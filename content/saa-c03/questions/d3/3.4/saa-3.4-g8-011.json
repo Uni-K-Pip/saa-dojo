@@ -1,0 +1,78 @@
+{
+  "id": "saa-3.4-g8-011",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K4", "3.4-S1", "3.4-S2"],
+  "services": [
+    "AWS Site-to-Site VPN",
+    "AWS Transit Gateway",
+    "AWS Global Accelerator",
+    "AWS Client VPN",
+    "Amazon VPC"
+  ],
+  "qualifier": "performance",
+  "tags": ["高速化された VPN", "Site-to-Site VPN", "Transit Gateway", "海外拠点", "グローバルネットワーク"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、東京リージョンの VPC で業務システムを運用しており、VPC にアタッチした仮想プライベートゲートウェイと各拠点の間を AWS Site-to-Site VPN で接続しています。南米やアフリカにある海外の拠点からの VPN 接続は、公衆インターネットを長い距離経由するため、遅延の揺らぎや切断が頻繁に起きています。これらの拠点に AWS Direct Connect を用意する予算はありません。海外の拠点の VPN の品質を改善し、今後増える VPC にもまとめて接続できるようにする必要があります。どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Transit Gateway を作成して既存の VPC をアタッチし、VPC のルートテーブルで、海外の拠点のネットワーク宛ての通信をトランジットゲートウェイに向ける。",
+      "correct": true,
+      "rationale": "高速化された VPN 接続は、トランジットゲートウェイにアタッチする VPN 接続でだけ使えます。トランジットゲートウェイを用意すれば、今後増える VPC もアタッチするだけで拠点とつなげられます。"
+    },
+    {
+      "id": "b",
+      "text": "海外の拠点ごとに、アクセラレーションを有効にした Site-to-Site VPN 接続をトランジットゲートウェイに新しく作成し、拠点のカスタマーゲートウェイデバイスの接続先を切り替える。",
+      "correct": true,
+      "rationale": "高速化された VPN 接続は AWS Global Accelerator を使い、拠点に最も近いエッジロケーションから AWS のグローバルネットワークを通って AWS 側の終端に届きます。公衆インターネットを通る区間が短くなるため、遅延の揺らぎや切断を減らせます。既存の接続では有効にできないため、新しい接続を作って切り替えます。"
+    },
+    {
+      "id": "c",
+      "text": "仮想プライベートゲートウェイに接続している既存の Site-to-Site VPN 接続の設定を変更して、アクセラレーションを有効にする。",
+      "correct": false,
+      "rationale": "仮想プライベートゲートウェイは高速化された VPN 接続に対応していません。また、既存の VPN 接続のアクセラレーションを後から有効にしたり無効にしたりすることもできません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Global Accelerator の標準アクセラレーターを作成し、仮想プライベートゲートウェイの VPN トンネルの IP アドレスをエンドポイントとして登録する。",
+      "correct": false,
+      "rationale": "標準アクセラレーターのエンドポイントにできるのは、Network Load Balancer、Application Load Balancer、EC2 インスタンス、Elastic IP アドレスです。VPN トンネルの終端を登録することはできません。"
+    },
+    {
+      "id": "e",
+      "text": "海外の拠点の利用者の端末に AWS Client VPN のクライアントを導入し、各端末から VPC へ直接 VPN 接続させる。",
+      "correct": false,
+      "rationale": "Client VPN は個人の端末から接続するための VPN で、拠点のネットワークどうしをつなぐものではありません。通信は公衆インターネットを通るため、品質の改善にもなりません。"
+    }
+  ],
+  "explanation": "Site-to-Site VPN 接続ではアクセラレーションを有効にできます。高速化された VPN 接続は AWS Global Accelerator を使い、カスタマーゲートウェイデバイスに最も近い AWS のエッジロケーションで通信を受け取って、混雑の少ない AWS のグローバルネットワーク経由で AWS 側の終端まで届けます。公衆インターネットを長く通る海外の拠点ほど効果が大きく、Direct Connect を用意できない場合の選択肢になります。AWS は VPN トンネルごとに 1 つ、合わせて 2 つのアクセラレーターを作成して管理します。\n\nただし、高速化された VPN 接続は、トランジットゲートウェイにアタッチする VPN 接続でだけ使えます。仮想プライベートゲートウェイには対応していません。また、既存の VPN 接続のアクセラレーションは後から切り替えられないため、アクセラレーションを有効にした新しい VPN 接続を作り、カスタマーゲートウェイデバイスの設定を切り替えてから古い接続を削除します。NAT トラバーサルが必要で、IKE の開始はカスタマーゲートウェイデバイス側から行います。\n\nAWS Transit Gateway は、VPC や VPN 接続をまとめてつなぐハブです。VPC が増えても、アタッチメントを追加してルートテーブルを設定すれば拠点とつながります。Client VPN は個人の端末向けの VPN なので、拠点間の接続の代わりにはなりません。",
+  "keyPoints": [
+    "インターネット経由の VPN の品質を改善したい → 高速化された Site-to-Site VPN（AWS Global Accelerator を利用）",
+    "高速化された VPN 接続はトランジットゲートウェイにアタッチする VPN 接続だけで使える。仮想プライベートゲートウェイは非対応",
+    "既存の VPN 接続のアクセラレーションは後から変更できない。新しい接続を作って切り替える",
+    "Client VPN は個人の端末向け。拠点と VPC をつなぐのは Site-to-Site VPN"
+  ],
+  "references": [
+    {
+      "title": "Accelerated AWS Site-to-Site VPN connections - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/accelerated-vpn.html"
+    },
+    {
+      "title": "What is AWS Site-to-Site VPN? - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html"
+    },
+    {
+      "title": "What is AWS Global Accelerator? - AWS Global Accelerator",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-hybrid-and-multi-vpc"],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

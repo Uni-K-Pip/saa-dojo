@@ -1,0 +1,62 @@
+{
+  "id": "saa-3.4-g8-009",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-S1", "3.4-K2", "3.4-K4"],
+  "services": ["Amazon Route 53", "AWS Direct Connect", "Amazon VPC", "Amazon EC2"],
+  "qualifier": "operational",
+  "tags": ["ハイブリッドDNS", "Route 53 VPC Resolver", "インバウンドエンドポイント", "アウトバウンドエンドポイント", "プライベートホストゾーン"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Direct Connect でオンプレミスのデータセンターと VPC を接続しています。VPC 内の Amazon EC2 インスタンスは、オンプレミスの DNS サーバーが管理する corp.example.com の名前を解決する必要があります。また、オンプレミスのサーバーは、VPC に関連付けた Amazon Route 53 のプライベートホストゾーン aws.example.com の名前を解決する必要があります。この企業は、DNS サーバーを自分たちで構築して運用することは避けたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Route 53 VPC Resolver のアウトバウンドエンドポイントと corp.example.com の転送ルールを作成し、インバウンドエンドポイントも作成して、オンプレミスの DNS サーバーから aws.example.com の問い合わせをそこへ転送する。",
+      "correct": true,
+      "rationale": "アウトバウンドエンドポイントと転送ルールで、VPC からの corp.example.com の問い合わせをオンプレミスの DNS サーバーへ送れます。インバウンドエンドポイントは VPC のサブネットに IP アドレスを持ち、Direct Connect 経由で届いたオンプレミスからの問い合わせを受けて、プライベートホストゾーンの名前を解決します。どちらもマネージドなので DNS サーバーを運用する必要はありません。"
+    },
+    {
+      "id": "b",
+      "text": "VPC に Amazon EC2 インスタンスで DNS フォワーダーを 2 台構築し、DHCP オプションセットで VPC の DNS サーバーをフォワーダーに変更して、corp.example.com はオンプレミスへ、それ以外は Amazon が提供する DNS サーバーへ転送させる。",
+      "correct": false,
+      "rationale": "双方向の名前解決は実現できますが、DNS フォワーダーの構築、パッチ適用、冗長化、監視を自分たちで行う必要があります。DNS サーバーを自分たちで運用したくないという要件と、運用上のオーバーヘッドを最小にするという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "VPC 側は Route 53 VPC Resolver のアウトバウンドエンドポイントと転送ルールを作成する。オンプレミスの DNS サーバーでは、aws.example.com の問い合わせを VPC の CIDR ブロックの先頭に 2 を足した IP アドレスへ転送する。",
+      "correct": false,
+      "rationale": "VPC の CIDR ブロックの先頭に 2 を足したアドレスの Amazon DNS サーバーは、VPC の中から使うためのものです。プライベートホストゾーンの名前は VPN や Direct Connect の向こう側から直接は解決できないため、オンプレミスからの問い合わせにはインバウンドエンドポイントが必要です。"
+    },
+    {
+      "id": "d",
+      "text": "aws.example.com をパブリックホストゾーンとして作り直してオンプレミスからインターネット経由で解決させ、corp.example.com のレコードは各 EC2 インスタンスの hosts ファイルに登録する。",
+      "correct": false,
+      "rationale": "社内向けの名前と IP アドレスをインターネットに公開することになり、hosts ファイルをすべてのインスタンスで更新し続ける必要もあります。運用上のオーバーヘッドが大きく、管理されたハイブリッドの名前解決になりません。"
+    }
+  ],
+  "explanation": "VPC の中では、Route 53 VPC Resolver（旧称 Route 53 Resolver）が、VPC の CIDR ブロックの先頭に 2 を足したアドレスなどで DNS の問い合わせに答えます。プライベートホストゾーンの名前や VPC 内のホスト名を解決できますが、これは VPC の中から使うためのもので、プライベートホストゾーンの名前を VPN や Direct Connect の向こう側から直接解決することはできません。\n\nオンプレミスと VPC の間で名前解決をするには、Resolver エンドポイントを使います。インバウンドエンドポイントは、VPC のサブネットに IP アドレスを持つネットワークインターフェイスで、オンプレミスの DNS サーバーから転送された問い合わせを受けて、プライベートホストゾーンなどの名前を解決します。アウトバウンドエンドポイントは、転送ルールで指定したドメイン（ここでは corp.example.com）の問い合わせを、オンプレミスの DNS サーバーへ転送します。転送ルールはほかのアカウントとも共有できます。\n\nどちらもマネージドな機能なので、DNS サーバーの構築やパッチ適用は不要です。EC2 インスタンスで DNS フォワーダーを作る方法でも同じことはできますが、サーバーの運用が必要になります。社内の名前をパブリックホストゾーンで公開する方法は、セキュリティの面でも運用の面でも適していません。",
+  "keyPoints": [
+    "オンプレミスと VPC の間の名前解決 → Route 53 VPC Resolver のインバウンド・アウトバウンドエンドポイント",
+    "オンプレミス → AWS はインバウンドエンドポイント、AWS → オンプレミスはアウトバウンドエンドポイントと転送ルール",
+    "プライベートホストゾーンの名前は、VPN や Direct Connect の向こう側から直接は解決できない",
+    "Route 53 VPC Resolver の旧称は Route 53 Resolver"
+  ],
+  "references": [
+    {
+      "title": "What is Route 53 VPC Resolver? - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+    },
+    {
+      "title": "Understanding Amazon DNS - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-hybrid-and-multi-vpc"],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

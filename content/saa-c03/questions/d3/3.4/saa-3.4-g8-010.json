@@ -1,0 +1,62 @@
+{
+  "id": "saa-3.4-g8-010",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K4", "3.4-S1"],
+  "services": ["VPC endpoints", "AWS PrivateLink", "Amazon S3", "AWS Direct Connect"],
+  "qualifier": "security",
+  "tags": ["インターフェイスエンドポイント", "ゲートウェイエンドポイント", "S3", "Direct Connect", "オンプレミスからのアクセス"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスのデータセンターと VPC を AWS Direct Connect のプライベート仮想インターフェイスで接続しています。VPC 内の Amazon EC2 インスタンスは、ゲートウェイ VPC エンドポイント経由で Amazon S3 バケットを使っています。今回、オンプレミスのバッチサーバーからも同じバケットへ大量のデータをアップロードすることになりました。社内の規定により、オンプレミスからの通信はインターネットや AWS のパブリック IP アドレスを経由させず、プライベート IP アドレスだけで S3 に届ける必要があります。また、VPC 内の通信にかかる費用は増やさないようにします。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスのルーターで S3 宛ての通信を Direct Connect に向け、VPC の既存のゲートウェイ VPC エンドポイントを経由して S3 に届くようにルートを設定する。",
+      "correct": false,
+      "rationale": "ゲートウェイ VPC エンドポイントは、VPC のルートテーブルで指定して VPC の中から使うためのもので、オンプレミスからはアクセスできません。オンプレミスの通信をこのエンドポイント経由で S3 に届けることはできません。"
+    },
+    {
+      "id": "b",
+      "text": "VPC に S3 のインターフェイス VPC エンドポイントを追加し、オンプレミスからは Direct Connect 経由でエンドポイント固有の DNS 名を使わせ、VPC 内はゲートウェイ VPC エンドポイントを使い続ける。",
+      "correct": true,
+      "rationale": "S3 のインターフェイスエンドポイントは VPC のプライベート IP アドレスを持ち、Direct Connect や VPN を経由したオンプレミスからも使えます。VPC 内の通信は料金のかからないゲートウェイエンドポイントを使い続けるため、VPC 内の費用も増えません。"
+    },
+    {
+      "id": "c",
+      "text": "Direct Connect 接続にパブリック仮想インターフェイスを追加し、オンプレミスのバッチサーバーから、S3 のパブリックなエンドポイントへ Direct Connect 経由でアクセスさせる。",
+      "correct": false,
+      "rationale": "パブリック仮想インターフェイスを使うとインターネットを経由せずに S3 に届きますが、接続先は S3 のパブリック IP アドレスです。プライベート IP アドレスだけで S3 に届けるという規定を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "VPC に S3 のインターフェイス VPC エンドポイントを作成してプライベート DNS を有効にし、ゲートウェイ VPC エンドポイントは削除して、VPC 内とオンプレミスの通信をすべてインターフェイスエンドポイント経由にする。",
+      "correct": false,
+      "rationale": "オンプレミスからの通信の要件は満たしますが、インターフェイスエンドポイントは時間とデータ処理量に応じて課金されます。料金のかからないゲートウェイエンドポイントをやめて VPC 内の通信も移すと、VPC 内の費用が増えます。"
+    }
+  ],
+  "explanation": "Amazon S3 の VPC エンドポイントには 2 種類あります。ゲートウェイ VPC エンドポイントは、VPC のルートテーブルに S3 への経路として追加するもので、料金はかかりませんが、使えるのは VPC の中からだけです。オンプレミスや別のリージョンの VPC からは使えません。インターフェイス VPC エンドポイント（AWS PrivateLink）は、VPC のサブネットにプライベート IP アドレスを持つネットワークインターフェイスとして作られ、Direct Connect や Site-to-Site VPN を経由したオンプレミスからも使えます。こちらは時間とデータ処理量に応じて課金されます。\n\n2 種類のエンドポイントは同じ VPC に共存できます。VPC 内の EC2 インスタンスはゲートウェイエンドポイントを使い続け、オンプレミスのバッチサーバーだけがインターフェイスエンドポイントを使うようにすれば、オンプレミスの通信をプライベート IP アドレスだけで S3 に届けつつ、VPC 内の費用も増やさずに済みます。オンプレミスからはエンドポイント固有の DNS 名を使います。プライベート DNS の「インバウンドエンドポイントに対してのみ有効にする」設定と Route 53 VPC Resolver のインバウンドエンドポイントを組み合わせて、通常の S3 の DNS 名を使わせる方法もあります。\n\nパブリック仮想インターフェイスは、インターネットを経由せずに AWS のパブリックなサービスへ接続できますが、接続先はパブリック IP アドレスです。",
+  "keyPoints": [
+    "S3 のゲートウェイエンドポイントは VPC 内からだけ使える（料金なし）。オンプレミスからは使えない",
+    "オンプレミスからプライベート IP アドレスで S3 へ → S3 のインターフェイスエンドポイント（AWS PrivateLink）",
+    "ゲートウェイとインターフェイスのエンドポイントは同じ VPC に共存できる。VPC 内はゲートウェイを使い続けて費用を抑える",
+    "Direct Connect のパブリック仮想インターフェイスの接続先は、AWS のパブリック IP アドレス"
+  ],
+  "references": [
+    {
+      "title": "AWS PrivateLink for Amazon S3 - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/privatelink-interface-endpoints.html"
+    },
+    {
+      "title": "What is Direct Connect? - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-hybrid-and-multi-vpc"],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}
