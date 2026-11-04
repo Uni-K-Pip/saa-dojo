@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.1-g4-005",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K5", "2.1-S3"],
+  "services": ["Amazon Simple Storage Service", "Amazon EventBridge", "AWS Lambda"],
+  "qualifier": "operational",
+  "tags": ["イベント駆動", "ファンアウト", "S3イベント通知", "EventBridge"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、契約者がアップロードした書類を Amazon S3 バケットに保存しています。書類が保存されるたびに、ウイルススキャン、文字の読み取り、担当者への通知という 3 つの処理を、それぞれ別のチームが管理する AWS Lambda 関数で独立に実行したいと考えています。今後も処理が追加される予定で、そのたびに既存の処理やアップロードの仕組みを変更したくありません。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットで Amazon EventBridge への通知を有効にし、オブジェクト作成イベントのルールを処理ごとに作り、各 Lambda 関数をターゲットにする。",
+      "correct": true,
+      "rationale": "EventBridge への通知を有効にすると、バケットのイベントが EventBridge に送られます。処理ごとにルールを作れば、同じイベントを複数の Lambda 関数が独立に受け取れ、処理を追加するときもルールを足すだけで、既存の処理やバケットの設定を変える必要がありません。"
+    },
+    {
+      "id": "b",
+      "text": "バケットのイベント通知に、同じオブジェクト作成イベントを対象とする設定を処理ごとに 1 つずつ追加し、それぞれの Lambda 関数を送信先として指定する。",
+      "correct": false,
+      "rationale": "S3 のイベント通知では、同じイベントタイプに対してプレフィックスやサフィックスが重なる設定を複数作ることはできません。同じ書類の保存イベントを複数の関数へ直接送る構成は作れないため、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "1 つの Lambda 関数をバケットのイベント通知の送信先にし、その関数から 3 つの処理の Lambda 関数を順番に呼び出す。",
+      "correct": false,
+      "rationale": "処理を追加するたびに呼び出し元の関数を変更する必要があり、既存の処理を変更したくないという要件を満たしません。1 つの処理の失敗や遅延がほかの処理にも影響し、処理どうしが密に結合します。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EventBridge Scheduler で各チームの Lambda 関数を 1 分ごとに実行し、バケットに新しく追加された書類を一覧して処理させる。",
+      "correct": false,
+      "rationale": "定期的にバケットを一覧するポーリングでは、処理済みかどうかの管理を各チームが作り込む必要があり、オブジェクトが増えるほど一覧の負荷と遅延も大きくなります。イベント駆動の構成より運用上のオーバーヘッドが大きくなります。"
+    }
+  ],
+  "explanation": "イベント駆動アーキテクチャでは、イベントを出す側（ここでは S3 バケット）は誰が処理するかを知らず、受け取る側がそれぞれ必要なイベントを購読します。Amazon S3 で Amazon EventBridge への通知を有効にすると、バケットのイベントが EventBridge のデフォルトのイベントバスに送られます。ルールでバケット名やオブジェクトキーなどを条件にイベントを絞り込み、処理ごとのルールで各 Lambda 関数をターゲットにすれば、同じイベントが独立した複数の処理に配られます（ファンアウト）。新しい処理はルールを追加するだけで加えられます。\n\nS3 のイベント通知を直接使う場合、同じイベントタイプでプレフィックスやサフィックスが重なる設定は作れないため、1 つのイベントを複数の送信先に配るには Amazon SNS トピックや EventBridge を間に置きます。1 つの関数から順番に呼び出す構成やポーリングは、処理どうしの結合や作り込みが増えます。",
+  "keyPoints": [
+    "1 つのイベントを複数の処理へ独立に配る → EventBridge のルール（または SNS トピック）でファンアウト",
+    "S3 のイベント通知は、同じイベントタイプでプレフィックス・サフィックスが重なる設定を複数作れない",
+    "処理の追加はルールや購読を足すだけにし、イベントを出す側を変更しないのが疎結合"
+  ],
+  "references": [
+    {
+      "title": "Using EventBridge - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html"
+    },
+    {
+      "title": "Configuring event notifications using object key name filtering - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-filtering.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

@@ -52,7 +52,7 @@
   ],
   "references": [
     {
-      "title": "Caching strategies - Amazon ElastiCache",
+      "title": "Caching strategies for Memcached - Amazon ElastiCache",
       "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html"
     },
     {

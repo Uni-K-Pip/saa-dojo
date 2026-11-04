@@ -1,0 +1,66 @@
+{
+  "id": "saa-2.1-g4-007",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K7", "2.1-K3"],
+  "services": ["Amazon CloudFront", "Amazon Simple Storage Service", "Elastic Load Balancing", "AWS Global Accelerator", "Amazon Route 53"],
+  "qualifier": "performance",
+  "tags": ["CloudFront", "エッジ", "キャッシュ動作", "オリジンアクセスコントロール", "Global Accelerator"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある旅行予約サイトは、東京リージョンだけで運用しています。画像や JavaScript などの静的ファイルは Amazon S3 バケットに、空室検索の API は Application Load Balancer（ALB）の背後の Amazon EC2 インスタンスに置いています。欧米の利用者が増え、表示が遅いという声が寄せられています。静的ファイルは利用者の近くから配信し、API は毎回最新の結果を返す必要があります。S3 バケットはインターネットに直接公開したくありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudFront のディストリビューションで、静的ファイルのパスはオリジンアクセスコントロールを設定した S3 オリジンからキャッシュして配信し、API のパスはキャッシュしない設定で ALB に転送する。",
+      "correct": true,
+      "rationale": "静的ファイルは世界中のエッジロケーションにキャッシュされ、利用者の近くから配信されます。API のパスはキャッシュを無効にするため毎回オリジンの最新の結果が返り、エッジから AWS のネットワークを通るので遠方からの応答も改善します。オリジンアクセスコントロールとバケットポリシーで、バケットへのアクセスを CloudFront 経由だけに限定できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Global Accelerator のアクセラレーターを作成して ALB をエンドポイントに登録し、静的ファイルは S3 バケットの静的ウェブサイトホスティングを公開して配信する。",
+      "correct": false,
+      "rationale": "Global Accelerator は TCP・UDP の通信をエッジで受けて AWS のネットワークで運ぶ仕組みで、コンテンツをエッジにキャッシュしません。静的ファイルを利用者の近くから配信できず、ウェブサイトエンドポイントの公開はバケットを直接公開しないという要件にも反します。"
+    },
+    {
+      "id": "c",
+      "text": "S3 バケットで S3 Transfer Acceleration を有効にしてその専用エンドポイントから静的ファイルを配信し、API は Amazon Route 53 のレイテンシーベースルーティングで ALB に振り分ける。",
+      "correct": false,
+      "rationale": "S3 Transfer Acceleration は遠方からバケットへのアップロードやダウンロードを速くする機能で、ファイルをエッジにキャッシュして配信するものではありません。ブラウザから直接読ませるにはバケットの公開が必要になり、リージョンが 1 つだけならレイテンシーベースルーティングにも効果がありません。"
+    },
+    {
+      "id": "d",
+      "text": "欧州と北米のリージョンにも S3 バケットと EC2 インスタンスを複製し、Amazon Route 53 の位置情報ルーティングで利用者を最寄りのリージョンの S3 バケットと ALB に振り分ける。",
+      "correct": false,
+      "rationale": "各リージョンのバケットから直接配信するにはバケットを公開する必要があり、要件に反します。リージョンごとにサーバーやデータの同期を運用する負担も大きく、エッジのキャッシュを使う方法に比べて手間とコストがかかります。"
+    }
+  ],
+  "explanation": "Amazon CloudFront は、世界中のエッジロケーションでコンテンツをキャッシュして配信する CDN です。1 つのディストリビューションに複数のオリジンを登録し、パスのパターンごとにキャッシュ動作を分けられます。静的ファイルのパスは S3 オリジンからキャッシュして配信し、API のパスはマネージドキャッシュポリシーの CachingDisabled などでキャッシュを無効にして ALB に転送します。キャッシュしないリクエストも、利用者に近いエッジで受けて AWS のネットワークでオリジンまで運ぶため、遠方の利用者の応答を改善できます。S3 オリジンにはオリジンアクセスコントロール（OAC）を設定し、バケットポリシーで CloudFront からのアクセスだけを許可すれば、バケットを公開せずに済みます。\n\nAWS Global Accelerator は固定のエニーキャスト IP アドレスで TCP・UDP の通信を受けて最適なエンドポイントに運ぶサービスで、キャッシュは行いません。HTTP 以外のプロトコルや固定 IP アドレスが必要な場合に向いています。S3 Transfer Acceleration は、遠方からバケットへの大きなファイルの転送を速くする機能です。",
+  "keyPoints": [
+    "静的ファイルを利用者の近くから配信 → CloudFront のエッジキャッシュ",
+    "1 つのディストリビューションでパスごとにオリジンとキャッシュ動作を分けられる（動的な API はキャッシュ無効）",
+    "S3 バケットを公開しない → オリジンアクセスコントロール（OAC）とバケットポリシー",
+    "Global Accelerator はキャッシュしない。TCP・UDP、固定 IP アドレス、高速なフェイルオーバーが要件のとき"
+  ],
+  "references": [
+    {
+      "title": "Use managed cache policies - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html"
+    },
+    {
+      "title": "AWS Global Accelerator FAQs",
+      "url": "https://aws.amazon.com/global-accelerator/faqs/"
+    },
+    {
+      "title": "Configuring fast, secure file transfers using Amazon S3 Transfer Acceleration - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}
