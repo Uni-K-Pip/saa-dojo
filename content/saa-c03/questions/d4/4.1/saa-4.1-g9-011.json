@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-011",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K11", "4.1-K4"],
+  "services": ["Amazon EFS", "Amazon EBS", "Amazon S3"],
+  "qualifier": "availability",
+  "tags": ["ファイルストレージ", "ブロックストレージ", "Multi-Attach", "共有ファイルシステム"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある設計事務所は、Linux の Amazon EC2 インスタンスで動く図面管理アプリケーションを、2 つのアベイラビリティーゾーン（AZ）にまたがる Auto Scaling グループで運用する予定です。すべてのインスタンスが同じファイル群を、通常のファイルシステムと同じようにディレクトリで管理し、同時に読み書きできる必要があります。1 つの AZ が使えなくなっても、もう一方の AZ のインスタンスからファイルを使い続けられなければなりません。アプリケーションのファイル操作の方法は変えられません。この要件を満たすストレージはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Multi-Attach を有効にしたプロビジョンド IOPS SSD（io2）の EBS ボリュームを作成し、すべてのインスタンスに接続する。",
+      "correct": false,
+      "rationale": "Multi-Attach で 1 つのボリュームを接続できるのは、同じ AZ にあるインスタンスだけです。別の AZ のインスタンスからは使えず、AZ の障害にも耐えられません。また、一般的なファイルシステムで同時に書き込むとデータが壊れるため、クラスターに対応したファイルシステムも必要です。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon S3 バケットを作成し、アプリケーションがファイルをオブジェクトとして API で読み書きするようにする。",
+      "correct": false,
+      "rationale": "S3 はオブジェクトストレージで、ファイルシステムとしてではなく API でデータを読み書きします。ファイル操作の方法を変えられないという制約があるため、この要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EFS のファイルシステムを作成し、各 AZ にマウントターゲットを置いて、すべてのインスタンスから NFS でマウントする。",
+      "correct": true,
+      "rationale": "Amazon EFS は、複数の AZ にデータを保存する共有ファイルシステムで、多数の Linux インスタンスから NFS で同時にマウントできます。各 AZ のマウントターゲットを通じてアクセスするため、1 つの AZ が使えなくなっても、もう一方の AZ から使い続けられます。"
+    },
+    {
+      "id": "d",
+      "text": "各インスタンスに汎用 SSD（gp3）の EBS ボリュームを接続し、ファイルが書き込まれるたびに、ほかのインスタンスのボリュームへ同期する。",
+      "correct": false,
+      "rationale": "各ボリュームはそれぞれのインスタンス専用で、同期の仕組みを自分で作る必要があります。同時に書き込まれたときの整合性も保証できず、同じファイル群を同時に読み書きするという要件を満たしません。"
+    }
+  ],
+  "explanation": "ストレージは、データの扱い方によって 3 種類に分けられます。ブロックストレージ（Amazon EBS）は、1 台のサーバーに接続するディスクのように使い、1 つの AZ の中にあります。ファイルストレージ（Amazon EFS、Amazon FSx）は、複数のサーバーから同時にマウントできる共有のファイルシステムです。オブジェクトストレージ（Amazon S3）は、ファイルをオブジェクトとして API で読み書きし、容量の上限を気にせず使えます。\n\nこの問題では、複数の AZ のインスタンスが同じファイルを同時に読み書きし、ファイル操作の方法も変えられません。Linux から NFS で共有でき、データを複数の AZ に保存する Amazon EFS が適しています。EFS は保存した量に応じて容量が自動で増減するため、事前に容量を割り当てる必要もありません。\n\nEBS の Multi-Attach は、io1 と io2 のボリュームを同じ AZ の最大 16 台の Nitro ベースのインスタンスに接続する機能です。同時書き込みにはクラスターに対応したファイルシステムが必要で、別の AZ からは使えません。",
+  "keyPoints": [
+    "複数の AZ の Linux インスタンスで同じファイルを共有 → Amazon EFS",
+    "EBS は 1 つの AZ の中のブロックストレージ。Multi-Attach も同じ AZ の io1・io2 に限られる",
+    "S3 はオブジェクトストレージ。ファイルシステムとしてではなく API で読み書きする"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

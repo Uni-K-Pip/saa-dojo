@@ -1,0 +1,66 @@
+{
+  "id": "saa-4.1-g9-014",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-S3", "4.1-S7"],
+  "services": ["Amazon S3", "AWS DataSync", "AWS Direct Connect"],
+  "qualifier": "cost",
+  "tags": ["データ移行", "データ転送料金", "インターネット経由のアップロード"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある建築会社は、オンプレミスのファイルサーバーにある約 20 TB の設計図面のアーカイブを、Amazon S3 に一度だけ移したいと考えています。インターネット回線は 1 Gbps で、普段の利用率は 30% 程度のため、空いている帯域を使えば数日で転送を終えられます。移行の期限は 1 か月後で、移行後はオンプレミスとの継続的なデータ転送はありません。転送の途中で失敗したファイルは、担当者が再実行すれば問題ありません。最も低いコストで移行できる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS DataSync のエージェントをオンプレミスに導入し、DataSync のタスクでファイルサーバーから S3 へ転送する。",
+      "correct": false,
+      "rationale": "DataSync は転送の検証や再試行、スケジュール実行を自動で行える便利なサービスですが、転送したデータ量に応じた料金がかかります。帯域が十分にあり、一度だけの転送で手動の再実行も許容されているため、最も低いコストの方法ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS CLI の s3 sync コマンドを使い、インターネット経由でファイルサーバーから S3 へ直接アップロードする。",
+      "correct": true,
+      "rationale": "インターネットから S3 へのデータ転送（受信）には料金がかからず、かかるのは PUT リクエストと保存の料金だけです。AWS CLI は大きなファイルを自動でマルチパートアップロードし、s3 sync は再実行したときに未転送のファイルだけを転送します。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Direct Connect の専用接続を新たに申し込み、開通した専用線を使ってファイルサーバーから S3 へ転送する。",
+      "correct": false,
+      "rationale": "Direct Connect にはポートの時間料金などがかかり、開通までに時間もかかります。一度だけの 20 TB の移行で、インターネット回線の帯域も足りているため、コストが見合いません。"
+    },
+    {
+      "id": "d",
+      "text": "バケットで S3 Transfer Acceleration を有効にし、高速化用のエンドポイントを使ってファイルサーバーから S3 へ転送する。",
+      "correct": false,
+      "rationale": "S3 Transfer Acceleration は長距離の転送を速くする機能で、通常の料金に加えて転送量に応じた高速化の料金がかかります。期限まで余裕があり、速度を上げる必要もないため、余計な費用になります。"
+    }
+  ],
+  "explanation": "AWS では、インターネットから AWS へのデータ転送（受信）には料金がかかりません。S3 へのアップロードでかかるのは、主に PUT リクエストの料金と、保存したデータの料金です。そのため、回線の帯域と期限に余裕がある一度だけの移行では、AWS CLI などを使ってインターネット経由で直接アップロードするのが最も安上がりです。20 TB を空いている約 700 Mbps で転送すると、3 日ほどで終わります。\n\nほかの方法には、それぞれ向いている場面があります。AWS DataSync は、転送したデータの検証や失敗時の再試行、定期的な同期を自動化したい場合に向いており、転送量に応じた料金がかかります。AWS Direct Connect は、継続的に大量のデータを安定した回線でやり取りする場合に向いています。S3 Transfer Acceleration は、遠く離れた場所から速くアップロードしたい場合の追加料金の機能です。\n\n移行の方法は、データ量・回線の帯域・期限・転送の頻度から、必要な機能に見合うコストかどうかで選びます。",
+  "keyPoints": [
+    "インターネットから AWS へのデータ転送（受信）は無料",
+    "帯域と期限に余裕がある一度だけの移行 → インターネット経由で直接アップロードするのが最も安い",
+    "検証・再試行・定期的な同期を自動化したい → AWS DataSync（転送量に応じた料金）",
+    "S3 Transfer Acceleration は、速度のための追加料金の機能"
+  ],
+  "references": [
+    {
+      "title": "S3 Pricing",
+      "url": "https://aws.amazon.com/s3/pricing/"
+    },
+    {
+      "title": "Pricing - AWS DataSync",
+      "url": "https://aws.amazon.com/datasync/pricing/"
+    },
+    {
+      "title": "Uploading and copying objects using multipart upload in Amazon S3 - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

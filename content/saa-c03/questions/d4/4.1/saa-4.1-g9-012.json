@@ -1,0 +1,65 @@
+{
+  "id": "saa-4.1-g9-012",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-S1", "4.1-K9"],
+  "services": ["Amazon Data Firehose", "Amazon S3", "Amazon Athena"],
+  "qualifier": "cost",
+  "tags": ["リクエスト料金", "小さいオブジェクト", "バッファリング", "IoT"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある農業機器メーカーは、約 5,000 台のセンサーから 10 秒ごとに送られてくる 1〜2 KB の JSON データを、Amazon EC2 上のアプリケーションで受け取っています。アプリケーションはデータを 1 件ずつ個別のオブジェクトとして Amazon S3 に書き込み、分析チームが 1 時間ごとに Amazon Athena で集計しています。S3 の請求を確認したところ、保存料金よりも PUT リクエストの料金のほうがはるかに大きくなっていました。分析に使うデータは 15 分程度遅れても問題ありません。最もコスト効率の高い改善策はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 Transfer Acceleration を有効にし、アプリケーションが高速化用のエンドポイントを使ってデータを書き込むようにする。",
+      "correct": false,
+      "rationale": "S3 Transfer Acceleration は長距離の転送を速くする機能で、リクエストの数は減りません。通常の料金に加えて高速化の料金がかかるため、費用はかえって増えます。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションから Amazon Data Firehose にデータを送り、一定の時間や量ごとにまとめた大きなオブジェクトとして S3 に配信する。",
+      "correct": true,
+      "rationale": "Amazon Data Firehose は、受け取ったデータを指定した時間または量に達するまでバッファリングし、まとめて 1 つのオブジェクトとして S3 に書き込みます。オブジェクトの数が大幅に減るため、PUT リクエストの料金を大きく削減できます。15 分程度の遅れは許容されているので、バッファリングによる遅延も問題ありません。"
+    },
+    {
+      "id": "c",
+      "text": "書き込み先のストレージクラスを S3 Standard-IA に変更し、データの保存料金を下げることで全体の費用を削減する。",
+      "correct": false,
+      "rationale": "費用の大半は保存料金ではなく PUT リクエストの料金です。S3 Standard-IA は PUT リクエストの単価が S3 Standard より高く、128 KB 未満のオブジェクトも 128 KB として課金されるため、費用はかえって増えます。"
+    },
+    {
+      "id": "d",
+      "text": "マルチパートアップロードを使い、各 JSON データを複数のパートに分けて並列に書き込むことで、書き込みの効率を上げる。",
+      "correct": false,
+      "rationale": "マルチパートアップロードは、大きなオブジェクトを分割して効率よくアップロードする仕組みです。小さなデータを分割すると、パートごとにリクエストが発生し、リクエストの数はかえって増えます。"
+    }
+  ],
+  "explanation": "Amazon S3 の料金には、保存料金のほかに、PUT や GET などのリクエストの回数に応じた料金があります。小さなデータを 1 件ずつ個別のオブジェクトとして書き込むと、保存量はわずかでもリクエストの数が膨大になり、リクエストの料金が費用の大半を占めることがあります。このような場合は、データをまとめて大きなオブジェクトにしてから S3 に書き込む（一括でアップロードする）ことで、リクエストの数を大幅に減らせます。\n\nAmazon Data Firehose（旧称 Amazon Kinesis Data Firehose）は、ストリーミングデータを受け取り、指定した時間または量に達するまでバッファリングしてから、S3 などの配信先にまとめて書き込むマネージドサービスです。独自の集約処理を作る必要がなく、配信の前にデータを Apache Parquet などの列指向の形式に変換すれば、Athena でスキャンするデータ量も減らせます。\n\nなお、Firehose の取り込み料金は、直接送信したレコードごとに 5 KB 単位で切り上げて計算されます。非常に小さいレコードは、送信側である程度まとめてから送ると、さらに費用を抑えられます。",
+  "keyPoints": [
+    "小さなデータを大量に個別の PUT で書き込むと、リクエストの料金が保存料金を上回ることがある",
+    "小さなデータはまとめて大きなオブジェクトにしてから S3 に書き込む（Amazon Data Firehose のバッファリングなど）",
+    "低頻度アクセス向けのストレージクラスは、リクエストの単価や最小課金サイズのため小さなオブジェクトに向かない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Data Firehose? - Amazon Data Firehose",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    },
+    {
+      "title": "Data Firehose Pricing",
+      "url": "https://aws.amazon.com/firehose/pricing/"
+    },
+    {
+      "title": "S3 Pricing",
+      "url": "https://aws.amazon.com/s3/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}
