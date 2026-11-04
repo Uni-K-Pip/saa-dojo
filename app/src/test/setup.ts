@@ -7,5 +7,5 @@ afterEach(() => {
   cleanup();
 });
 
-// jsdom は scrollTo を実装していない
-window.scrollTo = (() => undefined) as typeof window.scrollTo;
+// jsdom は scrollTo を実装していない（node 環境のテストでは window がない）
+if (typeof window !== 'undefined') window.scrollTo = (() => undefined) as typeof window.scrollTo;
