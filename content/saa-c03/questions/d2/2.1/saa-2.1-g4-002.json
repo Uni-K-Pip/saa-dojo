@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.1-g4-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K2"],
+  "services": ["AWS Transfer Family", "Amazon Simple Storage Service", "Amazon Elastic Compute Cloud", "AWS Storage Gateway"],
+  "qualifier": "operational",
+  "tags": ["Transfer Family", "SFTP", "マネージドサービス", "ファイル転送"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社は、取引先 40 社から毎日 CSV ファイルを受け取るために、オンプレミスで SFTP サーバーを運用しています。サーバーの保守やパッチ適用の負担をなくすため、ファイルの受け取りを AWS に移し、受け取ったファイルは Amazon S3 に保存して分析に使う計画です。取引先には、現在使っている SFTP クライアントと接続先のホスト名をそのまま使い続けてもらう必要があります。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Transfer Family で SFTP を有効にしたサーバーを作成してストレージに Amazon S3 を指定し、既存のホスト名をサーバーのエンドポイントに向ける。",
+      "correct": true,
+      "rationale": "AWS Transfer Family は SFTP などのファイル転送プロトコルのサーバーをフルマネージドで提供し、受け取ったファイルを直接 Amazon S3 に保存できます。サーバーの保守やパッチ適用は不要で、既存のホスト名をエンドポイントに向ければ、取引先はクライアントの設定を変えずに使い続けられます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EC2 インスタンスに SFTP サーバーのソフトウェアをインストールし、受け取ったファイルを Amazon S3 にコピーするスクリプトを定期的に実行する。",
+      "correct": false,
+      "rationale": "取引先の使い方は変えずに済みますが、EC2 インスタンスの OS やソフトウェアのパッチ適用、可用性の確保、コピー用スクリプトの保守が残ります。サーバーの保守の負担をなくすという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "取引先ごとに Amazon S3 の署名付き URL を発行し、取引先にはその URL へ HTTPS でファイルをアップロードしてもらう。",
+      "correct": false,
+      "rationale": "署名付き URL を使えば S3 へ直接アップロードできますが、取引先は SFTP クライアントではなく HTTPS でアップロードする手順に変える必要があります。URL の発行や期限の管理も必要で、取引先が今の SFTP クライアントを使い続けるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Storage Gateway の S3 ファイルゲートウェイを配置し、取引先にはファイル共有にファイルを書き込んでもらって Amazon S3 に保存する。",
+      "correct": false,
+      "rationale": "S3 ファイルゲートウェイは、NFS や SMB のファイル共有を通じてオンプレミスのアプリケーションからファイルを S3 に保存する仕組みで、SFTP には対応していません。取引先が SFTP クライアントを使い続けるという要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS Transfer Family は、SFTP、FTPS、FTP、AS2 などのプロトコルでファイルを受け渡しするサーバーをフルマネージドで提供するサービスです。保存先には Amazon S3 または Amazon EFS を選べ、受け取ったファイルはそのまま S3 に保存されるので、分析などに直接使えます。サーバーは複数のアベイラビリティーゾーンにまたがる冗長な構成で動き、利用者がインスタンスの保守やパッチ適用をする必要はありません。\n\n既存のホスト名をサーバーのエンドポイントに関連付け、ユーザーを登録すれば、取引先は認証方法やクライアントの設定を変えずに接続先を移行できます。EC2 で SFTP サーバーを自前で運用する方法は保守の負担が残り、署名付き URL や Storage Gateway は取引先に使い方の変更を求めます。",
+  "keyPoints": [
+    "SFTP・FTPS・FTP・AS2 のファイル受け渡しをサーバー管理なしで → AWS Transfer Family（保存先は S3 または EFS）",
+    "取引先の手順やクライアントを変えずに移行できるかを確認する",
+    "Storage Gateway の S3 ファイルゲートウェイは NFS・SMB でオンプレミスのアプリから S3 に保存する仕組み"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Transfer Family? - AWS Transfer Family",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
+    },
+    {
+      "title": "AWS Transfer Family FAQs",
+      "url": "https://aws.amazon.com/aws-transfer-family/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}
