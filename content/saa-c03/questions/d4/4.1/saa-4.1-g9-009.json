@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-009",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K9", "4.1-S9"],
+  "services": ["Amazon S3", "AWS Cost Explorer", "AWS Trusted Advisor"],
+  "qualifier": "operational",
+  "tags": ["ストレージクラス分析", "アクセスパターン", "ライフサイクル"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるゲーム会社は、プレイヤーが投稿したスクリーンショットを Amazon S3 の S3 Standard ストレージクラスに保存しています。投稿から時間がたつとアクセスが減ると考えられていますが、投稿から何日目くらいで減るのかは誰も把握していません。チームは、実際のアクセスの傾向に基づいて、S3 Standard-IA へ移行するライフサイクルルールの日数を決めたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 サーバーアクセスログを有効にし、出力されたログを毎日ダウンロードして表計算ソフトで集計し、オブジェクトの経過日数ごとのアクセス数から移行までの日数を決める。",
+      "correct": false,
+      "rationale": "アクセスの傾向は分かりますが、大量のログを毎日ダウンロードして集計する手間がかかり、運用負荷が大きくなります。同じ分析は S3 ストレージクラス分析で自動的に行えます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Cost Explorer で S3 の日別の費用の推移を確認し、費用の伸びが鈍くなった時期をもとに、移行までの日数を決める。",
+      "correct": false,
+      "rationale": "Cost Explorer では費用の推移は分かりますが、オブジェクトが作成から何日たつとアクセスが減るのかは分かりません。移行の日数を決める根拠になりません。"
+    },
+    {
+      "id": "c",
+      "text": "スクリーンショットのプレフィックスを対象に S3 ストレージクラス分析を設定し、アクセスの傾向を一定期間観察した結果をもとに、移行までの日数を決める。",
+      "correct": true,
+      "rationale": "S3 ストレージクラス分析は、プレフィックスやタグで絞り込んだオブジェクトのアクセスの傾向を観察し、S3 Standard から S3 Standard-IA へいつ移行すべきかの判断材料を示します。結果は毎日更新され、S3 バケットへエクスポートすることもできます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Trusted Advisor のコスト最適化のチェック結果を確認し、推奨された日数で S3 Standard-IA へ移行するライフサイクルルールを作成する。",
+      "correct": false,
+      "rationale": "Trusted Advisor は使われていないリソースなどを指摘しますが、オブジェクトのアクセスの傾向から移行の日数を推奨する機能はありません。根拠のある日数を決められません。"
+    }
+  ],
+  "explanation": "ライフサイクルルールで低頻度アクセス向けのストレージクラスへ移す日数は、データが実際にどのくらいの期間読まれているかに基づいて決めるのが理想です。早すぎると取り出し料金や最低保存期間の料金がかさみ、遅すぎると高いストレージ料金を払い続けることになります。\n\nS3 ストレージクラス分析（Storage Class Analysis）は、バケット全体またはプレフィックスやオブジェクトタグで絞り込んだオブジェクトを対象に、作成からの日数ごとのアクセスの傾向を観察します。その結果から、S3 Standard のデータを S3 Standard-IA へいつ移すべきかを判断できます。分析結果は毎日更新され、CSV として S3 バケットにエクスポートして他のツールで可視化することもできます。なお、この分析が示すのは S3 Standard から S3 Standard-IA への移行についてだけです。\n\nアクセスの傾向が予測できず、日数を決められない、または変化し続ける場合は、S3 Intelligent-Tiering を使う方法もあります。",
+  "keyPoints": [
+    "ライフサイクルルールの移行日数を、実際のアクセスの傾向から決めたい → S3 ストレージクラス分析",
+    "ストレージクラス分析の対象は、プレフィックスやタグで絞り込める",
+    "傾向が決まらない・変化し続けるデータ → S3 Intelligent-Tiering も検討する"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 analytics – Storage Class Analysis - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/analytics-storage-class.html"
+    },
+    {
+      "title": "Managing the lifecycle of objects - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K8", "4.1-S6"],
+  "services": ["AWS Storage Gateway", "Amazon S3 Glacier", "AWS DataSync"],
+  "qualifier": "cost",
+  "tags": ["テープゲートウェイ", "ハイブリッドストレージ", "バックアップ", "アーカイブ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製薬会社は、オンプレミスのバックアップソフトウェアで毎週のフルバックアップを物理テープに書き込み、テープを外部の保管業者に預けています。テープの購入や輸送、保管の費用がかさむうえ、テープライブラリの保守期限も迫っています。バックアップは法令により 10 年間保持する必要がありますが、復元はほとんど発生せず、復元に 1〜2 日かかっても問題ありません。バックアップソフトウェアとテープを使った運用手順は、できるだけ変えたくありません。最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Storage Gateway の S3 ファイルゲートウェイを導入してバックアップの出力先を NFS 共有に変え、ライフサイクルルールで S3 Glacier Deep Archive へ移行する。",
+      "correct": false,
+      "rationale": "保存料金は抑えられますが、バックアップの出力先をテープからファイル共有に変えるため、バックアップソフトウェアの設定やテープを使った運用手順を変える必要があります。手順をできるだけ変えないという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "新しいテープライブラリをオンプレミスに導入して保守契約を更新し、テープを外部の保管業者に預ける運用を続ける。",
+      "correct": false,
+      "rationale": "運用手順は変わりませんが、テープライブラリの購入費や保守費、テープの購入・輸送・保管の費用がかかり続けます。コストを下げるという目的を果たせません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS DataSync で、バックアップソフトウェアが書き出したファイルを毎週 Amazon S3 に転送し、S3 Glacier Deep Archive に保存する。",
+      "correct": false,
+      "rationale": "バックアップの書き出し先をテープからファイルに変える必要があり、運用手順が大きく変わります。また、DataSync は転送したデータ量に応じた料金がかかります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Storage Gateway のテープゲートウェイを導入して仮想テープにバックアップし、取り出した仮想テープが S3 Glacier Deep Archive にアーカイブされるようにする。",
+      "correct": true,
+      "rationale": "テープゲートウェイは物理的なテープライブラリの代わりに仮想テープライブラリを提供するので、主要なバックアップソフトウェアからこれまでと同じテープの手順でバックアップできます。取り出した（イジェクトした）仮想テープは S3 Glacier Deep Archive にアーカイブされ、通常 12 時間以内に取り出せます。"
+    }
+  ],
+  "explanation": "AWS Storage Gateway は、オンプレミスのアプリケーションから AWS のストレージを使えるようにするハイブリッドストレージのサービスで、用途に応じていくつかの種類があります。S3 ファイルゲートウェイは NFS や SMB のファイル共有として S3 を使う場合、ボリュームゲートウェイは iSCSI のブロックストレージとして使う場合、テープゲートウェイは物理テープの代わりに仮想テープを使う場合に選びます。\n\nテープゲートウェイは、バックアップソフトウェアからは従来のテープライブラリのように見えるため、テープを使ったバックアップの手順を変えずに移行できます。仮想テープのデータは S3 に保存され、バックアップソフトウェアでテープを取り出すと、S3 Glacier Flexible Retrieval または S3 Glacier Deep Archive にアーカイブされます。テープの購入や輸送、外部保管の費用がなくなり、長期間保持するバックアップの保存料金も大きく下がります。\n\n「復元に 1〜2 日かかってもよい」という条件から、アーカイブ先には保存料金が最も低い S3 Glacier Deep Archive を選べます。",
+  "keyPoints": [
+    "物理テープのバックアップを手順を変えずにクラウドへ → Storage Gateway のテープゲートウェイ",
+    "長期保持でほとんど復元しないテープ → 取り出した仮想テープを S3 Glacier Deep Archive にアーカイブ",
+    "ファイル共有なら S3 ファイルゲートウェイ、ブロックストレージならボリュームゲートウェイ"
+  ],
+  "references": [
+    {
+      "title": "What is Tape Gateway? - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+    },
+    {
+      "title": "Tape Gateway | Amazon Web Services",
+      "url": "https://aws.amazon.com/storagegateway/vtl/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

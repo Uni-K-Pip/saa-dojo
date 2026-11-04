@@ -1,0 +1,62 @@
+{
+  "id": "saa-4.1-g9-006",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K6", "4.1-K9"],
+  "services": ["Amazon EBS", "Amazon EC2"],
+  "qualifier": "cost",
+  "tags": ["EBS ボリュームタイプ", "st1", "スループット"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるログ分析会社は、Amazon EC2 インスタンス上で独自のログ処理ソフトウェアを動かしています。ソフトウェアは約 10 TB のログファイルを大きなブロック単位で順番に読み込んで集計する処理を、日中を通して繰り返し実行します。小さなランダムな読み書きはほとんどなく、重要なのは高いスループットです。ログはこのインスタンスに接続した Amazon EBS ボリュームに保存しており、起動ボリュームは別にあります。ログを保存するボリュームとして、最もコスト効率の高いボリュームタイプはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "汎用 SSD（gp3）ボリュームを使い、必要なスループットを追加でプロビジョニングする。",
+      "correct": false,
+      "rationale": "gp3 でもスループットを追加できますが、1 GB あたりの料金が HDD のボリュームより高く、10 TB を保存するとストレージ料金がかさみます。大きなブロックを順番に読む処理には、SSD の低レイテンシーや高い IOPS は必要ありません。"
+    },
+    {
+      "id": "b",
+      "text": "プロビジョンド IOPS SSD（io2）ボリュームを使い、高い IOPS をプロビジョニングする。",
+      "correct": false,
+      "rationale": "io2 は、低レイテンシーで高い IOPS が必要なデータベースなどの重要なワークロード向けで、容量と IOPS の両方に高い料金がかかります。順次読み込みが中心でスループットが重要なワークロードには過剰です。"
+    },
+    {
+      "id": "c",
+      "text": "スループット最適化 HDD（st1）ボリュームを使う。",
+      "correct": true,
+      "rationale": "st1 は、頻繁にアクセスされ、大きなブロックを順番に読み書きするスループット重視のワークロード向けの低コストな HDD です。ログ処理や ETL、データウェアハウスなどに適しています。起動ボリュームには使えませんが、この問題では起動ボリュームが別にあるので問題ありません。"
+    },
+    {
+      "id": "d",
+      "text": "Cold HDD（sc1）ボリュームを使う。",
+      "correct": false,
+      "rationale": "sc1 は最も安い EBS ボリュームですが、アクセスの頻度が低いデータ向けで、スループットの上限も st1 より低くなります。日中を通して繰り返し読み込むログには st1 が適しています。"
+    }
+  ],
+  "explanation": "Amazon EBS のボリュームタイプは、SSD と HDD に分かれます。SSD の汎用 SSD（gp3 など）とプロビジョンド IOPS SSD（io2 など）は、小さな読み書きを高速に処理する性能（IOPS）が重要なワークロード向けです。HDD のスループット最適化 HDD（st1）と Cold HDD（sc1）は、大きなブロックを順番に読み書きするときの転送量（スループット）を重視したワークロード向けで、1 GB あたりの料金が SSD より低く抑えられています。\n\nst1 と sc1 の違いはアクセスの頻度です。st1 は頻繁にアクセスするログ処理、ETL、データウェアハウス、ビッグデータ処理などに向き、sc1 はめったにアクセスしない大量のデータを最も安く保存したい場合に向きます。この問題のログは日中を通して繰り返し読み込むため、st1 が最もコスト効率の高い選択です。\n\nなお、HDD のボリュームは起動ボリュームには使えません。OS を置く起動ボリュームには、gp3 などの SSD を使います。",
+  "keyPoints": [
+    "大きな順次 I/O・スループット重視・頻繁にアクセス → st1",
+    "アクセスの頻度が低く、とにかく安く保存したい大量のデータ → sc1",
+    "高い IOPS・低レイテンシーが必要なデータベース → io2、汎用の用途 → gp3",
+    "HDD（st1・sc1）は起動ボリュームに使えない"
+  ],
+  "references": [
+    {
+      "title": "Amazon EBS Throughput Optimized HDD and Cold HDD volumes - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html"
+    },
+    {
+      "title": "Amazon EBS volume types - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}
