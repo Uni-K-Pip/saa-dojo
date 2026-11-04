@@ -982,3 +982,9 @@ dl.glossary dd {
   padding: 0 4px;
   font-size: 0.8em;
 }
+
+.stat-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
