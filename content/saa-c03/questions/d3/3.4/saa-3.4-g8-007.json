@@ -1,0 +1,72 @@
+{
+  "id": "saa-3.4-g8-007",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-S3", "3.4-S1"],
+  "services": [
+    "AWS Outposts",
+    "AWS Wavelength",
+    "Amazon EC2",
+    "Amazon Elastic Block Store",
+    "AWS Direct Connect"
+  ],
+  "qualifier": "performance",
+  "tags": ["Outposts", "Local Zones", "Wavelength", "低レイテンシー", "データの現地処理"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造業の企業は、工場の生産ラインで撮影した製品の画像を検査し、不良品を見つけたら数ミリ秒以内にラインの制御装置へ停止の指示を返すアプリケーションを構築します。社内の規定により、撮影した画像と検査結果は工場の敷地の外へ送ってはいけません。また、運用チームは、すでに AWS リージョンで使っている Amazon EC2 や Amazon EBS と同じ API、コンソール、ツールで、このアプリケーションの環境を管理したいと考えています。アプリケーションを実行する場所として最も適しているのはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "工場に最も近い都市にある AWS Local Zones にサブネットを作成し、そのサブネットの Amazon EC2 インスタンスで検査アプリケーションを実行する。",
+      "correct": false,
+      "rationale": "Local Zones は大都市圏の近くにある AWS の施設で、利用者に低いレイテンシーでサービスを提供できます。しかし工場の外の施設なので、画像と検査結果を工場の敷地の外へ送らないという規定を満たせません。"
+    },
+    {
+      "id": "b",
+      "text": "工場に AWS Outposts のラックを設置し、VPC に作成した Outposts のサブネットで Amazon EC2 インスタンスを起動して、検査アプリケーションを実行する。",
+      "correct": true,
+      "rationale": "Outposts は AWS が管理するインフラストラクチャを顧客の施設に設置するサービスで、工場の中で EC2 や EBS をリージョンと同じ API やツールで使えます。処理が工場の中で完結するため、制御装置との間のレイテンシーを小さくでき、データを敷地の外へ送る必要もありません。"
+    },
+    {
+      "id": "c",
+      "text": "最寄りの AWS リージョンの Amazon EC2 インスタンスで検査アプリケーションを実行し、工場との間を AWS Direct Connect でつないで、安定したレイテンシーを確保する。",
+      "correct": false,
+      "rationale": "Direct Connect で通信は安定しますが、画像を工場の外のリージョンへ送ることになり、規定を満たせません。リージョンまでの距離があるため、数ミリ秒以内に応答を返すことも難しくなります。"
+    },
+    {
+      "id": "d",
+      "text": "通信事業者の 5G ネットワーク内にある AWS Wavelength Zone で Amazon EC2 インスタンスを実行し、工場の設備をモバイル回線で接続する。",
+      "correct": false,
+      "rationale": "Wavelength は通信事業者のネットワークの端に AWS のコンピューティングを置き、モバイル端末に低いレイテンシーを提供するためのものです。処理する場所は工場の外になるため、データを敷地の外へ送らないという規定を満たせません。"
+    }
+  ],
+  "explanation": "リソースの配置場所は、「だれに対して低いレイテンシーが必要か」と「データをどこに置かなければならないか」で決めます。この問題では、工場の制御装置との間で数ミリ秒以内に応答する必要があり、データを工場の敷地の外へ送ってはいけません。\n\nAWS Outposts は、AWS が運用・管理するラックやサーバーを顧客の施設に設置し、AWS のインフラストラクチャ、サービス、API、ツールを施設の中まで広げるサービスです。Outpost はリージョンの AZ の延長として扱われ、VPC に Outposts のサブネットを作って Amazon EC2 インスタンスや Amazon EBS ボリュームを使えます。ローカルゲートウェイを通じて工場のネットワークと直接通信できるので、オンプレミスの設備との低レイテンシーの通信や、データの現地処理が必要な場合に向いています。なお、Outpost はサービスリンクで親リージョンとつながり、管理のための通信はリージョンとの間で行われます。データを敷地内に留めるには、スナップショットなどの保存先にも注意します。\n\nAWS Local Zones は大都市圏や産業の中心地の近くに置かれた AWS の施設で、その地域の利用者に低いレイテンシーで提供するために使います。AWS Wavelength は通信事業者の 5G ネットワークの中に置かれ、モバイル端末向けに低いレイテンシーを実現します。どちらも工場の外にあるため、この規定は満たせません。リージョンで処理する方法も同じ理由で使えません。",
+  "keyPoints": [
+    "自社の施設内で、AWS と同じ API・ツールを使って低レイテンシーやデータの現地処理を実現 → AWS Outposts",
+    "大都市圏の利用者に低いレイテンシーで提供 → AWS Local Zones（AWS の施設）",
+    "5G のモバイル端末に低いレイテンシーで提供 → AWS Wavelength",
+    "「データを自社の敷地の外に出せない」は、リージョンや Local Zones では満たせない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Outposts? - AWS Outposts",
+      "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+    },
+    {
+      "title": "What is AWS Local Zones? - AWS Local Zones",
+      "url": "https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html"
+    },
+    {
+      "title": "What is AWS Wavelength? - AWS Wavelength",
+      "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-vpc-design"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

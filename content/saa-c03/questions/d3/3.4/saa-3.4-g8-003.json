@@ -1,0 +1,62 @@
+{
+  "id": "saa-3.4-g8-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K3", "3.4-S4"],
+  "services": ["Elastic Load Balancing", "Amazon ECS", "Amazon Route 53"],
+  "qualifier": "operational",
+  "tags": ["ALB", "パスベースルーティング", "リスナールール", "ターゲットグループ", "マイクロサービス"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンライン書店のモノリシックなアプリケーションを、注文、商品検索、会員管理の 3 つのマイクロサービスに分割し、Amazon ECS の別々のサービスとして個別にスケールさせる計画です。利用者からはこれまでどおり 1 つのドメイン名（shop.example.com）で HTTPS の接続を受け付け、URL のパスが /orders/、/search/、/members/ のどれで始まるかによって、対応するマイクロサービスへリクエストを振り分ける必要があります。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Application Load Balancer を 1 つ作成して HTTPS リスナーを設定し、パスパターンを条件とするリスナールールで、マイクロサービスごとのターゲットグループへ転送する。",
+      "correct": true,
+      "rationale": "ALB はリクエストの内容を見て振り分けるレイヤー 7 のロードバランサーで、パスパターンを条件とするリスナールールでターゲットグループを選べます。マイクロサービスごとにターゲットグループを分ければ、ECS のサービスが別々にタスクを登録してスケールでき、証明書の管理も 1 つのリスナーにまとめられます。"
+    },
+    {
+      "id": "b",
+      "text": "マイクロサービスごとに Network Load Balancer を作成し、Amazon Route 53 の加重ルーティングポリシーで、3 つの NLB にリクエストを振り分ける。",
+      "correct": false,
+      "rationale": "Route 53 は DNS の名前解決で応答を返すだけで、URL のパスを見ることはできません。加重ルーティングは決めた割合で応答を分けるだけなので、パスに応じて正しいマイクロサービスへ振り分けるという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Network Load Balancer を 1 つ作成し、マイクロサービスごとに異なるポート番号の TLS リスナーとターゲットグループを作成して、ポート番号で振り分ける。",
+      "correct": false,
+      "rationale": "NLB はレイヤー 4 で動作し、URL のパスでは振り分けられません。ポート番号で分けると利用者が接続するポートが変わり、これまでどおりの URL で受け付けるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Application Load Balancer の 1 つのターゲットグループに 3 つのマイクロサービスのタスクをすべて登録し、各タスクに組み込んだリバースプロキシで、パスに応じた転送先のタスクへリクエストを中継する。",
+      "correct": false,
+      "rationale": "パスによる振り分けはできますが、リバースプロキシの設定と転送先の管理を自分たちで行う必要があり、リクエストが余分に中継されます。ALB のリスナールールで済む処理を作り込むことになるため、運用上のオーバーヘッドが最も少ないという要件を満たしません。"
+    }
+  ],
+  "explanation": "URL のパスによってリクエストの転送先を変える処理は、Application Load Balancer（ALB）のパスベースルーティングで実現できます。ALB は HTTP と HTTPS のリクエストの内容を理解するレイヤー 7 のロードバランサーで、リスナールールの条件にパスパターン（path-pattern）やホスト名（host-header）、HTTP ヘッダー、クエリ文字列などを使えます。条件に合ったリクエストは、ルールで指定したターゲットグループへ転送されます。\n\nマイクロサービスごとにターゲットグループを作り、それぞれの Amazon ECS サービスに関連付けると、タスクの起動や停止に合わせてターゲットが自動で登録・解除されます。各サービスを個別にスケールしても、ALB の振り分けはそのまま使えます。HTTPS の証明書も ALB のリスナーで一元管理できます。\n\nNetwork Load Balancer（NLB）はレイヤー 4 で動作し、プロトコルとポート番号で振り分けるため、URL のパスは見ません。Amazon Route 53 は DNS なので、名前解決の段階ではパスがわかりません。リバースプロキシを自作する方法は動きますが、ALB の機能で済むことを自分で運用することになります。",
+  "keyPoints": [
+    "URL のパスやホスト名で振り分ける → ALB のリスナールール（パスベース・ホストベースのルーティング）",
+    "NLB はレイヤー 4 で動作し、URL の中身では振り分けられない",
+    "Route 53 は DNS なので、URL のパスを見て振り分けることはできない",
+    "マイクロサービスごとにターゲットグループを分けると、別々にスケールできる"
+  ],
+  "references": [
+    {
+      "title": "Condition types for listener rules - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html"
+    },
+    {
+      "title": "What is an Application Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-edge-and-load-balancing"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

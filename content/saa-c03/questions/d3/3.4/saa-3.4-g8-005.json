@@ -1,0 +1,78 @@
+{
+  "id": "saa-3.4-g8-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-S1", "3.4-S2", "3.4-K4"],
+  "services": [
+    "AWS Transit Gateway",
+    "AWS Direct Connect",
+    "AWS Resource Access Manager",
+    "Amazon VPC",
+    "AWS PrivateLink"
+  ],
+  "qualifier": "operational",
+  "tags": ["Transit Gateway", "ハブアンドスポーク", "ルートテーブルの分離", "トランジット仮想インターフェイス", "Direct Connect ゲートウェイ"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、1 つのリージョンで複数の AWS アカウントにまたがる 40 個の VPC を運用しており、2 年以内に 150 個ほどに増える見込みです。現在は VPC 同士をフルメッシュの VPC ピアリング接続でつないでおり、VPC を追加するたびに多数の接続とルートを設定する作業が負担になっています。オンプレミスのデータセンターとは AWS Direct Connect の専用接続でつないでおり、すべての VPC からオンプレミスに到達できる必要があります。一方で、本番環境の VPC と開発環境の VPC の間は通信できないようにする必要があります。運用上のオーバーヘッドを最小にしてこれらの要件を満たすには、どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミス接続用のハブ VPC に仮想プライベートゲートウェイと Direct Connect のプライベート仮想インターフェイスを接続し、各 VPC はハブ VPC との VPC ピアリング接続を経由してオンプレミスと通信する。",
+      "correct": false,
+      "rationale": "VPC ピアリング接続は推移的なルーティングに対応しておらず、ピア先の VPC の VPN 接続や Direct Connect 接続を経由してオンプレミスと通信することもできません。各 VPC からオンプレミスに到達するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Transit Gateway を作成して AWS Resource Access Manager で各アカウントと共有し、各 VPC をアタッチする。本番用と開発用でトランジットゲートウェイのルートテーブルを分け、関連付けと伝播を設定する。",
+      "correct": true,
+      "rationale": "Transit Gateway はリージョン内のハブとなる仮想ルーターで、VPC を追加するときはアタッチメントを 1 つ作るだけで済みます。アタッチメントを関連付けるルートテーブルを本番用と開発用に分け、それぞれに伝播させるルートを選ぶことで、本番と開発の間の経路をなくせます。RAM で共有すれば、ほかのアカウントの VPC もアタッチできます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Transit Gateway のすべてのアタッチメントを 1 つのルートテーブルに関連付けてルートを伝播させ、各 VPC のネットワーク ACL で、本番と開発の間の通信を CIDR ブロックの指定で拒否する。",
+      "correct": false,
+      "rationale": "通信を拒否することはできますが、VPC が増えるたびにすべての VPC のネットワーク ACL を更新する必要があり、規則数の上限にも近づきます。ルートテーブルを分ければ経路そのものをなくせるため、運用上のオーバーヘッドを最小にするという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Direct Connect ゲートウェイをトランジットゲートウェイに関連付け、既存の Direct Connect 接続にトランジット仮想インターフェイスを作成して、その Direct Connect ゲートウェイに接続する。",
+      "correct": true,
+      "rationale": "トランジット仮想インターフェイスと Direct Connect ゲートウェイを使うと、既存の Direct Connect 接続から、トランジットゲートウェイにアタッチしたすべての VPC へ到達できます。VPC が増えても Direct Connect 側の設定を VPC ごとに追加する必要はありません。"
+    },
+    {
+      "id": "e",
+      "text": "VPC 間の通信をすべて AWS PrivateLink に置き換え、通信先のサービスごとに VPC エンドポイントサービスを作成して、通信元の各 VPC にインターフェイス VPC エンドポイントを作成する。",
+      "correct": false,
+      "rationale": "PrivateLink は特定のサービスへの一方向の接続を提供する仕組みで、VPC 同士やオンプレミスとのネットワーク全体をつなぐものではありません。サービスと VPC の組み合わせごとにエンドポイントが必要になり、運用上のオーバーヘッドも増えます。"
+    }
+  ],
+  "explanation": "多数の VPC とオンプレミスをつなぐときは、AWS Transit Gateway をハブにしたハブアンドスポーク型の構成にします。フルメッシュの VPC ピアリング接続では、VPC が n 個あると接続が n×(n−1)/2 本必要になり、ルートの管理も VPC ごとに増えていきます。Transit Gateway なら、VPC を追加するときはアタッチメントを 1 つ作り、必要なルートテーブルに関連付けと伝播を設定するだけです。AWS Resource Access Manager（RAM）で共有すれば、組織内のほかのアカウントの VPC もアタッチできます。\n\n本番と開発の分離は、トランジットゲートウェイのルートテーブルを分けて実現します。各アタッチメントは 1 つのルートテーブルに関連付けられ、ルートをどのルートテーブルに伝播させるかを選べます。例えば、本番用のルートテーブルには本番 VPC とオンプレミスのルートだけを、開発用のルートテーブルには開発 VPC とオンプレミスのルートだけを入れれば、本番と開発の間には経路がなくなります。\n\nオンプレミスとの接続は、Direct Connect ゲートウェイをトランジットゲートウェイに関連付け、Direct Connect 接続のトランジット仮想インターフェイスをその Direct Connect ゲートウェイにつなぎます。VPC ピアリング接続は推移的なルーティングに対応せず、ピア先の VPN 接続や Direct Connect 接続も使えないため、ハブ VPC を経由する構成は成り立ちません。",
+  "keyPoints": [
+    "多数の VPC とオンプレミスをつなぐ → Transit Gateway のハブアンドスポーク（VPC の追加はアタッチメント 1 つ）",
+    "環境の分離 → トランジットゲートウェイのルートテーブルを分け、関連付けと伝播で経路を制御する",
+    "Direct Connect とトランジットゲートウェイ → トランジット仮想インターフェイス ＋ Direct Connect ゲートウェイ",
+    "VPC ピアリング接続は推移的なルーティングに対応しない。ピア先の VPN や Direct Connect も使えない"
+  ],
+  "references": [
+    {
+      "title": "How AWS Transit Gateway works - Amazon VPC",
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html"
+    },
+    {
+      "title": "Direct Connect gateways and Transit Gateway associations - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-transit-gateways.html"
+    },
+    {
+      "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-hybrid-and-multi-vpc"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}
