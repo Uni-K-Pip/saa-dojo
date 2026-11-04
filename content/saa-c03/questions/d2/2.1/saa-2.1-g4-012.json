@@ -1,0 +1,66 @@
+{
+  "id": "saa-2.1-g4-012",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K12", "2.1-S5"],
+  "services": ["AWS Fargate", "Amazon ECS", "Amazon EventBridge", "AWS Lambda", "Amazon Elastic Kubernetes Service"],
+  "qualifier": "cost",
+  "tags": ["サーバーレス", "Fargate", "EventBridge Scheduler", "バッチ処理", "Lambdaの制限"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、毎晩 1 回、売上データを集計してレポートを作成するバッチ処理を実行しています。処理はコンテナイメージにまとめられており、データ量によって 2〜3 時間かかります。現在は、この処理のためだけに Amazon EC2 インスタンスを常時起動しており、OS のパッチ適用の手間と、処理していない時間の料金が問題になっています。運用上のオーバーヘッドとコストを最も抑えられる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EventBridge Scheduler で毎晩 Amazon ECS の RunTask を呼び出し、バッチ処理を AWS Fargate のタスクとして実行する。",
+      "correct": true,
+      "rationale": "Fargate ではサーバーを管理する必要がなく、タスクが動いている間の vCPU とメモリに対してだけ料金がかかります。EventBridge Scheduler は ECS の RunTask を直接呼び出せるので、毎晩の起動も追加のサーバーなしで自動化できます。"
+    },
+    {
+      "id": "b",
+      "text": "既存のコンテナイメージから AWS Lambda 関数を作成し、Amazon EventBridge Scheduler で毎晩呼び出して、バッチ処理を実行する。",
+      "correct": false,
+      "rationale": "Lambda 関数はコンテナイメージから作成できますが、1 回の実行時間には上限があり、標準の関数では最大 15 分です。2〜3 時間かかるバッチ処理を 1 回の呼び出しで実行することはできません。"
+    },
+    {
+      "id": "c",
+      "text": "EC2 インスタンスをより小さいインスタンスタイプに変更して cron で毎晩処理を実行し、OS のパッチは AWS Systems Manager の Patch Manager で自動的に適用する。",
+      "correct": false,
+      "rationale": "パッチ適用の手間は減らせますが、インスタンスは常時起動したままなので、処理していない時間の料金がかかり続けます。小さいタイプにすると処理時間が延びるおそれもあり、コストを最も抑える方法ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EKS クラスターを作成し、マネージドノードグループのワーカーノードで、Kubernetes の CronJob としてバッチ処理を毎晩実行する。",
+      "correct": false,
+      "rationale": "1 日 1 回のバッチ処理のために、クラスターの料金とワーカーノードの EC2 インスタンスの料金がかかり、ノードのバージョン管理なども必要になります。運用上のオーバーヘッドとコストが大きくなります。"
+    }
+  ],
+  "explanation": "AWS Fargate は、コンテナを動かすサーバーを利用者が用意・管理せずにタスクを実行できるサーバーレスの実行環境です。料金はタスクに割り当てた vCPU とメモリなどに対して、タスクが動いている間だけかかるため、1 日に数時間しか動かない処理を常時起動の EC2 インスタンスで動かすより安くなり、OS のパッチ適用も不要になります。Amazon EventBridge Scheduler は Amazon ECS の RunTask をターゲットにでき、cron 式で毎晩決まった時刻にタスクを起動できます。\n\nAWS Lambda もサーバーレスですが、1 回の実行時間に上限（標準の関数では最大 15 分）があり、数時間かかる処理には向きません。短い処理やイベントへの反応には Lambda、長時間の処理や既存のコンテナをそのまま動かす場合は Fargate、と使い分けます。",
+  "keyPoints": [
+    "15 分を超える処理は Lambda ではなく、Fargate のタスクなどで実行する",
+    "定期実行するコンテナ → EventBridge Scheduler から ECS の RunTask を呼び出す",
+    "Fargate はタスクが動いている間だけ課金され、サーバーの管理も不要",
+    "たまにしか動かない処理のために EC2 インスタンスやクラスターを常時起動しない"
+  ],
+  "references": [
+    {
+      "title": "Using templated targets in EventBridge Scheduler - EventBridge Scheduler",
+      "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-templated.html"
+    },
+    {
+      "title": "Lambda quotas - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

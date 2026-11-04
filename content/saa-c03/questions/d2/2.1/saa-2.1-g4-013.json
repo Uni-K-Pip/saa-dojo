@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-013",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K13", "2.1-S6"],
+  "services": ["Amazon Elastic File System", "Amazon Elastic Block Store", "Amazon Simple Storage Service", "Amazon EC2 Auto Scaling"],
+  "qualifier": "other",
+  "tags": ["ファイルストレージ", "ブロックストレージ", "オブジェクトストレージ", "EFS", "マルチアタッチ"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある出版社は、記事の画像を加工する Linux のアプリケーションを Amazon EC2 で動かします。負荷に応じて 2〜10 台の間で台数が変わる Auto Scaling グループを、3 つのアベイラビリティーゾーンにまたがって構成する予定です。すべてのインスタンスが同じディレクトリのファイルを通常のファイル操作で同時に読み書きでき、保存容量は事前に決めずに自動で増減する必要があります。最も適切なストレージはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS のファイルシステムを作成し、各インスタンスから NFS でマウントして共有のディレクトリとして使う。",
+      "correct": true,
+      "rationale": "Amazon EFS は、複数のアベイラビリティーゾーンの多数のインスタンスから NFS で同時にマウントできるファイルストレージです。通常のファイル操作で読み書きでき、容量はファイルの追加や削除に応じて自動で増減します。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EBS のプロビジョンド IOPS SSD（io2）ボリュームを作成してマルチアタッチを有効にし、すべてのインスタンスに接続して共有する。",
+      "correct": false,
+      "rationale": "EBS のマルチアタッチは、同じアベイラビリティーゾーンにあるインスタンスにしか接続できず、同時書き込みにはクラスター対応のファイルシステムも必要です。3 つのゾーンにまたがる構成には使えず、容量も事前に決める必要があります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3 バケットを作成し、アプリケーションを変更して、ファイルを編集するたびにオブジェクト全体を S3 の API でアップロードし直す。",
+      "correct": false,
+      "rationale": "S3 は容量を気にせず使えるオブジェクトストレージですが、API でオブジェクト単位に読み書きする仕組みで、通常のファイル操作で同じディレクトリを共有するという要件を満たしません。アプリケーションの変更も必要です。"
+    },
+    {
+      "id": "d",
+      "text": "各インスタンスのインスタンスストアにファイルを保存し、cron で定期的に rsync を実行してほかのインスタンスとファイルを同期する。",
+      "correct": false,
+      "rationale": "インスタンスストアのデータはインスタンスの停止や終了で失われ、定期的な同期では各インスタンスの内容に食い違いが生じます。台数が増減する構成では同期先の管理も複雑になり、同時に読み書きするという要件を満たしません。"
+    }
+  ],
+  "explanation": "ストレージは大きく 3 種類に分けられます。ブロックストレージ（Amazon EBS、インスタンスストア）は 1 台のインスタンスにディスクとして接続して使います。EBS のマルチアタッチは io1・io2 ボリュームを同じアベイラビリティーゾーンの複数のインスタンスに接続できますが、同時書き込みにはクラスター対応のファイルシステムが必要です。ファイルストレージ（Amazon EFS、Amazon FSx）は、ネットワーク経由で複数のインスタンスから同時にマウントして、通常のファイル操作で共有できます。オブジェクトストレージ（Amazon S3）は、API でオブジェクト単位に読み書きし、容量の上限を気にせず大量のデータを保存できます。\n\nこの問題では、3 つのアベイラビリティーゾーンにまたがって台数が変わる Linux のインスタンスが同じディレクトリを同時に読み書きするため、NFS でマウントでき、容量が自動で増減する Amazon EFS が適しています。EFS は標準の構成でデータを複数のアベイラビリティーゾーンに保存し、どのゾーンのインスタンスからもアクセスできます。",
+  "keyPoints": [
+    "複数のインスタンス（複数 AZ）から同じファイルを同時に読み書き → Amazon EFS（Linux、NFS）",
+    "EBS は基本的に 1 台用。マルチアタッチは io1・io2 で同じ AZ のみ、クラスター対応のファイルシステムが必要",
+    "S3 は API でオブジェクト単位に読み書きするストレージで、通常のファイル操作の共有には向かない",
+    "インスタンスストアは一時的なデータ用。停止や終了で消える"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

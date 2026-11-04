@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-015",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K15", "2.1-S2"],
+  "services": ["Amazon Relational Database Service", "Amazon ElastiCache"],
+  "qualifier": "performance",
+  "tags": ["リードレプリカ", "読み取りの分散", "マルチAZ", "RDS"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon RDS for MySQL を使う受注システムを運用しています。月末になると、経理部門が売上の集計レポートを作成するために重い読み取りクエリを何度も実行し、そのたびに受注処理の応答が遅くなります。レポートには数秒前までのデータが反映されていれば十分です。受注処理への影響をなくすための最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "リードレプリカを作成し、レポート作成用のクエリはリードレプリカのエンドポイントに接続して実行する。",
+      "correct": true,
+      "rationale": "リードレプリカはプライマリの DB インスタンスから非同期でデータを複製する読み取り専用のコピーです。重いレポートのクエリをリードレプリカで実行すれば、受注処理を行うプライマリの負荷は増えません。複製はわずかに遅れますが、数秒前までのデータで十分という条件に合います。"
+    },
+    {
+      "id": "b",
+      "text": "DB インスタンスをマルチ AZ 配置（スタンバイ 1 つ）に変更し、レポート作成用のクエリはスタンバイの DB インスタンスに接続して実行する。",
+      "correct": false,
+      "rationale": "スタンバイが 1 つのマルチ AZ 配置は可用性を高めるための構成で、スタンバイは障害時に引き継ぐために待機しており、読み取りのクエリを受け付けません。読み取りの負荷を分散する目的には使えません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon ElastiCache を導入し、受注処理のアプリケーションがデータベースから読み取った結果をキャッシュするように変更する。",
+      "correct": false,
+      "rationale": "キャッシュは同じデータを繰り返し読む処理の負荷を減らしますが、問題の原因は経理部門の重い集計クエリです。受注処理側をキャッシュしても集計クエリの負荷はプライマリにかかり続け、アプリケーションの変更も必要です。"
+    },
+    {
+      "id": "d",
+      "text": "月末だけ DB インスタンスをより大きなインスタンスクラスに変更し、レポートの作成が終わったら元のインスタンスクラスに戻す。",
+      "correct": false,
+      "rationale": "インスタンスクラスの変更中は DB インスタンスが利用できない時間が生じ、毎月の作業の手間もかかります。集計クエリと受注処理が同じインスタンスを使う状態は変わらないため、影響をなくすことはできません。"
+    }
+  ],
+  "explanation": "Amazon RDS のリードレプリカは、プライマリの DB インスタンスの変更を非同期で複製する読み取り専用のインスタンスです。レポートや分析などの重い読み取りをリードレプリカに向けると、書き込みを行うプライマリの負荷を増やさずに読み取りの処理能力を増やせます。非同期の複製のためわずかな遅れ（レプリカラグ）がありますが、数秒前のデータで十分な用途には問題ありません。\n\nリードレプリカは読み取りのスケーリング、マルチ AZ 配置は可用性のための仕組みです。スタンバイが 1 つのマルチ AZ 配置では、スタンバイは同期的に複製されて障害時のフェイルオーバーに備え、読み取りには使えません。なお、RDS for MySQL と RDS for PostgreSQL には、読み取り可能なスタンバイを 2 つ持つマルチ AZ DB クラスターという配置もあります。キャッシュは同じデータを繰り返し読む処理に効果があり、毎回内容の異なる集計クエリには向きません。",
+  "keyPoints": [
+    "重い読み取り（レポート、分析）を本番から切り離す → リードレプリカに向ける",
+    "リードレプリカは非同期の複製で、わずかな遅れ（レプリカラグ）がある",
+    "スタンバイ 1 つのマルチ AZ 配置は可用性用で、スタンバイは読み取りに使えない",
+    "キャッシュは同じデータの繰り返しの読み取りに効く。毎回違う集計クエリには向かない"
+  ],
+  "references": [
+    {
+      "title": "Working with DB instance read replicas - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    },
+    {
+      "title": "Configuring and managing a Multi-AZ deployment for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.1-g4-023",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S2", "2.1-K6", "2.1-K15"],
+  "services": ["Amazon EC2 Auto Scaling", "Elastic Load Balancing", "Amazon Aurora"],
+  "qualifier": "performance",
+  "tags": ["スケーリング戦略", "スケジュールされたアクション", "ターゲット追跡", "Aurora Auto Scaling", "リードレプリカ"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるニュースサイトは、Application Load Balancer の背後の Amazon EC2 Auto Scaling グループで Web 層を動かし、データベースに Amazon Aurora MySQL を使っています。毎朝 7 時に始まるアクセスの急増は、毎日ほぼ同じ時刻と規模で起こり、新しいインスタンスは起動してから処理を始められるまでに 10 分かかります。日中も大きなニュースがあるとアクセスが予測できない形で増え、データベースへの読み取りも増えます。コストを抑えながら各層を負荷に合わせてスケールさせるには、どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Web 層に、毎朝 6 時 45 分に最小台数を引き上げてピークの後に戻すスケジュールされたアクションと、ALBRequestCountPerTarget を指標とするターゲット追跡スケーリングポリシーを設定する。",
+      "correct": true,
+      "rationale": "毎朝の急増は時刻と規模が決まっているため、起動にかかる 10 分を見込んで事前に台数を増やすスケジュールされたアクションが適しています。予測できない増加には、ターゲットあたりのリクエスト数を目標値に保つターゲット追跡スケーリングで自動的に対応できます。"
+    },
+    {
+      "id": "b",
+      "text": "Aurora に Aurora Auto Scaling のポリシーを設定し、Aurora レプリカの平均 CPU 使用率に応じてレプリカの数を増減させ、読み取りはリーダーエンドポイントに向ける。",
+      "correct": true,
+      "rationale": "Aurora Auto Scaling は、Aurora レプリカの平均 CPU 使用率や平均接続数を目標値に保つようにレプリカを自動で追加・削除します。リーダーエンドポイントは接続をレプリカに分散するため、増減したレプリカをアプリケーションの変更なしに使えます。"
+    },
+    {
+      "id": "c",
+      "text": "Web 層に、CPU 使用率が 90% を超えたらインスタンスを 1 台追加するシンプルスケーリングポリシーだけを設定し、クールダウンを 10 分にする。",
+      "correct": false,
+      "rationale": "負荷が高くなってから 1 台ずつ追加し、クールダウンの間は次の追加を待つため、毎朝の急増には間に合いません。起動に 10 分かかるインスタンスでは、急増の間ずっと能力が不足します。"
+    },
+    {
+      "id": "d",
+      "text": "読み取りの増加に備えて、アクセスが増えたときに Aurora のライターインスタンスを手作業でより大きなインスタンスクラスに変更する。",
+      "correct": false,
+      "rationale": "手作業では予測できない増加にすばやく対応できず、インスタンスクラスの変更中は処理が中断します。読み取りを分散するレプリカを使わずにライターだけを大きくする方法は、読み取りのスケーリングとして適切ではありません。"
+    },
+    {
+      "id": "e",
+      "text": "Web 層の Auto Scaling グループの最小台数と最大台数をピーク時に必要な台数にそろえ、常にその台数を起動しておく。",
+      "correct": false,
+      "rationale": "急増には対応できますが、アクセスの少ない時間帯も最大の台数分の料金がかかり、ピークを超える予測できない増加にも対応できません。負荷に応じて台数を増減するスケーリングになっていません。"
+    }
+  ],
+  "explanation": "スケーリングの戦略は、構成要素ごとに負荷の特徴と性質に合わせて選びます。Web 層のように Auto Scaling グループで動く層では、時刻と規模が予測できる増加にはスケジュールされたアクション（または過去の傾向から予測する予測スケーリング）で事前に台数を増やし、予測できない増加にはターゲット追跡スケーリングで対応します。インスタンスの準備に時間がかかる場合は、その時間を見込んで早めに増やすことが重要です。ALB の背後では、ターゲットあたりのリクエスト数（ALBRequestCountPerTarget）を指標にすると、負荷に比例して台数を調整できます。\n\nデータベースの読み取りは、Aurora レプリカを増やして分散します。Aurora Auto Scaling は、レプリカの平均 CPU 使用率や平均接続数を目標値に保つように、Aurora レプリカの数を自動で増減します（最大 15 台）。アプリケーションはリーダーエンドポイントに接続すれば、増減したレプリカに読み取りが分散されます。書き込みを受け持つライターを大きくする垂直スケーリングは、変更時に処理が中断し、読み取りの分散にもなりません。",
+  "keyPoints": [
+    "時刻と規模が予測できる増加 → スケジュールされたアクション（または予測スケーリング）で事前に増やす",
+    "予測できない増加 → ターゲット追跡スケーリング（ALB の背後なら ALBRequestCountPerTarget も有効）",
+    "インスタンスの準備に時間がかかるなら、その分早めに台数を増やす",
+    "データベースの読み取りの増加 → Aurora Auto Scaling でレプリカを増減し、リーダーエンドポイントで分散"
+  ],
+  "references": [
+    {
+      "title": "Scheduled scaling for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+    },
+    {
+      "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+    },
+    {
+      "title": "Amazon Aurora Auto Scaling with Aurora Replicas - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-016",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K16", "2.1-S7"],
+  "services": ["AWS Step Functions", "AWS Lambda", "Amazon DynamoDB", "Amazon Simple Queue Service"],
+  "qualifier": "operational",
+  "tags": ["ワークフロー", "Step Functions", "標準ワークフロー", "コールバック", "エラー処理"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、保険金の請求処理を自動化します。処理は書類の検証、不正の検知、担当者による承認、支払いの順に進み、担当者の承認には最大 5 日かかります。各ステップは AWS Lambda 関数で実装し、一時的なエラーは自動で再試行し、支払いに失敗したときは請求者に通知する処理に分岐させる必要があります。請求ごとの処理の進み具合も画面で確認したいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Step Functions の標準ワークフローで各ステップを定義し、Retry と Catch でエラーを処理して、承認はタスクトークンを使うコールバックで待つ。",
+      "correct": true,
+      "rationale": "標準ワークフローは最長 1 年実行でき、5 日かかる承認も待てます。Retry で一時的なエラーを再試行し、Catch で失敗時に通知のステップへ分岐できます。タスクトークンを使うコールバックでは、担当者の承認結果が返されるまでワークフローを止めておけ、実行の進み具合はコンソールで確認できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Step Functions の Express ワークフローで各ステップを定義し、Retry と Catch でエラーを処理して、承認はタスクトークンを使うコールバックで待つ。",
+      "correct": false,
+      "rationale": "Express ワークフローの実行時間は最長 5 分で、5 日かかる承認を待てません。タスクトークンを使うコールバックの連携パターンにも対応していないため、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "各 Lambda 関数が処理の最後に次の Lambda 関数を呼び出すようにし、承認待ちの状態と再試行の回数は Amazon DynamoDB のテーブルに記録して管理する。",
+      "correct": false,
+      "rationale": "ステップの順序、再試行、失敗時の分岐、承認待ちの管理をすべて自前で作り込む必要があり、関数どうしも密に結合します。進み具合を画面で確認する仕組みも別に作る必要があり、運用上のオーバーヘッドが大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "ステップの間に Amazon SQS キューを置いて各 Lambda 関数をつなぎ、承認待ちの請求はキューの可視性タイムアウトを 5 日に延ばして保留しておく。",
+      "correct": false,
+      "rationale": "SQS の可視性タイムアウトの上限は 12 時間で、5 日間メッセージを保留することはできません。失敗時の分岐や処理の進み具合の確認も自前で作り込む必要があります。"
+    }
+  ],
+  "explanation": "AWS Step Functions は、複数のステップからなる処理をステートマシンとして定義し、順序、分岐、並列実行、再試行を管理するワークフローのサービスです。各ステップを Lambda 関数などで実装し、ステップのつなぎ方はワークフローの定義に任せるため、関数どうしが互いを呼び出す必要がなくなります。Task ステートの Retry フィールドで一時的なエラーを自動で再試行し、Catch フィールドで失敗時に別のステップへ分岐できます。実行ごとの進み具合や入出力はコンソールで確認できます。\n\nワークフローには標準と Express の 2 種類があります。標準ワークフローは最長 1 年実行でき、人による承認など長く待つ処理に向いています。タスクトークンを使うコールバック（.waitForTaskToken）では、トークンを渡したタスクが SendTaskSuccess などで結果を返されるまで待機します。Express ワークフローは最長 5 分の大量・短時間の処理向けで、コールバックや .sync の連携パターンには対応していません。",
+  "keyPoints": [
+    "複数ステップの処理の順序・再試行・分岐・進み具合の管理 → AWS Step Functions",
+    "長時間の処理や人の承認待ち → 標準ワークフロー（最長 1 年）とタスクトークンのコールバック",
+    "Express ワークフローは最長 5 分。大量・短時間のイベント処理向け",
+    "エラーは Retry で再試行し、Catch で失敗時の処理に分岐する"
+  ],
+  "references": [
+    {
+      "title": "Choosing workflow type in Step Functions - AWS Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    },
+    {
+      "title": "Handling errors in Step Functions workflows - AWS Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}
