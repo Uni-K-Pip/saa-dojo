@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.2-g6-007",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-S1", "3.2-K4"],
+  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon EC2", "Amazon CloudFront"],
+  "qualifier": "performance",
+  "tags": ["ワークロードの分離", "パスベースルーティング", "ターゲットグループ", "独立したスケーリング"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある写真共有サービスは、Application Load Balancer（ALB）の背後にある 1 つの Auto Scaling グループで動いています。写真の投稿処理（/upload/*）は CPU を多く使い、イベントのある週末に急増します。一方、写真の閲覧（/view/*）は平日の夜に多くなります。両方の処理が同じインスタンスで動くため、投稿が急増すると閲覧の応答も遅くなります。アプリケーションは機能ごとに分けてデプロイできるように改修済みです。2 つの処理をそれぞれの負荷に合わせて独立してスケールさせ、互いの影響をなくすにはどうすべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "今の Auto Scaling グループのインスタンスタイプをより大きなものに変更し、グループの最大容量も引き上げる。",
+      "correct": false,
+      "rationale": "インスタンスを大きくすれば余裕は増えますが、投稿と閲覧は引き続き同じインスタンスで動きます。投稿が急増すれば閲覧にも影響し、2 つの処理を独立してスケールさせるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "機能ごとに Auto Scaling グループとターゲットグループを分けて、ALB のリスナールールでパスに応じて振り分ける。",
+      "correct": true,
+      "rationale": "ALB のリスナールールはリクエストのパスでターゲットグループを選べます。投稿用と閲覧用で Auto Scaling グループを分ければ、それぞれの負荷に合ったスケーリングポリシーで台数を増減でき、投稿の急増が閲覧用のインスタンスに影響することもなくなります。"
+    },
+    {
+      "id": "c",
+      "text": "今の Auto Scaling グループに、CPU 使用率とリクエスト数のそれぞれを指標とする 2 つのターゲット追跡スケーリングポリシーを設定する。",
+      "correct": false,
+      "rationale": "複数のターゲット追跡スケーリングポリシーを組み合わせると、どちらかの指標が目標を超えたときにスケールアウトできます。しかし、投稿と閲覧が同じインスタンスで動く構成は変わらないため、互いの影響をなくし、独立してスケールさせるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "ALB の前に Amazon CloudFront のディストリビューションを置き、閲覧される写真をエッジロケーションでキャッシュする。",
+      "correct": false,
+      "rationale": "CloudFront のキャッシュで閲覧の一部はオリジンに届かなくなりますが、キャッシュにないリクエストや投稿の処理は引き続き同じインスタンスで動きます。2 つの処理を独立してスケールさせるという要件を満たしません。"
+    }
+  ],
+  "explanation": "負荷の特徴が違う処理を 1 つのサーバー群でまとめて動かすと、一方の急増がもう一方の性能に影響し、台数も大きいほうの負荷に合わせて増やすことになります。構成要素ごとに分けて、それぞれを独立してスケールさせるのが基本です。\n\nApplication Load Balancer のリスナールールでは、パス（/upload/* など）、ホスト名、HTTP ヘッダーなどの条件でリクエストを別々のターゲットグループに振り分けられます。投稿用と閲覧用の Auto Scaling グループを別々のターゲットグループに登録すれば、次のように負荷に合わせて設定できます。\n\n- 投稿用: CPU を多く使うため、平均 CPU 使用率を指標にしたターゲット追跡スケーリング\n- 閲覧用: ターゲットあたりのリクエスト数（ALBRequestCountPerTarget）を指標にしたターゲット追跡スケーリング\n\nインスタンスタイプも、投稿用はコンピューティング最適化、閲覧用は汎用のように、処理に合わせて選べます。インスタンスを大きくしたり、同じグループにポリシーを足したりしても、処理が同じインスタンスに同居する限り、互いの影響はなくなりません。",
+  "keyPoints": [
+    "負荷の特徴が違う処理は構成要素ごとに分け、それぞれ独立してスケールさせる",
+    "ALB のリスナールール（パス、ホスト名など）で、機能ごとのターゲットグループに振り分けられる",
+    "Auto Scaling グループを分ければ、指標やインスタンスタイプも処理ごとに選べる",
+    "インスタンスを大きくするだけでは、同居する処理どうしの影響はなくならない"
+  ],
+  "references": [
+    {
+      "title": "Condition types for listener rules - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html"
+    },
+    {
+      "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+    },
+    {
+      "title": "Use Elastic Load Balancing to distribute incoming application traffic in your Auto Scaling group - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-scaling-and-decoupling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

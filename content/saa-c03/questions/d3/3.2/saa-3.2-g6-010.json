@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.2-g6-010",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-S4", "3.2-K5"],
+  "services": ["AWS Lambda", "Amazon CloudWatch"],
+  "qualifier": "performance",
+  "tags": ["Lambda のメモリ", "CPU の割り当て", "リソースのサイズ", "同時実行"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるオンラインショップは、出品された商品画像からサムネイルを作る処理を AWS Lambda 関数で動かしています。関数のメモリは 512 MB に設定されていますが、実際に使っているのは 200 MB 程度です。1 回の実行には約 8 秒かかり、Amazon CloudWatch で調べたところ、処理時間の大半は画像を変換する CPU の処理でした。コールドスタートの影響は小さく、関数のコードは変更しないで、サムネイルの作成時間を短くしたいと考えています。最も効果的な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プロビジョニングされた同時実行を設定し、初期化済みの実行環境を常に用意しておく。",
+      "correct": false,
+      "rationale": "プロビジョニングされた同時実行は、初期化済みの実行環境を用意してコールドスタートの遅延を減らす機能です。この例では遅いのは CPU を使う変換処理そのもので、コールドスタートの影響は小さいため、作成時間は短くなりません。"
+    },
+    {
+      "id": "b",
+      "text": "関数のメモリ設定を増やし、実行時間と料金を測りながら適切な値を選ぶ。",
+      "correct": true,
+      "rationale": "Lambda はメモリの設定量に比例して CPU の能力を割り当てます（1,769 MB で 1 vCPU 相当）。使用中のメモリが少なくても、CPU を多く使う処理ならメモリを増やすことで実行時間が短くなります。実行時間が短くなるため、料金の増加は小さく抑えられる場合もあります。"
+    },
+    {
+      "id": "c",
+      "text": "関数に予約された同時実行を設定し、ほかの関数に使われない同時実行数を確保する。",
+      "correct": false,
+      "rationale": "予約された同時実行は、関数が同時に実行できる数の上限と確保量を決める設定です。1 回の実行に割り当てられる CPU は変わらないため、各サムネイルの作成時間は短くなりません。"
+    },
+    {
+      "id": "d",
+      "text": "関数のエフェメラルストレージ（/tmp）を増やし、変換中の画像を一時保存できる容量を広げる。",
+      "correct": false,
+      "rationale": "エフェメラルストレージを増やすと /tmp に置ける一時データの量が増えますが、CPU の能力は変わりません。処理時間の大半を占める CPU の処理は速くならないため、要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS Lambda で選べるリソースの量は、メモリ（128 MB〜10,240 MB）だけです。CPU の能力はメモリの設定量に比例して割り当てられ、1,769 MB で 1 vCPU 相当になります。そのため、CPU を多く使う関数は、実際に使うメモリが少なくても、メモリの設定を増やすと速くなります。ただし、マルチスレッドに対応していない処理は、1 vCPU 相当を超えて増やしても速くなりにくいため、測定しながら決めます。メモリは、性能を調整するための主な手段です。\n\n料金は実行時間とメモリの量の積で決まります。メモリを増やすと時間あたりの単価は上がりますが、実行時間が短くなれば、全体の料金はあまり増えないこともあります。適切な値は、CloudWatch で実行時間を見ながら調べるほか、さまざまなメモリ設定で関数を実行して比べるオープンソースの AWS Lambda Power Tuning や、AWS Compute Optimizer の推奨事項を使って決められます。\n\nプロビジョニングされた同時実行はコールドスタートの遅延を、予約された同時実行は同時に実行できる数を、エフェメラルストレージは /tmp の容量を調整する設定で、どれも 1 回の実行の CPU の処理を速くするものではありません。",
+  "keyPoints": [
+    "Lambda の CPU はメモリの設定量に比例する（1,769 MB で 1 vCPU 相当）",
+    "CPU を多く使う関数は、使用メモリが少なくてもメモリの設定を増やすと速くなる",
+    "コールドスタート対策 → プロビジョニングされた同時実行。同時実行数の確保・制限 → 予約された同時実行",
+    "メモリの最適値は AWS Lambda Power Tuning や AWS Compute Optimizer で探せる"
+  ],
+  "references": [
+    {
+      "title": "Configure Lambda Event Function memory - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html"
+    },
+    {
+      "title": "Configuring provisioned concurrency for an Event Function - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+    },
+    {
+      "title": "Configuring reserved concurrency for an Event Function - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-serverless-and-containers"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

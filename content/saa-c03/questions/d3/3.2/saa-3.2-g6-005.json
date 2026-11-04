@@ -58,7 +58,7 @@
       "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
     }
   ],
-  "lessonRefs": ["lesson-3.2-compute-options"],
+  "lessonRefs": ["lesson-3.2-serverless-and-containers"],
   "pool": "practice",
   "needsSourceCheck": false,
   "createdBy": "g6",

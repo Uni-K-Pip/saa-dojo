@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.2-g6-006",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-K6"],
+  "services": ["Amazon EKS", "Amazon ECS", "Amazon EC2", "AWS Elastic Beanstalk"],
+  "qualifier": "minimal-change",
+  "tags": ["コンテナオーケストレーション", "Kubernetes", "マネージドノードグループ", "移行"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある証券会社は、オンプレミスの Kubernetes クラスターで数十のマイクロサービスを運用しています。既存のマニフェストや Helm チャート、kubectl を使ったデプロイの手順、Kubernetes 向けの監視ツールをそのまま使い続けながら、AWS に移行したいと考えています。コントロールプレーンの可用性の確保やパッチ適用は AWS に任せ、ワーカーノードの作成や更新の手間も減らしたいと考えています。変更を最小限に抑えられる移行先はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon ECS のクラスターを作成し、マニフェストをタスク定義とサービスの定義に書き換えてデプロイする。",
+      "correct": false,
+      "rationale": "Amazon ECS は AWS 独自のコンテナオーケストレーションサービスで、Kubernetes の API を使いません。マニフェストや Helm チャートを書き換える必要があり、kubectl などのツールも使えないため、変更を最小限にするという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 インスタンスに Kubernetes のコントロールプレーンとワーカーノードを自分で構築し、既存のマニフェストでデプロイする。",
+      "correct": false,
+      "rationale": "既存のマニフェストやツールは使えますが、コントロールプレーンの冗長化やパッチ適用、バージョンアップを自分たちで行う必要があります。コントロールプレーンの運用を AWS に任せるという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Elastic Beanstalk の Docker プラットフォームで、マイクロサービスごとに環境を作成してデプロイする。",
+      "correct": false,
+      "rationale": "Elastic Beanstalk はアプリケーションの実行環境をまとめて用意するサービスで、Kubernetes のクラスターではありません。マニフェストや Helm チャート、kubectl を使ったデプロイの手順を使い続けられないため、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EKS のクラスターを作成し、マネージドノードグループでワーカーノードを動かす。",
+      "correct": true,
+      "rationale": "Amazon EKS は Kubernetes の適合認定を受けたマネージドサービスで、既存のマニフェストや Helm チャート、kubectl、エコシステムのツールをそのまま使えます。コントロールプレーンは AWS が複数の AZ で運用し、パッチも適用します。マネージドノードグループを使えば、ワーカーノード（EC2 インスタンス）の作成や更新も自動化できます。"
+    }
+  ],
+  "explanation": "AWS でコンテナを動かすオーケストレーションのサービスには、Amazon ECS と Amazon EKS があります。\n\n| 項目 | Amazon ECS | Amazon EKS |\n|---|---|---|\n| 仕組み | AWS 独自のオーケストレーション | Kubernetes（適合認定済み） |\n| 定義の書き方 | タスク定義、サービス | マニフェスト、Helm チャートなど |\n| ツール | AWS のコンソール、CLI、API | kubectl などの Kubernetes のツール |\n| 向いている場面 | AWS の機能とシンプルに統合したい | Kubernetes の資産やスキルを生かしたい、複数の環境で同じ仕組みを使いたい |\n\nオンプレミスで Kubernetes を使っていて、マニフェストやツールをそのまま使いたい場合は EKS を選びます。EKS ではコントロールプレーン（API サーバーなど）を AWS が複数の AZ に配置して運用し、異常なノードの置き換えやパッチ適用も行います。ワーカーノードは、マネージドノードグループで EC2 インスタンスの作成や更新を自動化するほか、AWS Fargate で動かしたり、EKS Auto Mode でノードの管理まで AWS に任せたりできます。\n\nECS は AWS のサービスとの統合がシンプルで学習コストも低いですが、Kubernetes の資産はそのまま使えません。",
+  "keyPoints": [
+    "既存の Kubernetes の資産（マニフェスト、Helm、kubectl）をそのまま使う → Amazon EKS",
+    "EKS のコントロールプレーンは AWS が複数の AZ で運用する",
+    "ワーカーノードの管理を減らす → マネージドノードグループ、AWS Fargate、EKS Auto Mode",
+    "Kubernetes にこだわらず AWS とシンプルに統合したい → Amazon ECS"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EKS? - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+    },
+    {
+      "title": "Simplify node lifecycle with managed node groups - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html"
+    },
+    {
+      "title": "Amazon EKS FAQs",
+      "url": "https://aws.amazon.com/eks/faqs/"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-serverless-and-containers"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

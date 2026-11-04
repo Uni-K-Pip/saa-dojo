@@ -1,0 +1,68 @@
+{
+  "id": "saa-3.2-g6-009",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-S3", "3.2-K1"],
+  "services": ["Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["HPC", "プレイスメントグループ", "Elastic Fabric Adapter", "MPI", "ノード間通信"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある気象研究機関は、数値予報のモデルを Amazon EC2 で実行します。モデルは MPI を使って 32 台のインスタンスで並列に計算し、計算の途中でノード間が頻繁に大量のデータを交換するため、ノード間の通信のレイテンシーとスループットが全体の処理時間を大きく左右します。1 回のジョブは数時間で終わり、1 つのアベイラビリティーゾーン（AZ）で実行して問題ありません。ノード間の通信性能を最大にするには、どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "スプレッドプレイスメントグループにインスタンスを起動し、各インスタンスを別々のラックに配置する。",
+      "correct": false,
+      "rationale": "スプレッドプレイスメントグループは、少数の重要なインスタンスを別々のハードウェアに分けて同時障害のリスクを下げるためのものです。通信性能は向上せず、1 つの AZ で実行できるのは 1 グループあたり 7 台までなので、32 台のジョブにも使えません。"
+    },
+    {
+      "id": "b",
+      "text": "クラスタープレイスメントグループを作成し、32 台のインスタンスを同じインスタンスタイプでまとめて起動する。",
+      "correct": true,
+      "rationale": "クラスタープレイスメントグループは、1 つの AZ の中でインスタンスをネットワーク上の近い位置に配置します。グループ内のインスタンスは低いレイテンシーと高いスループットで通信できるため、ノード間の通信が多い密結合の HPC に適しています。容量不足を避けるため、同じインスタンスタイプを 1 回のリクエストで起動するのが推奨です。"
+    },
+    {
+      "id": "c",
+      "text": "インスタンスを 3 つの AZ に分散して起動し、AZ 間で計算を分担する。",
+      "correct": false,
+      "rationale": "複数の AZ に分けると AZ の障害には強くなりますが、AZ 間の通信は同じ AZ 内よりレイテンシーが大きくなります。EFA の通信も AZ をまたげないため、ノード間の通信性能を最大にするという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Elastic Fabric Adapter（EFA）に対応したインスタンスタイプを選び、各インスタンスに EFA を接続する。",
+      "correct": true,
+      "rationale": "EFA は、OS のカーネルを経由しない通信（OS バイパス）で、HPC や機械学習のインスタンス間通信のレイテンシーを下げ、スループットを高めるネットワークデバイスです。Open MPI や Intel MPI に対応しており、追加料金なしで使えます。"
+    },
+    {
+      "id": "e",
+      "text": "パーティションプレイスメントグループを作成し、ノードを複数のパーティションに分けて起動する。",
+      "correct": false,
+      "rationale": "パーティションプレイスメントグループは、パーティションごとに別々のラックを使い、HDFS や Cassandra などの分散システムでハードウェア障害の影響範囲を限定するためのものです。ノード間の通信性能を高める仕組みではありません。"
+    }
+  ],
+  "explanation": "MPI を使う密結合の HPC では、計算の途中でノード間の通信が頻繁に発生するため、ネットワークの性能が処理時間を左右します。次の 2 つを組み合わせます。\n\n- クラスタープレイスメントグループ: 1 つの AZ の中で、インスタンスを広帯域のネットワークの近い位置にまとめて配置します。低いレイテンシーと高いスループットが得られます。\n- Elastic Fabric Adapter（EFA）: OS バイパスの機能を持つネットワークデバイスで、MPI や NCCL の通信を高速化します。対応するインスタンスタイプで、追加料金なしで使えます。\n\nプレイスメントグループの使い分けは次のとおりです。\n\n| 種類 | 配置 | 主な用途 |\n|---|---|---|\n| クラスター | 1 つの AZ 内で近くにまとめる | 低レイテンシー・高スループットの HPC |\n| パーティション | パーティションごとに別のラック | HDFS、HBase、Cassandra などの大規模な分散システム |\n| スプレッド | 1 台ずつ別のハードウェア（AZ ごとに 7 台まで） | 少数の重要なインスタンスの同時障害を防ぐ |\n\nクラスタープレイスメントグループは 1 つの AZ に限られるため、その AZ の障害には弱くなります。この問題のように 1 つの AZ での実行が許される計算ジョブで使います。",
+  "keyPoints": [
+    "密結合の HPC（MPI）でノード間通信を速くする → クラスタープレイスメントグループ + EFA",
+    "クラスタープレイスメントグループは 1 つの AZ に限られる。可用性より通信性能を優先するときに使う",
+    "スプレッドは同時障害を防ぐため（AZ ごとに 7 台まで）、パーティションは HDFS や Cassandra 向け",
+    "EFA は OS バイパスで MPI や NCCL の通信を高速化する。EFA の通信は AZ をまたげない"
+  ],
+  "references": [
+    {
+      "title": "Placement strategies for your placement groups - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+    },
+    {
+      "title": "Elastic Fabric Adapter for AI/ML and HPC workloads on Amazon EC2 - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-compute-options"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}
