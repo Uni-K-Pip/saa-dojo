@@ -57,7 +57,7 @@
       "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
     }
   ],
-  "lessonRefs": [],
+  "lessonRefs": ["lesson-1.3-backup-and-retention"],
   "pool": "practice",
   "needsSourceCheck": false,
   "createdBy": "g3",
