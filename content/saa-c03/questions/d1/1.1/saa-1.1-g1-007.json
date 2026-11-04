@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.1-g1-007",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S2", "1.1-K4"],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "Amazon Elastic Compute Cloud",
+    "AWS CloudTrail"
+  ],
+  "qualifier": "operational",
+  "tags": ["ABAC", "タグ", "セッションタグ", "aws:PrincipalTag", "aws:ResourceTag", "RBAC"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、1 つの AWS アカウントで複数のプロジェクトが Amazon EC2 インスタンスを使っています。開発者は自分のプロジェクトのインスタンスだけを起動・停止できる必要があります。プロジェクトは毎月のように追加され、開発者がプロジェクト間を異動することもよくあります。インスタンスにはすべて project タグが付いており、開発者は会社の ID プロバイダーからフェデレーションでサインインし、その際に所属プロジェクトが project セッションタグとして渡されます。プロジェクトの追加や異動のたびにポリシーを変更しなくて済む方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プロジェクトごとに IAM ロールを作成し、そのプロジェクトのインスタンスの ARN を列挙して起動と停止を許可するポリシーをそれぞれのロールにアタッチする。",
+      "correct": false,
+      "rationale": "プロジェクトごとのロールでも分離はできますが、プロジェクトが追加されるたびにロールとポリシーを作り、インスタンスが増えるたびに ARN の一覧を更新する必要があります。ポリシーを変更しなくて済むという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスの project タグがプリンシパルの project タグと一致する場合にだけ起動と停止を許可するポリシーを、開発者が使う 1 つのロールにアタッチする。",
+      "correct": true,
+      "rationale": "ABAC（属性ベースのアクセス制御）では、プリンシパルのタグとリソースのタグが一致するときに操作を許可します。新しいプロジェクトはタグの値が増えるだけで、異動しても ID プロバイダー側の属性が変わるだけなので、ポリシーを変更する必要がありません。"
+    },
+    {
+      "id": "c",
+      "text": "プロジェクトごとに IAM グループを作成して起動と停止を許可するポリシーをアタッチし、開発者を担当プロジェクトのグループに追加する。",
+      "correct": false,
+      "rationale": "IAM グループに所属できるのは IAM ユーザーだけで、フェデレーションでサインインする開発者は追加できません。また、プロジェクトが増えるたびにグループとポリシーを作る必要があり、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "開発者が使うロールに、すべてのインスタンスに対する ec2:StartInstances と ec2:StopInstances を許可し、操作は AWS CloudTrail で監査する。",
+      "correct": false,
+      "rationale": "ポリシーは 1 つで済みますが、開発者が他のプロジェクトのインスタンスまで起動・停止できてしまいます。CloudTrail による監査は事後の確認で、自分のプロジェクトだけに制限するという要件を満たしません。"
+    }
+  ],
+  "explanation": "IAM の伝統的な認可モデルは RBAC（ロールベースのアクセス制御）で、職務ごとにポリシーを作り、許可するリソースを列挙します。わかりやすい反面、新しいリソースやプロジェクトが増えるたびにポリシーの更新が必要です。\n\nABAC（属性ベースのアクセス制御）は、AWS ではタグを属性として使う認可の方式です。たとえば Condition で、aws:ResourceTag/project の値が ${aws:PrincipalTag/project} と等しいことを条件にすると、操作するリソースの project タグがプリンシパルの project タグと一致するときだけ許可されます。SAML や OIDC の ID プロバイダーからフェデレーションする場合は、従業員の属性をセッションタグとして渡せるため、会社のディレクトリの情報をそのまま認可に使えます。\n\nABAC には、新しいリソースに自動で権限が及ぶ、必要なポリシーの数が少ない、異動や組織の変更にポリシーを変えずに対応できる、という利点があります。一方で、タグがそのまま権限になるため、リソースのタグを付け替えられる人を制限することも重要です。",
+  "keyPoints": [
+    "プロジェクトやリソースが頻繁に増える → タグで認可する ABAC を検討する",
+    "ABAC の基本形は、aws:ResourceTag と aws:PrincipalTag の一致を条件にした許可",
+    "IAM グループに入れられるのは IAM ユーザーだけ。ロールやフェデレーションユーザーは入れられない"
+  ],
+  "references": [
+    {
+      "title": "Define permissions based on attributes with ABAC authorization - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+    },
+    {
+      "title": "Pass session tags in AWS STS - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

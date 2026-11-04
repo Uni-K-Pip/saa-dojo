@@ -1,0 +1,67 @@
+{
+  "id": "saa-1.1-g1-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K5"],
+  "services": [
+    "Amazon Elastic Compute Cloud",
+    "Amazon Simple Storage Service",
+    "AWS Identity and Access Management (IAM)"
+  ],
+  "qualifier": "security",
+  "tags": ["責任共有モデル", "ゲスト OS", "パッチ管理", "データ保護"],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるスタートアップ企業は、Amazon EC2 インスタンスで動く Web アプリケーションと、利用者がアップロードしたファイルを保存する Amazon S3 バケットで、新しいサービスを立ち上げます。セキュリティ担当者は AWS の責任共有モデルに基づいて、自社で対応しなければならない作業を洗い出しています。次のうち、この企業の責任になる作業はどれですか。2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "EC2 インスタンスのゲスト OS にセキュリティパッチを適用する。",
+      "correct": true,
+      "rationale": "EC2 のような IaaS では、ゲスト OS の更新とセキュリティパッチの適用は利用者の責任です。インスタンスにインストールしたアプリケーションやセキュリティグループの設定も、利用者が管理します。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 インスタンスを実行する物理ホストとハイパーバイザーにパッチを適用する。",
+      "correct": false,
+      "rationale": "EC2 を実行する物理ホストや仮想化レイヤーは、AWS が管理するインフラストラクチャです。そのパッチ適用は AWS の責任（クラウドのセキュリティ）で、利用者は操作できません。"
+    },
+    {
+      "id": "c",
+      "text": "S3 のデータを保存するストレージ機器を、廃棄するときに安全に消去する。",
+      "correct": false,
+      "rationale": "ストレージ機器を含むハードウェアの管理と、廃棄するときの安全な消去は AWS の責任です。利用者が物理的な機器に触れることはありません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 バケットへのアクセス許可と、保存するデータの暗号化の設定を管理する。",
+      "correct": true,
+      "rationale": "S3 のような抽象化されたサービスでも、だれにデータへのアクセスを許すか（バケットポリシーや IAM ポリシー）と、暗号化の選択肢をどう使うかは利用者が決めて管理します。データそのものの管理は常に利用者の責任です。"
+    },
+    {
+      "id": "e",
+      "text": "データセンターへの入館を管理し、施設の物理的なセキュリティを確保する。",
+      "correct": false,
+      "rationale": "データセンターなどの施設の物理的なセキュリティは、AWS が責任を持つクラウドのセキュリティに含まれます。"
+    }
+  ],
+  "explanation": "AWS の責任共有モデルでは、AWS がクラウドのセキュリティ（Security of the Cloud）を、利用者がクラウドにおけるセキュリティ（Security in the Cloud）を担います。AWS は、サービスを動かすハードウェア、ソフトウェア、ネットワーク、施設というインフラストラクチャを保護します。\n\n利用者の責任の範囲は、使うサービスによって変わります。Amazon EC2 のような IaaS では、ゲスト OS の更新とセキュリティパッチ、インストールしたアプリケーション、セキュリティグループ（AWS が提供するファイアウォール）の設定が利用者の責任です。Amazon S3 や Amazon DynamoDB のような抽象化されたサービスでは、インフラストラクチャ、OS、プラットフォームを AWS が運用し、利用者はエンドポイントを使ってデータを保存・取得します。それでも、データの管理、暗号化の選択、IAM によるアクセス権限の管理は利用者の責任です。\n\nパッチ管理や構成管理のように、AWS と利用者の両方が担う共有の統制もあります。パッチ管理では、AWS がインフラストラクチャの、利用者がゲスト OS とアプリケーションのパッチを担当します。",
+  "keyPoints": [
+    "AWS はクラウドのセキュリティ、利用者はクラウドにおけるセキュリティを担う",
+    "EC2 ではゲスト OS のパッチ、アプリケーション、セキュリティグループの設定が利用者の責任",
+    "どのサービスでも、データとアクセス権限の管理は利用者の責任"
+  ],
+  "references": [
+    {
+      "title": "Shared Responsibility Model - Amazon Web Services (AWS)",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

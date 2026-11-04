@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.1-g1-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S1", "1.1-K4"],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "Amazon Elastic Compute Cloud",
+    "Amazon Simple Storage Service",
+    "AWS Secrets Manager"
+  ],
+  "qualifier": "security",
+  "tags": ["ルートユーザー", "アクセスキー", "インスタンスプロファイル", "一時的な認証情報", "最小権限"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業のセキュリティ監査で、AWS アカウントのルートユーザーにアクセスキーが作成されており、Amazon EC2 インスタンス上の夜間バッチスクリプトがそのキーを使って Amazon S3 バケットにファイルを書き込んでいることが分かりました。スクリプトは今後も動かし続ける必要があります。AWS のベストプラクティスに従って、最もセキュアに対応する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ルートユーザーに MFA を設定し、アクセスキーは AWS Secrets Manager に保存して、スクリプトが実行のたびに取得するように変更する。",
+      "correct": false,
+      "rationale": "キーの保管場所を変えても、ルートユーザーのアクセスキーを使い続けることに変わりはありません。ルートユーザーはアカウント内のすべての操作ができ、IAM ポリシーで権限を絞れないため、プログラムからの利用には使いません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 への書き込みだけを許可した IAM ロールを EC2 インスタンスにアタッチし、スクリプトをロールの認証情報に切り替えてから、ルートユーザーのアクセスキーを削除する。",
+      "correct": true,
+      "rationale": "EC2 インスタンスにアタッチした IAM ロールの一時的な認証情報は自動で更新されるため、スクリプトに長期的なキーを置く必要がありません。必要な操作だけを許可すれば最小権限も満たせます。ルートユーザーのアクセスキーは作成しないことが推奨されているので、切り替えた後に削除します。"
+    },
+    {
+      "id": "c",
+      "text": "ルートユーザーのアクセスキーを 90 日ごとにローテーションする運用を定め、新しいキーに切り替えたら古いキーをすぐに無効化する。",
+      "correct": false,
+      "rationale": "ローテーションで漏えいしたときの影響期間は短くなりますが、すべての権限を持つルートユーザーの長期的なキーを使い続ける点は変わりません。ルートユーザーにはアクセスキーを作らないのがベストプラクティスです。"
+    },
+    {
+      "id": "d",
+      "text": "AdministratorAccess をアタッチした IAM ユーザーを作成してそのアクセスキーをスクリプトに設定し、動作を確認してからルートユーザーのアクセスキーを削除する。",
+      "correct": false,
+      "rationale": "ルートユーザーのキーはなくなりますが、IAM ユーザーのアクセスキーは長期的な認証情報で、AdministratorAccess は S3 への書き込みに対して広すぎます。最小権限と一時的な認証情報の利用というベストプラクティスを満たしません。"
+    }
+  ],
+  "explanation": "ルートユーザーは AWS アカウントを作成したときの ID で、アカウント内のすべてのリソースとサービス、請求情報にまでアクセスできます。IAM ポリシーで権限を制限できないため、AWS はルートユーザーのアクセスキーを作成しないこと、日常の作業にはルートユーザーを使わず、ルートユーザーが必要なタスクのときだけ使うことを推奨しています。\n\nAWS 上で動くワークロードには、IAM ロールの一時的な認証情報を使います。EC2 インスタンスにはインスタンスプロファイルを通じてロールをアタッチでき、AWS SDK や AWS CLI はインスタンスメタデータから、自動で更新される認証情報を取得します。スクリプトにキーを書いたり、ローテーションの仕組みを作ったりする必要はありません。\n\nルートユーザーは強力なパスワードと MFA で保護し、サインインや利用を監視します。AWS Organizations のメンバーアカウントでは、ルートユーザーの認証情報そのものを削除し、ルートユーザーが必要な作業を管理アカウントから一元的に行う方法もあります。",
+  "keyPoints": [
+    "ルートユーザーのアクセスキーは作らない。あれば代わりの手段に切り替えてから削除する",
+    "EC2 上のプログラムには、インスタンスプロファイルで IAM ロールを渡す",
+    "キーの保管場所やローテーションを工夫しても、長期的な認証情報の問題は解決しない"
+  ],
+  "references": [
+    {
+      "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+    },
+    {
+      "title": "Use an IAM role to grant permissions to applications running on Amazon EC2 instances - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}
