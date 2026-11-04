@@ -1,0 +1,1619 @@
+{
+  "exam": {
+    "code": "SAA-C03",
+    "nameEn": "AWS Certified Solutions Architect - Associate",
+    "nameJa": "AWS 認定ソリューションアーキテクト – アソシエイト",
+    "questionsTotal": 65,
+    "questionsScored": 50,
+    "durationMinutes": 130,
+    "passingScore": 720,
+    "scoreRange": "100-1000",
+    "questionTypes": [
+      "択一選択（4つから1つ）",
+      "複数選択（5つ以上から2つ以上）"
+    ]
+  },
+  "checkedAt": "2026-11-04",
+  "domains": [
+    {
+      "id": 1,
+      "nameEn": "Design Secure Architectures",
+      "nameJa": "セキュアなアーキテクチャの設計",
+      "weightPercent": 30,
+      "taskStatements": [
+        {
+          "id": "1.1",
+          "titleEn": "Design secure access to AWS resources",
+          "titleJa": "AWS リソースへのセキュアなアクセスを設計する",
+          "items": [
+            {
+              "id": "1.1-K1",
+              "kind": "knowledge",
+              "textJa": "複数アカウントにまたがるアクセス制御と管理"
+            },
+            {
+              "id": "1.1-K2",
+              "kind": "knowledge",
+              "textJa": "フェデレーションと ID サービス（IAM、IAM Identity Center）"
+            },
+            {
+              "id": "1.1-K3",
+              "kind": "knowledge",
+              "textJa": "グローバルインフラ（リージョン、アベイラビリティーゾーン）とアクセス設計の関係"
+            },
+            {
+              "id": "1.1-K4",
+              "kind": "knowledge",
+              "textJa": "セキュリティのベストプラクティス（最小権限の原則など）"
+            },
+            {
+              "id": "1.1-K5",
+              "kind": "knowledge",
+              "textJa": "責任共有モデル"
+            },
+            {
+              "id": "1.1-S1",
+              "kind": "skill",
+              "textJa": "IAM ユーザーとルートユーザーにベストプラクティスを適用する（MFA、ルートユーザーの利用制限など）"
+            },
+            {
+              "id": "1.1-S2",
+              "kind": "skill",
+              "textJa": "IAM ユーザー・グループ・ロール・ポリシーを組み合わせた柔軟な認可モデルを設計する"
+            },
+            {
+              "id": "1.1-S3",
+              "kind": "skill",
+              "textJa": "ロールベースのアクセス制御を設計する（AWS STS、ロールの切り替え、クロスアカウントアクセス）"
+            },
+            {
+              "id": "1.1-S4",
+              "kind": "skill",
+              "textJa": "複数アカウントのセキュリティ戦略を設計する（AWS Control Tower、SCP）"
+            },
+            {
+              "id": "1.1-S5",
+              "kind": "skill",
+              "textJa": "各サービスのリソースベースポリシーの使いどころを判断する"
+            },
+            {
+              "id": "1.1-S6",
+              "kind": "skill",
+              "textJa": "ディレクトリサービスと IAM ロールをフェデレーションすべき場面を判断する"
+            }
+          ],
+          "keyServices": [
+            "AWS Identity and Access Management (IAM)",
+            "AWS IAM Identity Center",
+            "AWS Security Token Service (AWS STS)",
+            "AWS Organizations",
+            "AWS Control Tower",
+            "AWS Directory Service",
+            "Amazon Cognito"
+          ]
+        },
+        {
+          "id": "1.2",
+          "titleEn": "Design secure workloads and applications",
+          "titleJa": "セキュアなワークロードとアプリケーションを設計する",
+          "items": [
+            {
+              "id": "1.2-K1",
+              "kind": "knowledge",
+              "textJa": "アプリケーションの設定と認証情報の安全な扱い"
+            },
+            {
+              "id": "1.2-K2",
+              "kind": "knowledge",
+              "textJa": "AWS サービスのエンドポイント"
+            },
+            {
+              "id": "1.2-K3",
+              "kind": "knowledge",
+              "textJa": "ポート・プロトコル・ネットワークトラフィックの制御"
+            },
+            {
+              "id": "1.2-K4",
+              "kind": "knowledge",
+              "textJa": "アプリケーションへのセキュアなアクセス"
+            },
+            {
+              "id": "1.2-K5",
+              "kind": "knowledge",
+              "textJa": "セキュリティサービスとその使いどころ（Amazon Cognito、Amazon GuardDuty、Amazon Macie など）"
+            },
+            {
+              "id": "1.2-K6",
+              "kind": "knowledge",
+              "textJa": "AWS の外からの脅威（DDoS、SQL インジェクションなど）"
+            },
+            {
+              "id": "1.2-S1",
+              "kind": "skill",
+              "textJa": "セキュリティ要素を備えた VPC を設計する（セキュリティグループ、ルートテーブル、ネットワーク ACL、NAT ゲートウェイ）"
+            },
+            {
+              "id": "1.2-S2",
+              "kind": "skill",
+              "textJa": "ネットワークの分離方針を決める（パブリックサブネットとプライベートサブネットなど）"
+            },
+            {
+              "id": "1.2-S3",
+              "kind": "skill",
+              "textJa": "サービスを組み合わせてアプリケーションを保護する（AWS Shield、AWS WAF、IAM Identity Center、AWS Secrets Manager）"
+            },
+            {
+              "id": "1.2-S4",
+              "kind": "skill",
+              "textJa": "AWS との外部ネットワーク接続を保護する（VPN、AWS Direct Connect）"
+            }
+          ],
+          "keyServices": [
+            "Amazon VPC",
+            "AWS WAF",
+            "AWS Shield",
+            "Amazon GuardDuty",
+            "Amazon Macie",
+            "Amazon Cognito",
+            "AWS Secrets Manager",
+            "AWS Systems Manager",
+            "AWS Network Firewall",
+            "AWS PrivateLink",
+            "AWS Site-to-Site VPN",
+            "AWS Direct Connect"
+          ]
+        },
+        {
+          "id": "1.3",
+          "titleEn": "Determine appropriate data security controls",
+          "titleJa": "適切なデータセキュリティ管理を決定する",
+          "items": [
+            {
+              "id": "1.3-K1",
+              "kind": "knowledge",
+              "textJa": "データへのアクセスとガバナンス"
+            },
+            {
+              "id": "1.3-K2",
+              "kind": "knowledge",
+              "textJa": "データの復旧"
+            },
+            {
+              "id": "1.3-K3",
+              "kind": "knowledge",
+              "textJa": "データの保持と分類"
+            },
+            {
+              "id": "1.3-K4",
+              "kind": "knowledge",
+              "textJa": "暗号化と適切な鍵管理"
+            },
+            {
+              "id": "1.3-S1",
+              "kind": "skill",
+              "textJa": "コンプライアンス要件に合う AWS の技術を選ぶ"
+            },
+            {
+              "id": "1.3-S2",
+              "kind": "skill",
+              "textJa": "保存データを暗号化する（AWS KMS など）"
+            },
+            {
+              "id": "1.3-S3",
+              "kind": "skill",
+              "textJa": "転送中のデータを暗号化する（AWS Certificate Manager と TLS など）"
+            },
+            {
+              "id": "1.3-S4",
+              "kind": "skill",
+              "textJa": "暗号化キーのアクセスポリシーを実装する"
+            },
+            {
+              "id": "1.3-S5",
+              "kind": "skill",
+              "textJa": "データのバックアップとレプリケーションを実装する"
+            },
+            {
+              "id": "1.3-S6",
+              "kind": "skill",
+              "textJa": "データのアクセス・ライフサイクル・保護のポリシーを実装する"
+            },
+            {
+              "id": "1.3-S7",
+              "kind": "skill",
+              "textJa": "暗号化キーのローテーションと証明書の更新を行う"
+            }
+          ],
+          "keyServices": [
+            "AWS Key Management Service (AWS KMS)",
+            "AWS CloudHSM",
+            "AWS Certificate Manager (ACM)",
+            "Amazon S3",
+            "AWS Backup",
+            "Amazon Macie",
+            "AWS Secrets Manager",
+            "AWS Config",
+            "AWS CloudTrail"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nameEn": "Design Resilient Architectures",
+      "nameJa": "弾力性に優れたアーキテクチャの設計",
+      "weightPercent": 26,
+      "taskStatements": [
+        {
+          "id": "2.1",
+          "titleEn": "Design scalable and loosely coupled architectures",
+          "titleJa": "スケーラブルで疎結合なアーキテクチャを設計する",
+          "items": [
+            {
+              "id": "2.1-K1",
+              "kind": "knowledge",
+              "textJa": "API の作成と管理（Amazon API Gateway、REST API）"
+            },
+            {
+              "id": "2.1-K2",
+              "kind": "knowledge",
+              "textJa": "マネージドサービスとその使いどころ（AWS Transfer Family、Amazon SQS、AWS Secrets Manager など）"
+            },
+            {
+              "id": "2.1-K3",
+              "kind": "knowledge",
+              "textJa": "キャッシュ戦略"
+            },
+            {
+              "id": "2.1-K4",
+              "kind": "knowledge",
+              "textJa": "マイクロサービスの設計原則（ステートレスとステートフルの違いなど）"
+            },
+            {
+              "id": "2.1-K5",
+              "kind": "knowledge",
+              "textJa": "イベント駆動アーキテクチャ"
+            },
+            {
+              "id": "2.1-K6",
+              "kind": "knowledge",
+              "textJa": "水平スケーリングと垂直スケーリング"
+            },
+            {
+              "id": "2.1-K7",
+              "kind": "knowledge",
+              "textJa": "エッジでの高速化の使い方（CDN など）"
+            },
+            {
+              "id": "2.1-K8",
+              "kind": "knowledge",
+              "textJa": "アプリケーションをコンテナへ移行する方法"
+            },
+            {
+              "id": "2.1-K9",
+              "kind": "knowledge",
+              "textJa": "ロードバランシングの考え方（Application Load Balancer など）"
+            },
+            {
+              "id": "2.1-K10",
+              "kind": "knowledge",
+              "textJa": "多層アーキテクチャ"
+            },
+            {
+              "id": "2.1-K11",
+              "kind": "knowledge",
+              "textJa": "キューイングとメッセージング（パブリッシュ／サブスクライブなど）"
+            },
+            {
+              "id": "2.1-K12",
+              "kind": "knowledge",
+              "textJa": "サーバーレスの技術とパターン（AWS Fargate、AWS Lambda）"
+            },
+            {
+              "id": "2.1-K13",
+              "kind": "knowledge",
+              "textJa": "ストレージの種類と特性（オブジェクト、ファイル、ブロック）"
+            },
+            {
+              "id": "2.1-K14",
+              "kind": "knowledge",
+              "textJa": "コンテナのオーケストレーション（Amazon ECS、Amazon EKS）"
+            },
+            {
+              "id": "2.1-K15",
+              "kind": "knowledge",
+              "textJa": "リードレプリカを使うべき場面"
+            },
+            {
+              "id": "2.1-K16",
+              "kind": "knowledge",
+              "textJa": "ワークフローのオーケストレーション（AWS Step Functions）"
+            },
+            {
+              "id": "2.1-S1",
+              "kind": "skill",
+              "textJa": "要件に応じてイベント駆動・マイクロサービス・多層のアーキテクチャを設計する"
+            },
+            {
+              "id": "2.1-S2",
+              "kind": "skill",
+              "textJa": "構成要素ごとのスケーリング戦略を決める"
+            },
+            {
+              "id": "2.1-S3",
+              "kind": "skill",
+              "textJa": "疎結合を実現するために必要なサービスを選ぶ"
+            },
+            {
+              "id": "2.1-S4",
+              "kind": "skill",
+              "textJa": "コンテナを使うべき場面を判断する"
+            },
+            {
+              "id": "2.1-S5",
+              "kind": "skill",
+              "textJa": "サーバーレスを使うべき場面を判断する"
+            },
+            {
+              "id": "2.1-S6",
+              "kind": "skill",
+              "textJa": "要件に合うコンピューティング・ストレージ・ネットワーク・データベースを推奨する"
+            },
+            {
+              "id": "2.1-S7",
+              "kind": "skill",
+              "textJa": "ワークロードに合った専用サービスを使う"
+            }
+          ],
+          "keyServices": [
+            "Amazon SQS",
+            "Amazon SNS",
+            "Amazon EventBridge",
+            "AWS Step Functions",
+            "AWS Lambda",
+            "Amazon API Gateway",
+            "Amazon ECS",
+            "Amazon EKS",
+            "AWS Fargate",
+            "Elastic Load Balancing",
+            "Amazon EC2 Auto Scaling",
+            "Amazon ElastiCache",
+            "Amazon CloudFront",
+            "AWS Transfer Family"
+          ]
+        },
+        {
+          "id": "2.2",
+          "titleEn": "Design highly available and/or fault-tolerant architectures",
+          "titleJa": "高可用性または耐障害性を備えたアーキテクチャを設計する",
+          "items": [
+            {
+              "id": "2.2-K1",
+              "kind": "knowledge",
+              "textJa": "グローバルインフラ（アベイラビリティーゾーン、リージョン、Amazon Route 53）"
+            },
+            {
+              "id": "2.2-K2",
+              "kind": "knowledge",
+              "textJa": "マネージドサービスとその使いどころ（Amazon Comprehend、Amazon Polly など）"
+            },
+            {
+              "id": "2.2-K3",
+              "kind": "knowledge",
+              "textJa": "ネットワークの基本（ルートテーブルなど）"
+            },
+            {
+              "id": "2.2-K4",
+              "kind": "knowledge",
+              "textJa": "災害対策の戦略（バックアップと復元、パイロットライト、ウォームスタンバイ、アクティブ／アクティブ、RPO、RTO）"
+            },
+            {
+              "id": "2.2-K5",
+              "kind": "knowledge",
+              "textJa": "分散システムの設計パターン"
+            },
+            {
+              "id": "2.2-K6",
+              "kind": "knowledge",
+              "textJa": "フェイルオーバーの戦略"
+            },
+            {
+              "id": "2.2-K7",
+              "kind": "knowledge",
+              "textJa": "イミュータブルインフラストラクチャ"
+            },
+            {
+              "id": "2.2-K8",
+              "kind": "knowledge",
+              "textJa": "ロードバランシングの考え方（Application Load Balancer など）"
+            },
+            {
+              "id": "2.2-K9",
+              "kind": "knowledge",
+              "textJa": "プロキシの考え方（Amazon RDS Proxy など）"
+            },
+            {
+              "id": "2.2-K10",
+              "kind": "knowledge",
+              "textJa": "サービスクォータとスロットリング（スタンバイ環境のクォータ設定など）"
+            },
+            {
+              "id": "2.2-K11",
+              "kind": "knowledge",
+              "textJa": "ストレージの選択肢と特性（耐久性、レプリケーション）"
+            },
+            {
+              "id": "2.2-K12",
+              "kind": "knowledge",
+              "textJa": "ワークロードの可視化（AWS X-Ray など）"
+            },
+            {
+              "id": "2.2-S1",
+              "kind": "skill",
+              "textJa": "インフラの整合性を保つ自動化の方針を決める"
+            },
+            {
+              "id": "2.2-S2",
+              "kind": "skill",
+              "textJa": "リージョンやアベイラビリティーゾーンをまたぐ高可用性・耐障害性に必要なサービスを選ぶ"
+            },
+            {
+              "id": "2.2-S3",
+              "kind": "skill",
+              "textJa": "ビジネス要件から高可用性の指標を定める"
+            },
+            {
+              "id": "2.2-S4",
+              "kind": "skill",
+              "textJa": "単一障害点をなくす設計を実装する"
+            },
+            {
+              "id": "2.2-S5",
+              "kind": "skill",
+              "textJa": "データの耐久性と可用性を確保する（バックアップなど）"
+            },
+            {
+              "id": "2.2-S6",
+              "kind": "skill",
+              "textJa": "ビジネス要件に合う災害対策の戦略を選ぶ"
+            },
+            {
+              "id": "2.2-S7",
+              "kind": "skill",
+              "textJa": "改修できないレガシーアプリの信頼性をサービスで高める"
+            },
+            {
+              "id": "2.2-S8",
+              "kind": "skill",
+              "textJa": "ワークロードに合った専用サービスを使う"
+            }
+          ],
+          "keyServices": [
+            "Amazon Route 53",
+            "Elastic Load Balancing",
+            "Amazon EC2 Auto Scaling",
+            "Amazon RDS",
+            "Amazon Aurora",
+            "Amazon RDS Proxy",
+            "Amazon DynamoDB",
+            "Amazon S3",
+            "AWS Backup",
+            "AWS Elastic Disaster Recovery",
+            "AWS X-Ray",
+            "Service Quotas",
+            "AWS CloudFormation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nameEn": "Design High-Performing Architectures",
+      "nameJa": "高性能なアーキテクチャの設計",
+      "weightPercent": 24,
+      "taskStatements": [
+        {
+          "id": "3.1",
+          "titleEn": "Determine high-performing and/or scalable storage solutions",
+          "titleJa": "高性能またはスケーラブルなストレージを決定する",
+          "items": [
+            {
+              "id": "3.1-K1",
+              "kind": "knowledge",
+              "textJa": "ビジネス要件に合うハイブリッドストレージ"
+            },
+            {
+              "id": "3.1-K2",
+              "kind": "knowledge",
+              "textJa": "ストレージサービスとその使いどころ（Amazon S3、Amazon EFS、Amazon EBS など）"
+            },
+            {
+              "id": "3.1-K3",
+              "kind": "knowledge",
+              "textJa": "ストレージの種類と特性（オブジェクト、ファイル、ブロック）"
+            },
+            {
+              "id": "3.1-S1",
+              "kind": "skill",
+              "textJa": "性能要件を満たすストレージサービスと設定を決める"
+            },
+            {
+              "id": "3.1-S2",
+              "kind": "skill",
+              "textJa": "将来の増加に合わせて拡張できるストレージを選ぶ"
+            }
+          ],
+          "keyServices": [
+            "Amazon S3",
+            "Amazon EBS",
+            "Amazon EFS",
+            "Amazon FSx",
+            "AWS Storage Gateway",
+            "AWS DataSync"
+          ]
+        },
+        {
+          "id": "3.2",
+          "titleEn": "Design high-performing and elastic compute solutions",
+          "titleJa": "高性能で伸縮性のあるコンピューティングを設計する",
+          "items": [
+            {
+              "id": "3.2-K1",
+              "kind": "knowledge",
+              "textJa": "コンピューティングサービスとその使いどころ（AWS Batch、Amazon EMR、AWS Fargate など）"
+            },
+            {
+              "id": "3.2-K2",
+              "kind": "knowledge",
+              "textJa": "グローバルインフラとエッジサービスを使った分散コンピューティング"
+            },
+            {
+              "id": "3.2-K3",
+              "kind": "knowledge",
+              "textJa": "キューイングとメッセージング（パブリッシュ／サブスクライブなど）"
+            },
+            {
+              "id": "3.2-K4",
+              "kind": "knowledge",
+              "textJa": "スケーリング機能とその使いどころ（Amazon EC2 Auto Scaling、AWS Auto Scaling）"
+            },
+            {
+              "id": "3.2-K5",
+              "kind": "knowledge",
+              "textJa": "サーバーレスの技術とパターン（AWS Lambda、AWS Fargate）"
+            },
+            {
+              "id": "3.2-K6",
+              "kind": "knowledge",
+              "textJa": "コンテナのオーケストレーション（Amazon ECS、Amazon EKS）"
+            },
+            {
+              "id": "3.2-S1",
+              "kind": "skill",
+              "textJa": "構成要素ごとに独立してスケールできるようワークロードを分離する"
+            },
+            {
+              "id": "3.2-S2",
+              "kind": "skill",
+              "textJa": "スケーリングのきっかけになる指標と条件を見極める"
+            },
+            {
+              "id": "3.2-S3",
+              "kind": "skill",
+              "textJa": "要件に合うコンピューティングの選択肢と機能（EC2 インスタンスタイプなど）を選ぶ"
+            },
+            {
+              "id": "3.2-S4",
+              "kind": "skill",
+              "textJa": "要件に合うリソースの種類とサイズ（Lambda のメモリ量など）を選ぶ"
+            }
+          ],
+          "keyServices": [
+            "Amazon EC2",
+            "Amazon EC2 Auto Scaling",
+            "AWS Lambda",
+            "AWS Fargate",
+            "Amazon ECS",
+            "Amazon EKS",
+            "AWS Batch",
+            "Amazon EMR",
+            "Elastic Load Balancing"
+          ]
+        },
+        {
+          "id": "3.3",
+          "titleEn": "Determine high-performing database solutions",
+          "titleJa": "高性能なデータベースを決定する",
+          "items": [
+            {
+              "id": "3.3-K1",
+              "kind": "knowledge",
+              "textJa": "グローバルインフラ（アベイラビリティーゾーン、リージョン）とデータベース配置"
+            },
+            {
+              "id": "3.3-K2",
+              "kind": "knowledge",
+              "textJa": "キャッシュの戦略とサービス（Amazon ElastiCache など）"
+            },
+            {
+              "id": "3.3-K3",
+              "kind": "knowledge",
+              "textJa": "データアクセスのパターン（読み取り中心か書き込み中心か）"
+            },
+            {
+              "id": "3.3-K4",
+              "kind": "knowledge",
+              "textJa": "データベースの容量計画（キャパシティユニット、インスタンスタイプ、プロビジョンド IOPS）"
+            },
+            {
+              "id": "3.3-K5",
+              "kind": "knowledge",
+              "textJa": "データベース接続とプロキシ"
+            },
+            {
+              "id": "3.3-K6",
+              "kind": "knowledge",
+              "textJa": "データベースエンジンとその使いどころ（同種・異種間の移行など）"
+            },
+            {
+              "id": "3.3-K7",
+              "kind": "knowledge",
+              "textJa": "データベースのレプリケーション（リードレプリカなど）"
+            },
+            {
+              "id": "3.3-K8",
+              "kind": "knowledge",
+              "textJa": "データベースの種類とサービス（サーバーレス、リレーショナルと非リレーショナル、インメモリ）"
+            },
+            {
+              "id": "3.3-S1",
+              "kind": "skill",
+              "textJa": "要件に合わせてリードレプリカを構成する"
+            },
+            {
+              "id": "3.3-S2",
+              "kind": "skill",
+              "textJa": "データベースのアーキテクチャを設計する"
+            },
+            {
+              "id": "3.3-S3",
+              "kind": "skill",
+              "textJa": "適切なデータベースエンジンを選ぶ（MySQL と PostgreSQL など）"
+            },
+            {
+              "id": "3.3-S4",
+              "kind": "skill",
+              "textJa": "適切なデータベースの種類を選ぶ（Amazon Aurora、Amazon DynamoDB など）"
+            },
+            {
+              "id": "3.3-S5",
+              "kind": "skill",
+              "textJa": "要件に合わせてキャッシュを組み込む"
+            }
+          ],
+          "keyServices": [
+            "Amazon RDS",
+            "Amazon Aurora",
+            "Amazon Aurora Serverless",
+            "Amazon DynamoDB",
+            "Amazon DynamoDB Accelerator (DAX)",
+            "Amazon ElastiCache",
+            "Amazon RDS Proxy",
+            "Amazon Redshift",
+            "AWS Database Migration Service (AWS DMS)"
+          ]
+        },
+        {
+          "id": "3.4",
+          "titleEn": "Determine high-performing and/or scalable network architectures",
+          "titleJa": "高性能またはスケーラブルなネットワークを決定する",
+          "items": [
+            {
+              "id": "3.4-K1",
+              "kind": "knowledge",
+              "textJa": "エッジのネットワークサービスとその使いどころ（Amazon CloudFront、AWS Global Accelerator）"
+            },
+            {
+              "id": "3.4-K2",
+              "kind": "knowledge",
+              "textJa": "ネットワークの設計方法（サブネットの階層、ルーティング、IP アドレス設計）"
+            },
+            {
+              "id": "3.4-K3",
+              "kind": "knowledge",
+              "textJa": "ロードバランシングの考え方（Application Load Balancer など）"
+            },
+            {
+              "id": "3.4-K4",
+              "kind": "knowledge",
+              "textJa": "ネットワーク接続の選択肢（AWS VPN、AWS Direct Connect、AWS PrivateLink）"
+            },
+            {
+              "id": "3.4-S1",
+              "kind": "skill",
+              "textJa": "グローバル・ハイブリッド・多層などの構成に合うネットワークトポロジーを作る"
+            },
+            {
+              "id": "3.4-S2",
+              "kind": "skill",
+              "textJa": "将来の拡張に対応できるネットワーク構成を決める"
+            },
+            {
+              "id": "3.4-S3",
+              "kind": "skill",
+              "textJa": "要件に合わせてリソースの配置場所を決める"
+            },
+            {
+              "id": "3.4-S4",
+              "kind": "skill",
+              "textJa": "適切なロードバランシング方式を選ぶ"
+            }
+          ],
+          "keyServices": [
+            "Amazon VPC",
+            "Amazon CloudFront",
+            "AWS Global Accelerator",
+            "Elastic Load Balancing",
+            "AWS Transit Gateway",
+            "AWS Direct Connect",
+            "AWS Site-to-Site VPN",
+            "AWS PrivateLink",
+            "Amazon Route 53"
+          ]
+        },
+        {
+          "id": "3.5",
+          "titleEn": "Determine high-performing data ingestion and transformation solutions",
+          "titleJa": "高性能なデータの取り込みと変換を決定する",
+          "items": [
+            {
+              "id": "3.5-K1",
+              "kind": "knowledge",
+              "textJa": "データ分析と可視化のサービスとその使いどころ（Amazon Athena、AWS Lake Formation、Amazon QuickSight）"
+            },
+            {
+              "id": "3.5-K2",
+              "kind": "knowledge",
+              "textJa": "データ取り込みのパターン（頻度など）"
+            },
+            {
+              "id": "3.5-K3",
+              "kind": "knowledge",
+              "textJa": "データ転送サービスとその使いどころ（AWS DataSync、AWS Storage Gateway）"
+            },
+            {
+              "id": "3.5-K4",
+              "kind": "knowledge",
+              "textJa": "データ変換サービスとその使いどころ（AWS Glue）"
+            },
+            {
+              "id": "3.5-K5",
+              "kind": "knowledge",
+              "textJa": "取り込み口へのセキュアなアクセス"
+            },
+            {
+              "id": "3.5-K6",
+              "kind": "knowledge",
+              "textJa": "要件を満たすデータ量と速度"
+            },
+            {
+              "id": "3.5-K7",
+              "kind": "knowledge",
+              "textJa": "ストリーミングデータのサービスとその使いどころ（Amazon Kinesis）"
+            },
+            {
+              "id": "3.5-S1",
+              "kind": "skill",
+              "textJa": "データレイクを構築し保護する"
+            },
+            {
+              "id": "3.5-S2",
+              "kind": "skill",
+              "textJa": "ストリーミングデータのアーキテクチャを設計する"
+            },
+            {
+              "id": "3.5-S3",
+              "kind": "skill",
+              "textJa": "データ転送の方法を設計する"
+            },
+            {
+              "id": "3.5-S4",
+              "kind": "skill",
+              "textJa": "可視化の方針を実装する"
+            },
+            {
+              "id": "3.5-S5",
+              "kind": "skill",
+              "textJa": "データ処理に適したコンピューティングを選ぶ（Amazon EMR など）"
+            },
+            {
+              "id": "3.5-S6",
+              "kind": "skill",
+              "textJa": "取り込みの適切な設定を選ぶ"
+            },
+            {
+              "id": "3.5-S7",
+              "kind": "skill",
+              "textJa": "データ形式を変換する（CSV から Parquet など）"
+            }
+          ],
+          "keyServices": [
+            "Amazon Kinesis Data Streams",
+            "Amazon Data Firehose",
+            "AWS Glue",
+            "Amazon Athena",
+            "AWS Lake Formation",
+            "Amazon QuickSight",
+            "Amazon EMR",
+            "AWS DataSync",
+            "AWS Storage Gateway",
+            "Amazon Redshift",
+            "Amazon MSK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "nameEn": "Design Cost-Optimized Architectures",
+      "nameJa": "コストを最適化したアーキテクチャの設計",
+      "weightPercent": 20,
+      "taskStatements": [
+        {
+          "id": "4.1",
+          "titleEn": "Design cost-optimized storage solutions",
+          "titleJa": "コストを最適化したストレージを設計する",
+          "items": [
+            {
+              "id": "4.1-K1",
+              "kind": "knowledge",
+              "textJa": "アクセスの選択肢（S3 のリクエスタ支払いなど）"
+            },
+            {
+              "id": "4.1-K2",
+              "kind": "knowledge",
+              "textJa": "コスト管理の機能（コスト配分タグ、複数アカウントの一括請求）"
+            },
+            {
+              "id": "4.1-K3",
+              "kind": "knowledge",
+              "textJa": "コスト管理ツールとその使いどころ（AWS Cost Explorer、AWS Budgets、AWS Cost and Usage Report）"
+            },
+            {
+              "id": "4.1-K4",
+              "kind": "knowledge",
+              "textJa": "ストレージサービスとその使いどころ（Amazon FSx、Amazon EFS、Amazon S3、Amazon EBS）"
+            },
+            {
+              "id": "4.1-K5",
+              "kind": "knowledge",
+              "textJa": "バックアップの戦略"
+            },
+            {
+              "id": "4.1-K6",
+              "kind": "knowledge",
+              "textJa": "ブロックストレージの選択肢（HDD と SSD のボリュームタイプ）"
+            },
+            {
+              "id": "4.1-K7",
+              "kind": "knowledge",
+              "textJa": "データのライフサイクル"
+            },
+            {
+              "id": "4.1-K8",
+              "kind": "knowledge",
+              "textJa": "ハイブリッドストレージの選択肢（AWS DataSync、AWS Transfer Family、AWS Storage Gateway）"
+            },
+            {
+              "id": "4.1-K9",
+              "kind": "knowledge",
+              "textJa": "ストレージのアクセスパターン"
+            },
+            {
+              "id": "4.1-K10",
+              "kind": "knowledge",
+              "textJa": "ストレージの階層化（オブジェクトストレージのコールド階層など）"
+            },
+            {
+              "id": "4.1-K11",
+              "kind": "knowledge",
+              "textJa": "ストレージの種類と特性（オブジェクト、ファイル、ブロック）"
+            },
+            {
+              "id": "4.1-S1",
+              "kind": "skill",
+              "textJa": "適切なストレージ戦略を設計する（S3 への一括アップロードと個別アップロードなど）"
+            },
+            {
+              "id": "4.1-S2",
+              "kind": "skill",
+              "textJa": "ワークロードに合ったストレージ容量を決める"
+            },
+            {
+              "id": "4.1-S3",
+              "kind": "skill",
+              "textJa": "AWS のストレージへデータを移す最も安い方法を決める"
+            },
+            {
+              "id": "4.1-S4",
+              "kind": "skill",
+              "textJa": "ストレージの自動拡張が必要な場面を判断する"
+            },
+            {
+              "id": "4.1-S5",
+              "kind": "skill",
+              "textJa": "S3 オブジェクトのライフサイクルを管理する"
+            },
+            {
+              "id": "4.1-S6",
+              "kind": "skill",
+              "textJa": "適切なバックアップやアーカイブの方法を選ぶ"
+            },
+            {
+              "id": "4.1-S7",
+              "kind": "skill",
+              "textJa": "ストレージへのデータ移行に適したサービスを選ぶ"
+            },
+            {
+              "id": "4.1-S8",
+              "kind": "skill",
+              "textJa": "適切なストレージ階層を選ぶ"
+            },
+            {
+              "id": "4.1-S9",
+              "kind": "skill",
+              "textJa": "ストレージに合うデータのライフサイクルを選ぶ"
+            },
+            {
+              "id": "4.1-S10",
+              "kind": "skill",
+              "textJa": "ワークロードに最もコスト効率の高いストレージサービスを選ぶ"
+            }
+          ],
+          "keyServices": [
+            "Amazon S3",
+            "Amazon S3 Glacier",
+            "Amazon EBS",
+            "Amazon EFS",
+            "Amazon FSx",
+            "AWS Backup",
+            "AWS Storage Gateway",
+            "AWS DataSync",
+            "AWS Transfer Family",
+            "AWS Snow Family",
+            "AWS Cost Explorer",
+            "AWS Budgets"
+          ]
+        },
+        {
+          "id": "4.2",
+          "titleEn": "Design cost-optimized compute solutions",
+          "titleJa": "コストを最適化したコンピューティングを設計する",
+          "items": [
+            {
+              "id": "4.2-K1",
+              "kind": "knowledge",
+              "textJa": "コスト管理の機能（コスト配分タグ、複数アカウントの一括請求）"
+            },
+            {
+              "id": "4.2-K2",
+              "kind": "knowledge",
+              "textJa": "コスト管理ツールとその使いどころ（AWS Cost Explorer、AWS Budgets、AWS Cost and Usage Report）"
+            },
+            {
+              "id": "4.2-K3",
+              "kind": "knowledge",
+              "textJa": "グローバルインフラ（アベイラビリティーゾーン、リージョン）とコスト"
+            },
+            {
+              "id": "4.2-K4",
+              "kind": "knowledge",
+              "textJa": "購入オプション（スポットインスタンス、リザーブドインスタンス、Savings Plans）"
+            },
+            {
+              "id": "4.2-K5",
+              "kind": "knowledge",
+              "textJa": "分散コンピューティングの戦略（エッジ処理など）"
+            },
+            {
+              "id": "4.2-K6",
+              "kind": "knowledge",
+              "textJa": "ハイブリッドのコンピューティング（AWS Outposts、AWS Snowball Edge）"
+            },
+            {
+              "id": "4.2-K7",
+              "kind": "knowledge",
+              "textJa": "インスタンスのタイプ・ファミリー・サイズ（メモリ最適化、コンピューティング最適化、仮想化）"
+            },
+            {
+              "id": "4.2-K8",
+              "kind": "knowledge",
+              "textJa": "コンピューティングの利用効率の最適化（コンテナ、サーバーレス、マイクロサービス）"
+            },
+            {
+              "id": "4.2-K9",
+              "kind": "knowledge",
+              "textJa": "スケーリングの戦略（Auto Scaling、休止状態）"
+            },
+            {
+              "id": "4.2-S1",
+              "kind": "skill",
+              "textJa": "適切なロードバランシング方式を選ぶ（ALB［レイヤー7］、NLB［レイヤー4］、Gateway Load Balancer）"
+            },
+            {
+              "id": "4.2-S2",
+              "kind": "skill",
+              "textJa": "伸縮するワークロードのスケーリング方法を決める（水平と垂直、EC2 の休止状態）"
+            },
+            {
+              "id": "4.2-S3",
+              "kind": "skill",
+              "textJa": "コスト効率の高いコンピューティングサービスを選ぶ（AWS Lambda、Amazon EC2、AWS Fargate）"
+            },
+            {
+              "id": "4.2-S4",
+              "kind": "skill",
+              "textJa": "ワークロードの種類ごとに必要な可用性を決める（本番と非本番など）"
+            },
+            {
+              "id": "4.2-S5",
+              "kind": "skill",
+              "textJa": "ワークロードに合ったインスタンスファミリーを選ぶ"
+            },
+            {
+              "id": "4.2-S6",
+              "kind": "skill",
+              "textJa": "ワークロードに合ったインスタンスサイズを選ぶ"
+            }
+          ],
+          "keyServices": [
+            "Amazon EC2",
+            "Amazon EC2 Spot Instances",
+            "Savings Plans",
+            "Amazon EC2 Auto Scaling",
+            "AWS Lambda",
+            "AWS Fargate",
+            "AWS Compute Optimizer",
+            "Elastic Load Balancing",
+            "AWS Outposts",
+            "AWS Cost Explorer"
+          ]
+        },
+        {
+          "id": "4.3",
+          "titleEn": "Design cost-optimized database solutions",
+          "titleJa": "コストを最適化したデータベースを設計する",
+          "items": [
+            {
+              "id": "4.3-K1",
+              "kind": "knowledge",
+              "textJa": "コスト管理の機能（コスト配分タグ、複数アカウントの一括請求）"
+            },
+            {
+              "id": "4.3-K2",
+              "kind": "knowledge",
+              "textJa": "コスト管理ツールとその使いどころ（AWS Cost Explorer、AWS Budgets、AWS Cost and Usage Report）"
+            },
+            {
+              "id": "4.3-K3",
+              "kind": "knowledge",
+              "textJa": "キャッシュの戦略"
+            },
+            {
+              "id": "4.3-K4",
+              "kind": "knowledge",
+              "textJa": "データの保持ポリシー"
+            },
+            {
+              "id": "4.3-K5",
+              "kind": "knowledge",
+              "textJa": "データベースの容量計画（キャパシティユニットなど）"
+            },
+            {
+              "id": "4.3-K6",
+              "kind": "knowledge",
+              "textJa": "データベース接続とプロキシ"
+            },
+            {
+              "id": "4.3-K7",
+              "kind": "knowledge",
+              "textJa": "データベースエンジンとその使いどころ（同種・異種間の移行など）"
+            },
+            {
+              "id": "4.3-K8",
+              "kind": "knowledge",
+              "textJa": "データベースのレプリケーション（リードレプリカなど）"
+            },
+            {
+              "id": "4.3-K9",
+              "kind": "knowledge",
+              "textJa": "データベースの種類とサービス（リレーショナルと非リレーショナル、Amazon Aurora、Amazon DynamoDB）"
+            },
+            {
+              "id": "4.3-S1",
+              "kind": "skill",
+              "textJa": "適切なバックアップと保持のポリシーを設計する（スナップショットの頻度など）"
+            },
+            {
+              "id": "4.3-S2",
+              "kind": "skill",
+              "textJa": "適切なデータベースエンジンを選ぶ（MySQL と PostgreSQL など）"
+            },
+            {
+              "id": "4.3-S3",
+              "kind": "skill",
+              "textJa": "コスト効率の高いデータベースサービスを選ぶ（DynamoDB と Amazon RDS、サーバーレスなど）"
+            },
+            {
+              "id": "4.3-S4",
+              "kind": "skill",
+              "textJa": "コスト効率の高いデータベースの形式を選ぶ（時系列、列指向など）"
+            },
+            {
+              "id": "4.3-S5",
+              "kind": "skill",
+              "textJa": "スキーマとデータを別の場所や別のエンジンへ移行する"
+            }
+          ],
+          "keyServices": [
+            "Amazon RDS",
+            "Amazon Aurora",
+            "Amazon Aurora Serverless",
+            "Amazon DynamoDB",
+            "Amazon ElastiCache",
+            "Amazon Redshift",
+            "Amazon Timestream",
+            "AWS Database Migration Service (AWS DMS)",
+            "AWS Schema Conversion Tool (AWS SCT)",
+            "AWS Backup"
+          ]
+        },
+        {
+          "id": "4.4",
+          "titleEn": "Design cost-optimized network architectures",
+          "titleJa": "コストを最適化したネットワークを設計する",
+          "items": [
+            {
+              "id": "4.4-K1",
+              "kind": "knowledge",
+              "textJa": "コスト管理の機能（コスト配分タグ、複数アカウントの一括請求）"
+            },
+            {
+              "id": "4.4-K2",
+              "kind": "knowledge",
+              "textJa": "コスト管理ツールとその使いどころ（AWS Cost Explorer、AWS Budgets、AWS Cost and Usage Report）"
+            },
+            {
+              "id": "4.4-K3",
+              "kind": "knowledge",
+              "textJa": "ロードバランシングの考え方（Application Load Balancer など）"
+            },
+            {
+              "id": "4.4-K4",
+              "kind": "knowledge",
+              "textJa": "NAT ゲートウェイ（NAT インスタンスとのコスト比較など）"
+            },
+            {
+              "id": "4.4-K5",
+              "kind": "knowledge",
+              "textJa": "ネットワーク接続（専用線、VPN など）"
+            },
+            {
+              "id": "4.4-K6",
+              "kind": "knowledge",
+              "textJa": "ネットワークのルーティング・トポロジー・ピアリング（AWS Transit Gateway、VPC ピアリング）"
+            },
+            {
+              "id": "4.4-K7",
+              "kind": "knowledge",
+              "textJa": "ネットワークサービスとその使いどころ（DNS など）"
+            },
+            {
+              "id": "4.4-S1",
+              "kind": "skill",
+              "textJa": "NAT ゲートウェイの構成を選ぶ（共有の1台か、アベイラビリティーゾーンごとか）"
+            },
+            {
+              "id": "4.4-S2",
+              "kind": "skill",
+              "textJa": "ネットワーク接続を選ぶ（AWS Direct Connect、VPN、インターネット）"
+            },
+            {
+              "id": "4.4-S3",
+              "kind": "skill",
+              "textJa": "データ転送コストを抑える経路を構成する（リージョン間、AZ 間、プライベートとパブリック、AWS Global Accelerator、VPC エンドポイント）"
+            },
+            {
+              "id": "4.4-S4",
+              "kind": "skill",
+              "textJa": "CDN とエッジキャッシュが必要な場面を判断する"
+            },
+            {
+              "id": "4.4-S5",
+              "kind": "skill",
+              "textJa": "既存ワークロードのネットワークを見直して最適化する"
+            },
+            {
+              "id": "4.4-S6",
+              "kind": "skill",
+              "textJa": "適切なスロットリングの方針を選ぶ"
+            },
+            {
+              "id": "4.4-S7",
+              "kind": "skill",
+              "textJa": "ネットワーク機器の帯域を決める（VPN を1本か複数か、Direct Connect の速度など）"
+            }
+          ],
+          "keyServices": [
+            "Amazon VPC",
+            "NAT gateway",
+            "VPC endpoints",
+            "AWS PrivateLink",
+            "AWS Transit Gateway",
+            "AWS Direct Connect",
+            "AWS Site-to-Site VPN",
+            "Amazon CloudFront",
+            "AWS Global Accelerator",
+            "Amazon Route 53",
+            "Amazon API Gateway"
+          ]
+        }
+      ]
+    }
+  ],
+  "basics": {
+    "titleJa": "基礎講座（AWS 未経験者向け）",
+    "items": [
+      {
+        "id": "basics-K1",
+        "kind": "knowledge",
+        "textJa": "クラウドの基本（オンデマンド、従量課金、伸縮性、IaaS・PaaS・SaaS）"
+      },
+      {
+        "id": "basics-K2",
+        "kind": "knowledge",
+        "textJa": "AWS のグローバルインフラ（リージョン、アベイラビリティーゾーン、エッジロケーション）"
+      },
+      {
+        "id": "basics-K3",
+        "kind": "knowledge",
+        "textJa": "責任共有モデル"
+      },
+      {
+        "id": "basics-K4",
+        "kind": "knowledge",
+        "textJa": "ネットワークの基礎（IP アドレス、CIDR 表記、サブネット、ルーティング、インターネットゲートウェイ）"
+      },
+      {
+        "id": "basics-K5",
+        "kind": "knowledge",
+        "textJa": "DNS・HTTP と HTTPS・TLS・ポート番号の基礎"
+      },
+      {
+        "id": "basics-K6",
+        "kind": "knowledge",
+        "textJa": "認証と認可、IAM の基本（ユーザー、グループ、ロール、ポリシー）"
+      },
+      {
+        "id": "basics-K7",
+        "kind": "knowledge",
+        "textJa": "暗号化の基礎（保存時と転送時、鍵の管理）"
+      },
+      {
+        "id": "basics-K8",
+        "kind": "knowledge",
+        "textJa": "ストレージの種類（ブロック、ファイル、オブジェクト）と代表的なサービス"
+      },
+      {
+        "id": "basics-K9",
+        "kind": "knowledge",
+        "textJa": "データベースの種類（リレーショナル、キーバリュー、インメモリ、データウェアハウス）"
+      },
+      {
+        "id": "basics-K10",
+        "kind": "knowledge",
+        "textJa": "可用性・耐障害性・スケーラビリティの基礎（冗長化、水平と垂直のスケーリング、RPO と RTO）"
+      },
+      {
+        "id": "basics-K11",
+        "kind": "knowledge",
+        "textJa": "疎結合・イベント駆動・サーバーレスの基礎"
+      },
+      {
+        "id": "basics-K12",
+        "kind": "knowledge",
+        "textJa": "料金の基本（従量課金、データ転送料金、購入オプションの概要）"
+      },
+      {
+        "id": "basics-K13",
+        "kind": "knowledge",
+        "textJa": "主要サービスの全体像（Amazon EC2、Amazon S3、Amazon VPC、IAM、Amazon RDS、AWS Lambda など）"
+      },
+      {
+        "id": "basics-K14",
+        "kind": "knowledge",
+        "textJa": "監視とログの基礎（Amazon CloudWatch、AWS CloudTrail、AWS Config）"
+      }
+    ]
+  },
+  "services": {
+    "inScope": [
+      {
+        "category": "分析",
+        "services": [
+          "Amazon Athena",
+          "AWS Data Exchange",
+          "AWS Data Pipeline",
+          "Amazon EMR",
+          "AWS Glue",
+          "Amazon Kinesis",
+          "AWS Lake Formation",
+          "Amazon Managed Streaming for Apache Kafka",
+          "Amazon OpenSearch Service",
+          "Amazon Quick",
+          "Amazon Redshift"
+        ]
+      },
+      {
+        "category": "アプリケーション統合",
+        "services": [
+          "Amazon AppFlow",
+          "Amazon EventBridge",
+          "Amazon MQ",
+          "Amazon Simple Notification Service",
+          "Amazon Simple Queue Service",
+          "AWS Step Functions"
+        ]
+      },
+      {
+        "category": "AWSコスト管理",
+        "services": [
+          "AWS Budgets",
+          "AWS Cost and Usage Report",
+          "AWS Cost Explorer",
+          "Savings Plans"
+        ]
+      },
+      {
+        "category": "コンピューティング",
+        "services": [
+          "AWS Batch",
+          "Amazon Elastic Compute Cloud",
+          "Amazon EC2 Auto Scaling",
+          "AWS Elastic Beanstalk",
+          "AWS Outposts",
+          "AWS Serverless Application Repository",
+          "VMware Cloud on AWS",
+          "AWS Wavelength"
+        ]
+      },
+      {
+        "category": "コンテナ",
+        "services": [
+          "Amazon Elastic Container Registry",
+          "Amazon Elastic Container Service",
+          "Amazon ECS Anywhere",
+          "Amazon Elastic Kubernetes Service",
+          "Amazon EKS Anywhere",
+          "Amazon EKS Distro"
+        ]
+      },
+      {
+        "category": "データベース",
+        "services": [
+          "Amazon Aurora",
+          "Amazon Aurora Serverless",
+          "Amazon DocumentDB (with MongoDB compatibility)",
+          "Amazon DynamoDB",
+          "Amazon ElastiCache",
+          "Amazon Keyspaces (for Apache Cassandra)",
+          "Amazon Neptune",
+          "Amazon Relational Database Service",
+          "Amazon Redshift"
+        ]
+      },
+      {
+        "category": "開発者用ツール",
+        "services": [
+          "AWS X-Ray"
+        ]
+      },
+      {
+        "category": "フロントエンドWebとモバイル",
+        "services": [
+          "AWS Amplify",
+          "Amazon API Gateway",
+          "AWS Device Farm"
+        ]
+      },
+      {
+        "category": "機械学習",
+        "services": [
+          "Amazon Comprehend",
+          "Amazon Lex",
+          "Amazon Polly",
+          "Amazon Rekognition",
+          "Amazon SageMaker AI",
+          "Amazon Textract",
+          "Amazon Transcribe",
+          "Amazon Translate"
+        ]
+      },
+      {
+        "category": "管理とガバナンス",
+        "services": [
+          "AWS Auto Scaling",
+          "AWS Command Line Interface",
+          "AWS CloudFormation",
+          "AWS CloudTrail",
+          "Amazon CloudWatch",
+          "AWS Compute Optimizer",
+          "AWS Config",
+          "AWS Control Tower",
+          "AWS Health Dashboard",
+          "AWS License Manager",
+          "Amazon Managed Grafana",
+          "Amazon Managed Service for Prometheus",
+          "AWS Management Console",
+          "AWS Organizations",
+          "AWS Proton",
+          "AWS Service Catalog",
+          "AWS Systems Manager",
+          "AWS Well-Architected Tool"
+        ]
+      },
+      {
+        "category": "メディアサービス",
+        "services": [
+          "Amazon Kinesis Video Streams"
+        ]
+      },
+      {
+        "category": "移行と転送",
+        "services": [
+          "AWS Application Discovery Service",
+          "AWS Application Migration Service",
+          "AWS DataSync",
+          "AWS Database Migration Service",
+          "AWS Snow Family",
+          "AWS Transfer Family"
+        ]
+      },
+      {
+        "category": "ネットワーキングとコンテンツ配信",
+        "services": [
+          "AWS Client VPN",
+          "Amazon CloudFront",
+          "AWS Direct Connect",
+          "Elastic Load Balancing",
+          "AWS Global Accelerator",
+          "AWS PrivateLink",
+          "Amazon Route 53",
+          "AWS Site-to-Site VPN",
+          "AWS Transit Gateway",
+          "Amazon Virtual Private Cloud"
+        ]
+      },
+      {
+        "category": "セキュリティ、アイデンティティ、コンプライアンス",
+        "services": [
+          "AWS Artifact",
+          "AWS Certificate Manager",
+          "AWS CloudHSM",
+          "Amazon Cognito",
+          "Amazon Detective",
+          "AWS Directory Service",
+          "AWS Firewall Manager",
+          "Amazon GuardDuty",
+          "AWS IAM Identity Center",
+          "Amazon Inspector",
+          "AWS Key Management Service",
+          "Amazon Macie",
+          "AWS Network Firewall",
+          "AWS Resource Access Manager",
+          "AWS Secrets Manager",
+          "AWS Security Hub",
+          "AWS Shield",
+          "AWS WAF",
+          "AWS Identity and Access Management"
+        ]
+      },
+      {
+        "category": "サーバーレス",
+        "services": [
+          "AWS Fargate",
+          "AWS Lambda"
+        ]
+      },
+      {
+        "category": "ストレージ",
+        "services": [
+          "AWS Backup",
+          "Amazon Elastic Block Store",
+          "Amazon Elastic File System",
+          "Amazon FSx",
+          "Amazon Simple Storage Service",
+          "Amazon S3 Glacier",
+          "AWS Storage Gateway"
+        ]
+      },
+      {
+        "category": "関連機能（試験ガイドの例示に登場）",
+        "services": [
+          "NAT gateway",
+          "VPC endpoints",
+          "AWS Security Token Service (AWS STS)",
+          "Service Quotas",
+          "AWS Schema Conversion Tool (AWS SCT)",
+          "Amazon Data Firehose",
+          "AWS Trusted Advisor"
+        ]
+      }
+    ],
+    "outOfScope": [
+      "Amazon Managed Workflows for Apache Airflow",
+      "Amazon Sumerian",
+      "Amazon Managed Blockchain",
+      "Amazon Lightsail",
+      "Amazon RDS on VMware",
+      "AWS Cloud Development Kit",
+      "AWS CloudShell",
+      "AWS CodeArtifact",
+      "AWS CodeBuild",
+      "AWS CodeCommit",
+      "AWS CodeDeploy",
+      "Amazon Corretto",
+      "AWS Fault Injection Simulator",
+      "AWS Tools and SDKs",
+      "Amazon Location Service",
+      "Amazon GameLift",
+      "Internet of Thingsカテゴリの全サービス",
+      "Apache MXNet on AWS",
+      "AWS DeepComposer",
+      "AWS Deep Learning AMIs",
+      "AWS Deep Learning Containers",
+      "Amazon DevOps Guru",
+      "Amazon Elastic Inference",
+      "Amazon HealthLake",
+      "AWS Inferentia",
+      "Amazon Personalize",
+      "PyTorch on AWS",
+      "TensorFlow on AWS",
+      "AWS Console Mobile Application",
+      "AWS Distro for OpenTelemetry",
+      "AWS Elemental Appliances and Software",
+      "AWS Elemental MediaConnect",
+      "AWS Elemental MediaConvert",
+      "AWS Elemental MediaLive",
+      "AWS Elemental MediaPackage",
+      "AWS Elemental MediaTailor",
+      "Amazon Interactive Video Service",
+      "Migration Evaluator",
+      "AWS Cloud Map",
+      "Amazon Braket",
+      "AWS Ground Station"
+    ]
+  },
+  "sources": [
+    {
+      "title": "AWS Certified Solutions Architect - Associate（試験ページ）",
+      "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+    },
+    {
+      "title": "SAA-C03 試験ガイド",
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html"
+    },
+    {
+      "title": "SAA-C03 対象サービス",
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html"
+    },
+    {
+      "title": "SAA-C03 対象外サービス",
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-out-of-scope-services.html"
+    },
+    {
+      "title": "SAA-C03 試験ガイドの改訂履歴",
+      "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-revisions.html"
+    }
+  ]
+}

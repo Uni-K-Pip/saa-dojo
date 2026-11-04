@@ -1,0 +1,70 @@
+{
+  "id": "saa-2.2-ex-001",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K6", "2.2-S4", "2.2-S2"],
+  "services": ["Amazon RDS", "Amazon EventBridge", "AWS Lambda", "Amazon Route 53"],
+  "qualifier": "availability",
+  "tags": ["マルチ AZ", "リードレプリカ", "フェイルオーバー", "同期レプリケーション"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある旅行会社は、予約サイトを複数のアベイラビリティーゾーン（AZ）にまたがる Amazon EC2 Auto Scaling グループで運用しています。データベースはシングル AZ の Amazon RDS for MySQL で、別の AZ のリードレプリカを売上レポートの集計に使っています。先日の AZ 障害では、リードレプリカを手作業で昇格させたため復旧に時間がかかり、直前の予約データの一部も失われました。今後は、プライマリの AZ に障害が起きても手作業なしで切り替わり、確定済みの予約データを失わないようにする必要があります。レポートの集計は今後もプライマリとは別の DB インスタンスで実行します。これらの要件を満たし、データベースの可用性を高める方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "別の AZ にリードレプリカを追加し、プライマリの障害を Amazon EventBridge で検知したら AWS Lambda でそのリードレプリカを昇格させ、Amazon Route 53 のレコードを昇格先に向ける。",
+      "correct": false,
+      "rationale": "リードレプリカへのレプリケーションは非同期のため、障害の直前にコミットされた更新がまだレプリカに届いていないことがあります。昇格を自動化しても、確定済みの予約データを失わないという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "プライマリの DB インスタンスをマルチ AZ DB インスタンス配置に変更し、レポートの集計は既存のリードレプリカで続ける。",
+      "correct": true,
+      "rationale": "マルチ AZ DB インスタンス配置では、別の AZ のスタンバイへ同期的にレプリケーションされるため、コミット済みのデータはスタンバイにもあります。プライマリの AZ に障害が起きると RDS が自動でフェイルオーバーし、DB インスタンスのエンドポイントの DNS レコードがスタンバイを指すように切り替わります。既存のリードレプリカは新しいプライマリからレプリケーションを続けるため、レポートの集計も別のインスタンスで続けられます。"
+    },
+    {
+      "id": "c",
+      "text": "プライマリの DB インスタンスをマルチ AZ DB インスタンス配置に変更し、リードレプリカを削除して、レポートの集計はスタンバイに接続して実行する。",
+      "correct": false,
+      "rationale": "マルチ AZ DB インスタンス配置のスタンバイは読み取りトラフィックを受け付けません。リードレプリカを削除するとレポートを実行できる別のインスタンスがなくなり、レポートの集計をプライマリとは別の DB インスタンスで実行するという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "レポート用のリードレプリカを、別の AZ にスタンバイを持つマルチ AZ 配置のリードレプリカとして作成し直す。",
+      "correct": false,
+      "rationale": "リードレプリカをマルチ AZ 配置にしても、スタンバイが守るのはリードレプリカ自身だけです。プライマリはシングル AZ のままなので、プライマリの AZ に障害が起きても自動では切り替わらず、手作業なしで切り替えるという要件を満たしません。"
+    }
+  ],
+  "explanation": "RDS のマルチ AZ 配置とリードレプリカは、目的が異なる仕組みです。マルチ AZ DB インスタンス配置は、別の AZ にスタンバイを置き、プライマリの更新を同期的にレプリケーションします。障害を検知すると RDS が自動でスタンバイに切り替え（通常 60〜120 秒）、エンドポイント名は変わらないため、アプリケーションは再接続するだけで処理を再開できます。ただし、スタンバイは読み取りには使えません。\n\n一方、リードレプリカは非同期レプリケーションで読み取りの負荷を分散する仕組みです。昇格させれば災害対策にも使えますが、レプリケーションの遅延分のデータを失うおそれがあり、昇格も自動のフェイルオーバーではありません。この問題では、自動の切り替えと確定済みデータの保護をマルチ AZ 配置で満たし、レポートの読み取りは既存のリードレプリカに分けるのが適切です。\n\nなお、読み取りに使えるスタンバイを 2 台持つマルチ AZ DB クラスター配置という形態もありますが、この問題で扱っているのはスタンバイを読み取りに使えない DB インスタンス配置です。",
+  "keyPoints": [
+    "「自動フェイルオーバー」「確定済みデータを失わない」はマルチ AZ 配置（同期レプリケーション）",
+    "「読み取りの負荷分散」「レポート用」はリードレプリカ（非同期レプリケーション）",
+    "マルチ AZ DB インスタンス配置のスタンバイは読み取りに使えない",
+    "フェイルオーバー後もエンドポイント名は変わらない（DNS レコードが切り替わる）"
+  ],
+  "references": [
+    {
+      "title": "Multi-AZ DB instance deployments for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+    },
+    {
+      "title": "Failing over a Multi-AZ DB instance for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html"
+    },
+    {
+      "title": "Working with DB instance read replicas - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    },
+    {
+      "title": "Amazon RDS FAQs",
+      "url": "https://aws.amazon.com/rds/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "ex",
+  "createdAt": "2026-11-04"
+}

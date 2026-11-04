@@ -1,0 +1,73 @@
+{
+  "id": "saa-1.1-ex-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S4", "1.1-K1", "1.1-S2"],
+  "services": [
+    "AWS Organizations",
+    "AWS Identity and Access Management (IAM)",
+    "Amazon EBS",
+    "AWS CloudFormation",
+    "AWS Config",
+    "AWS Systems Manager"
+  ],
+  "qualifier": "security",
+  "tags": ["SCP", "マルチアカウント", "ガードレール", "アクセス許可の境界", "予防的統制"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations を使い、プロジェクトごとに作成した AWS アカウントを Workloads という OU（組織単位）にまとめています。各プロジェクトの開発チームには、自チームのアカウントで AdministratorAccess ポリシーを付与した IAM ロールを使わせています。セキュリティ部門はすべてのアカウントで Amazon EBS のデフォルト暗号化を有効にしました。この設定を、各アカウントの管理者やルートユーザーを含めてだれも無効にできないようにし、今後 Workloads OU に追加されるアカウントにも自動で適用する必要があります。また、違反を後から検知して戻すのではなく、無効化の操作そのものを防ぐ必要があります。最もセキュアにこれらの要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ec2:DisableEbsEncryptionByDefault アクションを拒否（Deny）する SCP を作成し、Workloads OU 内の既存の各アカウントに個別にアタッチする。",
+      "correct": false,
+      "rationale": "SCP は OU にも個々のアカウントにもアタッチでき、アタッチされたアカウントではルートユーザーを含むすべての IAM ユーザーとロールの操作を制限します。ただし、アカウントに直接アタッチした SCP はそのアカウントにしか効かず、後から OU に追加されたアカウントには適用されません。今後追加されるアカウントにも自動で適用するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "ec2:DisableEbsEncryptionByDefault アクションを拒否するポリシーを AWS CloudFormation StackSets で各アカウントに配布し、すべての IAM ユーザーとロールにアクセス許可の境界として設定する。",
+      "correct": false,
+      "rationale": "アクセス許可の境界は IAM ユーザーとロールに設定するもので、ルートユーザーの操作は制限できません。また、AdministratorAccess を持つ開発チームは境界の削除や付け替えができ、境界のない新しいロールも作れます。管理者やルートユーザーを含めてだれも無効にできないようにするという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "ec2:DisableEbsEncryptionByDefault アクションを拒否（Deny）する SCP を作成し、Workloads OU にアタッチする。",
+      "correct": true,
+      "rationale": "SCP はメンバーアカウントの IAM ユーザーとロールが使える権限の上限を定め、ルートユーザーにも適用されます。SCP による明示的な拒否はアカウント内のどの IAM ポリシーでも上書きできないため、管理者でも無効化の操作が拒否されます。OU にアタッチした SCP は、後から OU に追加されたアカウントにも継承されます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Config ルールで各アカウントの EBS のデフォルト暗号化の設定を評価し、無効になっていれば AWS Systems Manager Automation による自動修復で有効に戻す。",
+      "correct": false,
+      "rationale": "AWS Config による評価と自動修復は、設定が変わった後に検知して元に戻す発見的な統制です。無効化から修復までの間に暗号化されていない EBS ボリュームが作られるおそれがあり、無効化の操作そのものを防ぐという要件を満たしません。"
+    }
+  ],
+  "explanation": "SCP（サービスコントロールポリシー）は AWS Organizations の機能で、メンバーアカウントの IAM ユーザーとロールが使える権限の上限（ガードレール）を定めます。SCP 自体は権限を与えず、IAM ポリシーで許可され、かつ SCP でも許可された操作だけを実行できます。SCP はメンバーアカウントのルートユーザーにも適用され、SCP による明示的な拒否はアカウント内のどの IAM ポリシーでも上書きできません。そのため、AdministratorAccess を持つ開発チームが ec2:DisableEbsEncryptionByDefault を呼び出しても拒否されます。さらに、OU にアタッチした SCP は配下のアカウントに継承されるので、今後 Workloads OU に追加されるアカウントにも追加の作業なしで適用されます。\n\nアクセス許可の境界や IAM ポリシーは、アカウントの管理者が変更できるアカウント内の制御で、ルートユーザーには効きません。AWS Config の自動修復は、起きた変更を後から戻す発見的な統制で、操作を事前に止める予防的な統制ではありません。\n\nなお、SCP は管理アカウントには適用されないため、管理アカウントではワークロードを動かさないのが基本です。セキュリティ部門のロールなど特定のプリンシパルだけを例外にしたい場合は、SCP の条件に aws:PrincipalArn を指定します。",
+  "keyPoints": [
+    "「管理者やルートユーザーも含めて禁止する」ガードレールは SCP で実現する",
+    "OU にアタッチした SCP は、後から OU に入ったアカウントにも継承される",
+    "アクセス許可の境界は IAM ユーザーとロールごとの上限で、ルートユーザーには効かない",
+    "AWS Config の自動修復は発見的な統制で、操作そのものは防げない"
+  ],
+  "references": [
+    {
+      "title": "Service control policies (SCPs) - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "title": "Example SCPs for Amazon Elastic Compute Cloud (Amazon EC2) - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_ec2.html"
+    },
+    {
+      "title": "Permissions boundaries for IAM entities - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "ex",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,83 @@
+{
+  "id": "saa-2.1-ex-001",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K11", "2.1-S3", "2.1-S2"],
+  "services": [
+    "Amazon SQS",
+    "Amazon EC2 Auto Scaling",
+    "Amazon EC2",
+    "Amazon CloudWatch",
+    "Amazon SNS",
+    "Amazon MQ"
+  ],
+  "qualifier": "operational",
+  "tags": ["疎結合", "キュー", "ターゲット追跡スケーリング", "バックログ", "可視性タイムアウト"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある動画共有サービスでは、Web 層の Amazon EC2 インスタンスが投稿を受け付けると、同じインスタンス上で動画の変換を同期的に実行しています。テレビ番組で紹介されると投稿が数分のうちに平常時の 30 倍に増え、Web 層がタイムアウトして投稿の一部が失われます。変換は GPU を搭載した EC2 インスタンスで 1 本あたり最大 30 分かかり、結果は投稿から 2 時間以内に公開できれば十分です。同じ動画が 2 回変換されても問題はありません。投稿を失わず、変換用インスタンスの台数を処理待ちの量に見合うよう自動で増減させ、運用上のオーバーヘッドを最小にする必要があります。どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Web 層から Amazon SNS トピックに変換ジョブを発行し、各変換用インスタンスの HTTP エンドポイントをサブスクリプションとして登録して、ジョブを直接受け取らせる。",
+      "correct": false,
+      "rationale": "Amazon SNS は購読先へメッセージを即座にプッシュする仕組みで、処理側が自分のペースで取り出すためのバッファーにはなりません。変換用インスタンスが処理しきれずに配信の再試行が尽きると、配信不能キューを設定していない限りメッセージは破棄されるため、投稿を失わないという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Web 層は変換ジョブを Amazon SQS 標準キューに送信してすぐに応答を返す。変換用インスタンスはキューからジョブを取得し、可視性タイムアウトは最大の変換時間より長くする。",
+      "correct": true,
+      "rationale": "SQS キューが投稿の急増を受け止めるため、Web 層は変換の完了を待たずに応答でき、ジョブはキューに保持されて失われません。標準キューは少なくとも 1 回の配信のため重複が起こり得ますが、重複して変換しても問題ないという条件なので適しています。可視性タイムアウトを最大の変換時間より長くすると、処理中のジョブが途中でキューに戻ってほかのインスタンスにも渡されることを避けられます。"
+    },
+    {
+      "id": "c",
+      "text": "変換用の Auto Scaling グループに、Amazon SQS キューの ApproximateNumberOfMessagesVisible の値そのものを目標値とするターゲット追跡スケーリングポリシーを設定する。",
+      "correct": false,
+      "rationale": "待機中のメッセージ数そのものは、インスタンスを増やしても比例して下がる指標ではありません。台数を考慮しないため、キューが減っていく途中でも必要以上にインスタンスを追加することがあり、台数を処理待ちの量に見合うよう増減させるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Web 層と変換層の間に Amazon MQ のブローカーをアクティブ／スタンバイ構成で配置し、変換用インスタンスはブローカーのキューからジョブを取得する。",
+      "correct": false,
+      "rationale": "Amazon MQ でもキューによる非同期化はできますが、ブローカーのインスタンスタイプの選定やメンテナンスウィンドウの管理、負荷に応じたブローカーのサイズ変更が必要です。既存のメッセージングプロトコルとの互換性が求められていない新しい構成では、運用上のオーバーヘッドを最小にするという要件を満たしません。"
+    },
+    {
+      "id": "e",
+      "text": "変換用の Auto Scaling グループに、待機中のメッセージ数を InService のインスタンス数で割った「インスタンスあたりのバックログ」を指標とするターゲット追跡スケーリングポリシーを設定する。",
+      "correct": true,
+      "rationale": "インスタンスあたりのバックログ（待機中のメッセージ数 ÷ InService のインスタンス数）は、台数を増やすと比例して下がるため、ターゲット追跡スケーリングに適した指標です。目標値は「許容できる待ち時間 ÷ 1 件の平均処理時間」で決めます。CloudWatch のメトリクス計算で求められるので、独自のメトリクスを発行する仕組みも不要です。"
+    }
+  ],
+  "explanation": "急増するワークロードは、キューで受け付けと処理を切り離し（疎結合）、処理側をキューの状態に合わせてスケールさせるのが定石です。Web 層は Amazon SQS 標準キューに変換ジョブを入れるだけなので、投稿が急増してもすぐに応答でき、ジョブはキューに保持されて失われません。変換用インスタンスは自分のペースでジョブを取り出し、処理が終わったらメッセージを削除します。変換に最大 30 分かかるため、可視性タイムアウト（既定値は 30 秒）はそれより長く設定します。\n\nスケーリングには、待機中のメッセージ数を InService のインスタンス数で割った「インスタンスあたりのバックログ」を使います。例えば、キューで待てる時間を 90 分、1 本の平均変換時間を 15 分とすると、1 台あたり 6 本までのバックログを許容でき、目標値は 6 になります。メッセージ数そのものを目標にすると台数との比例関係がないため、過剰にスケールしやすくなります。長時間の処理がスケールインで中断されないよう、インスタンスのスケールイン保護を組み合わせることもできます。\n\nAmazon SNS は即時のプッシュ配信で、バッファーとしては使えません。Amazon MQ は既存の業界標準プロトコルを使うアプリケーションの移行に向いており、新しい構成では SQS より運用の手間がかかります。なお、変換は GPU を使い 15 分を超えることもあるため、AWS Lambda ではなく EC2 インスタンスで処理します。",
+  "keyPoints": [
+    "急増する処理は SQS で受け付けと処理を切り離し、ジョブをキューに保持して失わない",
+    "キューの処理側は「インスタンスあたりのバックログ」を指標にターゲット追跡スケーリングする",
+    "可視性タイムアウトは最大の処理時間より長くする（既定値は 30 秒）",
+    "SNS はプッシュ配信でバッファーにならない。Amazon MQ は既存プロトコルからの移行向け"
+  ],
+  "references": [
+    {
+      "title": "Scaling policy based on Amazon SQS - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html"
+    },
+    {
+      "title": "Create a target tracking scaling policy using metric math - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-target-tracking-metric-math.html"
+    },
+    {
+      "title": "Amazon SQS visibility timeout - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+    },
+    {
+      "title": "Amazon SQS FAQs",
+      "url": "https://aws.amazon.com/sqs/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "ex",
+  "createdAt": "2026-11-04"
+}

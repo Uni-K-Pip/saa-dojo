@@ -1,0 +1,70 @@
+{
+  "id": "saa-4.1-ex-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-S8", "4.1-S5", "4.1-K9", "4.1-K10"],
+  "services": ["Amazon S3", "Amazon S3 Glacier"],
+  "qualifier": "cost",
+  "tags": ["ストレージクラス", "ライフサイクル", "S3 Glacier Instant Retrieval", "アーカイブ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある精密部品メーカーは、検査装置が撮影した高解像度の画像（1 枚あたり約 20 MB）を Amazon S3 の S3 Standard ストレージクラスに保存しています。画像は撮影後 30 日間は品質管理チームが頻繁に参照しますが、その後は顧客から品質の問い合わせがあったときに、年に数回、一部の画像を参照するだけです。問い合わせ対応では、画像を数秒以内に表示できる必要があります。画像は 5 年間保存した後に削除します。また、1 つのアベイラビリティーゾーン（AZ）全体が失われても画像を失ってはなりません。最もコスト効率の高いストレージ設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 ライフサイクルルールで、作成から 30 日後に S3 Glacier Flexible Retrieval へ移行し、5 年後に削除する。問い合わせがあったときは迅速取り出しで復元する。",
+      "correct": false,
+      "rationale": "S3 Glacier Flexible Retrieval のオブジェクトは、読む前に復元が必要です。迅速取り出しでも通常 1〜5 分かかるため、画像を数秒以内に表示するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 ライフサイクルルールで、作成から 30 日後に S3 One Zone-IA へ移行し、5 年後に削除する。",
+      "correct": false,
+      "rationale": "S3 One Zone-IA はデータを 1 つの AZ にだけ保存するため、その AZ が失われると画像も失われます。AZ 全体が失われても画像を失わないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "S3 ライフサイクルルールで、作成から 30 日後に S3 Standard-IA へ移行し、5 年後に削除する。",
+      "correct": false,
+      "rationale": "S3 Standard-IA もミリ秒で取り出せ、複数の AZ に保存されます。しかし月 1 回程度のアクセスを想定したクラスで、ストレージ料金は S3 Glacier Instant Retrieval より高くなります。年に数回しか参照しない画像を 5 年間保存する用途では、最もコスト効率が高いという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 ライフサイクルルールで、作成から 30 日後に S3 Glacier Instant Retrieval へ移行し、5 年後に削除する。",
+      "correct": true,
+      "rationale": "S3 Glacier Instant Retrieval は S3 Standard と同じくミリ秒で取り出せ、3 つ以上の AZ にデータを保存します。四半期に 1 回程度以下しかアクセスしないデータ向けで、ストレージ料金は S3 Standard-IA より低くなります。最低保存期間の 90 日や最小課金サイズの 128 KB も、5 年間保存する約 20 MB の画像では問題になりません。"
+    }
+  ],
+  "explanation": "アクセスの傾向が決まっているので、S3 ライフサイクルルールで参照が減る時点に合わせて安いストレージクラスへ移し、保存期間が終わったら有効期限（Expiration）アクションで削除するのが基本です。移行先は、取り出し時間、AZ 障害への耐性、料金の順に絞り込みます。\n\nまず「数秒以内に表示」という条件から、読む前に復元が必要な S3 Glacier Flexible Retrieval と S3 Glacier Deep Archive が外れます。次に「AZ 全体が失われても失わない」という条件から、1 つの AZ にしか保存しない S3 One Zone-IA が外れます。残る S3 Standard-IA と S3 Glacier Instant Retrieval はどちらもミリ秒で取り出せますが、四半期に 1 回以下しか読まないデータでは、ストレージ料金が低い S3 Glacier Instant Retrieval のほうが安くなります。取り出し料金は S3 Glacier Instant Retrieval のほうが高いものの、参照されるのは年に数回、一部の画像だけなので全体への影響は小さく収まります。\n\nなお、アクセスの傾向が予測できない場合は S3 Intelligent-Tiering を検討します。",
+  "keyPoints": [
+    "「すぐに（ミリ秒で）読みたいが、アクセスは四半期に 1 回以下」なら S3 Glacier Instant Retrieval",
+    "S3 Glacier Flexible Retrieval は読む前に復元が必要で、迅速取り出しでも数分かかる",
+    "「AZ が失われてもデータを失わない」なら S3 One Zone-IA は選べない",
+    "アクセスの傾向が決まっているならライフサイクルルール、予測できないなら S3 Intelligent-Tiering"
+  ],
+  "references": [
+    {
+      "title": "Understanding and managing Amazon S3 storage classes - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    },
+    {
+      "title": "Understanding archive retrieval options - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+    },
+    {
+      "title": "Managing the lifecycle of objects - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+    },
+    {
+      "title": "Object Storage Classes – Amazon S3",
+      "url": "https://aws.amazon.com/s3/storage-classes/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "ex",
+  "createdAt": "2026-11-04"
+}
