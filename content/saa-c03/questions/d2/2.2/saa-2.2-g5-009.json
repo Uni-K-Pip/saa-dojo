@@ -1,0 +1,77 @@
+{
+  "id": "saa-2.2-g5-009",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K9",
+    "2.2-K10"
+  ],
+  "services": [
+    "Amazon RDS Proxy",
+    "Amazon Aurora",
+    "AWS Lambda",
+    "Amazon API Gateway"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "RDS Proxy",
+    "接続プール",
+    "フェイルオーバー",
+    "サーバーレス"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるスマートフォン向けアプリケーションのバックエンドは、Amazon API Gateway と AWS Lambda で構成され、Amazon Aurora MySQL 互換エディションの DB クラスターにデータを保存しています。キャンペーンでアクセスが急増すると、Lambda 関数の同時実行数が増えて DB の接続数が上限に達し、エラーが多発します。また、Aurora のフェイルオーバーの後、関数が古い DNS の情報で接続を試み続け、復旧に時間がかかることがあります。関数のコードを大きく変更せずに、これらの問題を解決する方法として最も適切なものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon RDS Proxy を作成して Aurora の DB クラスターをターゲットに登録し、Lambda 関数の接続先をプロキシのエンドポイントに変更する。",
+      "correct": true,
+      "rationale": "RDS Proxy は DB 接続をプールして多数の関数で共有するため、同時実行数が増えても DB への接続数を抑えられます。フェイルオーバーのときは、プロキシがアプリケーションからの接続を保ったまま新しい DB インスタンスに接続し直すため、DNS のキャッシュの影響を受けずに早く復旧できます。多くのアプリケーションは、接続先をプロキシのエンドポイントに変えるだけで使えます。"
+    },
+    {
+      "id": "b",
+      "text": "Aurora のライターの DB インスタンスクラスを、より多くのメモリを持つ大きいものに変更し、DB に同時に接続できる数の上限（max_connections）を引き上げる。",
+      "correct": false,
+      "rationale": "インスタンスクラスを大きくすると接続数の上限は上がりますが、関数の同時実行数がさらに増えれば再び上限に達します。フェイルオーバーの後に古い DNS の情報で接続し続ける問題も解決せず、コストも増えます。"
+    },
+    {
+      "id": "c",
+      "text": "Aurora レプリカを追加し、Lambda 関数の接続先を DB クラスターのリーダーエンドポイントに変更して、接続を複数のインスタンスに分散する。",
+      "correct": false,
+      "rationale": "リーダーエンドポイントは読み取り専用の Aurora レプリカに接続するため、データを書き込めません。フェイルオーバーの後に古い DNS の情報で接続し続ける問題も解決しません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数に小さい値の予約済み同時実行数を設定し、関数から同時に開かれる DB 接続の数を抑える。",
+      "correct": false,
+      "rationale": "予約済み同時実行数を小さくすると DB 接続の数は抑えられますが、上限を超えた呼び出しはスロットリングされてエラーになり、アクセスが急増したときに処理できる量が減ります。フェイルオーバーの問題も解決しません。"
+    }
+  ],
+  "explanation": "Lambda 関数は呼び出しが増えると実行環境が並列に増え、それぞれが DB に接続します。そのため、アクセスが急増すると DB の接続数の上限に達しやすくなります。Amazon RDS Proxy は、アプリケーションと DB の間に置くマネージドのデータベースプロキシで、DB 接続のプール（接続プール）を作って再利用します。多数の関数からの接続を少ない DB 接続にまとめ、すぐに処理できない接続は待たせたり制限したりするため、接続の急増から DB を守れます。\n\nRDS Proxy は可用性も高めます。DB のフェイルオーバーが起きると、プロキシがアプリケーションからの接続を保ったまま新しい DB インスタンスに接続し直します。アプリケーションは DB のエンドポイントの DNS の切り替わりを待たずにプロキシへ接続し続けられるため、フェイルオーバーにかかる時間が短くなります。また、DB の認証情報を AWS Secrets Manager で管理したり、IAM 認証を強制したりもできます。\n\n多くのアプリケーションは、接続先をプロキシのエンドポイントに変えるだけで、コードを変えずに RDS Proxy を使えます。なお、プロキシは DB と同じ VPC に作られ、インターネットから直接は接続できないため、Lambda 関数は VPC に接続しておく必要があります。",
+  "keyPoints": [
+    "Lambda から RDS・Aurora への接続数の急増 → RDS Proxy で接続をプールする",
+    "RDS Proxy は接続を保ったまま新しい DB インスタンスにつなぎ直し、フェイルオーバーを速くする",
+    "Aurora のリーダーエンドポイントは読み取り専用で、書き込みには使えない",
+    "予約済み同時実行数で接続数を絞ると、超えた呼び出しはスロットリングされる"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS Proxy for Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html"
+    },
+    {
+      "title": "Amazon RDS Proxy FAQs",
+      "url": "https://aws.amazon.com/rds/proxy/faqs/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-2.2-resilient-apps"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}

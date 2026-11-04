@@ -1,0 +1,80 @@
+{
+  "id": "saa-2.2-g5-010",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K10",
+    "2.2-S6"
+  ],
+  "services": [
+    "Service Quotas",
+    "Amazon EC2 Auto Scaling",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "サービスクォータ",
+    "vCPU",
+    "パイロットライト",
+    "DR 訓練"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、東京リージョンで本番環境を運用し、大阪リージョンに災害対策用のパイロットライト環境を用意しています。大阪リージョンの Amazon EC2 Auto Scaling グループは普段 0 台で、災害時には本番と同じ合計 400 vCPU 分のオンデマンドインスタンスを起動する計画です。DR 訓練で希望容量を増やしたところ、一部のインスタンスしか起動せず、vCPU の上限を超えたことを示すエラーが記録されました。実際の災害時に必要な数のインスタンスを確実に起動できるようにするには、どうすればよいですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Service Quotas で、大阪リージョンの EC2 オンデマンドインスタンスの vCPU 数のクォータを、本番と同じ規模で起動できる値まで事前に引き上げておく。",
+      "correct": true,
+      "rationale": "EC2 のオンデマンドインスタンスのクォータは、リージョンごとに、実行中のインスタンスが使う vCPU の数で管理されます。DR 用のリージョンのクォータが本番の規模より小さいと、災害時にスケールアウトできません。事前に引き上げておけば、訓練でも実際の災害でも必要な数のインスタンスを起動できます。"
+    },
+    {
+      "id": "b",
+      "text": "Service Quotas で、東京リージョンの EC2 オンデマンドインスタンスの vCPU 数のクォータを引き上げる。クォータはアカウントのすべてのリージョンで共有されるため、大阪リージョンにも適用される。",
+      "correct": false,
+      "rationale": "EC2 のオンデマンドインスタンスのクォータはリージョンごとの値で、東京リージョンで引き上げても大阪リージョンには反映されません。大阪リージョンで必要な数を起動できない問題は解決しません。"
+    },
+    {
+      "id": "c",
+      "text": "災害が発生した時点で Service Quotas から大阪リージョンのクォータの引き上げを申請する手順を、DR の手順書に追加しておく。",
+      "correct": false,
+      "rationale": "クォータの引き上げの申請は、審査や処理に時間がかかることがあり、すぐに承認されるとは限りません。災害が起きてから申請すると、目標の時間内に復旧できないおそれがあります。"
+    },
+    {
+      "id": "d",
+      "text": "大阪リージョンの Auto Scaling グループの最大容量を、合計 400 vCPU 分を超える台数に引き上げておく。",
+      "correct": false,
+      "rationale": "Auto Scaling グループの最大容量は、そのグループが起動するインスタンス数の上限を決めるだけで、アカウントの vCPU のクォータは変わりません。クォータを超える起動は引き続き失敗します。"
+    }
+  ],
+  "explanation": "AWS のサービスには、アカウントで使えるリソースや操作の数の上限であるクォータ（制限）があります。多くのクォータはリージョンごとに設定されていて、たとえば EC2 のオンデマンドインスタンスは、実行中のインスタンスが使う vCPU の合計で、アカウントとリージョンごとに上限が決まっています。Service Quotas では、クォータの値と使用状況を確認し、引き上げを申請できます。引き上げの申請は審査や処理に時間がかかることがあり、一部だけ承認されたり、承認されなかったりすることもあります。\n\n災害対策では、普段はほとんどリソースを動かさない DR 用のリージョンのクォータが、本番より小さいままになりがちです。パイロットライトやウォームスタンバイでは、災害時に本番と同じ規模までスケールアウトする必要があるため、DR 用のリージョンのクォータを事前に本番と同等に引き上げておきます。DR 訓練で実際にスケールアウトを試すと、このような問題を前もって見つけられます。\n\nなお、クォータの引き上げは起動できる数の上限を広げるもので、そのリージョンの空き容量まで保証するものではありません。容量を確実に確保したい場合はオンデマンドキャパシティ予約も使えますが、予約した容量も未使用のままクォータの対象として数えられます。",
+  "keyPoints": [
+    "多くのクォータはリージョンごと。DR 用のリージョンにも本番と同等のクォータを用意する",
+    "EC2 のオンデマンドインスタンスのクォータは vCPU 数で管理される",
+    "クォータの引き上げには時間がかかることがある → 災害の前に申請しておく",
+    "Auto Scaling グループの最大容量を上げても、アカウントのクォータは変わらない"
+  ],
+  "references": [
+    {
+      "title": "What is Service Quotas? - Service Quotas",
+      "url": "https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html"
+    },
+    {
+      "title": "Purchasing On-Demand Instances for Amazon EC2 - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html"
+    },
+    {
+      "title": "Disaster recovery options in the cloud - Disaster Recovery of Workloads on AWS: Recovery in the Cloud",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-2.2-disaster-recovery"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}

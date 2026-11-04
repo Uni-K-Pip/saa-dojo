@@ -1,0 +1,76 @@
+{
+  "id": "saa-2.2-g5-008",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K8",
+    "2.2-S4"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon Route 53",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "Application Load Balancer",
+    "パスベースルーティング",
+    "ヘルスチェック",
+    "ロードバランサーの種類"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるニュースサイトでは、記事ページを返す Web サーバーと、画像を縮小・変換する API サーバーを、それぞれ 2 つのアベイラビリティーゾーン（AZ）の Amazon EC2 インスタンスで動かしています。現在は Amazon Route 53 のシンプルルーティングで各インスタンスの Elastic IP アドレスを返していますが、インスタンスが停止しても DNS の応答から外れないため、一部の利用者にエラーが表示されます。正常なインスタンスだけにリクエストを送り、URL のパスが /api/ で始まるリクエストは API サーバーに、それ以外は Web サーバーに振り分けたいと考えています。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "2 つの AZ のサブネットに Application Load Balancer を作成し、パスが /api/* のリクエストは API サーバーの、それ以外は Web サーバーのターゲットグループに転送するリスナールールを設定する。",
+      "correct": true,
+      "rationale": "Application Load Balancer はアプリケーション層（レイヤー 7）で動き、URL のパスなどを条件にしたリスナールールで、リクエストを別々のターゲットグループに振り分けられます。ターゲットグループごとのヘルスチェックで正常なインスタンスにだけリクエストを送るため、インスタンスが停止しても利用者にエラーが出にくくなります。"
+    },
+    {
+      "id": "b",
+      "text": "2 つの AZ のサブネットに Network Load Balancer を作成し、TCP 443 のリスナーを設定して、Web サーバーと API サーバーをそれぞれ登録したターゲットグループに接続を振り分ける。",
+      "correct": false,
+      "rationale": "Network Load Balancer はトランスポート層（レイヤー 4）で TCP や UDP の接続を振り分けるため、HTTP のリクエストの URL のパスを見て転送先を変えることはできません。パスで振り分けるという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Route 53 の複数値回答ルーティングで各インスタンスの Elastic IP アドレスを返すレコードを作成し、それぞれに Route 53 のヘルスチェックを関連付ける。",
+      "correct": false,
+      "rationale": "複数値回答ルーティングでヘルスチェックを関連付ければ、正常なインスタンスの IP アドレスだけを返せます。しかし DNS は名前と IP アドレスを対応付けるだけで、URL のパスで振り分け先を変えることはできません。"
+    },
+    {
+      "id": "d",
+      "text": "Gateway Load Balancer を作成して Web サーバーと API サーバーをターゲットとして登録し、受け取ったリクエストの URL のパスに応じて、それぞれのサーバーへ振り分ける。",
+      "correct": false,
+      "rationale": "Gateway Load Balancer は、ファイアウォールなどの仮想アプライアンスに通信を通すためのロードバランサーで、パケットの流れ（フロー）単位で振り分けます。HTTP のリクエストの URL のパスで振り分ける機能はありません。"
+    }
+  ],
+  "explanation": "Elastic Load Balancing は、登録したターゲット（EC2 インスタンスなど）の状態をヘルスチェックで監視し、正常なターゲットにだけリクエストを送ります。DNS で各サーバーの IP アドレスを直接返す方法と違い、停止したサーバーにリクエストが送られ続けることがありません。\n\nロードバランサーには種類があり、用途で選びます。Application Load Balancer（ALB）は HTTP・HTTPS を扱うレイヤー 7 のロードバランサーで、パス、ホスト名、HTTP ヘッダーなどを条件にしたリスナールールで、リクエストをターゲットグループごとに振り分けられます。ALB は 2 つ以上の AZ を有効にする必要があり、1 つの AZ が使えなくなっても別の AZ の正常なターゲットへ振り分けを続けられます。Network Load Balancer（NLB）はレイヤー 4 で TCP・UDP の接続を高速に振り分けるもので、AZ ごとに固定の IP アドレスを持てますが、URL のパスは見ません。Gateway Load Balancer は、ファイアウォールなどの仮想アプライアンスを冗長化するためのものです。\n\nこの問題では、パスによる振り分けとヘルスチェックの両方が必要なので、ALB が適しています。",
+  "keyPoints": [
+    "URL のパスやホスト名で振り分ける → Application Load Balancer（レイヤー 7）",
+    "Network Load Balancer はレイヤー 4（TCP・UDP）で動き、パスでは振り分けられない",
+    "Gateway Load Balancer はファイアウォールなどの仮想アプライアンス向け",
+    "ロードバランサーはヘルスチェックで正常なターゲットにだけリクエストを送る"
+  ],
+  "references": [
+    {
+      "title": "What is an Application Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    },
+    {
+      "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-2.2-ha-basics"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}

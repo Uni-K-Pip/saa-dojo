@@ -1,0 +1,66 @@
+{
+  "id": "saa-2.2-g5-005",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K5"],
+  "services": ["Amazon Elastic Container Service", "Amazon Simple Queue Service"],
+  "qualifier": "availability",
+  "tags": ["再試行", "エクスポネンシャルバックオフ", "ジッター", "冪等性"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある EC サイトでは、Amazon ECS で動く注文サービスが在庫サービスの API を同期的に呼び出して在庫を引き当て、その結果をすぐに購入者の画面に表示しています。在庫サービスが一時的な過負荷でエラーを返すと、注文サービスのすべてのタスクが 1 秒ごとに再試行を繰り返すため、在庫サービスの回復が遅れています。また、応答がタイムアウトした後の再試行で、同じ注文の在庫が二重に引き当てられることもありました。一時的なエラーから自動で回復できるようにしたまま、これらの問題を解決する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "再試行の間隔を指数関数的に延ばしてジッターを加え、回数に上限を設ける。さらに注文ごとに一意の ID をリクエストに付け、在庫サービスは同じ ID を一度だけ処理する。",
+      "correct": true,
+      "rationale": "エクスポネンシャルバックオフで再試行による負荷の増加を抑え、ジッターで再試行のタイミングをばらつかせ、回数の上限で要求が積み上がるのを防ぎます。一意の ID で同じ注文の処理を一度だけにすれば（冪等にすれば）、タイムアウト後に再試行しても二重に引き当てられません。"
+    },
+    {
+      "id": "b",
+      "text": "再試行の間隔を指数関数的に延ばしてジッターを加え、回数に上限を設ける。在庫サービスは、届いたリクエストを重複の確認をせずにすべて処理する。",
+      "correct": false,
+      "rationale": "再試行による過負荷は抑えられますが、タイムアウトしたリクエストが実は在庫サービスで処理済みだった場合に、再試行で同じ注文がもう一度処理されます。二重の引き当てを防ぐという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "注文ごとに一意の ID をリクエストに付けて在庫サービスで重複を取り除き、再試行は在庫サービスが成功を返すまで 1 秒間隔で続ける。",
+      "correct": false,
+      "rationale": "二重の引き当ては防げますが、すべてのタスクが同じ間隔で上限なく再試行を続けるため、要求が同じタイミングに集中し、過負荷の在庫サービスの回復を遅らせる問題が残ります。"
+    },
+    {
+      "id": "d",
+      "text": "注文サービスと在庫サービスの間に Amazon SQS 標準キューを置いて呼び出しを非同期にし、在庫サービスが処理できるペースでメッセージを受信して引き当てるようにする。",
+      "correct": false,
+      "rationale": "キューで負荷を平準化すると在庫サービスの過負荷は和らぎますが、呼び出しが非同期になり、引き当ての結果をすぐに購入者の画面に表示するという要件を満たしません。また、標準キューのメッセージは重複して届くことがあり、二重の引き当ても防げません。"
+    }
+  ],
+  "explanation": "分散システムでは、ネットワークや依存先の一時的な不調によって、リクエストが失敗したりタイムアウトしたりすることが避けられません。再試行（リトライ）は一時的な障害から自動で回復する基本の手段ですが、やり方を誤ると障害を悪化させます。\n\n多くのクライアントが同じ間隔で再試行すると、要求が同じタイミングに集中して、過負荷の依存先に追い打ちをかけます。エクスポネンシャルバックオフ（再試行のたびに待ち時間を指数関数的に延ばす）で負荷の増加を抑え、ジッター（待ち時間にランダムな揺らぎを加える）で再試行のタイミングを分散させます。さらに再試行の回数に上限を設けて、回復しない障害で要求が積み上がるのを防ぎます。AWS SDK の多くは、この方式の再試行を標準で備えています。\n\nもう 1 つの注意点は、再試行しても安全な処理かどうかです。タイムアウトしたリクエストは、実は相手側で処理が済んでいる可能性があります。注文ごとの一意の ID を付けて同じ ID の処理を一度だけ行うようにすれば（冪等にすれば）、再試行しても結果が二重になりません。SQS のキューを挟む方法は負荷の平準化に役立ちますが、呼び出しが非同期になるため、結果をすぐに返す必要があるこの処理には使えません。",
+  "keyPoints": [
+    "再試行はエクスポネンシャルバックオフ＋ジッター＋回数の上限で行う",
+    "同じ間隔での一斉の再試行は、過負荷の依存先の回復を遅らせる",
+    "再試行する処理は冪等にする（一意の ID で重複を防ぐ）",
+    "結果をすぐに返す同期の処理は、キューによる非同期化に置き換えられない"
+  ],
+  "references": [
+    {
+      "title": "REL05-BP03 Control and limit retry calls - Reliability Pillar",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_limit_retries.html"
+    },
+    {
+      "title": "REL04-BP04 Make mutating operations idempotent - Reliability Pillar",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_prevent_interaction_failure_idempotent.html"
+    },
+    {
+      "title": "Timeouts, retries, and backoff with jitter - The Amazon Builders' Library",
+      "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
+    }
+  ],
+  "lessonRefs": ["lesson-2.2-resilient-apps"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}
