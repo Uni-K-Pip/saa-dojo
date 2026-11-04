@@ -1,0 +1,68 @@
+{
+  "id": "saa-3.3-g7-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K2", "3.3-S5"],
+  "services": ["Amazon ElastiCache", "Amazon RDS", "Amazon DynamoDB Accelerator (DAX)"],
+  "qualifier": "performance",
+  "tags": ["遅延読み込み", "書き込みスルー", "TTL", "キャッシュ戦略"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるオンライン書店は、Amazon RDS for MySQL に約 500 万点の書籍情報を保存しています。アクセスの大半は一部の人気書籍の詳細ページの表示で、データベースの CPU 使用率が高くなっています。チームは Amazon ElastiCache を導入して読み取りの負荷を下げることにしました。キャッシュのメモリは、実際に表示された書籍のデータだけに使いたいと考えています。書籍の価格は 1 日に数回更新され、更新から 10 分以内に表示へ反映されれば問題ありません。キャッシュの実装として適切なものはどれですか。2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アプリケーションはまずキャッシュを読み、データがなければデータベースから読み取ってキャッシュに書き込む（遅延読み込み）。",
+      "correct": true,
+      "rationale": "遅延読み込み（キャッシュアサイド）は、要求されたデータがキャッシュにないときだけデータベースから読み取ってキャッシュに入れる方式です。実際に表示された書籍だけがキャッシュに載るので、メモリを無駄にしません。"
+    },
+    {
+      "id": "b",
+      "text": "キャッシュに書き込むすべてのキーに、10 分の有効期限（TTL）を設定する。",
+      "correct": true,
+      "rationale": "遅延読み込みだけでは、価格が更新されてもキャッシュの古いデータが残り続けます。TTL を 10 分にすると、キーは 10 分で期限切れになり、次の読み取りでデータベースから最新の価格を読み直すため、10 分以内に反映するという要件を満たします。"
+    },
+    {
+      "id": "c",
+      "text": "データベースに書き込むたびに同じデータをキャッシュにも書き込み（書き込みスルー）、起動時には全書籍のデータをキャッシュに読み込んでおく。",
+      "correct": false,
+      "rationale": "書き込みスルーはキャッシュを最新に保てますが、全書籍を読み込んでおくと、ほとんど表示されない書籍のデータでメモリが埋まります。実際に表示された書籍だけにメモリを使うという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon RDS for MySQL の前に DynamoDB Accelerator (DAX) クラスターを置き、読み取りをすべて DAX 経由にする。",
+      "correct": false,
+      "rationale": "DAX は Amazon DynamoDB 専用のインメモリキャッシュで、Amazon RDS for MySQL の前には置けません。RDS の読み取りをキャッシュするには ElastiCache を使います。"
+    },
+    {
+      "id": "e",
+      "text": "キャッシュの項目には有効期限を設定せず、メモリが足りなくなったときに古い項目が自動で削除されるのに任せる。",
+      "correct": false,
+      "rationale": "有効期限がないと、更新前の価格がキャッシュに残り続け、メモリに余裕があるかぎり削除されません。価格の更新を 10 分以内に反映するという要件を満たしません。"
+    }
+  ],
+  "explanation": "キャッシュへのデータの載せ方には、主に遅延読み込み（キャッシュアサイド）と書き込みスルーがあります。遅延読み込みは、キャッシュにないデータだけをデータベースから読み取ってキャッシュに入れるので、要求されたデータだけがキャッシュに載ります。弱点は、データベースが更新されてもキャッシュが古いままになることです。書き込みスルーは、データベースへの書き込みと同時にキャッシュも更新するので古いデータが残りませんが、ほとんど読まれないデータまでキャッシュに載りやすくなります。\n\nこの問題では「表示された書籍だけにメモリを使う」ことから遅延読み込みを選び、その弱点である古いデータを「10 分の TTL」で補います。TTL は、許容できるデータの古さに合わせて決めるのが基本です。2 つの方式を組み合わせ、書き込みスルーにも TTL を付けて読まれないデータを自然に消す設計もよく使われます。DAX は DynamoDB 専用のキャッシュなので、RDS には使えません。",
+  "keyPoints": [
+    "「要求されたデータだけをキャッシュする」→ 遅延読み込み（キャッシュアサイド）",
+    "「キャッシュを常に最新に保つ」→ 書き込みスルー。読まれないデータでメモリが埋まりやすい",
+    "許容できるデータの古さは TTL で決める",
+    "DAX は DynamoDB 専用。RDS の読み取りのキャッシュには ElastiCache を使う"
+  ],
+  "references": [
+    {
+      "title": "Caching strategies for Memcached - Amazon ElastiCache",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html"
+    },
+    {
+      "title": "Caching Best Practices | Amazon Web Services",
+      "url": "https://aws.amazon.com/caching/best-practices/"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

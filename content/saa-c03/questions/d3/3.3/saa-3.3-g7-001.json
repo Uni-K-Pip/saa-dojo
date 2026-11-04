@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K1", "3.3-S2"],
+  "services": ["Amazon DynamoDB", "Amazon DynamoDB Accelerator (DAX)", "Amazon Aurora", "AWS Lambda"],
+  "qualifier": "performance",
+  "tags": ["グローバルテーブル", "マルチリージョン", "マルチアクティブ", "書き込みレイテンシー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるモバイルゲーム会社は、北米、欧州、アジアの 3 つの AWS リージョンでゲームサーバーを運用しています。プレイヤーの所持アイテムは、米国東部リージョンにある 1 つの Amazon DynamoDB テーブルに保存しています。欧州とアジアのプレイヤーからは、アイテムの購入や交換の反映が遅いという苦情が増えています。どのリージョンのプレイヤーも近くのリージョンで読み取りと書き込みの両方を低レイテンシーで行えるようにし、1 つのリージョンで障害が起きても別のリージョンでゲームを続けられるようにする必要があります。レプリケーションの仕組みを自社で作ることは避けたいと考えています。どの設計が要件を満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "テーブルを DynamoDB グローバルテーブルにして欧州とアジアのリージョンにレプリカを追加し、各リージョンのゲームサーバーは同じリージョンのレプリカを読み書きする。",
+      "correct": true,
+      "rationale": "グローバルテーブルは、複数のリージョンに置いたレプリカのどれでも読み取りと書き込みを受け付けるマルチアクティブのレプリケーション機能です。リージョン間の複製は DynamoDB が自動で行い、既存の DynamoDB API のまま使えます。1 つのリージョンで障害が起きても、トラフィックを別のリージョンのレプリカに移せば処理を続けられます。"
+    },
+    {
+      "id": "b",
+      "text": "米国東部のテーブルの前に DynamoDB Accelerator (DAX) クラスターを置き、欧州とアジアのゲームサーバーは DAX クラスター経由でテーブルを読み書きする。",
+      "correct": false,
+      "rationale": "DAX は 1 つのリージョンに置くインメモリキャッシュで、結果整合性の読み取りを速くするものです。書き込みは米国東部のテーブルへの書き込みが終わるまで完了しないため、欧州とアジアからの書き込みは遅いままです。米国東部で障害が起きたときに別のリージョンで続けるという要件も満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "データを Amazon Aurora Global Database に移して欧州とアジアにセカンダリクラスターを置き、各リージョンのゲームサーバーは同じリージョンのクラスターに接続する。",
+      "correct": false,
+      "rationale": "Aurora Global Database で書き込みを処理するのはプライマリリージョンのクラスターだけで、セカンダリリージョンは読み取り専用です。書き込み転送を使っても書き込みはプライマリリージョンへ送られるため、欧州とアジアの書き込みは速くなりません。"
+    },
+    {
+      "id": "d",
+      "text": "欧州とアジアにも DynamoDB テーブルを作り、DynamoDB Streams をきっかけに AWS Lambda 関数がほかのリージョンのテーブルへ変更を書き込むようにする。",
+      "correct": false,
+      "rationale": "この方法でも複製はできますが、複製の処理、失敗時の再試行、同じ項目が複数のリージョンで更新されたときの競合の扱いを自社で作り、運用し続けることになります。レプリケーションの仕組みを自社で作らないという要件を満たしません。"
+    }
+  ],
+  "explanation": "DynamoDB グローバルテーブルは、複数のリージョンにテーブルのレプリカを置き、DynamoDB が自動で変更を複製するマルチアクティブの機能です。どのレプリカも読み取りと書き込みを受け付けるので、各リージョンのゲームサーバーは近くのレプリカを使い、リージョンをまたぐ通信の遅延をなくせます。既存の DynamoDB API がそのまま使え、複数のリージョンで同じ項目が更新されたときの競合も DynamoDB が解決します（マルチリージョンの結果整合性モードでは最後の書き込みを優先）。リージョンで障害が起きたときは、別のリージョンのレプリカにトラフィックを移して処理を続けます。\n\nよく比べられる Aurora Global Database は、プライマリリージョンの 1 つのクラスターで書き込みを受け、読み取り専用のセカンダリリージョンへ通常 1 秒未満で複製する仕組みです。「読み取りは各地で速く、書き込みは 1 か所」なら Aurora Global Database、「各地で書き込みも速く」なら DynamoDB グローバルテーブルと整理できます。DAX は同じリージョン内の読み取りを速くするキャッシュで、書き込みの遅延やリージョン障害には効きません。",
+  "keyPoints": [
+    "「複数リージョンで読み取りも書き込みも低レイテンシー」→ DynamoDB グローバルテーブル（マルチアクティブ）",
+    "Aurora Global Database の書き込みはプライマリリージョンだけ。セカンダリリージョンは読み取り専用",
+    "DAX は同じリージョン内の読み取りを速くするキャッシュ。書き込みの遅さやリージョン障害は解決しない"
+  ],
+  "references": [
+    {
+      "title": "Global tables - multi-active, multi-Region replication - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html"
+    },
+    {
+      "title": "Using Amazon Aurora Global Database - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+    },
+    {
+      "title": "In-memory acceleration with DynamoDB Accelerator (DAX) - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

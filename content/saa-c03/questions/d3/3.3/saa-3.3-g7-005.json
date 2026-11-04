@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.3-g7-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K5", "3.3-S2"],
+  "services": ["Amazon RDS Proxy", "Amazon RDS", "AWS Lambda", "AWS Secrets Manager", "Amazon API Gateway"],
+  "qualifier": "minimal-change",
+  "tags": ["RDS Proxy", "接続プール", "フェイルオーバー", "サーバーレス"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon API Gateway と AWS Lambda で構築した注文 API から、Multi-AZ 配置の Amazon RDS for PostgreSQL にデータを書き込んでいます。セールの開始時に Lambda 関数の同時実行数が急増すると、データベースの接続数が上限に達して「too many connections」エラーが発生します。また、フェイルオーバーのたびにアプリケーションの接続エラーがしばらく続くことも問題になっています。データベースの認証情報は AWS Secrets Manager で管理しています。アプリケーションのコードの変更を最小限に抑えて両方の問題を改善する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon RDS Proxy を作成して Secrets Manager の認証情報を使うように設定し、Lambda 関数の接続先をプロキシに変える。",
+      "correct": true,
+      "rationale": "RDS Proxy は接続プールを持ち、多数の Lambda 関数からの接続を少数のデータベース接続で再利用します。フェイルオーバー時はアプリケーションの接続を保ったまま新しいプライマリに接続し直すため、接続エラーの時間を短くできます。接続先のエンドポイントを変えるだけで、コードの変更はほとんど要りません。"
+    },
+    {
+      "id": "b",
+      "text": "DB パラメータグループで max_connections の値を引き上げ、DB インスタンスクラスも 1 段階大きくしてメモリを増やす。",
+      "correct": false,
+      "rationale": "接続数の上限を上げても、接続ごとにメモリと CPU を消費するため、急増した接続を次々に開く負荷は残り、次の急増でまた上限に達するおそれがあります。フェイルオーバー時の接続エラーも改善しません。"
+    },
+    {
+      "id": "c",
+      "text": "リードレプリカを 2 つ作成し、Lambda 関数からの接続をプライマリとリードレプリカに振り分けて、プライマリ 1 台への接続の集中を避ける。",
+      "correct": false,
+      "rationale": "注文の書き込みは読み取り専用のリードレプリカでは処理できません。接続先を振り分けるにはコードの変更が必要で、書き込みの接続の急増やフェイルオーバー時のエラーも解消しません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数の予約済み同時実行数を小さい値に設定し、同時に動く関数の数、つまりデータベースへの同時接続数が上限を超えないように制限する。",
+      "correct": false,
+      "rationale": "同時実行数を絞ると接続数は抑えられますが、セール時の注文リクエストが Lambda のスロットリングで失敗し、処理できる量が減ります。フェイルオーバー時の問題も残ります。"
+    }
+  ],
+  "explanation": "Lambda 関数は呼び出しが増えると実行環境が次々に作られ、それぞれがデータベースに接続します。リレーショナルデータベースは接続ごとにメモリと CPU を使うため、同時実行数が急増すると接続数の上限に達しやすくなります。\n\nAmazon RDS Proxy は、アプリケーションとデータベースの間に置くフルマネージドのデータベースプロキシです。接続プールを作って接続を再利用するので、接続を開くたびにかかる負荷を減らし、データベースへの接続数も制御できます。プロキシは Secrets Manager に保存した認証情報でデータベースに接続し、クライアントには IAM 認証を求めることもできます。さらに、フェイルオーバー時はアプリケーションの接続を保ったままスタンバイから昇格した新しいプライマリに接続し直すので、アプリケーションから見た中断が短くなります。多くのアプリケーションは、接続先をプロキシのエンドポイントに変えるだけで使えます。\n\n接続数の上限やインスタンスサイズを上げる方法は根本的な解決になりません。リードレプリカは読み取りの負荷を分散するためのもので、書き込みの接続の問題は解決しません。",
+  "keyPoints": [
+    "「Lambda からの接続が多すぎる」「too many connections」→ Amazon RDS Proxy で接続をプールする",
+    "RDS Proxy はフェイルオーバー時にアプリケーションの接続を保ち、切り替えの影響を小さくする",
+    "RDS Proxy の認証情報は Secrets Manager に保存し、クライアントには IAM 認証も使える"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS Proxy - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+    },
+    {
+      "title": "Using AWS Lambda with Amazon RDS - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/services-rds.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}
