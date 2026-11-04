@@ -1,0 +1,69 @@
+{
+  "id": "saa-basics-f-006",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K2"
+  ],
+  "services": [
+    "Amazon S3",
+    "Amazon RDS",
+    "Amazon CloudFront"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "リージョン",
+    "データの保管場所",
+    "コンプライアンス"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "日本国内の顧客を対象にサービスを提供する会社は、法令と社内規程により、顧客の個人データを日本国内に保管しなければなりません。新しいシステムは AWS で構築する予定で、データベースとファイルの保存先には AWS のサービスを使います。データを国外に出さないようにするための考え方として、最も適切なものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "東京リージョンにリソースを作り、ほかのリージョンへの複製は設定しない",
+      "correct": true,
+      "rationale": "ほとんどのリソースは作成したリージョンの中にだけ存在し、AWS がデータを勝手にほかのリージョンへ複製することはありません。日本国内のリージョンを選び、ほかのリージョンへの複製を設定しなければ、データを国内に保管できます。"
+    },
+    {
+      "id": "b",
+      "text": "リージョンは指定せず、AWS がデータを最適な国へ自動で配置するのに任せる",
+      "correct": false,
+      "rationale": "AWS のリソースは、利用者がリージョンを選んで作成します。AWS がデータを最適な国へ自動で移す仕組みはありません。どこに保管するかを決めるのは利用者です。"
+    },
+    {
+      "id": "c",
+      "text": "米国のリージョンにリソースを作り、日本からの通信を HTTPS で暗号化する",
+      "correct": false,
+      "rationale": "HTTPS で暗号化しても、データが保存される場所は米国のリージョンのままです。暗号化は通信の途中を守るもので、国内に保管するという要件は満たせません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon CloudFront のエッジロケーションだけにデータを保存する",
+      "correct": false,
+      "rationale": "エッジロケーションは、CloudFront がコンテンツのコピー（キャッシュ）を利用者の近くから配信するための拠点です。データベースやファイルの保存先として使う場所ではありません。"
+    }
+  ],
+  "explanation": "AWS のリージョンは、世界の地理的に離れた地域ごとに置かれていて、日本にはアジアパシフィック（東京）とアジアパシフィック（大阪）のリージョンがあります。ほとんどの AWS リソースは作成したリージョンに属し、AWS はデータをほかのリージョンへ自動では複製しません。そのため、リージョンを選ぶことで、データを保管する国や地域を決められます。\n\nリージョンを選ぶときは、法令・規制（データの保管場所）、利用者との距離（遅延）、使いたいサービスがあるか、料金の 4 つを考えます。データの保管場所に関する要件がある場合は、まずそれを満たすリージョンに絞り込みます。",
+  "keyPoints": [
+    "「データを国内に保管する」→ その国のリージョンを選び、ほかのリージョンへ複製しない",
+    "AWS はデータをほかのリージョンへ自動では複製しない",
+    "暗号化は保管場所の要件の代わりにならない"
+  ],
+  "references": [
+    {
+      "title": "AWS Regions and Availability Zones",
+      "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions-availability-zones.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-global-infrastructure"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

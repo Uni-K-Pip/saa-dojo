@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-f-005",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K2"
+  ],
+  "services": [
+    "Amazon EC2",
+    "Elastic Load Balancing",
+    "Amazon CloudFront"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "アベイラビリティーゾーン",
+    "マルチ AZ",
+    "高可用性"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Web アプリケーションを、東京リージョンの 1 つのアベイラビリティーゾーン（AZ）にある 2 台の EC2 インスタンスで動かしています。経営層から、1 つの AZ 全体が災害や障害で使えなくなっても、アプリケーションが動き続けるようにしてほしいと指示がありました。インスタンスの台数は増やさずに対策したいと考えています。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "同じ AZ に 2 台のまま置き、どちらもより大きいインスタンスタイプに変更する",
+      "correct": false,
+      "rationale": "インスタンスを大きくすると処理能力は上がりますが、2 台とも同じ AZ にあることは変わりません。その AZ 全体が使えなくなれば、両方とも止まります。"
+    },
+    {
+      "id": "b",
+      "text": "2 台の EC2 インスタンスを別々の AZ に配置し、ロードバランサーで振り分ける",
+      "correct": true,
+      "rationale": "AZ は互いに物理的に離れ、電源やネットワークが独立しているので、2 台を別々の AZ に置けば、1 つの AZ が使えなくなってももう一方で処理を続けられます。ロードバランサーは、正常なインスタンスにだけ通信を送ります。台数は 2 台のままです。"
+    },
+    {
+      "id": "c",
+      "text": "同じ AZ の中で、2 台の EC2 インスタンスを別々のサブネットに分けて配置する",
+      "correct": false,
+      "rationale": "サブネットは 1 つの AZ の中にあるので、同じ AZ の中でサブネットを分けても、AZ 全体の障害には耐えられません。"
+    },
+    {
+      "id": "d",
+      "text": "EC2 インスタンスをいったん停止し、エッジロケーションで起動し直す",
+      "correct": false,
+      "rationale": "エッジロケーションは CloudFront などのサービスが使う拠点で、EC2 インスタンスを起動する場所ではありません。"
+    }
+  ],
+  "explanation": "アベイラビリティーゾーン（AZ）は、リージョンの中にある、互いに独立した場所です。1 つ以上のデータセンターでできていて、電源やネットワークが冗長化され、ほかの AZ から物理的に離れています。そのため、火災や洪水などの影響は 1 つの AZ にとどまるように設計されています。AWS は、アプリケーションを複数の AZ に配置することをベストプラクティスとしています。\n\nEC2 インスタンスを別々の AZ に置き、Elastic Load Balancing で正常なインスタンスにだけ通信を振り分ければ、1 つの AZ が使えなくなっても残りの AZ で動き続けます。インスタンスを大きくしたり、同じ AZ の中でサブネットを分けたりしても、AZ 全体の障害には耐えられません。",
+  "keyPoints": [
+    "「AZ の障害に耐える」→ 複数の AZ に分けて配置する",
+    "同じ AZ の中で大きくしたり、サブネットを分けたりしても AZ の障害には耐えられない",
+    "エッジロケーションは EC2 を起動する場所ではない"
+  ],
+  "references": [
+    {
+      "title": "AWS Regions and Availability Zones",
+      "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions-availability-zones.html"
+    },
+    {
+      "title": "Regions and Availability Zones - AWS Global Infrastructure",
+      "url": "https://aws.amazon.com/about-aws/global-infrastructure/regions_az/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-global-infrastructure"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

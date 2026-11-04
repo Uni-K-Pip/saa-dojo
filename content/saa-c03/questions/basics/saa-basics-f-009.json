@@ -1,0 +1,75 @@
+{
+  "id": "saa-basics-f-009",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K3"
+  ],
+  "services": [
+    "Amazon S3",
+    "Amazon DynamoDB",
+    "AWS Identity and Access Management (IAM)"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "責任共有モデル",
+    "抽象化型サービス",
+    "アクセス権限",
+    "データの管理"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社は、新しいアプリケーションのデータを Amazon S3 と Amazon DynamoDB に保存します。どちらも、AWS がインフラ、OS、プラットフォームを運用するサービスです。セキュリティ担当者は、責任共有モデルに基づいて、自社の責任として残る作業を洗い出しています。この会社の責任となる作業はどれですか。2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "保存するデータを分類し、暗号化の設定を選ぶ",
+      "correct": true,
+      "rationale": "S3 や DynamoDB のような抽象化型のサービスでも、データの管理（分類や暗号化の選択を含む）は利用者の責任です。"
+    },
+    {
+      "id": "b",
+      "text": "IAM で、だれがどのデータにアクセスできるかを決める",
+      "correct": true,
+      "rationale": "アクセス権限の管理は、どのサービスを使っても利用者の責任として残ります。IAM のポリシーなどで、必要な人にだけアクセスを許可します。"
+    },
+    {
+      "id": "c",
+      "text": "サービスを動かしているサーバーの OS にパッチを適用する",
+      "correct": false,
+      "rationale": "S3 や DynamoDB では、インフラ、OS、プラットフォームを AWS が運用します。サーバーの OS へのパッチ適用は AWS の責任です。"
+    },
+    {
+      "id": "d",
+      "text": "使い終わったストレージ機器を安全に廃棄する",
+      "correct": false,
+      "rationale": "ストレージ機器の廃棄は、AWS が受け持つ物理的なインフラの管理に含まれます。"
+    },
+    {
+      "id": "e",
+      "text": "データセンターのネットワーク機器の設定を管理する",
+      "correct": false,
+      "rationale": "AWS のインフラ機器の設定は AWS が管理します。利用者が設定するのは、自分のリソースやアプリケーションの設定です。"
+    }
+  ],
+  "explanation": "AWS は、Amazon S3 や Amazon DynamoDB のような抽象化型のサービスについて、インフラ、OS、プラットフォームを AWS が運用し、利用者はエンドポイントにアクセスしてデータを保存・取得すると説明しています。このときの利用者の責任は、データの管理（暗号化の選択を含む）、資産の分類、IAM などによるアクセス権限の管理です。\n\nどのサービスを使っても、データ、アクセス権限、各サービスの設定は利用者の責任として残ります。「マネージドなサービスだから AWS が全部守ってくれる」わけではない点に注意しましょう。",
+  "keyPoints": [
+    "抽象化型のサービスでも、データ・暗号化の選択・アクセス権限は利用者の責任",
+    "OS、機器、施設の管理は AWS の責任"
+  ],
+  "references": [
+    {
+      "title": "Shared Responsibility Model - Amazon Web Services (AWS)",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-shared-responsibility"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

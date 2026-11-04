@@ -1,0 +1,78 @@
+{
+  "id": "saa-basics-f-004",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K13"
+  ],
+  "services": [
+    "Amazon EC2",
+    "Amazon S3",
+    "Amazon RDS",
+    "Amazon VPC",
+    "Amazon DynamoDB"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "主要サービス",
+    "Web アプリケーション",
+    "サービスの役割"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、オンプレミスで動かしている社内向けの Web アプリケーションを AWS に移します。このアプリケーションは、Web サーバーのプログラム、利用者がアップロードした画像ファイル、注文を管理するリレーショナルデータベースの 3 つでできています。担当者は、それぞれの置き場所として AWS の代表的なサービスを選ぼうとしています。最も適した組み合わせはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Web サーバーに Amazon EC2、画像ファイルの保存に Amazon S3、データベースに Amazon RDS を使う",
+      "correct": true,
+      "rationale": "Amazon EC2 は Web サーバーのプログラムを動かす仮想サーバー、Amazon S3 は画像などのファイルをオブジェクトとして保存するストレージ、Amazon RDS はリレーショナルデータベースのマネージドサービスです。それぞれの役割に合っています。"
+    },
+    {
+      "id": "b",
+      "text": "Web サーバーに Amazon S3、画像ファイルの保存に Amazon EC2、データベースに Amazon RDS を使う",
+      "correct": false,
+      "rationale": "Amazon S3 はファイルを保存するストレージで、Web サーバーのプログラムを動かす仮想サーバーではありません。画像ファイルの保存先に EC2 インスタンスを使うのも、役割が逆です。"
+    },
+    {
+      "id": "c",
+      "text": "Web サーバーに Amazon EC2、画像ファイルの保存に Amazon RDS、データベースに Amazon S3 を使う",
+      "correct": false,
+      "rationale": "Amazon RDS はリレーショナルデータベースのサービスで、画像ファイルの置き場所ではありません。Amazon S3 はオブジェクトストレージで、SQL で注文を管理するリレーショナルデータベースとしては使えません。"
+    },
+    {
+      "id": "d",
+      "text": "Web サーバーに Amazon VPC、画像ファイルの保存に Amazon S3、データベースに Amazon DynamoDB を使う",
+      "correct": false,
+      "rationale": "Amazon VPC は仮想ネットワークのサービスで、Web サーバーのプログラムを動かすものではありません。また、Amazon DynamoDB はキーバリュー型の NoSQL データベースで、リレーショナルデータベースではありません。"
+    }
+  ],
+  "explanation": "AWS の主要サービスは、役割ごとに分けて覚えると整理できます。仮想サーバー（コンピューティング）は Amazon EC2、ファイルの保存（オブジェクトストレージ）は Amazon S3、リレーショナルデータベースは Amazon RDS、仮想ネットワークは Amazon VPC、NoSQL のデータベースは Amazon DynamoDB です。\n\nこの組み合わせは、典型的な Web アプリケーションの基本形です。実際の構成では、これらを Amazon VPC と組み合わせて動かし、IAM で操作できる人を絞り、Amazon CloudWatch で監視します。",
+  "keyPoints": [
+    "仮想サーバー → EC2、ファイルの保存 → S3、リレーショナルデータベース → RDS",
+    "VPC はネットワーク、DynamoDB は NoSQL のデータベース"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EC2? - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
+    },
+    {
+      "title": "What is Amazon S3? - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "What is Amazon Relational Database Service (Amazon RDS)? - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-cloud-and-aws"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}
