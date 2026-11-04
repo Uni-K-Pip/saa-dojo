@@ -1,0 +1,516 @@
+{
+  "createdBy": "x",
+  "entries": [
+    {
+      "term": "リージョン",
+      "en": "AWS Region",
+      "definition": "AWS のデータセンターが集まる、世界の地理的な地域の単位です。リージョンは互いに独立していて、それぞれが複数のアベイラビリティーゾーンで構成されます。データは、選んだリージョンの外へ自動で移ることはありません。",
+      "services": [],
+      "related": ["アベイラビリティーゾーン", "エッジロケーション", "ローカルゾーン"]
+    },
+    {
+      "term": "アベイラビリティーゾーン",
+      "en": "Availability Zone (AZ)",
+      "definition": "リージョンの中にある、電源・ネットワーク・冷却が独立した 1 つ以上のデータセンターの集まりです。AZ どうしは低レイテンシーの回線でつながっています。複数の AZ に分けて置くと、1 つの AZ の障害でもシステムを動かし続けられます。",
+      "services": [],
+      "related": ["リージョン", "マルチ AZ 配置", "高可用性"]
+    },
+    {
+      "term": "エッジロケーション",
+      "en": "Edge location",
+      "definition": "Amazon CloudFront のキャッシュや Amazon Route 53 の DNS の応答などに使われる、世界中の都市にある拠点です。利用者の近くで応答することで、レイテンシーを小さくします。",
+      "services": ["Amazon CloudFront", "Amazon Route 53", "AWS Global Accelerator"],
+      "related": ["CDN", "リージョン"]
+    },
+    {
+      "term": "ローカルゾーン",
+      "en": "Local Zone",
+      "definition": "大都市の近くに置かれた、リージョンの拡張です。その地域の利用者に非常に低いレイテンシーが必要な処理を、利用者の近くで動かせます。",
+      "services": [],
+      "related": ["リージョン", "レイテンシー"]
+    },
+    {
+      "term": "責任共有モデル",
+      "en": "Shared responsibility model",
+      "definition": "セキュリティの責任を AWS と利用者で分ける考え方です。AWS はクラウド「の」セキュリティ（データセンター、ハードウェア、基盤のソフトウェア）を、利用者はクラウド「における」セキュリティ（データ、IAM の設定、OS のパッチ、ネットワークの設定など）を担当します。マネージドサービスほど AWS の担当範囲が広がります。",
+      "services": [],
+      "related": ["マネージドサービス", "IaaS"]
+    },
+    {
+      "term": "従量課金",
+      "en": "Pay-as-you-go pricing",
+      "definition": "使った分だけ料金を支払う課金の方式です。前払いや長期の契約なしで始められ、使うのをやめれば料金もかかりません。",
+      "services": [],
+      "related": ["オンデマンドインスタンス", "Savings Plans"]
+    },
+    {
+      "term": "伸縮性",
+      "en": "Elasticity",
+      "definition": "負荷に合わせて、リソースを自動で増やしたり減らしたりできる性質です。ピークに合わせて常に多くのリソースを用意しておく必要がなくなり、コストを抑えられます。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["スケーラビリティ", "水平スケーリング"]
+    },
+    {
+      "term": "スケーラビリティ",
+      "en": "Scalability",
+      "definition": "負荷が増えても、リソースを足すことで性能を保てる性質です。台数を増やす水平スケーリングと、1 台を大きくする垂直スケーリングがあります。",
+      "services": [],
+      "related": ["水平スケーリング", "垂直スケーリング", "伸縮性"]
+    },
+    {
+      "term": "水平スケーリング",
+      "en": "Horizontal scaling",
+      "definition": "サーバーの台数を増やしたり（スケールアウト）、減らしたり（スケールイン）して処理能力を変える方法です。上限が大きく、1 台が止まっても全体は動き続けます。ロードバランサーや Auto Scaling と組み合わせます。",
+      "services": ["Amazon EC2 Auto Scaling", "Elastic Load Balancing"],
+      "related": ["垂直スケーリング", "Auto Scaling グループ"]
+    },
+    {
+      "term": "垂直スケーリング",
+      "en": "Vertical scaling",
+      "definition": "1 台のサーバーを、より大きなインスタンスタイプに変えて（スケールアップ）処理能力を上げる方法です。インスタンスタイプの上限で頭打ちになり、変更のときに停止が必要になることがあります。",
+      "services": ["Amazon EC2", "Amazon RDS"],
+      "related": ["水平スケーリング", "インスタンスタイプ"]
+    },
+    {
+      "term": "IaaS",
+      "en": "Infrastructure as a Service",
+      "definition": "サーバー、ストレージ、ネットワークなどの基盤をサービスとして使う形態です。OS より上は利用者が管理します。Amazon EC2 が代表的な例です。",
+      "services": ["Amazon EC2"],
+      "related": ["PaaS", "SaaS", "責任共有モデル"]
+    },
+    {
+      "term": "PaaS",
+      "en": "Platform as a Service",
+      "definition": "アプリケーションを動かす環境までをサービスとして使う形態です。利用者はアプリケーションとデータに集中できます。AWS Elastic Beanstalk が代表的な例です。",
+      "services": ["AWS Elastic Beanstalk"],
+      "related": ["IaaS", "SaaS"]
+    },
+    {
+      "term": "SaaS",
+      "en": "Software as a Service",
+      "definition": "完成したソフトウェアをサービスとして使う形態です。利用者はソフトウェアの設定と、自分のデータを管理します。",
+      "services": [],
+      "related": ["IaaS", "PaaS"]
+    },
+    {
+      "term": "マネージドサービス",
+      "en": "Managed service",
+      "definition": "サーバーの準備、パッチの適用、バックアップ、スケーリングなどの運用を AWS が受け持つサービスです。「運用上のオーバーヘッドを最小に」という要件では、まずマネージドサービスを検討します。",
+      "services": ["Amazon RDS", "Amazon DynamoDB"],
+      "related": ["サーバーレス", "責任共有モデル"]
+    },
+    {
+      "term": "サーバーレス",
+      "en": "Serverless",
+      "definition": "サーバーの準備や管理をせずに、アプリケーションを動かせる仕組みです。使った分だけ課金され、負荷に合わせて自動でスケールします。AWS Lambda、AWS Fargate、Amazon DynamoDB などが代表的な例です。",
+      "services": ["AWS Lambda", "AWS Fargate", "Amazon DynamoDB"],
+      "related": ["マネージドサービス", "イベント駆動アーキテクチャ"]
+    },
+    {
+      "term": "AWS Well-Architected フレームワーク",
+      "en": "AWS Well-Architected Framework",
+      "definition": "クラウドの設計を評価するための、AWS のベストプラクティス集です。運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の 6 つの柱からなります。AWS Well-Architected Tool で、自分のワークロードを見直せます。",
+      "services": ["AWS Well-Architected Tool"],
+      "related": ["高可用性", "最小権限の原則"]
+    },
+    {
+      "term": "Infrastructure as Code",
+      "en": "Infrastructure as Code (IaC)",
+      "definition": "インフラの構成をコード（テンプレート）で定義し、同じ構成を何度でも自動で作れるようにする方法です。手作業の設定ミスを防ぎ、別のリージョンに同じ環境を作るのも簡単になります。AWS CloudFormation が代表的な例です。",
+      "services": ["AWS CloudFormation"],
+      "related": ["スタック", "ドリフト検出"]
+    },
+    {
+      "term": "AMI",
+      "en": "Amazon Machine Image",
+      "definition": "EC2 インスタンスを起動するための、OS や設定済みのソフトウェアを含むイメージです。同じ構成のインスタンスを素早く起動でき、別のリージョンにコピーすることもできます。",
+      "services": ["Amazon EC2"],
+      "related": ["起動テンプレート", "インスタンスタイプ"]
+    },
+    {
+      "term": "インスタンスタイプ",
+      "en": "Instance type",
+      "definition": "EC2 インスタンスの CPU、メモリ、ストレージ、ネットワークの性能の組み合わせです。汎用、コンピューティング最適化、メモリ最適化、ストレージ最適化、高速コンピューティング（GPU など）のファミリーがあります。",
+      "services": ["Amazon EC2", "AWS Compute Optimizer"],
+      "related": ["垂直スケーリング", "適切なサイズ設定"]
+    },
+    {
+      "term": "ユーザーデータ",
+      "en": "User data",
+      "definition": "EC2 インスタンスの起動時に実行するスクリプトなどの設定です。ソフトウェアのインストールや初期設定を自動化できます。",
+      "services": ["Amazon EC2"],
+      "related": ["起動テンプレート", "AMI"]
+    },
+    {
+      "term": "インスタンスメタデータ",
+      "en": "Instance metadata",
+      "definition": "EC2 インスタンスの中から取得できる、インスタンス ID や、IAM ロールの一時的な認証情報などの情報です。セッションを使う IMDSv2 にすると、より安全に取得できます。",
+      "services": ["Amazon EC2"],
+      "related": ["IAM ロール", "一時的な認証情報"]
+    },
+    {
+      "term": "サービスクォータ",
+      "en": "Service quotas",
+      "definition": "AWS アカウントのリージョンごとに決められた、リソースの数や API の呼び出しの回数などの上限です。多くは Service Quotas から引き上げを申請できます。AWS Trusted Advisor でも上限に近いものを確認できます。",
+      "services": ["Service Quotas", "AWS Trusted Advisor"],
+      "related": ["スケーラビリティ"]
+    },
+    {
+      "term": "タグ",
+      "en": "Tag",
+      "definition": "AWS のリソースに付ける、キーと値のラベルです。リソースの整理、アクセスの制御、コストの集計（コスト配分タグ）に使います。",
+      "services": ["AWS Cost Explorer"],
+      "related": ["コスト配分タグ", "属性ベースのアクセス制御"]
+    },
+    {
+      "term": "VPC",
+      "en": "Virtual Private Cloud",
+      "definition": "AWS の中に作る、利用者専用の論理的に分離されたネットワークです。IP アドレスの範囲（CIDR）、サブネット、ルートテーブル、ゲートウェイを自分で決めます。1 つのリージョンの中に作り、複数の AZ にまたがります。",
+      "services": ["Amazon VPC"],
+      "related": ["サブネット", "CIDR 表記", "ルートテーブル"]
+    },
+    {
+      "term": "CIDR 表記",
+      "en": "CIDR notation",
+      "definition": "IP アドレスの範囲を「10.0.0.0/16」のように、アドレスとプレフィックスの長さで表す書き方です。/ の後ろの数字が小さいほど範囲が広くなります。例えば /16 は 65,536 個、/24 は 256 個のアドレスを表します。",
+      "services": ["Amazon VPC"],
+      "related": ["VPC", "サブネット"]
+    },
+    {
+      "term": "サブネット",
+      "en": "Subnet",
+      "definition": "VPC の IP アドレスの範囲を分けたものです。1 つのサブネットは 1 つの AZ の中にあります。各サブネットでは、先頭の 4 つと最後の 1 つ、合わせて 5 つの IP アドレスを AWS が予約しています。",
+      "services": ["Amazon VPC"],
+      "related": ["パブリックサブネット", "プライベートサブネット", "CIDR 表記"]
+    },
+    {
+      "term": "パブリックサブネット",
+      "en": "Public subnet",
+      "definition": "ルートテーブルに、インターネットゲートウェイへの経路があるサブネットです。パブリック IP アドレスを持つリソースが、インターネットと直接通信できます。",
+      "services": ["Amazon VPC"],
+      "related": ["インターネットゲートウェイ", "プライベートサブネット", "ルートテーブル"]
+    },
+    {
+      "term": "プライベートサブネット",
+      "en": "Private subnet",
+      "definition": "インターネットゲートウェイへの直接の経路がないサブネットです。データベースやアプリケーションのサーバーを置きます。インターネットへの送信が必要なら NAT ゲートウェイを、AWS のサービスへの接続なら VPC エンドポイントを使います。",
+      "services": ["Amazon VPC", "NAT gateway"],
+      "related": ["パブリックサブネット", "NAT ゲートウェイ", "VPC エンドポイント"]
+    },
+    {
+      "term": "ルートテーブル",
+      "en": "Route table",
+      "definition": "サブネットから出る通信を、宛先に応じてどこへ送るか（インターネットゲートウェイ、NAT ゲートウェイ、VPC エンドポイント、ピアリング接続など）を決める経路の表です。",
+      "services": ["Amazon VPC"],
+      "related": ["サブネット", "インターネットゲートウェイ", "ゲートウェイ型エンドポイント"]
+    },
+    {
+      "term": "インターネットゲートウェイ",
+      "en": "Internet gateway",
+      "definition": "VPC とインターネットの間の通信を可能にする、冗長化されたゲートウェイです。VPC に 1 つ付け、ルートテーブルで経路を設定します。",
+      "services": ["Amazon VPC"],
+      "related": ["パブリックサブネット", "NAT ゲートウェイ"]
+    },
+    {
+      "term": "NAT ゲートウェイ",
+      "en": "NAT gateway",
+      "definition": "プライベートサブネットのリソースからインターネットへの通信を可能にし、インターネット側から始まる通信は受け付けないマネージドなゲートウェイです。AZ ごとに作るものは、可用性のために各 AZ に置きます。AZ をまたいで自動で広がるリージョン NAT ゲートウェイもあります。時間料金とデータ処理料金がかかります。",
+      "services": ["NAT gateway", "Amazon VPC"],
+      "related": ["プライベートサブネット", "ゲートウェイ型エンドポイント", "データ転送料金"]
+    },
+    {
+      "term": "Elastic IP アドレス",
+      "en": "Elastic IP address",
+      "definition": "アカウントに割り当てて保持できる、固定のパブリック IPv4 アドレスです。インスタンスを停止・起動してもアドレスが変わりません。パブリック IPv4 アドレスには時間料金がかかります。",
+      "services": ["Amazon EC2", "Amazon VPC"],
+      "related": ["ENI", "NAT ゲートウェイ"]
+    },
+    {
+      "term": "ENI",
+      "en": "Elastic network interface",
+      "definition": "VPC の中の仮想的なネットワークカードです。プライベート IP アドレス、セキュリティグループ、MAC アドレスなどを持ち、EC2 インスタンスやインターフェイス型エンドポイントなどに付けて使います。",
+      "services": ["Amazon EC2", "Amazon VPC"],
+      "related": ["セキュリティグループ", "インターフェイス型エンドポイント"]
+    },
+    {
+      "term": "セキュリティグループ",
+      "en": "Security group",
+      "definition": "インスタンスなどの ENI 単位で、通信を許可する仮想的なファイアウォールです。許可のルールだけを書き、拒否のルールはありません。ステートフルなので、許可した通信への応答は自動で通ります。別のセキュリティグループを送信元に指定できます。",
+      "services": ["Amazon VPC", "Amazon EC2"],
+      "related": ["ネットワーク ACL", "ステートフル", "ENI"]
+    },
+    {
+      "term": "ネットワーク ACL",
+      "en": "Network ACL",
+      "definition": "サブネット単位で、通信を許可または拒否するファイアウォールです。ルールは番号の小さい順に評価されます。ステートレスなので、応答の通信（エフェメラルポート）も明示的に許可する必要があります。特定の IP アドレスを拒否したいときに使います。",
+      "services": ["Amazon VPC"],
+      "related": ["セキュリティグループ", "ステートレス", "サブネット"]
+    },
+    {
+      "term": "ステートフル",
+      "en": "Stateful",
+      "definition": "通信の状態を覚えておき、許可した通信への応答を自動で許可する性質です。セキュリティグループがステートフルです。",
+      "services": ["Amazon VPC"],
+      "related": ["ステートレス", "セキュリティグループ"]
+    },
+    {
+      "term": "ステートレス",
+      "en": "Stateless",
+      "definition": "通信の状態を覚えず、行きと帰りの通信をそれぞれ別に評価する性質です。ネットワーク ACL がステートレスです。アプリケーションでは、サーバーにセッションの状態を持たない設計のことも指し、スケールしやすくなります。",
+      "services": ["Amazon VPC"],
+      "related": ["ステートフル", "ネットワーク ACL", "水平スケーリング"]
+    },
+    {
+      "term": "VPC フローログ",
+      "en": "VPC Flow Logs",
+      "definition": "VPC の ENI を出入りする IP 通信の情報（送信元、宛先、ポート、許可・拒否など）を記録する機能です。Amazon CloudWatch Logs や Amazon S3 に保存し、通信の調査やセキュリティの分析に使います。",
+      "services": ["Amazon VPC", "Amazon CloudWatch", "Amazon S3"],
+      "related": ["ENI", "脅威検出"]
+    },
+    {
+      "term": "VPC ピアリング",
+      "en": "VPC peering",
+      "definition": "2 つの VPC を 1 対 1 でつなぎ、プライベート IP アドレスで通信できるようにする接続です。別のアカウントや別のリージョンの VPC ともつなげます。推移的な経路はなく、CIDR が重なる VPC どうしはつなげません。",
+      "services": ["Amazon VPC"],
+      "related": ["トランジットゲートウェイ", "VPC", "CIDR 表記"]
+    },
+    {
+      "term": "VPC エンドポイント",
+      "en": "VPC endpoint",
+      "definition": "VPC の中から、インターネットゲートウェイや NAT ゲートウェイを通らずに、AWS のサービスなどへプライベートに接続するための入口です。ゲートウェイ型とインターフェイス型などがあります。",
+      "services": ["VPC endpoints", "AWS PrivateLink"],
+      "related": ["ゲートウェイ型エンドポイント", "インターフェイス型エンドポイント", "エンドポイントポリシー"]
+    },
+    {
+      "term": "ゲートウェイ型エンドポイント",
+      "en": "Gateway endpoint",
+      "definition": "Amazon S3 と Amazon DynamoDB にだけ使える VPC エンドポイントです。ルートテーブルに経路を追加して使い、追加の料金はかかりません。オンプレミスやピアリングした VPC からは使えません。",
+      "services": ["VPC endpoints", "Amazon S3", "Amazon DynamoDB"],
+      "related": ["VPC エンドポイント", "インターフェイス型エンドポイント", "ルートテーブル"]
+    },
+    {
+      "term": "インターフェイス型エンドポイント",
+      "en": "Interface endpoint",
+      "definition": "サブネットにプライベート IP アドレスを持つ ENI を作り、そこから AWS のサービスや他社のサービスに接続する VPC エンドポイントです。AWS PrivateLink の仕組みを使います。セキュリティグループで制御でき、オンプレミスからも使えます。時間料金とデータ処理料金がかかります。",
+      "services": ["VPC endpoints", "AWS PrivateLink"],
+      "related": ["VPC エンドポイント", "ゲートウェイ型エンドポイント", "ENI"]
+    },
+    {
+      "term": "エンドポイントポリシー",
+      "en": "Endpoint policy",
+      "definition": "VPC エンドポイントに付けるリソースベースのポリシーです。そのエンドポイントを通して使えるサービスの操作やリソースを絞ります。例えば、自社のバケットにだけアクセスを許します。",
+      "services": ["VPC endpoints"],
+      "related": ["VPC エンドポイント", "リソースベースのポリシー"]
+    },
+    {
+      "term": "エンドポイントサービス",
+      "en": "Endpoint service",
+      "definition": "自分のアプリケーションを AWS PrivateLink で、ほかの VPC やアカウントに公開する仕組みです。Network Load Balancer の後ろにサービスを置き、利用する側はインターフェイス型エンドポイントを作って接続します。CIDR が重なっていても使えます。",
+      "services": ["AWS PrivateLink", "Elastic Load Balancing"],
+      "related": ["インターフェイス型エンドポイント", "VPC ピアリング"]
+    },
+    {
+      "term": "トランジットゲートウェイ",
+      "en": "AWS Transit Gateway",
+      "definition": "多数の VPC とオンプレミスのネットワークを、中央のハブでつなぐリージョンのサービスです。推移的な経路を持ち、ルートテーブルで通信できる組み合わせを分けられます。別のリージョンのトランジットゲートウェイともピアリングできます。",
+      "services": ["AWS Transit Gateway", "AWS Resource Access Manager"],
+      "related": ["VPC ピアリング", "サイト間 VPN", "Direct Connect ゲートウェイ"]
+    },
+    {
+      "term": "サイト間 VPN",
+      "en": "AWS Site-to-Site VPN",
+      "definition": "オンプレミスのネットワークと AWS を、インターネット上の IPsec の暗号化トンネルでつなぐ接続です。1 つの接続に 2 本のトンネルがあります。AWS 側は仮想プライベートゲートウェイかトランジットゲートウェイ、オンプレミス側はカスタマーゲートウェイです。",
+      "services": ["AWS Site-to-Site VPN"],
+      "related": ["IPsec", "仮想プライベートゲートウェイ", "カスタマーゲートウェイ"]
+    },
+    {
+      "term": "IPsec",
+      "en": "Internet Protocol Security",
+      "definition": "IP の通信を暗号化し、改ざんを防ぐための仕組みです。AWS Site-to-Site VPN が使います。",
+      "services": ["AWS Site-to-Site VPN"],
+      "related": ["サイト間 VPN", "転送時の暗号化"]
+    },
+    {
+      "term": "仮想プライベートゲートウェイ",
+      "en": "Virtual private gateway",
+      "definition": "VPC に付ける、VPN 接続や AWS Direct Connect の AWS 側の入口です。1 つの VPC につき 1 つ付けられます。多数の VPC をまとめるなら、トランジットゲートウェイを使います。",
+      "services": ["AWS Site-to-Site VPN", "AWS Direct Connect", "Amazon VPC"],
+      "related": ["サイト間 VPN", "カスタマーゲートウェイ", "トランジットゲートウェイ"]
+    },
+    {
+      "term": "カスタマーゲートウェイ",
+      "en": "Customer gateway",
+      "definition": "サイト間 VPN の、オンプレミス側の機器（ルーターやファイアウォール）を AWS に登録したリソースです。",
+      "services": ["AWS Site-to-Site VPN"],
+      "related": ["サイト間 VPN", "仮想プライベートゲートウェイ"]
+    },
+    {
+      "term": "専用線接続",
+      "en": "AWS Direct Connect",
+      "definition": "オンプレミスと AWS を、インターネットを通らない専用の回線でつなぐ接続です。帯域が大きく、レイテンシーが安定し、AWS からのデータ送信の単価も下がります。既定では暗号化されず、回線の準備に時間がかかります。",
+      "services": ["AWS Direct Connect"],
+      "related": ["仮想インターフェイス", "Direct Connect ゲートウェイ", "サイト間 VPN"]
+    },
+    {
+      "term": "仮想インターフェイス",
+      "en": "Virtual interface (VIF)",
+      "definition": "Direct Connect の回線の上に作る論理的な接続です。VPC につなぐプライベート仮想インターフェイス、トランジットゲートウェイにつなぐトランジット仮想インターフェイス、Amazon S3 などのパブリックなサービスにつなぐパブリック仮想インターフェイスがあります。",
+      "services": ["AWS Direct Connect"],
+      "related": ["専用線接続", "Direct Connect ゲートウェイ"]
+    },
+    {
+      "term": "Direct Connect ゲートウェイ",
+      "en": "Direct Connect gateway",
+      "definition": "1 つの Direct Connect の接続から、複数のリージョンの VPC（仮想プライベートゲートウェイやトランジットゲートウェイ）に接続できるようにするグローバルなリソースです。",
+      "services": ["AWS Direct Connect"],
+      "related": ["専用線接続", "仮想インターフェイス", "トランジットゲートウェイ"]
+    },
+    {
+      "term": "BGP",
+      "en": "Border Gateway Protocol",
+      "definition": "ネットワークどうしが経路の情報を自動で交換するためのプロトコルです。Direct Connect や動的ルーティングを使うサイト間 VPN で使い、障害時に別の経路へ切り替えられるようにします。",
+      "services": ["AWS Direct Connect", "AWS Site-to-Site VPN"],
+      "related": ["専用線接続", "サイト間 VPN"]
+    },
+    {
+      "term": "DNS",
+      "en": "Domain Name System",
+      "definition": "「example.com」のようなドメイン名を、IP アドレスなどに変換（名前解決）する仕組みです。AWS では Amazon Route 53 が DNS のサービスです。",
+      "services": ["Amazon Route 53"],
+      "related": ["ホストゾーン", "エイリアスレコード", "TTL"]
+    },
+    {
+      "term": "ホストゾーン",
+      "en": "Hosted zone",
+      "definition": "Amazon Route 53 で、1 つのドメインの DNS レコードをまとめて管理する入れ物です。インターネットに公開するパブリックホストゾーンと、関連付けた VPC の中だけで使うプライベートホストゾーンがあります。",
+      "services": ["Amazon Route 53"],
+      "related": ["DNS", "エイリアスレコード"]
+    },
+    {
+      "term": "エイリアスレコード",
+      "en": "Alias record",
+      "definition": "Amazon Route 53 独自のレコードで、CloudFront のディストリビューション、ELB、S3 の静的ウェブサイトなどの AWS のリソースを指せます。ドメインの頂点（example.com そのもの）にも使え、AWS のリソースを指すエイリアスへの問い合わせには料金がかかりません。",
+      "services": ["Amazon Route 53", "Amazon CloudFront", "Elastic Load Balancing"],
+      "related": ["DNS", "ホストゾーン"]
+    },
+    {
+      "term": "TTL",
+      "en": "Time to live",
+      "definition": "DNS の応答を、利用者側でキャッシュしてよい時間です。TTL が長いと問い合わせは減りますが、送り先を変えたときに反映されるまで時間がかかります。",
+      "services": ["Amazon Route 53"],
+      "related": ["DNS", "フェイルオーバールーティング"]
+    },
+    {
+      "term": "Route 53 Resolver エンドポイント",
+      "en": "Route 53 Resolver endpoints",
+      "definition": "VPC とオンプレミスの間で DNS の問い合わせを転送するための入口です。オンプレミスから VPC の名前を解決するインバウンドエンドポイントと、VPC からオンプレミスの名前を解決するアウトバウンドエンドポイントがあります。",
+      "services": ["Amazon Route 53"],
+      "related": ["DNS", "ホストゾーン"]
+    },
+    {
+      "term": "CDN",
+      "en": "Content delivery network",
+      "definition": "コンテンツを世界中の拠点にキャッシュし、利用者の近くから配信する仕組みです。レイテンシーを下げ、オリジンの負荷とデータ転送量を減らします。AWS では Amazon CloudFront です。",
+      "services": ["Amazon CloudFront"],
+      "related": ["エッジロケーション", "オリジン", "キャッシュ"]
+    },
+    {
+      "term": "オリジン",
+      "en": "Origin",
+      "definition": "CloudFront がキャッシュにないコンテンツを取りに行く元のサーバーです。Amazon S3 のバケット、ALB、EC2、オンプレミスの HTTP サーバーなどを指定できます。",
+      "services": ["Amazon CloudFront", "Amazon S3", "Elastic Load Balancing"],
+      "related": ["CDN", "オリジンアクセスコントロール"]
+    },
+    {
+      "term": "オリジンアクセスコントロール",
+      "en": "Origin access control (OAC)",
+      "definition": "CloudFront から S3 のバケットへのアクセスだけを許し、利用者がバケットに直接アクセスできないようにする仕組みです。バケットポリシーで CloudFront のディストリビューションからのアクセスを許可します。以前のオリジンアクセスアイデンティティ（OAI）より、OAC が推奨されています。",
+      "services": ["Amazon CloudFront", "Amazon S3"],
+      "related": ["オリジン", "バケットポリシー"]
+    },
+    {
+      "term": "エニーキャスト",
+      "en": "Anycast",
+      "definition": "同じ IP アドレスを世界中の複数の拠点から広告し、利用者を最も近い拠点に届ける方式です。AWS Global Accelerator は 2 つの固定のエニーキャスト IP アドレスを提供します。",
+      "services": ["AWS Global Accelerator"],
+      "related": ["エッジロケーション", "レイテンシー"]
+    },
+    {
+      "term": "ロードバランサー",
+      "en": "Load balancer",
+      "definition": "受け取った通信を複数のターゲットに分散し、ヘルスチェックで異常なターゲットを外す仕組みです。Elastic Load Balancing には ALB（レイヤー 7）、NLB（レイヤー 4）、GWLB（レイヤー 3）があります。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ターゲットグループ", "リスナー", "ヘルスチェック"]
+    },
+    {
+      "term": "ターゲットグループ",
+      "en": "Target group",
+      "definition": "ロードバランサーが通信を送る先（EC2 インスタンス、IP アドレス、Lambda 関数など）をまとめたものです。ターゲットグループごとにヘルスチェックを設定します。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "ヘルスチェック"]
+    },
+    {
+      "term": "リスナー",
+      "en": "Listener",
+      "definition": "ロードバランサーが通信を待ち受けるプロトコルとポートの設定です。ALB ではリスナーのルールで、パスやホスト名に応じて送り先のターゲットグループを決めます。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "ターゲットグループ"]
+    },
+    {
+      "term": "スティッキーセッション",
+      "en": "Sticky sessions",
+      "definition": "同じ利用者からの通信を、同じターゲットに送り続けるロードバランサーの機能です。ターゲットの負荷が偏ることがあるので、セッションの情報は ElastiCache や DynamoDB に置く設計のほうがスケールしやすくなります。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "ステートレス"]
+    },
+    {
+      "term": "クロスゾーン負荷分散",
+      "en": "Cross-zone load balancing",
+      "definition": "ロードバランサーが、すべての AZ のターゲットに均等に通信を分散する機能です。AZ ごとのターゲットの数が違っても負荷が偏りにくくなります。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "アベイラビリティーゾーン"]
+    },
+    {
+      "term": "登録解除の遅延",
+      "en": "Deregistration delay",
+      "definition": "ロードバランサーからターゲットを外すとき、処理中のリクエストが終わるまで待つ時間です。以前は Connection Draining と呼ばれていました。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "ターゲットグループ"]
+    },
+    {
+      "term": "OSI 参照モデル",
+      "en": "OSI model",
+      "definition": "ネットワークの機能を 7 つの層に分けたモデルです。レイヤー 3 は IP、レイヤー 4 は TCP・UDP、レイヤー 7 は HTTP などのアプリケーションの層です。ALB はレイヤー 7、NLB はレイヤー 4、GWLB はレイヤー 3 で動きます。",
+      "services": ["Elastic Load Balancing"],
+      "related": ["ロードバランサー", "TLS"]
+    },
+    {
+      "term": "TLS",
+      "en": "Transport Layer Security",
+      "definition": "通信を暗号化し、通信相手が本物かを証明書で確かめる仕組みです。HTTPS は、HTTP を TLS で暗号化したものです。",
+      "services": ["AWS Certificate Manager (ACM)", "Elastic Load Balancing"],
+      "related": ["転送時の暗号化", "SSL/TLS 証明書"]
+    },
+    {
+      "term": "ポート番号",
+      "en": "Port number",
+      "definition": "1 台のサーバーの中で、通信の相手となるアプリケーションを区別する番号です。例えば HTTP は 80、HTTPS は 443、SSH は 22、MySQL は 3306 を使うのが一般的です。セキュリティグループでは、ポート番号ごとに通信を許可します。",
+      "services": ["Amazon VPC"],
+      "related": ["セキュリティグループ", "TLS"]
+    },
+    {
+      "term": "Egress-only インターネットゲートウェイ",
+      "en": "Egress-only internet gateway",
+      "definition": "IPv6 の通信で、VPC の中からインターネットへの送信だけを許し、インターネット側から始まる通信を受け付けないゲートウェイです。IPv4 の NAT ゲートウェイに当たる役割です。",
+      "services": ["Amazon VPC"],
+      "related": ["NAT ゲートウェイ", "インターネットゲートウェイ"]
+    },
+    {
+      "term": "プレフィックスリスト",
+      "en": "Prefix list",
+      "definition": "複数の CIDR ブロックをまとめて名前を付けたものです。セキュリティグループやルートテーブルで参照できます。ゲートウェイ型エンドポイントは、AWS が管理する S3 や DynamoDB のプレフィックスリストを経路に使います。",
+      "services": ["Amazon VPC", "VPC endpoints"],
+      "related": ["ゲートウェイ型エンドポイント", "CIDR 表記"]
+    }
+  ]
+}
