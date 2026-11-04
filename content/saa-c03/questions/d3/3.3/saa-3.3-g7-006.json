@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-006",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K6", "3.3-S3"],
+  "services": ["AWS Database Migration Service (AWS DMS)", "AWS Schema Conversion Tool (AWS SCT)", "Amazon Aurora", "AWS Direct Connect", "Amazon EC2"],
+  "qualifier": "availability",
+  "tags": ["異種間移行", "スキーマ変換", "CDC", "Oracle"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、オンプレミスのデータセンターで Oracle Database を使った契約管理システムを運用しています。ライセンス費用を減らすため、データベースを Amazon Aurora PostgreSQL-Compatible Edition に移行することにしました。データベースには約 2 TB のデータと多数のストアドプロシージャがあります。システムは平日の日中に使われており、移行の切り替えで停止できるのは数十分までです。データセンターと AWS は AWS Direct Connect で接続されています。どの移行方法が要件を満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "DMS Schema Conversion または AWS SCT でスキーマとストアドプロシージャを変換し、AWS DMS で全ロードと継続的なレプリケーションを行ってから切り替える。",
+      "correct": true,
+      "rationale": "エンジンが異なる移行（異種間移行）では、まずスキーマとストアドプロシージャなどのコードを移行先のエンジン向けに変換します。その後、AWS DMS で既存のデータを全ロードし、移行元で発生する変更を継続的なレプリケーション（CDC）で反映し続ければ、切り替え時の停止を数十分に収められます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS DMS のタスクを全ロードと継続的なレプリケーション（CDC）で実行する。移行先のテーブルは DMS に自動で作成させ、スキーマの変換は行わない。",
+      "correct": false,
+      "rationale": "AWS DMS が自動で作成するのはテーブルと主キーまでで、ストアドプロシージャなどのコードを Oracle から PostgreSQL 向けに変換することはしません。異種間移行ではスキーマの変換が別に必要です。"
+    },
+    {
+      "id": "c",
+      "text": "Oracle Data Pump でエクスポートしたダンプファイルを Amazon S3 に置き、Aurora PostgreSQL の S3 からのインポート機能で読み込んでから切り替える。",
+      "correct": false,
+      "rationale": "Data Pump のダンプファイルは Oracle 固有の形式で、PostgreSQL にはそのまま読み込めません。ストアドプロシージャも変換されず、エクスポートから読み込みまでの間は更新を止める必要があるため、停止時間の要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Oracle Database を Amazon EC2 に移して Oracle Data Guard で同期し、同期が追いついた時点で接続先を EC2 に切り替える。",
+      "correct": false,
+      "rationale": "停止時間は短くできますが、移行先も Oracle Database のままなので Oracle のライセンス費用は減りません。Aurora PostgreSQL に移行してライセンス費用を減らすという目的を満たしません。"
+    }
+  ],
+  "explanation": "移行元と移行先のデータベースエンジンが同じ（例: Oracle から Amazon RDS for Oracle）なら同種間移行、異なる（例: Oracle から Aurora PostgreSQL）なら異種間移行です。異種間移行では、テーブル定義、インデックス、ストアドプロシージャなどをエンジンに合わせて変換する必要があり、AWS DMS のマネージドの機能である DMS Schema Conversion か、PC にダウンロードして使う AWS Schema Conversion Tool (AWS SCT) を使います。自動で変換できなかった部分は、評価レポートで確認して手作業で直します。\n\nデータの移行には AWS Database Migration Service (AWS DMS) を使います。全ロードで既存のデータをコピーし、その間とその後に発生した変更を継続的なレプリケーション（変更データキャプチャ、CDC）で反映し続けると、移行元を動かしたまま移行先を同期できます。同期が追いついたらアプリケーションの接続先を切り替えるだけなので、停止時間を短くできます。\n\nOracle を EC2 に移す方法は同種間移行で、停止時間は短くできてもライセンス費用の削減にはつながりません。",
+  "keyPoints": [
+    "エンジンが変わる異種間移行 → DMS Schema Conversion（または AWS SCT）でスキーマとコードを変換してから AWS DMS でデータを移す",
+    "停止時間を短くする → AWS DMS の全ロードと継続的なレプリケーション（CDC）で同期してから切り替える",
+    "AWS DMS が自動で作るのはテーブルと主キーまで。ストアドプロシージャは変換しない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Database Migration Service? - AWS Database Migration Service",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "Converting database schemas using DMS Schema Conversion - AWS Database Migration Service",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html"
+    },
+    {
+      "title": "What is the AWS Schema Conversion Tool? - AWS Schema Conversion Tool",
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

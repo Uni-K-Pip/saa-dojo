@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-009",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-S1", "3.3-K7"],
+  "services": ["Amazon Aurora"],
+  "qualifier": "performance",
+  "tags": ["カスタムエンドポイント", "リーダーエンドポイント", "Aurora レプリカ", "ワークロードの分離"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある EC サイトは、Amazon Aurora MySQL-Compatible Edition の DB クラスターを使っています。クラスターはライターインスタンス 1 台と、同じインスタンスクラスの Aurora レプリカ 2 台で構成され、Web アプリケーションは読み取りにリーダーエンドポイントを使っています。分析チームが日中に重い集計クエリを実行するようになり、Web アプリケーションの読み取りが遅くなることがあります。チームはメモリの大きいインスタンスクラスの Aurora レプリカを 2 台追加し、分析チームのクエリはその 2 台だけで、Web アプリケーションの読み取りは既存の 2 台だけで処理したいと考えています。どの構成が要件を満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "追加した 2 台を含むカスタムエンドポイントを作成して分析チームに使わせ、Web アプリケーションは引き続きリーダーエンドポイントを使う。",
+      "correct": false,
+      "rationale": "リーダーエンドポイントは、クラスター内のすべての Aurora レプリカに接続を分散します。追加した分析用の 2 台も対象になるため、Web アプリケーションの読み取りが分析用のレプリカに送られ、重い集計クエリの影響を受けます。"
+    },
+    {
+      "id": "b",
+      "text": "追加した 2 台のカスタムエンドポイントと既存の 2 台のカスタムエンドポイントを作成し、分析チームと Web アプリケーションがそれぞれを使う。",
+      "correct": true,
+      "rationale": "カスタムエンドポイントは、選んだ DB インスタンスの集まりに接続を分散するエンドポイントです。分析用と Web 用の 2 つを作れば、それぞれのワークロードを決めたレプリカだけで処理でき、1 台が使えなくなっても同じグループの別のレプリカに接続できます。"
+    },
+    {
+      "id": "c",
+      "text": "分析チームには追加した 2 台のインスタンスエンドポイントを 1 つずつ配り、Web アプリケーションはクラスターエンドポイントを使うように変える。",
+      "correct": false,
+      "rationale": "クラスターエンドポイントは常にライターインスタンスを指すため、Web アプリケーションの読み取りがライターに集中します。インスタンスエンドポイントを直接配る方法では、接続の分散や障害時の切り替えもできません。"
+    },
+    {
+      "id": "d",
+      "text": "追加した 2 台のフェイルオーバーの優先度を最も高い 0 に設定し、分析チームにはリーダーエンドポイントを使わせる。",
+      "correct": false,
+      "rationale": "フェイルオーバーの優先度は、ライターの障害時にどのレプリカを昇格させるかを決める設定で、読み取りの振り分けには影響しません。優先度を最も高くすると、障害時に分析用のレプリカがライターに昇格することにもなります。"
+    }
+  ],
+  "explanation": "Aurora の DB クラスターには用途別のエンドポイントがあります。クラスターエンドポイント（ライターエンドポイント）は常にライターインスタンスを指し、リーダーエンドポイントはすべての Aurora レプリカに読み取りの接続を分散します。インスタンスエンドポイントは特定の 1 台を指します。\n\nインスタンスクラスや用途の違うレプリカを混在させる場合は、カスタムエンドポイントを使います。カスタムエンドポイントには任意の DB インスタンスを登録でき、Aurora はその中で接続を分散します。この問題では、分析用の 2 台と Web 用の 2 台をそれぞれカスタムエンドポイントにまとめることで、重い集計クエリが Web アプリケーションの読み取りに影響しなくなります。リーダーエンドポイントは分析用のレプリカも含むため、カスタムエンドポイントを使う場合、通常はリーダーエンドポイントを使いません。\n\nあわせて、分析用のレプリカのフェイルオーバーの優先度を低く（数値を大きく）しておくと、ライターの障害時にはライターと同じインスタンスクラスの Web 用のレプリカが優先して昇格します。",
+  "keyPoints": [
+    "リーダーエンドポイントはすべての Aurora レプリカに分散する。用途ごとにレプリカを分けるならカスタムエンドポイント",
+    "クラスターエンドポイントは常にライターインスタンスを指す",
+    "フェイルオーバーの優先度（0 が最優先、15 が最低）は昇格の順番を決めるだけで、読み取りの振り分けには関係しない"
+  ],
+  "references": [
+    {
+      "title": "Custom endpoints for Amazon Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Endpoints.Custom.html"
+    },
+    {
+      "title": "Amazon Aurora endpoint connections - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"
+    },
+    {
+      "title": "High availability for Amazon Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

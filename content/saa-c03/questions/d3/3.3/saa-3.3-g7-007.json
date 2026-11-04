@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-007",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K7", "3.3-K3"],
+  "services": ["Amazon RDS", "Amazon Aurora"],
+  "qualifier": "other",
+  "tags": ["リードレプリカ", "非同期レプリケーション", "レプリカラグ", "読み取りの整合性"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会員制サイトは、Amazon RDS for MySQL のプライマリ DB インスタンスと 2 つのリードレプリカを使っています。アプリケーションは書き込みをプライマリに送り、読み取りはすべてリードレプリカに送っています。会員がプロフィールを更新した直後に表示される確認画面で、更新前の内容が表示されることがあると苦情が寄せられています。ほかの画面では、数秒程度古いデータが表示されても問題ありません。読み取りの負荷分散の効果をできるだけ保ちながら、この問題を確実に解消する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "更新直後の確認画面の読み取りだけはプライマリ DB インスタンスに送り、ほかの画面の読み取りは引き続きリードレプリカに送る。",
+      "correct": true,
+      "rationale": "リードレプリカへの反映は非同期のため、書き込みの直後はレプリカに古いデータが残っていることがあります。書き込んだ本人がすぐに読む確認画面だけをプライマリから読めば、必ず最新のデータが表示されます。ほかの読み取りはリードレプリカのままなので、負荷分散の効果もほとんど失われません。"
+    },
+    {
+      "id": "b",
+      "text": "リードレプリカの DB インスタンスクラスを大きくして、プライマリからの変更を早く反映できるようにし、レプリカラグを小さくする。",
+      "correct": false,
+      "rationale": "インスタンスを大きくするとレプリカラグが小さくなることはありますが、非同期のレプリケーションである以上、遅れはなくなりません。更新直後に古い内容が表示される問題を確実には解消できません。"
+    },
+    {
+      "id": "c",
+      "text": "プライマリ DB インスタンスを Multi-AZ 配置に変更し、同期レプリケーションによって変更がリードレプリカにもすぐ反映されるようにする。",
+      "correct": false,
+      "rationale": "Multi-AZ 配置で同期レプリケーションの対象になるのはスタンバイで、リードレプリカへの反映は非同期のままです。この変更ではリードレプリカの遅れは解消しません。"
+    },
+    {
+      "id": "d",
+      "text": "リードレプリカを 4 つに増やし、1 つあたりの読み取りの負荷を減らすことで、レプリケーションの遅れを小さくする。",
+      "correct": false,
+      "rationale": "リードレプリカを増やすと読み取りを分散できますが、各レプリカへの反映は非同期のままです。更新直後に古い内容が表示される問題は確実には解消しません。"
+    }
+  ],
+  "explanation": "Amazon RDS のリードレプリカは、データベースエンジンの非同期レプリケーションでプライマリの変更を受け取ります。そのため、プライマリへの書き込みとリードレプリカへの反映の間には遅れ（レプリカラグ）があり、書き込んだ直後にリードレプリカを読むと古いデータが返ることがあります。\n\n「書いた直後に書いた本人が読む」処理のように、最新のデータが必要な読み取りはプライマリに送ります。数秒の遅れを許容できる読み取りはリードレプリカに送ることで、負荷分散の効果を保てます。インスタンスの拡大やレプリカの追加でラグを小さくできても、ゼロにはできません。Multi-AZ 配置のスタンバイへの同期レプリケーションは可用性のための仕組みで、リードレプリカへの反映の速さには関係しません。\n\nなお、Amazon Aurora のレプリカはライターと共有のストレージを読むため、レプリカラグは通常 100 ミリ秒を大きく下回ります。それでも、書き込み直後の読み取りを確実に最新にしたい場合はライターに送ります。",
+  "keyPoints": [
+    "RDS のリードレプリカへの反映は非同期。書き込み直後のレプリカの読み取りは古いことがある",
+    "書き込み直後に最新のデータが必要な読み取りは、プライマリ（ライター）に送る",
+    "Multi-AZ のスタンバイへの同期レプリケーションは、リードレプリカの遅れを解消しない"
+  ],
+  "references": [
+    {
+      "title": "Working with DB instance read replicas - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    },
+    {
+      "title": "Multi-AZ DB instance deployments for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+    },
+    {
+      "title": "Replication with Amazon Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

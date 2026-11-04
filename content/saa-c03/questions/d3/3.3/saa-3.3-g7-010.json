@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.3-g7-010",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-S2", "3.3-K8"],
+  "services": ["Amazon Aurora", "Amazon Redshift", "AWS Database Migration Service (AWS DMS)", "AWS Glue", "Amazon Athena"],
+  "qualifier": "operational",
+  "tags": ["zero-ETL 統合", "OLTP と分析の分離", "データウェアハウス"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売企業は、店舗の販売データを地域ごとに 3 つの Amazon Aurora MySQL-Compatible Edition の DB クラスターに記録しています。経営企画部門は、3 つのクラスターのデータを合わせて、過去数年分の売上を数分前のデータまで含めて複雑に集計したいと考えています。集計のクエリが店舗のトランザクション処理の性能に影響してはいけません。データ基盤チームは少人数のため、ETL パイプラインの構築や運用はできるだけ避けたいと考えています。どの設計が要件を最もよく満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各 Aurora DB クラスターから Amazon Redshift への zero-ETL 統合を作成し、Redshift で 3 クラスター分のデータを合わせて集計する。",
+      "correct": true,
+      "rationale": "Aurora の zero-ETL 統合は、Aurora に書き込まれたデータを、自社でパイプラインを作らずにほぼリアルタイムで Amazon Redshift に複製するフルマネージドの仕組みです。複数の DB クラスターから同じ Redshift に統合できるので 3 地域分のデータを合わせて集計でき、集計の負荷も Aurora にかかりません。"
+    },
+    {
+      "id": "b",
+      "text": "各 Aurora DB クラスターに Aurora レプリカを追加し、経営企画部門は 3 つのレプリカに別々にクエリを実行して、結果を表計算ソフトで合算する。",
+      "correct": false,
+      "rationale": "Aurora レプリカで集計すればトランザクション処理への影響は避けられますが、3 つのクラスターのデータを合わせた集計はできず、結果を手作業で合算することになります。過去数年分の大量のデータを複雑に集計する分析基盤としても向いていません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Glue の ETL ジョブを 1 日 1 回実行して 3 つのクラスターのデータを Amazon S3 に書き出し、Amazon Athena で集計する。",
+      "correct": false,
+      "rationale": "1 日 1 回の ETL では、数分前のデータまで含めて集計するという要件を満たしません。ETL ジョブの作成と運用も必要になります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DMS のレプリケーションインスタンスを用意し、3 つのクラスターから Amazon Redshift への継続的なレプリケーションのタスクをそれぞれ作成して運用する。",
+      "correct": false,
+      "rationale": "AWS DMS でもほぼリアルタイムで Redshift へ複製できますが、レプリケーションインスタンスとタスクの設定、監視、障害時の対応を自社で行う必要があります。パイプラインの構築や運用を避けたいという要件に、zero-ETL 統合ほど合いません。"
+    }
+  ],
+  "explanation": "トランザクション処理（OLTP）と分析を同じデータベースで行うと、重い集計がトランザクション処理の性能に影響します。分析用のデータは Amazon Redshift などのデータウェアハウスに分けるのが基本ですが、そのためには従来、ETL（抽出・変換・読み込み）のパイプラインを作って運用する必要がありました。\n\nAurora の zero-ETL 統合を使うと、Aurora DB クラスターのデータとスキーマの変更が、ほぼリアルタイムで Redshift に自動で複製されます。パイプラインのプロビジョニングと管理は AWS が行い、複数の DB クラスターを 1 つの Redshift のデータウェアハウスに統合することもできます。Redshift は列指向のストレージを使うデータウェアハウスで、大量の履歴データを集計する分析クエリに向いています。\n\n日次の ETL ではデータの鮮度が足りず、AWS DMS は複製の仕組みを自社で運用する手間がかかり、Aurora レプリカは複数のクラスターを合わせた大規模な分析に向きません。",
+  "keyPoints": [
+    "OLTP のデータベースに影響させずにほぼリアルタイムで分析 → Aurora の zero-ETL 統合で Amazon Redshift に複製する",
+    "「ETL パイプラインを作りたくない」→ zero-ETL 統合。AWS DMS や AWS Glue は自社で構築・運用する",
+    "複数のデータベースを合わせた大規模な集計 → データウェアハウス（Amazon Redshift）"
+  ],
+  "references": [
+    {
+      "title": "Aurora zero-ETL integrations - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/zero-etl.html"
+    },
+    {
+      "title": "What is Amazon Redshift? - Amazon Redshift",
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

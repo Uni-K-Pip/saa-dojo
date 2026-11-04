@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.3-g7-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K8", "3.3-K4"],
+  "services": ["Amazon Aurora Serverless", "Amazon Aurora", "Amazon DynamoDB", "Amazon EventBridge", "AWS Lambda"],
+  "qualifier": "cost",
+  "tags": ["Aurora Serverless", "ACU", "自動スケーリング", "変動するワークロード"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の経理部門は、MySQL 互換のデータベースを使う社内の精算システムを運用しています。システムは月末の数日間だけ多くの社員が使い、それ以外の日は利用がわずかで、夜間や週末はほとんど使われません。現在は、月末の負荷に合わせた大きなインスタンスクラスで Amazon Aurora MySQL-Compatible Edition の DB クラスターを常に動かしています。アプリケーションを変更せずに、負荷に合わせてデータベースのキャパシティーが自動で増減し、使わない時間のコストを抑えられる構成にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "DB クラスターの DB インスタンスを Aurora Serverless に変更し、最小と最大のキャパシティーを ACU で設定する。",
+      "correct": true,
+      "rationale": "Aurora Serverless は、負荷に応じてキャパシティーを 0.5 ACU（Aurora キャパシティーユニット）単位で自動的に増減し、使ったキャパシティーの分だけ課金されます。MySQL 互換のままなので、アプリケーションの変更は要りません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EventBridge のスケジュールで AWS Lambda 関数を実行し、月末の前後に DB インスタンスクラスを変更する。",
+      "correct": false,
+      "rationale": "スケジュールでインスタンスクラスを変える方法は、月末以外の予想外の負荷に対応できず、変更のたびに再起動やフェイルオーバーによる中断も発生します。負荷に合わせて自動で増減するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "データを Amazon DynamoDB に移行し、テーブルをオンデマンドキャパシティーモードで使う。",
+      "correct": false,
+      "rationale": "DynamoDB は MySQL 互換ではないため、データモデルとアプリケーションの大幅な変更が必要です。アプリケーションを変更しないという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "ストレージは自動で拡張されるので、DB インスタンスクラスを月平均の負荷に合わせて小さくする。",
+      "correct": false,
+      "rationale": "Aurora のストレージはデータ量に合わせて自動で拡張されますが、CPU やメモリなどのコンピューティングのキャパシティーは増えません。小さいインスタンスクラスでは月末の負荷に耐えられません。"
+    }
+  ],
+  "explanation": "Aurora Serverless は、Aurora のオンデマンドで自動スケーリングする構成です（古い資料では Aurora Serverless v2 と書かれています）。キャパシティーは Aurora キャパシティーユニット（ACU）で表され、負荷に応じて 0.5 ACU 単位で細かく増減し、使った分だけ課金されます。月末だけ忙しいシステム、負荷を予測できない新しいアプリケーション、開発・テスト環境など、負荷の変動が大きいワークロードに向いています。対応するエンジンのバージョンであれば、最小キャパシティーを 0 ACU にして、一定時間接続がないときに自動で一時停止させ、その間のインスタンスの料金をなくすこともできます。\n\nプロビジョンドの DB インスタンスでは、ピークに合わせたサイズの料金を払い続けるか、手作業やスケジュールでサイズを変える必要があります。DynamoDB のオンデマンドモードも使った分だけの課金ですが、MySQL 互換ではないためアプリケーションの書き換えが必要です。",
+  "keyPoints": [
+    "負荷の変動が大きい・予測できないリレーショナルデータベース → Aurora Serverless（ACU で自動スケーリングし、使った分だけ課金）",
+    "Aurora のストレージは自動で拡張されるが、コンピューティングは DB インスタンスで決まる",
+    "「アプリケーションを変更せずに」→ 同じエンジン互換のまま使える選択肢を選ぶ"
+  ],
+  "references": [
+    {
+      "title": "Using Aurora serverless - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+    },
+    {
+      "title": "Scaling to Zero ACUs with automatic pause and resume for Aurora serverless - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}
