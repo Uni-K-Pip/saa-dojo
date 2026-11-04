@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.3-g3-009",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-S5", "1.3-K2"],
+  "services": ["AWS Backup", "Amazon EC2", "Amazon EBS", "Amazon RDS", "Amazon DynamoDB", "Amazon EFS", "AWS Lambda", "Amazon EventBridge"],
+  "qualifier": "operational",
+  "tags": ["バックアッププラン", "クロスリージョンコピー", "災害対策", "一元管理"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社は、東京リージョンで Amazon EC2 インスタンス、Amazon RDS の DB インスタンス、Amazon DynamoDB のテーブル、Amazon EFS のファイルシステムを使っています。災害対策として、これらすべてのバックアップを毎日取得して 35 日間保持し、同じバックアップのコピーを大阪リージョンにも保存する必要があります。バックアップの取得状況は 1 か所でまとめて確認したいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Backup のバックアッププランに、毎日のバックアップと 35 日間の保持、大阪リージョンへのコピーのルールを設定し、タグで対象のリソースを割り当てる。",
+      "correct": true,
+      "rationale": "AWS Backup は、複数の AWS サービスのバックアップをバックアッププランで一元的に自動化するサービスです。頻度、保持期間、別のリージョンへのコピーをルールとして設定でき、タグでリソースを割り当てれば新しいリソースも自動で対象になります。取得状況はコンソールでまとめて確認できます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Data Lifecycle Manager で EBS スナップショットの取得とリージョン間のコピーを設定し、RDS、DynamoDB、EFS はそれぞれのサービスのバックアップ機能を個別に設定する。",
+      "correct": false,
+      "rationale": "サービスごとに別々の仕組みでバックアップとコピーを設定・監視することになり、取得状況を 1 か所でまとめて確認できません。運用上のオーバーヘッドが最も少ないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EventBridge のスケジュールで AWS Lambda 関数を毎日実行し、各サービスの API でバックアップの取得とリージョン間のコピー、古いバックアップの削除を行う。",
+      "correct": false,
+      "rationale": "バックアップ、コピー、削除の処理と、その失敗の監視を自分でコードとして作成・保守する必要があります。運用上のオーバーヘッドが最も少ないという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "RDS のクロスリージョンリードレプリカ、DynamoDB のグローバルテーブル、EFS のレプリケーションで、各リソースを大阪リージョンに常に複製しておく。",
+      "correct": false,
+      "rationale": "レプリケーションは最新の状態を複製する仕組みで、誤った削除やデータの破損もそのまま複製されます。毎日のバックアップを 35 日間保持して過去の時点に戻せるようにするという要件を満たさず、EC2 インスタンスも対象になっていません。"
+    }
+  ],
+  "explanation": "AWS Backup は、AWS のさまざまなサービスのデータ保護を一元的に自動化するフルマネージドサービスです。Amazon EC2、Amazon EBS、Amazon RDS、Amazon Aurora、Amazon DynamoDB、Amazon EFS、Amazon FSx、Amazon S3 など多くのリソースに対応しています。\n\nバックアッププランには、バックアップの頻度（毎日など）とバックアップウィンドウ、保持期間などのライフサイクル、別のリージョンや別のアカウントへのコピーをルールとして設定します。対象のリソースは、リソースの種類、リソース ID、タグで割り当てます。タグで割り当てておくと、あとから作ったリソースにタグを付けるだけで対象にできます。バックアップのジョブとコピーのジョブの状況は、AWS Backup のコンソールでまとめて確認できます。別のリージョンにコピーしたバックアップは、コピー先のバックアップボールトのキーで暗号化し直されます。\n\nリードレプリカやグローバルテーブルなどのレプリケーションは、障害時に素早く切り替えるための仕組みです。誤って削除したデータや壊れたデータもそのまま複製されるため、過去の時点に戻すためのバックアップの代わりにはなりません。",
+  "keyPoints": [
+    "複数のサービスのバックアップを一元的に自動化する → AWS Backup のバックアッププラン",
+    "別のリージョンや別のアカウントへのコピーは、バックアッププランのルールで自動化できる",
+    "レプリケーションは削除や破損も複製する。過去の時点に戻すにはバックアップが必要"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Backup? - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+    },
+    {
+      "title": "Creating backup copies across AWS Regions - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html"
+    },
+    {
+      "title": "Select AWS services to backup - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/assigning-resources.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}
