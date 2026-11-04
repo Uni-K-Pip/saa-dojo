@@ -1,0 +1,79 @@
+{
+  "id": "saa-1.2-g2-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K5"],
+  "services": [
+    "Amazon Macie",
+    "Amazon GuardDuty",
+    "Amazon Inspector",
+    "AWS Security Hub",
+    "Amazon Detective",
+    "Amazon S3"
+  ],
+  "qualifier": "security",
+  "tags": ["機密データの検出", "脅威検出", "セキュリティサービス", "個人情報"],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるオンライン教育サービスの会社は、受講者の氏名やクレジットカード番号を含むファイルを Amazon S3 に保存し、Amazon EC2 で Web アプリケーションを動かしています。セキュリティ部門は、次の 2 つを実現するマネージドサービスを導入したいと考えています。1 つ目は、S3 バケット内のオブジェクトから個人情報などの機密データを自動で見つけて報告することです。2 つ目は、AWS のログを継続的に分析し、EC2 インスタンスと既知の悪意のある IP アドレスとの通信や、IAM の認証情報の不審な使用などの脅威を検出することです。どのサービスを使うべきですか。2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Inspector",
+      "correct": false,
+      "rationale": "Amazon Inspector は、EC2 インスタンスやコンテナイメージ、AWS Lambda 関数のソフトウェアの脆弱性と、意図しないネットワークへの露出を継続的にスキャンするサービスです。S3 の機密データの検出や、ログを分析した脅威の検出は行いません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Macie",
+      "correct": true,
+      "rationale": "Amazon Macie は、機械学習とパターンマッチングで S3 バケット内のオブジェクトを分析し、個人情報などの機密データを見つけて検出結果として報告します。1 つ目の要件に合います。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Security Hub",
+      "correct": false,
+      "rationale": "AWS Security Hub は、GuardDuty や Macie、Amazon Inspector などの検出結果を集約・相関付けして対応の優先順位を付けるサービスです。機密データや脅威を見つける処理そのものは、各検出サービスが行います。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Detective",
+      "correct": false,
+      "rationale": "Amazon Detective は、検出結果やログをもとに、セキュリティ上の問題の調査と根本原因の特定を助けるサービスです。脅威を継続的に検出して知らせる役割は GuardDuty が担います。"
+    },
+    {
+      "id": "e",
+      "text": "Amazon GuardDuty",
+      "correct": true,
+      "rationale": "Amazon GuardDuty は、AWS CloudTrail の管理イベント、VPC フローログ、DNS ログなどを継続的に分析し、悪意のある IP アドレスとの通信や認証情報の不審な使用などの脅威を検出します。フローログを自分で作成しなくても分析されます。2 つ目の要件に合います。"
+    }
+  ],
+  "explanation": "AWS のセキュリティサービスは、それぞれ見つける対象が決まっています。\n\n・Amazon GuardDuty: CloudTrail の管理イベント、VPC フローログ、DNS ログなどを継続的に分析し、悪意のある IP アドレスとの通信、暗号通貨のマイニング、認証情報の不審な使用などの脅威を検出します。有効にするだけで、これらのログを独立した経路で取り込んで分析します。\n・Amazon Macie: S3 バケット内のオブジェクトを機械学習とパターンマッチングで分析し、個人情報や認証情報などの機密データを見つけます。\n・Amazon Inspector: EC2 インスタンス、コンテナイメージ、Lambda 関数のソフトウェアの脆弱性と、意図しないネットワークへの露出をスキャンします。\n・Amazon Detective: 検出結果をきっかけに、関連するログを可視化して調査と根本原因の特定を助けます。\n・AWS Security Hub: 各サービスの検出結果を集約・相関付けし、優先順位を付けます。ベストプラクティスに沿った設定かどうかのチェックは Security Hub CSPM（以前の Security Hub）で行います。\n\nこの問題では、S3 の機密データの発見が Macie、ログの分析による脅威の検出が GuardDuty の役割です。",
+  "keyPoints": [
+    "S3 の個人情報・機密データを見つける → Amazon Macie",
+    "ログを分析して脅威（不審な通信や認証情報の悪用）を検出する → Amazon GuardDuty",
+    "ソフトウェアの脆弱性のスキャン → Amazon Inspector",
+    "検出結果の調査・根本原因の特定 → Amazon Detective、集約と優先順位付け → AWS Security Hub"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Macie? - Amazon Macie",
+      "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+    },
+    {
+      "title": "GuardDuty foundational data sources - Amazon GuardDuty",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html"
+    },
+    {
+      "title": "What are Security Hub and Security Hub CSPM? - AWS Security Hub",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-are-securityhub-services.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-app-protection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}

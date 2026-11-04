@@ -1,0 +1,306 @@
+{
+  "createdBy": "x",
+  "entries": [
+    {
+      "term": "Auto Scaling グループ",
+      "en": "Auto Scaling group",
+      "definition": "同じ設定の EC2 インスタンスをまとめ、最小・最大・希望の台数の範囲で自動的に増減させる単位です。異常なインスタンスを自動で置き換え、複数の AZ にインスタンスを分散させます。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["起動テンプレート", "スケーリングポリシー", "ヘルスチェック"]
+    },
+    {
+      "term": "起動テンプレート",
+      "en": "Launch template",
+      "definition": "EC2 インスタンスを起動するときの設定（AMI、インスタンスタイプ、セキュリティグループ、ユーザーデータ、IAM ロールなど）をまとめたテンプレートです。バージョンを管理でき、Auto Scaling グループで使います。",
+      "services": ["Amazon EC2", "Amazon EC2 Auto Scaling"],
+      "related": ["Auto Scaling グループ", "AMI", "ユーザーデータ"]
+    },
+    {
+      "term": "スケーリングポリシー",
+      "en": "Scaling policy",
+      "definition": "Auto Scaling で、いつ、どのくらい台数を増減させるかの決まりです。ターゲット追跡、ステップ、スケジュール、予測などの種類があります。",
+      "services": ["Amazon EC2 Auto Scaling", "AWS Auto Scaling"],
+      "related": ["ターゲット追跡スケーリング", "スケジュールされたスケーリング", "予測スケーリング"]
+    },
+    {
+      "term": "ターゲット追跡スケーリング",
+      "en": "Target tracking scaling",
+      "definition": "「平均 CPU 使用率を 50% に保つ」のように目標の値を決めると、その値に近づくように台数を自動で増減させるスケーリングポリシーです。設定が簡単で、多くの場合に最初に選びます。",
+      "services": ["Amazon EC2 Auto Scaling", "Amazon CloudWatch"],
+      "related": ["スケーリングポリシー", "Auto Scaling グループ"]
+    },
+    {
+      "term": "スケジュールされたスケーリング",
+      "en": "Scheduled scaling",
+      "definition": "「平日の 9 時に 10 台にする」のように、決まった日時に台数を変えるスケーリングです。負荷が増える時刻が分かっている場合に、事前に台数を増やしておけます。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["スケーリングポリシー", "予測スケーリング"]
+    },
+    {
+      "term": "予測スケーリング",
+      "en": "Predictive scaling",
+      "definition": "過去の負荷のパターンを機械学習で分析し、負荷が増える前に台数を増やすスケーリングです。毎日や毎週のように繰り返す負荷の変動に向いています。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["スケーリングポリシー", "スケジュールされたスケーリング"]
+    },
+    {
+      "term": "ウォームプール",
+      "en": "Warm pool",
+      "definition": "初期化を済ませた EC2 インスタンスを停止状態などで待機させておき、スケールアウトのときに素早く使えるようにする Auto Scaling の機能です。起動に時間がかかるアプリケーションに向いています。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["Auto Scaling グループ", "ライフサイクルフック"]
+    },
+    {
+      "term": "ライフサイクルフック",
+      "en": "Lifecycle hook",
+      "definition": "Auto Scaling でインスタンスを起動したときや終了するときに、処理を一時停止して、ソフトウェアの準備やログの退避などの作業を行えるようにする機能です。",
+      "services": ["Amazon EC2 Auto Scaling"],
+      "related": ["Auto Scaling グループ", "ウォームプール"]
+    },
+    {
+      "term": "ヘルスチェック",
+      "en": "Health check",
+      "definition": "リソースが正常に応答しているかを定期的に確かめる仕組みです。ELB は異常なターゲットに通信を送らず、Auto Scaling は異常なインスタンスを置き換え、Route 53 は異常な送り先を DNS の応答から外します。",
+      "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon Route 53"],
+      "related": ["ロードバランサー", "Auto Scaling グループ", "フェイルオーバールーティング"]
+    },
+    {
+      "term": "プレイスメントグループ",
+      "en": "Placement group",
+      "definition": "EC2 インスタンスの物理的な配置を決める設定です。クラスターは 1 つの AZ の中で近くに置いてインスタンス間の通信を速くし、分散は別々のハードウェアに置いて同時に故障しないようにし、パーティションは大規模な分散システムをグループごとに分けて置きます。",
+      "services": ["Amazon EC2"],
+      "related": ["HPC", "高可用性"]
+    },
+    {
+      "term": "オンデマンドインスタンス",
+      "en": "On-Demand Instances",
+      "definition": "長期の約束なしで、使った時間の分だけ支払う EC2 の購入方法です。短期間の処理や、負荷が予測できない処理、中断できない処理に向いています。",
+      "services": ["Amazon EC2"],
+      "related": ["リザーブドインスタンス", "Savings Plans", "スポットインスタンス"]
+    },
+    {
+      "term": "リザーブドインスタンス",
+      "en": "Reserved Instances",
+      "definition": "1 年か 3 年の期間でインスタンスの属性を決めて約束する代わりに、オンデマンドより安くなる購入方法です。属性を変えられないスタンダードと、交換できるコンバーティブルがあります。AZ を指定するとキャパシティも予約されます。",
+      "services": ["Amazon EC2", "Amazon RDS"],
+      "related": ["Savings Plans", "オンデマンドインスタンス", "オンデマンドキャパシティ予約"]
+    },
+    {
+      "term": "Savings Plans",
+      "en": "Savings Plans",
+      "definition": "1 年か 3 年の期間、1 時間あたりの利用額を約束する代わりに割引を受ける料金のモデルです。Compute Savings Plans はインスタンスファミリーやリージョンを問わず EC2、AWS Fargate、AWS Lambda に適用され、EC2 Instance Savings Plans はリージョンとファミリーを決める代わりに割引が大きくなります。",
+      "services": ["Savings Plans", "Amazon EC2", "AWS Fargate", "AWS Lambda"],
+      "related": ["リザーブドインスタンス", "オンデマンドインスタンス"]
+    },
+    {
+      "term": "スポットインスタンス",
+      "en": "Spot Instances",
+      "definition": "AWS の使われていないキャパシティを、オンデマンドより大幅に安く使う EC2 の購入方法です。AWS がキャパシティを必要とすると、2 分前の通知で中断されます。中断しても再実行できるバッチ処理などに向いています。",
+      "services": ["Amazon EC2 Spot Instances", "Amazon EC2"],
+      "related": ["オンデマンドインスタンス", "バッチ処理", "Auto Scaling グループ"]
+    },
+    {
+      "term": "専有ホスト",
+      "en": "Dedicated Hosts",
+      "definition": "物理サーバー 1 台をまるごと自分専用にする EC2 の使い方です。ソケット数やコア数が見えるので、物理的な単位で決まるソフトウェアのライセンスを持ち込めます（BYOL）。",
+      "services": ["Amazon EC2", "AWS License Manager"],
+      "related": ["ハードウェア専有インスタンス", "ライセンスの持ち込み"]
+    },
+    {
+      "term": "ハードウェア専有インスタンス",
+      "en": "Dedicated Instances",
+      "definition": "ほかの AWS アカウントとハードウェアを共有しないで動く EC2 インスタンスです。専有ホストと違い、物理サーバーのソケットやコアは見えず、配置も指定できません。",
+      "services": ["Amazon EC2"],
+      "related": ["専有ホスト"]
+    },
+    {
+      "term": "オンデマンドキャパシティ予約",
+      "en": "On-Demand Capacity Reservations",
+      "definition": "特定の AZ で、指定したインスタンスタイプのキャパシティを期間の約束なしに予約する機能です。予約している間は、使っていなくてもオンデマンドの料金がかかります。Savings Plans などと組み合わせると割引を受けられます。",
+      "services": ["Amazon EC2"],
+      "related": ["リザーブドインスタンス", "Savings Plans"]
+    },
+    {
+      "term": "コンテナ",
+      "en": "Container",
+      "definition": "アプリケーションと、その実行に必要なライブラリや設定を 1 つにまとめ、どの環境でも同じように動かせるようにする仕組みです。仮想マシンより軽く、すぐに起動できます。",
+      "services": ["Amazon ECS", "Amazon EKS", "AWS Fargate"],
+      "related": ["コンテナオーケストレーション", "コンテナイメージ", "マイクロサービス"]
+    },
+    {
+      "term": "コンテナオーケストレーション",
+      "en": "Container orchestration",
+      "definition": "多数のコンテナの配置、起動、スケーリング、障害時の再起動を自動で管理することです。AWS では Amazon ECS（AWS 独自）と Amazon EKS（Kubernetes）があり、実行環境には EC2 か AWS Fargate を選べます。",
+      "services": ["Amazon ECS", "Amazon EKS", "AWS Fargate"],
+      "related": ["コンテナ", "タスク定義"]
+    },
+    {
+      "term": "タスク定義",
+      "en": "Task definition",
+      "definition": "Amazon ECS で、どのコンテナイメージを、どのくらいの CPU とメモリで、どの IAM ロールを使って動かすかを書いた設定です。タスク定義から起動したものをタスクと呼びます。",
+      "services": ["Amazon ECS"],
+      "related": ["コンテナオーケストレーション", "IAM ロール"]
+    },
+    {
+      "term": "コンテナイメージ",
+      "en": "Container image",
+      "definition": "コンテナを起動するためのひな形です。AWS では Amazon Elastic Container Registry（Amazon ECR）に保存し、脆弱性のスキャンもできます。",
+      "services": ["Amazon Elastic Container Registry", "Amazon Inspector"],
+      "related": ["コンテナ", "脆弱性スキャン"]
+    },
+    {
+      "term": "コールドスタート",
+      "en": "Cold start",
+      "definition": "AWS Lambda で、関数の実行環境を新しく用意するときに発生する起動の遅れです。レイテンシーが重要な関数では、プロビジョニングされた同時実行で事前に環境を用意しておくと防げます。",
+      "services": ["AWS Lambda"],
+      "related": ["プロビジョニングされた同時実行", "レイテンシー"]
+    },
+    {
+      "term": "プロビジョニングされた同時実行",
+      "en": "Provisioned concurrency",
+      "definition": "AWS Lambda の関数の実行環境を、指定した数だけ初期化して待機させておく機能です。コールドスタートを避け、安定して低いレイテンシーで応答できます。追加の料金がかかります。",
+      "services": ["AWS Lambda"],
+      "related": ["コールドスタート", "予約された同時実行"]
+    },
+    {
+      "term": "予約された同時実行",
+      "en": "Reserved concurrency",
+      "definition": "AWS Lambda の特定の関数のために、同時に実行できる数を確保し、同時にその数を上限にする設定です。重要な関数の実行枠を守ったり、下流のデータベースへの負荷を抑えたりするのに使います。",
+      "services": ["AWS Lambda"],
+      "related": ["プロビジョニングされた同時実行", "スロットリング"]
+    },
+    {
+      "term": "イベントソースマッピング",
+      "en": "Event source mapping",
+      "definition": "Amazon SQS、Amazon Kinesis Data Streams、DynamoDB ストリームなどから AWS Lambda がレコードを読み取り、まとめて関数に渡す仕組みです。",
+      "services": ["AWS Lambda", "Amazon SQS", "Amazon Kinesis Data Streams"],
+      "related": ["イベント駆動アーキテクチャ", "DynamoDB ストリーム"]
+    },
+    {
+      "term": "スロットリング",
+      "en": "Throttling",
+      "definition": "決められた量を超えるリクエストを制限することです。Amazon API Gateway では、1 秒あたりのリクエスト数とバーストの上限を設定し、使用量プランで利用者ごとに制限できます。超えたリクエストには 429 エラーが返ります。",
+      "services": ["Amazon API Gateway", "AWS Lambda"],
+      "related": ["使用量プラン", "予約された同時実行"]
+    },
+    {
+      "term": "使用量プラン",
+      "en": "Usage plan",
+      "definition": "Amazon API Gateway で、API キーごとに 1 秒あたりのリクエスト数や、1 日・1 か月のリクエストの上限を決める仕組みです。API を外部の利用者に提供するときに使います。",
+      "services": ["Amazon API Gateway"],
+      "related": ["スロットリング"]
+    },
+    {
+      "term": "ステートマシン",
+      "en": "State machine",
+      "definition": "AWS Step Functions で、処理の手順（順番、分岐、並列、待機、再試行、エラー処理）を定義したワークフローです。複数の Lambda 関数や AWS のサービスを、コードを書き足さずにつなげられます。",
+      "services": ["AWS Step Functions", "AWS Lambda"],
+      "related": ["マイクロサービス", "疎結合"]
+    },
+    {
+      "term": "マイクロサービス",
+      "en": "Microservices",
+      "definition": "アプリケーションを、独立して開発・デプロイ・スケールできる小さなサービスの集まりとして作る設計です。サービスどうしは API やメッセージでやり取りします。",
+      "services": ["Amazon ECS", "AWS Lambda", "Amazon API Gateway"],
+      "related": ["疎結合", "コンテナ", "イベント駆動アーキテクチャ"]
+    },
+    {
+      "term": "疎結合",
+      "en": "Loose coupling",
+      "definition": "システムの部品どうしが、互いの状態や処理の速さに直接依存しないようにする設計です。キューやイベントを間に挟むと、片方が止まったり遅くなったりしても、もう片方は動き続けられます。",
+      "services": ["Amazon SQS", "Amazon SNS", "Amazon EventBridge"],
+      "related": ["イベント駆動アーキテクチャ", "マイクロサービス", "ファンアウト"]
+    },
+    {
+      "term": "イベント駆動アーキテクチャ",
+      "en": "Event-driven architecture",
+      "definition": "「注文が入った」「ファイルがアップロードされた」などのイベントをきっかけに、処理が動く設計です。イベントを出す側と受け取る側が疎結合になり、サーバーレスと相性がよい設計です。",
+      "services": ["Amazon EventBridge", "AWS Lambda", "Amazon SNS"],
+      "related": ["疎結合", "イベントバス", "サーバーレス"]
+    },
+    {
+      "term": "イベントバス",
+      "en": "Event bus",
+      "definition": "Amazon EventBridge でイベントを受け取り、ルールに合ったターゲットへ届ける経路です。AWS のサービスのイベントが届く既定のイベントバス、独自のカスタムイベントバス、SaaS のパートナーのイベントバスがあります。",
+      "services": ["Amazon EventBridge"],
+      "related": ["イベント駆動アーキテクチャ", "ファンアウト"]
+    },
+    {
+      "term": "ファンアウト",
+      "en": "Fan-out",
+      "definition": "1 つのメッセージを複数の受信側に同時に届ける構成です。Amazon SNS のトピックに複数の Amazon SQS のキューをサブスクライブすると、各キューの受信側が自分のペースで処理できます。",
+      "services": ["Amazon SNS", "Amazon SQS"],
+      "related": ["疎結合", "イベントバス"]
+    },
+    {
+      "term": "可視性タイムアウト",
+      "en": "Visibility timeout",
+      "definition": "Amazon SQS で、受信されたメッセージをほかの受信側から見えなくしておく時間です。この間に処理して削除しないと、メッセージはまた見えるようになり、もう一度処理されます。処理にかかる時間より長く設定します。",
+      "services": ["Amazon SQS"],
+      "related": ["デッドレターキュー", "べき等性"]
+    },
+    {
+      "term": "デッドレターキュー",
+      "en": "Dead-letter queue (DLQ)",
+      "definition": "決められた回数処理に失敗したメッセージを移しておくキューです。失敗し続けるメッセージがほかの処理を妨げるのを防ぎ、原因を後で調べられます。",
+      "services": ["Amazon SQS", "Amazon SNS", "AWS Lambda"],
+      "related": ["可視性タイムアウト", "FIFO キュー"]
+    },
+    {
+      "term": "ロングポーリング",
+      "en": "Long polling",
+      "definition": "Amazon SQS でメッセージを受信するとき、キューが空でもすぐに空の応答を返さず、メッセージが届くまで最大 20 秒待つ方法です。空の応答と API の呼び出しが減り、コストを下げられます。",
+      "services": ["Amazon SQS"],
+      "related": ["可視性タイムアウト"]
+    },
+    {
+      "term": "FIFO キュー",
+      "en": "FIFO queue",
+      "definition": "メッセージを送った順番どおりに届け（メッセージグループの中で）、重複を取り除く Amazon SQS のキューです。名前は .fifo で終わります。標準キューよりスループットの上限が低くなります。",
+      "services": ["Amazon SQS"],
+      "related": ["デッドレターキュー", "べき等性"]
+    },
+    {
+      "term": "べき等性",
+      "en": "Idempotency",
+      "definition": "同じ処理を何回実行しても、結果が 1 回実行したときと同じになる性質です。SQS の標準キューのように同じメッセージが 2 回届くことがある仕組みでは、受信側の処理をべき等にしておきます。",
+      "services": ["Amazon SQS", "AWS Lambda"],
+      "related": ["FIFO キュー", "可視性タイムアウト"]
+    },
+    {
+      "term": "シャード",
+      "en": "Shard",
+      "definition": "Amazon Kinesis Data Streams で、データの流れを分けて並列に処理する単位です。プロビジョンドモードでは、1 つのシャードで 1 秒あたり 1 MB か 1,000 件の書き込みを処理でき、シャードを増やすとスループットが上がります。",
+      "services": ["Amazon Kinesis Data Streams"],
+      "related": ["パーティションキー", "ストリーミングデータ"]
+    },
+    {
+      "term": "パーティションキー",
+      "en": "Partition key",
+      "definition": "データをどのシャードやパーティションに置くかを決めるキーです。Kinesis Data Streams では同じパーティションキーのレコードが同じシャードに入り、順序が保たれます。DynamoDB ではテーブルの主キーの一部で、値が偏るとアクセスが一部に集中します。",
+      "services": ["Amazon Kinesis Data Streams", "Amazon DynamoDB"],
+      "related": ["シャード", "キーバリューストア"]
+    },
+    {
+      "term": "ハイブリッドクラウド",
+      "en": "Hybrid cloud",
+      "definition": "オンプレミスの環境と AWS を組み合わせて使う形態です。ネットワークは Direct Connect や VPN で、ストレージは AWS Storage Gateway で、計算は AWS Outposts などでつなぎます。",
+      "services": ["AWS Outposts", "AWS Storage Gateway", "AWS Direct Connect"],
+      "related": ["専用線接続", "サイト間 VPN"]
+    },
+    {
+      "term": "HPC",
+      "en": "High performance computing",
+      "definition": "多数のサーバーを連携させて、科学計算やシミュレーションなどの大規模な計算を行うことです。AWS では、クラスターのプレイスメントグループ、高速なネットワーク、Amazon FSx for Lustre、AWS Batch などを組み合わせます。",
+      "services": ["Amazon EC2", "Amazon FSx", "AWS Batch"],
+      "related": ["プレイスメントグループ", "バッチ処理"]
+    },
+    {
+      "term": "バッチ処理",
+      "en": "Batch processing",
+      "definition": "たまったデータをまとめて処理する方式です。AWS Batch はジョブの待ち行列と実行環境を管理し、必要な分だけ EC2（スポットインスタンスを含む）や AWS Fargate を使ってジョブを実行します。",
+      "services": ["AWS Batch", "Amazon EC2 Spot Instances", "AWS Fargate"],
+      "related": ["スポットインスタンス", "HPC"]
+    }
+  ]
+}

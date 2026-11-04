@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K1"],
+  "services": ["Amazon S3", "Amazon CloudFront"],
+  "qualifier": "cost",
+  "tags": ["リクエスタ支払い", "データ共有", "データ転送料金"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある気象研究機関は、過去 30 年分の気象観測データ（約 400 TB）を Amazon S3 バケットに保存し、国内外の大学や企業の研究者に提供しています。研究者は、それぞれ自分の AWS アカウントの認証情報を使ってデータをダウンロードしています。利用者が増えたため、ダウンロードに伴うリクエスト料金とデータ転送料金が研究機関の予算を圧迫しています。研究機関はデータの保存料金を引き続き負担しますが、ダウンロードにかかる費用は研究者の AWS アカウントに請求されるようにしたいと考えています。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットをオリジンとする Amazon CloudFront ディストリビューションを作成し、研究者には CloudFront のドメイン名を使ってエッジロケーション経由でダウンロードしてもらう。",
+      "correct": false,
+      "rationale": "CloudFront のデータ転送料金とリクエスト料金は、ディストリビューションを所有する研究機関に請求されます。キャッシュによってオリジンへのリクエストが減っても、ダウンロードの費用を研究者に請求するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "バケットでリクエスタ支払い（Requester Pays）を有効にし、研究者にはダウンロードのリクエストに x-amz-request-payer ヘッダーを付けてもらう。",
+      "correct": true,
+      "rationale": "リクエスタ支払いを有効にしたバケットでは、リクエストの料金とダウンロードのデータ転送料金がリクエストした側の AWS アカウントに請求され、バケット所有者には保存料金だけが残ります。研究者は認証済みのリクエストに x-amz-request-payer ヘッダー（AWS CLI では --request-payer）を付けて、料金の負担に同意します。"
+    },
+    {
+      "id": "c",
+      "text": "バケットで S3 Transfer Acceleration を有効にし、研究者には高速化用のエンドポイントを使って最寄りのエッジロケーション経由でダウンロードしてもらう。",
+      "correct": false,
+      "rationale": "S3 Transfer Acceleration は長距離の転送を速くする機能で、通常のデータ転送料金に加えて高速化の料金がかかります。研究機関の負担はかえって増え、ダウンロードの費用を研究者に請求するという要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "研究者ごとに有効期限付きの署名付き URL（presigned URL）を発行する仕組みを作り、研究者にはその URL を使ってダウンロードしてもらう。",
+      "correct": false,
+      "rationale": "署名付き URL は、アクセスできる相手と期間を制限する仕組みです。料金の請求先は変わらず、リクエスタ支払いでないバケットではダウンロードの費用をバケット所有者が払い続けます。"
+    }
+  ],
+  "explanation": "Amazon S3 では通常、保存・リクエスト・データ転送の料金をすべてバケット所有者が払います。リクエスタ支払い（Requester Pays）を有効にすると、リクエストの料金とバケットからダウンロードするときのデータ転送料金がリクエストした側に請求され、バケット所有者は保存料金だけを払います。気象データや地理空間データのような大きなデータセットを、提供する側の負担を増やさずに共有したい場合に使う機能です。\n\nリクエスタ支払いのバケットには匿名でアクセスできず、すべてのリクエストに AWS の認証が必要です。リクエストする側は x-amz-request-payer ヘッダー（AWS CLI では --request-payer オプション）で料金の負担に同意します。IAM ロールを引き受けてリクエストした場合は、そのロールが属するアカウントに請求されます。\n\nCloudFront、S3 Transfer Acceleration、署名付き URL は、配信の速さやアクセスの制御には役立ちますが、料金の請求先を利用者に移すことはできません。",
+  "keyPoints": [
+    "「データの利用者にダウンロードの費用を負担させたい」→ S3 のリクエスタ支払い",
+    "リクエスタ支払いでも、保存料金はバケット所有者が払う",
+    "リクエスタ支払いのバケットは匿名アクセス不可。利用者は AWS の認証情報でリクエストし、料金の負担に同意する"
+  ],
+  "references": [
+    {
+      "title": "Using Requester Pays general purpose buckets for storage transfers and usage - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+    },
+    {
+      "title": "Downloading objects from Requester Pays buckets - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

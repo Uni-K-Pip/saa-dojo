@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.1-g4-004",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K4", "2.1-K6"],
+  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon ElastiCache", "Amazon Elastic Block Store"],
+  "qualifier": "availability",
+  "tags": ["ステートレス", "セッション管理", "スティッキーセッション", "ElastiCache"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会員制の Web サイトは、Application Load Balancer の背後の Amazon EC2 Auto Scaling グループで動いており、ログイン状態とショッピングカートの内容を各インスタンスのメモリに保存しています。スティッキーセッションを有効にしていますが、スケールインやインスタンスの置き換えが起きるたびに、一部の利用者がログアウトされてカートの中身が消えるという苦情が寄せられています。台数を自由に増減できるようにしたうえで、この問題を解決する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ログイン状態とカートの内容を Amazon ElastiCache (Redis OSS) に保存するようにし、インスタンスをステートレスにする。",
+      "correct": true,
+      "rationale": "セッションのデータをインスタンスの外の ElastiCache に置くと、どのインスタンスでも同じ利用者のリクエストを処理できます。インスタンスがスケールインや置き換えで終了してもセッションは失われず、台数を自由に増減できます。"
+    },
+    {
+      "id": "b",
+      "text": "スティッキーセッションの有効期間を 7 日間に延ばし、同じ利用者のリクエストがログインからログアウトまで同じインスタンスに送られ続けるようにする。",
+      "correct": false,
+      "rationale": "有効期間を延ばしても、紐付いたインスタンスが終了すればロードバランサーは別のインスタンスにリクエストを送り、そのインスタンスのメモリにあったセッションは失われます。負荷も特定のインスタンスに偏りやすくなります。"
+    },
+    {
+      "id": "c",
+      "text": "Auto Scaling グループのスケールインを無効にし、インスタンスの台数をピーク時の負荷に合わせて固定して、インスタンスが終了しにくいようにする。",
+      "correct": false,
+      "rationale": "スケールインによるセッションの消失は減りますが、台数を自由に増減するという要件を満たしません。ヘルスチェックの失敗によるインスタンスの置き換えではセッションが失われ、閑散時も多くのインスタンスの料金がかかります。"
+    },
+    {
+      "id": "d",
+      "text": "各インスタンスに Amazon EBS ボリュームを追加してアプリケーションの設定を変更し、ログイン状態とカートの内容をファイルとしてそのボリュームに書き込む。",
+      "correct": false,
+      "rationale": "EBS ボリュームは接続したインスタンスからしか読み書きできないため、別のインスタンスにリクエストが送られるとセッションを参照できません。状態がインスタンスに紐付いたままで、問題は解決しません。"
+    }
+  ],
+  "explanation": "サーバーがセッションなどの状態を自分のメモリやディスクに持つ「ステートフル」な構成では、同じ利用者のリクエストを同じサーバーに送り続ける必要があり、そのサーバーが終了すると状態が失われます。スティッキーセッションは同じターゲットに送り続ける仕組みにすぎず、ターゲットが異常になったり登録解除されたりすると、リクエストは別のターゲットに送られます。\n\nセッションのデータを Amazon ElastiCache や Amazon DynamoDB などインスタンスの外の共有ストアに置くと、各インスタンスは状態を持たない「ステートレス」な構成になります。どのインスタンスでも任意のリクエストを処理できるため、スティッキーセッションに頼らずに Auto Scaling で台数を自由に増減でき、インスタンスの障害や置き換えでも利用者に影響しません。これが水平スケーリングとマイクロサービスの基本的な設計原則です。",
+  "keyPoints": [
+    "台数を自由に増減したい → セッションなどの状態をインスタンスの外（ElastiCache、DynamoDB）に置いてステートレスにする",
+    "スティッキーセッションは、紐付いたターゲットが終了すると別のターゲットに振り分けられ、ローカルのセッションは失われる",
+    "EBS ボリュームやインスタンスのメモリに置いた状態は、ほかのインスタンスと共有できない"
+  ],
+  "references": [
+    {
+      "title": "Edit target group attributes for your Application Load Balancer (sticky sessions) - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+    },
+    {
+      "title": "REL05-BP06 Make systems stateless where possible - Reliability Pillar",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_mitigate_interaction_failure_stateless.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

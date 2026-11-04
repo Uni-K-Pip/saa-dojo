@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.2-g2-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K2", "1.2-S2"],
+  "services": ["VPC endpoints", "AWS PrivateLink", "Amazon Simple Queue Service", "Amazon EC2", "NAT gateway"],
+  "qualifier": "security",
+  "tags": ["インターフェイスエンドポイント", "ゲートウェイエンドポイント", "プライベート DNS", "サービスエンドポイント"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある医療データ分析会社は、VPC のプライベートサブネットにある Amazon EC2 インスタンスで集計処理を実行しています。この VPC にはインターネットゲートウェイも NAT ゲートウェイもなく、社内規程でインターネットへの経路を作ることが禁止されています。VPC の DNS 解決と DNS ホスト名の属性は有効です。新たに、集計の完了通知を Amazon SQS のキューへ送信する処理を追加します。アプリケーションは AWS SDK の既定の設定のまま、SQS のリージョンの標準エンドポイント（sqs.<リージョン>.amazonaws.com）に接続します。アプリケーションのコードと設定を変更せずに要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "SQS のゲートウェイ VPC エンドポイントを作成してプライベートサブネットのルートテーブルに関連付け、エンドポイントポリシーで対象のキューへの送信だけを許可する。",
+      "correct": false,
+      "rationale": "ゲートウェイ型の VPC エンドポイントが対応しているのは Amazon S3 と Amazon DynamoDB だけで、SQS 用のゲートウェイ型エンドポイントは作れません。SQS にプライベートに接続するにはインターフェイス型を使います。"
+    },
+    {
+      "id": "b",
+      "text": "SQS のインターフェイス VPC エンドポイントをプライベートサブネットに作成し、プライベート DNS 名は無効のままにしておく。エンドポイントのセキュリティグループで、インスタンスからの HTTPS を許可する。",
+      "correct": false,
+      "rationale": "プライベート DNS を無効にすると、標準のエンドポイント名はパブリック IP アドレスに解決されたままなので、インターネットへの経路がない VPC からは接続できません。エンドポイント固有の DNS 名を SDK に指定する必要があり、コードと設定を変更しないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "SQS のインターフェイス VPC エンドポイントをプライベートサブネットに作成し、プライベート DNS 名を有効にする。エンドポイントのセキュリティグループで、インスタンスからの HTTPS を許可する。",
+      "correct": true,
+      "rationale": "インターフェイス型エンドポイントは AWS PrivateLink でサブネット内にネットワークインターフェイスを作ります。プライベート DNS を有効にすると、VPC 内では SQS の標準のエンドポイント名がエンドポイントのプライベート IP アドレスに解決されるため、SDK の既定の設定のままインターネットを経由せずに送信できます。"
+    },
+    {
+      "id": "d",
+      "text": "インターネットゲートウェイとパブリックサブネットの NAT ゲートウェイを作成してプライベートサブネットの経路に加え、ネットワーク ACL で送信先を SQS の IP アドレス範囲に限定する。",
+      "correct": false,
+      "rationale": "コードを変えずに SQS へ接続できますが、NAT ゲートウェイとインターネットゲートウェイを経由するインターネットへの経路を作ることになり、社内規程に反します。送信先を絞っても、経路を作らないという要件は満たしません。"
+    }
+  ],
+  "explanation": "VPC エンドポイントを使うと、インターネットゲートウェイや NAT ゲートウェイを使わずに、VPC 内から AWS のサービスへプライベートに接続できます。エンドポイントには 2 種類あります。ゲートウェイ型はルートテーブルにルートを追加する方式で、対応するのは Amazon S3 と Amazon DynamoDB だけです。インターフェイス型は AWS PrivateLink を使い、サブネットにプライベート IP アドレスを持つネットワークインターフェイスを作る方式で、SQS を含む多くのサービスに対応しています。\n\nインターフェイス型エンドポイントでプライベート DNS を有効にすると、sqs.<リージョン>.amazonaws.com のようなサービスの標準のエンドポイント名が、VPC 内ではエンドポイントのプライベート IP アドレスに解決されます。そのため、SDK の既定の設定のままでも通信がエンドポイントを通り、コードや設定を変える必要がありません。プライベート DNS を無効にした場合は、エンドポイント固有の DNS 名（vpce- で始まる名前）を SDK に指定する変更が必要です。\n\nなお、プライベート DNS を使うには、VPC の DNS 解決と DNS ホスト名の属性を有効にしておきます。また、インターフェイス型エンドポイントに関連付けるセキュリティグループでは、クライアントからの HTTPS（443）を許可します。",
+  "keyPoints": [
+    "ゲートウェイ型エンドポイントは S3 と DynamoDB だけ。それ以外はインターフェイス型（AWS PrivateLink）",
+    "インターフェイス型でプライベート DNS を有効にすると、標準のエンドポイント名のままプライベートに接続できる",
+    "「インターネットへの経路を作らない」なら NAT ゲートウェイではなく VPC エンドポイント",
+    "インターフェイス型エンドポイントのセキュリティグループでクライアントからの HTTPS（443）を許可する"
+  ],
+  "references": [
+    {
+      "title": "Access AWS services through AWS PrivateLink - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
+    },
+    {
+      "title": "Gateway endpoints - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+    },
+    {
+      "title": "Internetwork traffic privacy in Amazon SQS - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-internetwork-traffic-privacy.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-private-connectivity"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,62 @@
+{
+  "id": "saa-3.2-g6-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-S2", "3.2-K4"],
+  "services": ["Amazon EC2 Auto Scaling", "Elastic Load Balancing", "Amazon CloudWatch", "Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["ターゲット追跡スケーリング", "ALBRequestCountPerTarget", "スケーリングの指標", "I/O 待ち"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある旅行予約サイトは、Application Load Balancer の背後にある Auto Scaling グループの EC2 インスタンスで動いています。処理の大半は外部の空室照会サービスの応答待ちで、CPU 使用率はリクエスト数にかかわらず 20〜25% で推移します。負荷試験では、1 台あたり 1 分間に約 1,200 件までなら応答時間が目標内に収まりました。今は平均 CPU 使用率 60% を目標とするターゲット追跡スケーリングポリシーのため、アクセスが増えても台数が増えません。台数をリクエスト量に見合うよう自動で調整するには、どのポリシーにすべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ターゲットあたりのリクエスト数（ALBRequestCountPerTarget）を指標に、目標値を 1,000 としたターゲット追跡スケーリングポリシー",
+      "correct": true,
+      "rationale": "ALBRequestCountPerTarget はターゲット 1 台あたりの 1 分間のリクエスト数で、台数を増やすとそれに比例して下がるため、ターゲット追跡スケーリングに適しています。CPU に負荷が表れない I/O 待ち中心のアプリケーションでも、リクエスト量に見合った台数を保てます。目標値は、1 台が処理できる上限の 1,200 件に余裕を持たせて決めます。"
+    },
+    {
+      "id": "b",
+      "text": "ロードバランサーが受けたリクエストの総数（RequestCount）を指標とし、目標値を 1,000 にしたターゲット追跡スケーリングポリシー",
+      "correct": false,
+      "rationale": "ロードバランサーが受けるリクエストの総数は、インスタンスを増やしても減りません。目標値を超えている限り最大容量まで台数を増やし続けるなど、ターゲット追跡スケーリングが正しく働かないため、リクエスト量に見合った台数にするという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "ターゲットの平均応答時間（TargetResponseTime）を指標とし、目標値をサイトで定めた応答時間の目標に合わせたターゲット追跡スケーリングポリシー",
+      "correct": false,
+      "rationale": "応答時間は負荷が高いと長くなりますが、台数に比例して短くなるわけではありません。この例では外部の空室照会サービスが遅いだけでも長くなり、台数を増やしても改善しないのにスケールアウトが続くおそれがあります。要件を満たす指標ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "平均 CPU 使用率を指標とし、目標値を 60% から 20% に下げたターゲット追跡スケーリングポリシー",
+      "correct": false,
+      "rationale": "この例では CPU 使用率がリクエスト数にかかわらず 20〜25% で推移するため、負荷の大きさを表す指標になりません。目標を 20% にすると、アクセスが少ないときでも目標を超えて台数が増え続け、リクエスト量に見合った台数を保てません。"
+    }
+  ],
+  "explanation": "ターゲット追跡スケーリングでは、指標の値が目標値に近づくように台数を増減します。そのため、指標はインスタンスの忙しさを表し、台数に比例して増減するものでなければなりません。事前に用意された指標は、平均 CPU 使用率、平均受信バイト数、平均送信バイト数、ターゲットあたりのリクエスト数（ALBRequestCountPerTarget）の 4 つです。\n\n外部サービスの応答待ちが中心のアプリケーションでは、CPU 使用率に負荷が表れません。このような場合は、1 台が処理しているリクエスト数を表す ALBRequestCountPerTarget が適しています。目標値は、1 台が 1 分間に処理できる最適な量です。負荷試験で求めた上限（1,200 件）に、急な増加に備える余裕を持たせて設定します。\n\nAWS のドキュメントでは、次の指標はターゲット追跡に使えない例として挙げられています。\n\n- ロードバランサーが受けたリクエストの総数（RequestCount）: 台数を増やしても変わらない\n- リクエストのレイテンシー: 負荷が上がると増えるが、台数に比例して変わるわけではない\n- SQS キューの待機メッセージ数そのもの: 台数に比例しない（インスタンスあたりのバックログにすれば使える）",
+  "keyPoints": [
+    "ターゲット追跡の指標は、台数に比例して増減する「1 台あたり」の値を選ぶ",
+    "CPU に負荷が表れない I/O 待ち中心の Web アプリ → ALBRequestCountPerTarget",
+    "ロードバランサー全体のリクエスト数やレイテンシーは、ターゲット追跡の指標に向かない",
+    "目標値は負荷試験で求めた 1 台の処理能力に余裕を持たせて決める"
+  ],
+  "references": [
+    {
+      "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+    },
+    {
+      "title": "CloudWatch metrics for your Application Load Balancer - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-cloudwatch-metrics.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-scaling-and-decoupling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

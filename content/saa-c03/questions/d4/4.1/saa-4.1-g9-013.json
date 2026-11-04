@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-013",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-S2", "4.1-K6"],
+  "services": ["Amazon EBS", "Amazon EC2"],
+  "qualifier": "cost",
+  "tags": ["gp3", "gp2", "容量の見直し", "Elastic Volumes"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon EC2 上で動くデータベースのデータを、3 TiB の汎用 SSD（gp2）の EBS ボリュームに保存しています。実際のデータ量は 400 GiB ほどで、今後も大きく増える見込みはありません。gp2 は容量に応じてベースラインの IOPS が決まるため、9,000 IOPS を確保する目的で大きな容量を割り当てていました。今後も 9,000 IOPS と 250 MiB/秒の性能が必要です。移行のための短いメンテナンス時間は確保できます。性能を保ったまま、ストレージの費用を最も削減できる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Elastic Volumes でボリュームタイプを gp3 に変更し、容量は 3 TiB のまま、9,000 IOPS と 250 MiB/秒をプロビジョニングする。",
+      "correct": false,
+      "rationale": "gp3 は 1 GiB あたりの料金が gp2 より低いので費用は下がります。しかし、使っていない約 2.6 TiB の容量の料金を払い続けることになり、最も削減できる方法ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "Elastic Volumes でボリュームタイプを gp3 に変更すると同時に容量を 500 GiB に縮小し、9,000 IOPS と 250 MiB/秒をプロビジョニングする。",
+      "correct": false,
+      "rationale": "Elastic Volumes では、ボリュームの容量を増やすことはできますが、減らすことはできません。この変更は実行できないため、要件を満たせません。"
+    },
+    {
+      "id": "c",
+      "text": "500 GiB のプロビジョンド IOPS SSD（io2）ボリュームを新しく作成して 9,000 IOPS をプロビジョニングし、データをコピーしてから元のボリュームを削除する。",
+      "correct": false,
+      "rationale": "性能は満たせますが、io2 は 1 GiB あたりの料金に加えて、プロビジョニングした IOPS にも高い料金がかかります。gp3 で十分な性能なので、費用が最も低い方法ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "500 GiB の gp3 ボリュームを新しく作成して 9,000 IOPS と 250 MiB/秒をプロビジョニングし、データをコピーしてから元のボリュームを削除する。",
+      "correct": true,
+      "rationale": "gp3 は、容量と無関係に IOPS とスループットをプロビジョニングできます。必要な容量だけの新しいボリュームに必要な性能を設定し、データを移せば、使っていない容量の料金がなくなります。EBS ボリュームは縮小できないため、小さい新しいボリュームへデータをコピーする方法を取ります。"
+    }
+  ],
+  "explanation": "gp2 のベースラインの IOPS は、容量 1 GiB あたり 3 IOPS で決まります（最小 100、最大 16,000）。そのため、高い IOPS が必要なときは、データ量に関係なく大きな容量を割り当てる必要がありました。gp3 では、容量に関係なく 3,000 IOPS と 125 MiB/秒のベースライン性能があり、それを超える IOPS とスループットを別にプロビジョニングできます。1 GiB あたりの料金も gp2 より低く設定されています。\n\nこの問題では、データ量は 400 GiB ほどなので、余裕を持たせた 500 GiB の gp3 ボリュームに 9,000 IOPS と 250 MiB/秒をプロビジョニングすれば、性能を保ったまま容量の料金を大きく減らせます。ただし、Elastic Volumes で変更できるのはボリュームタイプ・IOPS・スループットと容量の拡張だけで、容量を縮小することはできません。容量を減らすには、新しいボリュームを作成してデータをコピーします。\n\nio2 は、より高い耐久性や IOPS が必要な重要なデータベース向けで、IOPS にも料金がかかるため、この性能要件では割高です。",
+  "keyPoints": [
+    "gp2 は IOPS が容量に比例する。gp3 は容量と無関係に IOPS・スループットを設定できる",
+    "IOPS のために大きな gp2 ボリュームを使っている → 必要な容量の gp3 に移して IOPS をプロビジョニング",
+    "EBS ボリュームは拡張できるが縮小できない。小さくするには新しいボリュームにデータをコピーする"
+  ],
+  "references": [
+    {
+      "title": "Amazon EBS General Purpose SSD volumes - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+    },
+    {
+      "title": "Modify an Amazon EBS volume using Elastic Volumes operations - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

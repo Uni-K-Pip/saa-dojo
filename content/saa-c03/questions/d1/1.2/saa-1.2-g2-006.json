@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.2-g2-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K6", "1.2-S3"],
+  "services": ["AWS WAF", "Elastic Load Balancing", "AWS Shield", "Amazon GuardDuty", "Amazon CloudFront", "Amazon VPC"],
+  "qualifier": "operational",
+  "tags": ["SQL インジェクション", "レートベースのルール", "マネージドルール", "HTTP フラッド"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある EC サイトは、Application Load Balancer（ALB）の背後の Amazon EC2 インスタンスで動いています。最近、検索フォームのパラメータに SQL 文の一部を埋め込んだリクエストが増えているほか、少数の IP アドレスからログインページへ短時間に大量のリクエストが送られています。送信元の IP アドレスは国内外にあり、日によって変わります。これらのリクエストを、アプリケーションに届く前に遮断したいと考えています。アプリケーションのコードを変更せず、運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ALB に関連付けた AWS WAF のウェブ ACL に、SQL インジェクションを検査するマネージドルールグループと、ログインページへのリクエスト数を送信元 IP アドレスごとに制限するレートベースのルールを追加する。",
+      "correct": true,
+      "rationale": "AWS WAF は HTTP リクエストの内容を検査し、ALB に届く前に許可・ブロックを判断します。SQL データベース用のマネージドルールグループで SQL インジェクションのパターンをブロックでき、レートベースのルールは、しきい値を超えた IP アドレスを自動でブロックするので、送信元が日によって変わっても追従できます。"
+    },
+    {
+      "id": "b",
+      "text": "サブネットのネットワーク ACL に、大量のリクエストを送ってくる IP アドレスを拒否するルールを追加し、SQL インジェクションを含むリクエストは、すべてのアカウントに適用される AWS Shield Standard の自動の緩和に任せる。",
+      "correct": false,
+      "rationale": "AWS Shield Standard が防ぐのは、ネットワーク層やトランスポート層の一般的な DDoS 攻撃で、HTTP リクエストの中身は検査しないため SQL インジェクションは防げません。また、日によって変わる送信元をネットワーク ACL で追い続けるのは手作業になります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon GuardDuty を有効にし、不審なリクエストを検出したら Amazon EventBridge 経由で運用担当者に通知して、担当者が送信元を調べて対応する。",
+      "correct": false,
+      "rationale": "GuardDuty は脅威を検出して知らせるサービスで、リクエストを遮断する機能はありません。通知を受けて人が対応する方法では、アプリケーションに届く前に遮断するという要件を満たさず、運用負荷も大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "ALB の前に Amazon CloudFront を置き、地理的制限で国外からのアクセスを拒否したうえで、静的なコンテンツをエッジでキャッシュしてオリジンへのリクエストを減らす。",
+      "correct": false,
+      "rationale": "送信元は国内にもあるため、地理的制限だけでは遮断できません。キャッシュでオリジンの負荷は下がりますが、SQL インジェクションを含むリクエストを検査してブロックすることはできません。"
+    }
+  ],
+  "explanation": "SQL インジェクションや大量の HTTP リクエスト（HTTP フラッド）のような、アプリケーション層（レイヤー 7）の攻撃を防ぐには AWS WAF を使います。AWS WAF のウェブ ACL を ALB、Amazon CloudFront、Amazon API Gateway などに関連付けると、リクエストのヘッダーやクエリ文字列、本文などをルールで検査し、アプリケーションに届く前に許可・ブロック・カウントを判断できます。\n\n・AWS マネージドルール: AWS が作成・更新するルールグループです。SQL データベース用のルールグループで SQL インジェクションに使われるパターンをブロックでき、自分でルールを書いて保守する必要がありません。\n・レートベースのルール: 一定時間のリクエスト数を送信元 IP アドレスなどの単位で数え、しきい値を超えた送信元を自動でブロックします。ログインページの URI に絞って適用することもできます。\n\nAWS Shield Standard は、すべての AWS のお客様に追加料金なしで自動的に適用され、ネットワーク層やトランスポート層の一般的な DDoS 攻撃から守ります。HTTP リクエストの中身は検査しないため、SQL インジェクションの対策にはなりません。より大規模な DDoS 攻撃への対応や DDoS 対応チームの支援が必要な場合は、AWS Shield Advanced を検討します。",
+  "keyPoints": [
+    "SQL インジェクションやクロスサイトスクリプティングなどレイヤー 7 の攻撃 → AWS WAF",
+    "特定の送信元からの大量リクエスト → AWS WAF のレートベースのルール",
+    "AWS Shield Standard は自動・無料で L3/L4 の DDoS を緩和するが、リクエストの中身は検査しない",
+    "GuardDuty は検出のサービスで、通信の遮断はしない"
+  ],
+  "references": [
+    {
+      "title": "Use-case specific rule groups - AWS WAF",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-use-case.html"
+    },
+    {
+      "title": "Using rate-based rule statements in AWS WAF - AWS WAF",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+    },
+    {
+      "title": "AWS Shield Standard overview - AWS Shield",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-app-protection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}

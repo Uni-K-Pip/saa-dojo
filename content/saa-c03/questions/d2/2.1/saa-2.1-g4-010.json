@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.1-g4-010",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K10", "2.1-S1", "2.1-K9"],
+  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon Virtual Private Cloud", "Amazon Relational Database Service"],
+  "qualifier": "security",
+  "tags": ["多層アーキテクチャ", "内部ALB", "セキュリティグループ", "プライベートサブネット", "マルチAZ"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、Web 層、アプリケーション層、データベース層からなる 3 層の業務システムを AWS に構築します。インターネットから直接アクセスできるのは Web 層の入り口だけにし、アプリケーション層には Web 層からのみ、データベースにはアプリケーション層からのみアクセスできるようにする必要があります。各層はアベイラビリティーゾーン（AZ）1 つの障害に耐え、Web 層とアプリケーション層は負荷に応じてそれぞれ独立にスケールする必要があります。どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インターネット向けの ALB をパブリックサブネットに置き、Web 層とアプリケーション層はプライベートサブネットの別々の Auto Scaling グループで 2 つの AZ に分散し、間に内部 ALB を置く。データベースは Amazon RDS のマルチ AZ 配置にする。",
+      "correct": true,
+      "rationale": "インターネットから届くのはパブリックサブネットの ALB だけで、各層のインスタンスとデータベースはプライベートサブネットに置かれます。層ごとに Auto Scaling グループを分けるので独立にスケールでき、2 つの AZ への分散と RDS のマルチ AZ 配置で AZ 1 つの障害に耐えられます。内部 ALB で層の間を疎結合にできます。"
+    },
+    {
+      "id": "b",
+      "text": "ALB を含む各層のセキュリティグループのインバウンドルールで、送信元として 1 つ手前の層のセキュリティグループを指定し、必要なポートだけを許可する。",
+      "correct": true,
+      "rationale": "セキュリティグループのルールでは、送信元に別のセキュリティグループを指定できます。インスタンスが増減して IP アドレスが変わっても、1 つ手前の層からの通信だけを許可する設定が自動的に保たれ、層ごとのアクセス制御の要件を満たせます。"
+    },
+    {
+      "id": "c",
+      "text": "すべての層のインスタンスをパブリックサブネットに置いてパブリック IP アドレスを割り当て、ネットワーク ACL でインターネットからの通信を Web 層のサブネットだけに許可する。",
+      "correct": false,
+      "rationale": "アプリケーション層とデータベースにもパブリック IP アドレスがあり、ネットワーク ACL の設定を誤るとインターネットから到達できてしまいます。ステートレスなネットワーク ACL では戻りの通信も明示的に許可する必要があり、層ごとの制御が複雑になります。"
+    },
+    {
+      "id": "d",
+      "text": "Web 層とアプリケーション層を同じインスタンスで動かして 1 つの Auto Scaling グループにまとめ、データベースへの通信はそのサブネットの IP アドレス範囲から許可する。",
+      "correct": false,
+      "rationale": "Web 層とアプリケーション層が同じインスタンスで動くため、負荷に応じてそれぞれ独立にスケールするという要件を満たしません。層を分けておくと、処理の重い層だけを増やせます。"
+    },
+    {
+      "id": "e",
+      "text": "すべての層を 1 つの AZ にまとめて構築し、障害に備えて別の AZ で AMI とスナップショットから環境を再構築する手順を用意しておく。",
+      "correct": false,
+      "rationale": "AZ に障害が起きると、再構築が終わるまでシステムが止まります。AZ 1 つの障害に耐えるという要件を満たしません。"
+    }
+  ],
+  "explanation": "多層アーキテクチャでは、役割の異なる層をネットワークとアクセス制御で分け、層ごとにスケールさせます。典型的な構成では、インターネット向けの Application Load Balancer（ALB）だけをパブリックサブネットに置き、Web 層とアプリケーション層のインスタンスはプライベートサブネットに置きます。Web 層とアプリケーション層の間に内部 ALB を置くと、内部 ALB はプライベート IP アドレスだけを持ち、VPC 内からのリクエストだけを受け付けます。層ごとに Auto Scaling グループを分けて複数の AZ にまたがらせ、データベースは Amazon RDS のマルチ AZ 配置にすると、AZ 1 つの障害に耐えられます。\n\n層の間のアクセス制御には、送信元にセキュリティグループを指定するルールを使います。インスタンスの IP アドレスが変わってもルールを変更する必要がなく、Auto Scaling と相性がよい方法です。ネットワーク ACL はサブネット単位のステートレスな制御で、補助的に使います。",
+  "keyPoints": [
+    "インターネットに置くのは入り口の ALB だけ。各層のインスタンスとデータベースはプライベートサブネット",
+    "層の間は内部 ALB でつなぎ、層ごとの Auto Scaling グループで独立にスケール",
+    "層の間のアクセス制御は、送信元にセキュリティグループを指定するルールで",
+    "AZ 障害への備え → 各層を複数 AZ に分散し、データベースはマルチ AZ 配置"
+  ],
+  "references": [
+    {
+      "title": "How Elastic Load Balancing works (load balancer scheme) - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+    },
+    {
+      "title": "Security group rules - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
+    },
+    {
+      "title": "Configuring and managing a Multi-AZ deployment for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

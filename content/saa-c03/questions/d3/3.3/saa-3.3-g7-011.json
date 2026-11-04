@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-011",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-S3", "3.3-K6"],
+  "services": ["Amazon Aurora", "Amazon DynamoDB", "Amazon Redshift"],
+  "qualifier": "minimal-change",
+  "tags": ["データベースエンジン", "PostgreSQL", "PostGIS", "互換性"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある不動産情報サイトは、オンプレミスの PostgreSQL で物件データを管理しています。アプリケーションは PostGIS 拡張機能を使い、「駅から半径 1 km 以内の物件」のような地理空間検索を行っています。会社はデータベースを AWS のマネージドサービスに移し、読み取りの増加に合わせて読み取り専用のレプリカを追加できるようにしたいと考えています。SQL とアプリケーションの変更はできるだけ避けたいと考えています。どの方法を選ぶべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Aurora MySQL-Compatible Edition に移行し、地理空間検索の SQL は MySQL の空間関数を使うように書き換える。",
+      "correct": false,
+      "rationale": "MySQL にも空間データの機能はありますが、PostGIS の関数とは書き方が異なるため、地理空間検索の SQL を書き換える必要があります。SQL とアプリケーションの変更を避けるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Aurora PostgreSQL-Compatible Edition に移行し、PostGIS 拡張機能を有効にする。",
+      "correct": true,
+      "rationale": "Aurora PostgreSQL は PostgreSQL 互換のエンジンで、PostGIS 拡張機能を使えます。既存の SQL をほぼそのまま使え、最大 15 台の Aurora レプリカを追加して読み取りを分散できます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon DynamoDB に移行し、緯度と経度を項目の属性として保存して検索する。",
+      "correct": false,
+      "rationale": "DynamoDB はキーによるアクセスに強い NoSQL データベースで、PostgreSQL の SQL や PostGIS の地理空間検索はそのままでは使えません。データモデルとアプリケーションを作り直す必要があります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Redshift に移行し、地理空間データ型を使って検索する。",
+      "correct": false,
+      "rationale": "Redshift は大量のデータを集計するためのデータウェアハウスで、Web サイトから多数の短いクエリを低レイテンシーで処理する用途には向きません。アプリケーションの SQL の見直しも必要になります。"
+    }
+  ],
+  "explanation": "データベースエンジンを選ぶときは、まずアプリケーションが使っている機能（SQL の方言、拡張機能、ストアドプロシージャなど）を確認します。同じエンジンか、その互換エンジンを選べば、SQL とアプリケーションの変更を最小限にできます。\n\nこの問題のアプリケーションは PostgreSQL と PostGIS 拡張機能を使っているので、PostgreSQL 互換の Amazon Aurora PostgreSQL-Compatible Edition（または Amazon RDS for PostgreSQL）を選びます。Aurora では最大 15 台の Aurora レプリカを追加して読み取りを分散できます。MySQL も代表的なオープンソースのエンジンですが、PostgreSQL とは SQL の方言や拡張機能が異なり、エンジンを変えるとスキーマや SQL の変換が必要になります。DynamoDB（キーバリュー型の NoSQL）や Redshift（データウェアハウス）は、そもそもデータベースの種類が異なります。",
+  "keyPoints": [
+    "アプリケーションが使うエンジン固有の機能（例: PostGIS）を確認し、同じエンジンの互換サービスを選ぶ",
+    "PostGIS などの PostgreSQL の拡張機能 → Aurora PostgreSQL または RDS for PostgreSQL",
+    "エンジンを変えると、SQL やスキーマの変換が必要になる"
+  ],
+  "references": [
+    {
+      "title": "Managing spatial data with the PostGIS extension - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Appendix.PostgreSQL.CommonDBATasks.PostGIS.html"
+    },
+    {
+      "title": "Working with Amazon Aurora PostgreSQL - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html"
+    },
+    {
+      "title": "Replication with Amazon Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

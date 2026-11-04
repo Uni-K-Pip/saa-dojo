@@ -1,0 +1,81 @@
+{
+  "id": "saa-2.2-g5-006",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K6",
+    "2.2-K1",
+    "2.2-S2"
+  ],
+  "services": [
+    "Amazon Route 53",
+    "Elastic Load Balancing",
+    "Amazon CloudFront"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "フェイルオーバールーティング",
+    "アクティブ／パッシブ",
+    "ヘルスチェック",
+    "オリジンフェイルオーバー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるオンライン予約サービスは、東京リージョンの Application Load Balancer（ALB）の背後にある Amazon EC2 インスタンスで動いています。災害対策として大阪リージョンにも同じ構成の環境を用意し、データベースのデータも複製しています。会社は、通常時はすべての利用者を東京リージョンで処理し、東京リージョンの ALB が正常に応答しなくなったときにだけ、予約の登録（HTTP の POST リクエスト）を含むすべての通信を自動で大阪リージョンに切り替えたいと考えています。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Route 53 のフェイルオーバールーティングで、東京の ALB を指すプライマリのエイリアスレコードと、大阪の ALB を指すセカンダリのエイリアスレコードを作成し、ターゲットのヘルスを評価する。",
+      "correct": true,
+      "rationale": "フェイルオーバールーティングは、プライマリが正常な間はプライマリのレコードだけを返し、異常になるとセカンダリのレコードを返すアクティブ／パッシブの構成です。ALB へのエイリアスレコードでは、ヘルスチェックを作らずに「ターゲットのヘルスを評価」を有効にすれば、東京の ALB が正常でなくなったときに大阪へ切り替わります。DNS で接続先を切り替えるため、POST を含むすべての通信が対象になります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Route 53 のレイテンシーベースルーティングで、東京と大阪の ALB を指すエイリアスレコードをそれぞれ作成し、ターゲットのヘルスを評価する。",
+      "correct": false,
+      "rationale": "レイテンシーベースルーティングは、利用者ごとに遅延の小さいリージョンへ振り分けるアクティブ／アクティブの構成です。通常時から大阪リージョンのほうが近い利用者は大阪で処理されるため、通常時はすべての利用者を東京で処理するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon CloudFront のディストリビューションでオリジングループを作成し、東京の ALB をプライマリ、大阪の ALB をセカンダリとして登録して、5xx のステータスコードでオリジンフェイルオーバーするように設定する。",
+      "correct": false,
+      "rationale": "CloudFront のオリジンフェイルオーバーで 2 つ目のオリジンに送り直されるのは、GET、HEAD、OPTIONS のリクエストだけです。予約の登録に使う POST リクエストは切り替わらないため、すべての通信を切り替えるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Route 53 の加重ルーティングで、東京の ALB を指すレコードの重みを 100、大阪の ALB を指すレコードの重みを 0 にし、ヘルスチェックは使わない。",
+      "correct": false,
+      "rationale": "重み 0 のレコードが使われるのは、重みが 0 より大きいレコードがすべて異常と判定されたときだけです。正常性を判定しないと東京のレコードは常に返され続け、東京の ALB が応答しなくなっても大阪へ切り替わりません。"
+    }
+  ],
+  "explanation": "Route 53 のルーティングポリシーには、それぞれ向いている使い方があります。フェイルオーバールーティングは、通常はプライマリだけを使い、プライマリが異常になったときにセカンダリへ切り替えるアクティブ／パッシブ型の構成に使います。レイテンシーベースや加重などのポリシーは、正常なリソースのすべてに振り分けるアクティブ／アクティブ型の構成に使います（加重ルーティングも、重み 0 のレコードとヘルスチェックを組み合わせればアクティブ／パッシブにできます）。\n\nレコードが正常かどうかは、ヘルスチェックを関連付けるか、エイリアスレコードで「ターゲットのヘルスを評価」を有効にして判定します。ALB などのロードバランサーへのエイリアスレコードでは、ヘルスチェックを作る代わりにターゲットのヘルスを評価すれば、正常でないロードバランサーへ通信を送らないようにできます。\n\nCloudFront のオリジンフェイルオーバーは、リクエストごとにまずプライマリのオリジンへ送り、失敗したリクエストだけをセカンダリへ送り直す仕組みです。切り替わるのは GET、HEAD、OPTIONS のリクエストだけなので、静的なコンテンツや読み取り中心の通信に向いています。",
+  "keyPoints": [
+    "通常は片方だけを使い、障害時に切り替える → Route 53 のフェイルオーバールーティング",
+    "ロードバランサーへのエイリアスレコード → ヘルスチェックの代わりに「ターゲットのヘルスを評価」を有効にする",
+    "CloudFront のオリジンフェイルオーバーは GET・HEAD・OPTIONS だけが対象",
+    "レイテンシーベースや加重のルーティングは、通常時から複数のリソースに振り分ける"
+  ],
+  "references": [
+    {
+      "title": "Failover routing - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+    },
+    {
+      "title": "Active-active and active-passive failover - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-types.html"
+    },
+    {
+      "title": "Optimize high availability with CloudFront origin failover - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-2.2-ha-basics"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}

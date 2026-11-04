@@ -1,0 +1,62 @@
+{
+  "id": "saa-1.2-g2-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K4", "1.2-K5"],
+  "services": ["Elastic Load Balancing", "Amazon Cognito", "AWS WAF", "Amazon CloudFront", "Amazon EC2"],
+  "qualifier": "minimal-change",
+  "tags": ["ALB 認証", "OIDC", "ユーザープール", "ID プール", "ID プロバイダー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、従業員向けの勤怠管理 Web アプリケーションを、インターネット向けの Application Load Balancer（ALB）の背後にある Amazon EC2 インスタンスで動かしています。従業員は自宅や出張先など、さまざまな場所からアクセスします。このアプリケーションにはログイン機能がなく、URL を知っていればだれでも画面を開けることが問題になりました。従業員が社内の OpenID Connect（OIDC）準拠の ID プロバイダー（IdP）のアカウントでサインインした場合だけアクセスできるようにする必要があります。アプリケーションのコードは変更できません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Cognito ID プールを作成して社内 IdP と連携し、サインインした従業員に一時的な AWS 認証情報を発行して、その認証情報で ALB にアクセスさせる。",
+      "correct": false,
+      "rationale": "ID プールは、IdP などのトークンを一時的な AWS 認証情報に交換し、アプリケーションが Amazon S3 などの AWS サービスを呼び出せるようにする仕組みです。ALB には AWS 認証情報でリクエストを認可する機能がないため、ブラウザーでサインインした従業員だけに画面を見せる用途には使えません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS WAF のウェブ ACL を ALB に関連付け、本社のネットワークのグローバル IP アドレスからのリクエストだけを許可する。",
+      "correct": false,
+      "rationale": "自宅や出張先からのアクセスが拒否されてしまいます。また、送信元の IP アドレスで絞るだけで従業員一人ひとりの認証にはならず、IdP のアカウントでサインインした場合だけアクセスさせるという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "ALB の HTTPS リスナーのルールに、社内 IdP を OIDC で指定する認証アクションを追加し、認証に成功したリクエストだけをターゲットグループへ転送する。",
+      "correct": true,
+      "rationale": "ALB は、OIDC 準拠の IdP や Amazon Cognito ユーザープールを使ったユーザー認証を、リスナールールの認証アクションとして実行できます。未認証のユーザーは IdP のサインイン画面へリダイレクトされ、認証済みのリクエストだけがターゲットに届きます。認証を ALB に任せるので、コードの変更は不要です。"
+    },
+    {
+      "id": "d",
+      "text": "ALB の前に Amazon CloudFront を置き、署名付き Cookie を持つリクエストだけを配信するように設定して、従業員にだけ Cookie を配布する。",
+      "correct": false,
+      "rationale": "署名付き Cookie を使うには、利用者を認証して Cookie に署名・発行する仕組みを別に作る必要があります。社内 IdP でのサインインと連携する処理の開発が必要になり、アプリケーションのコードを変更しないという要件を満たしません。"
+    }
+  ],
+  "explanation": "Application Load Balancer（ALB）には、アプリケーションに届く前に利用者を認証する機能があります。HTTPS リスナーのルールに認証アクションを設定すると、未認証の利用者は ID プロバイダー（IdP）のサインイン画面へリダイレクトされ、サインインに成功した利用者のリクエストだけがターゲットグループへ転送されます。認証先には、OpenID Connect（OIDC）準拠の IdP（authenticate-oidc）か、Amazon Cognito ユーザープール（authenticate-cognito）を指定できます。ALB は利用者の情報（クレーム）を HTTP ヘッダーでターゲットに渡すので、アプリケーションは必要ならそれを読むだけで済み、認証処理を自分で持つ必要がありません。\n\nAmazon Cognito には 2 つの仕組みがあります。ユーザープールは「この利用者はだれか」を認証してトークンを発行するユーザーディレクトリで、ALB や Amazon API Gateway と組み合わせてサインインを必須にできます。ID プールは、信頼できるトークンを一時的な AWS 認証情報に交換し、アプリケーションが AWS のサービスを直接呼び出せるようにする仕組みで、Web 画面へのアクセス制御には使いません。\n\nAWS WAF による IP アドレスの制限や CloudFront の署名付き Cookie は、それだけでは IdP と連携した利用者の認証にはなりません。",
+  "keyPoints": [
+    "「コードを変えずにサインインを必須にする」→ ALB の認証アクション（OIDC 準拠の IdP または Cognito ユーザープール）",
+    "ALB の認証アクションは HTTPS リスナーで使う",
+    "Cognito ユーザープールは利用者の認証、ID プールは一時的な AWS 認証情報の発行",
+    "送信元 IP アドレスの制限は、利用者個人の認証の代わりにならない"
+  ],
+  "references": [
+    {
+      "title": "Authenticate users using an Application Load Balancer - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html"
+    },
+    {
+      "title": "What is Amazon Cognito? - Amazon Cognito",
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-app-protection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}

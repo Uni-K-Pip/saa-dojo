@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.3-g3-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-K2", "1.3-S5"],
+  "services": ["Amazon RDS"],
+  "qualifier": "availability",
+  "tags": ["ポイントインタイムリカバリ", "自動バックアップ", "誤操作", "Multi-AZ", "RPO"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、受注管理システムのデータベースとして Amazon RDS for MySQL の DB インスタンスを Multi-AZ 配置で運用しています。自動バックアップは保持期間 7 日で有効になっていて、自動スナップショットは毎日午前 3 時ごろに作成されます。本日 14 時 05 分、運用担当者が条件を誤った UPDATE 文を実行して多くの受注データを書き換えてしまい、直後に受注の受け付けを停止しました。誤った操作の直前の状態にデータを戻す必要があり、失われるデータはできるだけ少なくしたいと考えています。どの方法を取るべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Multi-AZ 配置のスタンバイ DB インスタンスへ手動でフェイルオーバーし、スタンバイ側のデータを使って受注の受け付けを再開する。",
+      "correct": false,
+      "rationale": "Multi-AZ 配置のスタンバイには、プライマリへの書き込みが同期的に複製されます。誤った UPDATE 文の結果もスタンバイに反映されているため、フェイルオーバーしても誤操作の前の状態には戻りません。"
+    },
+    {
+      "id": "b",
+      "text": "誤った操作の直前の時刻を指定してポイントインタイムリカバリで新しい DB インスタンスを作成し、接続先を切り替える。",
+      "correct": true,
+      "rationale": "自動バックアップでは、日次のスナップショットに加えてトランザクションログが 5 分ごとに Amazon S3 にアップロードされます。保持期間内の任意の時点を指定して新しい DB インスタンスとして復元できるため、誤操作の直前まで戻せ、失われるデータを最小にできます。"
+    },
+    {
+      "id": "c",
+      "text": "当日の午前 3 時ごろに作成された自動スナップショットから新しい DB インスタンスを復元し、接続先を切り替える。",
+      "correct": false,
+      "rationale": "スナップショットから復元すると、スナップショットを作成した午前 3 時ごろの状態に戻ります。その後 14 時 05 分までに書き込まれた受注データが失われるため、失われるデータをできるだけ少なくするという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "既存の DB インスタンスに対してポイントインタイムリカバリを実行し、誤った操作の直前の状態にその場で巻き戻す。",
+      "correct": false,
+      "rationale": "Amazon RDS のポイントインタイムリカバリは、元の DB インスタンスを変更せずに新しい DB インスタンスを作成する仕組みです。既存の DB インスタンスをその場で巻き戻すことはできません。"
+    }
+  ],
+  "explanation": "Amazon RDS の自動バックアップは、バックアップウィンドウ中に取得される日次のスナップショットと、5 分ごとに Amazon S3 にアップロードされるトランザクションログで構成されます。この 2 つを組み合わせることで、バックアップの保持期間（最大 35 日）内の任意の時点を指定して復元できます。これがポイントインタイムリカバリです。復元先は新しい DB インスタンスで、元の DB インスタンスは変更されません。復元後は、アプリケーションの接続先を新しい DB インスタンスに切り替えます。\n\n誤った UPDATE 文や DELETE 文のような論理的な誤りは、Multi-AZ 配置のスタンバイやリードレプリカにもそのまま複製されます。Multi-AZ 配置は DB インスタンスや AZ の障害に備える仕組みで、誤操作からの復旧には使えません。スナップショットからの復元は、スナップショットを取得した時点にしか戻れないため、その後の書き込みが失われます。",
+  "keyPoints": [
+    "誤操作や論理的な破損からの復旧はポイントインタイムリカバリ。Multi-AZ のスタンバイやリードレプリカは誤操作も複製する",
+    "RDS のポイントインタイムリカバリは新しい DB インスタンスとして復元され、元の DB インスタンスは変更されない",
+    "スナップショットから復元すると取得した時点の状態に戻り、その後の変更は失われる"
+  ],
+  "references": [
+    {
+      "title": "Restoring a DB instance to a specified time for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html"
+    },
+    {
+      "title": "Backup retention period - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html"
+    },
+    {
+      "title": "Multi-AZ DB instance deployments for Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-backup-and-retention"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

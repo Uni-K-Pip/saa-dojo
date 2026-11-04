@@ -1,0 +1,68 @@
+{
+  "id": "saa-basics-f-008",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K3"
+  ],
+  "services": [
+    "Amazon EC2",
+    "Amazon RDS"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "責任共有モデル",
+    "ゲスト OS",
+    "パッチ適用"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon EC2 のインスタンス上で、自社で開発した業務システムを動かしています。インスタンスの OS には Linux を使い、業務システムのほかに監視用のソフトウェアも自分でインストールしています。監査に向けて、責任共有モデルに基づき、自社が行う必要がある作業と、AWS に任せられる作業を整理しています。次の作業のうち、この会社が自分で行う必要があるものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS のデータセンターへの入館を管理し、警備を行う",
+      "correct": false,
+      "rationale": "データセンターの物理的なセキュリティは、AWS の責任（クラウドのセキュリティ）です。利用者は AWS のデータセンターに入ることができません。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 インスタンスのゲスト OS にセキュリティパッチを適用する",
+      "correct": true,
+      "rationale": "EC2 のようなインフラ型のサービスでは、インスタンスの OS（ゲスト OS）の管理は利用者の責任です。セキュリティパッチの適用も利用者が行います。"
+    },
+    {
+      "id": "c",
+      "text": "仮想マシンを動かすための仮想化の基盤（ハイパーバイザー）を更新する",
+      "correct": false,
+      "rationale": "仮想化の基盤は、AWS がすべてのサービスを動かすために運用しているインフラの一部で、更新は AWS が行います。"
+    },
+    {
+      "id": "d",
+      "text": "故障したサーバーやネットワーク機器を新しいものに交換する",
+      "correct": false,
+      "rationale": "ハードウェアやネットワーク機器の保守・交換は、AWS が受け持つインフラの管理に含まれます。"
+    }
+  ],
+  "explanation": "責任共有モデルでは、AWS は「クラウドのセキュリティ」として、サービスを動かすインフラ（ハードウェア、ソフトウェア、ネットワーク、施設）を守ります。利用者は「クラウドにおけるセキュリティ」として、クラウドに置くものを守ります。利用者の責任の範囲は、使うサービスによって変わります。\n\nAmazon EC2 のようなインフラ型のサービスでは、利用者がゲスト OS の管理（更新やセキュリティパッチの適用を含む）、インストールしたソフトウェア、セキュリティグループの設定を受け持ちます。一方、Amazon RDS のようなマネージドサービスでは OS やデータベースソフトウェアの更新を AWS が受け持つので、パッチの作業を減らしたい場合はマネージドサービスへの移行を検討します。",
+  "keyPoints": [
+    "EC2 のゲスト OS のパッチ適用は利用者の責任",
+    "施設、ハードウェア、仮想化の基盤は AWS の責任",
+    "パッチ作業を減らしたい → マネージドサービスを検討する"
+  ],
+  "references": [
+    {
+      "title": "Shared Responsibility Model - Amazon Web Services (AWS)",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-shared-responsibility"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

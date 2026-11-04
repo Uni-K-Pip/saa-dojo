@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.3-g3-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-K1", "1.3-S6"],
+  "services": ["AWS Lake Formation", "Amazon Athena", "AWS Glue", "Amazon S3", "Amazon Macie"],
+  "qualifier": "operational",
+  "tags": ["データレイク", "データガバナンス", "列レベルのセキュリティ", "行レベルのセキュリティ", "データフィルター"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売企業は、売上データと顧客データを Amazon S3 上のデータレイクに保存し、AWS Glue Data Catalog にテーブルとして登録して、各部門のアナリストが Amazon Athena でクエリしています。顧客テーブルには氏名や電話番号などの個人情報の列があり、マーケティング部門のアナリストにはこれらの列を見せてはいけません。また、各地域の営業アナリストには、自分の担当地域の行だけを見せる必要があります。データのコピーを作らずに、こうしたアクセス権限を一元的に管理したいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データレイクの S3 の場所を AWS Lake Formation に登録し、列と行を絞り込むデータフィルターを作成して、部門や地域ごとのアナリストの IAM ロールに付与する。",
+      "correct": true,
+      "rationale": "Lake Formation は Data Catalog のデータベースやテーブルへの権限を一元管理し、データフィルターで列レベル・行レベル（両方を組み合わせたセルレベル）のセキュリティを実現します。Athena などの統合されたエンジンがクエリ時にこの権限を適用するため、データのコピーは不要です。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Glue ジョブで部門と地域ごとに、個人情報の列や他地域の行を除いたデータのコピーを別のプレフィックスに作成し、IAM ポリシーで各ロールが読めるプレフィックスを制限する。",
+      "correct": false,
+      "rationale": "部門と地域の組み合わせごとにコピーを作るため、データが重複し、ジョブとポリシーの保守も増えます。データのコピーを作らずに権限を一元管理するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "S3 バケットポリシーに、アナリストの IAM ロールごとに個人情報の列と担当地域以外の行の読み取りを拒否するステートメントを追加する。",
+      "correct": false,
+      "rationale": "S3 のバケットポリシーで制御できるのはバケットやオブジェクト（キー）の単位のアクセスで、1 つのファイルの中の列や行は区別できません。列と行の単位でアクセスを絞るという要件を満たせません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Macie の機密データ検出ジョブで個人情報を含むオブジェクトを特定し、マーケティング部門のロールがそれらのオブジェクトを読めないように IAM ポリシーで拒否する。",
+      "correct": false,
+      "rationale": "Macie は S3 の機密データを見つけるサービスで、クエリ時のアクセス制御はしません。個人情報を含むオブジェクト全体を拒否すると、マーケティング部門は必要な他の列も読めなくなり、地域ごとの行の絞り込みもできません。"
+    }
+  ],
+  "explanation": "AWS Lake Formation は、S3 上のデータレイクに対するアクセス権限を一元的に管理するサービスです。S3 の場所を Lake Formation に登録すると、AWS Glue Data Catalog のデータベース、テーブル、列に対する権限を Lake Formation で付与・取り消しできます。データフィルターを使うと、特定の列を除外する列レベルのセキュリティ、列の値で行を絞り込む行レベルのセキュリティ、その両方を組み合わせたセルレベルのセキュリティを設定できます。Amazon Athena、Amazon Redshift Spectrum、Amazon EMR などの統合されたエンジンがクエリのたびにこの権限を適用するため、部門ごとにデータをコピーする必要がありません。\n\nS3 のバケットポリシーや IAM ポリシーは、バケットやオブジェクトの単位でアクセスを制御する仕組みで、1 つのファイルの中の特定の列や行だけを隠すことはできません。部門ごとにコピーを作る方法は、データの重複と保守の手間が増えます。Amazon Macie は S3 にある機密データを見つけて知らせるサービスで、アクセス制御そのものは行いません。Macie で個人情報の場所を把握し、Lake Formation で見せる範囲を制御する、という組み合わせが有効です。",
+  "keyPoints": [
+    "データレイクで列や行の単位までアクセスを絞る → AWS Lake Formation のデータフィルター",
+    "S3 のバケットポリシーや IAM ポリシーはオブジェクト単位の制御で、ファイルの中の列や行は絞れない",
+    "Amazon Macie は機密データを「見つける」サービスで、アクセスを「制御する」サービスではない"
+  ],
+  "references": [
+    {
+      "title": "Data filtering and cell-level security in Lake Formation - AWS Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+    },
+    {
+      "title": "What is AWS Lake Formation? - AWS Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-data-governance"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

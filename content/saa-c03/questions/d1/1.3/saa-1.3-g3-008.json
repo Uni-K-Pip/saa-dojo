@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.3-g3-008",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-S4", "1.3-K1"],
+  "services": ["AWS Key Management Service (AWS KMS)", "Amazon S3", "AWS Identity and Access Management (IAM)"],
+  "qualifier": "security",
+  "tags": ["キーポリシー", "クロスアカウント", "最小権限", "SSE-KMS", "kms:Decrypt"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、データ提供用の AWS アカウント A の Amazon S3 バケットに、アカウント A のカスタマーマネージドキーを使う SSE-KMS で暗号化したファイルを保存しています。分析用のアカウント B の IAM ロールにファイルを読ませるため、バケットポリシーでこのロールに s3:GetObject を許可し、ロールの IAM ポリシーでもバケットへの s3:GetObject を許可しました。キーのキーポリシーは作成時の既定のままで、ロールには KMS に関する権限を付与していません。しかし、このロールでファイルを読もうとするとアクセス拒否のエラーになります。最小権限の原則に従って、この問題を解決する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アカウント B のロールの IAM ポリシーに、アカウント A のキーに対する kms:Decrypt の許可を追加する。アカウント A のキーのキーポリシーは変更しない。",
+      "correct": false,
+      "rationale": "別のアカウントのプリンシパルが KMS キーを使うには、キーを所有するアカウントのキーポリシーでも許可されている必要があります。キーポリシーを変更しなければ、IAM ポリシーだけを変えてもアクセスは拒否されたままです。"
+    },
+    {
+      "id": "b",
+      "text": "アカウント A のキーのキーポリシーで、アカウント B のロールに kms:Decrypt を許可する。ロールの IAM ポリシーは変更しない。",
+      "correct": false,
+      "rationale": "キーポリシーで別のアカウントに許可しても、そのアカウントの IAM ポリシーで実際のユーザーやロールに権限を与えなければ使えません。ロールの IAM ポリシーに kms:Decrypt がないため、アクセスは拒否されたままです。"
+    },
+    {
+      "id": "c",
+      "text": "キーのキーポリシーでアカウント B のロールに kms:Decrypt を許可し、ロールの IAM ポリシーにもそのキーに対する kms:Decrypt を追加する。",
+      "correct": true,
+      "rationale": "クロスアカウントで KMS キーを使うには、キーを所有するアカウントのキーポリシーと、利用する側のアカウントの IAM ポリシーの両方で許可が必要です。読み取りだけなら kms:Decrypt を許可すれば十分で、最小権限の原則にも合います。"
+    },
+    {
+      "id": "d",
+      "text": "キーのキーポリシーでアカウント B に kms:* を許可し、ロールの IAM ポリシーにもすべての KMS キーに対する kms:* を追加する。",
+      "correct": false,
+      "rationale": "ファイルは読めるようになりますが、読み取りに不要な暗号化やキーの管理の操作まで、すべてのキーに対して許可してしまいます。最小権限の原則に従うという要件を満たしません。"
+    }
+  ],
+  "explanation": "KMS キーへのアクセスは、キーポリシーを中心に決まります。キーポリシーはキーを所有するアカウントにあり、ほかのアカウントのプリンシパルにキーを使わせるには、次の 2 つの両方が必要です。\n\n1. キーを所有するアカウント A のキーポリシーで、アカウント B（またはアカウント B の特定のロール）に必要な操作を許可する\n2. アカウント B の IAM ポリシーで、そのロールにアカウント A のキー（キー ARN を指定）に対する操作を許可する\n\nキーポリシーは「だれがキーを使える可能性があるか」を、IAM ポリシーは「実際にだれが使えるか」を決めるもので、どちらか一方だけでは足りません。S3 の SSE-KMS で暗号化されたオブジェクトをダウンロードするには kms:Decrypt、SSE-KMS で暗号化してアップロードするには kms:GenerateDataKey が必要です。今回は読み取りだけなので、kms:Decrypt だけを許可します。\n\nなお、AWS マネージドキー（aws/s3）はキーポリシーを変更できないため、AWS マネージドキーで暗号化したデータはほかのアカウントと共有できません。アカウントをまたいで共有するデータには、カスタマーマネージドキーを使います。",
+  "keyPoints": [
+    "別のアカウントに KMS キーを使わせる → キー側のキーポリシーと、利用する側の IAM ポリシーの両方で許可する",
+    "SSE-KMS のオブジェクトを読むには kms:Decrypt、暗号化して書き込むには kms:GenerateDataKey が必要",
+    "AWS マネージドキーで暗号化したデータは、ほかのアカウントと共有できない"
+  ],
+  "references": [
+    {
+      "title": "Allowing users in other accounts to use a KMS key - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+    },
+    {
+      "title": "Using server-side encryption with AWS KMS keys (SSE-KMS) - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-encryption-and-keys"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.4-g8-006",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-S2", "3.4-K2"],
+  "services": ["Amazon VPC", "Amazon Elastic Kubernetes Service", "AWS Transit Gateway"],
+  "qualifier": "minimal-change",
+  "tags": ["CIDRブロック", "セカンダリCIDR", "IPアドレスの枯渇", "サブネット", "拡張性"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、CIDR ブロックが 10.20.0.0/20 の VPC で、3 つの AZ のサブネットを使って Amazon EKS のクラスターを運用しています。VPC の IP アドレスの範囲はすべてサブネットに割り当て済みで、利用者の増加に合わせてノードとポッドを追加しようとしたところ、IP アドレスが足りなくなりました。この VPC は AWS Transit Gateway でほかの VPC やオンプレミスのネットワークとつながっており、どの範囲が使用中かは IP アドレスの管理台帳でわかります。既存のワークロードの IP アドレスは変えずに、変更を最小限にして使える IP アドレスを増やす必要があります。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "VPC のプライマリ CIDR ブロックを 10.20.0.0/16 に変更して範囲を広げ、既存のサブネットの CIDR ブロックもそれぞれ大きくして、使える IP アドレスを増やす。",
+      "correct": false,
+      "rationale": "既存の VPC の CIDR ブロックは、作成後にサイズを大きくも小さくもできません。サブネットの CIDR ブロックも作成後には変更できないため、この方法は実行できません。"
+    },
+    {
+      "id": "b",
+      "text": "ほかのネットワークと重複しない未使用の範囲を、セカンダリ CIDR ブロックとして VPC に追加し、その範囲に新しいサブネットを作成してクラスターで使う。",
+      "correct": true,
+      "rationale": "VPC には、作成後もセカンダリ CIDR ブロックを追加できます。既存のサブネットとワークロードはそのままで、新しい範囲に作ったサブネットをノードやポッドに使えます。接続先のネットワークと重複しない範囲を選べば、Transit Gateway 経由の通信にも支障がありません。"
+    },
+    {
+      "id": "c",
+      "text": "未使用の範囲で CIDR ブロックが /16 の新しい VPC を作成してトランジットゲートウェイにアタッチし、EKS クラスターを作り直してから、すべてのワークロードを移行する。",
+      "correct": false,
+      "rationale": "IP アドレスは増やせますが、クラスターの作り直しとすべてのワークロードの移行が必要になり、既存のワークロードの IP アドレスも変わります。変更を最小限にするという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "既存のサブネットをいったん削除し、VPC の CIDR ブロックの中で、より少ない数の大きなサブネットに分け直して作り直す。",
+      "correct": false,
+      "rationale": "VPC の CIDR ブロックの範囲は変わらないため、分け直しても使える IP アドレスはほとんど増えません。サブネットを削除するにはその中のリソースもすべて削除する必要があり、既存のワークロードの IP アドレスも変わります。"
+    }
+  ],
+  "explanation": "VPC の CIDR ブロックは、作成後にサイズを変更できません。サブネットの CIDR ブロックも同様です。IP アドレスが足りなくなったときは、VPC にセカンダリ CIDR ブロック（/16〜/28）を追加し、その範囲に新しいサブネットを作成します。追加した CIDR ブロックへのローカルルートは、VPC のルートテーブルに自動で追加されます。既存のサブネットとリソースには手を加えないため、変更を最小限にできます。\n\n追加する範囲は、VPC にすでに関連付けている範囲と重複させてはいけません。Transit Gateway や Direct Connect でほかのネットワークとつながっている場合は、接続先の範囲とも重複しないように選び、新しい範囲への経路が接続先に伝わるようにします。また、追加できる範囲には制限があり、例えばプライマリ CIDR ブロックが 10.0.0.0/8 の範囲にある VPC には、172.16.0.0/12 や 192.168.0.0/16 の範囲を追加できません。10.0.0.0/8 のほかの範囲や 100.64.0.0/10 の範囲は追加できます。\n\n新しい VPC へ移行する方法は大がかりで、ワークロードの IP アドレスも変わります。サブネットを分け直しても、VPC 全体の範囲が同じなので IP アドレスは増えません。こうした事態を避けるには、将来の拡張を見込んで、最初から余裕のある範囲を、ほかのネットワークと重複しないように計画しておくことが大切です。",
+  "keyPoints": [
+    "VPC とサブネットの CIDR ブロックは、作成後にサイズを変えられない",
+    "IP アドレスが足りなくなったら → セカンダリ CIDR ブロックを追加して新しいサブネットを作る",
+    "追加する範囲は、VPC 内の既存の範囲とも、接続先のネットワークとも重複させない",
+    "将来の拡張を見込み、最初から余裕のある範囲を重複しないように計画する"
+  ],
+  "references": [
+    {
+      "title": "VPC CIDR blocks - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"
+    },
+    {
+      "title": "Subnet CIDR blocks - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html"
+    },
+    {
+      "title": "CreateSubnet - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateSubnet.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-vpc-design"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

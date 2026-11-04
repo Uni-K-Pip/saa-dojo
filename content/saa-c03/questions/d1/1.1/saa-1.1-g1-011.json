@@ -1,0 +1,67 @@
+{
+  "id": "saa-1.1-g1-011",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S6", "1.1-K2"],
+  "services": [
+    "AWS Directory Service",
+    "AWS IAM Identity Center",
+    "AWS Organizations",
+    "AWS Direct Connect",
+    "AWS Identity and Access Management (IAM)"
+  ],
+  "qualifier": "operational",
+  "tags": ["AD Connector", "Active Directory", "IAM Identity Center", "ID ソース", "シングルサインオン", "Directory Service"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスのデータセンターで Microsoft Active Directory を運用し、従業員のアカウントとパスワードのポリシーを管理しています。従業員が既存の AD の認証情報で、AWS Organizations の複数の AWS アカウントにシングルサインオンできるようにする必要があります。セキュリティ方針により、ディレクトリの情報を AWS にコピーしたりキャッシュしたりしてはいけません。オンプレミスとは AWS Direct Connect で接続済みです。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Directory Service の Simple AD を作成して従業員のアカウントを登録し、IAM Identity Center の ID ソースに設定する。",
+      "correct": false,
+      "rationale": "Simple AD は AWS 上に作る独立したディレクトリで、従業員のアカウントを別に登録する必要があり、ディレクトリの情報を AWS に持つことになります。また、IAM Identity Center は Simple AD を ID ソースとしてサポートしていません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Managed Microsoft AD を作成してオンプレミスの AD のユーザーとパスワードを移行し、IAM Identity Center の ID ソースに設定する。",
+      "correct": false,
+      "rationale": "AWS Managed Microsoft AD は IAM Identity Center の ID ソースにできますが、ユーザーとパスワードを移行すると、ディレクトリの情報を AWS にコピーすることになり、セキュリティ方針に反します。"
+    },
+    {
+      "id": "c",
+      "text": "AD Connector を作成してオンプレミスの AD に接続し、IAM Identity Center の ID ソースに設定して、グループに権限セットを割り当てる。",
+      "correct": true,
+      "rationale": "AD Connector は、ディレクトリへのリクエストをオンプレミスの AD に転送するゲートウェイで、ディレクトリの情報をクラウドにキャッシュしません。IAM Identity Center の ID ソースに設定すると、従業員は既存の AD の認証情報でサインインでき、権限セットで複数アカウントへのアクセスをまとめて管理できます。"
+    },
+    {
+      "id": "d",
+      "text": "各アカウントに従業員ごとの IAM ユーザーを作成し、オンプレミスの AD と同じユーザー名とパスワードのポリシーを設定する。",
+      "correct": false,
+      "rationale": "IAM ユーザーは AD とは別の ID で、従業員は既存の AD の認証情報を使えません。アカウントごとにユーザーを作って管理する必要もあり、運用負荷が大きくなります。"
+    }
+  ],
+  "explanation": "AWS Directory Service には、目的の異なる複数のディレクトリがあります。AD Connector は、オンプレミスの Microsoft Active Directory へのリクエストを中継するディレクトリゲートウェイで、AWS 側にディレクトリの情報をキャッシュしません。パスワードの有効期限やアカウントのロックアウトといった既存のセキュリティポリシーも、そのままオンプレミスの AD で適用されます。AWS Managed Microsoft AD は AWS が運用する Active Directory で、AWS 上に AD そのものが必要な場合や、オンプレミスの AD と信頼関係を結ぶ場合に使います。Simple AD は Samba 4 ベースの小規模向けのディレクトリです。\n\nIAM Identity Center の ID ソースには、Identity Center ディレクトリ、Active Directory（AWS Managed Microsoft AD、または AD Connector 経由のセルフマネージド AD）、外部 ID プロバイダーのいずれか 1 つを使えます。AD を ID ソースにすると、認証はオンプレミスの AD に直接パススルーされ、パスワードの情報は Identity Center に同期されません。従業員は AWS アクセスポータルに AD の認証情報でサインインし、割り当てられた権限セットに対応する IAM ロールで各アカウントを操作します。\n\n「オンプレミスの AD の認証情報をそのまま使う」「AWS にディレクトリの情報を置かない」とあれば AD Connector、「AWS 上でも AD が必要（AD に依存するワークロードを動かすなど）」なら AWS Managed Microsoft AD を考えます。",
+  "keyPoints": [
+    "オンプレミスの AD の認証情報を使い、AWS にディレクトリの情報を置かない → AD Connector",
+    "AWS 上で AD 自体が必要、またはオンプレミスと信頼関係を結ぶ → AWS Managed Microsoft AD",
+    "IAM Identity Center の ID ソースは 1 つだけ。Simple AD は ID ソースにできない"
+  ],
+  "references": [
+    {
+      "title": "AD Connector - AWS Directory Service",
+      "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html"
+    },
+    {
+      "title": "Microsoft AD directory - AWS IAM Identity Center",
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-roles-federation"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

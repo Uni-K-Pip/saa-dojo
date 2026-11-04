@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-018",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S3", "2.1-K11"],
+  "services": ["Amazon Simple Queue Service", "Amazon Simple Notification Service", "Elastic Load Balancing"],
+  "qualifier": "availability",
+  "tags": ["疎結合", "SQS FIFO", "メッセージグループID", "重複排除", "順序保証"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある証券会社の注文受付システムは、受け付けた売買注文を社内の約定システムの API に同期的に送っています。約定システムが夜間のメンテナンスや障害で止まると、注文の受け付けもエラーになります。約定システムが止まっていても注文を受け付け続け、復旧後に処理する必要があります。同じ顧客の注文は受け付けた順に処理し、同じ注文が二重に処理されてはなりません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "注文を Amazon SQS FIFO キューに送信し、顧客 ID をメッセージグループ ID に指定する。約定システムはキューから取り出して処理する。",
+      "correct": true,
+      "rationale": "キューが注文を保持するため、約定システムが止まっていても受け付けを続け、復旧後に処理できます。FIFO キューは同じメッセージグループ ID の中で送信順に配信し、重複排除の仕組みで同じメッセージを二重に取り込みません。顧客 ID をグループにすると、顧客ごとの順序を保ったまま顧客間は並行して処理できます。"
+    },
+    {
+      "id": "b",
+      "text": "注文を Amazon SQS 標準キューに送信し、約定システムはキューからメッセージを取り出して、受け付けた順番を確認しながら処理する。",
+      "correct": false,
+      "rationale": "標準キューでも約定システムの停止中に注文を保持できますが、配信の順序はベストエフォートで、同じメッセージが複数回配信されることがあります。受け付けた順に処理し二重処理をしないという要件を、キューだけでは満たせません。"
+    },
+    {
+      "id": "c",
+      "text": "注文を Amazon SNS の標準トピックに発行し、約定システムの API の HTTPS エンドポイントをトピックにサブスクライブする。",
+      "correct": false,
+      "rationale": "SNS は受け取った注文をすぐにエンドポイントへプッシュするため、約定システムが長く止まると再試行が尽きて注文が失われるおそれがあります。標準トピックは配信の順序も保証しません。"
+    },
+    {
+      "id": "d",
+      "text": "注文受付システムの前に Application Load Balancer を置き、約定システムが止まっている間は、時間をおいて注文を再送するようクライアントに案内する。",
+      "correct": false,
+      "rationale": "注文受付システムと約定システムは同期的につながったままで、約定システムが止まると注文を受け付けられない問題は解決しません。再送をクライアントに任せると、順序や二重処理の管理も難しくなります。"
+    }
+  ],
+  "explanation": "同期的な呼び出しでつながったシステムは、呼び出し先が止まると呼び出し元も止まります。間に Amazon SQS のキューを置くと、送信側はキューにメッセージを入れるだけで処理を終えられ、受信側は復旧後にキューから取り出して処理できます。これが、キューによる疎結合です。\n\nSQS のキューには 2 種類あります。標準キューはほぼ無制限のスループットを持ちますが、少なくとも 1 回の配信のため重複が起こり得て、順序もベストエフォートです。FIFO キューは、同じメッセージグループ ID のメッセージを送信された順に配信し、重複排除 ID（またはメッセージの内容に基づく重複排除）によって、5 分間の重複排除期間内に送られた同じメッセージを取り込みません。顧客 ID をメッセージグループ ID にすると、顧客ごとの順序を保ちながら、異なる顧客の注文は並行して処理できます。FIFO キューのスループットには上限がある（高スループットモードで引き上げ可能）ため、要件に順序や重複排除がなければ標準キューを選びます。",
+  "keyPoints": [
+    "呼び出し先が止まっても受け付けを続ける → 間に SQS キューを置いて非同期にする",
+    "順序と重複排除が必要 → SQS FIFO キュー（順序はメッセージグループ ID ごと）",
+    "グループ ID を顧客 ID などにすると、グループ内の順序を保ちつつグループ間は並行処理できる",
+    "標準キューは少なくとも 1 回の配信でベストエフォートの順序。スループットを優先するとき"
+  ],
+  "references": [
+    {
+      "title": "Exactly-once processing in Amazon SQS - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html"
+    },
+    {
+      "title": "Amazon SQS message quotas - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

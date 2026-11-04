@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-K4", "3.3-K8"],
+  "services": ["Amazon DynamoDB"],
+  "qualifier": "operational",
+  "tags": ["オンデマンドキャパシティーモード", "プロビジョンドキャパシティーモード", "キャパシティーユニット"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるスタートアップは、イベントのチケット抽選アプリケーションを新しく公開します。データは Amazon DynamoDB に保存します。アクセスは抽選の受け付け開始直後に急増し、それ以外の時間はほとんどありません。公開前のため、1 秒あたりの読み取りと書き込みの量をどの程度見込めばよいかわかりません。チームは、キャパシティーの見積もりや監視、調整の作業をせずに、使った分だけ支払いたいと考えています。どのキャパシティーの設定が要件を最もよく満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "テーブルをオンデマンドキャパシティーモードで作成する。",
+      "correct": true,
+      "rationale": "オンデマンドモードでは、キャパシティーを計画しなくてもテーブルがトラフィックに合わせて自動で拡張し、読み取りと書き込みのリクエスト数に応じて課金されます。アクセスがほとんどない時間に、使わないキャパシティーの料金を払う必要もありません。"
+    },
+    {
+      "id": "b",
+      "text": "プロビジョンドキャパシティーモードで作成し、想定される最大の読み取りと書き込みのキャパシティーユニットを常に割り当てておく。",
+      "correct": false,
+      "rationale": "プロビジョンドモードでは、割り当てたキャパシティーに対して実際の使用量にかかわらず課金されます。アクセスがほとんどない時間も最大量の料金がかかり、そもそも最大量を見積もれないという状況にも合いません。"
+    },
+    {
+      "id": "c",
+      "text": "プロビジョンドキャパシティーモードで作成し、Auto Scaling で使用率に合わせてキャパシティーユニットを増減させる。",
+      "correct": false,
+      "rationale": "Auto Scaling を使っても、最小値・最大値・目標使用率を決めて見直す作業が残り、割り当てた分は使わなくても課金されます。また、使用率が数分間続けて目標を超えてから調整するため、受け付け開始直後の急増には間に合わないことがあります。"
+    },
+    {
+      "id": "d",
+      "text": "プロビジョンドキャパシティーモードで作成し、リザーブドキャパシティーを購入して料金を下げる。",
+      "correct": false,
+      "rationale": "リザーブドキャパシティーは、一定量のキャパシティーを 1 年などの期間使うと約束して料金を下げる仕組みで、実際に使ったかどうかにかかわらず約束した分を支払います。使用量を予測できないアプリケーションには向かず、使った分だけ支払うという要件にも合いません。"
+    }
+  ],
+  "explanation": "DynamoDB のキャパシティーモードには、オンデマンドとプロビジョンドの 2 つがあります。オンデマンドモードはキャパシティーの計画が不要で、トラフィックの増減に合わせて自動で拡張し、リクエスト単位で課金されます。新しいアプリケーションでトラフィックを予測できない場合や、急増と閑散を繰り返す場合に向いています。\n\nプロビジョンドモードは、1 秒あたりの読み取りと書き込みのキャパシティーユニットを割り当てる方式です。割り当てた分は使わなくても課金され、設定と監視の手間もかかります。トラフィックが予測でき安定している場合は、Auto Scaling やリザーブドキャパシティーと組み合わせるとオンデマンドより安くできることがあります。「予測できない」「使った分だけ支払う」「キャパシティーを管理したくない」という条件がそろったら、オンデマンドモードを選びます。",
+  "keyPoints": [
+    "予測できない・急増する・キャパシティーを管理したくない → DynamoDB オンデマンドモード",
+    "予測できる安定したトラフィック → プロビジョンドモードと Auto Scaling、リザーブドキャパシティーでコストを下げる",
+    "プロビジョンドモードは、割り当てたキャパシティーに使わなくても料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "DynamoDB on-demand capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+    },
+    {
+      "title": "DynamoDB provisioned capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+    },
+    {
+      "title": "Managing throughput capacity automatically with DynamoDB auto scaling - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

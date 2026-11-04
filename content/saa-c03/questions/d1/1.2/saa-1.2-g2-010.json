@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.2-g2-010",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-S4"],
+  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN", "AWS Transit Gateway", "AWS Client VPN"],
+  "qualifier": "security",
+  "tags": ["Direct Connect", "転送中の暗号化", "プライベート IP VPN", "MACsec", "ホスト型接続"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造会社は、オンプレミスのデータセンターと AWS を、AWS Direct Connect パートナーが提供する 1 Gbps のホスト型接続でつないでいます。この接続ではトランジット仮想インターフェイスを使い、Direct Connect ゲートウェイと AWS Transit Gateway を経由して複数の VPC と通信しています。新しい社内規程で、オンプレミスと VPC の間のすべての通信を転送中に暗号化することが求められました。通信は今後もインターネットを経由せず、Direct Connect の経路を使い続ける必要があります。これらの要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Direct Connect のホスト型接続で MACsec を有効にし、オンプレミス側のルーターと Direct Connect のデバイスの間のレイヤー 2 の通信を IEEE 802.1AE の方式で暗号化する。",
+      "correct": false,
+      "rationale": "MACsec が使えるのは、選ばれたロケーションの 10 Gbps・100 Gbps・400 Gbps の専用接続などで、ホスト型接続ではサポートされていません。この会社の接続では、転送中の暗号化という要件を MACsec で満たすことはできません。"
+    },
+    {
+      "id": "b",
+      "text": "Transit Gateway にプライベート IP アドレスを使う AWS Site-to-Site VPN 接続を作成し、トランジット仮想インターフェイス上に IPsec トンネルを確立する。",
+      "correct": true,
+      "rationale": "プライベート IP VPN を使うと、Direct Connect のトランジット仮想インターフェイス上に IPsec VPN を構成し、オンプレミスと AWS の間の通信を暗号化できます。トンネルの両端にはプライベート IP アドレスを使い、Transit Gateway で終端するため、インターネットを経由しません。"
+    },
+    {
+      "id": "c",
+      "text": "Direct Connect はインターネットを経由しない専用の接続で、転送中のデータは AWS によって自動で暗号化されるため、追加の設定は行わない。",
+      "correct": false,
+      "rationale": "Direct Connect は既定では転送中の通信を暗号化しません。インターネットを経由しないことと暗号化されていることは別の話で、すべての通信を転送中に暗号化するという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "VPC に AWS Client VPN のエンドポイントを作成し、オンプレミスの各サーバーに VPN クライアントを導入して、インターネット経由の暗号化されたトンネルで VPC に接続させる。",
+      "correct": false,
+      "rationale": "Client VPN は通信を暗号化できますが、個々の利用者の端末から接続するためのサービスで、この構成では通信がインターネットを経由します。Direct Connect の経路を使い続けるという要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS Direct Connect は、オンプレミスと AWS を専用のネットワーク接続でつなぐサービスで、インターネットを経由しないため帯域や遅延が安定します。ただし、Direct Connect は既定では転送中の通信を暗号化しません。暗号化が必要な場合は、次のどちらかを使います。\n\n・MACsec: Direct Connect の接続のレイヤー 2 を IEEE 802.1AE の MACsec で暗号化します。選ばれたロケーションの 10 Gbps・100 Gbps・400 Gbps の専用接続などで使え、ホスト型接続ではサポートされていません。\n・Direct Connect 上の Site-to-Site VPN: Direct Connect の経路の上に IPsec VPN のトンネルを張ります。プライベート IP VPN では、トランジット仮想インターフェイスと Direct Connect ゲートウェイを経由して、Transit Gateway でトンネルを終端し、トンネルの両端にプライベート IP アドレスを使います。パブリック仮想インターフェイスやパブリック IP アドレスを使わずに、暗号化と閉じた経路を両立できます。\n\nAWS Client VPN は、リモートワークの利用者などが端末から VPC に接続するためのクライアント型の VPN で、拠点のネットワーク同士をつなぐ用途には AWS Site-to-Site VPN を使います。",
+  "keyPoints": [
+    "Direct Connect は既定では暗号化されない。「専用線だから暗号化済み」はひっかけ",
+    "Direct Connect の経路のまま暗号化する → Direct Connect 上の Site-to-Site VPN（プライベート IP VPN）か MACsec",
+    "MACsec は対応する専用接続で使う機能で、ホスト型接続では使えない",
+    "拠点同士の接続は Site-to-Site VPN、個々の利用者の端末からの接続は Client VPN"
+  ],
+  "references": [
+    {
+      "title": "Encryption in AWS Direct Connect - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"
+    },
+    {
+      "title": "MAC Security in Direct Connect - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+    },
+    {
+      "title": "Private IP AWS Site-to-Site VPN with Direct Connect - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/private-ip-dx.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-private-connectivity"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K3"],
+  "services": ["AWS Budgets", "AWS Cost Explorer", "AWS Cost and Usage Report", "Amazon CloudWatch"],
+  "qualifier": "operational",
+  "tags": ["予算", "予測アラート", "コスト管理ツール"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある出版社では、電子書籍の配信データを保存している Amazon S3 の費用が、月によって大きく変動しています。財務部門は、その月の S3 の費用が月末までに 2,000 USD を超えると見込まれた時点で、担当チームにメールで通知したいと考えています。実際に超えてからではなく、超えそうだと分かった段階で対策を始めたいからです。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Cost Explorer で S3 の日別の費用を表示するレポートを保存し、担当チームが毎朝レポートを確認して、超えそうなときに財務部門へ連絡する。",
+      "correct": false,
+      "rationale": "Cost Explorer は費用の分析や可視化に向いていますが、この方法では毎日人が確認する必要があり、運用負荷が大きくなります。見落としや連絡の遅れも起こりえます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon CloudWatch の請求アラームを S3 のサービス単位で作成し、見積もり料金が 2,000 USD を超えたときに Amazon SNS でメールを送る。",
+      "correct": false,
+      "rationale": "CloudWatch の請求アラームは、その時点までに発生した見積もり料金（実績）で判定します。月末の予測値では判定しないため、超えそうだと分かった段階で通知するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Budgets で、サービスを Amazon S3 に絞った月次のコスト予算を 2,000 USD で作成し、予測コストが予算の 100% を超えたときにメールで通知する。",
+      "correct": true,
+      "rationale": "AWS Budgets は、実績のコストだけでなく予測コストでもアラートを出せます。サービスで絞り込んだ予算に予測ベースの通知を設定すれば、超える前に自動でメールが届き、追加の仕組みを作る必要もありません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Cost and Usage Report を S3 に配信し、AWS Lambda 関数で毎日集計して月末の費用を予測し、超えそうなときに Amazon SNS で通知する。",
+      "correct": false,
+      "rationale": "要件は満たせますが、予測の計算と通知の仕組みを自分で作り、保守し続ける必要があります。AWS Budgets の予測アラートで同じことができるため、運用負荷が最も少ない方法ではありません。"
+    }
+  ],
+  "explanation": "AWS のコスト管理ツールは、目的によって使い分けます。AWS Budgets は、コストや使用量の予算を決めて、実績または予測が基準を超えたときに通知する（必要ならアクションを実行する）ツールです。AWS Cost Explorer は、過去の費用の推移や内訳をグラフで分析し、将来の費用を予測するツールです。AWS Cost and Usage Report は、最も詳細な明細データを S3 に配信するもので、Amazon Athena などで独自に分析するときに使います。\n\nこの問題の要件は「超えそうだと分かった段階で、自動で通知する」ことなので、予測コストに対するアラートを設定できる AWS Budgets が最適です。予算はサービスやタグ、アカウントなどで絞り込めるため、S3 の費用だけを対象にできます。通知先にはメールアドレスや Amazon SNS トピックを指定します。\n\nCloudWatch の請求アラームは、発生済みの見積もり料金（実績）がしきい値を超えたときに動作するため、予測による事前の通知には使えません。",
+  "keyPoints": [
+    "予算を超えそう（予測）な時点で通知したい → AWS Budgets の予測アラート",
+    "過去の費用の分析・可視化 → AWS Cost Explorer、最も詳細な明細データ → AWS Cost and Usage Report",
+    "CloudWatch の請求アラームは実績の見積もり料金で判定し、予測では判定しない"
+  ],
+  "references": [
+    {
+      "title": "Managing your costs with AWS Budgets - AWS Cost Management",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "title": "Create a billing alarm to monitor your estimated AWS charges - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/monitor_estimated_charges_with_cloudwatch.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

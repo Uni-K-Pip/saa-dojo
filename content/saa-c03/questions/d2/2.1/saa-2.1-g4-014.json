@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-014",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K14", "2.1-K12", "2.1-S4"],
+  "services": ["Amazon Elastic Kubernetes Service", "AWS Fargate", "Amazon Elastic Container Service", "Amazon Elastic Compute Cloud"],
+  "qualifier": "operational",
+  "tags": ["コンテナオーケストレーション", "EKS", "Fargate", "Kubernetes", "移行"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスの Kubernetes クラスターで 20 個のマイクロサービスを動かしており、マニフェストファイルと Helm チャートで管理しています。AWS への移行にあたり、既存のマニフェストと運用ツールはできるだけそのまま使いたいと考えています。一方で、Kubernetes のコントロールプレーンやワーカーノードのサーバーを管理する人員はいません。DaemonSet や特権コンテナは使っていません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EKS クラスターを作成して Fargate プロファイルを設定し、マイクロサービスのポッドを AWS Fargate で実行する。",
+      "correct": true,
+      "rationale": "Amazon EKS は Kubernetes のコントロールプレーンを AWS が管理するサービスで、既存のマニフェストや Helm チャート、kubectl をそのまま使えます。Fargate プロファイルに一致するポッドは Fargate で動くため、ワーカーノードのサーバーを用意・管理する必要もありません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon ECS クラスターを作成し、各マイクロサービスのマニフェストを ECS のタスク定義とサービスの定義に書き換えて、AWS Fargate で実行する。",
+      "correct": false,
+      "rationale": "サーバーの管理は不要になりますが、ECS は Kubernetes ではないため、マニフェストや Helm チャートをタスク定義などに書き換える必要があります。既存のマニフェストと運用ツールをそのまま使うという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EKS クラスターを作成し、自分で選んだ AMI から起動した Amazon EC2 インスタンスをセルフマネージド型のワーカーノードとして登録する。",
+      "correct": false,
+      "rationale": "コントロールプレーンは AWS が管理しますが、ワーカーノードの OS のパッチ適用、バージョンの更新、台数の管理を自分で行う必要があります。ワーカーノードのサーバーを管理する人員がいないという条件に合いません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 インスタンスに Kubernetes をインストールし、コントロールプレーンとワーカーノードを複数のアベイラビリティーゾーンに自分で構築する。",
+      "correct": false,
+      "rationale": "既存のマニフェストは使えますが、コントロールプレーンの冗長化やバージョンアップ、ワーカーノードの管理をすべて自分で行う必要があります。サーバーを管理する人員がいないという条件に合いません。"
+    }
+  ],
+  "explanation": "AWS でコンテナを動かすオーケストレーションのサービスには、AWS 独自の Amazon ECS と、Kubernetes を使う Amazon EKS があります。既存の Kubernetes のマニフェスト、Helm チャート、kubectl などのツールを生かして移行したい場合は EKS を選びます。EKS では Kubernetes のコントロールプレーンを AWS が複数のアベイラビリティーゾーンで運用します。\n\nポッドを動かす計算資源には、EC2 のワーカーノードか AWS Fargate を選べます。Fargate プロファイルで名前空間やラベルを指定すると、一致するポッドが Fargate で動き、ワーカーノードの用意やパッチ適用、台数の管理が不要になります。ただし Fargate では DaemonSet、特権コンテナ、GPU などは使えないため、これらが必要な場合は EC2 のノードを使います。なお、ノードの管理を AWS に任せる方法には、EC2 のノードを AWS が管理する EKS Auto Mode もあります。\n\nECS は Kubernetes との互換性がないため、マニフェストの書き換えが必要です。",
+  "keyPoints": [
+    "既存の Kubernetes のマニフェストやツールを生かす → Amazon EKS（コントロールプレーンは AWS が管理）",
+    "ワーカーノードを管理したくない → EKS のポッドを Fargate で実行（Fargate プロファイル）",
+    "Fargate では DaemonSet、特権コンテナ、GPU などが使えない点に注意",
+    "Kubernetes にこだわらず AWS のサービスと簡単に統合したいなら Amazon ECS"
+  ],
+  "references": [
+    {
+      "title": "Simplify compute management with AWS Fargate - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html"
+    },
+    {
+      "title": "Automate cluster infrastructure with EKS Auto Mode - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

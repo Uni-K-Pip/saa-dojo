@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-020",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S5", "2.1-K12", "2.1-K1"],
+  "services": ["Amazon API Gateway", "AWS Lambda", "Amazon DynamoDB", "Amazon EC2 Auto Scaling", "AWS Fargate"],
+  "qualifier": "cost",
+  "tags": ["サーバーレスを使う場面", "従量課金", "API Gateway", "Lambda", "DynamoDB オンデマンド"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある自治体は、住民から粗大ごみの収集申し込みを受け付ける Web API を新たに作ります。申し込みは 1 日に数百件程度ですが、年末には一時的に数十倍に増え、夜間はほとんど利用されません。1 件の処理は 1 秒以内に終わり、申し込みのデータは申し込み番号をキーに読み書きするだけです。サーバーの管理をせず、利用量に応じた料金で運用したいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon API Gateway と AWS Lambda で API を作成し、申し込みのデータはオンデマンドモードの Amazon DynamoDB テーブルに保存する。",
+      "correct": true,
+      "rationale": "API Gateway、Lambda、オンデマンドモードの DynamoDB は、いずれもサーバーの管理が不要で、リクエストの数や実行時間などの利用量に応じて料金がかかります。年末の急増にも自動で対応し、夜間に利用がなければほとんど料金がかかりません。"
+    },
+    {
+      "id": "b",
+      "text": "Application Load Balancer と Amazon EC2 の Auto Scaling グループ（最小 2 台）で API を動かし、データは Amazon RDS for MySQL に保存する。",
+      "correct": false,
+      "rationale": "急増には対応できますが、利用がほとんどない夜間も最小 2 台のインスタンスとデータベースの料金がかかります。EC2 インスタンスの OS の管理も必要で、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon ECS のサービスとして AWS Fargate のタスクを常に 2 つ動かし、データは Amazon Aurora のプロビジョニングされた DB インスタンスに保存する。",
+      "correct": false,
+      "rationale": "サーバーの管理は不要ですが、タスクと DB インスタンスは利用の有無にかかわらず動き続けて料金がかかります。1 日数百件の短い処理には、利用量に応じた料金のサービスのほうが適しています。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EKS のクラスターで API を動かし、データはクラスターの中にポッドとして構築したデータベースに保存する。",
+      "correct": false,
+      "rationale": "クラスターとワーカーノードの料金が常にかかり、Kubernetes やデータベースの運用も必要です。小規模で利用量の変動が大きい API には過剰で、要件を満たしません。"
+    }
+  ],
+  "explanation": "サーバーレスのサービスは、サーバーの用意や管理が不要で、負荷に応じて自動でスケールし、使った分だけ料金がかかります。利用量が少ない、変動が大きい、夜間はほとんど使われない、1 回の処理が短い、といったワークロードに向いています。\n\nこの問題では、Amazon API Gateway でリクエストを受け、AWS Lambda で処理し、Amazon DynamoDB のオンデマンドモードのテーブルに保存する構成が適しています。API Gateway はリクエスト数、Lambda はリクエスト数と実行時間、オンデマンドモードの DynamoDB は読み書きのリクエスト数に応じて課金され、容量の事前の見積もりも不要です。\n\n一方、常時稼働するインスタンスやタスク、プロビジョニングされたデータベースは、利用がないときも料金がかかります。処理が長時間に及ぶ、常に一定以上の負荷がある、といった場合はコンテナや EC2 を検討します。",
+  "keyPoints": [
+    "利用量が少ない・変動が大きい・処理が短い → API Gateway＋Lambda＋DynamoDB のサーバーレス構成",
+    "サーバーレスは自動でスケールし、使った分だけ課金される",
+    "キーで読み書きするだけのデータで容量を見積もりたくない → DynamoDB のオンデマンドモード",
+    "常時稼働のインスタンスやタスクは、利用がない時間も料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Lambda? - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    },
+    {
+      "title": "DynamoDB on-demand capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

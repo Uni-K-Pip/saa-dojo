@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-008",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K8", "2.1-S4"],
+  "services": ["Amazon Elastic Container Registry", "Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon Elastic Compute Cloud"],
+  "qualifier": "operational",
+  "tags": ["コンテナ移行", "ECR", "Fargate", "ECS サービス"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスの仮想マシンで動いている Java の Web アプリケーションを AWS に移行する計画です。開発者のノート PC、テスト環境、本番環境で同じ実行環境を使い、ライブラリのバージョンの違いによる不具合をなくしたいと考えています。アプリケーションは常時稼働してリクエストを処理し、コードは大きく変更したくありません。本番環境では、サーバーの OS のパッチ適用や容量の管理をしたくありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "コンテナイメージを Amazon ECR に保存し、Amazon ECS のサービスとして AWS Fargate で実行して、Application Load Balancer の背後に置く。",
+      "correct": true,
+      "rationale": "コンテナイメージにはアプリケーションとライブラリがまとめて入るため、ノート PC でも AWS でも同じ実行環境で動きます。Fargate はサーバーの管理が不要な実行環境で、OS のパッチ適用や容量の管理をせずに、ECS のサービスとして必要な数のタスクを常時稼働させられます。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションを含む AMI を作成して Amazon EC2 Auto Scaling グループで起動し、開発者にも同じ AMI から起動した EC2 インスタンスで開発してもらう。",
+      "correct": false,
+      "rationale": "AMI は EC2 インスタンス用のイメージで、開発者のノート PC では使えません。本番環境でも EC2 インスタンスの OS のパッチ適用や容量の管理が残るため、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "アプリケーションを処理ごとの AWS Lambda 関数に分けて書き直し、Amazon API Gateway から呼び出す構成にして、テストは Lambda のコンソールで行う。",
+      "correct": false,
+      "rationale": "サーバーの管理は不要になりますが、常時稼働する Web アプリケーションを関数単位に書き直す必要があり、コードを大きく変更したくないという要件を満たしません。ノート PC と同じ実行環境で動かすという要件にも合いません。"
+    },
+    {
+      "id": "d",
+      "text": "コンテナイメージを Amazon S3 に保存し、Docker をインストールした Amazon EC2 インスタンスの Auto Scaling グループで、起動時にイメージを読み込んで実行する。",
+      "correct": false,
+      "rationale": "同じ実行環境は使えますが、EC2 インスタンスの OS のパッチ適用、Docker の保守、台数の管理が残ります。イメージの保存にもレジストリではない S3 を使うため管理の手間が増え、要件を満たしません。"
+    }
+  ],
+  "explanation": "コンテナは、アプリケーションと実行に必要なライブラリや設定をイメージとしてまとめる仕組みで、開発者の PC、テスト環境、本番環境で同じ実行環境を再現できます。既存のアプリケーションをコンテナに移行するときは、まずアプリケーションをコンテナイメージにし、マネージドなレジストリである Amazon ECR に保存します。\n\n次に、Amazon ECS のタスク定義で使うイメージや CPU・メモリを指定し、ECS のサービスとして起動します。サービスは指定した数のタスクを常に稼働させ、異常なタスクを置き換え、Application Load Balancer のターゲットとして自動で登録します。起動タイプに AWS Fargate を選ぶと、タスクを動かすサーバーを利用者が用意・管理する必要がなく、OS のパッチ適用や容量の管理から解放されます。\n\nAWS Lambda もサーバーの管理は不要ですが、関数単位の設計への書き直しが必要です。EC2 インスタンスで Docker を動かす方法では、ホストの管理が残ります。",
+  "keyPoints": [
+    "環境ごとの差をなくす → アプリケーションと依存ライブラリをコンテナイメージにまとめる",
+    "コンテナ移行の流れ: イメージを作成 → Amazon ECR に保存 → ECS（または EKS）で実行",
+    "サーバーの OS や容量を管理したくない → 起動タイプに AWS Fargate",
+    "常時稼働の既存アプリを書き換えずに移すなら Lambda よりコンテナ"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic Container Registry? - Amazon ECR",
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

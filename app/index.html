@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="AWS 認定ソリューションアーキテクト – アソシエイト（SAA-C03）の非公式学習アプリ" />
+    <meta name="theme-color" content="#0a58a8" />
+    <title>SAA Dojo</title>
+    <script>
+      // 保存済みのテーマと文字サイズを、描画前に反映する
+      try {
+        var a = JSON.parse(localStorage.getItem('saa-dojo:appearance') || '{}');
+        if (a.theme === 'light' || a.theme === 'dark') document.documentElement.dataset.theme = a.theme;
+        if (a.fontSize === 'small' || a.fontSize === 'large' || a.fontSize === 'xlarge') document.documentElement.dataset.font = a.fontSize;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>このアプリを使うには JavaScript を有効にしてください。</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

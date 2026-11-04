@@ -1,0 +1,72 @@
+{
+  "id": "saa-3.4-g8-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K1", "3.4-S1", "3.4-S4"],
+  "services": [
+    "AWS Global Accelerator",
+    "Amazon CloudFront",
+    "Elastic Load Balancing",
+    "Amazon Route 53",
+    "Amazon EC2"
+  ],
+  "qualifier": "performance",
+  "tags": ["Global Accelerator", "エニーキャスト", "静的IPアドレス", "UDP", "リージョン間フェイルオーバー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、UDP 上の独自プロトコルで通信するリアルタイムの音声会議サービスを、2 つの AWS リージョンで Network Load Balancer（NLB）の背後の Amazon EC2 インスタンスで提供しています。利用者は世界中にいて、公衆インターネットを長く経由するために遅延とジッターが大きいという苦情が増えています。法人の利用者は、ファイアウォールで接続先の IP アドレスを固定で許可する必要があります。また、一方のリージョンで障害が起きたときは、クライアントの DNS キャッシュに左右されずに、すぐに他方のリージョンへ切り替える必要があります。これらの要件を満たし、通信の性能を最も高められる構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudFront ディストリビューションを作成し、2 つのリージョンの NLB をオリジングループのプライマリとセカンダリに設定して、オリジンフェイルオーバーを構成する。",
+      "correct": false,
+      "rationale": "CloudFront は HTTP と HTTPS（WebSocket を含む）でコンテンツを配信するサービスで、UDP 上の独自プロトコルを中継できません。オリジンフェイルオーバーも HTTP のリクエストごとに働く仕組みのため、この音声会議サービスには使えません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Global Accelerator の標準アクセラレーターを作成して UDP のリスナーを設定し、2 つのリージョンの NLB をそれぞれのリージョンのエンドポイントグループに登録する。",
+      "correct": true,
+      "rationale": "Global Accelerator は TCP と UDP に対応し、エニーキャストの静的 IP アドレスを提供するので、法人の利用者はその IP アドレスだけを許可すれば済みます。通信は最寄りのエッジロケーションから AWS のグローバルネットワークを通るため、遅延とジッターを抑えられます。ヘルスチェックで異常を検知すると同じ IP アドレスのまま正常なリージョンへ振り向けるため、DNS キャッシュの影響も受けません。"
+    },
+    {
+      "id": "c",
+      "text": "各リージョンの NLB に Elastic IP アドレスを割り当てて法人の利用者に許可してもらい、Amazon Route 53 のレイテンシーベースルーティングとヘルスチェックで接続先のリージョンを振り分ける。",
+      "correct": false,
+      "rationale": "NLB に Elastic IP アドレスを割り当てれば IP アドレスは固定できますが、リージョンの切り替えは DNS の応答を変えて行うため、クライアントや DNS リゾルバーがキャッシュしている間は障害の起きたリージョンに接続し続けます。通信も公衆インターネットを経由したままなので、遅延とジッターも改善しません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Global Accelerator の標準アクセラレーターを作成し、2 つのリージョンに Application Load Balancer（ALB）を配置して、それぞれのリージョンのエンドポイントグループに ALB を登録する。",
+      "correct": false,
+      "rationale": "Global Accelerator は ALB をエンドポイントにできますが、ALB のリスナーが対応するプロトコルは HTTP と HTTPS だけなので、UDP 上の独自プロトコルを受けられません。UDP を扱うには NLB や EC2 インスタンスをエンドポイントにします。"
+    }
+  ],
+  "explanation": "UDP を使うリアルタイム通信を世界中の利用者へ届けるときは、AWS Global Accelerator が適しています。Global Accelerator はエニーキャストの静的 IP アドレスを 2 つ（デュアルスタックでは IPv4 と IPv6 を 2 つずつ）提供し、クライアントの通信を最寄りのエッジロケーションで受け取って、AWS のグローバルネットワーク経由でエンドポイントまで届けます。混雑しやすい公衆インターネットを通る区間が短くなるため、遅延とジッターが小さくなります。\n\n標準アクセラレーターでは、リージョンごとのエンドポイントグループに NLB、ALB、EC2 インスタンス、Elastic IP アドレスを登録できます。ヘルスチェックでエンドポイントの異常を検知すると、1 分未満で正常なエンドポイントへ振り向けます。クライアントが接続する IP アドレスは変わらないので、DNS キャッシュの期限切れを待つ必要がなく、法人のファイアウォールの設定も変えずに済みます。\n\nAmazon CloudFront もエッジロケーションを使いますが、HTTP と HTTPS のコンテンツをキャッシュして配信するためのサービスで、UDP の独自プロトコルには使えません。Amazon Route 53 のルーティングポリシーによる切り替えは DNS のキャッシュに左右されます。ALB は HTTP と HTTPS のロードバランサーなので、UDP を扱うときは NLB を使います。",
+  "keyPoints": [
+    "UDP や独自の TCP プロトコル、静的 IP アドレス、すばやいリージョン切り替え → AWS Global Accelerator",
+    "HTTP・HTTPS のコンテンツをエッジでキャッシュして配信 → Amazon CloudFront",
+    "DNS による切り替えはキャッシュの影響を受ける。Global Accelerator は同じ IP アドレスのまま切り替える",
+    "ALB は HTTP と HTTPS だけ。UDP は NLB で受ける"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Global Accelerator? - AWS Global Accelerator",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"
+    },
+    {
+      "title": "AWS Global Accelerator FAQs",
+      "url": "https://aws.amazon.com/global-accelerator/faqs/"
+    },
+    {
+      "title": "Listeners for your Application Load Balancers - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-edge-and-load-balancing"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

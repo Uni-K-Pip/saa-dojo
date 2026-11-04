@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.3-g7-013",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-S5", "3.3-K2"],
+  "services": ["Amazon DynamoDB Accelerator (DAX)", "Amazon DynamoDB", "Amazon ElastiCache"],
+  "qualifier": "performance",
+  "tags": ["DAX", "インメモリキャッシュ", "マイクロ秒", "読み取りの負荷"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるニュースアプリは、記事のメタデータを Amazon DynamoDB テーブルに保存しています。速報が出ると同じ記事のデータが短時間に大量に読まれ、テーブルの読み取りキャパシティーの消費が急増します。アプリケーションの読み取りの応答時間をミリ秒単位からマイクロ秒単位に短くし、同じデータへの繰り返しの読み取りでテーブルにかかる負荷を減らしたいと考えています。記事のデータは数秒程度古くても問題ありません。開発チームは、既存の DynamoDB API を使ったコードをほとんど変更したくないと考えています。どの方法が要件を最もよく満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "DynamoDB Accelerator (DAX) クラスターを作成し、アプリケーションの DynamoDB クライアントを DAX クライアントに置き換える。",
+      "correct": true,
+      "rationale": "DAX は DynamoDB 用のインメモリキャッシュで、結果整合性の読み取りの応答時間を 1 桁ミリ秒からマイクロ秒単位に短くします。DynamoDB と API 互換なので、クライアントを DAX のものに変えるだけでほとんどのコードをそのまま使え、繰り返しの読み取りはキャッシュから返るためテーブルの負荷も減ります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon ElastiCache のクラスターを作成し、キャッシュを先に読んでデータがなければテーブルを読む遅延読み込みの処理を、アプリケーションのコードに実装する。",
+      "correct": false,
+      "rationale": "ElastiCache でもキャッシュはできますが、キャッシュの読み書きや無効化の処理をアプリケーションに実装する必要があります。既存のコードをほとんど変更しないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "テーブルの読み取りを強力な整合性のある読み込みに変更し、読み取りキャパシティーユニットを増やして急増に備える。",
+      "correct": false,
+      "rationale": "強力な整合性のある読み込みは、結果整合性の読み込みの 2 倍の読み取りキャパシティーを消費し、応答時間もマイクロ秒単位にはなりません。繰り返しの読み取りによるテーブルの負荷も減りません。"
+    },
+    {
+      "id": "d",
+      "text": "テーブルにグローバルセカンダリインデックスを追加し、記事の読み取りの一部をインデックスに振り分けて分散する。",
+      "correct": false,
+      "rationale": "グローバルセカンダリインデックスは別のキーで検索するための仕組みで、読み取りの応答時間をマイクロ秒単位にはしません。インデックスへの書き込みのキャパシティーも追加で消費します。"
+    }
+  ],
+  "explanation": "DynamoDB の応答時間は通常 1 桁ミリ秒ですが、マイクロ秒単位の応答が必要な場合や、同じ項目への読み取りが集中してテーブルの負荷が上がる場合は、DynamoDB Accelerator (DAX) を使います。DAX は DynamoDB の前に置くフルマネージドのインメモリキャッシュで、DynamoDB と API 互換です。アプリケーションは DAX のクライアントを使うだけで、キャッシュにあるデータはキャッシュから、ないデータは DAX が DynamoDB から取得して返します。\n\nDAX が返すのは結果整合性のデータです。強力な整合性のある読み込みが必要な処理には向きませんが、この問題のように数秒古くてもよいデータには適しています。ElastiCache は Amazon RDS などにも使える汎用のキャッシュですが、キャッシュの処理をアプリケーションに組み込む必要があり、コードの変更が大きくなります。",
+  "keyPoints": [
+    "DynamoDB の読み取りをマイクロ秒単位に・コードの変更は最小限 → DynamoDB Accelerator (DAX)",
+    "DAX は結果整合性の読み取り向け。強力な整合性が必要な読み取りには使わない",
+    "ElastiCache は汎用のキャッシュ。キャッシュの処理をアプリケーションに実装する必要がある"
+  ],
+  "references": [
+    {
+      "title": "In-memory acceleration with DynamoDB Accelerator (DAX) - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+    },
+    {
+      "title": "DAX and DynamoDB consistency models - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-scaling"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

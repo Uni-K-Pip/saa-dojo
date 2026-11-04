@@ -1,0 +1,68 @@
+{
+  "id": "saa-4.1-g9-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K7", "4.1-S5"],
+  "services": ["Amazon S3"],
+  "qualifier": "cost",
+  "tags": ["バージョニング", "ライフサイクル", "マルチパートアップロード"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるソフトウェア会社は、ビルド成果物を保存する Amazon S3 バケットでバージョニングを有効にしています。ビルドのたびに同じキーのオブジェクトが上書きされるため、古いバージョンが大量に残っています。また、ネットワークの切断で失敗した大きなファイルのマルチパートアップロードが、完了しないまま多数残っていることも分かりました。誤った上書きから戻せるよう、各オブジェクトの古いバージョンは新しいほうから 3 つを残す必要があります。S3 の保存料金を最も効果的に削減できる組み合わせはどれですか。2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ライフサイクルルールで NoncurrentVersionExpiration と NewerNoncurrentVersions を指定し、最新でなくなって 1 日たった古いバージョンを、新しい 3 つを除いて削除する。",
+      "correct": true,
+      "rationale": "バージョニングしたバケットでは、上書きされた古いバージョンも保存料金の対象です。NoncurrentVersionExpiration に NewerNoncurrentVersions を組み合わせると、残す古いバージョンの数を指定したうえで、それ以外を自動的に削除できます。"
+    },
+    {
+      "id": "b",
+      "text": "ライフサイクルルールで AbortIncompleteMultipartUpload を指定し、開始から 7 日たっても完了していないマルチパートアップロードを中止する。",
+      "correct": true,
+      "rationale": "未完了のマルチパートアップロードは、アップロード済みのパートが保存料金の対象になり、中止するまで課金され続けます。ライフサイクルルールで一定日数後に自動で中止すれば、不要なパートが削除されます。"
+    },
+    {
+      "id": "c",
+      "text": "バケットのバージョニングを停止し、今後の上書きで古いバージョンが作られないようにして、保存されるオブジェクトの数が増えないようにする。",
+      "correct": false,
+      "rationale": "バージョニングを停止しても、すでにある古いバージョンは削除されません。さらに、今後の上書きでは古いバージョンが残らないため、誤った上書きから戻せるようにするという要件を満たせなくなります。"
+    },
+    {
+      "id": "d",
+      "text": "ライフサイクルルールで Expiration を指定し、作成から 30 日たった現在のバージョンを期限切れにして、ビルド成果物の保存期間を短くする。",
+      "correct": false,
+      "rationale": "バージョニングしたバケットで現在のバージョンを期限切れにすると、削除マーカーが追加され、元のバージョンは古いバージョンとして残ります。保存量は減らず、必要な最新のビルド成果物も見えなくなります。"
+    },
+    {
+      "id": "e",
+      "text": "ライフサイクルルールで、古いバージョンを最新でなくなって 30 日後に S3 Glacier Deep Archive へ移行し、すべての古いバージョンを保存し続ける。",
+      "correct": false,
+      "rationale": "古いバージョンの保存料金は下がりますが、不要なバージョンは残り続け、件数に応じた移行リクエストの料金もかかります。新しい 3 つ以外は不要なので、削除するほうが効果的です。未完了のマルチパートアップロードの料金も減りません。"
+    }
+  ],
+  "explanation": "バージョニングを有効にしたバケットでは、オブジェクトを上書きしたり削除したりしても、以前のバージョンが「古いバージョン（noncurrent version）」として残り、保存料金がかかり続けます。ライフサイクルルールの NoncurrentVersionExpiration を使うと、最新でなくなってから指定した日数がたった古いバージョンを自動で削除できます。NewerNoncurrentVersions を指定すれば、新しいほうから指定した数の古いバージョンは残せるので、「直近の 3 つは戻せるようにしたい」といった要件に合わせられます。\n\nマルチパートアップロードは、大きなファイルを分割して並列にアップロードする仕組みです。途中で失敗したまま完了も中止もされないと、アップロード済みのパートが見えないまま保存料金の対象になります。AbortIncompleteMultipartUpload を指定すると、開始から指定した日数がたった未完了のアップロードを自動で中止し、パートを削除できます。\n\nバージョニングの停止では既存の古いバージョンは消えず、現在のバージョンへの Expiration は削除マーカーを追加するだけで保存量を減らしません。",
+  "keyPoints": [
+    "バージョニングしたバケットの古いバージョンにも保存料金がかかる → NoncurrentVersionExpiration（残す数は NewerNoncurrentVersions）",
+    "未完了のマルチパートアップロードのパートも課金される → AbortIncompleteMultipartUpload",
+    "バージョニングを停止しても、既存の古いバージョンは削除されない",
+    "バージョニングしたバケットで現在のバージョンを期限切れにすると、削除マーカーが付くだけで古いバージョンは残る"
+  ],
+  "references": [
+    {
+      "title": "Lifecycle configuration elements - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html"
+    },
+    {
+      "title": "Configuring a bucket lifecycle configuration to delete incomplete multipart uploads - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpu-abort-incomplete-mpu-lifecycle-config.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

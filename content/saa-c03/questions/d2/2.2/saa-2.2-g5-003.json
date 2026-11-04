@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-g5-003",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K3", "2.2-K6", "2.2-S4"],
+  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN", "Amazon Virtual Private Cloud", "AWS Client VPN"],
+  "qualifier": "cost",
+  "tags": ["ルートテーブル", "最長一致", "ハイブリッド接続", "フェイルオーバー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造会社は、本社のデータセンターと AWS の VPC を 1 本の AWS Direct Connect 接続で結び、仮想プライベートゲートウェイ経由で通信しています。先月この接続に障害が起き、工場の生産管理システムが VPC 上のサーバーと数時間通信できなくなりました。会社は、通常時は今後も Direct Connect を使い、Direct Connect に障害が起きたときだけ自動的に別の経路で通信を続けたいと考えています。新しい専用線を契約する予算はありません。最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "同じ仮想プライベートゲートウェイに AWS Site-to-Site VPN 接続を作成して BGP を使い、Direct Connect と同じオンプレミスのプレフィックスを広告する。VPC のルートテーブルではルート伝播を有効にする。",
+      "correct": true,
+      "rationale": "仮想プライベートゲートウェイは、同じプレフィックスの経路を Direct Connect と VPN の両方から受け取ると、Direct Connect の BGP 経路を優先します。通常時は Direct Connect が使われ、障害で Direct Connect の経路が消えると自動的に VPN の経路で通信が続きます。VPN はインターネット回線を使うため、専用線を追加するより安価です。"
+    },
+    {
+      "id": "b",
+      "text": "同じ仮想プライベートゲートウェイに AWS Site-to-Site VPN 接続を作成して BGP を使い、オンプレミスのネットワークを Direct Connect で広告しているものより細かいプレフィックスに分けて VPN で広告する。",
+      "correct": false,
+      "rationale": "経路の選択では、まず宛先に最も長く一致するプレフィックス（最長一致）が優先されます。VPN でより細かいプレフィックスを広告すると通常時から VPN の経路が選ばれてしまい、通常時は Direct Connect を使うという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "別の Direct Connect ロケーションに 2 本目の Direct Connect 接続を追加し、両方の接続で同じプレフィックスを広告する。",
+      "correct": false,
+      "rationale": "Direct Connect を 2 本にすれば障害に強くなりますが、新しい専用線の契約が必要です。専用線を追加する予算がないという制約を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Client VPN エンドポイントを作成し、Direct Connect に障害が起きたら工場の各端末から VPN クライアントで VPC に接続させる。",
+      "correct": false,
+      "rationale": "Client VPN は利用者の端末ごとに VPN 接続を張るリモートアクセスの仕組みで、拠点のネットワーク全体の経路を切り替えるものではありません。障害のたびに各端末で接続の操作が必要になり、自動的に通信を続けるという要件を満たしません。"
+    }
+  ],
+  "explanation": "VPC のルートテーブルや仮想プライベートゲートウェイでは、宛先に最も長く一致するプレフィックスの経路が優先されます（最長一致）。同じプレフィックスの経路が複数あるときは、仮想プライベートゲートウェイは Direct Connect の BGP 経路、VPN の静的経路、VPN の BGP 経路の順に優先します。\n\nこの性質を使うと、Direct Connect を主経路、Site-to-Site VPN を予備の経路にできます。両方で同じプレフィックスを広告しておけば、通常時は Direct Connect が選ばれ、Direct Connect の障害で BGP の経路が消えると VPN の経路に自動で切り替わります。サブネットのルートテーブルでルート伝播を有効にすると、仮想プライベートゲートウェイが受け取った経路が自動で反映されます。VPN は既存のインターネット回線を使うため、専用線を追加するより低コストです。ただし帯域や遅延はインターネットの状況に左右されるので、障害時に許容できる性能かを確かめておきます。\n\n一方、VPN でより細かいプレフィックスを広告すると、最長一致によって通常時から VPN が使われ、主経路と予備の経路が逆になります。なお、オンプレミス側のルーターでも Direct Connect 経由の経路を優先するように設定しておきます。",
+  "keyPoints": [
+    "経路の選択はまず最長一致。同じプレフィックスなら Direct Connect の BGP 経路が VPN より優先される",
+    "Direct Connect の低コストな予備経路 → 同じプレフィックスを広告する Site-to-Site VPN",
+    "VPN でより細かいプレフィックスを広告すると、通常時から VPN が使われる",
+    "Client VPN は端末単位のリモートアクセス、Site-to-Site VPN は拠点間の接続"
+  ],
+  "references": [
+    {
+      "title": "Route tables and AWS Site-to-Site VPN route priority - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-route-priority.html"
+    },
+    {
+      "title": "How route priority works - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/route-tables-priority.html"
+    }
+  ],
+  "lessonRefs": ["lesson-2.2-ha-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}

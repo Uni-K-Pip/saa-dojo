@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.3-g3-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-S2", "1.3-K4", "1.3-S4"],
+  "services": ["Amazon S3", "AWS Key Management Service (AWS KMS)", "AWS CloudTrail"],
+  "qualifier": "security",
+  "tags": ["SSE-KMS", "カスタマーマネージドキー", "AWS マネージドキー", "キーポリシー", "保存時の暗号化"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある法律事務所は、契約書の PDF ファイルを Amazon S3 バケットに保存しています。セキュリティ方針では、保存時の暗号化に使う鍵について次の 3 点が求められています。鍵が使われるたびに AWS CloudTrail に記録されること。鍵を使えるユーザーとロールを、セキュリティチームが鍵のポリシーで制御できること。情報漏えいが疑われたときに、セキュリティチームが鍵を無効にしてオブジェクトの復号を止められること。これらの要件を満たすバケットの暗号化設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon S3 が鍵の生成と管理を行うサーバー側の暗号化（SSE-S3）を、バケットのデフォルト暗号化に設定する。",
+      "correct": false,
+      "rationale": "SSE-S3 では S3 が鍵を管理し、鍵の操作は AWS KMS を通りません。鍵の使用そのものは CloudTrail に記録されず、鍵のポリシーで利用者を制御したり、鍵を無効にしたりすることもできません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS KMS の AWS マネージドキー（aws/s3）を使うサーバー側の暗号化（SSE-KMS）を、バケットのデフォルト暗号化に設定する。",
+      "correct": false,
+      "rationale": "AWS マネージドキーの使用は CloudTrail に記録されますが、キーポリシーは変更できず、キーを無効にすることもできません。利用者を制御する要件と、鍵を無効にして復号を止める要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "カスタマーマネージドキーを作成してキーポリシーで利用者を制限し、そのキーによる SSE-KMS をデフォルト暗号化に設定する。",
+      "correct": true,
+      "rationale": "カスタマーマネージドキーは自分で作成・管理する KMS キーで、キーポリシーで利用者を制御でき、いつでも無効にできます。S3 がこのキーを使うたびに KMS の API 呼び出しが CloudTrail に記録され、キーを無効にすると、そのキーで暗号化されたオブジェクトは復号できなくなります。"
+    },
+    {
+      "id": "d",
+      "text": "アプリケーションが独自に生成した鍵でファイルを暗号化してからアップロードし、鍵はアプリケーションサーバーの設定ファイルで管理する。",
+      "correct": false,
+      "rationale": "鍵がアプリケーションの設定ファイルにあるため、鍵の使用は CloudTrail に記録されず、鍵のポリシーによる制御や一元的な無効化もできません。"
+    }
+  ],
+  "explanation": "Amazon S3 は、何も設定しなくても新しいオブジェクトを SSE-S3 で暗号化します。鍵の管理や監査について要件がある場合は、AWS KMS の鍵を使う SSE-KMS を選びます。\n\nKMS の鍵のうち、S3 の暗号化に使えるのは主にカスタマーマネージドキーと AWS マネージドキー（aws/s3）です。カスタマーマネージドキーは利用者が作成・管理する鍵で、キーポリシーの変更、無効化と再有効化、削除の予約、自動ローテーションの設定ができます。AWS マネージドキーは AWS のサービスが利用者に代わって作成する鍵で、キーポリシーやローテーションの設定を変更できず、無効化や削除の予約もできません。どちらも、使用は CloudTrail に記録されます。\n\nキーを無効にすると、S3 はそのキーでデータキーを復号できなくなるため、そのキーで暗号化されたオブジェクトを読み出せなくなります。無効化は再有効化で元に戻せるため、削除と違って安全に「止める」ことができます。なお、デフォルト暗号化の変更はそれ以降に保存されるオブジェクトに適用され、既存のオブジェクトは暗号化し直されません。既存のオブジェクトも対象にするには、コピーし直すなどして新しいキーで暗号化します。\n\nSSE-S3 は鍵の管理を S3 に任せる方式で、鍵ごとのアクセス制御や監査はできません。独自の鍵をアプリケーションで管理する方法は、鍵の保護や監査を自分で作り込む必要があります。",
+  "keyPoints": [
+    "鍵の利用者の制御、無効化、ローテーションの設定が必要 → カスタマーマネージドキーによる SSE-KMS",
+    "AWS マネージドキー（aws/〜）は使用の記録はできるが、キーポリシーの変更や無効化はできない",
+    "KMS キーを無効にすると、そのキーで暗号化したデータは再有効化するまで復号できない"
+  ],
+  "references": [
+    {
+      "title": "Using server-side encryption with AWS KMS keys (SSE-KMS) - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+    },
+    {
+      "title": "AWS KMS keys - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+    },
+    {
+      "title": "Enable and disable keys - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/enabling-keys.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-encryption-and-keys"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

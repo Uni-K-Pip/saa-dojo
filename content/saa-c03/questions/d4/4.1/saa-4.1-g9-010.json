@@ -1,0 +1,62 @@
+{
+  "id": "saa-4.1-g9-010",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K10", "4.1-S8", "4.1-K9"],
+  "services": ["Amazon S3", "Amazon S3 Glacier"],
+  "qualifier": "cost",
+  "tags": ["S3 Intelligent-Tiering", "アーカイブ階層", "アクセスパターン"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画配信会社は、ユーザーがアップロードした動画の元ファイル（数百 TB、1 ファイルは数百 MB 以上）を Amazon S3 に保存しています。どの動画がいつ再び必要になるかは予測できず、多くは何か月もアクセスされませんが、古い動画が突然よく見られることもあります。最後のアクセスから 180 日以上たった動画は、必要になったときに 12 時間程度待てるので、保存料金をできるだけ下げたいと考えています。一方、それより最近アクセスされた動画は、すぐに読み出せる必要があります。運用の手間はかけたくありません。最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 Intelligent-Tiering に保存し、追加の設定はせずに、自動で使われる高頻度・低頻度・アーカイブインスタントアクセスの各階層に任せる。",
+      "correct": false,
+      "rationale": "自動の階層だけでも、アクセスのない動画は低頻度アクセス階層やアーカイブインスタントアクセス階層へ移ります。しかし、最も安いディープアーカイブアクセス階層は有効にしないと使われないため、保存料金をできるだけ下げるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 Intelligent-Tiering に保存し、180 日間アクセスのないオブジェクトをディープアーカイブアクセス階層に移す設定を有効にする。",
+      "correct": true,
+      "rationale": "S3 Intelligent-Tiering は、オブジェクトごとに最後のアクセスからの日数を監視して階層を自動で移します。オプションのディープアーカイブアクセス階層を 180 日で有効にすれば、長くアクセスのない動画だけが最も安い階層に移り、最近アクセスされた動画はすぐ読み出せる階層に残ります。"
+    },
+    {
+      "id": "c",
+      "text": "ライフサイクルルールで、作成から 180 日後に S3 Glacier Deep Archive へ移行し、必要になった動画はその都度復元する。",
+      "correct": false,
+      "rationale": "ライフサイクルルールはオブジェクトの作成からの日数で移行し、最後にアクセスされた時期を考慮しません。作成から 180 日を過ぎていても最近よく見られている動画まで移行されるため、最近アクセスされた動画をすぐ読み出すという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "ライフサイクルルールで、作成から 30 日後に S3 Standard-IA、180 日後に S3 Glacier Flexible Retrieval へ移行する。",
+      "correct": false,
+      "rationale": "作成からの日数で一律に移行するため、作成から時間がたっていても最近よく見られている動画まで復元が必要なクラスに移ってしまいます。また、S3 Glacier Flexible Retrieval は S3 Glacier Deep Archive ほど安くありません。"
+    }
+  ],
+  "explanation": "S3 Intelligent-Tiering は、オブジェクトごとのアクセスを監視し、30 日間アクセスがなければ低頻度アクセス階層、90 日間なければアーカイブインスタントアクセス階層へ自動で移すストレージクラスです。ここまではどの階層もミリ秒で読み出せます。さらに、オプションのアーカイブアクセス階層（90 日以上）とディープアーカイブアクセス階層（180 日以上）を有効にすると、長くアクセスのないオブジェクトを、それぞれ S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive と同じ性能の、より安い階層に移せます。この 2 つの階層から読むには復元が必要です。アクセスされたオブジェクトは高頻度アクセス階層に戻ります。\n\nライフサイクルルールは「作成からの日数」で移行するため、アクセスの傾向が予測できないデータには向きません。この問題のように「最後のアクセスからの日数」で判断したい場合は、S3 Intelligent-Tiering が適しています。\n\nS3 Intelligent-Tiering には、オブジェクトの数に応じた監視と自動化の料金がかかります。128 KB 未満のオブジェクトは監視されず、自動で階層を移らない点にも注意します。",
+  "keyPoints": [
+    "アクセスの傾向が予測できない → S3 Intelligent-Tiering（最後のアクセスからの日数で自動的に階層を移す）",
+    "Intelligent-Tiering のアーカイブアクセス階層・ディープアーカイブアクセス階層はオプション。有効にしないと使われない",
+    "ライフサイクルルールの移行は作成からの日数で決まり、アクセスの有無は考慮しない",
+    "128 KB 未満のオブジェクトは Intelligent-Tiering で監視されず、自動で階層を移らない"
+  ],
+  "references": [
+    {
+      "title": "How S3 Intelligent-Tiering works - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html"
+    },
+    {
+      "title": "Managing S3 Intelligent-Tiering - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-managing.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

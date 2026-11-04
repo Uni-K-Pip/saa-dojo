@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-022",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S7", "2.1-K2", "2.1-K11"],
+  "services": ["Amazon MQ", "Amazon Simple Queue Service", "Amazon Elastic Compute Cloud", "Amazon Managed Streaming for Apache Kafka"],
+  "qualifier": "minimal-change",
+  "tags": ["Amazon MQ", "ActiveMQ", "JMS", "移行", "マネージドメッセージブローカー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造業の企業は、オンプレミスの受発注システムを AWS に移行します。システムを構成する複数の Java アプリケーションは、Apache ActiveMQ のブローカーを介して JMS と STOMP でメッセージをやり取りしています。移行の期限が短いため、アプリケーションのメッセージング部分のコードは変更せずに移行し、ブローカーのサーバーの保守からも解放されたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon MQ で ActiveMQ のブローカーをアクティブ/スタンバイ構成で作成し、アプリケーションの接続先をそのブローカーに変更する。",
+      "correct": true,
+      "rationale": "Amazon MQ は ActiveMQ などのブローカーをマネージドで提供し、JMS や STOMP などの標準の API とプロトコルにそのまま対応します。接続先を変えるだけでメッセージングのコードを変更せずに移行でき、ブローカーのサーバーの保守も AWS に任せられます。"
+    },
+    {
+      "id": "b",
+      "text": "メッセージングを Amazon SQS に置き換え、アプリケーションのメッセージの送受信を AWS SDK で SQS の API を呼び出すように書き換える。",
+      "correct": false,
+      "rationale": "SQS はサーバーの保守が不要で新しいアプリケーションには適していますが、STOMP などのプロトコルには対応していないため、メッセージングのコードを書き換える必要があります。コードを変更せずに移行するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EC2 インスタンスに ActiveMQ をインストールし、2 つのアベイラビリティーゾーンにまたがる冗長構成でブローカーを自分で運用する。",
+      "correct": false,
+      "rationale": "コードを変更せずに移行できますが、ブローカーのソフトウェアと OS のパッチ適用、冗長構成の管理を自分で行う必要があります。ブローカーのサーバーの保守から解放されたいという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon MSK のクラスターを作成し、アプリケーションが Apache Kafka のプロトコルでメッセージを送受信するようにクライアントを変更する。",
+      "correct": false,
+      "rationale": "Amazon MSK は Apache Kafka のマネージドサービスで、ActiveMQ の JMS や STOMP とは互換性がありません。クライアントのコードを変更する必要があり、要件を満たしません。"
+    }
+  ],
+  "explanation": "Amazon MQ は、Apache ActiveMQ と RabbitMQ のメッセージブローカーを提供するマネージドサービスです。JMS などの業界標準の API や、AMQP、STOMP、MQTT、OpenWire などのプロトコルに対応しているため、これらを使う既存のアプリケーションは、接続先を変えるだけでメッセージングのコードを書き換えずに移行できます。ブローカーのプロビジョニングやソフトウェアのパッチ適用は AWS が行い、アクティブ/スタンバイ構成にすると、2 つのアベイラビリティーゾーンで冗長化されます。\n\n一方、これから新しく作るアプリケーションでは、Amazon SQS や Amazon SNS を選ぶのが一般的です。ほぼ無制限にスケールし、ブローカーという単位の管理もありません。既存のアプリケーションの移行か、新しいアプリケーションかで、ワークロードに合ったサービスを選びます。Amazon MSK はストリーミングデータを扱う Apache Kafka のマネージドサービスです。",
+  "keyPoints": [
+    "JMS・AMQP・STOMP・MQTT などを使う既存のアプリをコードを変えずに移行 → Amazon MQ",
+    "新しく作るアプリのキューや通知 → Amazon SQS・Amazon SNS",
+    "Amazon MQ のアクティブ/スタンバイ構成は 2 つの AZ で冗長化される",
+    "EC2 で自前のブローカーを動かすと、パッチ適用や冗長化の管理が残る"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon MQ? - Amazon MQ",
+      "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+    },
+    {
+      "title": "Amazon SQS FAQs",
+      "url": "https://aws.amazon.com/sqs/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

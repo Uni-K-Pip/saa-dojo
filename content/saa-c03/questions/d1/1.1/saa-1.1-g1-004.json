@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.1-g1-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K4"],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "AWS CloudTrail",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "operational",
+  "tags": ["最小権限", "IAM Access Analyzer", "ポリシー生成", "CloudTrail", "最終アクセス情報"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、EC2 インスタンスの起動・停止と EBS スナップショットの作成を自動で行う運用ツールが IAM ロールを使っています。このロールには構築時の都合で AmazonEC2FullAccess がアタッチされたままで、セキュリティ監査で最小権限の原則に反すると指摘されました。アカウントでは AWS CloudTrail の証跡が有効になっています。実際に使われている操作だけを許可するポリシーを、最も少ない手間で作成する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "IAM Access Analyzer のポリシー検証で AmazonEC2FullAccess の内容を検査し、警告が出たステートメントを除いたポリシーに置き換える。",
+      "correct": false,
+      "rationale": "ポリシー検証は、ポリシーの文法やセキュリティ上のベストプラクティスに照らした問題を指摘する機能です。ロールが実際にどの操作を使ったかは分からないため、使われている操作だけに絞るという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "IAM の最終アクセス情報でロールが最近使ったサービスを確認し、そのサービスで必要な操作を調べてポリシーを手作業で作成する。",
+      "correct": false,
+      "rationale": "最終アクセス情報は使われていない権限を見つけるのに役立ちますが、ポリシーを生成するわけではありません。必要な操作を調べてポリシーを手で書く必要があり、最も少ない手間という要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "IAM Access Analyzer のポリシー生成でロールの CloudTrail のイベントを分析し、生成されたポリシーを確認してから元のポリシーと置き換える。",
+      "correct": true,
+      "rationale": "IAM Access Analyzer のポリシー生成は、CloudTrail の証跡に記録されたイベントを最大 90 日分分析し、ロールが実際に使ったサービスと操作に基づくポリシーのテンプレートを作ります。リソースの ARN などを調整してから置き換えれば、少ない手間で最小権限に近づけられます。"
+    },
+    {
+      "id": "d",
+      "text": "AmazonEC2FullAccess を AmazonEC2ReadOnlyAccess に置き換え、運用ツールでエラーになった操作をそのつど許可に追加していく。",
+      "correct": false,
+      "rationale": "本番の運用ツールでエラーを起こしながら権限を足していく方法は、障害を招くうえに手間もかかります。AmazonEC2ReadOnlyAccess 自体も、ツールが使わない読み取り操作まで許可します。"
+    }
+  ],
+  "explanation": "最小権限の原則とは、タスクに必要な操作を、必要なリソースに対してだけ、必要な条件のもとで許可することです。構築中は広い権限から始めても、運用に入ったら実際の利用に合わせて絞り込むことが推奨されています。\n\nIAM Access Analyzer のポリシー生成は、そのための機能です。指定した CloudTrail の証跡と期間（最大 90 日）のイベントを分析し、IAM ユーザーやロールが使ったサービスと操作を含むポリシーのテンプレートを生成します。Amazon EC2 のように操作レベルまで特定できるサービスでは、使われた操作が一覧になります。テンプレートでリソースの ARN や条件を指定して管理ポリシーとして保存し、ロールにアタッチしてから、広すぎる元のポリシーを外します。S3 のデータイベントのように操作レベルでは反映されないものもあるため、生成されたポリシーは必ず確認してから使います。\n\n同じ IAM Access Analyzer でも、ポリシー検証は書いたポリシーの誤りや危険な記述を指摘する機能、外部アクセスの検出はアカウントや組織の外と共有されたリソースを見つける機能で、目的が異なります。IAM の最終アクセス情報は、使われていないサービスや権限を見つけて削除するときに使います。",
+  "keyPoints": [
+    "実際の利用状況から最小権限のポリシーを作る → IAM Access Analyzer のポリシー生成",
+    "ポリシー生成は CloudTrail の証跡（最大 90 日分）を分析する",
+    "ポリシー検証は文法や危険な記述のチェック、外部アクセスの検出は共有の確認で、目的が違う"
+  ],
+  "references": [
+    {
+      "title": "IAM Access Analyzer policy generation - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"
+    },
+    {
+      "title": "Security best practices in IAM - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

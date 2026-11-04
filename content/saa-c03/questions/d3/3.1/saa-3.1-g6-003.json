@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.1-g6-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K3", "3.1-K2"],
+  "services": ["Amazon EBS", "Amazon EC2", "Amazon EFS", "Amazon S3"],
+  "qualifier": "other",
+  "tags": ["ブロックストレージ", "インスタンスストア", "データの永続性", "ストレージの種類"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある卸売会社は、1 台の Amazon EC2 インスタンスで動かす市販の在庫管理ソフトウェアを AWS に移行します。このソフトウェアは約 500 GB の独自形式のデータファイルに対して、数 KB 単位のランダムな読み書きを絶えず行います。ベンダーはデータファイルを OS からディスク（ブロックデバイス）として認識されるボリュームに置くことを条件としており、ネットワーク経由のファイル共有はサポートしていません。また、メンテナンスでインスタンスを停止してから起動しても、データが残っている必要があります。最も適したストレージはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インスタンスストアを備えたインスタンスタイプを選び、インスタンスストアのボリュームにデータファイルを置く。",
+      "correct": false,
+      "rationale": "インスタンスストアはホストに物理的に接続されたブロックストレージで高速ですが、一時的なストレージです。インスタンスを停止すると、データは消去されます。停止してから起動してもデータが残っているという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EFS のファイルシステムを作成し、インスタンスに NFS でマウントしてデータファイルを置く。",
+      "correct": false,
+      "rationale": "Amazon EFS はネットワーク経由で使うファイルストレージです。データは保持されますが、ベンダーがサポートしていないネットワーク経由のファイル共有にあたるため、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3 のバケットにデータファイルをオブジェクトとして置き、ソフトウェアから読み書きする。",
+      "correct": false,
+      "rationale": "Amazon S3 はオブジェクトストレージで、データは API を通じてオブジェクト単位で読み書きします。OS からディスクとして認識されるボリュームではないため、ベンダーの条件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "汎用 SSD（gp3）の Amazon EBS ボリュームをインスタンスに接続し、データファイルを置く。",
+      "correct": true,
+      "rationale": "Amazon EBS はインスタンスにブロックデバイスとして接続する永続的なブロックストレージで、OS からはディスクとして認識されます。インスタンスのライフサイクルとは独立しているため、インスタンスを停止して起動してもデータは保持されます。小さなランダムな読み書きにも向いています。"
+    }
+  ],
+  "explanation": "ストレージは、データの扱い方で 3 種類に分けられます。\n\n- ブロックストレージ: データを固定サイズのブロックとして扱い、OS からはディスクとして見えます。ファイルシステムを作って使い、小さなランダムな読み書きを低レイテンシーで行えます。Amazon EBS やインスタンスストアが該当します。\n- ファイルストレージ: ディレクトリとファイルの階層で扱い、NFS や SMB でネットワーク越しに複数のサーバーから共有できます。Amazon EFS や Amazon FSx が該当します。\n- オブジェクトストレージ: データをメタデータ付きのオブジェクトとしてキーで管理し、API でオブジェクト単位に読み書きします。容量の上限を気にせず使えます。Amazon S3 が該当します。\n\nこの問題では、ベンダーが「OS からディスクとして認識されるボリューム」を求めているのでブロックストレージに絞られます。ブロックストレージのうち、インスタンスストアはインスタンスを停止・休止・終了するとデータが消えるため、キャッシュや一時ファイル向けです。停止後もデータを残すには、インスタンスとは独立して存続する Amazon EBS を使います。",
+  "keyPoints": [
+    "OS からディスクとして使う・小さなランダム I/O → ブロックストレージ（Amazon EBS）",
+    "インスタンスストアは停止・休止・終了でデータが消える。キャッシュや一時データ向け",
+    "複数のサーバーで共有するファイル → ファイルストレージ（Amazon EFS、Amazon FSx）",
+    "API でオブジェクト単位に読み書きし、容量を気にせず保存する → オブジェクトストレージ（Amazon S3）"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic Block Store? - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    },
+    {
+      "title": "Data persistence for Amazon EC2 instance store volumes - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html"
+    },
+    {
+      "title": "Block vs File vs Object Storage - Difference Between Data Storage Services - AWS",
+      "url": "https://aws.amazon.com/compare/the-difference-between-block-file-object-storage/"
+    }
+  ],
+  "lessonRefs": ["lesson-3.1-storage-types-and-services"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

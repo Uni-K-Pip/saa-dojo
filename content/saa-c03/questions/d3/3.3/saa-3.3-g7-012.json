@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.3-g7-012",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": ["3.3-S4", "3.3-K8"],
+  "services": ["Amazon DynamoDB", "Amazon Aurora", "Amazon Neptune", "Amazon RDS"],
+  "qualifier": "performance",
+  "tags": ["データベースの種類", "キーバリュー", "NoSQL", "水平スケーリング"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるゲーム会社は、新作のオンラインゲームでプレイヤーデータを保存するデータベースを選んでいます。データはプレイヤー ID をキーとして読み書きし、テーブルの結合や複雑な集計は行いません。公開直後から数百万人が遊ぶ可能性があり、読み取りも書き込みも 1 秒あたり数十万件まで増えると想定しています。どの規模でも 1 桁ミリ秒の応答時間を保ちたく、サーバーのパッチ適用やスケーリングの管理はしたくありません。どのデータベースが要件を最もよく満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Aurora MySQL-Compatible Edition の DB クラスターを作成し、Aurora レプリカを 15 台まで追加して読み取りを分散する。",
+      "correct": false,
+      "rationale": "Aurora レプリカで分散できるのは読み取りだけで、書き込みは 1 台のライターインスタンスが処理します。書き込みが 1 秒あたり数十万件に増える場合に対応しにくく、インスタンスクラスの選定やレプリカの管理も必要です。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon DynamoDB のテーブルを作成し、パーティションキーをプレイヤー ID にする。",
+      "correct": true,
+      "rationale": "DynamoDB はサーバーレスでフルマネージドの NoSQL データベースで、どの規模でも 1 桁ミリ秒の性能を保つように設計されています。キーによる単純な読み書きが中心で結合が要らないアクセスパターンに適しており、パッチ適用やサーバーの管理は不要です。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Neptune の DB クラスターを作成し、プレイヤーをグラフのノードとして保存する。",
+      "correct": false,
+      "rationale": "Neptune は、つながりの多いデータをたどる検索（ソーシャルグラフなど）に向いたグラフデータベースです。プレイヤー ID による単純な読み書きには向いておらず、インスタンスのサイズと台数の管理も必要です。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon RDS for MySQL を最も大きいインスタンスクラスで作成し、プロビジョンド IOPS SSD のストレージを使う。",
+      "correct": false,
+      "rationale": "1 台の DB インスタンスを大きくする方法には限界があり、書き込みが 1 秒あたり数十万件まで増える場合の性能を保てません。インスタンスの管理やスケーリングの計画も必要です。"
+    }
+  ],
+  "explanation": "データベースの種類は、データの形とアクセスパターンで選びます。結合やトランザクションを伴う複雑なクエリが必要ならリレーショナルデータベース（Amazon Aurora、Amazon RDS）、キーを指定した単純な読み書きを大規模に行うならキーバリュー型の Amazon DynamoDB、つながりをたどる検索ならグラフデータベースの Amazon Neptune が候補になります。\n\nこの問題は、プレイヤー ID をキーにした読み書きだけで結合や集計がなく、トラフィックが非常に大きく増える可能性があります。DynamoDB はテーブルを多数のパーティションに分けて水平にスケールするため、どの規模でも 1 桁ミリ秒の応答を保てます。サーバーレスなので、パッチ適用やサーバーの管理も不要です。オンデマンドモードにすれば、キャパシティーの計画も要りません。\n\nリレーショナルデータベースは、読み取りはレプリカで分散できても、書き込みは基本的に 1 台のプライマリ（ライター）が処理するため、書き込みの規模に限界があります。",
+  "keyPoints": [
+    "キーによる単純な読み書き・どの規模でも 1 桁ミリ秒・サーバー管理なし → Amazon DynamoDB",
+    "結合や複雑なトランザクションが必要 → Aurora や RDS などのリレーショナルデータベース",
+    "Aurora レプリカや RDS のリードレプリカで分散できるのは読み取りだけ"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon DynamoDB? - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+    },
+    {
+      "title": "Replication with Amazon Aurora - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+    },
+    {
+      "title": "What Is Amazon Neptune? - Amazon Neptune",
+      "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.3-database-selection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g7",
+  "createdAt": "2026-11-04"
+}

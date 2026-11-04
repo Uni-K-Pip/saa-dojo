@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.3-g3-007",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-S3", "1.3-S7"],
+  "services": ["AWS Certificate Manager (ACM)", "Elastic Load Balancing", "Amazon EC2", "Amazon Route 53"],
+  "qualifier": "operational",
+  "tags": ["転送中の暗号化", "TLS", "HTTPS リスナー", "DNS 検証", "リダイレクト"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある旅行会社は、Application Load Balancer（ALB）の背後にある Amazon EC2 インスタンスで会員向けの Web サイトを運用しており、ドメインの DNS は Amazon Route 53 で管理しています。現在は HTTP（ポート 80）だけで公開していますが、ログイン情報を保護するため、利用者のブラウザと ALB の間の通信を TLS で暗号化することになりました。HTTP でアクセスした利用者は HTTPS に誘導する必要があります。証明書の取得や更新の作業はできるだけなくしたいと考えています。最も運用負荷の少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Certificate Manager（ACM）で DNS 検証のパブリック証明書を発行して ALB の HTTPS リスナーに設定し、HTTP リスナーに HTTPS へのリダイレクトを設定する。",
+      "correct": true,
+      "rationale": "ACM の DNS 検証の証明書は、検証用の CNAME レコードが DNS に残っていて ALB などの統合サービスで使われている間、ACM が自動で更新します。HTTP リスナーのリダイレクトアクションで、HTTP のリクエストを HTTPS に誘導できます。"
+    },
+    {
+      "id": "b",
+      "text": "各 EC2 インスタンスで自己署名証明書を作成して Web サーバーで HTTPS を有効にし、ALB のターゲットグループのプロトコルを HTTPS に変更する。",
+      "correct": false,
+      "rationale": "暗号化されるのは ALB と EC2 インスタンスの間だけで、ALB のリスナーが HTTP のままなので、ブラウザと ALB の間の通信は暗号化されません。インスタンスごとの証明書の管理も必要になります。"
+    },
+    {
+      "id": "c",
+      "text": "外部の認証局から購入した証明書を AWS Certificate Manager（ACM）にインポートして ALB の HTTPS リスナーに設定し、HTTP リスナーには HTTPS へのリダイレクトを設定する。",
+      "correct": false,
+      "rationale": "ACM にインポートした証明書は、ACM のマネージド更新の対象外です。有効期限が近づくたびに新しい証明書を購入してインポートし直す必要があり、証明書の更新作業をなくすという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "ALB の HTTP リスナーを削除し、AWS Certificate Manager（ACM）で発行したパブリック証明書を設定した HTTPS リスナーだけで Web サイトを公開する。",
+      "correct": false,
+      "rationale": "HTTP リスナーを削除すると、HTTP でアクセスした利用者は接続できなくなります。HTTP でアクセスした利用者を HTTPS に誘導するという要件を満たしません。"
+    }
+  ],
+  "explanation": "ブラウザと ALB の間の通信を暗号化するには、ALB に HTTPS リスナーを作成し、サーバー証明書を設定します。ALB は TLS の接続を終端し、復号したリクエストをターゲットに転送します。\n\nAWS Certificate Manager（ACM）では、パブリック証明書を発行して ALB、Amazon CloudFront、Amazon API Gateway などの統合サービスで使えます。ドメインを所有していることの確認（検証）には DNS 検証と E メール検証があります。DNS 検証では、ACM が示す CNAME レコードを DNS に作成して残しておけば、ACM が証明書を自動で更新します。E メール検証の証明書は更新のたびにメールでの承認が必要で、外部で購入して ACM にインポートした証明書は自動では更新されません。\n\nHTTP でアクセスした利用者を HTTPS に誘導するには、ポート 80 の HTTP リスナーを残したまま、そのアクションを HTTPS へのリダイレクト（HTTP 301 の恒久的なリダイレクト）にします。\n\nなお、ALB とターゲットの間の通信も暗号化する必要がある場合は、ターゲットグループのプロトコルを HTTPS にし、インスタンス側にも証明書を設定します。",
+  "keyPoints": [
+    "ブラウザと ALB の間を暗号化する → ALB の HTTPS リスナーに ACM の証明書を設定する",
+    "証明書の更新作業をなくす → ACM の DNS 検証のパブリック証明書。インポートした証明書は自動更新されない",
+    "HTTP の利用者を HTTPS に誘導する → HTTP リスナーのリダイレクトアクション"
+  ],
+  "references": [
+    {
+      "title": "Create an HTTPS listener for your Application Load Balancer - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html"
+    },
+    {
+      "title": "Managed certificate renewal in AWS Certificate Manager - AWS Certificate Manager",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html"
+    },
+    {
+      "title": "AWS Certificate Manager DNS validation - AWS Certificate Manager",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-encryption-and-keys"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

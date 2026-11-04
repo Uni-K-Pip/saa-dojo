@@ -1,0 +1,73 @@
+{
+  "id": "saa-3.4-g8-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K4", "3.4-S1"],
+  "services": [
+    "AWS PrivateLink",
+    "Elastic Load Balancing",
+    "Amazon VPC",
+    "AWS Transit Gateway",
+    "AWS Resource Access Manager",
+    "AWS WAF"
+  ],
+  "qualifier": "security",
+  "tags": ["PrivateLink", "VPCエンドポイントサービス", "インターフェイスエンドポイント", "CIDRの重複", "SaaS"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある SaaS 企業は、自社の AWS アカウントの VPC で、データ分析の API を Amazon EC2 インスタンスで提供しています。数百社の顧客が、それぞれ自社の AWS アカウントの VPC から、インターネットを経由せずにこの API を呼び出したいと考えています。顧客の VPC の CIDR ブロックは互いに重複しているものが多く、SaaS 企業の VPC と重複するものもあります。SaaS 企業は、顧客から到達できる範囲をこの API だけに限定する必要があり、顧客の VPC 内のリソースへ自分から接続することはありません。これらの要件を満たすソリューションはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "顧客の VPC ごとに VPC ピアリング接続を作成し、ルートテーブルとセキュリティグループで、通信先を API のサブネットだけに限定する。",
+      "correct": false,
+      "rationale": "VPC ピアリング接続は、CIDR ブロックが一致または重複する VPC の間には作成できません。重複する顧客が多いため使えず、数百の接続とルートを管理する負担も大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "API の前段に Network Load Balancer を配置して VPC エンドポイントサービスを作成し、顧客の AWS アカウントに接続を許可して、顧客の VPC にインターフェイス VPC エンドポイントを作成してもらう。",
+      "correct": true,
+      "rationale": "AWS PrivateLink では、顧客の VPC に作られるエンドポイントのネットワークインターフェイスから NLB へ、AWS のネットワーク内で接続します。VPC 同士をルーティングでつなぐわけではないので CIDR ブロックが重複していても使え、顧客から到達できるのは NLB の背後の API だけです。接続は顧客側からしか始められません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Transit Gateway を作成して AWS Resource Access Manager で顧客のアカウントと共有し、顧客の VPC をアタッチしてもらい、トランジットゲートウェイのルートテーブルには API の VPC へのルートだけを設定する。",
+      "correct": false,
+      "rationale": "Transit Gateway は VPC 同士を IP ルーティングでつなぐため、CIDR ブロックが重複する VPC は、アタッチメントごとに 1:1 NAT のルールでアドレスを変換しない限り、宛先を区別できずに正しく通信できません。また、ネットワーク同士をつなぐ構成になるため、到達範囲を API だけに限定するにはルートやセキュリティグループの管理が複雑になります。"
+    },
+    {
+      "id": "d",
+      "text": "API をインターネット向けの Application Load Balancer で公開し、AWS WAF の IP セットで、顧客の NAT ゲートウェイの Elastic IP アドレスからのリクエストだけを許可する。",
+      "correct": false,
+      "rationale": "接続元を絞り込むことはできますが、通信はインターネットを経由します。インターネットを経由せずに API を呼び出したいという要件を満たしません。"
+    }
+  ],
+  "explanation": "自社のサービスを、多数の VPC やアカウントに非公開で提供するときは AWS PrivateLink を使います。サービスを提供する側（サービスプロバイダー）は、サービスの前段に Network Load Balancer（NLB）を置いて VPC エンドポイントサービスを作成し、接続を許可する AWS アカウントなどのプリンシパルを指定します。利用する側（サービスコンシューマー）は、自分の VPC のサブネットにインターフェイス VPC エンドポイントを作成します。エンドポイントにはそのサブネットのプライベート IP アドレスが割り当てられ、通信は AWS のネットワーク内で NLB に届きます。\n\nPrivateLink は VPC 同士をルーティングでつなぐのではなく、特定のサービスへの入り口だけを相手の VPC に置く仕組みです。そのため CIDR ブロックが重複していても使え、顧客から到達できるのは NLB の背後のサービスだけです。接続はコンシューマー側からしか始められないため、プロバイダー側から顧客の VPC へ入り込むこともありません。\n\nVPC ピアリング接続は、CIDR ブロックが重複する VPC の間には作成できません。Transit Gateway も VPC 同士を IP ルーティングでつなぐ仕組みで、重複する CIDR ブロックを扱うには、アタッチメントごとに 1:1 NAT によるアドレス変換を設定する必要があります。インターネット向けのロードバランサーで公開する方法は、インターネットを経由しないという要件を満たしません。",
+  "keyPoints": [
+    "自社のサービスを多数の VPC・アカウントに非公開で提供 → NLB ＋ VPC エンドポイントサービス（AWS PrivateLink）",
+    "PrivateLink はネットワーク同士をつながないので、CIDR ブロックが重複していても使える",
+    "PrivateLink の接続はコンシューマー側からだけ始まり、公開されるのは NLB の背後のサービスだけ",
+    "VPC ピアリング接続は、CIDR ブロックが重複する VPC の間には作成できない"
+  ],
+  "references": [
+    {
+      "title": "Share your services through AWS PrivateLink - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"
+    },
+    {
+      "title": "What is AWS PrivateLink? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
+    },
+    {
+      "title": "Overview of AWS networking services for SaaS offerings - AWS Prescriptive Guidance",
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-network-access-options/services.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-hybrid-and-multi-vpc"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

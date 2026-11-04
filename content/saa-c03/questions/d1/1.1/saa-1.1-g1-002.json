@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.1-g1-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K2", "1.1-K1"],
+  "services": [
+    "AWS IAM Identity Center",
+    "AWS Organizations",
+    "AWS Identity and Access Management (IAM)",
+    "Amazon Cognito"
+  ],
+  "qualifier": "operational",
+  "tags": ["IAM Identity Center", "SAML 2.0", "SCIM", "権限セット", "フェデレーション", "シングルサインオン"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は従業員の ID を Microsoft Entra ID で管理しています。AWS Organizations で管理している 30 の AWS アカウントに、従業員が会社の ID でサインインできるようにする必要があります。入社や異動、退職に合わせて AWS 側のユーザーとグループも自動で更新されるようにし、アカウントごとのアクセス権限は一か所でまとめて管理したいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各アカウントの IAM に Microsoft Entra ID を SAML ID プロバイダーとして登録し、アカウントごとにフェデレーション用の IAM ロールを作成する。",
+      "correct": false,
+      "rationale": "IAM の SAML フェデレーションでも会社の ID でサインインできますが、ID プロバイダーの登録とロールの作成・更新を 30 のアカウントそれぞれで行う必要があります。権限を一か所でまとめて管理できず、運用負荷が大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Cognito ユーザープールに Microsoft Entra ID を SAML ID プロバイダーとして追加し、従業員がユーザープール経由で各アカウントにサインインできるようにする。",
+      "correct": false,
+      "rationale": "Amazon Cognito ユーザープールは、自社で開発するウェブアプリやモバイルアプリの利用者を認証するためのサービスです。従業員が AWS マネジメントコンソールや複数の AWS アカウントにサインインする用途には使いません。"
+    },
+    {
+      "id": "c",
+      "text": "IAM Identity Center の ID ソースに Microsoft Entra ID を外部 ID プロバイダーとして設定し、SCIM の自動プロビジョニングを有効にして権限セットを割り当てる。",
+      "correct": true,
+      "rationale": "IAM Identity Center は外部 ID プロバイダーと SAML 2.0 で認証を連携し、SCIM でユーザーとグループを自動でプロビジョニングできます。権限セットをグループとアカウントに割り当てると、各アカウントに対応する IAM ロールが自動で作られるため、30 アカウント分の権限を一か所で管理できます。"
+    },
+    {
+      "id": "d",
+      "text": "各アカウントに従業員ごとの IAM ユーザーを作成し、Microsoft Entra ID のユーザー情報をスクリプトで定期的に IAM と同期する。",
+      "correct": false,
+      "rationale": "IAM ユーザーはパスワードやアクセスキーといった長期的な認証情報を持ち、アカウントごとに管理が必要です。同期スクリプトの作成と保守も必要で、運用負荷が最も大きい方法です。人間のユーザーにはフェデレーションと一時的な認証情報を使うのがベストプラクティスです。"
+    }
+  ],
+  "explanation": "従業員（ワークフォース）が複数の AWS アカウントにアクセスするときは、AWS IAM Identity Center（旧称 AWS Single Sign-On）で一元管理するのが推奨される方法です。ID ソースには、Identity Center ディレクトリ、Active Directory、外部 ID プロバイダーのいずれか 1 つを選びます。Okta や Microsoft Entra ID などの外部 ID プロバイダーを使う場合、認証は SAML 2.0 で連携し、ユーザーとグループは SCIM で自動的にプロビジョニングします。これにより、入社・異動・退職が ID プロバイダーに反映されると、Identity Center のユーザーとグループも更新されます。\n\nアクセス権限は権限セット（1 つ以上の IAM ポリシーをまとめたテンプレート）として定義し、ユーザーやグループとアカウントの組み合わせに割り当てます。割り当てると、Identity Center が各アカウントに対応する IAM ロールを作成・管理し、利用者は AWS アクセスポータルや AWS CLI から一時的な認証情報でアカウントを操作します。権限セットを変更すると、各アカウントのロールも自動で更新されます。\n\nIAM の SAML フェデレーションはアカウントごとの設定が必要で、アカウントが多いと管理が分散します。Amazon Cognito は顧客向けアプリケーションの利用者の認証に使うサービスで、従業員の AWS アカウントへのアクセスには使いません。",
+  "keyPoints": [
+    "従業員が複数アカウントにシングルサインオン → IAM Identity Center と権限セット",
+    "外部 ID プロバイダーとは SAML 2.0 で認証し、SCIM でユーザーとグループを自動同期する",
+    "Amazon Cognito はアプリの利用者向け、IAM Identity Center は従業員向け"
+  ],
+  "references": [
+    {
+      "title": "External identity providers - AWS IAM Identity Center",
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+    },
+    {
+      "title": "Manage AWS accounts with permission sets - AWS IAM Identity Center",
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-roles-federation"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

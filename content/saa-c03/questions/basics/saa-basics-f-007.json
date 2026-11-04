@@ -1,0 +1,69 @@
+{
+  "id": "saa-basics-f-007",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K2"
+  ],
+  "services": [
+    "Amazon CloudFront",
+    "Amazon EC2",
+    "Amazon VPC"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "エッジロケーション",
+    "CDN",
+    "キャッシュ",
+    "遅延"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、東京リージョンの EC2 インスタンスで、製品を紹介する Web サイトを公開しています。最近、欧州や南米からのアクセスが増えましたが、遠い地域の利用者から、画像や動画の表示が遅いという声が届いています。会社は、Web サイトの構成を大きく変えずに、世界中の利用者に向けて表示を速くしたいと考えています。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudFront で、エッジロケーションから画像や動画を配信する",
+      "correct": true,
+      "rationale": "CloudFront は、世界各地のエッジロケーションにコンテンツのコピー（キャッシュ）を置き、利用者に近い場所から返します。遠い地域の利用者も毎回東京まで通信しなくて済むので、表示が速くなります。既存の Web サイトをオリジン（元のサーバー）にしたまま追加できます。"
+    },
+    {
+      "id": "b",
+      "text": "東京リージョンの別の AZ にも EC2 インスタンスを追加し、2 台で処理を分担する",
+      "correct": false,
+      "rationale": "別の AZ に追加すると、AZ の障害には強くなります。しかし、どちらの AZ も東京リージョンにあるので、欧州や南米の利用者との距離は変わらず、表示の遅さは改善しません。"
+    },
+    {
+      "id": "c",
+      "text": "EC2 インスタンスを、CPU とメモリがより大きいインスタンスタイプに変更する",
+      "correct": false,
+      "rationale": "インスタンスを大きくすると、サーバーの処理能力は上がります。しかし、遅さの主な原因は利用者との距離による通信の遅延なので、大きな改善は見込めません。"
+    },
+    {
+      "id": "d",
+      "text": "東京リージョンの VPC に新しいサブネットを追加して、通信の経路を増やす",
+      "correct": false,
+      "rationale": "サブネットを追加しても、サーバーの場所は東京のままで、遠い地域の利用者との距離は変わりません。"
+    }
+  ],
+  "explanation": "エッジロケーション（PoP）は、世界中の多くの都市に置かれた、利用者に近い拠点です。数はリージョンよりずっと多く、Amazon CloudFront はここにコンテンツのコピー（キャッシュ）を置いて、利用者の近くから配信します。そのため、オリジンのサーバーから遠い地域の利用者でも、画像や動画を速く表示できます。\n\n複数の AZ への配置は、障害への強さ（可用性）を高める方法で、遠い利用者との通信の遅延は縮まりません。「世界中の利用者に速く届ける」と書かれていたら、まず CloudFront を考えます。",
+  "keyPoints": [
+    "「世界中の利用者に速く配信」→ CloudFront のエッジロケーションからキャッシュを配信",
+    "マルチ AZ は可用性の対策で、遠い利用者の遅延は改善しない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon CloudFront? - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-global-infrastructure"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

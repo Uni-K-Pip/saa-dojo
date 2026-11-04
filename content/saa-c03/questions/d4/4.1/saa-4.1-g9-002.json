@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K2", "4.1-K3"],
+  "services": ["Amazon S3", "AWS Cost Explorer"],
+  "qualifier": "operational",
+  "tags": ["コスト配分タグ", "バケットタグ", "費用の按分"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある広告制作会社は、複数の顧客プロジェクトのデータを 1 つの Amazon S3 バケットに保存し、プロジェクトごとにプレフィックスを分けています。経理部門は、S3 の費用をプロジェクトごとに AWS Cost Explorer で確認し、顧客への請求に使いたいと考えています。担当者が各オブジェクトに project タグを付けましたが、Cost Explorer では project タグで費用を絞り込めませんでした。今後の S3 の費用をプロジェクトごとに Cost Explorer で確認できるようにする方法のうち、運用上のオーバーヘッドが最も少ないものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オブジェクトに付けた project タグを、請求とコスト管理のコンソールでコスト配分タグとして有効にし、Cost Explorer で project タグごとに集計する。",
+      "correct": false,
+      "rationale": "S3 のコスト配分タグはバケットに付けたタグだけが対象で、オブジェクトタグは請求データに使われません。オブジェクトタグを有効にしようとしても、プロジェクトごとの費用は Cost Explorer に現れません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 Storage Lens でプレフィックスごとの保存量を集計するダッシュボードを作り、経理部門には Cost Explorer の代わりにそのダッシュボードを使ってもらう。",
+      "correct": false,
+      "rationale": "S3 Storage Lens は保存量やリクエストなどの利用状況を可視化する機能で、費用そのものは示しません。経理部門が保存量から費用を計算し直す手間がかかり、Cost Explorer で費用を確認するという要件も満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudTrail のデータイベントでプロジェクトごとのリクエスト数を記録し、保存量と合わせて費用を計算するスクリプトを毎月実行する。",
+      "correct": false,
+      "rationale": "独自の集計スクリプトを作って毎月動かす必要があり、運用負荷が大きくなります。CloudTrail のデータイベントの記録にも追加の料金がかかり、Cost Explorer で確認するという要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "プロジェクトごとに S3 バケットを分けてデータを移し、各バケットに project タグを付けたうえで、project をコスト配分タグとして有効にする。",
+      "correct": true,
+      "rationale": "S3 のコスト配分タグはバケット単位で費用を分けます。プロジェクトごとのバケットに project タグを付け、そのタグキーを請求とコスト管理のコンソールで有効にすれば、それ以降の S3 の費用を Cost Explorer で project ごとに絞り込み・集計できます。"
+    }
+  ],
+  "explanation": "AWS の費用を部門やプロジェクトごとに分けて見るには、リソースにタグを付け、そのタグキーを請求とコスト管理のコンソールでコスト配分タグとして有効にします。有効にしたタグは Cost Explorer や AWS Cost and Usage Report で絞り込みやグループ化に使えます。ユーザー定義のタグは、付けただけでは請求データに現れない点に注意します。\n\nAmazon S3 の場合、コスト配分タグとして使えるのはバケットに付けたタグだけです。オブジェクトタグはライフサイクルルールの対象の絞り込みやアクセス制御には使えますが、費用の按分には使えません。そのため、プロジェクトごとに費用を分けたいときは、バケットをプロジェクトごとに分けてバケットにタグを付けます。\n\nS3 Storage Lens や独自のスクリプトでも保存量やリクエスト数は把握できますが、費用として Cost Explorer に表示されるわけではなく、計算や運用の手間が残ります。",
+  "keyPoints": [
+    "S3 のコスト配分タグはバケット単位。オブジェクトタグでは費用を分けられない",
+    "ユーザー定義タグは、コスト配分タグとして有効にして初めて請求データに現れる",
+    "費用を部門・プロジェクトごとに見たい → リソースのタグ付け＋コスト配分タグの有効化＋Cost Explorer"
+  ],
+  "references": [
+    {
+      "title": "Using cost allocation S3 bucket tags - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/CostAllocTagging.html"
+    },
+    {
+      "title": "Activating user-defined cost allocation tags - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

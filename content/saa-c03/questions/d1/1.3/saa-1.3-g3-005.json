@@ -1,0 +1,66 @@
+{
+  "id": "saa-1.3-g3-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-S1", "1.3-K1"],
+  "services": ["AWS Config", "AWS Organizations", "AWS CloudTrail", "Amazon Athena", "AWS Lambda", "Amazon EBS", "Amazon RDS", "Amazon S3"],
+  "qualifier": "operational",
+  "tags": ["コンプライアンス", "コンフォーマンスパック", "Config ルール", "アグリゲーター", "発見的統制"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融機関は、AWS Organizations で数十個の AWS アカウントを管理しています。監査部門から、すべてのアカウントについて「EBS ボリュームが暗号化されていること」「RDS の DB インスタンスのストレージ暗号化が有効であること」「S3 バケットのパブリックアクセスがブロックされていること」を継続的に評価し、全アカウントの準拠状況と非準拠のリソースを 1 か所で確認できるようにするよう求められました。今後追加されるアカウントにも自動で適用する必要があります。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Config マネージドルールをまとめたコンフォーマンスパックを組織全体にデプロイし、アグリゲーターで全アカウントの評価結果を集約する。",
+      "correct": true,
+      "rationale": "AWS Config はリソースの設定と変更履歴を記録し、ルールで継続的に評価します。組織のコンフォーマンスパックはルールをまとめて全メンバーアカウントにデプロイでき、新しく組織に参加したアカウントにも自動でデプロイされます。アグリゲーターで、複数のアカウントとリージョンの準拠状況を 1 か所で確認できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS CloudTrail で組織の証跡を作成し、記録された API 呼び出しを Amazon Athena で定期的にクエリして、非準拠のリソースを判定する。",
+      "correct": false,
+      "rationale": "CloudTrail が記録するのは API の呼び出し履歴で、リソースの現在の設定そのものではありません。設定を判定するクエリを自分で作成・保守する必要があり、運用上のオーバーヘッドが最も少ないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "各アカウントで AWS Lambda 関数を毎日実行してリソースの設定を調べ、結果を監査用アカウントの S3 バケットに集約する。",
+      "correct": false,
+      "rationale": "評価のためのコードを自分で作成・保守し、新しいアカウントへの展開も自分で管理する必要があります。1 日 1 回の確認では、設定が変わったときに継続的に評価することもできません。"
+    },
+    {
+      "id": "d",
+      "text": "暗号化されていないリソースの作成を拒否する SCP を組織のルートにアタッチし、新しいリソースが非準拠にならないようにする。",
+      "correct": false,
+      "rationale": "SCP は操作を事前に拒否する予防的な統制です。既存のリソースの準拠状況を評価したり、非準拠のリソースを 1 か所で確認したりする機能はありません。"
+    }
+  ],
+  "explanation": "AWS Config は、AWS リソースの設定と変更履歴を記録し、AWS Config ルールで望ましい設定に準拠しているかを継続的に評価するサービスです。EBS ボリュームの暗号化（encrypted-volumes）、RDS のストレージ暗号化（rds-storage-encrypted）、S3 バケットのパブリックアクセスのブロック（s3-bucket-level-public-access-prohibited）など、よく使う評価にはマネージドルールが用意されています。\n\nコンフォーマンスパックは、複数の Config ルールと修復アクションを 1 つの単位にまとめたものです。AWS Organizations と組み合わせると、組織のコンフォーマンスパックとして全メンバーアカウントに一括でデプロイでき、新しく組織に参加したアカウントにも自動でデプロイされます。さらに、AWS Config のアグリゲーターを使うと、複数のアカウントとリージョンの評価結果を 1 つのアカウントに集約して確認できます。なお、評価には各アカウントで AWS Config による設定の記録が有効になっている必要があります。\n\nAWS CloudTrail は「だれが、いつ、どの API を呼び出したか」の記録で、リソースの設定の評価には向きません。SCP は操作を事前に止める予防的な統制で、準拠状況を評価して報告する発見的な統制とは役割が違います。両方を組み合わせることもできますが、評価と報告の要件は AWS Config で満たします。",
+  "keyPoints": [
+    "複数のアカウントで設定の準拠状況を継続的に評価する → AWS Config ルール（まとめて配るならコンフォーマンスパック）",
+    "組織のコンフォーマンスパックは、新しく組織に参加したアカウントにも自動でデプロイされる",
+    "複数のアカウントとリージョンの評価結果を 1 か所で見る → AWS Config のアグリゲーター",
+    "CloudTrail は API 呼び出しの記録、AWS Config はリソースの設定と変更履歴の記録"
+  ],
+  "references": [
+    {
+      "title": "Conformance Packs for AWS Config - AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html"
+    },
+    {
+      "title": "Managing Conformance Packs for AWS Config Across all Accounts in Your Organization - AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/conformance-pack-organization-apis.html"
+    },
+    {
+      "title": "Multi-Account Multi-Region Data Aggregation for AWS Config - AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-data-governance"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

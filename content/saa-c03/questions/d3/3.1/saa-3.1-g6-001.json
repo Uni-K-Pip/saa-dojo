@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.1-g6-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K1", "3.1-K2"],
+  "services": ["AWS Storage Gateway", "Amazon S3", "AWS DataSync"],
+  "qualifier": "minimal-change",
+  "tags": ["ハイブリッドストレージ", "S3 File Gateway", "NFS", "ローカルキャッシュ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある測量会社では、オンプレミスの Linux サーバーで動く図面管理アプリケーションが、NAS の NFS 共有に図面ファイルを保存しています。NAS の容量が足りなくなってきたため、ファイルの保存先を Amazon S3 に移し、クラウド上の分析ツールから S3 のオブジェクトとして直接読めるようにしたいと考えています。アプリケーションのコードは改修できず、最近使ったファイルは引き続き社内から低レイテンシーで開ける必要があります。この要件を満たすソリューションはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスに AWS Storage Gateway の Volume Gateway をキャッシュ型ボリュームで構成し、iSCSI ボリュームとしてアプリケーションのサーバーに接続する。",
+      "correct": false,
+      "rationale": "キャッシュ型ボリュームはプライマリデータを S3 に保存し、よく使うデータをローカルにキャッシュします。しかし、ボリュームのデータは S3 API で直接読むことができません。クラウド上の分析ツールから S3 のオブジェクトとして直接読むという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "オンプレミスに S3 File Gateway をデプロイし、S3 バケットに対応付けた NFS ファイル共有をアプリケーションの保存先としてマウントする。",
+      "correct": true,
+      "rationale": "S3 File Gateway は NFS や SMB のファイル共有を提供し、書き込まれたファイルを 1 ファイル 1 オブジェクトとして S3 バケットに保存します。最近使ったデータはゲートウェイのローカルキャッシュから低レイテンシーで読めます。アプリケーションはマウント先を変えるだけで済み、保存されたオブジェクトはクラウドのツールから直接読めます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS DataSync のタスクで、NAS の NFS 共有から S3 バケットへ 1 時間ごとにファイルをコピーし、アプリケーションは引き続き NAS に保存する。",
+      "correct": false,
+      "rationale": "DataSync で S3 へコピーすれば分析ツールからは読めますが、元のファイルは NAS に残り続けます。保存先は NAS のままなので、NAS の容量不足を解消するという目的を果たせません。"
+    },
+    {
+      "id": "d",
+      "text": "オンプレミスに AWS Storage Gateway の Tape Gateway をデプロイし、図面ファイルを仮想テープに書き込んで S3 に保存する。",
+      "correct": false,
+      "rationale": "Tape Gateway は、バックアップソフトウェアから物理テープの代わりに使う仮想テープライブラリです。アプリケーションがファイル共有として読み書きする用途には使えず、データは仮想テープとして保存されるため S3 のオブジェクトとして直接読むこともできません。"
+    }
+  ],
+  "explanation": "AWS Storage Gateway は、オンプレミスのアプリケーションから使い慣れたプロトコルのまま AWS のストレージを使えるようにするハイブリッドストレージのサービスで、用途ごとにゲートウェイの種類が分かれています。\n\nS3 File Gateway は NFS（Linux 向け）と SMB（Windows 向け）のファイル共有を提供し、ファイルと S3 オブジェクトが 1 対 1 で対応します。そのため、オンプレミスのアプリケーションはファイル共有として読み書きを続けながら、同じデータをクラウド側のサービスから S3 のオブジェクトとして直接使えます。最近使ったデータはゲートウェイのローカルキャッシュに置かれるので、社内からの読み取りは低レイテンシーです。\n\nVolume Gateway は iSCSI のブロックストレージを提供し、スナップショットを Amazon EBS のスナップショットとして取得できますが、ボリュームのデータを S3 API で直接読むことはできません。Tape Gateway は既存のバックアップソフトウェア向けの仮想テープライブラリです。AWS DataSync はデータの移行や定期的なコピーのためのサービスで、ローカルキャッシュを持たず、コピー元のデータも残ります。",
+  "keyPoints": [
+    "オンプレミスのファイル共有（NFS/SMB）のまま S3 に保存し、S3 のオブジェクトとしても使う → S3 File Gateway",
+    "Volume Gateway は iSCSI のブロックストレージ。データは S3 API で直接読めない",
+    "Tape Gateway は既存のバックアップソフトウェアからテープの代わりに使う",
+    "DataSync は移行や定期コピー向け。ローカルキャッシュは持たない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon S3 File Gateway - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+    },
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
+    },
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.1-hybrid-storage"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "saa-basics-f-010",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K3"
+  ],
+  "services": [
+    "Amazon RDS",
+    "Amazon EC2"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "責任共有モデル",
+    "マネージドサービス",
+    "パッチ適用"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、EC2 インスタンスに MySQL を自分でインストールしてデータベースを運用しています。担当者は少人数で、毎月の OS とデータベースソフトウェアの更新作業に多くの時間を取られています。会社は、アプリケーションからは引き続き MySQL として使いながら、更新作業の負担をできるだけ減らしたいと考えています。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon RDS for MySQL に移行し、OS とデータベースの更新を AWS に任せる",
+      "correct": true,
+      "rationale": "Amazon RDS では、データベースを動かすサーバーの OS やデータベースソフトウェアの更新、バックアップの実行などを AWS が受け持ちます。RDS for MySQL なら、アプリケーションからはこれまでどおり MySQL として使えます。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 インスタンスをより大きいインスタンスタイプに変更して、更新作業を早く終わらせる",
+      "correct": false,
+      "rationale": "インスタンスを大きくしても、更新作業そのものは利用者が行うことに変わりません。作業の負担は減りません。"
+    },
+    {
+      "id": "c",
+      "text": "別の AZ にも EC2 インスタンスを用意し、1 台ずつ手作業で更新して停止を避ける",
+      "correct": false,
+      "rationale": "2 台にすると更新中も片方で動かせますが、更新する台数が増えるので、作業の負担はむしろ増えます。"
+    },
+    {
+      "id": "d",
+      "text": "セキュリティグループの受信ルールをすべて削除し、外部から接続できないようにする",
+      "correct": false,
+      "rationale": "受信ルールを削除すると、アプリケーションもデータベースに接続できなくなります。また、OS やソフトウェアの更新が不要になるわけではありません。"
+    }
+  ],
+  "explanation": "責任共有モデルでは、利用者の責任の範囲は使うサービスによって変わります。EC2 のようなインフラ型のサービスでは、ゲスト OS や自分で入れたソフトウェアの更新は利用者の責任です。一方、Amazon RDS のようなマネージドサービスでは、OS やデータベースソフトウェアの更新、バックアップの実行などを AWS が受け持ちます（更新を適用する時間帯は利用者が選べます）。\n\nそのため、「更新作業の負担を減らしたい」「運用上のオーバーヘッドを最小にしたい」という要件では、マネージドサービスへの移行が答えの方向になります。ただし、データベースのユーザーやスキーマ、接続の許可などは、引き続き利用者が管理します。",
+  "keyPoints": [
+    "「パッチ作業を減らしたい」→ マネージドサービス（RDS など）に移す",
+    "RDS でも、スキーマ、データベースのユーザー、接続の許可は利用者が管理する"
+  ],
+  "references": [
+    {
+      "title": "Shared Responsibility Model - Amazon Web Services (AWS)",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    },
+    {
+      "title": "What is Amazon Relational Database Service (Amazon RDS)? - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "Security in Amazon RDS - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-shared-responsibility"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

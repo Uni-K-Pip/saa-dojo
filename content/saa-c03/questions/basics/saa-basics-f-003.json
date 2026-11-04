@@ -1,0 +1,74 @@
+{
+  "id": "saa-basics-f-003",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K13"
+  ],
+  "services": [
+    "AWS Lambda",
+    "Amazon S3",
+    "Amazon EC2",
+    "Amazon EBS",
+    "Amazon VPC"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "主要サービス",
+    "サーバーレス",
+    "イベント駆動"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の Web サイトでは、利用者が Amazon S3 のバケットに画像をアップロードします。開発チームは、画像がアップロードされるたびに、縮小画像を作る短いプログラムを動かしたいと考えています。チームは少人数のため、サーバーの用意や OS の更新はしたくありません。また、画像がアップロードされない時間帯には、処理の料金がかからないようにしたいと考えています。最も適した方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスを常時起動しておき、プログラムでバケットを定期的に確認する",
+      "correct": false,
+      "rationale": "EC2 インスタンスでは、OS の更新などサーバーの管理が必要です。また、常時起動していると、画像がアップロードされない時間帯にも料金がかかります。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda の関数を作り、画像のアップロードをきっかけに実行する",
+      "correct": true,
+      "rationale": "AWS Lambda は、イベントをきっかけにコードを実行するサーバーレスのサービスです。サーバーや OS の管理は AWS が行い、料金はリクエストの回数と実行時間で決まるので、実行しない時間帯には処理の料金がかかりません。S3 へのアップロードを、Lambda 関数を動かすきっかけにできます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EBS ボリュームにプログラムを置き、アップロードのたびに読み込ませる",
+      "correct": false,
+      "rationale": "Amazon EBS は EC2 インスタンスに接続して使うブロックストレージで、それ自体はプログラムを実行しません。プログラムを動かすには EC2 インスタンスが必要になり、サーバーの管理が残ります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon VPC を作成し、そのサブネットにプログラムを配置して実行する",
+      "correct": false,
+      "rationale": "Amazon VPC は仮想ネットワークを作るサービスで、プログラムを実行する機能はありません。プログラムを動かすには、別にコンピューティングのサービスが必要です。"
+    }
+  ],
+  "explanation": "AWS Lambda は、サーバーを用意・管理せずにコード（関数）を実行できるサーバーレスのコンピューティングサービスです。S3 へのファイルのアップロードなどのイベントをきっかけに関数を動かせます。サーバーの用意、OS の更新、台数の調整は AWS が行い、料金はリクエストの回数と実行時間で決まります。\n\nAmazon EC2 は自由度の高い仮想サーバーですが、OS から上を利用者が管理し、起動している間は料金がかかります。Amazon EBS はストレージ、Amazon VPC はネットワークのサービスで、どちらもプログラムを実行するものではありません。主要サービスの役割（コンピューティング、ストレージ、ネットワーク）を区別しておきましょう。",
+  "keyPoints": [
+    "「サーバーを管理せず、イベントのたびにコードを動かす」→ AWS Lambda",
+    "EC2 は OS から上を利用者が管理し、起動している間は料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Lambda? - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    },
+    {
+      "title": "Amazon S3 Event Notifications - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventNotifications.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-cloud-and-aws"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "f",
+  "createdAt": "2026-11-04"
+}

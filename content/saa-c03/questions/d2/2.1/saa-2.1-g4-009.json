@@ -1,0 +1,66 @@
+{
+  "id": "saa-2.1-g4-009",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K9"],
+  "services": ["Elastic Load Balancing", "Amazon ECS", "Amazon Route 53"],
+  "qualifier": "operational",
+  "tags": ["ALB", "パスベースルーティング", "ターゲットグループ", "マイクロサービス"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、注文、在庫、会員の 3 つのマイクロサービスを Amazon ECS で動かしています。クライアントからは 1 つのドメイン名で HTTPS のリクエストを受け付け、URL のパスが /orders で始まるリクエストは注文サービスに、/inventory で始まるものは在庫サービスに、/members で始まるものは会員サービスに振り分けたいと考えています。運用上のオーバーヘッドが最も少ない構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Application Load Balancer を 1 つ作成し、HTTPS リスナーにパスのパターンを条件とするルールを追加して、サービスごとのターゲットグループに転送する。",
+      "correct": true,
+      "rationale": "Application Load Balancer は HTTP・HTTPS のリクエストの内容を見て振り分けるレイヤー 7 のロードバランサーで、リスナーのルールでパスのパターンを条件にターゲットグループを選べます。1 つのロードバランサーと 1 つのドメイン名で 3 つのサービスに振り分けられます。"
+    },
+    {
+      "id": "b",
+      "text": "Network Load Balancer を 1 つ作成し、サービスごとにポート番号の異なる TCP リスナーを作成して、クライアントに接続先のポートを使い分けてもらう。",
+      "correct": false,
+      "rationale": "Network Load Balancer はレイヤー 4 で動作し、URL のパスを見て振り分けることはできません。ポート番号で分けるとクライアント側の変更が必要になり、パスで振り分けるという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "サービスごとに Application Load Balancer を作成し、Amazon Route 53 の加重ルーティングで 3 つのロードバランサーにリクエストを振り分ける。",
+      "correct": false,
+      "rationale": "DNS による加重ルーティングは、名前解決の結果を重みに応じて変えるだけで、URL のパスを見ることはできません。パスと無関係にリクエストが各サービスに送られるため要件を満たさず、ロードバランサーが 3 つになる分の管理とコストも増えます。"
+    },
+    {
+      "id": "d",
+      "text": "Gateway Load Balancer を作成してサービスごとのターゲットグループを登録し、URL のパスに応じてリクエストを転送する。",
+      "correct": false,
+      "rationale": "Gateway Load Balancer は、ファイアウォールや侵入検知などの仮想アプライアンスに通信を通すためのロードバランサーで、URL のパスに応じた振り分けはできません。"
+    }
+  ],
+  "explanation": "Elastic Load Balancing には用途の異なるロードバランサーがあります。Application Load Balancer（ALB）は HTTP・HTTPS のリクエストを解釈するレイヤー 7 のロードバランサーで、リスナーのルールの条件にホストヘッダー、パスのパターン、HTTP ヘッダー、HTTP メソッド、クエリ文字列、送信元 IP アドレスを使えます。パスごとにサービス別のターゲットグループへ転送すれば、1 つの ALB と 1 つのドメイン名で複数のマイクロサービスを公開できます。Amazon ECS のサービスは、起動したタスクをターゲットグループに自動で登録します。\n\nNetwork Load Balancer（NLB）は TCP・UDP を扱うレイヤー 4 のロードバランサーで、高いスループットや固定 IP アドレスが必要なときに使いますが、パスでは振り分けられません。Gateway Load Balancer は仮想アプライアンスの冗長化とスケーリングのためのものです。DNS の加重ルーティングは名前解決の段階で重みに応じて振り分けるだけで、リクエストの内容は見ません。",
+  "keyPoints": [
+    "URL のパスやホスト名で振り分ける → ALB のリスナールール（レイヤー 7）",
+    "NLB はレイヤー 4（TCP・UDP）。パスでの振り分けはできない",
+    "Gateway Load Balancer はファイアウォールなどの仮想アプライアンス用",
+    "Route 53 のルーティングは名前解決の段階の振り分けで、リクエストの内容は見ない"
+  ],
+  "references": [
+    {
+      "title": "Condition types for listener rules - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html"
+    },
+    {
+      "title": "What is a Network Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+    },
+    {
+      "title": "What is a Gateway Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

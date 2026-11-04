@@ -1,0 +1,84 @@
+{
+  "id": "saa-1.1-g1-010",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S5",
+    "1.1-K1"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "AWS Lambda",
+    "AWS Identity and Access Management (IAM)",
+    "AWS Organizations",
+    "AWS Key Management Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "リソースベースのポリシー",
+    "バケットポリシー",
+    "クロスアカウント",
+    "最小権限",
+    "SCP"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業では、分析用アカウントの AWS Lambda 関数が、データ用アカウントの Amazon S3 バケットにあるオブジェクトを読み取る必要があります。2 つのアカウントは同じ AWS Organizations の組織に属しており、オブジェクトは SSE-S3 で暗号化されています。Lambda 関数は分析用アカウントのリソースにも同時にアクセスするため、ロールを切り替えずに、関数の実行ロールのままバケットを読み取れるようにしたいと考えています。最小権限で要件を満たすために必要な設定はどれですか。2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データ用アカウントに読み取り専用の IAM ロールを作成して信頼ポリシーで Lambda 関数の実行ロールを信頼し、関数がそのロールを引き受けて読み取るようにする。",
+      "correct": false,
+      "rationale": "クロスアカウントのロールでもアクセスできますが、Lambda 関数は AssumeRole でロールを切り替える必要があり、そのセッションでは元の実行ロールの権限を使えません。ロールを切り替えずに読み取るという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "データ用アカウントのバケットポリシーで、Lambda 関数の実行ロールを Principal に指定し、オブジェクトに対する s3:GetObject を許可する。",
+      "correct": true,
+      "rationale": "バケットポリシーはリソースベースのポリシーで、別のアカウントのプリンシパルを Principal に指定してアクセスを許可できます。データ用アカウント側でこの許可を与えない限り、分析用アカウントのロールはバケットを読み取れません。"
+    },
+    {
+      "id": "c",
+      "text": "データ用アカウントで S3 ブロックパブリックアクセスを無効にし、バケットポリシーでオブジェクトの読み取りを全員に許可する。",
+      "correct": false,
+      "rationale": "バケットを公開すると、だれでもオブジェクトを読み取れてしまい、最小権限に反します。特定のロールにだけ許可すれば、パブリックアクセスを許可する必要はありません。"
+    },
+    {
+      "id": "d",
+      "text": "分析用アカウントに適用されている SCP に、データ用アカウントのバケットのオブジェクトに対する s3:GetObject を許可するステートメントを追加する。",
+      "correct": false,
+      "rationale": "SCP はアカウント内のプリンシパルが使える権限の上限を定めるだけで、権限を付与しません。SCP で許可しても、IAM ポリシーやバケットポリシーによる許可がなければアクセスできません。"
+    },
+    {
+      "id": "e",
+      "text": "分析用アカウントで、Lambda 関数の実行ロールのポリシーに、データ用アカウントのバケットのオブジェクトに対する s3:GetObject の許可を追加する。",
+      "correct": true,
+      "rationale": "クロスアカウントのアクセスでは、リソースベースのポリシーに加えて、アクセスする側のアイデンティティベースのポリシーでも許可が必要です。実行ロールに対象バケットのオブジェクトへの s3:GetObject だけを許可すれば、最小権限になります。"
+    }
+  ],
+  "explanation": "同じアカウントの中では、多くの場合、アイデンティティベースのポリシーとリソースベースのポリシーのどちらか一方で許可されていればアクセスできます。一方、アカウントをまたぐアクセスでは、アクセスする側のアイデンティティベースのポリシーと、リソース側のリソースベースのポリシーの両方で許可されている必要があります。\n\nS3 のバケットポリシーのようなリソースベースのポリシーを使うと、別のアカウントのプリンシパルは自分の ID のままリソースにアクセスできます。ロールを引き受ける方法では、元の権限を手放してロールの権限に切り替わるため、2 つのアカウントのリソースを同時に扱う処理（データのコピーなど）では、リソースベースのポリシーのほうが便利です。リソースベースのポリシーは、S3 のほか、Amazon SNS、Amazon SQS、AWS KMS、AWS Lambda など多くのサービスでサポートされています。\n\nSCP は権限の上限を決めるだけなので、許可を足しても権限は増えません。なお、オブジェクトを SSE-KMS で暗号化している場合は、KMS キーのキーポリシーでも別アカウントのロールに kms:Decrypt を許可する必要があります。この問題では SSE-S3 なので、キーポリシーの設定は不要です。",
+  "keyPoints": [
+    "クロスアカウントのアクセスは、アクセスする側の IAM ポリシーとリソース側のリソースベースのポリシーの両方で許可する",
+    "元の権限を保ったまま別アカウントのリソースを使う → リソースベースのポリシー。ロールを引き受けると元の権限は手放す",
+    "SSE-KMS で暗号化されたオブジェクトには、KMS キーポリシーの許可も必要"
+  ],
+  "references": [
+    {
+      "title": "Cross account resource access in IAM - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html"
+    },
+    {
+      "title": "Bucket policies for Amazon S3 - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

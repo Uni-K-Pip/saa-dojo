@@ -1,0 +1,68 @@
+{
+  "id": "saa-3.4-g8-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-S4", "3.4-K3"],
+  "services": [
+    "Elastic Load Balancing",
+    "VPC endpoints",
+    "Amazon EC2",
+    "AWS Network Firewall",
+    "Amazon VPC"
+  ],
+  "qualifier": "availability",
+  "tags": ["Gateway Load Balancer", "仮想アプライアンス", "GENEVE", "イングレスルーティング", "透過的な検査"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、インターネットから VPC 内の Web アプリケーションに届くすべての通信を、セキュリティ部門が指定したサードパーティ製の仮想ファイアウォールで検査する必要があります。このファイアウォールは AWS Marketplace から入手したアプライアンスで、Amazon EC2 インスタンスとして動作します。通信の送信元と宛先の IP アドレスを変えずに透過的に検査し、通信量に応じてアプライアンスの台数を増減できるようにし、1 台が故障しても検査が止まらないようにする必要があります。これらの要件を満たす構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アプライアンスを Network Load Balancer のターゲットとして登録して Web アプリケーションの DNS 名を NLB に向け、各アプライアンスが検査した通信を Web アプリケーションへ中継する。",
+      "correct": false,
+      "rationale": "アプライアンスが通信の宛先になり、検査後に Web アプリケーションへ改めて中継するプロキシの構成になります。Web アプリケーションから見た送信元はアプライアンスになるため、IP アドレスを変えずに透過的に検査するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "複数台のアプライアンスを Gateway Load Balancer のターゲットグループに登録し、ルートテーブルで通信が Gateway Load Balancer エンドポイントを経由するようにする。",
+      "correct": true,
+      "rationale": "Gateway Load Balancer はレイヤー 3 で動作し、受け取ったパケットを GENEVE でカプセル化してアプライアンスに渡すため、元のパケットの送信元と宛先は変わりません。ヘルスチェックで異常なアプライアンスを外し、台数の増減にも対応できます。エンドポイントはルートテーブルの次のホップに指定できます。"
+    },
+    {
+      "id": "c",
+      "text": "アプライアンスを 1 台起動して送信元/送信先チェックを無効にし、インターネットゲートウェイと Web アプリケーションのサブネットのルートテーブルで、アプライアンスのネットワークインターフェイスを次のホップとして指定する。",
+      "correct": false,
+      "rationale": "ネットワークインターフェイスを次のホップにすれば透過的に検査できますが、1 台のアプライアンスにすべての通信が集中します。故障すると検査が止まり、台数を増やして負荷を分散することもできないため、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "指定されたアプライアンスの代わりに AWS Network Firewall のファイアウォールを作成し、ルートテーブルで通信がファイアウォールエンドポイントを経由するようにする。",
+      "correct": false,
+      "rationale": "Network Firewall は AWS が管理する可用性の高いファイアウォールですが、セキュリティ部門が指定したサードパーティ製のアプライアンスで検査するという要件を満たしません。"
+    }
+  ],
+  "explanation": "サードパーティ製のファイアウォールや侵入検知・防止システム（IDS/IPS）などの仮想アプライアンスを、通信の経路に透過的に挟んで台数を増減させたいときは、Gateway Load Balancer（GWLB）を使います。GWLB は OSI 参照モデルのレイヤー 3 で動作し、すべてのポートの IP パケットを受け取って、ターゲットグループに登録したアプライアンスに振り分けます。GWLB とアプライアンスの間は GENEVE プロトコル（ポート 6081）でカプセル化してやり取りするため、元のパケットの送信元と宛先の IP アドレスはそのままです。同じ通信フローは同じアプライアンスに送られ、ヘルスチェックで異常なアプライアンスは振り分けから外れます。\n\n通信を GWLB に通すには、GWLB エンドポイントを作成し、ルートテーブルの次のホップに指定します。インターネットからの通信では、インターネットゲートウェイに関連付けたルートテーブル（イングレスルーティング）で、アプリケーションのサブネット宛ての通信をエンドポイントに向け、アプリケーションのサブネットからの戻りの通信もエンドポイントを経由させます。\n\nNLB はレイヤー 4 のロードバランサーで、アプライアンスが宛先となるため、経路に透過的に挟む使い方はできません。1 台のアプライアンスのネットワークインターフェイスに向ける方法は、単一障害点になります。AWS のマネージドなファイアウォールで要件を満たせる場合は AWS Network Firewall が選択肢になりますが、この問題ではサードパーティ製のアプライアンスが指定されています。",
+  "keyPoints": [
+    "サードパーティ製の仮想アプライアンスを透過的に挟み、台数を増減させる → Gateway Load Balancer",
+    "GWLB はレイヤー 3 で動作し、GENEVE（ポート 6081）でアプライアンスとやり取りする",
+    "ルートテーブルの次のホップに GWLB エンドポイントを指定して通信を経由させる",
+    "AWS のマネージドなファイアウォールでよい場合 → AWS Network Firewall"
+  ],
+  "references": [
+    {
+      "title": "What is a Gateway Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+    },
+    {
+      "title": "Access virtual appliances through AWS PrivateLink - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-edge-and-load-balancing"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g8",
+  "createdAt": "2026-11-04"
+}

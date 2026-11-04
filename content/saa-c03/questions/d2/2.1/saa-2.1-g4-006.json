@@ -1,0 +1,65 @@
+{
+  "id": "saa-2.1-g4-006",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K6", "2.1-S2"],
+  "services": ["Amazon Elastic Compute Cloud", "Amazon EC2 Auto Scaling", "Elastic Load Balancing", "Amazon CloudWatch"],
+  "qualifier": "availability",
+  "tags": ["水平スケーリング", "垂直スケーリング", "Auto Scaling", "単一障害点"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の受注システムは、1 台の Amazon EC2 インスタンスで動いています。キャンペーンのたびにアクセスが増えて CPU 使用率が 100% に達し、応答が遅くなります。アクセスの増え方は予測できず、利用者も増え続ける見込みです。インスタンスの障害でシステムが止まることも問題になっています。アプリケーションはセッション情報をデータベースに保存しており、どのサーバーでも処理を引き継げます。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Application Load Balancer の背後に複数のアベイラビリティーゾーンにまたがる Auto Scaling グループを置き、ターゲット追跡スケーリングを設定する。",
+      "correct": true,
+      "rationale": "負荷に応じて台数を自動で増減する水平スケーリングで、予測できないアクセスの増加にも対応できます。複数のアベイラビリティーゾーンに分散するため、1 台や 1 つのゾーンに障害が起きても処理を続けられます。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスを停止してより大きなインスタンスタイプに変更し、キャンペーンの前には毎回、予想されるアクセス数に合わせてさらに大きなタイプに変更する。",
+      "correct": false,
+      "rationale": "インスタンスを大きくする垂直スケーリングでは、タイプの変更のたびにインスタンスの停止が必要で、大きさにも上限があります。1 台のままなので障害でシステムが止まる問題も解決しません。"
+    },
+    {
+      "id": "c",
+      "text": "インスタンスに Amazon EBS のプロビジョンド IOPS SSD ボリュームを追加してデータを移し、読み書きに使う IOPS をキャンペーンの規模に合わせて引き上げる。",
+      "correct": false,
+      "rationale": "ボトルネックはディスクの I/O ではなく CPU なので、IOPS を上げても応答は改善しません。1 台のままなので、障害でシステムが止まる問題も解決しません。"
+    },
+    {
+      "id": "d",
+      "text": "インスタンスの自動復旧を有効にし、CPU 使用率が高いときは Amazon CloudWatch アラームで管理者に通知して、管理者が手作業でより大きなインスタンスタイプに変更する。",
+      "correct": false,
+      "rationale": "自動復旧は基盤のハードウェアの問題からインスタンスを復旧させる機能で、負荷の増加には対応しません。手作業でのタイプ変更は停止を伴い、予測できないアクセスの増加にすばやく対応できません。"
+    }
+  ],
+  "explanation": "スケーリングには、インスタンスを大きくする垂直スケーリング（スケールアップ）と、インスタンスの台数を増やす水平スケーリング（スケールアウト）があります。垂直スケーリングは手軽ですが、EBS を使うインスタンスのタイプを変更するには停止が必要で、大きさには上限があり、1 台に依存する単一障害点も残ります。\n\n水平スケーリングでは、Application Load Balancer がリクエストを複数のインスタンスに振り分け、Amazon EC2 Auto Scaling がメトリクスに応じて台数を自動で増減します。ターゲット追跡スケーリングは、CPU 使用率などのメトリクスを目標値に保つように台数を調整します。Auto Scaling グループを複数のアベイラビリティーゾーンにまたがらせると、障害時にも別のゾーンのインスタンスで処理を続けられ、異常なインスタンスは自動で置き換えられます。この問題のアプリケーションはセッション情報をデータベースに置いていてどのサーバーでも処理できるため、水平スケーリングに向いています。",
+  "keyPoints": [
+    "垂直スケーリングは変更に停止が必要で上限があり、単一障害点も残る",
+    "予測できない負荷と障害への備え → ALB＋複数 AZ の Auto Scaling グループで水平スケーリング",
+    "水平スケーリングの前提は、セッションなどの状態をインスタンスの外に置くこと"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EC2 Auto Scaling? - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    },
+    {
+      "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+    },
+    {
+      "title": "Change the instance type for your Amazon EC2 instance - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-type-of-ebs-backed-instance.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.1-g4-021",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S6", "2.1-K3"],
+  "services": ["Amazon DynamoDB", "Amazon ElastiCache", "Amazon Relational Database Service", "Amazon Redshift", "Amazon Neptune"],
+  "qualifier": "performance",
+  "tags": ["データベースの選択", "DynamoDB", "ElastiCache", "ソート済みセット", "ランキング"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるゲーム会社は、世界中で配信するモバイルゲームのバックエンドを AWS に構築します。プレイヤーのプロフィールと所持アイテムはプレイヤー ID をキーに読み書きし、リリース直後や大型イベントのときにはアクセスが予測できない形で何倍にも増えます。また、全プレイヤーのスコアのランキングを、スコアの更新後すぐにミリ秒未満の応答で表示する必要があります。データストアの容量の管理はできるだけ減らしたいと考えています。どの 2 つを組み合わせるべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プロフィールと所持アイテムを、オンデマンドモードの Amazon DynamoDB テーブルにプレイヤー ID をパーティションキーとして保存する。",
+      "correct": true,
+      "rationale": "DynamoDB はキーによる読み書きを規模にかかわらず数ミリ秒で処理するキーバリュー型のデータベースです。オンデマンドモードでは容量を事前に決める必要がなく、予測できないアクセスの増加にも自動で対応します。"
+    },
+    {
+      "id": "b",
+      "text": "ランキングを Amazon ElastiCache (Redis OSS) のソート済みセットで管理し、スコアが更新されるたびにプレイヤーのスコアを書き込む。",
+      "correct": true,
+      "rationale": "ElastiCache (Redis OSS) はメモリ上でデータを扱うため応答が非常に速く、ソート済みセットはスコア順に要素を並べて保持するデータ構造です。スコアを書き込むだけで順位が更新され、上位の一覧や個人の順位をすぐに取得できます。"
+    },
+    {
+      "id": "c",
+      "text": "プロフィールと所持アイテムを Amazon RDS for MySQL に保存し、アクセスが増えたときはリードレプリカを追加して負荷を分散する。",
+      "correct": false,
+      "rationale": "リードレプリカで増やせるのは読み取りの能力だけで、書き込みはプライマリの 1 台が受け持ちます。予測できない急増に合わせてインスタンスクラスやレプリカを調整する必要もあり、容量の管理を減らすという要件に合いません。"
+    },
+    {
+      "id": "d",
+      "text": "ランキングを Amazon Redshift のテーブルに保存し、スコアが更新されるたびに全プレイヤーの順位を集計するクエリを実行する。",
+      "correct": false,
+      "rationale": "Redshift は大量のデータを分析するデータウェアハウスで、頻繁な小さい更新に毎回ミリ秒未満で応答する用途には向きません。更新のたびに全体を集計する方法では、すぐに順位を表示するという要件を満たせません。"
+    },
+    {
+      "id": "e",
+      "text": "ランキングを Amazon Neptune のグラフとして保存し、プレイヤーどうしの関係をたどるクエリで順位を求める。",
+      "correct": false,
+      "rationale": "Neptune は友人関係などのつながりを高速にたどるためのグラフデータベースで、スコアの順位付けには向きません。全プレイヤーのランキングをミリ秒未満で返すという要件に合いません。"
+    }
+  ],
+  "explanation": "要件に合うデータベースを選ぶときは、データへのアクセスのしかた（キーで読み書きするのか、複雑な検索や集計をするのか）、必要な応答速度、規模と変動を確認します。\n\nプレイヤー ID をキーに読み書きし、アクセスが予測できない形で増えるデータには、Amazon DynamoDB が適しています。キーバリュー型で規模にかかわらず数ミリ秒の応答を保ち、オンデマンドモードならリクエストに応じて自動で処理能力が調整されるため、容量を管理する必要がほとんどありません。\n\nリアルタイムのランキングのように、ミリ秒未満の応答と順位付けが必要な処理には、Amazon ElastiCache (Redis OSS) のソート済みセットがよく使われます。メモリ上で動くため応答が非常に速く、スコアを更新するだけで順位が保たれます。Amazon Redshift は分析用のデータウェアハウス、Amazon Neptune はつながりをたどるグラフデータベースで、それぞれ得意な用途が異なります。",
+  "keyPoints": [
+    "キーで読み書き・予測できない急増・容量管理を減らしたい → DynamoDB のオンデマンドモード",
+    "ミリ秒未満の応答やリアルタイムのランキング → ElastiCache（Redis OSS）のソート済みセット",
+    "リードレプリカで増やせるのは読み取りだけ。書き込みはプライマリが受け持つ",
+    "Redshift は分析、Neptune はグラフ（関係をたどる）用。目的に合った専用のデータベースを選ぶ"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon DynamoDB? - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+    },
+    {
+      "title": "DynamoDB on-demand capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+    },
+    {
+      "title": "Common ElastiCache Use Cases and How ElastiCache Can Help - Amazon ElastiCache",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/elasticache-use-cases.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

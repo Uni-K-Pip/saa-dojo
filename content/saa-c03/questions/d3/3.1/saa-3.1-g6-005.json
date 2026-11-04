@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.1-g6-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-S2", "3.1-K2"],
+  "services": ["Amazon EFS", "Amazon EBS", "Amazon S3", "Amazon EC2"],
+  "qualifier": "operational",
+  "tags": ["EFS", "伸縮性", "容量計画", "リージョンファイルシステム", "One Zone"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画配信会社では、3 つのアベイラビリティーゾーン（AZ）にまたがる Auto Scaling グループの Linux の Amazon EC2 インスタンスが、自社で構築した NFS サーバーに素材ファイルを保存しています。データ量は今後 1 年で数百 TB に増える見込みですが、増え方は予測できません。容量の見積もりや拡張の作業をなくし、保存した量に応じて支払いたいと考えています。1 つの AZ が停止してもデータにアクセスでき、アプリケーションのコードは変更できません。どのストレージを使うべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS の One Zone ファイルシステムを作成し、すべての AZ の EC2 インスタンスからマウントする。",
+      "correct": false,
+      "rationale": "One Zone ファイルシステムも容量が自動的に増減しますが、データを 1 つの AZ にだけ保存します。その AZ が停止するとデータにアクセスできなくなるため、AZ の停止に耐えるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "今の NFS サーバーの Amazon EBS ボリュームの使用率を監視し、80% を超えたら Elastic Volumes でボリュームを拡張する仕組みを作る。",
+      "correct": false,
+      "rationale": "Elastic Volumes を使えば接続したままボリュームを拡張できますが、使用率の監視と拡張、OS 側のファイルシステムの拡張は利用者の作業として残り、容量の管理をなくすという要件を満たしません。NFS サーバーが 1 台なので、その AZ が停止すると共有ストレージ全体が使えなくなります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EFS のリージョンファイルシステムを作成して各 AZ にマウントターゲットを置き、各 EC2 インスタンスから NFS でマウントする。",
+      "correct": true,
+      "rationale": "Amazon EFS はファイルを追加・削除すると容量が自動的に増減し、ペタバイト規模まで拡張できます。容量の事前の確保は不要で、保存した量に応じて支払います。リージョンファイルシステムは複数の AZ にデータを冗長化して保存するため、1 つの AZ が停止してもアクセスできます。NFS でマウントするので、アプリケーションのコードも変えずに済みます。"
+    },
+    {
+      "id": "d",
+      "text": "素材ファイルを Amazon S3 バケットに保存し、アプリケーションから S3 API で読み書きする。",
+      "correct": false,
+      "rationale": "Amazon S3 は容量の上限を気にせず使え、複数の AZ にデータを保存します。しかし、ファイルの読み書きを S3 API に置き換えるにはアプリケーションのコードを変更する必要があり、コードを変更できないという制約を満たしません。"
+    }
+  ],
+  "explanation": "将来の増加量が予測できない共有ファイルストレージでは、容量を事前に確保しなくてよいサービスを選ぶと、容量の見積もりや拡張の作業をなくせます。Amazon EFS はサーバーレスで伸縮自在なファイルストレージで、ファイルの追加や削除に合わせて容量が自動的に増減し、ペタバイト規模まで止めずに拡張できます。料金は保存したデータの量に応じてかかります。\n\nEFS には 2 種類のファイルシステムがあります。リージョン（推奨）は同じリージョン内の複数の AZ にデータを冗長化して保存し、AZ が使えなくなってもデータにアクセスできます。One Zone は 1 つの AZ にだけ保存するため安価ですが、その AZ が失われるとデータも失われる可能性があります。性能面でも、Elastic スループットモード（推奨）を使えば、ワークロードに合わせてスループットが自動的に増減します。\n\nEBS ボリュームも Elastic Volumes で拡張できますが、いつ・どれだけ増やすかを決めて操作するのは利用者です。S3 も容量の上限なく使えますが、API が違うためコードを変更できない場合には選べません。",
+  "keyPoints": [
+    "増え方が予測できない共有ファイル（Linux・NFS） → Amazon EFS。容量は自動で増減し、使った分だけ支払う",
+    "AZ の停止に耐える必要があるなら EFS はリージョンファイルシステム。One Zone は 1 つの AZ だけ",
+    "EBS の Elastic Volumes は拡張できるが、監視と拡張の判断・操作は利用者が行う",
+    "コードを変更できないなら、S3 API への置き換えは選べない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "Amazon EFS performance specifications - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+    },
+    {
+      "title": "Amazon EFS FAQs",
+      "url": "https://aws.amazon.com/efs/faq/"
+    }
+  ],
+  "lessonRefs": ["lesson-3.1-storage-types-and-services"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

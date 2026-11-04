@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-015",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-S4", "4.1-S10", "4.1-S2"],
+  "services": ["Amazon S3", "Amazon EBS", "Amazon EFS"],
+  "qualifier": "cost",
+  "tags": ["容量管理", "自動拡張", "バックアップの保存先"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、オンプレミスのバックアップソフトウェアで作成したバックアップファイルを、Amazon EC2 インスタンスに接続した Amazon EBS ボリュームへ転送して保存しています。バックアップの量は予測できないペースで増えており、担当者は容量が足りなくなるたびにボリュームを拡張したり追加したりしています。容量不足を避けるため、現在は使っている量の 2 倍の容量を確保しています。バックアップソフトウェアは Amazon S3 に直接書き込む機能を備えています。容量の管理を不要にし、最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudWatch で EBS ボリュームの空き容量を監視し、しきい値を下回ったら AWS Lambda 関数が Elastic Volumes でボリュームを自動で拡張するようにする。",
+      "correct": false,
+      "rationale": "拡張の作業は自動化できますが、割り当てた容量分の料金を払う仕組みは変わらず、監視と拡張の仕組みを自分で保守する必要もあります。EC2 インスタンスの料金もかかり続けます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EFS のファイルシステムを作成して EC2 インスタンスからマウントし、バックアップファイルの保存先を EFS に変更する。",
+      "correct": false,
+      "rationale": "EFS は保存した量に応じて容量が自動で増減しますが、1 GB あたりの料金は S3 より高く、保存先として EC2 インスタンスも残ります。S3 に直接書き込めるのに EFS を使うのは割高です。"
+    },
+    {
+      "id": "c",
+      "text": "バックアップソフトウェアの保存先を Amazon S3 のバケットに変更し、保存したデータ量に応じた料金だけを払うようにする。",
+      "correct": true,
+      "rationale": "S3 は容量を事前に割り当てる必要がなく、保存したデータ量に応じて料金を払います。容量の拡張作業や余裕を持たせた確保が不要になり、保存先として使っていた EC2 インスタンスと EBS ボリュームもなくせます。"
+    },
+    {
+      "id": "d",
+      "text": "EBS ボリュームのタイプを Cold HDD（sc1）に変更して 1 GB あたりの料金を下げ、使っている量の 2 倍の容量を確保する運用は続ける。",
+      "correct": false,
+      "rationale": "1 GB あたりの料金は下がりますが、使っていない容量の料金と、容量を拡張・追加する作業は残ります。容量の管理を不要にするという要件を満たしません。"
+    }
+  ],
+  "explanation": "Amazon EBS のボリュームは、作成時に容量を割り当て、使っていなくても割り当てた容量分の料金がかかります。容量が足りなくなれば Elastic Volumes で拡張できますが、その作業や判断は利用者が行う必要があります。データ量が予測できないペースで増えるワークロードでは、余裕を持たせた容量の料金と、拡張の手間がかかり続けます。\n\nAmazon S3 と Amazon EFS は、保存したデータの量に応じて自動で容量が増減し、使った分だけ料金を払うストレージです。このようにデータ量の予測が難しく、容量の管理を自動化したい場面では、自動で伸縮するストレージを選びます。この問題では、バックアップソフトウェアが S3 に直接書き込めるため、1 GB あたりの料金が低い S3 を保存先にするのが最もコスト効率が高くなります。保存先として使っていた EC2 インスタンスも不要になります。\n\nさらに、古いバックアップはライフサイクルルールで低コストのストレージクラスに移せば、費用をもっと下げられます。",
+  "keyPoints": [
+    "EBS は割り当てた容量に課金される。増加が予測できないデータでは、余分な容量の料金と拡張の手間がかかる",
+    "データ量が予測できない・容量の管理をなくしたい → 自動で伸縮する S3 や EFS",
+    "アプリケーションが S3 に直接書き込めるなら、ファイルサーバーを用意するより S3 のほうが安い"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon S3? - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "Modify an Amazon EBS volume using Elastic Volumes operations - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

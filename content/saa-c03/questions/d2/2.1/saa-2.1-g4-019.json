@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.1-g4-019",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-S4", "2.1-K12"],
+  "services": ["Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon Elastic Compute Cloud", "AWS Elastic Beanstalk"],
+  "qualifier": "operational",
+  "tags": ["コンテナを使う場面", "Lambdaの制限", "Fargate", "依存ライブラリ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、既存の画像解析アプリケーションを AWS で動かします。アプリケーションは特定のバージョンの OS ライブラリと独自のネイティブライブラリに依存し、常時稼働して社内からのリクエストを受け付けます。1 件の解析には 20〜40 分かかり、16 GB のメモリを使います。開発チームは、ローカル環境と同じ構成で本番環境を動かし、サーバーの管理はしたくないと考えています。最も適切な実行環境はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "依存するライブラリを含めたコンテナイメージを作成し、Amazon ECS のサービスとして AWS Fargate で実行する。",
+      "correct": true,
+      "rationale": "コンテナイメージに OS ライブラリやネイティブライブラリをまとめると、ローカル環境と同じ構成をそのまま本番で動かせます。Fargate ではサーバーの管理が不要で、実行時間の制限を気にせず、16 GB のメモリを割り当てたタスクを常時稼働させられます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda 関数として実装し、ネイティブライブラリは Lambda レイヤーにまとめて、関数のメモリを設定できる上限の 10,240 MB にする。",
+      "correct": false,
+      "rationale": "Lambda 関数のメモリの上限は 10,240 MB で、16 GB を使う処理には足りません。1 回の実行時間にも上限（標準の関数では 15 分）があり、20〜40 分かかる解析は実行できません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EC2 インスタンスに必要なライブラリを手作業でインストールし、AMI を作成して Auto Scaling グループで実行する。",
+      "correct": false,
+      "rationale": "実行時間やメモリの制約はありませんが、EC2 インスタンスの OS のパッチ適用や台数の管理が必要です。サーバーの管理をしたくないという要件を満たさず、ローカル環境との構成の違いも生じやすくなります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Elastic Beanstalk の Python プラットフォームにアプリケーションをデプロイし、ネイティブライブラリはデプロイのたびにインストールする。",
+      "correct": false,
+      "rationale": "Elastic Beanstalk は EC2 インスタンスの環境を自動で構築しますが、OS や依存ライブラリはプラットフォームに左右され、ローカル環境と同じ構成を再現しにくくなります。デプロイのたびのインストールは時間がかかり、失敗の原因にもなります。"
+    }
+  ],
+  "explanation": "コンテナを選ぶべき典型的な場面は、特定の OS ライブラリやランタイムに依存するアプリケーションを、環境の違いなく動かしたいときです。コンテナイメージにアプリケーションと依存関係をまとめれば、開発者の PC と本番で同じ構成を再現できます。\n\nAWS Lambda は短い処理やイベントへの反応に向いたサーバーレスの実行環境ですが、メモリの上限は 10,240 MB、1 回の実行時間の上限は標準の関数で 15 分です。長時間の処理、大きなメモリ、常時稼働の処理には向きません。AWS Fargate は、サーバーを管理せずにコンテナを実行でき、Lambda の上限を超える大きなメモリや長時間の処理も扱えます。EC2 で直接動かす方法は自由度が高い一方、OS の管理が必要です。\n\n判断のコツは、処理時間、メモリ、依存関係、常時稼働かどうかを確認し、Lambda の制約に収まらないものやコンテナとして持ち運びたいものは Fargate を、OS レベルの細かい制御や特殊なハードウェアが必要なものは EC2 を選ぶことです。",
+  "keyPoints": [
+    "特定の OS ライブラリやランタイムに依存し、環境の違いをなくしたい → コンテナ",
+    "Lambda の上限: メモリ 10,240 MB、実行時間は標準の関数で 15 分",
+    "Lambda の制約に収まらない処理をサーバー管理なしで → Fargate",
+    "OS の細かい制御や特殊なハードウェアが必要なら EC2"
+  ],
+  "references": [
+    {
+      "title": "Lambda quotas - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g4",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.1-g1-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K1", "1.1-S3"],
+  "services": [
+    "AWS Organizations",
+    "AWS CloudFormation",
+    "AWS Identity and Access Management (IAM)",
+    "AWS Security Token Service (AWS STS)",
+    "AWS Secrets Manager"
+  ],
+  "qualifier": "operational",
+  "tags": ["マルチアカウント", "StackSets", "クロスアカウントロール", "SCP", "一時的な認証情報"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で約 80 の AWS アカウントを管理しており、アカウントは毎月のように増えています。セキュリティチームは監査用アカウントから、すべてのメンバーアカウントの設定を読み取り専用で調べる必要があります。今後追加されるアカウントでも、追加の作業なしに同じアクセスを使えるようにしたいと考えています。また、長期的な認証情報は使わない方針です。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "監査用アカウントを信頼する読み取り専用の IAM ロールを、自動デプロイを有効にしたサービスマネージド型の CloudFormation StackSets で組織全体に展開する。",
+      "correct": true,
+      "rationale": "サービスマネージド型のアクセス許可を使う StackSets は、Organizations と連携して組織や OU のアカウントにスタックを展開します。自動デプロイを有効にすると、対象に後から追加されたアカウントにも自動でスタックが作られるため、監査用ロールが追加の作業なしに用意されます。セキュリティチームはロールを引き受けて一時的な認証情報で調査でき、長期的な認証情報も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "監査用アカウントのセキュリティチームに ReadOnlyAccess 相当の操作を許可する SCP を作成し、組織のルートにアタッチする。",
+      "correct": false,
+      "rationale": "SCP はアカウント内のプリンシパルが使える権限の上限を定めるだけで、権限を付与しません。SCP で許可しても、メンバーアカウント側にアクセスを許可する IAM ロールなどがなければ、監査用アカウントからは何も読み取れません。"
+    },
+    {
+      "id": "c",
+      "text": "各メンバーアカウントに監査用の IAM ユーザーを作成して ReadOnlyAccess を付与し、発行したアクセスキーを監査用アカウントの AWS Secrets Manager にまとめて保管する。",
+      "correct": false,
+      "rationale": "IAM ユーザーのアクセスキーは長期的な認証情報で、方針に反します。保管場所をまとめても、新しいアカウントが増えるたびに IAM ユーザーとキーを作る作業が発生し、運用負荷も大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "監査用アカウントを信頼し ReadOnlyAccess を付与した IAM ロールを、既存の各メンバーアカウントで AWS CloudFormation スタックを使って個別に作成する。",
+      "correct": false,
+      "rationale": "クロスアカウントの IAM ロールで一時的な認証情報を使う点は適切です。しかし、既存のアカウントごとにスタックを作る方法では、今後追加されるアカウントには自動で展開されず、アカウントが増えるたびに作業が必要になります。"
+    }
+  ],
+  "explanation": "複数のアカウントへのアクセスは、アクセスされる側の各アカウントに IAM ロールを置き、信頼ポリシーでアクセス元のアカウントを指定するのが基本です。セキュリティチームは監査用アカウントから AWS STS の AssumeRole でそのロールを引き受け、一時的な認証情報で各アカウントを調べます。\n\nアカウントが多く、しかも増え続ける場合は、ロールを配る作業を自動化することが運用負荷を下げる鍵です。AWS CloudFormation StackSets のサービスマネージド型のアクセス許可は AWS Organizations と連携しており、組織全体や OU を対象にスタックを展開できます。自動デプロイを有効にすると、対象に追加されたアカウントへ自動でスタックが作られ、対象から外れたアカウントのスタックは削除するか保持するかを選べます。なお、サービスマネージド型の StackSets は管理アカウントには展開しません。\n\nSCP は権限の上限を決めるガードレールで、権限そのものは与えません。アクセスを許可するには、IAM ロールに付けるアイデンティティベースのポリシーか、リソースベースのポリシーが必要です。IAM ユーザーのアクセスキーは長期的な認証情報なので、ロールで代替できる場面では使いません。",
+  "keyPoints": [
+    "組織内のすべてのアカウントに同じ IAM ロールを配る → サービスマネージド型の StackSets と自動デプロイ",
+    "SCP は権限の上限を決めるだけで、権限を付与しない",
+    "クロスアカウントアクセスは、引き受け先のロールと一時的な認証情報で行う"
+  ],
+  "references": [
+    {
+      "title": "Enable or disable automatic deployments for StackSets in AWS Organizations - AWS CloudFormation",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html"
+    },
+    {
+      "title": "Service control policies (SCPs) - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "title": "Cross account resource access in IAM - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-multi-account"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

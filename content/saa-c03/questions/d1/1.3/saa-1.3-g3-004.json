@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.3-g3-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": ["1.3-K4", "1.3-S2"],
+  "services": ["AWS Key Management Service (AWS KMS)", "Amazon S3", "Amazon EC2"],
+  "qualifier": "security",
+  "tags": ["エンベロープ暗号化", "データキー", "クライアント側の暗号化", "GenerateDataKey"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある医療系のスタートアップ企業は、Amazon EC2 上のアプリケーションが作成する 1 件あたり 50〜200 MB の検査画像ファイルを Amazon S3 に保存しています。社内規程により、ファイルは S3 にアップロードする前にアプリケーション側で暗号化しなければなりません。暗号化に使う鍵は AWS KMS で一元的に管理し、平文の鍵をディスクに保存してはいけません。また、暗号化のための KMS へのリクエスト数はできるだけ少なくしたいと考えています。これらの要件を満たす設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ファイルごとに GenerateDataKey でデータキーを取得し、平文のデータキーで暗号化した後に破棄して、暗号化されたデータキーをファイルと一緒に保存する。",
+      "correct": true,
+      "rationale": "エンベロープ暗号化です。データキーを使えば大きなファイルもアプリケーション側で暗号化でき、KMS へのリクエストはファイルごとに 1 回で済みます。平文のデータキーは使用後すぐにメモリから消すのでディスクに残りません。復号時は、暗号化されたデータキーを Decrypt API で復号して使います。"
+    },
+    {
+      "id": "b",
+      "text": "ファイルを 4 KB ずつのブロックに分割してそれぞれを KMS の Encrypt API で暗号化し、暗号化した結果を順に連結してから S3 にアップロードする。",
+      "correct": false,
+      "rationale": "KMS の Encrypt API で暗号化できるのは 4,096 バイトまでなので、分割すれば処理自体はできますが、200 MB のファイルでは数万回のリクエストが必要です。KMS へのリクエスト数をできるだけ少なくするという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "KMS でデータキーを 1 つ生成し、平文のデータキーを EC2 インスタンス上の設定ファイルに保存して、すべてのファイルの暗号化に使い回す。",
+      "correct": false,
+      "rationale": "平文のデータキーを設定ファイルに保存しているため、平文の鍵をディスクに保存してはいけないという規程に違反します。1 つの鍵を使い回すと、漏えいしたときの影響範囲も大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "S3 バケットのデフォルト暗号化をカスタマーマネージドキーによる SSE-KMS に設定し、アプリケーションではファイルを暗号化せずにそのままアップロードする。",
+      "correct": false,
+      "rationale": "SSE-KMS は、S3 がオブジェクトを受け取ってから暗号化するサーバー側の暗号化です。S3 にアップロードする前にアプリケーション側で暗号化するという規程を満たしません。"
+    }
+  ],
+  "explanation": "AWS KMS の Encrypt API で直接暗号化できるデータは、対称暗号化キーの場合 4,096 バイトまでです。大きなデータを暗号化するときは、エンベロープ暗号化を使います。\n\n1. GenerateDataKey API を呼び出すと、KMS は平文のデータキーと、KMS キーで暗号化したデータキーのコピーを返します。\n2. アプリケーションは平文のデータキーでファイルを暗号化し、使い終わった平文のデータキーをすぐにメモリから消します。\n3. 暗号化されたデータキーは、暗号化したファイルと一緒に保存します。\n4. 復号するときは、暗号化されたデータキーを Decrypt API で復号し、得られた平文のデータキーでファイルを復号します。\n\nKMS キーそのものは暗号化されていない状態で KMS の外に出ることがなく、KMS とやり取りするのは小さなデータキーだけなので、ファイルの大きさに関係なくリクエストは 1 回で済みます。AWS Encryption SDK を使うと、この処理をライブラリに任せられます。\n\nSSE-KMS などのサーバー側の暗号化も内部ではデータキーを使いますが、暗号化を行うのは S3 です。データを S3 に送る前に暗号化する必要がある場合は、クライアント側の暗号化を選びます。",
+  "keyPoints": [
+    "KMS の Encrypt API で直接暗号化できるのは 4,096 バイトまで。大きなデータはエンベロープ暗号化で守る",
+    "エンベロープ暗号化: GenerateDataKey のデータキーでデータを暗号化し、暗号化されたデータキーをデータと一緒に保存する",
+    "「S3 に送る前に暗号化する」はクライアント側の暗号化。SSE-S3 や SSE-KMS はサーバー側の暗号化"
+  ],
+  "references": [
+    {
+      "title": "Generate data keys - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html"
+    },
+    {
+      "title": "Encrypt - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/APIReference/API_Encrypt.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.3-encryption-and-keys"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g3",
+  "createdAt": "2026-11-04"
+}

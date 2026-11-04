@@ -1,0 +1,67 @@
+{
+  "id": "saa-1.1-g1-003",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K3", "1.1-S4"],
+  "services": [
+    "AWS Organizations",
+    "AWS Identity and Access Management (IAM)",
+    "Amazon CloudFront",
+    "Amazon Route 53",
+    "AWS Config"
+  ],
+  "qualifier": "security",
+  "tags": ["SCP", "aws:RequestedRegion", "リージョン制限", "グローバルサービス", "データレジデンシー"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は EU のデータ保護規制に対応するため、AWS Organizations の全メンバーアカウントで、リソースを eu-central-1 と eu-west-1 の 2 つのリージョンにだけ作成できるようにする必要があります。各アカウントの管理者が設定を変更して回避できないようにし、違反は事後に検知するのではなく操作の時点で防ぎます。一方で、IAM、Amazon CloudFront、Amazon Route 53 などのグローバルサービスは引き続き利用できる必要があります。これらの要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "aws:RequestedRegion が 2 つのリージョン以外のリクエストを、すべての操作について拒否する SCP を作成し、組織のルートにアタッチする。",
+      "correct": false,
+      "rationale": "リージョンの制限自体は実現できますが、IAM や CloudFront、Route 53 などのグローバルサービスへのリクエストは us-east-1 のエンドポイントで処理されるため、除外しないとこれらも拒否されます。グローバルサービスを使い続けるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "すべてのリージョンで AWS Config を有効にし、許可していないリージョンに作成されたリソースを検出して Amazon SNS で管理者に通知する。",
+      "correct": false,
+      "rationale": "AWS Config による検出と通知は、リソースが作られた後に気づく発見的な統制です。操作の時点で防ぐという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "aws:RequestedRegion が 2 つのリージョン以外のリクエストを拒否し、グローバルサービスを除外した IAM ポリシーを、各アカウントのすべての IAM ロールにアタッチする。",
+      "correct": false,
+      "rationale": "IAM ポリシーはアカウント内の管理者が付け外しや編集をできるため、回避できないようにするという要件を満たしません。また、ルートユーザーには適用されず、新しく作られたロールにも自動では付きません。"
+    },
+    {
+      "id": "d",
+      "text": "aws:RequestedRegion が 2 つのリージョン以外のリクエストを拒否し、グローバルサービスの操作は NotAction で除外した SCP を、組織のルートにアタッチする。",
+      "correct": true,
+      "rationale": "SCP はメンバーアカウントのルートユーザーを含むすべての IAM ユーザーとロールに適用され、アカウントの管理者は変更できません。aws:RequestedRegion を条件にして許可リスト以外のリージョンへのリクエストを拒否すれば、操作の時点で防げます。グローバルサービスの操作を NotAction で除外することで、それらは引き続き利用できます。"
+    }
+  ],
+  "explanation": "AWS のサービスの多くはリージョンごとに提供され、API リクエストはリージョンのエンドポイントに送られます。aws:RequestedRegion はリクエストの送り先のリージョンを表すグローバル条件キーで、SCP の Deny ステートメントに StringNotEquals 条件として書くと、許可したリージョン以外への操作をまとめて拒否できます。\n\nただし、IAM、Amazon CloudFront、Amazon Route 53 などのグローバルサービスは、エンドポイントが us-east-1 リージョンにあります。何も除外しないと、これらのサービスへの操作も許可リスト外のリージョンへのリクエストとして拒否されます。そのため AWS Organizations のドキュメントにある SCP の例では、NotAction にグローバルサービスの操作を並べて、リージョン制限の対象から外しています。\n\nSCP は組織のルートや OU にアタッチすると配下のメンバーアカウントすべてに適用され、ルートユーザーを含めてアカウント内からは解除できない予防的な統制になります。アカウント内の IAM ポリシーは管理者が変更でき、AWS Config は事後の検知に使う発見的な統制です。なお、SCP は管理アカウントには適用されないため、管理アカウントではワークロードを動かさないようにします。",
+  "keyPoints": [
+    "使えるリージョンを組織全体で制限する → aws:RequestedRegion を条件にした SCP の Deny",
+    "リージョン制限の SCP では、グローバルサービスの操作を NotAction で除外する",
+    "アカウント内の IAM ポリシーは管理者が変えられる。回避させないなら SCP"
+  ],
+  "references": [
+    {
+      "title": "SCP syntax - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_syntax.html"
+    },
+    {
+      "title": "AWS global condition context keys - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-multi-account"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

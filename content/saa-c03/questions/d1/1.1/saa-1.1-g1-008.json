@@ -1,0 +1,65 @@
+{
+  "id": "saa-1.1-g1-008",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S3"],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "AWS Security Token Service (AWS STS)",
+    "AWS IAM Identity Center"
+  ],
+  "qualifier": "security",
+  "tags": ["外部 ID", "混乱した代理", "クロスアカウントロール", "AssumeRole", "信頼ポリシー", "サードパーティー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS のコストとリソースの設定を分析する外部の SaaS 事業者と契約しました。事業者は自社の AWS アカウントから多数の顧客の AWS アカウントにアクセスして分析を行います。この企業は、事業者に自社アカウントへの読み取り専用のアクセスを許可する必要があります。長期的な認証情報は渡さず、事業者のサービスを使う別の顧客がこの企業のロールの ARN を登録して、事業者経由でこの企業のアカウントにアクセスするリスクも防ぐ必要があります。最もセキュアな方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "読み取り専用の IAM ロールを作成して信頼ポリシーで事業者の AWS アカウントを信頼し、ロールの ARN は事業者以外に公開しないように管理する。",
+      "correct": false,
+      "rationale": "一時的な認証情報を使う点は適切ですが、ロールの ARN は秘密の情報ではなく、推測されたり漏れたりする可能性があります。外部 ID の条件がないと、別の顧客がこの ARN を事業者に登録するだけで、事業者経由でアクセスできてしまいます。"
+    },
+    {
+      "id": "b",
+      "text": "読み取り専用の権限を持つ IAM ユーザーを作成し、そのアクセスキーを事業者に渡して、90 日ごとにローテーションする。",
+      "correct": false,
+      "rationale": "IAM ユーザーのアクセスキーは長期的な認証情報で、ローテーションしても第三者に渡すことに変わりはありません。漏えいしたときの影響も大きく、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "事業者の担当者用に IAM Identity Center のユーザーを作成して読み取り専用の権限セットを割り当て、AWS アクセスポータルからサインインしてもらう。",
+      "correct": false,
+      "rationale": "IAM Identity Center のユーザーのパスワードは長期的な認証情報で、それを事業者に渡すことになります。また、事業者の AWS アカウントから多数の顧客アカウントにプログラムでアクセスする仕組みにも合いません。"
+    },
+    {
+      "id": "d",
+      "text": "事業者の AWS アカウントを信頼する読み取り専用の IAM ロールを作成し、事業者が顧客ごとに発行する外部 ID を sts:ExternalId 条件で必須にする。",
+      "correct": true,
+      "rationale": "第三者にアクセスを委任するときは、相手の AWS アカウントを信頼する IAM ロールを作り、相手は AssumeRole で一時的な認証情報を取得します。事業者が顧客ごとに一意に発行する外部 ID を必須にすると、別の顧客がこのロールの ARN を登録しても、事業者はその顧客の外部 ID でリクエストするため、ロールの引き受けに失敗します。"
+    }
+  ],
+  "explanation": "AWS では、別の AWS アカウントにアクセスを委任するときに IAM ロールを使います。ロールの信頼ポリシーでアクセス元のアカウントを Principal に指定し、アクセス許可ポリシーで許可する操作を決めます。アクセスする側は AWS STS の AssumeRole を呼び出し、一時的な認証情報を受け取ります。\n\n第三者が多数の顧客アカウントにアクセスする場合は、混乱した代理（confused deputy）の問題に注意します。ロールの ARN は秘密ではないため、悪意のある別の顧客が自分の設定としてこの企業のロールの ARN を事業者に登録すると、事業者がその顧客のために、この企業のアカウントにアクセスしてしまうおそれがあります。\n\nこれを防ぐのが外部 ID です。事業者は顧客ごとに一意の外部 ID を発行し、AssumeRole のリクエストには必ずその顧客の外部 ID を含めます。顧客は信頼ポリシーの Condition で、sts:ExternalId がその値と一致することを必須にします。別の顧客は事業者が送る外部 ID を変えられないため、このロールを引き受けられません。外部 ID は顧客ではなく事業者が管理し、顧客間での一意性を保証します。",
+  "keyPoints": [
+    "第三者へのアクセスの委任 → 相手のアカウントを信頼する IAM ロールと AssumeRole",
+    "多数の顧客を持つ第三者には、信頼ポリシーで sts:ExternalId を必須にする",
+    "外部 ID は事業者が顧客ごとに一意に発行する。ロールの ARN は秘密ではない"
+  ],
+  "references": [
+    {
+      "title": "The confused deputy problem - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+    },
+    {
+      "title": "Access to AWS accounts owned by third parties - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-roles-federation"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g1",
+  "createdAt": "2026-11-04"
+}

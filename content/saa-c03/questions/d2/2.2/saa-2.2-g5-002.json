@@ -1,0 +1,65 @@
+{
+  "id": "saa-2.2-g5-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K2", "2.2-S8"],
+  "services": ["Amazon Polly", "Amazon S3", "Amazon Transcribe", "Amazon SageMaker AI", "Amazon EC2 Auto Scaling"],
+  "qualifier": "operational",
+  "tags": ["マネージドサービス", "音声合成", "AI サービス", "単一障害点"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある e ラーニング企業は、教材のテキストから読み上げ音声を作り、受講者に配信しています。現在は、オープンソースの音声合成ソフトウェアを 1 台の Amazon EC2 インスタンスにインストールして使っていますが、インスタンスに障害が起きるたびに音声を作れなくなります。また、ソフトウェアの更新や、教材が増える時期のスケーリングも担当者の負担になっています。音声の生成を高い可用性で続けられるようにし、サーバーの管理もなくしたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Polly の API で教材のテキストから音声を合成し、生成した音声ファイルを Amazon S3 に保存して配信する。",
+      "correct": true,
+      "rationale": "Amazon Polly はテキストを自然な音声に変換する AWS のサービスで、処理を動かすサーバーの構築、ソフトウェアの更新、スケーリングを利用者が行う必要がありません。生成した音声は MP3 などのファイルとして保存し、追加料金なしで繰り返し再生できるため、S3 に置いて配信できます。"
+    },
+    {
+      "id": "b",
+      "text": "音声合成ソフトウェアを複数の AZ にまたがる Amazon EC2 Auto Scaling グループで動かし、Application Load Balancer で処理を振り分ける。",
+      "correct": false,
+      "rationale": "複数の AZ に分散すれば可用性は高まりますが、EC2 インスタンスの OS やソフトウェアの更新、スケーリングの設定は引き続き自社で管理します。サーバーの管理をなくすという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Transcribe に教材のテキストを送って音声ファイルを生成し、Amazon S3 に保存して配信する。",
+      "correct": false,
+      "rationale": "Amazon Transcribe は音声を文字に起こす（音声からテキストへ変換する）サービスです。テキストから読み上げ音声を作る用途には使えません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SageMaker AI のリアルタイム推論エンドポイントに音声合成モデルをデプロイし、複数のインスタンスで動かす。",
+      "correct": false,
+      "rationale": "SageMaker AI のエンドポイントは AWS が基盤を管理しますが、音声合成モデルの用意や更新、インスタンスの種類と台数の調整は自社で行います。テキストの読み上げという一般的な用途には専用のサービスがあり、それと比べて運用の負担が大きくなります。"
+    }
+  ],
+  "explanation": "AWS には、機械学習の専門知識がなくても API を呼ぶだけで使える AI サービスがあります。テキストの読み上げは Amazon Polly、音声の文字起こしは Amazon Transcribe、テキストの感情分析やキーフレーズの抽出は Amazon Comprehend、翻訳は Amazon Translate です。これらのサービスでは、処理を動かすサーバーの可用性やスケーリングを AWS が担うため、利用者はサーバーを管理せずに機能を使えます。\n\nこの問題では、1 台の EC2 インスタンスで動くソフトウェアが単一障害点になっており、更新やスケーリングの作業も負担になっています。EC2 Auto Scaling で冗長化すれば可用性は上がりますが、サーバー管理の負担は残ります。目的に合ったサービスである Amazon Polly に置き換えれば、可用性の確保と運用負荷の削減を同時に実現できます。Polly は合成した文字数に応じた従量課金で、生成した音声を保存して何度でも配信できます。",
+  "keyPoints": [
+    "テキスト → 音声は Amazon Polly、音声 → テキストは Amazon Transcribe",
+    "「サーバーの管理をなくしたい」→ 目的に合ったマネージドサービスに置き換える",
+    "感情分析・キーフレーズ抽出は Amazon Comprehend、翻訳は Amazon Translate"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Polly? - Amazon Polly",
+      "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
+    },
+    {
+      "title": "Amazon Polly FAQs",
+      "url": "https://aws.amazon.com/polly/faqs/"
+    },
+    {
+      "title": "What is Amazon Transcribe? - Amazon Transcribe",
+      "url": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html"
+    }
+  ],
+  "lessonRefs": ["lesson-2.2-resilient-apps"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g5",
+  "createdAt": "2026-11-04"
+}
