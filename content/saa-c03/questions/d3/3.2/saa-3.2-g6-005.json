@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.2-g6-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-K5", "3.2-K6"],
+  "services": ["AWS Fargate", "Amazon ECS", "Amazon EventBridge", "Amazon S3", "AWS Lambda", "Amazon EC2", "Amazon SQS"],
+  "qualifier": "cost",
+  "tags": ["サーバーレス", "イベント駆動", "Fargate", "長時間の処理", "Lambda の実行時間"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある放送局は、番組の録画ファイル（1 本あたり数 GB）を Amazon S3 にアップロードしています。アップロードのたびに、コンテナイメージとして用意した変換処理を実行して配信用の形式に変換します。変換は分割できず、1 本あたり 1〜3 時間かかります。アップロードは不定期で、1 本もない日もあります。サーバーやクラスターのインスタンスは管理したくなく、変換していない時間の費用はかけたくありません。最もコスト効率の高いアーキテクチャはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 のイベント通知で、コンテナイメージから作成した AWS Lambda 関数を呼び出し、関数の中で変換する。",
+      "correct": false,
+      "rationale": "Lambda はコンテナイメージからも関数を作れますが、1 回の実行時間に上限があり、通常の関数では最大 15 分です。分割できない 1〜3 時間の変換は完了できないため、要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 のイベントを Amazon EventBridge に送り、ルールのターゲットとして Amazon ECS のタスクを AWS Fargate で起動して変換する。",
+      "correct": true,
+      "rationale": "S3 のイベントを EventBridge に送れば、アップロードのたびにルールで ECS のタスクを起動できます。Fargate はサーバーレスのコンテナ実行環境で、インスタンスの管理は不要です。料金はタスクが動いている間の vCPU とメモリに対してかかるため、変換していない時間の費用はかかりません。実行時間の上限もないので、長時間の変換にも使えます。"
+    },
+    {
+      "id": "c",
+      "text": "S3 のイベント通知を Amazon SQS キューに送り、常時起動した 1 台の EC2 インスタンスでキューをポーリングして変換する。",
+      "correct": false,
+      "rationale": "EC2 インスタンスならば長時間の変換も実行できますが、OS のパッチ適用などのサーバー管理が必要です。アップロードがない日もインスタンスの料金がかかり続けるため、変換していない時間の費用をかけないという要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 のイベント通知を Amazon SQS キューに送り、AWS Fargate で常時 1 タスクを実行する Amazon ECS のサービスにキューをポーリングさせる。",
+      "correct": false,
+      "rationale": "Fargate を使うのでインスタンスの管理は不要ですが、サービスのタスクは常に動き続けるため、アップロードがない時間も vCPU とメモリの料金がかかります。変換していない時間の費用をかけないという要件を満たしません。"
+    }
+  ],
+  "explanation": "サーバーを管理せずにイベントをきっかけに処理を動かす方法として、AWS Lambda と AWS Fargate がよく比べられます。\n\n| 項目 | AWS Lambda | AWS Fargate（Amazon ECS のタスク） |\n|---|---|---|\n| 実行の単位 | 関数（コンテナイメージも可） | コンテナのタスク |\n| 実行時間 | 上限あり（通常の関数は最大 15 分） | 上限なし |\n| 課金 | リクエスト数と実行時間 | タスクが動いている間の vCPU とメモリ |\n| 向いている処理 | 短時間のイベント処理 | 長時間の処理、常駐するサービス |\n\nこの問題では変換が 1〜3 時間かかり、分割もできないため、Lambda は使えません。S3 のイベントを Amazon EventBridge に送り、ルールのターゲットとして ECS のタスクを Fargate で起動すれば、アップロードのたびに必要な分だけタスクが動き、終われば停止します。タスクの料金は動いている間だけなので、アップロードがない日の費用はかかりません。\n\n同じ Fargate でも、ECS のサービスとして常に動かし続けると、処理がない時間も料金がかかります。不定期に発生する処理は、イベントをきっかけにタスクを起動する形にします。",
+  "keyPoints": [
+    "サーバーレスで 15 分を超える処理 → EventBridge などのイベントで ECS のタスクを Fargate で起動",
+    "通常の Lambda 関数の実行時間は最大 15 分",
+    "Fargate の料金はタスクが動いている間の vCPU とメモリ。不定期の処理は常時起動にしない",
+    "S3 のイベントは EventBridge に送ると、ルールでさまざまなターゲットに振り分けられる"
+  ],
+  "references": [
+    {
+      "title": "Using EventBridge - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    },
+    {
+      "title": "Configure Lambda Event Function timeout - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-compute-options"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

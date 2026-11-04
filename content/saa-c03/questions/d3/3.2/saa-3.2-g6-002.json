@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.2-g6-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": ["3.2-K2", "3.2-K5"],
+  "services": ["Amazon CloudFront", "AWS Lambda", "Elastic Load Balancing", "Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["エッジコンピューティング", "CloudFront Functions", "Lambda@Edge", "キャッシュキー", "ビューワーリクエスト"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるニュースサイトは、Amazon CloudFront で世界中に記事を配信しています。リクエストごとに、URL のパスを小文字にそろえてキャッシュキーを正規化し、キャッシュヒット率を上げたいと考えています。また、トップページへのリクエストは Accept-Language ヘッダーを見て言語別のページの URL に書き換えます。どちらの処理もリクエストの内容だけで完結し、外部のサービスは呼び出しません。ピーク時は毎秒数万件のリクエストがあり、追加されるレイテンシーとコストを最小にする必要があります。どの方法を選ぶべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Lambda@Edge の関数を作成し、ディストリビューションのビューワーリクエストのイベントに関連付ける。",
+      "correct": false,
+      "rationale": "Lambda@Edge でも同じ処理はできますが、ネットワークアクセスや大きなメモリが必要な処理向けの仕組みです。サブミリ秒で実行される CloudFront Functions と比べて、リクエストあたりの料金が高く、追加されるレイテンシーも大きくなります。外部を呼ばない軽い処理では、レイテンシーとコストを最小にするという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Lambda@Edge の関数を作成し、ディストリビューションのオリジンリクエストのイベントに関連付ける。",
+      "correct": false,
+      "rationale": "オリジンリクエストの関数は、キャッシュにないときに CloudFront がオリジンへリクエストを転送する場合だけ実行されます。キャッシュキーが決まった後に動くため、パスを正規化してもキャッシュヒット率は上がらず、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "CloudFront Functions の関数を作成し、ディストリビューションのビューワーリクエストのイベントに関連付ける。",
+      "correct": true,
+      "rationale": "CloudFront Functions はエッジロケーションで動く軽量な JavaScript の関数で、サブミリ秒で実行され、毎秒数百万件のリクエストまで拡張できます。キャッシュキーの正規化や URL の書き換えは代表的な用途です。ビューワーリクエストで実行すればキャッシュを確認する前に処理でき、リクエストあたりの料金も Lambda@Edge より低く抑えられます。"
+    },
+    {
+      "id": "d",
+      "text": "オリジンの Application Load Balancer の背後にある EC2 インスタンスで、パスの正規化と言語別ページへの振り分けを行う。",
+      "correct": false,
+      "rationale": "オリジンで処理しても、CloudFront がキャッシュキーを決めるのはオリジンに届く前なので、キャッシュヒット率は上がりません。キャッシュにないリクエストはオリジンまで往復するため、追加のレイテンシーも大きくなります。"
+    }
+  ],
+  "explanation": "CloudFront では、エッジロケーションでコードを動かす方法が 2 つあります。\n\n| 項目 | CloudFront Functions | Lambda@Edge |\n|---|---|---|\n| 実行できるイベント | ビューワーリクエスト、ビューワーレスポンス | ビューワーとオリジンのリクエスト・レスポンス |\n| 実行時間 | サブミリ秒 | 数ミリ秒以上の処理も可能 |\n| 規模 | 毎秒数百万件まで | リージョンごとに毎秒 1 万件まで |\n| ネットワーク・本文へのアクセス | なし | あり |\n\nキャッシュキーの正規化、ヘッダーの操作、URL のリダイレクトや書き換え、トークンの検証のように、リクエストの内容だけで完結する軽い処理は CloudFront Functions が向いています。料金もリクエストあたりで Lambda@Edge より低くなります。外部のサービスを呼ぶ、リクエストの本文を読む、画像を加工するといった重い処理には Lambda@Edge を使います。\n\nキャッシュヒット率を上げるための正規化は、キャッシュを確認する前に実行されるビューワーリクエストで行う必要があります。オリジンリクエストのイベントやオリジンの処理は、キャッシュにないときだけ、キャッシュキーが決まった後に動きます。",
+  "keyPoints": [
+    "外部を呼ばない軽い処理（キャッシュキーの正規化、ヘッダー操作、URL の書き換え）→ CloudFront Functions",
+    "ネットワークアクセス、リクエスト本文、大きなメモリや長い処理が必要 → Lambda@Edge",
+    "キャッシュヒット率を上げる正規化はビューワーリクエストで行う。オリジンリクエストはキャッシュにないときだけ動く",
+    "CloudFront Functions はビューワーのイベントだけ。オリジンのイベントには使えない"
+  ],
+  "references": [
+    {
+      "title": "Differences between CloudFront Functions and Lambda@Edge - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html"
+    },
+    {
+      "title": "CloudFront events that can trigger a Lambda@Edge function - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html"
+    },
+    {
+      "title": "Introducing CloudFront Functions – Run Your Code at the Edge with Low Latency at Any Scale",
+      "url": "https://aws.amazon.com/blogs/aws/introducing-cloudfront-functions-run-your-code-at-the-edge-with-low-latency-at-any-scale/"
+    }
+  ],
+  "lessonRefs": ["lesson-3.2-compute-options"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}

@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.1-g6-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-S1", "3.1-K2"],
+  "services": ["Amazon FSx", "Amazon S3", "Amazon EFS", "AWS DataSync", "Amazon EBS", "Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["FSx for Lustre", "HPC", "S3 との連携", "遅延読み込み", "スクラッチ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製薬会社の研究チームは、Amazon S3 に保存した数百 TB のゲノムデータを、数百台の Linux の Amazon EC2 インスタンスで並列に解析するジョブを週に数回実行します。ジョブの実行中は、すべてのインスタンスから POSIX 準拠のファイルシステムとして、サブミリ秒のレイテンシーと非常に高いスループットでデータを読み書きする必要があります。ジョブの前にデータ全体をコピーする時間は取れず、解析結果は S3 に保存します。ジョブの間だけ使う作業領域として最も適したものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS のファイルシステムを Elastic スループットで作成し、ジョブの前に AWS DataSync で S3 から EFS へデータをコピーする。",
+      "correct": false,
+      "rationale": "Amazon EFS は多数のインスタンスから共有できますが、S3 のデータをファイルとして直接見せる仕組みはなく、ジョブの前にデータ全体をコピーする必要があります。コピーの時間が取れないという制約を満たさず、レイテンシーも最良で 1 ミリ秒程度のため、サブミリ秒の要件にも届きません。"
+    },
+    {
+      "id": "b",
+      "text": "各 EC2 インスタンスにプロビジョンド IOPS SSD（io2）の Amazon EBS ボリュームを接続し、ジョブの前に担当分のデータを S3 からコピーする。",
+      "correct": false,
+      "rationale": "EBS ボリュームはブロックストレージで、数百台のインスタンスから同じファイルシステムとして共有することはできません。また、ジョブの前にデータをコピーする必要があり、コピーの時間が取れないという制約を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "S3 バケットにリンクした Amazon FSx for Lustre のスクラッチファイルシステムをジョブごとに作成し、結果を S3 にエクスポートしてから削除する。",
+      "correct": true,
+      "rationale": "FSx for Lustre は HPC などの向けの POSIX 準拠の並列ファイルシステムで、サブミリ秒のレイテンシーと非常に高いスループットを提供します。S3 バケットにリンクすると S3 のオブジェクトがファイルとして見え、内容は最初にアクセスしたときに読み込まれるため、事前のコピーは不要です。一時的な処理には、データを複製しないスクラッチが適しています。"
+    },
+    {
+      "id": "d",
+      "text": "データを S3 Express One Zone のディレクトリバケットに移し、各インスタンスから S3 API で直接読み書きするようにジョブを書き換える。",
+      "correct": false,
+      "rationale": "S3 Express One Zone は 1 桁ミリ秒の一貫したレイテンシーを提供する高性能なストレージクラスですが、オブジェクトストレージです。POSIX 準拠のファイルシステムとして読み書きするという要件を満たさず、データを事前にディレクトリバケットへ移す必要もあります。"
+    }
+  ],
+  "explanation": "Amazon FSx for Lustre は、機械学習、HPC、動画処理など、ストレージの速さが処理時間を左右するワークロード向けのフルマネージドな並列ファイルシステムです。サブミリ秒のレイテンシーと非常に高いスループットを提供し、POSIX に準拠しているので Linux のアプリケーションをそのまま使えます。\n\nS3 との連携がもう 1 つの特長です。ファイルシステムを S3 バケットにリンクすると、S3 のオブジェクトがファイルとして見え、アプリケーションが最初にアクセスしたときに内容が S3 から読み込まれます。そのため、ジョブの前にデータ全体をコピーする必要がありません。最初のアクセスでは S3 から読み込む時間がかかりますが、その後はファイルシステム上のデータとして高速に読み書きできます。処理結果は S3 に書き戻せます。\n\nデプロイの種類は 2 つあります。スクラッチはデータを複製しない一時的な処理向けで、ジョブの間だけ使い、結果を S3 に残して削除する使い方に合います。パーシステントはデータを複製し、長期間使い続けるファイルシステム向けです。\n\nAmazon EFS は汎用の共有ファイルストレージで、S3 のデータを直接見せる仕組みはありません。EBS は 1 台（マルチアタッチでも同じ AZ の限られた台数）のインスタンスに接続するブロックストレージです。",
+  "keyPoints": [
+    "HPC・機械学習で、S3 のデータを高速なファイルシステムとして処理 → Amazon FSx for Lustre を S3 バケットにリンク",
+    "S3 にリンクした FSx for Lustre は、ファイルに初めてアクセスしたときに S3 から内容を読み込む",
+    "短期間の一時的な処理はスクラッチ、長期間使い続けるならパーシステント",
+    "S3 Express One Zone は 1 桁ミリ秒の高性能なオブジェクトストレージで、ファイルシステムではない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon FSx for Lustre? - FSx for Lustre",
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+    },
+    {
+      "title": "Linking your file system to an Amazon S3 bucket - FSx for Lustre",
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html"
+    },
+    {
+      "title": "Amazon EFS performance specifications - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.1-storage-types-and-services"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}
