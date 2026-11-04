@@ -1,0 +1,65 @@
+{
+  "id": "saa-4.1-g9-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K5", "4.1-S6"],
+  "services": ["Amazon S3", "Amazon S3 Glacier", "AWS Backup"],
+  "qualifier": "cost",
+  "tags": ["クロスリージョンレプリケーション", "災害対策", "S3 Glacier Deep Archive"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、契約書の画像（約 200 TB）を東京リージョンの Amazon S3 バケットに保存しており、バケットのバージョニングを有効にしています。大規模な災害で東京リージョン全体が使えなくなる場合に備えて、別のリージョンにデータのコピーを持つ必要があります。このコピーは災害時にしか使わず、災害時には 48 時間以内にデータを取り出せれば十分です。今後保存される契約書も自動でコピーする必要があります。最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "大阪リージョンにバケットを作成し、S3 クロスリージョンレプリケーションで、レプリカのストレージクラスに S3 Glacier Deep Archive を指定する。既存のオブジェクトは S3 バッチレプリケーションで複製する。",
+      "correct": true,
+      "rationale": "S3 のレプリケーションでは、レプリカのストレージクラスを指定できます。災害時にしか読まず、48 時間以内に取り出せればよいコピーなので、ストレージ料金が最も低い S3 Glacier Deep Archive が適しています。大容量取り出しでも 48 時間以内に復元できます。"
+    },
+    {
+      "id": "b",
+      "text": "大阪リージョンにバケットを作成し、既存のオブジェクトも含めて S3 Standard のまま複製したうえで、レプリカを 30 日後に S3 Standard-IA へ移行するライフサイクルルールを設定する。",
+      "correct": false,
+      "rationale": "別リージョンへのコピーという要件は満たします。しかし、災害時にしか使わないデータを S3 Standard や S3 Standard-IA に置くと、S3 Glacier Deep Archive に比べてストレージ料金が大幅に高くなります。"
+    },
+    {
+      "id": "c",
+      "text": "東京リージョン内に別のバケットを作成し、S3 同一リージョンレプリケーションで、レプリカのストレージクラスに S3 Glacier Deep Archive を指定する。既存のオブジェクトは S3 バッチレプリケーションで複製する。",
+      "correct": false,
+      "rationale": "同一リージョンレプリケーションのコピーは東京リージョンに置かれるため、東京リージョン全体が使えなくなる災害ではコピーも使えません。リージョン全体の災害に備えるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Backup で S3 バケットのバックアッププランを作成し、毎日のバックアップを大阪リージョンのバックアップボールトにコピーして保持する。",
+      "correct": false,
+      "rationale": "別リージョンにバックアップを持てますが、AWS Backup の S3 のバックアップはコールドストレージに対応しておらず、200 TB を保持する料金は S3 Glacier Deep Archive より大幅に高くなります。毎日のバックアップとリージョン間のコピーにも料金がかかります。"
+    }
+  ],
+  "explanation": "リージョン全体の災害に備えるには、データのコピーを別のリージョンに置く必要があります。Amazon S3 では、S3 クロスリージョンレプリケーション（CRR）で、新しく保存されたオブジェクトを自動的に別のリージョンのバケットへ複製できます。レプリケーションを設定する前からあるオブジェクトは自動では複製されないため、S3 バッチレプリケーションで複製します。レプリケーションには、元と先の両方のバケットでバージョニングが有効になっている必要があります。\n\nレプリケーションでは、レプリカのストレージクラスを元のオブジェクトと別に指定できます。災害時にしか読まないコピーなら、ストレージ料金が最も低い S3 Glacier Deep Archive を指定するのが効果的です。S3 Glacier Deep Archive からの復元は、標準取り出しで 12 時間以内、大容量取り出しで 48 時間以内に完了するので、「48 時間以内に取り出せればよい」という要件に合います。\n\n同一リージョンレプリケーションは、同じリージョン内でのコピーのため、リージョン全体の災害には備えられません。",
+  "keyPoints": [
+    "リージョン全体の災害に備えるコピー → S3 クロスリージョンレプリケーション（既存オブジェクトはバッチレプリケーション）",
+    "レプリケーションでは、レプリカのストレージクラスを安いクラスに指定できる",
+    "災害時にしか使わず、取り出しに 12〜48 時間待てるコピー → S3 Glacier Deep Archive"
+  ],
+  "references": [
+    {
+      "title": "Replicating objects within and across Regions - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+    },
+    {
+      "title": "Replicating existing objects with Batch Replication - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-batch-replication-batch.html"
+    },
+    {
+      "title": "Understanding archive retrieval options - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}

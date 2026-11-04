@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.1-g9-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": ["4.1-K4", "4.1-S10"],
+  "services": ["Amazon FSx", "Amazon S3", "Amazon EFS", "Amazon EBS"],
+  "qualifier": "cost",
+  "tags": ["FSx for Lustre", "スクラッチファイルシステム", "HPC", "一時的な処理"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある自動車メーカーは、衝突シミュレーションの入力データ（約 50 TB）を Amazon S3 に保存しています。毎月 1 回、数百台の Amazon EC2 インスタンスで 3 日間の解析を行い、その間はデータを共有ファイルシステムとして、高いスループットと低いレイテンシーで読み書きする必要があります。解析結果は S3 に書き戻し、解析が終わればファイルシステムは不要です。ファイルシステム上のデータは S3 から作り直せます。最もコスト効率の高いストレージ構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 バケットとリンクした Amazon FSx for Lustre の永続ファイルシステムを作成し、解析のない期間も含めて常に稼働させ、データを最新の状態に保っておく。",
+      "correct": false,
+      "rationale": "永続ファイルシステムは長期間使う重要なデータ向けで、データを複製して保護する分、料金も高めです。月に 3 日しか使わないのに常に稼働させると、残りの期間もストレージの料金がかかり続けます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EFS のファイルシステムを常設し、毎月の解析の前に S3 から全データをコピーして、解析が終わったらデータを削除する。",
+      "correct": false,
+      "rationale": "EFS は複数の AZ にデータを保存する汎用の共有ファイルシステムで、1 GB あたりの料金は高めです。数百台による並列の高スループット処理には FSx for Lustre が向いており、毎回の全データのコピーにも手間と時間がかかります。"
+    },
+    {
+      "id": "c",
+      "text": "解析のたびに、S3 バケットとリンクした Amazon FSx for Lustre のスクラッチファイルシステムを作成し、結果を S3 に書き戻した後で削除する。",
+      "correct": true,
+      "rationale": "スクラッチファイルシステムは、短期間の処理が中心のワークロード向けにコストを抑えた構成です。データは複製されず、ファイルサーバーが故障すると失われますが、入力は S3 から作り直せ、結果は S3 に書き戻すので問題ありません。解析の期間だけ作成するため、それ以外の期間の料金もかかりません。"
+    },
+    {
+      "id": "d",
+      "text": "各 EC2 インスタンスにプロビジョンド IOPS SSD（io2）の EBS ボリュームを接続し、解析の前に S3 から全データを各ボリュームへコピーする。",
+      "correct": false,
+      "rationale": "EBS ボリュームは基本的に 1 台のインスタンスから使うブロックストレージで、共有ファイルシステムになりません。数百台それぞれに 50 TB 分の高価な io2 ボリュームを用意することになり、コストも大幅に増えます。"
+    }
+  ],
+  "explanation": "Amazon FSx for Lustre は、HPC や機械学習のように多数のサーバーから並列に高スループットで読み書きする処理向けの共有ファイルシステムです。S3 バケットとリンクすると、S3 のオブジェクトをファイルとして見せ、アクセスしたときに S3 から読み込みます。処理結果は S3 に書き戻せます。\n\nFSx for Lustre には 2 つのデプロイの種類があります。永続ファイルシステムはデータを複製し、故障した部品を自動で交換するため、長期間使う重要なデータに向いています。スクラッチファイルシステムはデータを複製せず、故障するとそのサーバー上のデータは失われますが、そのぶん短期間の処理が中心のワークロードのコストを抑えられます。\n\nこの問題では、データが S3 から作り直せ、ファイルシステムは月に 3 日しか必要ありません。そのため、解析のたびにスクラッチファイルシステムを作成し、結果を S3 に書き戻して削除するのが最も安上がりです。常設のファイルシステムや、インスタンスごとの EBS ボリュームは、使わない期間の料金や重複したデータの料金がかかります。",
+  "keyPoints": [
+    "HPC や機械学習の並列処理で S3 のデータを高速に使う → S3 とリンクした FSx for Lustre",
+    "短期間の処理で、データを S3 から作り直せる → FSx for Lustre のスクラッチファイルシステム",
+    "必要な期間だけストレージを作成し、終わったら削除するとコストを抑えられる"
+  ],
+  "references": [
+    {
+      "title": "Deployment and storage class options for FSx for Lustre file systems - FSx for Lustre",
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/using-fsx-lustre.html"
+    },
+    {
+      "title": "Linking your file system to an Amazon S3 bucket - FSx for Lustre",
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g9",
+  "createdAt": "2026-11-04"
+}
