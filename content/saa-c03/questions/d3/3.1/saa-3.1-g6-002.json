@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.1-g6-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K2", "3.1-K3"],
+  "services": ["Amazon FSx", "Amazon EFS", "Amazon EBS", "Amazon EC2"],
+  "qualifier": "operational",
+  "tags": ["FSx for Windows File Server", "SMB", "Active Directory", "マルチ AZ", "ファイルストレージ"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、Windows Server で動く社内の業務アプリケーションを Amazon EC2 に移行します。アプリケーションは 2 つのアベイラビリティーゾーン（AZ）に分けて配置した複数の EC2 インスタンスで動き、すべてのインスタンスが SMB で同じファイル共有を読み書きします。ファイルへのアクセスは Active Directory のユーザーと NTFS のアクセス許可で制御し、1 つの AZ が停止してもファイル共有を使い続けられる必要があります。運用上のオーバーヘッドが最も少ないストレージはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS のリージョンファイルシステムを作成し、各 EC2 インスタンスからマウントする。",
+      "correct": false,
+      "rationale": "Amazon EFS は複数の AZ にデータを保存するフルマネージドのファイルストレージですが、プロトコルは NFS で、Windows の EC2 インスタンスからの利用はサポートされていません。SMB のファイル共有や NTFS のアクセス許可という要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon FSx for Windows File Server のマルチ AZ ファイルシステムを作成し、Active Directory に参加させる。",
+      "correct": true,
+      "rationale": "FSx for Windows File Server は、SMB でアクセスするフルマネージドの Windows ファイルサーバーで、Active Directory による認証と Windows のアクセス制御リスト（ACL）に対応しています。マルチ AZ 構成では別の AZ にスタンバイのファイルサーバーが置かれ、障害時は自動でフェイルオーバーするため、AZ の停止にも耐えられます。"
+    },
+    {
+      "id": "c",
+      "text": "プロビジョンド IOPS SSD（io2）の Amazon EBS ボリュームでマルチアタッチを有効にし、すべての EC2 インスタンスから同じボリュームに接続する。",
+      "correct": false,
+      "rationale": "EBS のマルチアタッチで接続できるのは、同じ AZ にあるインスタンスだけです。2 つの AZ のインスタンスから共有できず、AZ の停止にも耐えられません。また、複数のサーバーから同時に書き込むにはクラスター対応のファイルシステムが必要で、SMB のファイル共有にもなりません。"
+    },
+    {
+      "id": "d",
+      "text": "2 つの AZ にファイルサーバー用の Windows Server の EC2 インスタンスを 1 台ずつ構築し、DFS レプリケーションでファイルを同期する。",
+      "correct": false,
+      "rationale": "自前のファイルサーバーでも SMB や Active Directory の要件は満たせますが、OS のパッチ適用、バックアップ、レプリケーションの監視や障害対応を自分たちで行う必要があります。運用上のオーバーヘッドを最も少なくするという要件を満たしません。"
+    }
+  ],
+  "explanation": "Windows のアプリケーションが SMB でファイル共有を使い、Active Directory と NTFS のアクセス許可で制御したい場合は、Amazon FSx for Windows File Server を選びます。Windows Server をベースにしたフルマネージドのファイルサーバーで、パッチ適用やバックアップ、ハードウェア障害への対応は AWS が行います。\n\n可用性はデプロイの種類で決まります。シングル AZ は 1 つの AZ の中で障害を自動的に検出して対処し、マルチ AZ は別の AZ にスタンバイのファイルサーバーを置いて、障害時に自動でフェイルオーバーします。「AZ が停止しても使い続ける」という要件にはマルチ AZ が必要です。\n\nAmazon EFS も複数の AZ から同時に使えるファイルストレージですが、NFS で使う Linux 向けのサービスで、Windows のインスタンスはサポートされていません。EBS のマルチアタッチは同じ AZ の中だけで使える仕組みで、ファイル共有の代わりにはなりません。",
+  "keyPoints": [
+    "Windows・SMB・Active Directory のファイル共有 → Amazon FSx for Windows File Server",
+    "AZ の停止に耐えるファイル共有が必要なら、FSx for Windows File Server はマルチ AZ を選ぶ",
+    "Amazon EFS は NFS で使う Linux 向け。Windows のインスタンスは非対応",
+    "EBS のマルチアタッチは同じ AZ のインスタンスだけ。複数 AZ の共有ストレージにはならない"
+  ],
+  "references": [
+    {
+      "title": "What is FSx for Windows File Server? - Amazon FSx for Windows File Server",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+    },
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.1-storage-types-and-services"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g6",
+  "createdAt": "2026-11-04"
+}
