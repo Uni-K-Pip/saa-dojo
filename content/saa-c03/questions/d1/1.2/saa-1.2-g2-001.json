@@ -1,0 +1,73 @@
+{
+  "id": "saa-1.2-g2-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K1", "1.2-S3"],
+  "services": [
+    "AWS Secrets Manager",
+    "Amazon RDS",
+    "Amazon EC2",
+    "AWS Systems Manager",
+    "AWS Key Management Service",
+    "Amazon S3"
+  ],
+  "qualifier": "operational",
+  "tags": ["シークレット", "自動ローテーション", "Parameter Store", "認証情報", "ユーザーデータ"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社は、Amazon EC2 インスタンスで動く在庫管理アプリケーションから Amazon RDS for PostgreSQL のデータベースに接続しています。データベースのパスワードはアプリケーションの設定ファイルに平文で書かれ、ソースコードと一緒にリポジトリで管理されています。監査で指摘を受けたため、パスワードを設定ファイルとリポジトリから取り除き、30日ごとに自動で変更する必要があります。変更後も、アプリケーションが手作業なしで新しいパスワードを使えるようにします。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "パスワードを AWS Systems Manager Parameter Store の SecureString パラメータに保存する。Amazon EventBridge のスケジュールで30日ごとに独自の AWS Lambda 関数を起動し、パスワードの変更とパラメータの更新を行う。",
+      "correct": false,
+      "rationale": "Parameter Store の SecureString は AWS KMS で暗号化して保存できますが、認証情報のローテーション機能はありません。データベースのパスワードとパラメータを更新する処理を自作して保守する必要があり、運用上のオーバーヘッドが最も少ないという条件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "認証情報を AWS Secrets Manager のシークレットとして保存し、30日ごとの自動ローテーションを有効にする。アプリケーションは EC2 インスタンスの IAM ロールを使い、実行時にシークレットを取得する。",
+      "correct": true,
+      "rationale": "Secrets Manager は、スケジュールに沿ってシークレットの値とデータベースのパスワードの両方を自動で更新します。RDS 向けにはローテーション関数のテンプレートが用意されており、変更処理を自作する必要はありません。アプリケーションは実行時に最新の値を取得するため、ローテーション後も手作業なしで接続できます。"
+    },
+    {
+      "id": "c",
+      "text": "パスワードを AWS KMS キーで暗号化したファイルを Amazon S3 バケットに置き、アプリケーションの起動時に復号して読み込む。パスワードは運用担当者が30日ごとに変更してファイルを置き換える。",
+      "correct": false,
+      "rationale": "平文の保存はなくなりますが、パスワードの変更とファイルの置き換えが手作業のため、30日ごとに自動で変更するという要件を満たしません。起動時にしか読み込まないので、変更のたびにアプリケーションの再起動も必要です。"
+    },
+    {
+      "id": "d",
+      "text": "パスワードを EC2 インスタンスのユーザーデータに記述し、起動時に環境変数として設定する。30日ごとに新しいパスワードを含む起動テンプレートのバージョンを作り、インスタンスを置き換える。",
+      "correct": false,
+      "rationale": "ユーザーデータは認証や暗号化で保護されておらず、インスタンスにアクセスできる人やソフトウェアから読み取れるため、パスワードを置く場所として不適切です。変更も手作業のため、自動で変更するという要件も満たしません。"
+    }
+  ],
+  "explanation": "AWS Secrets Manager は、データベースの認証情報や API キーなどのシークレットを保存し、自動でローテーション（定期的な更新）するためのサービスです。ローテーションでは、シークレットの値と、データベース側のパスワードの両方が更新されます。Amazon RDS のデータベースについては、Secrets Manager が用意するテンプレートからローテーション用の AWS Lambda 関数を作れます。また、RDS がマスターユーザーのパスワードを Secrets Manager で管理する構成では、Lambda 関数を使わないマネージドローテーションも使えます。どちらも変更処理のコードを自作する必要はありません。アプリケーションには EC2 インスタンスの IAM ロールでシークレットの読み取りを許可し、実行時に最新の値を取得させるので、ローテーション後も手作業なしで接続できます。\n\nAWS Systems Manager Parameter Store の SecureString も AWS KMS で暗号化して値を保存できますが、認証情報のローテーション機能はありません。AWS は、データベースの認証情報のようなシークレットには Secrets Manager を使うことを推奨しています。\n\nS3 に置いた暗号化ファイルや EC2 のユーザーデータを使う方法では、変更が手作業になります。特にユーザーデータは認証や暗号化で保護されていないため、パスワードなどの機密情報を置いてはいけません。",
+  "keyPoints": [
+    "「認証情報を自動でローテーションする」→ AWS Secrets Manager",
+    "Parameter Store の SecureString は暗号化して保存できるが、ローテーション機能はない",
+    "認証情報はコードや設定ファイルに書かず、IAM ロールで実行時に取得する",
+    "EC2 のユーザーデータは保護されないので、パスワードなどの機密情報を置かない"
+  ],
+  "references": [
+    {
+      "title": "Rotate AWS Secrets Manager secrets - AWS Secrets Manager",
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
+    },
+    {
+      "title": "AWS Systems Manager Parameter Store - AWS Systems Manager",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    },
+    {
+      "title": "Use instance metadata to manage your EC2 instance - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-app-protection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "g2",
+  "createdAt": "2026-11-04"
+}
