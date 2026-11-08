@@ -1,0 +1,73 @@
+{
+  "id": "saa-1.3-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-K4",
+    "1.3-S2"
+  ],
+  "services": [
+    "AWS CloudHSM",
+    "AWS Key Management Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "AWS CloudHSM",
+    "専有 HSM",
+    "PKCS#11"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融機関は、決済アプリケーションが使う署名鍵を AWS 上で管理します。規制により、鍵はシングルテナントの HSM に保管し、鍵の管理は自社が排他的に行う必要があります。AWS の担当者も鍵素材にアクセスできないようにしなければなりません。アプリケーションは PKCS#11 ライブラリを使って鍵を利用します。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS CloudHSM のクラスターを複数の AZ に作成し、アプリケーションから PKCS#11 ライブラリで鍵を利用する。",
+      "correct": true,
+      "rationale": "CloudHSM は、顧客専有のシングルテナントの HSM を提供し、鍵とユーザーの管理は顧客だけが行います。PKCS#11、JCE、CNG などの標準 API で利用できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Secrets Manager に署名鍵を保存して、アプリケーションが起動時に取得する。",
+      "correct": false,
+      "rationale": "Secrets Manager は秘密情報を保管するサービスで、HSM ではありません。鍵がアプリケーションのメモリ上に取り出されるため、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS KMS で独自の鍵素材をインポートしたカスタマーマネージドキーを作成し、アプリケーションが KMS の API で署名を行う。",
+      "correct": false,
+      "rationale": "鍵素材を自社で用意しても、鍵は KMS のマルチテナントの HSM に保管されます。シングルテナントの HSM を専有する要件と、PKCS#11 での利用を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS KMS でカスタマーマネージドキーを作成し、アプリケーションが KMS の API で署名を行う。",
+      "correct": false,
+      "rationale": "KMS は AWS が管理するマルチテナントのサービスです。PKCS#11 での利用や、シングルテナントの HSM の専有という要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS CloudHSM は、AWS クラウド上で顧客が専有するハードウェアセキュリティモジュール（HSM）を使えるサービスです。HSM は顧客専用のシングルテナントで、鍵の生成、保管、ユーザーの管理は顧客が行い、AWS は鍵素材にアクセスできません。PKCS#11、Java Cryptography Extensions（JCE）、Microsoft CNG などの標準 API で利用できます。可用性のため、複数の AZ に HSM を置きます。\n\nAWS KMS は AWS が管理するマルチテナントのサービスで、AWS のサービスとの統合が広く、運用の手間が少ない一方、専有の HSM を自社で排他的に管理する要件や、PKCS#11 での直接の利用には向きません。鍵素材をインポートしても、保管場所は KMS の HSM です。\n\nSecrets Manager はパスワードや API キーなどの保管とローテーションのサービスで、HSM の代わりにはなりません。",
+  "keyPoints": [
+    "シングルテナントの専有 HSM・鍵の排他的な管理・PKCS#11 → AWS CloudHSM",
+    "AWS サービスとの統合と運用の手軽さ → AWS KMS",
+    "Secrets Manager は秘密情報の保管用で、HSM の代替ではない"
+  ],
+  "references": [
+    {
+      "title": "AWS CloudHSM とは - AWS CloudHSM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+    },
+    {
+      "title": "AWS CloudHSM よくある質問",
+      "url": "https://aws.amazon.com/cloudhsm/faqs/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-encryption-and-keys"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

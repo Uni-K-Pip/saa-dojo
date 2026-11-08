@@ -1,0 +1,76 @@
+{
+  "id": "saa-1.1-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S1",
+    "1.1-K1"
+  ],
+  "services": [
+    "AWS Organizations",
+    "AWS Identity and Access Management",
+    "Amazon Simple Storage Service",
+    "AWS Security Token Service (AWS STS)"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "ルートアクセスの一元管理",
+    "AssumeRoot",
+    "メンバーアカウント"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で約 300 のメンバーアカウントを管理しています。メンバーアカウントのルートユーザーには、個別に管理されたパスワードと MFA が残っています。また、あるアカウントで、すべてのプリンシパルを拒否する誤った Amazon S3 バケットポリシーを設定してしまい、バケットを操作できなくなりました。ルートユーザーの認証情報を各アカウントに保持せずに運用したいと考えています。運用負荷が最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Organizations のルートアクセスの一元管理を有効にして、メンバーアカウントのルートユーザーの認証情報を削除する。バケットポリシーの誤りは、管理アカウントまたは委任管理者が sts:AssumeRoot で S3UnlockBucketPolicy の特権タスクを実行して解除する。",
+      "correct": true,
+      "rationale": "ルートアクセスの一元管理で、メンバーアカウントのルート認証情報を削除でき、必要な特権タスクだけを短期のセッションで実行できます。すべてのプリンシパルを拒否するバケットポリシーの解除は、そのための特権タスクの1つです。"
+    },
+    {
+      "id": "b",
+      "text": "メンバーアカウントごとに、AdministratorAccess を持つ IAM ユーザーを作成し、アクセスキーを Secrets Manager に保管する。バケットポリシーの誤りは、そのユーザーで修正する。",
+      "correct": false,
+      "rationale": "長期の認証情報を増やすだけで、課題が解消しません。すべてのプリンシパルを拒否するバケットポリシーは、管理者権限の IAM ユーザーでは解除できません。"
+    },
+    {
+      "id": "c",
+      "text": "SCP で全メンバーアカウントのルートユーザーの操作をすべて拒否する。バケットポリシーの誤りは、IAM Identity Center の管理者権限を持つユーザーが DeleteBucketPolicy を実行して解除する。",
+      "correct": false,
+      "rationale": "すべてのプリンシパルを拒否するバケットポリシーは、管理者権限を持つ IAM のプリンシパルからも解除できず、ルートユーザーの特権タスクが必要です。SCP でルートユーザーを拒否すると、その解除手段まで失います。"
+    },
+    {
+      "id": "d",
+      "text": "各メンバーアカウントのルートユーザーのパスワードを長く複雑なものに変更し、ハードウェア MFA を割り当てて金庫に保管する。バケットポリシーの誤りは、そのルートユーザーでサインインして修正する。",
+      "correct": false,
+      "rationale": "認証情報が各アカウントに残るため、300 アカウントを個別に管理し続ける運用負荷が減りません。ルート認証情報を保持しないという要件も満たしません。"
+    }
+  ],
+  "explanation": "AWS Organizations には、メンバーアカウントのルートユーザーの認証情報を中央で管理する「ルートアクセスの一元管理」があります。有効にすると、メンバーアカウントのルートユーザーのパスワード、アクセスキー、署名証明書、MFA を削除でき、新しいアカウントはルート認証情報なしで作成されます。\n\nルートユーザーでなければできない作業のうち、一部は「ルートの特権タスク」として、管理アカウントまたは委任管理者が sts:AssumeRoot で短期のセッションを取得して実行できます。すべてのプリンシパルを拒否する S3 バケットポリシーの解除（S3UnlockBucketPolicy）や、SQS キューポリシーの解除などが該当します。\n\n管理者権限の IAM ユーザーや IAM Identity Center のユーザーでも、すべてを拒否するバケットポリシーは解除できないので、ルート認証情報を保持せずに運用するには、この仕組みが最も運用負荷の少ない方法です。",
+  "keyPoints": [
+    "メンバーアカウントのルート認証情報を持たずに運用 → ルートアクセスの一元管理＋sts:AssumeRoot",
+    "全プリンシパルを拒否するバケットポリシーはルートの特権タスクでしか解除できない",
+    "ルートユーザーの利用は最小限にし、日常の作業には使わない"
+  ],
+  "references": [
+    {
+      "title": "ルートユーザーの認証情報が必要なタスク - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"
+    },
+    {
+      "title": "AWS アカウントのルートユーザー - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account",
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

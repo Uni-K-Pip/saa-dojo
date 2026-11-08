@@ -1,0 +1,72 @@
+{
+  "id": "saa-1.1-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S1",
+    "1.1-K4"
+  ],
+  "services": [
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "MFA の強制",
+    "IAM ポリシー",
+    "BoolIfExists"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、約 200 人の従業員が IAM ユーザーで AWS マネジメントコンソールにサインインしています。セキュリティ方針が改訂され、すべてのユーザーに MFA が必須になりました。MFA を設定していないユーザーは、自分の MFA デバイスの登録とパスワードの変更だけができ、それ以外の AWS の操作はできないようにします。ユーザーはグループで管理されています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "IAM のアカウントのパスワードポリシーで、MFA を必須にする設定を有効にする。",
+      "correct": false,
+      "rationale": "パスワードポリシーで設定できるのは、文字数や文字種、有効期限などで、MFA を必須にする設定はありません。"
+    },
+    {
+      "id": "b",
+      "text": "全ユーザーが属するグループに、MFA の認証を受けていない場合（aws:MultiFactorAuthPresent が false または存在しない場合）、MFA の管理とパスワードの変更以外のすべての操作を拒否する IAM ポリシーをアタッチする。",
+      "correct": true,
+      "rationale": "MFA が使われていないリクエストを、自己管理用の操作を除いて拒否します。ユーザーは MFA を登録して再度サインインするまで、他の操作ができません。グループにアタッチすれば、新しいユーザーにも適用されます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Config のルールで MFA 未設定のユーザーを検出し、自動修復の処理でそのユーザーを削除する。",
+      "correct": false,
+      "rationale": "事後の検出で、ユーザーを削除する運用は業務への影響が大きすぎます。MFA を登録する機会を与える要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "CloudTrail のログを毎週確認して、MFA を使っていないユーザーを見つけ、管理者が手作業でユーザーを無効にする。",
+      "correct": false,
+      "rationale": "事後の対応で、確認までの間は MFA なしで操作できてしまいます。200 人分を手作業で確認する運用負荷も大きくなります。"
+    }
+  ],
+  "explanation": "IAM ユーザーに MFA を強制するには、MFA で認証されていないリクエストを拒否する IAM ポリシーを使います。条件キー aws:MultiFactorAuthPresent は、MFA で認証されたセッションで true になります。MFA を使っていない場合は、キーが存在しないこともあるため、BoolIfExists で false または存在しないケースの両方を拒否します。\n\nこの拒否ポリシーでは、NotAction を使って、iam:CreateVirtualMFADevice、iam:EnableMFADevice、iam:ChangePassword など、自分の MFA とパスワードの管理に必要な操作だけを除外します。ユーザーは MFA を登録してからサインインし直すことで、本来の権限を使えるようになります。\n\nパスワードポリシーでは MFA は必須にできません。ログの確認や Config による事後の対応は、MFA なしの操作を許してしまうため、予防的な統制にはなりません。",
+  "keyPoints": [
+    "MFA の強制 → aws:MultiFactorAuthPresent を条件にした Deny（BoolIfExists）",
+    "MFA の登録とパスワードの変更だけは NotAction で除外する",
+    "事後の検知よりも、予防的な拒否ポリシーを選ぶ"
+  ],
+  "references": [
+    {
+      "title": "MFA で保護された API アクセスの設定 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html"
+    },
+    {
+      "title": "AWS での多要素認証 (MFA) の使用 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

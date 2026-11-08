@@ -1,0 +1,69 @@
+{
+  "id": "saa-1.1-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S2",
+    "1.1-K4"
+  ],
+  "services": [
+    "AWS Identity and Access Management",
+    "AWS Lambda"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "アクセス許可境界",
+    "権限昇格の防止",
+    "委任"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、アプリケーション開発チームの開発者に、AWS Lambda 関数用の IAM ロールを自分たちで作成する権限を与えたいと考えています。ただし、開発者が自分より強い権限を持つロールを作って権限を昇格させたり、監査ログの設定を変更したりすることは防がなければなりません。セキュリティ部門がロールを個別に作成する運用は避けたく、最小権限の原則も維持する必要があります。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "開発者に iam:* を許可し、CloudTrail の停止を拒否するポリシーを追加で付ける。",
+      "correct": false,
+      "rationale": "iam:* を許可すると、管理者権限を持つロールを作って自分に引き受けさせる権限昇格ができます。CloudTrail の停止を拒否しても、他の監査設定の変更や昇格は防げません。"
+    },
+    {
+      "id": "b",
+      "text": "開発者が作成したロールを AWS Config ルールで毎日検査し、過大な権限を持つロールを見つけたら Lambda で削除する。",
+      "correct": false,
+      "rationale": "事後に検知して削除する方法で、検知までの間は過大な権限を持つロールが使えてしまいます。作成の時点で権限を制限する予防的な統制ではなく、ルールや自動修復の運用も増えます。"
+    },
+    {
+      "id": "c",
+      "text": "開発者に PowerUserAccess マネージドポリシーを付与する。IAM ロールは開発者が必要なときに自分で作成する。",
+      "correct": false,
+      "rationale": "PowerUserAccess は IAM の操作を原則として許可しないため、開発者は Lambda 用のロールを作成できません。要件を満たさない上に、権限の上限を決める仕組みにもなりません。"
+    },
+    {
+      "id": "d",
+      "text": "開発者に iam:CreateRole などの権限を与え、その条件として、ロール作成時に所定のアクセス許可境界ポリシーを必ず付けるよう iam:PermissionsBoundary 条件キーで強制する。境界ポリシーでは Lambda の実行に必要な操作だけを許可する。",
+      "correct": true,
+      "rationale": "アクセス許可境界は、ロールに付けられる権限の上限を決めます。作成時に境界の付与を必須にすれば、開発者が作るロールは境界の範囲を超えられず、権限昇格や監査ログ設定の変更も防げます。作成自体は開発者に任せられるため、運用の負荷も増えません。"
+    }
+  ],
+  "explanation": "IAM のアクセス許可境界（permissions boundary）は、IAM ユーザーまたはロールに付与できる権限の上限を決める高度な機能です。実際に許可されるのは、アイデンティティベースのポリシーと境界の両方で許可されている操作だけです。\n\n開発者に iam:CreateRole や iam:AttachRolePolicy を許可しつつ、「iam:PermissionsBoundary が指定の境界ポリシーの ARN と一致する場合に限る」という条件を付けると、開発者は境界が付いたロールしか作れません。さらに境界ポリシーの変更や削除（iam:DeleteRolePermissionsBoundary など）を許可しなければ、作ったロールから境界を外すこともできません。こうして、権限の委任と最小権限を両立できます。\n\nPowerUserAccess は IAM を実質的に操作できないため目的に合わず、iam:* を許可するだけでは昇格を防げません。事後検知は予防的な統制にならず、運用も増えます。",
+  "keyPoints": [
+    "IAM の権限を開発者に委任しつつ上限を決める → アクセス許可境界＋iam:PermissionsBoundary 条件キー",
+    "権限昇格の防止は作成時の予防的な統制で行う（事後検知は補助）",
+    "実効権限はアイデンティティポリシーと境界の積集合"
+  ],
+  "references": [
+    {
+      "title": "IAM エンティティのアクセス許可の境界 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

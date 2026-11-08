@@ -1,0 +1,72 @@
+{
+  "id": "saa-1.2-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K5",
+    "1.2-S3"
+  ],
+  "services": [
+    "Amazon GuardDuty",
+    "Amazon EventBridge",
+    "AWS Lambda",
+    "Amazon Simple Notification Service",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "GuardDuty",
+    "EventBridge",
+    "自動対応"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon GuardDuty が Amazon EC2 インスタンスの侵害の疑いを検出したときに、そのインスタンスを自動で隔離したいと考えています。隔離は、インスタンスのセキュリティグループを、すべての通信を拒否するものに付け替えることで行い、同時にセキュリティチームへ通知します。常時稼働するサーバーを追加せずに実現し、運用負荷は小さくしたいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "GuardDuty の検出結果を S3 バケットにエクスポートし、1 時間ごとに起動する EC2 インスタンス上の cron ジョブで読み取って、セキュリティグループを付け替える。",
+      "correct": false,
+      "rationale": "常時稼働に近いサーバーが必要で、対応までに最大 1 時間の遅れが出ます。EventBridge でイベントを直接処理する構成より、運用負荷も大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "GuardDuty の設定で自動修復を有効にして、侵害の疑いがあるインスタンスの隔離を GuardDuty に任せる。",
+      "correct": false,
+      "rationale": "GuardDuty は脅威を検出するサービスで、インスタンスを自動で隔離する設定はありません。対応の処理は、別に用意する必要があります。"
+    },
+    {
+      "id": "c",
+      "text": "GuardDuty の検出結果を Amazon EventBridge のルールで受け取り、重大度で絞り込んで AWS Lambda 関数を起動する。Lambda 関数がセキュリティグループを付け替え、Amazon SNS でセキュリティチームへ通知する。",
+      "correct": true,
+      "rationale": "GuardDuty の検出結果は EventBridge にイベントとして送られます。ルールで絞り込み、Lambda で自動対応と SNS 通知を行う構成なら、サーバーを常時動かす必要がありません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Inspector のスキャンを有効にして、脆弱性が見つかったインスタンスを自動で隔離する。",
+      "correct": false,
+      "rationale": "Inspector は脆弱性を評価するサービスで、実行中の侵害の疑いを検出する GuardDuty とは目的が違います。隔離の機能も標準では持ちません。"
+    }
+  ],
+  "explanation": "GuardDuty は、CloudTrail、VPC フローログ、DNS ログなどを分析して脅威を検出するサービスですが、検出した後の対応は自動では行いません。検出結果（finding）は Amazon EventBridge にイベントとして自動で送られるため、EventBridge のルールでイベントを受け取り、AWS Lambda や AWS Step Functions、Amazon SNS などを起動して対応を自動化します。\n\nこの問題の構成は、(1) EventBridge のルールで、対象の検出結果（重大度が高いものなど）を絞り込む、(2) Lambda 関数で、侵害の疑いがあるインスタンスのセキュリティグループを通信をすべて拒否するものに付け替える、(3) SNS でセキュリティチームへ通知する、というものです。すべてサーバーレスで、使った分だけの料金です。\n\nInspector は脆弱性の評価、GuardDuty は脅威の検出という違いも押さえておきます。",
+  "keyPoints": [
+    "GuardDuty の検出に自動で対応 → EventBridge ルール＋Lambda（SNS で通知）",
+    "GuardDuty は検出まで。隔離などの対応は自動化の仕組みを別に用意する",
+    "脅威の検出は GuardDuty、脆弱性の評価は Inspector"
+  ],
+  "references": [
+    {
+      "title": "Amazon EventBridge を使った GuardDuty の検出結果への対応 - Amazon GuardDuty ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

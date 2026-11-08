@@ -1,0 +1,70 @@
+{
+  "id": "saa-1.1-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-K4",
+    "1.1-S2"
+  ],
+  "services": [
+    "AWS Identity and Access Management",
+    "AWS CloudTrail",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "IAM Access Analyzer",
+    "ポリシー生成",
+    "最小権限"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、3 年前に作成した IAM ロールが、当時の見積もりで付与した広い権限のまま、Amazon S3 と Amazon DynamoDB を使うバッチ処理に使われています。実際に使われている操作だけを許可するように最小権限へ絞り込みたいのですが、使われている API を手作業で調べるのは避けたいと考えています。AWS CloudTrail の証跡は有効で、過去のログが保存されています。最も運用負荷が少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ロールの権限をすべて外してバッチ処理を実行し、エラーになった操作を 1 つずつ許可として追加していく。",
+      "correct": false,
+      "rationale": "本番のバッチ処理を止めながら試行錯誤することになり、運用負荷もリスクも大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "IAM 認証情報レポートをダウンロードして、API の使用状況を確認し、許可する操作を手作業でポリシーに書く。",
+      "correct": false,
+      "rationale": "認証情報レポートは、IAM ユーザーのパスワードやアクセスキーの利用状況を示すもので、ロールが呼び出した API は分かりません。"
+    },
+    {
+      "id": "c",
+      "text": "IAM Access Analyzer のポリシー生成を使い、CloudTrail のログに記録されたロールのアクセスアクティビティに基づいて、実際に使われた操作だけを許可するポリシーを生成して置き換える。",
+      "correct": true,
+      "rationale": "ポリシー生成は、CloudTrail のログからロールが実際に使った操作を分析し、それだけを許可するポリシーのひな形を作ります。手作業で API を調べる必要がありません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Trusted Advisor のセキュリティチェックを有効にして、過剰な権限を自動的に削除させる。",
+      "correct": false,
+      "rationale": "Trusted Advisor は IAM ポリシーを分析して自動で権限を絞り込む機能を持ちません。権限の削除は行わず、結果は参考情報にとどまります。"
+    }
+  ],
+  "explanation": "最小権限に絞り込むときは、実際に使われている操作を根拠にするのが確実です。IAM Access Analyzer のポリシー生成は、指定した期間の CloudTrail ログを分析し、IAM ユーザーまたはロールが実際に呼び出したアクションに基づいて、アイデンティティベースのポリシーを生成します。生成されたポリシーを確認し、必要に応じて調整してから既存の広い権限と置き換えます。\n\nなお、CloudTrail のログに記録されない操作（データイベントを記録していない S3 のオブジェクト操作など）は、生成されたポリシーに含まれない場合があるので、必要な操作が漏れていないか確認します。\n\nIAM 認証情報レポートは IAM ユーザーの認証情報の状態を示し、API の使用状況は示しません。権限を外して試行錯誤する方法は、業務を止めるリスクがあります。",
+  "keyPoints": [
+    "実際の利用に基づいて最小権限へ → IAM Access Analyzer のポリシー生成（CloudTrail ログが元）",
+    "S3 のオブジェクト操作などのデータイベントはログの設定によって、生成結果に含まれないことがある",
+    "権限の絞り込みは本番を止めずに行う"
+  ],
+  "references": [
+    {
+      "title": "IAM Access Analyzer のポリシー生成 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

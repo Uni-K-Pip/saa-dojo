@@ -1,0 +1,72 @@
+{
+  "id": "saa-1.2-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S1",
+    "1.2-K3",
+    "1.2-S3"
+  ],
+  "services": [
+    "AWS Network Firewall",
+    "Amazon Virtual Private Cloud",
+    "NAT gateway",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "Network Firewall",
+    "FQDN フィルタリング",
+    "外向き通信の制御"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、VPC のプライベートサブネットで動く Amazon EC2 インスタンスから、特定の SaaS 事業者のドメイン（api.partner.example.com と *.updates.example.net）への HTTPS 通信だけをインターネット経由で許可し、それ以外の外向きの通信は、IP アドレスを直接指定した通信も含めてすべて遮断したいと考えています。宛先の IP アドレスは頻繁に変わります。ドメイン名で許可リストを管理できる、運用負荷の低い構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インスタンスのセキュリティグループのアウトバウンドルールに、許可したいドメイン名を指定する。",
+      "correct": false,
+      "rationale": "セキュリティグループのルールで指定できるのは、IP アドレスの範囲、プレフィックスリスト、セキュリティグループなどで、ドメイン名は指定できません。"
+    },
+    {
+      "id": "b",
+      "text": "サブネットのネットワーク ACL のアウトバウンドルールで、許可したいドメイン名を指定する。",
+      "correct": false,
+      "rationale": "ネットワーク ACL も IP アドレスの範囲とポートで制御するもので、ドメイン名は指定できません。宛先の IP アドレスが頻繁に変わる要件にも対応できません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Route 53 Resolver DNS Firewall で許可リスト以外のドメインの名前解決をブロックする。",
+      "correct": false,
+      "rationale": "DNS の名前解決は制御できますが、IP アドレスを直接指定した通信や、DNS を経由しない通信は止められません。外向きの通信をすべて遮断する要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Network Firewall をファイアウォール専用サブネットに配置し、プライベートサブネットからの通信がファイアウォールエンドポイントと NAT ゲートウェイを通るようルートを設定する。ドメインリストの許可ルールを持つステートフルルールグループを適用する。",
+      "correct": true,
+      "rationale": "Network Firewall のステートフルルールグループは、HTTP の Host ヘッダーや TLS の SNI を見てドメイン名で許可リストを管理できます。宛先の IP アドレスが変わっても、ルールを変更する必要がありません。"
+    }
+  ],
+  "explanation": "外向きの通信をドメイン名で制御するには、AWS Network Firewall のステートフルルールグループ（ドメインリスト）を使います。HTTP ヘッダーの Host や TLS の SNI を検査し、許可リストにあるドメインだけを通せます。\n\n構成としては、パブリックサブネットとは別にファイアウォール専用のサブネットを作ってエンドポイントを置き、プライベートサブネットのルートテーブルの既定ルートをファイアウォールエンドポイントへ向けます。ファイアウォール側のサブネットから NAT ゲートウェイを経由してインターネットゲートウェイへ出ます。\n\nセキュリティグループとネットワーク ACL は、どちらも IP アドレス単位の制御です。Route 53 Resolver DNS Firewall は名前解決の段階で制御するため、IP アドレスを直接使う通信は防げません。ドメイン名による許可リストと、許可リスト以外の完全な遮断を両立するには、Network Firewall が適しています。",
+  "keyPoints": [
+    "ドメイン名で外向き通信を許可・拒否 → Network Firewall のドメインリスト（SNI/Host 検査）",
+    "SG と NACL は IP・ポートでの制御でドメイン名は扱えない",
+    "DNS Firewall は名前解決の制御で、IP 直接の通信は止められない"
+  ],
+  "references": [
+    {
+      "title": "AWS Network Firewall とは - AWS Network Firewall デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

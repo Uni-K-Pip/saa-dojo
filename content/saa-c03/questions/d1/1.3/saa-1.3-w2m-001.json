@@ -1,0 +1,69 @@
+{
+  "id": "saa-1.3-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-K3",
+    "1.3-S6",
+    "1.3-K1"
+  ],
+  "services": [
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "S3 オブジェクトロック",
+    "コンプライアンスモード",
+    "WORM"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある証券会社は、顧客との通信記録を Amazon S3 に保存します。規制により、記録は 7 年間、変更も削除もできない状態で保持する必要があります。監査では、保持期間中は AWS アカウントのルートユーザーを含むどのユーザーも記録を削除できないことを示さなければなりません。この要件を満たす最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットポリシーで、すべてのプリンシパルに対する s3:DeleteObject を拒否する。",
+      "correct": false,
+      "rationale": "バケットポリシーは、権限のあるユーザーが変更または削除できます。ポリシーを外せば削除できるため、7 年間削除できないことを保証できません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 オブジェクトロックのガバナンスモードで保持期間を 7 年に設定し、s3:BypassGovernanceRetention の権限を管理者だけに付与する。",
+      "correct": false,
+      "rationale": "ガバナンスモードでは、s3:BypassGovernanceRetention の権限を持つユーザーが保持を解除して削除できます。誰も削除できないことを示す要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "バケットのバージョニングと MFA Delete を有効にして、削除には MFA を必須にする。",
+      "correct": false,
+      "rationale": "MFA Delete は、MFA を持つルートユーザーが削除できる仕組みです。誰も削除できないことを保証せず、変更もできない状態にもなりません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 オブジェクトロックを有効にしたバケットで、デフォルトの保持をコンプライアンスモード、保持期間 7 年に設定する。",
+      "correct": true,
+      "rationale": "コンプライアンスモードでは、保持期間中は、ルートユーザーを含むどのユーザーも、オブジェクトバージョンの上書きや削除、保持モードの変更、保持期間の短縮ができません。"
+    }
+  ],
+  "explanation": "S3 オブジェクトロックは、WORM（Write Once Read Many）モデルで、オブジェクトバージョンの削除や上書きを一定期間または無期限に防ぐ機能です。バージョニングが必要で、保持モードにはガバナンスモードとコンプライアンスモードがあります。\n\nガバナンスモードでは、特別な権限（s3:BypassGovernanceRetention）を持つユーザーが保持設定を解除できます。コンプライアンスモードでは、保持期間が終わるまで、ルートユーザーを含め誰もオブジェクトバージョンを削除できず、保持モードの変更や保持期間の短縮もできません。SEC 17a-4 などの規制で WORM が求められる場面に適しています。\n\nMFA Delete は誤削除への対策であり、権限のあるユーザーが削除できる点は変わりません。バケットポリシーによる拒否も、ポリシーの変更で外せるため同様です。",
+  "keyPoints": [
+    "誰も（ルートも）保持期間中に削除できない → S3 オブジェクトロックのコンプライアンスモード",
+    "ガバナンスモードは特別な権限を持つユーザーが解除できる",
+    "オブジェクトロックにはバージョニングが前提"
+  ],
+  "references": [
+    {
+      "title": "S3 オブジェクトロックを使用したオブジェクトのロック - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-backup-and-retention"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
