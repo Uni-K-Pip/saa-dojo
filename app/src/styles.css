@@ -746,10 +746,8 @@ details.filter[open] > summary {
 /* ---------- Markdown（レッスン・早見表） ---------- */
 .markdown table {
   border-collapse: collapse;
-  width: 100%;
+  min-width: 100%;
   font-size: 0.9rem;
-  display: block;
-  overflow-x: auto;
 }
 
 .markdown th,
@@ -811,6 +809,9 @@ details.filter[open] > summary {
   background: var(--warn-bg);
   border-color: var(--warn);
 }
+
+.callout.tip .callout-title::before { content: "💡" / ""; }
+.callout.trap .callout-title::before { content: "⚠" / ""; }
 
 .callout-title {
   font-weight: 700;

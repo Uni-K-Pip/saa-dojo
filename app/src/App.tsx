@@ -10,6 +10,11 @@ const PracticeSessionPage = lazy(() => import('./pages/PracticeSessionPage'));
 const MockPage = lazy(() => import('./pages/MockPage'));
 const MockSessionPage = lazy(() => import('./pages/MockSessionPage'));
 const MockResultPage = lazy(() => import('./pages/MockResultPage'));
+const BasicsPage = lazy(() => import('./pages/BasicsPage'));
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const LessonPage = lazy(() => import('./pages/LessonPage'));
+const ReviewPage = lazy(() => import('./pages/ReviewPage'));
+const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -32,6 +37,11 @@ export function AppRoutes() {
         <Route path="mock" element={<MockPage />} />
         <Route path="mock/session/:id" element={<MockSessionPage />} />
         <Route path="mock/result/:id" element={<MockResultPage />} />
+        <Route path="basics" element={<BasicsPage />} />
+        <Route path="roadmap" element={<RoadmapPage />} />
+        <Route path="lessons/:id" element={<LessonPage />} />
+        <Route path="review" element={<ReviewPage />} />
+        <Route path="flashcards" element={<FlashcardsPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
         <Route path="*" element={<NotFoundPage />} />
