@@ -1,0 +1,82 @@
+{
+  "id": "saa-1.2-w2m-012",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S3",
+    "1.2-S1",
+    "1.2-K4"
+  ],
+  "services": [
+    "Amazon CloudFront",
+    "Elastic Load Balancing",
+    "Amazon Virtual Private Cloud",
+    "AWS WAF"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "CloudFront 経由のみ",
+    "マネージドプレフィックスリスト",
+    "カスタムヘッダー"
+  ],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、Amazon CloudFront のディストリビューション（AWS WAF 付き）を前面に置き、パブリックサブネットの Application Load Balancer をオリジンにしています。ALB はパブリックサブネットに置いたままにします。利用者が ALB のドメイン名に直接アクセスして WAF を回避することを防ぎ、すべてのリクエストを CloudFront 経由にしたいと考えています。セキュリティグループの IP アドレス範囲の管理は、手作業を避けたいと考えています。この要件を満たす方法を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ALB のリスナーを HTTP に変更し、CloudFront のオリジンプロトコルポリシーを HTTP のみにして、通信を CloudFront と ALB の間に限定する。",
+      "correct": false,
+      "rationale": "通信が暗号化されなくなる上、HTTP のリスナーに直接アクセスされることを防げません。直接のアクセスを遮断する効果がありません。"
+    },
+    {
+      "id": "b",
+      "text": "ALB のセキュリティグループのインバウンドを、0.0.0.0/0 に許可し、保護は WAF だけに任せる。",
+      "correct": false,
+      "rationale": "WAF は CloudFront に関連付けられています。ALB に直接アクセスされると、WAF を回避できてしまいます。"
+    },
+    {
+      "id": "c",
+      "text": "ALB のセキュリティグループのインバウンドの送信元に、CloudFront の AWS マネージドプレフィックスリストを指定して許可する。",
+      "correct": true,
+      "rationale": "マネージドプレフィックスリストは、CloudFront のオリジンに接続する IP アドレスの範囲を、AWS が自動で更新します。手作業で IP アドレス範囲を管理する必要がありません。"
+    },
+    {
+      "id": "d",
+      "text": "ALB のネットワーク ACL で、ブラウザーの User-Agent が CloudFront のものでないリクエストを拒否する。",
+      "correct": false,
+      "rationale": "ネットワーク ACL は、IP アドレスとポートで制御します。HTTP のヘッダーは検査できません。User-Agent は偽装も容易です。"
+    },
+    {
+      "id": "e",
+      "text": "CloudFront のオリジンにカスタムヘッダーを設定して秘密の値を付け、ALB のリスナールールで、その値が一致するリクエストだけを転送する。",
+      "correct": true,
+      "rationale": "CloudFront は、その値を付けてオリジンにリクエストを送ります。ALB が値を検証することで、CloudFront の IP アドレス範囲を使った別の AWS 利用者のディストリビューションなどからの直接のアクセスも拒否できます。"
+    }
+  ],
+  "explanation": "CloudFront の背後のオリジンを、CloudFront 経由のアクセスだけに限定するには、2つの層で制御します。\n\n(1) ネットワーク層: ALB のセキュリティグループで、CloudFront のオリジンに接続する IP アドレス範囲を送信元に許可します。AWS のマネージドプレフィックスリスト（com.amazonaws.global.cloudfront.origin-facing）を指定すると、範囲の更新を AWS が行うため、手作業の管理が不要です。\n\n(2) アプリケーション層: CloudFront のオリジンのカスタムヘッダー（秘密の値）を設定し、ALB のリスナールールで、その値を持つリクエストだけを転送します。プレフィックスリストは CloudFront 全体の範囲を指すため、他のアカウントの CloudFront のディストリビューションからのアクセスも通ってしまいますが、秘密のヘッダーの検証で防げます。\n\nなお、CloudFront の VPC オリジンを使って ALB をプライベートにする方法もありますが、この問題では ALB をパブリックのまま使います。",
+  "keyPoints": [
+    "オリジンを CloudFront 経由のみに制限 → CloudFront のマネージドプレフィックスリスト（SG）＋カスタムヘッダーの検証（ALB）",
+    "プレフィックスリストは、AWS が IP アドレス範囲を自動更新する",
+    "WAF を回避する直接アクセスは、オリジン側で遮断する"
+  ],
+  "references": [
+    {
+      "title": "AWS マネージドプレフィックスリストを使って CloudFront からのアクセスを制限する - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html"
+    },
+    {
+      "title": "カスタムヘッダーをオリジンへ転送する",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

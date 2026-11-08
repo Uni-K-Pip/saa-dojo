@@ -1,0 +1,73 @@
+{
+  "id": "saa-4.3-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": [
+    "4.3-K9",
+    "4.3-S3",
+    "4.3-K4"
+  ],
+  "services": [
+    "Amazon Relational Database Service",
+    "Amazon EventBridge",
+    "AWS Lambda"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "RDS の停止",
+    "開発環境",
+    "スケジュール"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の開発チームは、Amazon RDS for MySQL の開発用の DB インスタンス 10 台を、平日の日中（9 時〜19 時）だけ使っています。夜間と週末は誰も使いませんが、24 時間分の DB インスタンスの料金がかかっています。データは保持したままで、使わない時間のインスタンスの料金を減らしたいと考えています。運用の手間はできるだけ抑えたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インスタンスクラスを 1 つ小さくして、24 時間稼働のまま、料金を下げる。",
+      "correct": false,
+      "rationale": "夜間や週末の使われていない時間にも料金がかかり続けます。サイズを小さくすると、日中の性能が不足する可能性もあります。"
+    },
+    {
+      "id": "b",
+      "text": "リザーブド DB インスタンスを 1 年間で購入して、使わない時間も含めて割引を受ける。",
+      "correct": false,
+      "rationale": "リザーブドは、24 時間分のコミットメントに対する割引で、使わない夜間や週末の料金もかかります。使わない時間の料金を減らす要件に合いません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EventBridge Scheduler で、夜間に DB インスタンスの停止、朝に起動を行うスケジュールを作成する。",
+      "correct": true,
+      "rationale": "RDS は DB インスタンスを一時的に停止でき、停止中はインスタンスの料金がかかりません（ストレージとバックアップの料金は課金）。スケジュールで自動化すれば、運用の手間も抑えられます。"
+    },
+    {
+      "id": "d",
+      "text": "毎晩、スナップショットを取って DB インスタンスを削除し、朝にスナップショットから復元する。",
+      "correct": false,
+      "rationale": "毎日の削除と復元に時間がかかり、接続先のエンドポイントなどの再設定も必要です。運用の手間が大きく、復元の失敗のリスクもあります。"
+    }
+  ],
+  "explanation": "Amazon RDS の DB インスタンスは、一時的に停止できます。停止している間は、DB インスタンスの時間料金がかからず、ストレージ、プロビジョンド IOPS、バックアップのストレージには引き続き料金がかかります。停止できる期間は最大 7 日間で、7 日を過ぎると自動的に再起動されます。この問題の夜間や週末の停止は、この範囲に収まります。Multi-AZ の構成でも停止できます（SQL Server の Multi-AZ など一部の構成を除く）。\n\n停止と起動の自動化には、EventBridge Scheduler から RDS の StopDBInstance と StartDBInstance API を呼び出すか、AWS Systems Manager Automation、AWS Instance Scheduler を使います。サーバーの管理は不要です。\n\nスナップショットの削除と復元は手間がかかります。リザーブドは継続利用向けで、使わない時間の費用を減らしません。サイズを小さくすると、性能が不足する可能性があります。",
+  "keyPoints": [
+    "開発・テスト環境の RDS は使わない時間に停止して、インスタンス料金を削減（EventBridge Scheduler などで自動化）",
+    "停止中もストレージとバックアップの料金はかかる。停止は最大 7 日で自動再起動",
+    "常時稼働の割引（リザーブド）は、停止して使わない用途には合わない"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS DB インスタンスを一時的に停止する - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html"
+    },
+    {
+      "title": "Amazon EventBridge Scheduler とは",
+      "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

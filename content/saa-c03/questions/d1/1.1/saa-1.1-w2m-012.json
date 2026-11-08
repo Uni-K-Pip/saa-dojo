@@ -1,0 +1,76 @@
+{
+  "id": "saa-1.1-w2m-012",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S3",
+    "1.1-S2",
+    "1.1-K4"
+  ],
+  "services": [
+    "Amazon Elastic Kubernetes Service",
+    "AWS Identity and Access Management",
+    "Amazon Simple Storage Service",
+    "Amazon DynamoDB"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "EKS Pod Identity",
+    "IRSA",
+    "Pod ごとの最小権限"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon EKS のクラスターで動く複数のアプリケーションの Pod が、Amazon S3 や Amazon DynamoDB にアクセスします。現在は、ノードの EC2 インスタンスプロファイルに権限を付けているため、同じノードのすべての Pod が同じ権限を持ってしまいます。Pod のサービスアカウントごとに、必要最小限の権限だけを付与したいと考えています。長期のアクセスキーは使いません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アプリケーションごとに IAM ユーザーのアクセスキーを作成し、Kubernetes の Secret に保存して Pod に渡す。",
+      "correct": false,
+      "rationale": "長期のアクセスキーを使うため、要件に反します。漏えいのリスクと、ローテーションの運用の手間もあります。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションごとに専用のノードグループを作成し、アプリケーションに必要な権限を持つインスタンスプロファイルを、それぞれのノードグループに付ける。",
+      "correct": false,
+      "rationale": "ノードグループの数が増えて運用が複雑になり、同じノードグループの Pod は、権限を共有します。Pod 単位の最小権限にはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "Pod からノードのインスタンスメタデータサービスにアクセスさせ、ノードのロールの一時的な認証情報を取得させる。",
+      "correct": false,
+      "rationale": "現在の問題そのものです。ノードのロールの権限をすべての Pod が使えてしまい、Pod ごとの最小権限になりません。"
+    },
+    {
+      "id": "d",
+      "text": "EKS Pod Identity（または IAM roles for service accounts）を使い、サービスアカウントごとに IAM ロールを関連付ける。ノードのロールからは、アプリケーション用の権限を外す。",
+      "correct": true,
+      "rationale": "Pod Identity や IRSA は、Kubernetes のサービスアカウントに IAM ロールを関連付けて、Pod に一時的な認証情報を渡します。Pod ごとに最小権限を実現でき、ノードのロールに依存しません。"
+    }
+  ],
+  "explanation": "EKS のノードの IAM ロールを Pod が共有すると、同じノードのすべての Pod が同じ権限を持ち、最小権限の原則に反します。Pod ごとに権限を分けるには、サービスアカウントに IAM ロールを関連付けます。\n\nEKS Pod Identity は、EKS が提供する仕組みで、サービスアカウントと IAM ロールの関連付けを EKS の API で管理します。Pod にエージェント経由で一時的な認証情報が渡されます。従来から使われている IAM roles for service accounts（IRSA）は、クラスターの OIDC ID プロバイダーを IAM に登録して、ロールの信頼ポリシーでサービスアカウントを指定する方式で、AssumeRoleWithWebIdentity を使います。どちらも、長期のアクセスキーが不要です。\n\nノードグループを分ける方法は、Pod 単位の分離にならず、運用も増えます。アクセスキーの利用は長期の認証情報です。",
+  "keyPoints": [
+    "Pod ごとの最小権限・長期キーなし → EKS Pod Identity または IRSA（サービスアカウントに IAM ロールを関連付け）",
+    "ノードのロールは、ノード上のすべての Pod が共有してしまう",
+    "ワークロードには一時的な認証情報を使う"
+  ],
+  "references": [
+    {
+      "title": "EKS Pod Identity - Amazon EKS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html"
+    },
+    {
+      "title": "サービスアカウントの IAM ロール - Amazon EKS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

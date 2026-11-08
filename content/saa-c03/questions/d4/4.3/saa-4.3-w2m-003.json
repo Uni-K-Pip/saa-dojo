@@ -1,0 +1,70 @@
+{
+  "id": "saa-4.3-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": [
+    "4.3-S1",
+    "4.3-K4",
+    "4.3-K2"
+  ],
+  "services": [
+    "Amazon Relational Database Service",
+    "Amazon Simple Storage Service",
+    "Amazon Athena",
+    "AWS Glue"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "RDS スナップショットのエクスポート",
+    "Parquet",
+    "長期保存"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon RDS for MySQL の本番 DB の月次の手動スナップショットを、法令に対応するために 7 年間保持しています。スナップショットが増えて、ストレージの料金が大きくなっています。これらのスナップショットから DB を復元することはほとんどありませんが、将来、過去のデータを SQL で分析できる状態は残す必要があります。費用を下げながら、この要件を満たす最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべてのスナップショットを別のリージョンにもコピーして、リージョンの障害に備える。",
+      "correct": false,
+      "rationale": "スナップショットのストレージが増え、料金も増えます。費用を下げる要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "自動バックアップの保持期間を最大に設定して、スナップショットの代わりに、自動バックアップで 7 年間保持する。",
+      "correct": false,
+      "rationale": "自動バックアップの保持期間は、最大 35 日です。7 年間は保持できず、手動スナップショットの代わりにはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "スナップショットを Amazon S3 に Parquet 形式でエクスポートし、S3 のライフサイクルで低コストのストレージクラスに移す。元のスナップショットを削除して、必要なときに Amazon Athena でクエリする。",
+      "correct": true,
+      "rationale": "スナップショットのエクスポートは、データを Apache Parquet 形式で S3 に出力します。S3 の低コストのクラスに保存し、Athena で SQL を使って分析できるため、費用を下げつつ、分析の要件を満たせます。"
+    },
+    {
+      "id": "d",
+      "text": "スナップショットを毎月作成する頻度を、毎週に増やして、復元できる時点を細かくする。",
+      "correct": false,
+      "rationale": "スナップショットの数が増えて、ストレージの料金も増えます。費用を下げる要件に反し、分析のための参照にも役立ちません。"
+    }
+  ],
+  "explanation": "RDS の手動スナップショットは、削除するまで保持されますが、DB インスタンスの一部としてのデータの量に応じたストレージ料金がかかり続けます。復元することがほとんどなく、分析のために参照できればよいデータには、スナップショットのエクスポート機能が向いています。\n\nRDS のスナップショットを S3 にエクスポートすると、データが Apache Parquet 形式で S3 に書き出されます。Parquet は列指向で圧縮効率が高く、Amazon Athena から直接 SQL でクエリでき、AWS Glue のデータカタログと組み合わせると分析も簡単です。S3 では、ライフサイクルで S3 Glacier Instant Retrieval などの低コストのクラスに移せるので、長期保存の費用を下げられます。エクスポートしたあとは、元のスナップショットを削除できます。\n\n自動バックアップの保持期間の上限は 35 日です。コピーや頻度を増やす方法は、費用を増やします。",
+  "keyPoints": [
+    "復元は不要で分析だけしたい長期保存のスナップショット → S3 に Parquet でエクスポート＋Athena",
+    "自動バックアップの保持期間の上限は 35 日。長期保存は手動スナップショットか AWS Backup",
+    "S3 のライフサイクルで低コストのクラスに移して費用を下げる"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 への DB スナップショットデータのエクスポート - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

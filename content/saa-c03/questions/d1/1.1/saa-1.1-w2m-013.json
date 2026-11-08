@@ -1,0 +1,69 @@
+{
+  "id": "saa-1.1-w2m-013",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S3",
+    "1.1-K2"
+  ],
+  "services": [
+    "AWS Identity and Access Management",
+    "AWS Security Token Service (AWS STS)"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "OIDC ID プロバイダー",
+    "GitHub Actions",
+    "AssumeRoleWithWebIdentity"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、GitHub Actions のワークフローから AWS にアプリケーションをデプロイしています。現在は、IAM ユーザーのアクセスキーを GitHub のシークレットに保存しています。長期の認証情報をなくして、特定のリポジトリの特定のブランチのワークフローだけが、デプロイ用の IAM ロールを使えるようにしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Cognito ID プールで未認証のアイデンティティを許可し、デプロイ用ロールを割り当てる。",
+      "correct": false,
+      "rationale": "未認証のアイデンティティは、誰にでも一時的な認証情報を渡すことになります。特定のリポジトリとブランチに限定する要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "IAM に GitHub の OIDC ID プロバイダーを登録し、デプロイ用ロールの信頼ポリシーで、リポジトリとブランチを指定する条件を付ける。ワークフローが一時的な認証情報を取得する。",
+      "correct": true,
+      "rationale": "OIDC フェデレーションで、GitHub が発行するトークンを使って、IAM ロールを引き受けられます。信頼ポリシーの条件で、リポジトリとブランチを限定でき、長期のアクセスキーが不要です。"
+    },
+    {
+      "id": "c",
+      "text": "アクセスキーを 90 日ごとにローテーションし、新しいキーを GitHub のシークレットに自動で登録し直すスクリプトを作る。",
+      "correct": false,
+      "rationale": "ローテーションしても、IAM ユーザーの長期の認証情報であることは変わりません。長期の認証情報をなくす要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "IAM ユーザーに MFA を設定して、ワークフローの実行時に、担当者が MFA コードを入力して認証する。",
+      "correct": false,
+      "rationale": "自動化されたワークフローで、MFA コードの人手による入力を前提にすると、デプロイの自動化が成り立ちません。長期のアクセスキーも残ります。"
+    }
+  ],
+  "explanation": "GitHub Actions のようなサードパーティの CI/CD のサービスが AWS にアクセスするときは、OIDC フェデレーションを使うと、長期のアクセスキーを保存せずに済みます。\n\n手順は次のとおりです。(1) IAM に OIDC ID プロバイダー（GitHub の場合は token.actions.githubusercontent.com）を登録する。(2) デプロイ用の IAM ロールを作成し、信頼ポリシーで、そのプロバイダーを Principal にして、sts:AssumeRoleWithWebIdentity を許可する。(3) 信頼ポリシーの Condition で、トークンの sub（リポジトリ、ブランチ、環境など）と aud を指定して、使えるワークフローを限定する。(4) ワークフローが、トークンを使ってロールを引き受け、一時的な認証情報を取得する。\n\nキーのローテーションは長期の認証情報の管理を楽にするだけです。MFA は人の操作を前提にします。未認証のアクセスは、誰でも使えるためセキュリティ上、不適切です。",
+  "keyPoints": [
+    "CI/CD から AWS へ長期キーなしでアクセス → IAM の OIDC ID プロバイダー＋ロールの信頼ポリシーの条件（sub）",
+    "限定は信頼ポリシーの Condition（リポジトリ／ブランチ）で行う",
+    "自動化には人の操作を前提とする認証は使えない"
+  ],
+  "references": [
+    {
+      "title": "OpenID Connect (OIDC) ID プロバイダーの作成 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
