@@ -18,19 +18,19 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "あるオンラインゲーム会社は、Amazon CloudFront と Application Load Balancer（ALB）を使ってゲームのポータルサイトを公開しており、AWS のエンタープライズサポートプランを契約しています。新作の発売日に大規模な DDoS 攻撃を受け、攻撃によるトラフィックの急増で利用料金も大きく増えました。今後は、攻撃を受けている間に AWS の DDoS 対応の専門チームの支援を受けられるようにし、DDoS 攻撃が原因で増えた料金を補填する仕組みも利用したいと考えています。さらに、HTTP リクエストのフラッド攻撃は自動で検出して緩和する必要があります。これらの要件を満たす方法はどれですか。",
+  "stem": "あるオンラインゲーム会社は、Amazon CloudFront と Application Load Balancer（ALB）を使ってゲームのポータルサイトを公開しており、AWS Enterprise Support を契約しています。新作の発売日に大規模な DDoS 攻撃を受け、攻撃によるトラフィックの急増で利用料金も大きく増えました。今後は、攻撃を受けている間に AWS の DDoS 対応の専門チームの支援を受けられるようにし、DDoS 攻撃が原因で増えた料金を補填する仕組みも利用したいと考えています。さらに、HTTP リクエストのフラッド攻撃は自動で検出して緩和する必要があります。これらの要件を満たす方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "追加料金なしの AWS Shield Standard がすべての AWS のお客様に自動で適用されていることを確認したうえで、CloudFront と ALB に関連付けた AWS WAF のウェブ ACL に、Anti-DDoS マネージドルールグループを追加する。",
+      "text": "追加料金なしの AWS Shield Standard がすべての AWS のお客様に自動で適用されていることを確認したうえで、CloudFront と ALB にそれぞれ関連付けた別々の AWS WAF ウェブ ACL に、Anti-DDoS マネージドルールグループを追加する。",
       "correct": false,
       "rationale": "Anti-DDoS マネージドルールグループで HTTP リクエストのフラッド攻撃は自動で緩和できますが、DDoS 対応の専門チーム（SRT）の支援や、DDoS 攻撃による料金の増加の補填は AWS Shield Advanced の機能で、Shield Standard では受けられません。"
     },
     {
       "id": "b",
-      "text": "AWS Shield Advanced をサブスクライブして CloudFront と ALB を保護対象に追加し、両方に関連付けた AWS WAF のウェブ ACL に Anti-DDoS マネージドルールグループを追加する。",
+      "text": "AWS Shield Advanced をサブスクライブして CloudFront と ALB を保護対象に追加し、CloudFront と ALB にそれぞれ関連付けた別々の AWS WAF ウェブ ACL に Anti-DDoS マネージドルールグループを追加する。",
       "correct": true,
-      "rationale": "Shield Advanced は保護対象リソースについて、Shield Response Team（SRT）の支援と、DDoS 攻撃による料金の急増に対するサービスクレジットでの補填を提供します。HTTP リクエストのフラッド攻撃は、AWS WAF の Anti-DDoS マネージドルールグループが自動で検出・緩和します。SRT の利用に必要なサポートプランも契約済みです。"
+      "rationale": "Shield Advanced は保護対象リソースについて、Shield Response Team（SRT）の支援と、DDoS 攻撃による料金の急増について、申請して適格条件を満たした場合のサービスクレジットでの補填を提供します。HTTP リクエストのフラッド攻撃は、AWS WAF の Anti-DDoS マネージドルールグループが自動で検出・緩和します。SRT の利用に必要な AWS Support プラン（AWS Enterprise Support）も契約済みです。"
     },
     {
       "id": "c",
@@ -45,7 +45,7 @@
       "rationale": "GuardDuty は脅威を検出するサービスで、DDoS 攻撃の緩和や専門チームの支援、料金の補填は行いません。セキュリティグループには拒否ルールもないため、攻撃元を遮断する仕組みとしても不適切です。"
     }
   ],
-  "explanation": "AWS Shield には 2 つのレベルがあります。AWS Shield Standard は、すべての AWS のお客様に追加料金なしで自動的に適用され、ネットワーク層やトランスポート層の一般的な DDoS 攻撃を緩和します。AWS Shield Advanced は有料のサブスクリプションで、保護対象として登録したリソース（Amazon CloudFront ディストリビューション、Amazon Route 53 のホストゾーン、AWS Global Accelerator、Application Load Balancer、Elastic IP アドレスなど）に対して、次のような機能を追加します。\n\n・Shield Response Team（SRT）の支援: DDoS 攻撃への対応に詳しいチームが緩和を支援します。利用にはビジネスサポートかエンタープライズサポートの契約が必要です。\n・コスト保護: DDoS 攻撃が原因で保護対象リソースの利用料金が急増した場合に、サービスクレジットで補填を受けられる場合があります。\n・保護対象リソースでの標準的な AWS WAF の料金が、サブスクリプションに含まれます。\n\nHTTP リクエストのフラッド攻撃のようなアプリケーション層の DDoS 攻撃には、AWS WAF のウェブ ACL で対策します。2026 年 3 月 26 日からは、AWS WAF の Anti-DDoS マネージドルールグループが HTTP フラッド対策の標準の方法になり、Shield Advanced の従来のアプリケーション層の自動緩和機能に代わりました。このルールグループは攻撃を数秒で検出して緩和します。\n\nこの問題の「専門チームの支援」「料金の補填」は Shield Advanced にしかない機能です。AWS WAF だけ、または検出サービスや VPC 内のファイアウォールでは満たせません。",
+  "explanation": "AWS Shield には 2 つのレベルがあります。AWS Shield Standard は、すべての AWS のお客様に追加料金なしで自動的に適用され、ネットワーク層やトランスポート層の一般的な DDoS 攻撃を緩和します。AWS Shield Advanced は有料のサブスクリプションで、保護対象として登録したリソース（Amazon CloudFront ディストリビューション、Amazon Route 53 のホストゾーン、AWS Global Accelerator、Application Load Balancer、Elastic IP アドレスなど）に対して、次のような機能を追加します。\n\n・Shield Response Team（SRT）の支援: DDoS 攻撃への対応に詳しいチームが緩和を支援します。利用には AWS Enterprise Support など、SRT の利用対象となる AWS Support プランの契約が必要です。\n・コスト保護: DDoS 攻撃が原因で保護対象リソースの利用料金が急増した場合に、申請し、適格条件を満たした場合にサービスクレジットを受けられます。\n・保護対象リソースでの標準的な AWS WAF の料金が、サブスクリプションに含まれます。\n\nHTTP リクエストのフラッド攻撃のようなアプリケーション層の DDoS 攻撃には、AWS WAF のウェブ ACL で対策します。2026 年 3 月 26 日からは、AWS WAF の Anti-DDoS マネージドルールグループが HTTP フラッド対策の標準の方法になり、Shield Advanced の従来のアプリケーション層の自動緩和機能に代わる標準の推奨方式になりました。ただし、既存の顧客は従来の機能を継続して利用できます。このルールグループは攻撃を数秒で検出して緩和します。なお、CloudFront 用のウェブ ACL と、ALB などリージョナルリソース用のウェブ ACL は別に作成する必要があります。\n\nこの問題の「専門チームの支援」「料金の補填」は Shield Advanced にしかない機能です。AWS WAF だけ、または検出サービスや VPC 内のファイアウォールでは満たせません。",
   "keyPoints": [
     "「DDoS 対応チーム（SRT）の支援」「DDoS による料金増加の補填」→ AWS Shield Advanced",
     "Shield Standard は全アカウントに自動・無料で適用され、L3/L4 の一般的な DDoS を緩和する",
