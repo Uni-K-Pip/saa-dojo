@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.2-w2m-009",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S4",
+    "1.2-K4"
+  ],
+  "services": [
+    "AWS Client VPN",
+    "AWS Directory Service",
+    "Amazon Virtual Private Cloud",
+    "Amazon Relational Database Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Client VPN",
+    "リモートアクセス",
+    "Active Directory 認証"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、在宅勤務の従業員が VPC のプライベートサブネットにある社内の Web アプリケーションと Amazon RDS に安全に接続できるようにしたいと考えています。従業員の認証は、既存の AWS Managed Microsoft AD のアカウントで行い、接続できるサブネットは部署ごとに制御します。通信はインターネット上で暗号化し、VPN 装置の購入や、VPN サーバーの運用は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Site-to-Site VPN 接続を作成して、従業員の自宅のルーターごとにカスタマーゲートウェイを登録する。",
+      "correct": false,
+      "rationale": "Site-to-Site VPN は、拠点のネットワークと VPC を結ぶためのもので、従業員の端末を個別に接続する用途には向きません。AD の認証やグループごとの制御もできません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EC2 インスタンスに OpenVPN サーバーを構築し、AD と連携させて従業員を接続する。",
+      "correct": false,
+      "rationale": "実現はできますが、VPN サーバーの構築、パッチの適用、冗長化を自分たちで行います。VPN サーバーの運用を避けたい要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "アプリケーションを、パブリックサブネットの Application Load Balancer で公開して、従業員の自宅の IP アドレスだけを許可する。",
+      "correct": false,
+      "rationale": "自宅の IP アドレスは固定ではなく、変更のたびにルールの更新が必要です。RDS には接続できず、アプリケーションをインターネットに公開することにもなります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Client VPN エンドポイントを VPC に作成し、AWS Managed Microsoft AD による認証を設定する。承認ルールで、部署のグループごとに接続を許可するネットワークを制御する。",
+      "correct": true,
+      "rationale": "Client VPN は、従業員の端末から VPC への接続を提供するマネージドな VPN サービスです。Active Directory 認証と承認ルールで、グループごとにアクセスできるネットワークを制御でき、サーバーの運用も不要です。"
+    }
+  ],
+  "explanation": "AWS Client VPN は、OpenVPN ベースのクライアントを使って、リモートの従業員が AWS やオンプレミスのリソースに安全に接続できるマネージドな VPN サービスです。クライアントの VPN エンドポイントを VPC のサブネットに関連付けて、ネットワークインターフェイスを経由して VPC に接続させます。サーバーの構築や拡張は不要です。\n\n認証には、Active Directory（AWS Managed Microsoft AD や AD Connector）、相互認証（証明書）、SAML ベースのフェデレーション認証を使えます。承認ルールにより、AD のグループごとに、アクセスできる宛先のネットワーク（CIDR）を制御できます。\n\nSite-to-Site VPN は、拠点のルーターなどと VPC を結ぶ用途です。EC2 に VPN サーバーを自前で構築すると運用の負荷が増え、インターネット向けに公開する方法は、プライベートリソースへのアクセスに適しません。",
+  "keyPoints": [
+    "リモートワーカーが VPC に接続 → AWS Client VPN（AD・証明書・SAML 認証、承認ルール）",
+    "拠点と VPC を結ぶのは Site-to-Site VPN",
+    "VPN サーバーの運用を避けたい → マネージドな Client VPN"
+  ],
+  "references": [
+    {
+      "title": "AWS Client VPN とは - AWS Client VPN 管理者ガイド",
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-private-connectivity"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

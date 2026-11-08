@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.1-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K3",
+    "2.1-K15",
+    "2.1-S6"
+  ],
+  "services": [
+    "Amazon ElastiCache"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "ElastiCache",
+    "Redis OSS",
+    "ソート済みセット",
+    "自動フェイルオーバー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるゲームのバックエンドは、プレイヤーのセッションデータとリアルタイムのランキングを Amazon ElastiCache に保存します。ランキングは、スコアで並べ替えて上位のプレイヤーを取得する処理が中心です。ノードに障害が起きても、データを失わずに自動でフェイルオーバーできる必要があります。最も適切なエンジンと構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon DynamoDB Accelerator（DAX）のクラスターを作成し、ランキングのデータを保存する。",
+      "correct": false,
+      "rationale": "DAX は DynamoDB 専用のインメモリキャッシュで、任意のデータを保存するものではありません。ソート済みセットのような機能もありません。"
+    },
+    {
+      "id": "b",
+      "text": "Redis OSS エンジンの単一ノードを、大きなインスタンスタイプで作成する。",
+      "correct": false,
+      "rationale": "レプリカがなく、ノードに障害が起きるとデータを失い、自動でフェイルオーバーもできません。可用性の要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Redis OSS（または互換の Valkey）エンジンを使い、プライマリノードと、別の AZ にレプリカノードを置いた構成で、Multi-AZ と自動フェイルオーバーを有効にする。ランキングにはソート済みセットを使う。",
+      "correct": true,
+      "rationale": "Redis OSS のソート済みセットは、スコア順の取得に適しています。レプリカと自動フェイルオーバーにより、ノード障害時にもデータを保持したままフェイルオーバーできます。"
+    },
+    {
+      "id": "d",
+      "text": "Memcached エンジンで複数のノードを作成し、キーをノード間で分散して保存する。",
+      "correct": false,
+      "rationale": "Memcached はノード間の複製や自動フェイルオーバーがなく、ノードが失われるとそのデータも失われます。スコア順に取得するデータ構造もありません。"
+    }
+  ],
+  "explanation": "Amazon ElastiCache には、Redis OSS（互換の Valkey を含む）と Memcached の2種類のエンジンがあります。\n\nRedis OSS は、ソート済みセット、リスト、ハッシュなどのデータ構造を持ち、リアルタイムのランキングやセッションストアに向いています。レプリケーション、Multi-AZ、自動フェイルオーバー、永続化（スナップショット）にも対応します。Memcached は、シンプルなキーバリューのキャッシュで、複数のスレッドを使った高いスループットとノード間のシャーディングが特徴ですが、複製や自動フェイルオーバー、永続化は備えていません。\n\nノード障害に備える場合は、別の AZ にレプリカを置き、Multi-AZ と自動フェイルオーバーを有効にします。DAX は DynamoDB 専用のキャッシュで、他のデータを保存する目的には使えません。",
+  "keyPoints": [
+    "ランキング・セッション・複製・自動フェイルオーバー → ElastiCache の Redis OSS（Valkey）",
+    "Memcached は複製・永続化なしのシンプルなキャッシュ",
+    "DAX は DynamoDB 専用"
+  ],
+  "references": [
+    {
+      "title": "Amazon ElastiCache とは - Amazon ElastiCache ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+    },
+    {
+      "title": "Redis OSS の Multi-AZ と自動フェイルオーバー",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/AutoFailover.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
