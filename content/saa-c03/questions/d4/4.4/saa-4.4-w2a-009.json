@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-009",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K7", "4.4-K3"],
+  "services": ["Amazon Route 53", "Elastic Load Balancing"],
+  "qualifier": "cost",
+  "tags": ["Route 53", "エイリアスレコード", "ゾーンの頂点", "CNAME"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Route 53 のパブリックホストゾーンで example.com を管理しています。ゾーンの頂点（example.com）へのアクセスを、Application Load Balancer に向けたいと考えています。ALB の DNS 名は変更される可能性があり、DNS の問い合わせ料金もできるだけ抑えたいと考えています。最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "example.com に、ALB の DNS 名を値とする CNAME レコードを作成する。",
+      "correct": false,
+      "rationale": "DNS の仕様上、ゾーンの頂点には CNAME レコードを作成できません。また、CNAME レコードへの問い合わせには通常の料金がかかります。"
+    },
+    {
+      "id": "b",
+      "text": "example.com に、ALB の IP アドレスを値とする A レコードを作成する。",
+      "correct": false,
+      "rationale": "ALB の IP アドレスは固定ではなく、変更されることがあります。手動で更新し続ける運用が必要になり、変更を追従できません。"
+    },
+    {
+      "id": "c",
+      "text": "example.com に、ALB を対象とするエイリアスレコードを作成する。",
+      "correct": true,
+      "rationale": "エイリアスレコードはゾーンの頂点にも作成でき、ALB の DNS 名が指す IP アドレスの変更に自動で追従します。AWS のリソース（ALB、CloudFront など）を対象とするエイリアスレコードへの問い合わせは、Route 53 では無料です。"
+    },
+    {
+      "id": "d",
+      "text": "example.com に、ALB の DNS 名を TXT レコードで登録する。",
+      "correct": false,
+      "rationale": "TXT レコードは、ドメインの所有確認などのテキスト情報用で、アクセスの転送には使えません。"
+    }
+  ],
+  "explanation": "Route 53 のレコードには、通常のレコードに加えて、Route 53 独自のエイリアスレコードがあります。\n\n・CNAME レコード: ある名前を別の名前に対応付ける。DNS の仕様上、ゾーンの頂点には作成できない。問い合わせには通常の料金がかかる。\n・エイリアスレコード: ALB、CloudFront ディストリビューション、S3 のウェブサイトエンドポイント、API Gateway など、AWS のリソースを対象にできる。ゾーンの頂点にも作成できる。AWS のリソースを対象とする問い合わせは無料で、リソース側の IP アドレスの変更にも自動で追従する。ヘルスチェックの結果を評価する設定もできる。\n\nAWS のリソースへ向ける場合は、エイリアスレコードが基本です。ゾーンの頂点への設定や、問い合わせ料金の削減が必要なときの定番の答えになります。",
+  "keyPoints": [
+    "ゾーンの頂点（example.com）を ALB や CloudFront に向ける → エイリアスレコード（CNAME は不可）",
+    "AWS のリソースを対象とするエイリアスレコードへの問い合わせは無料",
+    "ALB や CloudFront の IP アドレスは変わるので、A レコードで固定しない"
+  ],
+  "references": [
+    {
+      "title": "Choosing between alias and non-alias records - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"
+    },
+    {
+      "title": "Amazon Route 53 pricing",
+      "url": "https://aws.amazon.com/route53/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

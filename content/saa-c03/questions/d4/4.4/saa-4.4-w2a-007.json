@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-S4", "4.4-K7"],
+  "services": ["Amazon CloudFront", "Amazon Simple Storage Service"],
+  "qualifier": "cost",
+  "tags": ["Amazon CloudFront", "CDN", "エッジキャッシュ", "データ転送料金"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画配信サービスは、画像と動画ファイルを Amazon S3 のバケットから、世界中の利用者へ直接配信しています。人気のあるコンテンツには同じファイルへのアクセスが集中しており、S3 からのデータ転送料金とリクエスト料金が大きくなっています。遠方の利用者の表示も遅いことが課題です。コストと表示速度の両方を改善する、最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudFront ディストリビューションを作成し、S3 バケットをオリジンにして、そのドメインから配信する。",
+      "correct": true,
+      "rationale": "CloudFront は、エッジロケーションにコンテンツをキャッシュします。繰り返し読まれるファイルは S3 に取りに行かずにエッジから返すので、S3 へのリクエストが減り、利用者に近い場所から配信されるため表示も速くなります。S3 から CloudFront へのデータ転送は無料です。"
+    },
+    {
+      "id": "b",
+      "text": "S3 Transfer Acceleration を有効にして、ダウンロードも高速化する。",
+      "correct": false,
+      "rationale": "Transfer Acceleration は、主に遠方からのアップロードを速くする機能で、コンテンツをキャッシュしません。加速した転送には追加料金がかかり、コスト削減にはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Global Accelerator を作成して、S3 バケットを保護対象に追加する。",
+      "correct": false,
+      "rationale": "Global Accelerator は、固定 IP アドレスと AWS のネットワークを使う経路の最適化のためのサービスで、コンテンツのキャッシュは行いません。追加の料金がかかり、S3 のリクエスト料金も減りません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 バケットを複数のリージョンに作成して、Route 53 のレイテンシールーティングで振り分ける。",
+      "correct": false,
+      "rationale": "複数リージョンへの保存で、ストレージ料金とレプリケーションの料金が増えます。リージョンごとの運用も必要になり、エッジのキャッシュのほうが低コストです。"
+    }
+  ],
+  "explanation": "CDN（コンテンツ配信ネットワーク）は、コンテンツをユーザーに近い拠点にキャッシュして配信します。Amazon CloudFront は、世界中のエッジロケーションを使う AWS の CDN です。\n\nCDN が必要な場面の判断基準は次のとおりです。\n\n・同じコンテンツが繰り返し読まれる（キャッシュの効果が大きい）\n・利用者が地理的に分散していて、遠方の利用者の表示を速くしたい\n・オリジンのリクエスト数、負荷、データ転送を減らしたい\n\nキャッシュヒットした分は、オリジン（S3 など）に取りに行かないので、オリジンのリクエスト料金が減ります。また、AWS のオリジン（S3 や ALB など）から CloudFront へのデータ転送は無料です。CloudFront から利用者へのデータ転送料金がかかりますが、S3 から直接インターネットへ配信するより単価が低く、量に応じた割引もあります。",
+  "keyPoints": [
+    "同じコンテンツが繰り返し読まれる、世界中の利用者、オリジンの負荷・転送料金を減らしたい → CloudFront",
+    "AWS のオリジンから CloudFront へのデータ転送は無料",
+    "Global Accelerator と Transfer Acceleration はキャッシュしない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon CloudFront? - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+    },
+    {
+      "title": "Amazon CloudFront pricing",
+      "url": "https://aws.amazon.com/cloudfront/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
