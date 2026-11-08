@@ -1,0 +1,76 @@
+{
+  "id": "saa-basics-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K10"
+  ],
+  "services": [
+    "Amazon EC2 Auto Scaling",
+    "Amazon ElastiCache",
+    "Amazon EC2"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "ステートレス",
+    "セッション管理",
+    "Auto Scaling"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるオンラインスクールの Web サイトは、ログイン中の利用者の情報（セッション）を各 EC2 インスタンスのメモリに保存しています。Auto Scaling で夜間にインスタンスの台数が減ると、そのインスタンスにつながっていた利用者が突然ログアウトされてしまいます。台数の自動的な増減は続けたまま、この問題を解消するには、どうすればよいですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "セッション情報を Amazon ElastiCache に保存し、Web サーバーに状態を持たせない（ステートレスな）設計にする。",
+      "correct": true,
+      "rationale": "セッションをサーバーの外に置けば、どのインスタンスでも同じ情報を読めます。インスタンスが減っても情報は消えないので、台数の自動的な増減を続けられます。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスタイプを大きなものに変更し、台数を 1 台に減らして固定する。",
+      "correct": false,
+      "rationale": "垂直スケーリングで 1 台にすると、そのサーバーが単一障害点になります。伸縮性も失われ、再起動や障害のたびにセッションが消えます。"
+    },
+    {
+      "id": "c",
+      "text": "Auto Scaling の最小台数を現在の最大台数と同じにして、台数が減らないようにする。",
+      "correct": false,
+      "rationale": "ログアウトは起きなくなりますが、夜間も最大台数で動かすことになり、需要に合わせて増減する利点を捨てています。要件の「増減を続ける」を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "セッション情報を EC2 インスタンスにアタッチした EBS ボリュームのファイルに保存する。",
+      "correct": false,
+      "rationale": "EBS ボリュームは通常 1 台のインスタンスに接続され、インスタンスが終了すると一緒に失われることがあります。ほかのインスタンスから共有して読むこともできません。"
+    }
+  ],
+  "explanation": "サーバーのメモリにセッションを持たせると、そのサーバーが減ったり壊れたりしたときに情報が消え、利用者は毎回同じサーバーにつながる必要があります。これでは台数を自由に増減できません。\n\nセッションなどの状態を Amazon ElastiCache や Amazon DynamoDB といったサーバーの外の場所に置き、Web サーバーをステートレスにすると、どのサーバーでも同じように処理できます。その結果、EC2 Auto Scaling による水平スケーリング（台数の増減）を安全に使えます。インスタンスを大きくする垂直スケーリングは、1 台のままなので冗長化にならず、この問題の解決にはなりません。",
+  "keyPoints": [
+    "台数を自由に増減したい → セッションなどの状態をサーバーの外（ElastiCache、DynamoDB）に置き、ステートレスにする",
+    "垂直スケーリングは単一障害点を残し、冗長化にならない"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 Auto Scaling とは",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    },
+    {
+      "title": "What is Amazon ElastiCache?",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+    },
+    {
+      "title": "AWS Well-Architected フレームワーク 信頼性の柱",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-availability-scaling"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

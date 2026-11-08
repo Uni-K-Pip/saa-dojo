@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-006",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K9"
+  ],
+  "services": [
+    "Amazon Redshift",
+    "Amazon DynamoDB",
+    "Amazon ElastiCache",
+    "Amazon RDS"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "データウェアハウス",
+    "OLAP",
+    "分析"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社は、過去 5 年分の販売履歴（数 TB）を、地域別・商品別に集計して経営会議向けのレポートを作りたいと考えています。現在は注文を処理している本番のデータベースで集計しており、重い集計の実行中は注文画面が遅くなります。分析用のデータを本番の注文処理から分けて、大量のデータを SQL で集計するには、どのサービスが最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Redshift",
+      "correct": true,
+      "rationale": "Redshift は大量のデータを SQL で集計・分析するためのデータウェアハウスです。分析用のデータを移せば、本番の注文処理に負荷をかけずに集計できます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon DynamoDB",
+      "correct": false,
+      "rationale": "DynamoDB はキーで読み書きする用途に向き、複数項目にまたがる集計や結合は苦手です。数 TB の履歴を地域別・商品別に集計する用途には向きません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon ElastiCache",
+      "correct": false,
+      "rationale": "ElastiCache はよく使うデータを一時的に置くキャッシュです。数年分の履歴を保存して集計する用途ではなく、分析の仕組みも持ちません。"
+    },
+    {
+      "id": "d",
+      "text": "本番の RDS の DB インスタンスを大きなサイズに変更して、同じ場所で集計を続ける。",
+      "correct": false,
+      "rationale": "インスタンスを大きくしても、集計と注文処理が同じデータベースを使うので、重い集計が注文処理に影響する問題は残ります。"
+    }
+  ],
+  "explanation": "大量のデータをまとめて集計する処理は OLAP（オンライン分析処理）と呼ばれ、データを列ごとにまとめて保存する Amazon Redshift が得意とします。注文の登録のような 1 件ずつの処理（OLTP）を行う本番のデータベースで重い集計をすると、利用者の操作が遅くなるので、分析用のデータは Redshift に移して、そこで集計します。\n\nDynamoDB は結合や集計が苦手で、ElastiCache はキャッシュです。本番のデータベースを大きくしても、集計と注文処理が同じ場所で競合する点は変わりません。",
+  "keyPoints": [
+    "ペタバイトまでの大量データの集計・分析・BI → Redshift（OLAP）",
+    "分析は本番の OLTP データベースと分ける"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Redshift?",
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    },
+    {
+      "title": "What is Amazon RDS?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-database-types"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

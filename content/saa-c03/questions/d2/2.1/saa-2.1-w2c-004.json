@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.1-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K13", "2.1-S6"],
+  "services": ["Amazon Simple Storage Service", "Amazon Elastic Block Store", "Amazon Elastic File System", "Amazon Elastic Compute Cloud"],
+  "qualifier": "other",
+  "tags": ["ストレージの種類", "オブジェクト", "ブロック", "インスタンスストア"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるメディア企業は、動画共有サービスのストレージを設計しています。投稿された完成動画は数百 TB 規模になる見込みで、世界中の視聴者に HTTPS で配信します。容量を事前に決められず、長期間保管するために高い耐久性が必要です。一方、投稿のメタデータを管理する自己管理の PostgreSQL は 1 台の Amazon EC2 インスタンスで動かし、データファイルへの低レイテンシーなランダム読み書きと、インスタンスが停止してもデータが失われないことが必要です。この 2 種類のデータの保存先として適切な設計を 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "完成動画を 1 つの Amazon EBS ボリュームに保存し、そのボリュームをアタッチした EC2 インスタンスから視聴者に配信する。",
+      "correct": false,
+      "rationale": "EBS ボリュームは、サイズを決めて作成するブロックストレージで、1 つのボリュームの容量には上限があります。数百 TB で増え続けるデータには向かず、世界中への配信も 1 つのインスタンスが担うことになり、耐久性や拡張性の要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "PostgreSQL のデータディレクトリを、EC2 インスタンスにアタッチした Amazon EBS の汎用 SSD（gp3）ボリュームに置く。",
+      "correct": true,
+      "rationale": "EBS は EC2 から使うブロックストレージで、データベースのような低レイテンシーなランダム読み書きに向いています。ボリュームのデータはインスタンスを停止しても保持されるので、永続性の要件も満たします。"
+    },
+    {
+      "id": "c",
+      "text": "PostgreSQL のデータディレクトリを、EC2 インスタンスのインスタンスストアのボリュームに置く。",
+      "correct": false,
+      "rationale": "インスタンスストアは、ホストに物理的に接続された一時的なストレージです。インスタンスの停止や終了、基盤となるハードウェアの障害でデータが失われます。データが失われないことという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "PostgreSQL のデータディレクトリを、Amazon S3 バケットをファイルシステムとしてマウントするツールの上に置く。",
+      "correct": false,
+      "rationale": "S3 はオブジェクトストレージで、オブジェクト全体を書き込み・取得する使い方が基本です。ファイルの一部を頻繁に書き換えるデータベースのランダムな I/O には向かず、レイテンシーの要件も満たせません。"
+    },
+    {
+      "id": "e",
+      "text": "完成動画を Amazon S3 バケットに保存し、Amazon CloudFront を通じて視聴者に HTTPS で配信する。",
+      "correct": true,
+      "rationale": "S3 はオブジェクトストレージで、容量を事前に決める必要がなく、ほぼ無制限に増やせます。高い耐久性で長期間保管でき、CloudFront と組み合わせて世界中に HTTPS で配信できます。"
+    }
+  ],
+  "explanation": "ストレージは、データへのアクセス方法で 3 種類に分けて考えます。\n\nオブジェクトストレージ（Amazon S3）は、オブジェクトを HTTP の API で読み書きします。容量が実質無制限で、耐久性が高く、動画や画像のような大量の非構造化データの保管や配信に向きます。ファイルストレージ（Amazon EFS や Amazon FSx）は、NFS や SMB のプロトコルで複数のサーバーから共有のファイルシステムとしてマウントして使います。ブロックストレージ（Amazon EBS、インスタンスストア）は、EC2 インスタンスに接続されるディスクのようなストレージで、ブロック単位の低レイテンシーな読み書きができ、データベースやブートボリュームに向きます。EBS はインスタンスと独立してデータが保持されますが、インスタンスストアは一時的で、インスタンスの停止や障害でデータが失われます。\n\nこの問題では、完成動画は容量の増加と配信の点でオブジェクトストレージの S3、PostgreSQL のデータファイルは低レイテンシーなランダム I/O と永続性の点で EBS が適切です。",
+  "keyPoints": [
+    "大量の非構造化データを長期保管して HTTP で配信する → オブジェクトストレージ（S3）",
+    "データベースの低レイテンシーなランダム I/O → ブロックストレージ（EBS）。インスタンスストアは一時的で永続性がない",
+    "複数のインスタンスが共有ディレクトリを同時に読み書きする → ファイルストレージ（EFS など）",
+    "S3 はオブジェクト単位の API で使う。ファイルの一部を書き換える用途には向かない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EBS? - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    },
+    {
+      "title": "What is Amazon S3? - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "Amazon EC2 instance store - Amazon EC2",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

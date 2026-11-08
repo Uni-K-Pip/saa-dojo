@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-007",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-S7", "2.2-K6"],
+  "services": ["Amazon EC2", "Amazon CloudWatch", "Amazon SNS"],
+  "qualifier": "minimal-change",
+  "tags": ["EC2 自動復旧", "StatusCheckFailed_System", "レガシーアプリ", "単一インスタンス", "CloudWatch アラーム"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある印刷会社は、ベンダーのサポートが終了した旧式の帳票アプリケーションを、1 台の Amazon EC2 インスタンスで動かしています。アプリケーションは複数台での稼働に対応しておらず、ライセンスがインスタンスのプライベート IP アドレスに紐づくため、改修もできません。データは EBS ボリュームにあります。基盤のハードウェア障害でインスタンスが止まったときに、同じインスタンス ID と IP アドレスのまま自動で復旧し、運用担当者にも通知したいと考えています。変更を最小限にする方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インスタンスを Auto Scaling グループ（最小 1・最大 1）に入れ、ヘルスチェックに失敗したら新しいインスタンスに置き換える。",
+      "correct": false,
+      "rationale": "Auto Scaling は異常なインスタンスを終了して新しいインスタンスを起動するため、インスタンス ID もプライベート IP アドレスも変わります。IP アドレスに紐づくライセンスの制約に合わず、構成の見直しも必要です。"
+    },
+    {
+      "id": "b",
+      "text": "StatusCheckFailed_System メトリクスの CloudWatch アラームを作成し、EC2 の復旧アクションと Amazon SNS への通知を設定する。",
+      "correct": true,
+      "rationale": "システムステータスチェックの失敗は基盤のハードウェアやソフトウェアの問題を示し、復旧アクションでインスタンスが別のホストに移されます。インスタンス ID、プライベート IP、EBS ボリュームなどはそのまま維持され、SNS で通知も送れます。アプリケーションの変更も不要です。"
+    },
+    {
+      "id": "c",
+      "text": "StatusCheckFailed_Instance メトリクスの CloudWatch アラームを作成し、インスタンスの再起動アクションを設定する。",
+      "correct": false,
+      "rationale": "インスタンスステータスチェックは OS やネットワーク設定などインスタンス側の問題を示します。再起動では同じホストで動き続けるため、基盤のハードウェア障害からは復旧できません。"
+    },
+    {
+      "id": "d",
+      "text": "毎日 AMI を取得しておき、障害が起きたら運用担当者が AMI から新しいインスタンスを起動し、IP アドレスを手作業で合わせる。",
+      "correct": false,
+      "rationale": "復旧が手作業で、最大で 1 日分のデータが失われる可能性があります。復旧までの時間もかかり、自動で復旧するという要件を満たしません。"
+    }
+  ],
+  "explanation": "改修できず、複数台で動かせないレガシーアプリケーションの場合、インスタンスの冗長化ではなく、1 台のインスタンスを自動で復旧させる方法を使います。EC2 は、基盤のホストのハードウェアやソフトウェアの問題で、システムステータスチェックが失敗したときに、インスタンスを別のホストへ移すことで自動復旧します。復旧したインスタンスは、インスタンス ID、プライベート・パブリック・Elastic IP アドレス、メタデータ、アタッチされた EBS ボリューム、AZ などを維持します。RAM の内容は失われ、OS は再起動した状態になります。\n\nシンプルな自動復旧は対応するインスタンスで既定で有効ですが、通知や条件を自分で決めたい場合は、StatusCheckFailed_System メトリクスに CloudWatch アラームを作り、復旧アクションと SNS 通知を設定します。CloudWatch アラームによる復旧では、インスタンスストアのデータは失われるため、永続データは EBS に置きます。\n\nAuto Scaling による置き換えはインスタンス ID と IP アドレスが変わります。インスタンスステータスチェックの失敗は OS 側の問題で、ホストを移す復旧の対象ではありません。なお、これは単一のインスタンスを守る仕組みなので、改修できる場合は複数の AZ に冗長化するのが望ましい構成です。",
+  "keyPoints": [
+    "改修できない単一インスタンス → StatusCheckFailed_System のアラーム + EC2 復旧アクションで同じ ID・IP のまま別ホストに復旧",
+    "システムステータスチェック（基盤の問題）→ 復旧。インスタンスステータスチェック（OS 側の問題）→ 再起動",
+    "復旧しても RAM は失われ、CloudWatch アラームによる復旧ではインスタンスストアも失われる。永続データは EBS に置く",
+    "Auto Scaling による置き換えはインスタンス ID と IP アドレスが変わる"
+  ],
+  "references": [
+    {
+      "title": "Automatic instance recovery - Amazon EC2",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-recover.html"
+    },
+    {
+      "title": "Configure CloudWatch action based recovery on an EC2 instance - Amazon EC2",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cloudwatch-recovery.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.2-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-S4"],
+  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN"],
+  "qualifier": "performance",
+  "tags": ["Direct Connect", "MACsec", "専用接続", "レイヤー 2 暗号化", "転送中の暗号化"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある放送局は、データセンターと AWS を、データセンター内のコロケーション拠点で終端する 10 Gbps の AWS Direct Connect 専用接続でつないでいます。セキュリティ監査で、ルーターと AWS の間の通信を暗号化するよう求められました。大量の映像データを転送するため、接続の帯域をできるだけそのまま使い、暗号化のためにアプリケーションを個別に変更しないことが条件です。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "パブリック仮想インターフェイスの上に AWS Site-to-Site VPN を構成し、すべての通信を IPsec トンネルに通す。",
+      "correct": false,
+      "rationale": "IPsec のトンネルは暗号化の処理とトンネルごとの帯域の上限があり、10 Gbps の接続の帯域をそのまま使えません。大量の映像データを転送し、帯域をできるだけそのまま使うという要件に合いません。"
+    },
+    {
+      "id": "b",
+      "text": "専用接続で MACsec を有効にし、MACsec に対応したルーターに接続キー（CKN と CAK）を設定する。",
+      "correct": true,
+      "rationale": "MACsec は 10 Gbps / 100 Gbps / 400 Gbps の専用接続で使える、レイヤー 2 の暗号化です。ルーターと Direct Connect のデバイス間のリンクを、回線速度で暗号化でき、アプリケーションの変更も不要です。"
+    },
+    {
+      "id": "c",
+      "text": "転送するすべてのアプリケーションを改修し、アプリケーション層で TLS を使う通信に変更する。",
+      "correct": false,
+      "rationale": "アプリケーションごとの改修が必要になり、条件の個別に変更しないに反します。TLS を使わない通信が残る可能性もあり、接続全体の暗号化にはなりません。"
+    },
+    {
+      "id": "d",
+      "text": "Direct Connect ゲートウェイと AWS Transit Gateway を追加して、複数の VPC と接続できるようにする。",
+      "correct": false,
+      "rationale": "Direct Connect ゲートウェイと Transit Gateway は複数の VPC への経路を扱う仕組みで、通信の暗号化の機能はありません。暗号化の要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS Direct Connect は、通信をインターネットではなく専用の回線で AWS に届けるサービスです。お客様のルーターと AWS の間の区間を暗号化したいときは、利用者が構成します。方法には、主に次の 2 つがあります。\n\nMACsec（IEEE 802.1AE）は、お客様のルーターと Direct Connect のロケーションのデバイスの間のレイヤー 2 のリンクを暗号化します。専用接続の 10 Gbps、100 Gbps、400 Gbps で、対応する拠点でのみ使えます。接続キー（CKN と CAK）を AWS とルーターの両方に設定し、ルーターが MACsec に対応している必要があります。ポイントツーポイントのリンクの暗号化で、エンドツーエンドではありません。パートナーが提供するホスト型接続では使えません。\n\nIPsec の AWS Site-to-Site VPN を Direct Connect の上に重ねると、ホスト型接続でも暗号化できますが、トンネルの帯域に上限があり、暗号化の処理が必要です。このため、帯域をできるだけそのまま使いたい専用接続では MACsec が向きます。",
+  "keyPoints": [
+    "専用接続（10/100/400 Gbps）で帯域を落とさず暗号化 → MACsec（レイヤー 2、ルーターが対応している必要がある）",
+    "MACsec はホスト型接続では使えない。ホスト型は Direct Connect 上の VPN で暗号化する",
+    "Direct Connect ゲートウェイ・Transit Gateway は経路の仕組みで、暗号化はしない"
+  ],
+  "references": [
+    {
+      "title": "MAC Security in Direct Connect - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+    },
+    {
+      "title": "What is AWS Direct Connect? - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-private-connectivity"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

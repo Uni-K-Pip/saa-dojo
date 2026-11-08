@@ -1,0 +1,79 @@
+{
+  "id": "saa-2.2-w2c-006",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S3",
+    "2.2-K6"
+  ],
+  "services": [
+    "Amazon Route 53",
+    "Amazon CloudWatch",
+    "Amazon EC2"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "ヘルスチェック設計",
+    "プライベートホストゾーン",
+    "CloudWatch Synthetics",
+    "アラームベースのヘルスチェック",
+    "フェイルオーバー"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社の社内向け契約照会システムは、東京リージョンの VPC 内にあるプライベート IP アドレスだけを持つ EC2 インスタンスで動き、社内ネットワークと VPC からプライベートホストゾーンのドメイン名で利用されています。大阪リージョンにスタンバイ環境があり、Route 53 のフェイルオーバールーティングで切り替えます。インスタンスや OS が正常でも、アプリケーションが HTTP 500 を返し続ける障害を検知して切り替えたいと考えています。ただし、インスタンスにパブリック IP アドレスを付けたり、インターネットに公開したりしてはいけません。どのヘルスチェックを設計すべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プライマリのインスタンスのプライベート IP アドレスを指定して、Route 53 の HTTP エンドポイントヘルスチェックを作成し、プライマリレコードに関連付ける。",
+      "correct": false,
+      "rationale": "Route 53 のヘルスチェッカーは VPC の外にあり、プライベートな範囲の IP アドレスのエンドポイントはチェックできません。プライベート IP だけのインスタンスの死活は検知できません。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 の StatusCheckFailed メトリクスに CloudWatch アラームを作成し、そのアラームに基づく Route 53 ヘルスチェックをプライマリレコードに関連付ける。",
+      "correct": false,
+      "rationale": "StatusCheckFailed はインスタンスやホストの状態を見る指標です。インスタンスと OS が正常なまま、アプリケーションが HTTP 500 を返す障害は検知できません。"
+    },
+    {
+      "id": "c",
+      "text": "VPC 内で CloudWatch Synthetics のカナリアにアプリケーションの URL を定期確認させ、成功率のアラームに基づく Route 53 ヘルスチェックをプライマリレコードに関連付ける。",
+      "correct": true,
+      "rationale": "VPC 内で動くカナリアは、プライベートなエンドポイントをアプリケーションレベルで確認できます。成功率のアラームを Route 53 のアラームベースのヘルスチェックに結び付ければ、インターネットに公開せずに HTTP 500 の障害でフェイルオーバーできます。"
+    },
+    {
+      "id": "d",
+      "text": "インスタンスにパブリック IP アドレスを付けてセキュリティグループで全インターネットからのアクセスを許可し、Route 53 の HTTP エンドポイントヘルスチェックを作成する。",
+      "correct": false,
+      "rationale": "Route 53 のヘルスチェックは動作しますが、インスタンスをインターネットに公開しないという要件に反します。社内向けのシステムを不必要に公開する設計は避けます。"
+    }
+  ],
+  "explanation": "Route 53 のエンドポイントヘルスチェックは、世界各地の Route 53 のヘルスチェッカーがインターネット側から対象に接続して判定します。そのため、VPC 内でプライベート IP アドレスだけを持つリソースは直接チェックできません。公式ドキュメントでは、そのようなリソースには、CloudWatch のメトリクスにアラームを付け、そのデータストリームに基づくヘルスチェック（アラームベースのヘルスチェック）を使う方法が示されています。\n\n何を監視するかも設計の要点です。StatusCheckFailed はホストやインスタンスの健全性しか表さないため、アプリケーションの応答異常は検知できません。VPC 内で動かした CloudWatch Synthetics のカナリアでアプリケーションの URL を定期的に呼び出し、結果の成功率メトリクスにアラームを付ければ、アプリケーションレベルの障害を非公開のまま検知できます。そのアラームに基づく Route 53 ヘルスチェックを、フェイルオーバーのプライマリレコードに関連付けます。\n\nなお、Route 53 のアラームベースのヘルスチェックには、メトリクス演算を使うアラームや「M out of N」のアラームを使えないといった制約があります。アラームは標準解像度のメトリクスと単純な統計で作ります。",
+  "keyPoints": [
+    "Route 53 のヘルスチェッカーは VPC の外にある。プライベート IP のリソースは CloudWatch アラームベースのヘルスチェックで監視する",
+    "ヘルスチェックの対象は、何の障害を検知したいかで決める。ホストの状態とアプリケーションの応答は別",
+    "VPC 内の CloudWatch Synthetics カナリアで、非公開のエンドポイントをアプリケーションレベルで監視できる",
+    "アラームベースのヘルスチェックは、メトリクス演算や M out of N のアラームに非対応"
+  ],
+  "references": [
+    {
+      "title": "Configuring failover in a private hosted zone - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover-private-hosted-zones.html"
+    },
+    {
+      "title": "Values that you specify when you create or update health checks - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-creating-values.html"
+    },
+    {
+      "title": "Running a canary on a VPC - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

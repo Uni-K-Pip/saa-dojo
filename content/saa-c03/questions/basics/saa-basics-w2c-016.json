@@ -1,0 +1,76 @@
+{
+  "id": "saa-basics-w2c-016",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K6"
+  ],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "Amazon EC2",
+    "Amazon S3"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "IAM ロール",
+    "一時的な認証情報",
+    "アクセスキー"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある開発チームは、EC2 インスタンス上で動くアプリケーションから、Amazon S3 のバケットのファイルを読み取らせたいと考えています。担当者は、IAM ユーザーのアクセスキーを作ってアプリケーションの設定ファイルに書く案を出しました。AWS が推奨する、より安全な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "読み取りに必要な権限だけを付けた IAM ロールを作成し、EC2 インスタンスに付ける。",
+      "correct": true,
+      "rationale": "IAM ロールを付けると、アプリケーションは有効期限付きの一時的な認証情報を自動で受け取れます。長期的なアクセスキーを保管せずに済み、漏れた場合の被害も限られます。"
+    },
+    {
+      "id": "b",
+      "text": "ルートユーザーのアクセスキーを作成し、アプリケーションに設定する。",
+      "correct": false,
+      "rationale": "ルートユーザーはアカウントのすべての権限を持ちます。アクセスキーを作ること自体が推奨されておらず、漏れたときの被害も最大になります。"
+    },
+    {
+      "id": "c",
+      "text": "アクセスキーを AMI に埋め込んで、EC2 インスタンスを起動する。",
+      "correct": false,
+      "rationale": "長期的なアクセスキーを使い続ける点は同じで、AMI を共有したときなどに漏れる危険が増します。キーの更新も難しくなります。"
+    },
+    {
+      "id": "d",
+      "text": "バケットを公開設定にして、認証なしで読み取れるようにする。",
+      "correct": false,
+      "rationale": "認証なしで世界中のだれでも読めてしまいます。必要な相手だけに権限を与えるという最小権限の考え方に反します。"
+    }
+  ],
+  "explanation": "EC2 インスタンスや Lambda 関数で動くアプリケーションが AWS のサービスを呼び出すときは、IAM ロールを付けるのが基本です。ロールを引き受けると、AWS STS から有効期限付きの一時的な認証情報が発行され、EC2 では自動で更新されます。アクセスキーをコードや設定ファイルに書く必要はありません。\n\n長期的なアクセスキーは、漏れたときに悪用され続ける危険があります。ルートユーザーのアクセスキーは特に危険で、作らないのが原則です。ロールに付ける権限は、読み取りだけなど、必要なものに絞ります（最小権限の原則）。",
+  "keyPoints": [
+    "EC2 や Lambda で動くアプリケーションに AWS を呼び出させる → IAM ロールを付ける。アクセスキーを書き込む選択肢は誤り",
+    "人もアプリケーションも、できるだけ一時的な認証情報を使う"
+  ],
+  "references": [
+    {
+      "title": "IAM roles for Amazon EC2",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html"
+    },
+    {
+      "title": "IAM roles",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
+    },
+    {
+      "title": "Security best practices in IAM",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-iam"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

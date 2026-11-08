@@ -1,0 +1,57 @@
+{
+  "id": "saa-3.1-w2c-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-S2", "3.1-K3"],
+  "services": ["Amazon EBS", "Amazon EC2"],
+  "qualifier": "availability",
+  "tags": ["EBS", "Elastic Volumes", "容量拡張", "無停止"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社の在庫管理システムは、Linux の Amazon EC2 インスタンスにアタッチした汎用 SSD（gp2）の Amazon EBS データボリューム（500 GiB）にデータを保存しています。データの増加で空き容量が少なくなり、ボリュームを 1 TiB に拡張する必要があります。システムは 24 時間稼働しており、インスタンスの停止やボリュームのデタッチはできません。サービスを止めずに容量を増やす最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "現在のボリュームのスナップショットから 1 TiB のボリュームを作成し、インスタンスを停止して古いボリュームと入れ替える。",
+      "correct": false,
+      "rationale": "スナップショットから大きなボリュームを作る方法でも拡張できますが、ボリュームの入れ替えにインスタンスの停止が必要です。サービスを止められないという条件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスを停止してボリュームをデタッチし、サイズを変更してから再接続する。",
+      "correct": false,
+      "rationale": "サイズの変更は可能ですが、インスタンスの停止とデタッチは不要な操作です。インスタンスが対応していれば、Elastic Volumes によって接続したまま変更できるので、停止できない条件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Elastic Volumes でボリュームのサイズを 1 TiB に変更し、変更が反映されたあとにオペレーティングシステムでファイルシステムを拡張する。",
+      "correct": true,
+      "rationale": "Elastic Volumes を使うと、アタッチして使用中のままボリュームのサイズを増やせます。サイズの変更後に、OS 上でパーティションとファイルシステムを拡張すれば新しい容量を使えるので、サービスを止める必要がありません。"
+    },
+    {
+      "id": "d",
+      "text": "EBS ボリュームの自動拡張を有効にして、空き容量が減ったら容量が自動で増えるようにする。",
+      "correct": false,
+      "rationale": "EBS には、使用量に応じて容量を自動で増やす機能はありません。容量の変更は Elastic Volumes で明示的に行います。"
+    }
+  ],
+  "explanation": "Amazon EBS の Elastic Volumes は、ボリュームのサイズの増加、ボリュームタイプの変更、IOPS やスループットの調整を、ボリュームをデタッチせずインスタンスを再起動せずに行える機能です（インスタンスが対応している場合）。変更の操作には追加料金がかからず、変更後の構成に対して課金されます。\n\nサイズを増やしたあとは、OS 側でパーティションとファイルシステムを拡張しないと新しい容量が使えません。注意点として、ボリュームサイズは増やすことしかできず、小さくはできません。また、1 つのボリュームを続けて変更する場合は、前の変更が完了するのを待つ必要があります。EBS は容量を自動で拡張しないため、容量の監視と拡張の自動化が必要な場合は、CloudWatch のアラームなどを組み合わせて自分で仕組みを作ります。",
+  "keyPoints": [
+    "稼働中の EBS を無停止で拡張 → Elastic Volumes（サイズ、タイプ、IOPS、スループットを変更）。そのあと OS でファイルシステムを拡張",
+    "ボリュームサイズは増やすだけで、縮小はできない。縮小は新しいボリュームへデータを移す",
+    "EBS には容量の自動拡張機能はない（EFS や S3 は容量が自動で伸びる）"
+  ],
+  "references": [
+    {
+      "title": "Modify an Amazon EBS volume using Elastic Volumes operations",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "saa-3.2-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-K2",
+    "3.2-K1"
+  ],
+  "services": [
+    "AWS Outposts",
+    "Amazon EC2",
+    "Amazon ECS"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "AWS Outposts",
+    "オンプレミス",
+    "ローカル処理",
+    "低レイテンシー",
+    "Local Zones との違い"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造業の会社は、工場内の生産ライン制御装置から毎秒大量のセンサーデータを受け取り、数ミリ秒以内に異常を判定して装置へ指示を返す処理を、コンテナ化したアプリケーションで動かしています。判定はすべて工場の建物内で完結させる必要があり、リージョンまでの回線の遅延や状態に左右されてはいけません。開発チームは、リージョンと同じ API やツールをそのまま使いたく、サーバーの保守や部品交換は自社で行いたくありません。どの構成が最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "工場の近くにある AWS Local Zones に VPC を拡張し、サブネットで Amazon ECS のタスクを動かす。",
+      "correct": false,
+      "rationale": "Local Zones は AWS が運用する大都市圏の施設で、顧客の建物の中ではありません。制御装置との往復遅延は数ミリ秒を保証できず、データを工場の建物内で処理するという要件も満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Direct Connect で工場とリージョンを専用線接続し、リージョンの Amazon ECS に判定処理を置く。",
+      "correct": false,
+      "rationale": "専用線でも判定のたびにリージョンまで往復するため、数ミリ秒以内の応答を安定して保てません。回線の状態にも左右されるため、リージョンまでの回線に左右されないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Outposts のラックを工場に設置し、Outpost のサブネットで Amazon ECS のタスクや Amazon EC2 インスタンスを動かす。",
+      "correct": true,
+      "rationale": "Outposts は AWS が管理するインフラを顧客の施設に設置し、リージョンと同じ API やツールでコンピューティングを動かせます。判定を建物内の機器と同じ場所で行えるため低遅延で、保守は AWS が担います。"
+    },
+    {
+      "id": "d",
+      "text": "自社で調達した Linux サーバーを工場内に設置し、Amazon ECS Anywhere でコンテナを管理する。",
+      "correct": false,
+      "rationale": "建物内で処理でき、リージョンの API でコンテナを管理することもできますが、サーバーの調達・保守・部品交換を自社で行う必要があります。サーバーの保守は自社で行いたくないという要件を満たしません。"
+    }
+  ],
+  "explanation": "AWS Outposts は、AWS が運用するインフラ、サービス、API をお客様の施設に拡張するフルマネージドサービスです。AWS が所有・管理するハードウェアを工場などに設置し、Outpost 上のサブネットで Amazon EC2、Amazon ECS、Amazon EBS などを動かします。データのローカル処理と低遅延が求められ、しかもリージョンと同じ API やツールを使いたい場合に向いています。ハードウェアの保守は AWS が担当します。\n\nLocal Zones は AWS が運用する都市圏の施設へ VPC を拡張するもので、顧客の建物の中ではありません。Direct Connect は接続を安定させますが、処理はリージョンで行うため往復の遅延が残り、回線の状態にも左右されます。ECS Anywhere は自社のサーバーでコンテナを動かせますが、サーバーの保守は自社の責任です。",
+  "keyPoints": [
+    "自社の施設内で AWS と同じ API・ツールを使い、数ミリ秒の応答とローカル処理が必要 → AWS Outposts",
+    "Local Zones は AWS の都市圏の施設。顧客の建物の中には置かれない",
+    "Direct Connect は接続の安定化。処理をリージョンで行う限り往復遅延は残る",
+    "ECS Anywhere は自社サーバーで動かす。ハードウェアの保守は自社の責任"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Outposts? - AWS Outposts",
+      "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+    },
+    {
+      "title": "AWS Outposts",
+      "url": "https://aws.amazon.com/outposts/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

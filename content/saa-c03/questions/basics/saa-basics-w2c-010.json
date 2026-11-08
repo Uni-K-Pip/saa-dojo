@@ -1,0 +1,71 @@
+{
+  "id": "saa-basics-w2c-010",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K5"
+  ],
+  "services": [
+    "Amazon Route 53",
+    "Elastic Load Balancing"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Route 53",
+    "エイリアスレコード",
+    "ドメインの頂点"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、ドメイン名 example.com（ドメインの頂点）で、Application Load Balancer の背後にある Web サイトを公開します。ロードバランサーの IP アドレスは AWS によって変わることがあるため、アドレスが変わっても設定を直さずに済むようにしたいと考えています。Amazon Route 53 でどのように設定しますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "example.com にエイリアスレコードを作成し、ロードバランサーを指定する。",
+      "correct": true,
+      "rationale": "エイリアスレコードは、ロードバランサーなどの AWS リソースを指します。IP アドレスが変わっても自動で追従し、ドメインの頂点にも作成できます。"
+    },
+    {
+      "id": "b",
+      "text": "example.com に CNAME レコードを作成し、ロードバランサーの DNS 名を指定する。",
+      "correct": false,
+      "rationale": "CNAME レコードは、ドメインの頂点（example.com）には作成できません。頂点を AWS リソースに向けるにはエイリアスレコードを使います。"
+    },
+    {
+      "id": "c",
+      "text": "example.com に A レコードを作成し、現在のロードバランサーの IP アドレスを書く。",
+      "correct": false,
+      "rationale": "ロードバランサーの IP アドレスは変わることがあります。固定で書くと、アドレスが変わったときに手作業で直さないと通信できなくなります。"
+    },
+    {
+      "id": "d",
+      "text": "example.com に MX レコードを作成し、ロードバランサーを指定する。",
+      "correct": false,
+      "rationale": "MX レコードは、メールの宛先となるサーバーを示すためのものです。Web サイトの通信をロードバランサーに向ける用途には使えません。"
+    }
+  ],
+  "explanation": "Amazon Route 53 のエイリアスレコードは、Route 53 独自のレコードで、ロードバランサーや Amazon CloudFront などの AWS リソースを指すことができます。リソースの IP アドレスが変わっても自動で追従するので、設定を直す必要がありません。また、ドメインの頂点（example.com）にも作成できます。\n\n一般的な CNAME レコードは、別のドメイン名の別名を作る仕組みですが、ドメインの頂点には作れません。A レコードに IP アドレスを直接書くと、アドレスの変更に追従できません。MX レコードはメール用です。",
+  "keyPoints": [
+    "ドメインの頂点をロードバランサーや CloudFront に向ける → Route 53 のエイリアスレコード",
+    "CNAME レコードはドメインの頂点には作れない"
+  ],
+  "references": [
+    {
+      "title": "Choosing between alias and non-alias records",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"
+    },
+    {
+      "title": "What is Amazon Route 53?",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-dns-http-tls"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

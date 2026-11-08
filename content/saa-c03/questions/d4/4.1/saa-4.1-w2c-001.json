@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K1",
+    "4.1-K9"
+  ],
+  "services": [
+    "Amazon S3",
+    "Amazon CloudFront"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "データ転送料金",
+    "CloudFront",
+    "リクエスタ支払い",
+    "一般公開"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるソフトウェア会社は、自社製品のインストーラー（1 本あたり約 2 GB）を Amazon S3 バケットに置き、世界中の一般ユーザーが URL からダウンロードできるように公開しています。ユーザーは AWS アカウントを持っておらず、人気のある数本のインストーラーに、同じ内容のダウンロードが毎日大量に集中します。S3 から直接配信しているため、S3 のデータ転送料金と GET リクエスト料金が膨らんでいます。ユーザーの使い勝手を変えずに、配信にかかるコストを下げる必要があります。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットでリクエスタ支払い（Requester Pays）を有効にし、ダウンロードの料金をユーザーに負担してもらう。",
+      "correct": false,
+      "rationale": "リクエスタ支払いのバケットでは、すべてのリクエストを認証する必要があり、匿名アクセスは使えません。AWS アカウントを持たない一般ユーザーはダウンロードできなくなり、使い勝手を変えないという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon CloudFront ディストリビューションの配信元に S3 バケットを指定し、ユーザーには CloudFront の URL で配信する。バケットはオリジンアクセスコントロール（OAC）で CloudFront からだけ読めるようにする。",
+      "correct": true,
+      "rationale": "人気のあるファイルはエッジロケーションのキャッシュから配信されるため、S3 への GET リクエストと S3 からの転送量が減ります。AWS のオリジン（S3 など）から CloudFront へのデータ転送は料金が免除されます。ユーザーは URL が変わるだけで、そのままダウンロードできます。"
+    },
+    {
+      "id": "c",
+      "text": "バケットで S3 Transfer Acceleration を有効にし、ユーザーにはアクセラレートエンドポイントの URL を案内する。",
+      "correct": false,
+      "rationale": "Transfer Acceleration は遠距離の転送を速くする機能で、通常の料金に加えて高速化の追加料金がかかることがあります。同じファイルの繰り返しの取得を減らす仕組みではなく、コストを下げる目的には合いません。"
+    },
+    {
+      "id": "d",
+      "text": "インストーラーを S3 Intelligent-Tiering ストレージクラスに移し、アクセスが多いオブジェクトを自動で最適な階層に置く。",
+      "correct": false,
+      "rationale": "S3 Intelligent-Tiering は保存料金を最適化するストレージクラスです。今回膨らんでいるのはデータ転送料金と GET リクエスト料金で、保存するクラスを変えても配信にかかる料金は下がりません。"
+    }
+  ],
+  "explanation": "S3 から直接配信すると、ダウンロードのたびに S3 のデータ転送（インターネットへの送信）料金と GET リクエスト料金がかかります。同じ人気ファイルを大量の人が繰り返し取得する場合は、Amazon CloudFront を前段に置いてエッジロケーションにキャッシュさせるのが定番の対策です。キャッシュに当たったリクエストは S3 まで届かないため、S3 の GET リクエストと転送量が減ります。また、AWS のオリジンから CloudFront へのデータ転送は料金が免除されます。バケットをオリジンアクセスコントロールで保護すれば、バケット自体は非公開のまま配信できます。\n\nリクエスタ支払いは、データの提供者が転送とリクエストの料金を利用者に負担させるアクセス方法ですが、利用者が AWS アカウントで認証してリクエストする必要があり、匿名の一般ユーザーには使えません。Transfer Acceleration は速度のための機能、Intelligent-Tiering は保存料金のための機能で、どちらも配信コストの削減策ではありません。",
+  "keyPoints": [
+    "不特定多数のユーザーに同じコンテンツを配信してデータ転送料金が重い → CloudFront でキャッシュして S3 の転送とリクエストを減らす",
+    "リクエスタ支払いは、利用者が AWS アカウントで認証できる場合だけ使える（匿名アクセス不可）",
+    "AWS のオリジンから CloudFront へのデータ転送は料金が免除される",
+    "保存料金の最適化（ストレージクラス）と配信料金の最適化（キャッシュ・リクエスタ支払い）は別の問題"
+  ],
+  "references": [
+    {
+      "title": "Using Requester Pays general purpose buckets for storage transfers and usage - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+    },
+    {
+      "title": "Amazon CloudFront Pricing",
+      "url": "https://aws.amazon.com/cloudfront/pricing/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-pricing"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

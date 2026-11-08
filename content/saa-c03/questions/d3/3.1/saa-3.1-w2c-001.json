@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.1-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K1", "3.1-K2"],
+  "services": ["AWS Storage Gateway", "Amazon S3", "AWS DataSync"],
+  "qualifier": "cost",
+  "tags": ["ハイブリッドストレージ", "Tape Gateway", "仮想テープ", "長期保管"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある出版社は、制作データのバックアップをオンプレミスの物理テープライブラリに書き出し、7 年間保管しています。テープの交換や外部倉庫への搬送の手間をなくすため、保管先を AWS に移すことにしました。使用中のバックアップソフトウェアは iSCSI 接続のテープライブラリにしか書き出せず、ソフトウェアも運用手順も変更できません。保管データはほとんど読み出されません。この要件を最も低コストで満たすソリューションはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスに S3 File Gateway をデプロイして NFS 共有をバックアップ先に指定し、S3 ライフサイクルで S3 Glacier Deep Archive へ移行する。",
+      "correct": false,
+      "rationale": "S3 File Gateway はファイル共有（NFS/SMB）を提供します。バックアップソフトウェアはテープライブラリにしか書き出せないため、書き出し先をファイル共有に変える設定変更が必要になり、変更できないという制約を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "オンプレミスに Volume Gateway をキャッシュ型ボリュームで構成し、iSCSI ディスクとしてバックアップサーバーに接続する。",
+      "correct": false,
+      "rationale": "Volume Gateway はブロックストレージ（ディスク）として見えます。バックアップソフトウェアが書き出せるのはテープデバイスだけなので使えません。また、ボリュームのデータは S3 Glacier Deep Archive のような低コストの長期保管層には置かれません。"
+    },
+    {
+      "id": "c",
+      "text": "オンプレミスに Tape Gateway をデプロイし、仮想テープライブラリとして認識させ、アーカイブしたテープを S3 Glacier Deep Archive に保管する。",
+      "correct": true,
+      "rationale": "Tape Gateway は、iSCSI 接続の仮想テープライブラリとして物理テープの代わりになります。バックアップソフトウェアと運用手順は変えずに済み、アーカイブした仮想テープは S3 Glacier Deep Archive に保管されるため、ほとんど読み出さないデータを最も低コストで長期保管できます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync で、バックアップ済みのデータを週に 1 回 S3 Glacier Deep Archive へコピーする。",
+      "correct": false,
+      "rationale": "DataSync はファイルやオブジェクトを転送するサービスで、テープライブラリの代わりにはなりません。バックアップソフトウェアのテープ管理やカタログを通らないため、バックアップソフトウェアから復元する運用手順を維持できません。"
+    }
+  ],
+  "explanation": "Tape Gateway は AWS Storage Gateway の一種で、物理テープライブラリの代わりに使える仮想テープライブラリ（VTL）を iSCSI で提供します。バックアップソフトウェアからは通常のテープライブラリとテープドライブに見えるため、ソフトウェアの設定や運用手順をほぼ変えずに、テープの交換や搬送といった物理的な運用をなくせます。書き込まれた仮想テープは AWS 側に保存され、アーカイブすると S3 Glacier Flexible Retrieval または S3 Glacier Deep Archive に保管されます。ほとんど読み出さない長期保管データには、保管料金が最も低い S3 Glacier Deep Archive が向いています。\n\nS3 File Gateway や Volume Gateway は、バックアップソフトウェアがテープにしか書き出せない場合は使えません。DataSync は転送サービスであり、バックアップソフトウェアのテープ運用を置き換えるものではありません。",
+  "keyPoints": [
+    "バックアップソフトウェアがテープ前提のまま AWS に移行 → Tape Gateway（iSCSI の仮想テープライブラリ）",
+    "ほとんど読み出さない長期保管 → アーカイブした仮想テープを S3 Glacier Deep Archive に置くと保管料が最も低い",
+    "File Gateway はファイル共有、Volume Gateway はブロックボリューム、Tape Gateway はテープ。接続の見え方で選ぶ"
+  ],
+  "references": [
+    {
+      "title": "What is Tape Gateway? - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+    },
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,66 @@
+{
+  "id": "saa-2.1-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K8", "2.1-K14"],
+  "services": ["Amazon Elastic Container Registry", "Amazon Elastic Container Service", "AWS Fargate", "Amazon Simple Storage Service"],
+  "qualifier": "operational",
+  "tags": ["コンテナ移行", "Amazon ECR", "ライフサイクルポリシー", "クロスリージョンレプリケーション"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会計ソフトの開発会社は、オンプレミスの仮想マシンで動いていたアプリケーションをコンテナ化し、AWS Fargate 上の Amazon ECS に移行しています。CI/CD パイプラインはビルドのたびに新しいイメージを Amazon ECR のプライベートリポジトリにプッシュしており、古いイメージが溜まって保管コストが増えています。また、東京リージョンが利用できなくなったときに、大阪リージョンの ECS で同じイメージからタスクを起動できる必要があります。直近の 30 個のイメージだけを残したいと考えています。運用上の手間が最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "リポジトリにイメージ数が 30 を超えたら古いものを期限切れにするライフサイクルポリシーを設定し、プライベートレジストリのレプリケーション設定で大阪リージョンへのクロスリージョンレプリケーションを有効にする。",
+      "correct": true,
+      "rationale": "ライフサイクルポリシーが古いイメージを自動で削除し、レジストリのレプリケーション設定がプッシュされたイメージを大阪リージョンのリポジトリへ自動で複製します。どちらも設定だけで済み、パイプラインの改修や独自のスクリプトは要りません。大阪の ECS は大阪のリポジトリから直接イメージを取得できます。"
+    },
+    {
+      "id": "b",
+      "text": "イメージを tar ファイルにして S3 バケットに保存し、S3 のライフサイクルルールで古いファイルを削除する。バケットは大阪リージョンにレプリケートし、障害時はその tar ファイルを ECS のタスクの起動に使う。",
+      "correct": false,
+      "rationale": "ECS のタスクは、コンテナレジストリからイメージを取得して起動します。S3 上の tar ファイルを直接使ってタスクを起動することはできません。障害時に手作業でイメージを読み込み直す必要があり、運用の手間も大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "ライフサイクルポリシーで古いイメージを削除し、大阪リージョンの ECS のタスク定義には、東京リージョンの ECR リポジトリのイメージ URI をそのまま指定する。",
+      "correct": false,
+      "rationale": "大阪のタスクが東京のリポジトリからイメージを取得する構成です。東京リージョンが利用できないときは、その ECR にもアクセスできず、大阪でタスクを起動できません。リージョン障害に備えるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "イメージを Amazon ECR Public の公開リポジトリにプッシュし、東京と大阪の ECS のタスクの両方からそこを参照する。",
+      "correct": false,
+      "rationale": "公開リポジトリのイメージは誰でも取得できます。自社の会計ソフトのイメージを公開してしまうことになり、社外に出せないアプリケーションの保管先として不適切です。"
+    }
+  ],
+  "explanation": "コンテナへの移行では、アプリケーションをイメージにまとめ、それを保管するレジストリと、実行する ECS や EKS を組み合わせます。Amazon ECR はフルマネージドのプライベートレジストリで、ECS や Fargate がイメージを取得する標準の保管先です。\n\nイメージが増え続ける問題には、ECR のライフサイクルポリシーを使います。「イメージ数が 30 を超えた分を期限切れにする」のようなルールを書けば、古いイメージが自動で削除されます。リージョン障害への備えには、プライベートレジストリのレプリケーション設定を使います。クロスリージョンやクロスアカウントで、プッシュされたイメージを別のリージョンのリポジトリへ自動で複製できます。レプリケーション先のリージョンにあれば、障害時もそのリージョンの ECS からイメージを取得できます。\n\nなお、オンプレミスのサーバー上の Java や .NET のアプリケーションをコンテナ化するコマンドラインツールとして AWS App2Container がありますが、2025 年 11 月 7 日以降は新規のお客様の受付が終了しています。新しく取り組むときは、アプリケーションのコンテナ化は Dockerfile を用意して進める前提で考えます。",
+  "keyPoints": [
+    "コンテナイメージの保管は Amazon ECR。古いイメージの自動削除は ECR のライフサイクルポリシー",
+    "リージョン障害に備えてイメージを別リージョンにも置く → ECR のプライベートレジストリのレプリケーション（クロスリージョン、クロスアカウント）",
+    "ECS がイメージを取得できるのはコンテナレジストリ。S3 の tar ファイルは直接使えない",
+    "AWS App2Container は 2025 年 11 月 7 日以降、新規のお客様の受付を終了している"
+  ],
+  "references": [
+    {
+      "title": "Automate the cleanup of images by using lifecycle policies in Amazon ECR",
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html"
+    },
+    {
+      "title": "Configuring private image replication in Amazon ECR",
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-settings-configure.html"
+    },
+    {
+      "title": "What is AWS App2Container?",
+      "url": "https://docs.aws.amazon.com/app2container/latest/UserGuide/what-is-a2c.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

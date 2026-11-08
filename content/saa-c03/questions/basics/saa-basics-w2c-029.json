@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-029",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K8"
+  ],
+  "services": [
+    "Amazon FSx",
+    "Amazon EFS",
+    "Amazon S3",
+    "Amazon EBS"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "FSx for Windows File Server",
+    "SMB",
+    "ファイルストレージ"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、オンプレミスの Windows のファイルサーバーを AWS に移します。Windows の EC2 インスタンスから、SMB を使う共有フォルダーとして使える、フルマネージドのファイルストレージが必要です。どのサービスが最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS",
+      "correct": false,
+      "rationale": "EFS は Linux 向けのファイルストレージ（NFS）で、Windows のインスタンスでは使えません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon FSx for Windows File Server",
+      "correct": true,
+      "rationale": "FSx for Windows File Server は、Windows の共有フォルダー（SMB）として使えるフルマネージドのファイルストレージです。Windows のファイルサーバーの移行に向きます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3",
+      "correct": false,
+      "rationale": "S3 はオブジェクトストレージで、HTTP(S) の API で読み書きします。SMB の共有フォルダーとしては使えません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EBS",
+      "correct": false,
+      "rationale": "EBS は 1 台の EC2 インスタンスに接続するブロックストレージです。複数のサーバーが共有する共有フォルダーの役割は果たせません。"
+    }
+  ],
+  "explanation": "ファイルストレージは、フォルダーとファイルの階層でデータを管理し、複数のサーバーがネットワーク経由で同時に使います。通信には、Linux では主に NFS、Windows では SMB を使います。\n\nWindows の共有フォルダー（SMB）が必要なら、Amazon FSx for Windows File Server を選びます。Amazon EFS は Linux 向けで、Windows のインスタンスでは使えません。S3 はオブジェクトストレージ、EBS は 1 台のインスタンスに接続するブロックストレージで、どちらも共有フォルダーの代わりにはなりません。",
+  "keyPoints": [
+    "Windows のファイル共有（SMB）→ Amazon FSx for Windows File Server",
+    "Amazon EFS は Linux 向け。問題文に Windows とあったら EFS は選ばない"
+  ],
+  "references": [
+    {
+      "title": "What is FSx for Windows File Server?",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+    },
+    {
+      "title": "What is Amazon Elastic File System?",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-storage-types"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

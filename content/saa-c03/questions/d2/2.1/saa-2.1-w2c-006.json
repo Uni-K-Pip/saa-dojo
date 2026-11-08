@@ -1,0 +1,77 @@
+{
+  "id": "saa-2.1-w2c-006",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K16",
+    "2.1-S7"
+  ],
+  "services": [
+    "AWS Step Functions",
+    "AWS Glue",
+    "AWS Lambda",
+    "Amazon Elastic Container Service",
+    "Amazon EventBridge",
+    "Amazon Simple Notification Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Step Functions",
+    "サービス統合",
+    "Run a Job（.sync）",
+    "Standard ワークフロー"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売企業は、毎晩のデータ集計を次の順に実行するワークフローを作ります。まず AWS Lambda 関数で入力ファイルを検証し、次に AWS Glue のジョブで売上データを変換します（所要 1〜2 時間）。完了後に、Amazon ECS の AWS Fargate タスクでレポートを生成します。Glue のジョブが失敗したときは 10 分後に 1 回だけ再実行し、それでも失敗したら Amazon SNS で運用担当者に通知します。ジョブの完了を待つためのポーリング用のコードは書きたくなく、運用上のオーバーヘッドを最小にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Step Functions の Express ワークフローで、Glue のジョブを Run a Job（.sync）パターンで呼び出す。実行回数と時間で課金される Express の方が安いのでこちらを選ぶ。",
+      "correct": false,
+      "rationale": "Express ワークフローは、Run a Job（.sync）とコールバック（.waitForTaskToken）のパターンをサポートせず、実行時間の上限も 5 分です。1〜2 時間かかる Glue のジョブの完了を待つ用途には使えません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EventBridge のルールで Glue のジョブの状態変更を受け取り、Lambda 関数が成否を判断して、次のステップの起動、再実行、SNS への通知を行う。",
+      "correct": false,
+      "rationale": "各ステップの順序、10 分後の再実行、通知の分岐を、イベントごとに動く Lambda 関数のコードで管理することになります。状態を追跡する独自のロジックが必要で、運用上のオーバーヘッドが小さい構成ではありません。"
+    },
+    {
+      "id": "c",
+      "text": "Standard ワークフローで、Glue の StartJobRun と ECS の RunTask を .sync パターンで呼び出す。Glue に Retry で 10 分間隔・最大 1 回を設定し、Catch で SNS の通知へ分岐させる。",
+      "correct": true,
+      "rationale": "Standard ワークフローは Run a Job（.sync）をサポートし、Glue や ECS の最適化された統合が、ジョブの完了までをサービス側で待ちます。ポーリングのコードは要りません。Retry と Catch で再試行と失敗時の分岐を定義でき、1 年までの長時間の実行も可能です。"
+    },
+    {
+      "id": "d",
+      "text": "Standard ワークフローから Lambda 関数を呼び出し、その関数が Glue のジョブを開始して、完了するまで一定間隔で状態を確認しながら待つ。完了後に次のステップへ進める。",
+      "correct": false,
+      "rationale": "Lambda 関数の実行時間には 15 分の上限があり、1〜2 時間かかる Glue のジョブの完了を 1 つの関数で待つことはできません。待つためのポーリングのコードを自分で書く必要があり、要件にも反します。"
+    }
+  ],
+  "explanation": "AWS Step Functions は、Lambda や他の AWS サービスを組み合わせたワークフローを、状態機械として定義して実行するオーケストレーションのサービスです。AWS SDK 統合や最適化された統合で、200 以上のサービスをコードなしで呼び出せます。\n\nサービス統合には 3 つのパターンがあります。Request Response は API を呼んだらすぐ次へ進みます。Run a Job（.sync）は、Glue、ECS、AWS Batch などのジョブが完了するまで Step Functions が待ちます。コールバック（.waitForTaskToken）はタスクトークンが返されるまで待ちます。.sync を使えば、完了を確認するためのポーリング用のコードや Lambda 関数が要りません。\n\nStandard ワークフローは最長 1 年まで実行でき、すべての統合パターンをサポートします。Express ワークフローは最長 5 分で、Request Response のパターンだけをサポートします。そのため、数時間かかるジョブの完了待ちには Standard を使います。失敗時の再試行は Retry（IntervalSeconds や MaxAttempts）、フォールバックは Catch で、ワークフローの定義として書けます。",
+  "keyPoints": [
+    "ジョブの完了を待つ処理をコードなしで書く → Step Functions の Run a Job（.sync）統合（Glue、ECS、Batch など）",
+    "Express ワークフローは最長 5 分で、.sync とコールバック（.waitForTaskToken）をサポートしない。長時間のジョブは Standard",
+    "再試行とエラー時の分岐は、状態機械の Retry と Catch で定義する",
+    "Lambda の実行時間は最大 15 分。長時間の処理を待つのに使わない"
+  ],
+  "references": [
+    {
+      "title": "Discover service integration patterns in Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html"
+    },
+    {
+      "title": "Choosing workflow type in Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

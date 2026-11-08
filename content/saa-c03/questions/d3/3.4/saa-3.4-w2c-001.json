@@ -1,0 +1,77 @@
+{
+  "id": "saa-3.4-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": [
+    "3.4-K1",
+    "3.4-S3"
+  ],
+  "services": [
+    "Amazon CloudFront",
+    "Amazon Simple Storage Service",
+    "AWS Global Accelerator",
+    "Amazon Route 53"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "CloudFront",
+    "オリジンフェイルオーバー",
+    "オリジングループ",
+    "OAC"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある出版社は、世界中の読者に PDF の電子書籍を配信しています。ファイルは東京リージョンの Amazon S3 バケットに保存され、大阪リージョンのバケットにクロスリージョンレプリケーションで複製されています。読者の近くからキャッシュで配信しつつ、東京のバケットが 5xx のエラーを返したときは、DNS の TTL やクライアント側のキャッシュを待たずに、リクエストごとに自動で大阪のバケットから返したいと考えています。バケットはインターネットに直接公開しません。社内の方針で、切り替えのためのコードを新たに書いてデプロイ・保守することは認められず、設定だけで実現する必要があります。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "2 つのバケットの静的ウェブサイトエンドポイントを、Amazon Route 53 のフェイルオーバールーティングのプライマリとセカンダリのレコードに登録し、ヘルスチェックで切り替える。",
+      "correct": false,
+      "rationale": "DNS ベースの切り替えは、レコードの TTL と読者側の DNS キャッシュの影響を受け、リクエストごとの切り替えにはなりません。バケットも静的ウェブサイトとしてインターネットに公開する必要があり、キャッシュによる配信もありません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Global Accelerator のアクセラレーターを作成して、東京と大阪の 2 つのバケットをそれぞれのリージョンのエンドポイントグループに登録する。",
+      "correct": false,
+      "rationale": "Global Accelerator の標準アクセラレーターで登録できるエンドポイントは、ALB、NLB、EC2 インスタンス、Elastic IP アドレスです。S3 バケットは登録できません。また、Global Accelerator にはコンテンツのキャッシュ機能もありません。"
+    },
+    {
+      "id": "c",
+      "text": "東京のバケットだけをオリジンにした CloudFront ディストリビューションを作り、オリジンレスポンスのトリガーで Lambda@Edge 関数を実行して、エラー時に大阪のバケットから取得する。",
+      "correct": false,
+      "rationale": "Lambda@Edge の関数でエラー時の取得先の切り替えを実装すれば実現はできますが、切り替えのコードを自分で書いてデプロイし、保守する必要があります。設定だけで実現するという要件を満たしません。CloudFront のオリジングループなら同じ切り替えを設定だけで行えます。"
+    },
+    {
+      "id": "d",
+      "text": "CloudFront で、東京のバケットをプライマリ、大阪のバケットをセカンダリにしたオリジングループを作り、500、502、503、504 で切り替える。両バケットに OAC を設定する。",
+      "correct": true,
+      "rationale": "CloudFront のオリジンフェイルオーバーは、キャッシュにない GET、HEAD、OPTIONS のリクエストでプライマリが指定したステータスコードを返したときに、その場でセカンダリに送ります。DNS の TTL に左右されません。OAC によってバケットは CloudFront からのアクセスだけを許可でき、キャッシュで配信されます。設定だけで実現できます。"
+    }
+  ],
+  "explanation": "Amazon CloudFront は、HTTP/HTTPS のコンテンツをエッジロケーションにキャッシュして配信するサービスです。オリジングループを作成してプライマリとセカンダリの 2 つのオリジンを指定すると、プライマリが接続できない、または指定した HTTP ステータスコード（400、403、404、416、429、500、502、503、504 から選択）を返したときに、CloudFront が自動でセカンダリのオリジンにリクエストを送ります。切り替えはリクエストごとに行われ、DNS を使わないので TTL の影響を受けません。切り替えの対象は GET、HEAD、OPTIONS のリクエストです。S3 のオリジンにはオリジンアクセスコントロール（OAC）を設定して、バケットを公開せずに CloudFront からだけ読み取れるようにします。\n\nAWS Global Accelerator は、静的 IP アドレスと AWS のグローバルネットワークで TCP や UDP の通信を高速化し、ヘルスチェックでエンドポイントを切り替えますが、キャッシュはなく、S3 バケットはエンドポイントにできません。Route 53 のフェイルオーバーは DNS の応答を切り替える方式で、TTL とクライアントのキャッシュの影響を受けます。",
+  "keyPoints": [
+    "キャッシュ配信＋オリジンの自動切り替え → CloudFront のオリジングループ（オリジンフェイルオーバー）。切り替え対象は GET、HEAD、OPTIONS",
+    "DNS ベース（Route 53）の切り替えは TTL とクライアントのキャッシュの影響を受ける。CloudFront のオリジンフェイルオーバーはリクエストごと",
+    "Global Accelerator は ALB、NLB、EC2、Elastic IP が対象。S3 は対象外で、キャッシュもない",
+    "S3 オリジンを公開せずに配信する → OAC"
+  ],
+  "references": [
+    {
+      "title": "Optimize high availability with CloudFront origin failover",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+    },
+    {
+      "title": "How AWS Global Accelerator works",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-edge-and-load-balancing"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

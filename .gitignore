@@ -7,3 +7,4 @@ coverage/
 .DS_Store
 app/test-results/
 app/playwright-report/
+.claude/

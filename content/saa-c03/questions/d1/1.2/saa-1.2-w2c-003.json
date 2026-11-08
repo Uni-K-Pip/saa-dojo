@@ -1,0 +1,62 @@
+{
+  "id": "saa-1.2-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": ["1.2-K4", "1.2-K5"],
+  "services": ["Amazon CloudFront", "Amazon S3", "Amazon Cognito", "AWS WAF"],
+  "qualifier": "security",
+  "tags": ["CloudFront 署名付き Cookie", "署名付き URL", "信頼されたキーグループ", "HLS", "Amazon Cognito", "OAC"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある語学学習サービスは、有料会員向けの講座動画を HLS 形式（数百個のセグメントファイルとプレイリストで構成）で Amazon S3 に保存し、Amazon CloudFront で配信しています。会員は Web アプリケーションで Amazon Cognito のユーザープールを使ってサインインします。サインインした有料会員だけが一定時間動画を視聴でき、S3 には CloudFront 経由でしかアクセスさせません。プレイヤーが読み込むプレイリスト内の URL は変更したくありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "動画のセグメントファイルごとに CloudFront の署名付き URL を生成し、プレイリストに書かれた各ファイルの URL を署名付き URL に書き換えて配信する。",
+      "correct": false,
+      "rationale": "署名付き URL は個別のファイルへのアクセスを制限する方法です。数百個のセグメントごとに URL を署名し、プレイリストを書き換える必要があり、プレイリスト内の URL を変更しない要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Cognito のユーザープールとアイデンティティプールで会員に一時的な AWS 認証情報を発行し、会員のプレイヤーから S3 バケットの動画を直接読み取らせる。",
+      "correct": false,
+      "rationale": "S3 に直接アクセスさせると CloudFront を経由しないため、S3 には CloudFront 経由でしかアクセスさせない要件に反します。HLS のプレイヤーが SigV4 で署名したリクエストを送る設計も現実的ではありません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS WAF のウェブ ACL を CloudFront に関連付け、有料会員の IP アドレスを IP セットに登録して、そのアドレスからのリクエストだけを許可する。",
+      "correct": false,
+      "rationale": "会員の IP アドレスは変わりやすく、サインインした会員かどうかの判断にもなりません。会員が複数の端末やネットワークから視聴する場合にも対応できず、会員だけに視聴させる要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "CloudFront の信頼されたキーグループを動画のキャッシュビヘイビアに設定し、S3 には Origin Access Control（OAC）でアクセスする。サインインに成功した会員に、アプリケーションが有効期限付きの署名付き Cookie を返す。",
+      "correct": true,
+      "rationale": "署名付き Cookie は、HLS の動画の全ファイルのような複数の制限付きファイルへのアクセスを、URL を変えずに許可できます。有効期限で視聴できる時間を限定でき、OAC で S3 を CloudFront 経由のアクセスに限定できます。"
+    }
+  ],
+  "explanation": "CloudFront で有料会員向けなどのプライベートなコンテンツを配信するには、署名付き URL または署名付き Cookie を使います。署名者には、信頼されたキーグループ（推奨）を使い、キャッシュビヘイビアで署名を必須にします。署名を必須にすると、有効な署名のないリクエストは CloudFront が拒否します。\n\n署名付き URL は、個別のファイルへのアクセスを制限したいときや、Cookie に対応しないクライアントのときに使います。署名付き Cookie は、HLS の動画の全ファイルや会員専用エリアのファイル全体のように、複数の制限付きファイルへのアクセスを許可したいときや、現在の URL を変えたくないときに使います。この問題はプレイリストの URL を変えられない複数のファイルなので、署名付き Cookie が適しています。ユーザーの認証は Cognito のユーザープールなどで行い、認証に成功した後にアプリケーションが署名付き Cookie を発行します。\n\nS3 を CloudFront からのアクセスだけに限定するには、Origin Access Control（OAC）を使い、バケットポリシーで CloudFront のサービスプリンシパルだけを許可します。AWS WAF の IP 制限は、ユーザーの認証や視聴時間の制限には向きません。",
+  "keyPoints": [
+    "複数の制限付きファイル（HLS など）、URL を変えたくない → CloudFront の署名付き Cookie",
+    "個別のファイル、Cookie 非対応のクライアント → 署名付き URL。署名者は信頼されたキーグループを使う",
+    "S3 を CloudFront 経由に限定 → OAC。S3 の直接アクセスや IP 制限は会員の認証にならない",
+    "ユーザーの認証は Cognito のユーザープール。署名付き Cookie の発行はアプリケーションが行う"
+  ],
+  "references": [
+    {
+      "title": "Decide to use signed URLs or signed cookies - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-choosing-signed-urls-cookies.html"
+    },
+    {
+      "title": "Specify signers that can create signed URLs and signed cookies - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.2-app-protection"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
