@@ -3,6 +3,7 @@ import { HashRouter, Route, Routes } from 'react-router';
 import { Layout } from './components/Layout';
 import { StudyProvider, useStudy } from './state/study';
 import { applyAppearance } from './appearance';
+import { UpdateToast } from './components/UpdateToast';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const PracticeSetupPage = lazy(() => import('./pages/PracticeSetupPage'));
@@ -80,6 +81,7 @@ export default function App() {
       <HashRouter>
         <AppRoutes />
       </HashRouter>
+      <UpdateToast />
     </StudyProvider>
   );
 }
