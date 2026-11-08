@@ -1,0 +1,75 @@
+{
+  "id": "saa-2.1-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K10",
+    "2.1-K6"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon EC2 Auto Scaling",
+    "Amazon Relational Database Service",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "多層アーキテクチャ",
+    "内部ALB",
+    "層ごとのスケーリング",
+    "Multi-AZ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、社内向けの経費精算システムを AWS に構築しています。構成は Web 層、アプリケーション層、データベース層の 3 層です。現在の設計では、Web 層の Amazon EC2 インスタンスが、アプリケーション層の各インスタンスのプライベート IP アドレスを設定ファイルに書いて直接呼び出しています。月末はアプリケーション層だけ負荷が高くなるため、その層の台数を自動で増減させたいと考えています。台数が変わるたびに Web 層の設定を書き換えることは避けたく、1 つのアベイラビリティーゾーン（AZ）が使えなくなっても処理を続ける必要があります。この要件を満たす設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アプリケーション層の各インスタンスに Elastic IP アドレスを割り当て、Web 層の設定ファイルに並べる。台数が変わったときは、設定を更新するスクリプトを実行する。",
+      "correct": false,
+      "rationale": "インスタンスごとにアドレスを管理し、台数が変わるたびに設定を更新する運用が残ります。台数の増減のたびに Web 層の設定を書き換えないという要件を満たしません。また、障害のあるインスタンスを自動で除外する仕組みもありません。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーション層のプログラムを Web 層の各インスタンスに同居させ、localhost で呼び出す構成にして、層を分けずに Web 層の台数で一括してスケールさせる。",
+      "correct": false,
+      "rationale": "アプリケーション層だけをスケールさせる、という要件を満たしません。層を分けるのは、層ごとに独立して台数や障害対応を決められるようにするためで、同居させるとこの利点が失われます。"
+    },
+    {
+      "id": "c",
+      "text": "アプリケーション層を、メモリと CPU が大きい 1 台のインスタンスに集約し、負荷の増加にはインスタンスタイプの変更で対応する。",
+      "correct": false,
+      "rationale": "1 台に集約すると、そのインスタンスや AZ の障害でアプリケーション層全体が止まります。インスタンスタイプの変更には停止も伴い、AZ 障害に耐えるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "アプリケーション層を複数 AZ の Auto Scaling グループにして前段に内部 ALB を置き、Web 層はその DNS 名を呼び出す。データベースは RDS の Multi-AZ 配置にする。",
+      "correct": true,
+      "rationale": "内部の ALB が、層の間の窓口として安定した DNS 名を提供します。アプリケーション層の台数が増減しても、ALB のターゲットが自動で更新されるので、Web 層の設定は変わりません。複数 AZ に分散し、ALB のヘルスチェックで異常なインスタンスを外すので AZ 障害にも耐えます。データベースも Multi-AZ で可用性を保てます。"
+    }
+  ],
+  "explanation": "多層アーキテクチャは、Web、アプリケーション、データベースといった役割ごとに層を分け、層ごとに独立してスケールし、障害に備えられるようにする設計です。層を独立させるには、層と層の間の接続先がインスタンスの台数や IP アドレスに依存しないことが重要です。\n\n層の間にロードバランサーを置き、呼び出し側はロードバランサーの DNS 名を使います。社内の層の間の通信には、インターネットに公開しない内部（internal）スキームの ALB が向いています。アプリケーション層を複数 AZ の Auto Scaling グループにすれば、台数の増減に合わせてインスタンスが自動でターゲットに登録、解除され、ヘルスチェックで異常なインスタンスにはリクエストが送られません。データベース層は Amazon RDS の Multi-AZ 配置で、AZ 障害やインスタンス障害に備えます。\n\nインスタンスの IP アドレスを設定に書く方法は、スケーリングや障害のたびに手作業が必要になります。層を同居させたり、1 台に集約してスケールアップで対応したりすると、層ごとの独立したスケーリングと耐障害性が得られません。",
+  "keyPoints": [
+    "層の間の通信はロードバランサー（内部 ALB）の DNS 名経由にし、インスタンスの IP アドレスに依存させない",
+    "層ごとに Auto Scaling グループを分け、複数 AZ に配置すると、層ごとに独立してスケールし AZ 障害にも耐える",
+    "データベース層の可用性は RDS の Multi-AZ 配置で確保する",
+    "スケールアップ（1 台を大きく）は単一障害点を残す。水平スケーリング＋ロードバランサーが基本"
+  ],
+  "references": [
+    {
+      "title": "What is an Application Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    },
+    {
+      "title": "Multi-AZ DB instance deployments for Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

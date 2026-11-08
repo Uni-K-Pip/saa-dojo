@@ -1,0 +1,78 @@
+{
+  "id": "saa-basics-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K10"
+  ],
+  "services": [
+    "AWS Backup",
+    "Amazon RDS"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "RPO",
+    "RTO",
+    "災害対策"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社の注文管理システムに、障害からの復旧の目標が定められました。障害が起きたときに失ってよいデータは最大 15 分分まで（RPO）、サービスが止まってから再開するまでの時間は最大 1 時間まで（RTO）です。この 2 つの目標を満たすために必要な対策を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データのバックアップを 1 日 1 回、深夜に取得する。",
+      "correct": false,
+      "rationale": "バックアップが 1 日 1 回だと、最悪の場合は約 1 日分のデータを失います。失ってよいデータは 15 分分までという RPO を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "15 分以内の間隔でバックアップを取得するか、データを継続的に別の場所へ複製する。",
+      "correct": true,
+      "rationale": "最後の復旧ポイントから失うデータの量が 15 分以内に収まります。これが RPO（失ってよいデータの量）を満たす対策です。"
+    },
+    {
+      "id": "c",
+      "text": "障害が起きてから、担当者がバックアップを確認し、新しい環境を一から手作業で構築する。",
+      "correct": false,
+      "rationale": "環境を一から手作業で作ると、再開までに 1 時間以上かかるおそれがあります。再開までの時間の上限である RTO を満たす保証がありません。"
+    },
+    {
+      "id": "d",
+      "text": "バックアップの保存期間を 1 年間に延ばす。",
+      "correct": false,
+      "rationale": "保存期間を延ばしても、最後のバックアップからの経過時間や復旧の速さは変わりません。RPO にも RTO にも直接効きません。"
+    },
+    {
+      "id": "e",
+      "text": "待機用の環境をあらかじめ用意し、障害時に 1 時間以内に切り替えて再開できるようにしておく。",
+      "correct": true,
+      "rationale": "待機系を用意して切り替えの手順を整えておけば、止まってから再開するまでの時間を短くできます。これが RTO（止まってよい時間）を満たす対策です。"
+    }
+  ],
+  "explanation": "RPO（目標復旧時点）は「データをどこまで失ってよいか」を時間で表した目標で、RTO（目標復旧時間）は「止まってよい時間」です。\n\nRPO を 15 分にするには、最後の復旧ポイントから 15 分より古いデータが生じないように、15 分以内の間隔でバックアップを取るか、データを継続的に複製します。RTO を 1 時間にするには、障害時にすぐ使える待機系の環境を用意し、切り替えの手順を整えておきます。バックアップの回数や保存期間は RPO に、環境を再開できるまでの速さは RTO に関係します。どちらも小さくするほど費用と手間が増えるので、要件に合わせて決めます。",
+  "keyPoints": [
+    "RPO は失ってよいデータの量（時間）、RTO は止まってよい時間",
+    "RPO を小さくする → バックアップの間隔を短くするか、継続的に複製する",
+    "RTO を小さくする → 待機系の環境を用意し、切り替えを自動化する"
+  ],
+  "references": [
+    {
+      "title": "Disaster recovery options in the cloud",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    },
+    {
+      "title": "AWS Well-Architected フレームワーク 信頼性の柱",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-availability-scaling"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.1-w2c-010",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K3", "3.1-S1"],
+  "services": ["Amazon EBS", "Amazon EC2"],
+  "qualifier": "availability",
+  "tags": ["Amazon EBS", "Multi-Attach", "io2", "クラスターファイルシステム"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある通信会社は、単一のアベイラビリティーゾーンで動かす Linux 向けのクラスターアプリケーションの可用性を高めるため、Nitro System ベースの Amazon EC2 インスタンス 2 台から 1 つの共有ブロックボリュームに同時に読み書きさせる構成を検討しています。アプリケーションは書き込み順序を自分で制御し、I/O フェンシングでノード間の整合性を保ちます。この構成でストレージとして正しい設計を 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プロビジョンド IOPS SSD（io2）の Amazon EBS ボリュームを、Multi-Attach を有効にして作成し、2 台のインスタンスにアタッチする。",
+      "correct": true,
+      "rationale": "Multi-Attach は io1 と io2 のボリュームで使え、同じアベイラビリティーゾーンにある Nitro ベースの複数のインスタンスに 1 つのボリュームをアタッチできます。io2 は I/O フェンシングにも対応しています。"
+    },
+    {
+      "id": "b",
+      "text": "汎用 SSD（gp3）の Amazon EBS ボリュームを作成し、Multi-Attach を有効にして 2 台のインスタンスにアタッチする。",
+      "correct": false,
+      "rationale": "Multi-Attach に対応するボリュームタイプは、Provisioned IOPS SSD の io1 と io2 だけです。gp3 では Multi-Attach を有効にできません。"
+    },
+    {
+      "id": "c",
+      "text": "共有ボリュームに XFS を作成し、2 台のインスタンスから同時にマウントして読み書きする。",
+      "correct": false,
+      "rationale": "XFS や ext4 のような標準的なファイルシステムは、複数のサーバーからの同時アクセスを想定していません。同時にマウントして書き込むと、データが破損するおそれがあります。"
+    },
+    {
+      "id": "d",
+      "text": "共有ボリューム上のファイルシステムには、複数のサーバーからの同時アクセスを想定したクラスター対応のものを使う。",
+      "correct": true,
+      "rationale": "Multi-Attach ではボリュームへの同時アクセスは許されますが、データの整合性は保証されません。AWS は、データを守るためクラスター対応のファイルシステムを使うことを勧めています。アプリケーション自身が書き込み順序を管理する要件とも合います。"
+    },
+    {
+      "id": "e",
+      "text": "2 台目のインスタンスを別のアベイラビリティーゾーンに配置して、同じボリュームにアタッチする。",
+      "correct": false,
+      "rationale": "Multi-Attach で 1 つのボリュームにアタッチできるのは、同じアベイラビリティーゾーン内のインスタンスだけです。別のアベイラビリティーゾーンのインスタンスにはアタッチできません。"
+    }
+  ],
+  "explanation": "Amazon EBS Multi-Attach は、1 つの Provisioned IOPS SSD（io1 または io2）ボリュームを、同じアベイラビリティーゾーンにある複数の Nitro ベースのインスタンスにアタッチする機能です。アタッチされた各インスタンスは、共有ボリュームへ読み書きできます。追加料金はなく、io1 と io2 の通常の料金がかかります。AWS は、性能・一貫性・耐久性の面で io2 を推奨しています。\n\n注意点は 3 つです。1 つ目は、対応するボリュームタイプが io1 と io2 に限られ、gp3 などでは使えないことです。2 つ目は、アタッチできるのが同じアベイラビリティーゾーン内のインスタンスだけであることです。3 つ目は、XFS や ext4 のような標準的なファイルシステムは同時アクセスを想定していないことです。データの整合性のため、クラスター対応のファイルシステムを使い、アプリケーションが書き込み順序を管理する必要があります。io1 と io2 の Multi-Attach ボリュームは、書き込みアクセスを制御する I/O フェンシング（NVMe リザベーション）に対応しています。\n\nなお、Multi-Attach ボリューム自体は 1 つのアベイラビリティーゾーンに閉じているため、アベイラビリティーゾーンをまたぐ耐障害性は別の仕組みで確保します。",
+  "keyPoints": [
+    "1 つの EBS ボリュームを複数インスタンスで共有 → Multi-Attach。対応は io1／io2 のみ、同一 AZ、Nitro ベースのインスタンス",
+    "標準の XFS／ext4 は同時書き込みを想定しない。クラスター対応のファイルシステムか、アプリ側の書き込み制御が必要",
+    "AZ をまたぐ共有や、数百台からの共有なら EBS ではなく EFS（NFS）を検討する"
+  ],
+  "references": [
+    {
+      "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+    },
+    {
+      "title": "Amazon EBS volume types",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

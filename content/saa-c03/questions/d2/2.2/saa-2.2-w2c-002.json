@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.2-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K11", "2.2-S4"],
+  "services": ["Amazon EFS", "Amazon EC2", "Amazon EBS"],
+  "qualifier": "availability",
+  "tags": ["Amazon EFS", "リージョナル", "One Zone", "共有ファイルシステム", "EBS Multi-Attach"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある出版社の Web サイトは、3 つのアベイラビリティーゾーン（AZ）に分散した Amazon EC2 インスタンスで動いています。すべてのインスタンスが同じ記事画像のファイルを読み書きできるよう、Linux の共有ファイルシステムが必要です。いずれか 1 つの AZ で障害が起きても、残りの AZ のインスタンスが共有ファイルへアクセスし続けられなければなりません。運用負荷は小さくしたいと考えています。この要件を満たす構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS の One Zone ファイルシステムを作成し、3 つの AZ のインスタンスからマウントする。",
+      "correct": false,
+      "rationale": "One Zone ファイルシステムはデータを 1 つの AZ 内にだけ保存し、マウントターゲットも 1 つです。その AZ に障害が起きるとファイルシステム全体が使えなくなり、AZ 障害に耐える要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Provisioned IOPS SSD（io2）の Amazon EBS ボリュームで Multi-Attach を有効にし、3 つの AZ のインスタンスにアタッチする。",
+      "correct": false,
+      "rationale": "EBS Multi-Attach でボリュームを共有できるのは同じ AZ 内のインスタンスだけで、複数の AZ にまたがってアタッチできません。また、ボリューム自体も 1 つの AZ に置かれます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EFS のリージョナルファイルシステムを作成し、3 つの AZ それぞれにマウントターゲットを作成して各インスタンスからマウントする。",
+      "correct": true,
+      "rationale": "リージョナルファイルシステムはデータを複数の AZ に冗長保存し、AZ ごとにマウントターゲットを作れます。1 つの AZ に障害が起きても、ほかの AZ のインスタンスは自分の AZ のマウントターゲットからアクセスを続けられ、マネージドなので運用負荷も小さくなります。"
+    },
+    {
+      "id": "d",
+      "text": "各インスタンスのインスタンスストアに画像を置き、cron で rsync を実行して相互に同期する。",
+      "correct": false,
+      "rationale": "インスタンスストアのデータはインスタンスの停止や障害で失われ、同期の遅れや競合も起こります。自前の同期の仕組みを運用する負荷も大きく、共有ファイルシステムの代わりにはなりません。"
+    }
+  ],
+  "explanation": "複数の AZ のインスタンスから同時に読み書きできる共有ファイルシステムには、NFS で接続する Amazon EFS が向いています。EFS には、データを複数の AZ に冗長保存するリージョナルファイルシステムと、1 つの AZ だけに保存する One Zone ファイルシステムがあります。リージョナルでは AZ ごとにマウントターゲットを作り、各インスタンスは同じ AZ のマウントターゲットからマウントします。1 つの AZ に障害が起きても、データは別の AZ に残っているので、ほかの AZ のインスタンスからのアクセスは続きます。\n\nOne Zone は費用を抑えられますが、AZ 障害に弱いので、開発・テスト環境や再作成できるデータ向けです。EBS は 1 つの AZ に置かれるブロックストレージで、Multi-Attach でも同じ AZ のインスタンスにしか共有できません。インスタンスストアは耐久性がなく、共有もできないため、永続的な共有データには使いません。",
+  "keyPoints": [
+    "複数 AZ のインスタンスから共有する Linux のファイルシステム → Amazon EFS（AZ ごとにマウントターゲット）",
+    "AZ 障害に耐える → EFS のリージョナル。One Zone は 1 つの AZ 内だけの冗長性で、費用は安い",
+    "EBS は 1 つの AZ 内のボリューム。Multi-Attach も同じ AZ のインスタンスに限られる"
+  ],
+  "references": [
+    {
+      "title": "How Amazon EFS works - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+    },
+    {
+      "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach - Amazon EC2",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes-multi.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

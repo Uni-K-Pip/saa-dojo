@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-023",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K14"
+  ],
+  "services": [
+    "AWS Config",
+    "Amazon S3",
+    "AWS CloudTrail",
+    "Amazon CloudWatch"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "AWS Config",
+    "Config ルール",
+    "準拠状況"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、社内の規則で「Amazon S3 のバケットを公開しない」と決めています。セキュリティ担当者は、新しく作られたバケットも含めて、設定が規則に違反しているバケットを自動で見つけ、一覧で確認したいと考えています。どのサービスの機能を使いますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudWatch アラームで、バケットの CPU 使用率を監視する。",
+      "correct": false,
+      "rationale": "S3 のバケットには CPU 使用率という指標はありません。CloudWatch アラームは、メトリクスがしきい値を超えたときに動くもので、設定が規則に合っているかは評価しません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS CloudTrail のイベント履歴で、バケットの作成操作を確認する。",
+      "correct": false,
+      "rationale": "CloudTrail は API の操作を記録しますが、設定が規則に合っているかを常に評価して違反を一覧にする機能ではありません。"
+    },
+    {
+      "id": "c",
+      "text": "VPC フローログで、バケットへの通信を記録する。",
+      "correct": false,
+      "rationale": "VPC フローログは VPC のネットワークインターフェイスを出入りする通信の情報を記録するもので、バケットの公開設定が規則に合っているかは評価できません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Config のルールで、バケットの公開設定を評価する。",
+      "correct": true,
+      "rationale": "AWS Config ルールは、設定が変わるたびにリソースを評価し、規則に違反したものを「非準拠」として知らせます。新しいバケットも対象になり、一覧で確認できます。"
+    }
+  ],
+  "explanation": "AWS Config は、リソースの設定とその変化の履歴を記録するサービスです。Config ルールで「S3 バケットを公開しない」「EBS ボリュームを暗号化する」などの規則を決めると、設定が変わるたびに評価し、違反しているリソースを「非準拠」として知らせます。違反を自動で直す設定（修復）も使えます。\n\nCloudWatch は状態の監視、CloudTrail は API 操作の記録、VPC フローログは通信の記録で、いずれも「設定が規則に合っているか」を評価する用途ではありません。「社内の規則に違反している設定を見つけたい」は AWS Config ルールの典型的な場面です。",
+  "keyPoints": [
+    "設定がルールに合っているかの評価、設定の変更履歴 → AWS Config",
+    "CloudTrail は操作の記録、Config は設定とその準拠状況の記録"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Config?",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    },
+    {
+      "title": "What is AWS CloudTrail?",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-monitoring-logging"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

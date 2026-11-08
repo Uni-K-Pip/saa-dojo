@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-014",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K7", "2.2-S1"],
+  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon Elastic Compute Cloud", "Amazon Route 53"],
+  "qualifier": "availability",
+  "tags": ["イミュータブルインフラ", "ブルー/グリーンデプロイ", "加重ターゲットグループ", "ロールバック"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある決済サービスの API は、Application Load Balancer（ALB）の背後にある Amazon EC2 Auto Scaling グループで稼働しています。次のリリースでは OS とランタイムのメジャーバージョンを上げた新しい AMI に切り替えます。既存のインスタンスには変更を加えず、まず本番トラフィックの 10% だけを新しい環境に流して検証し、問題が見つかったときは追加の構築なしで、DNS のキャッシュや TTL に左右されず即時に旧環境へ戻せる必要があります。既存の ALB と DNS レコードは変更できません。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "既存の Auto Scaling グループの起動テンプレートを新しい AMI の新バージョンに更新し、インスタンスの更新（instance refresh）で既存のインスタンスを順に置き換える。",
+      "correct": false,
+      "rationale": "新しい AMI で置き換えるのでイミュータブルな運用にはなりますが、置換が進むと旧インスタンスは終了されます。トラフィックの比率を指定して検証することはできず、問題が見つかったときに旧環境へ戻すには、再度インスタンスを置き換える時間が必要です。"
+    },
+    {
+      "id": "b",
+      "text": "既存のインスタンスに AWS Systems Manager の Run Command で新しいランタイムを導入し、動作を確認してから OS を更新する。",
+      "correct": false,
+      "rationale": "稼働中のインスタンスに変更を加える方法で、イミュータブルインフラの考え方に反し、「既存のインスタンスには変更を加えない」要件を満たしません。メジャーバージョンの更新を戻すのも難しく、環境間の差も生まれます。"
+    },
+    {
+      "id": "c",
+      "text": "新しい AMI から別の Auto Scaling グループを作成して別のターゲットグループに登録する。ALB のリスナールールで旧・新のターゲットグループに重みを付けて 90 対 10 に分け、検証後に重みを切り替える。問題があれば重みを戻す。",
+      "correct": true,
+      "rationale": "新旧の環境を並行して稼働させるブルー/グリーンの構成です。ALB の加重ターゲットグループでリクエスト単位に比率を制御でき、重みの変更だけで即座に切り替えも切り戻しもできます。旧環境は検証が終わるまで残すため、既存のインスタンスにも変更を加えません。"
+    },
+    {
+      "id": "d",
+      "text": "新しい AMI で新しい ALB と Auto Scaling グループを作成し、Amazon Route 53 の加重ルーティングで旧・新の ALB を 90 対 10 に分ける。問題があればレコードの重みを戻す。",
+      "correct": false,
+      "rationale": "DNS の応答はクライアントやリゾルバーに TTL の間キャッシュされるため、重みを戻しても反映に時間がかかり、即時には切り戻せません。また、既存のドメイン名に加重レコードを作るには既存の DNS レコードの変更が必要で、既存の ALB と DNS レコードは変更できないという制約にも反します。"
+    }
+  ],
+  "explanation": "イミュータブルインフラストラクチャは、稼働中のサーバーを更新せず、変更を含む新しいイメージ（AMI）から新しいサーバーを作って置き換える考え方です。構成のずれが生じず、元の環境が残っていれば戻すのも簡単です。\n\nこの問題の肝は、旧環境を残したまま新環境を並行稼働させ、リクエストの比率で段階的に移行し、問題があれば即座に戻せる点です。ALB のフォワードアクションでは、複数のターゲットグループに 0〜999 の重みを付けて振り分けられます。新しい AMI の Auto Scaling グループを別のターゲットグループに登録し、重みを 90:10 から 0:100 へと進めれば、ブルー/グリーンデプロイになります。切り戻しは重みを戻すだけで、DNS のキャッシュの影響も受けません。\n\nインスタンスの更新は手軽ですが、置換が進むと旧環境が消えるため、トラフィックの比率を指定した検証や即時の切り戻しには向きません。Route 53 の加重ルーティングは新旧の ALB を分けるのに使えますが、DNS の TTL により切り替えの反映が遅れます。",
+  "keyPoints": [
+    "稼働中のサーバーを変更せず、新しい AMI で置き換える → イミュータブルインフラ。構成のずれを防ぎ、切り戻しも容易",
+    "ブルー/グリーンは新旧を並行稼働。ALB のフォワードアクションで複数のターゲットグループに重みを付けると、リクエスト単位で比率を制御できる",
+    "DNS ベースの切り替え（Route 53 の加重ルーティング）は、TTL とキャッシュにより即時の切り戻しが難しい",
+    "インスタンスの更新はローリングで置き換える方法。旧環境が残らない"
+  ],
+  "references": [
+    {
+      "title": "Action types for listener rules - Application Load Balancers",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html"
+    },
+    {
+      "title": "Use an instance refresh to update instances in an Auto Scaling group - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

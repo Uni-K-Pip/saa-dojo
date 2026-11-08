@@ -1,0 +1,71 @@
+{
+  "id": "saa-basics-w2c-015",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K7"
+  ],
+  "services": [
+    "Amazon RDS",
+    "AWS Key Management Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "RDS の暗号化",
+    "スナップショット",
+    "保存時の暗号化"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社には、暗号化されていない Amazon RDS の DB インスタンスがあります。新しいセキュリティ基準により、保存データの暗号化が必須になりました。データを失わずに、暗号化されたデータベースへ移すには、どの手順を取りますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "DB インスタンスの設定を変更して、暗号化を有効にする。",
+      "correct": false,
+      "rationale": "RDS の DB インスタンスは、作成した後に暗号化を直接有効にすることはできません。暗号化できるのは、作成するときだけです。"
+    },
+    {
+      "id": "b",
+      "text": "スナップショットを取得し、暗号化を有効にしてコピーする。暗号化されたスナップショットから新しい DB インスタンスを復元して、アプリケーションの接続先を切り替える。",
+      "correct": true,
+      "rationale": "暗号化されていないスナップショットを、暗号化を有効にしてコピーできます。そこから復元した DB インスタンスは暗号化されており、データも引き継がれます。"
+    },
+    {
+      "id": "c",
+      "text": "暗号化を有効にした読み取りレプリカを作成する。",
+      "correct": false,
+      "rationale": "暗号化されていない DB インスタンスの、暗号化された読み取りレプリカは作成できません。読み取りレプリカは元の DB と暗号化の状態が同じになります。"
+    },
+    {
+      "id": "d",
+      "text": "DB への接続を SSL/TLS に限定する設定にする。",
+      "correct": false,
+      "rationale": "接続の SSL/TLS は転送時の暗号化です。ストレージに保存されるデータを暗号化する保存時の暗号化にはなりません。"
+    }
+  ],
+  "explanation": "RDS の DB インスタンスの暗号化は、作成するときにだけ有効にでき、作成後に直接有効にすることはできません。ただし、暗号化されていないスナップショットを、暗号化を有効にしてコピーできるので、実質的に既存のデータベースを暗号化できます。\n\n手順は、(1) スナップショットを取る、(2) 暗号化を有効にしてスナップショットをコピーする、(3) 暗号化されたスナップショットから新しい DB インスタンスを復元し、アプリケーションの接続先を切り替える、です。暗号化された読み取りレプリカは、暗号化されていない DB からは作れません。接続の SSL/TLS は、保存時ではなく転送時の暗号化です。",
+  "keyPoints": [
+    "既存の暗号化されていない RDS（EBS も同様）→ スナップショットを暗号化してコピーし、そこから復元する",
+    "暗号化されていない RDS の DB から、暗号化された読み取りレプリカは作れない"
+  ],
+  "references": [
+    {
+      "title": "Encrypting Amazon RDS resources",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+    },
+    {
+      "title": "What is Amazon RDS?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-encryption"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

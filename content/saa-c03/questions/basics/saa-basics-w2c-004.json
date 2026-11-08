@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K9"
+  ],
+  "services": [
+    "Amazon RDS",
+    "Amazon DynamoDB",
+    "Amazon Redshift",
+    "Amazon ElastiCache"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "リレーショナル",
+    "トランザクション",
+    "RDS"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある雑貨店チェーンは、オンプレミスの MySQL で動いている注文管理システムを AWS に移します。注文、顧客、商品の複数の表を結合して検索し、注文の登録と在庫の更新を「全部成功するか全部取り消す」トランザクションで処理する必要があります。データベースの運用はできるだけ AWS に任せたいと考えています。どのサービスが最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon DynamoDB",
+      "correct": false,
+      "rationale": "DynamoDB はキーで読み書きする NoSQL で、複数の表の結合（JOIN）は苦手です。既存の MySQL のアプリケーションをそのまま移す用途にも向きません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon RDS for MySQL",
+      "correct": true,
+      "rationale": "RDS はリレーショナルデータベースのマネージドサービスで、SQL による結合とトランザクションを使えます。ハードウェアの用意、パッチの適用、バックアップは AWS が行います。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Redshift",
+      "correct": false,
+      "rationale": "Redshift は大量のデータを集計・分析するためのデータウェアハウスです。注文の登録のような 1 件ずつの頻繁な更新を処理する用途には向きません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon ElastiCache",
+      "correct": false,
+      "rationale": "ElastiCache はデータをメモリに置くキャッシュで、元のデータは別のデータベースに残す前提です。注文データの本来の保存先にはなりません。"
+    }
+  ],
+  "explanation": "「複数の表を結合して検索」「トランザクション」「既存の MySQL のアプリケーション」というキーワードは、リレーショナルデータベースを示します。AWS では Amazon RDS（MySQL、PostgreSQL などを使えるマネージドサービス）か Amazon Aurora が候補です。運用を AWS に任せたいという条件も、マネージドサービスの RDS で満たせます。\n\nDynamoDB は規模の拡張と一定の応答速度に優れる反面、結合は苦手です。Redshift は分析（OLAP）向けで、注文の登録のような OLTP には向きません。ElastiCache はキャッシュとして使い、元データを置く場所にはなりません。",
+  "keyPoints": [
+    "結合・トランザクション・既存の MySQL や PostgreSQL → RDS か Aurora",
+    "分析は Redshift、キャッシュは ElastiCache、キーでの高速な読み書きは DynamoDB"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon RDS?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "What is Amazon DynamoDB?",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-database-types"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

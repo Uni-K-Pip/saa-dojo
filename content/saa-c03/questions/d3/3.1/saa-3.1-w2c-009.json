@@ -1,0 +1,71 @@
+{
+  "id": "saa-3.1-w2c-009",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-S1", "3.1-K2"],
+  "services": ["Amazon S3"],
+  "qualifier": "performance",
+  "tags": ["Amazon S3", "Transfer Acceleration", "マルチパートアップロード", "大容量オブジェクト"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある報道機関のシンガポールとシドニーの支局は、1 本 5〜20 GB の動画ファイルを、インターネット経由で米国東部（バージニア北部）リージョンの Amazon S3 バケットにアップロードしています。回線の帯域には余裕がありますが、単一の接続では転送が遅く、通信が途切れるたびに最初からやり直しになっています。バケット名は DNS に準拠し、ピリオドを含みません。アップロードの所要時間を短縮し、中断時の再送も最小にしたいと考えています。最も効果的な対策を 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 のゲートウェイ VPC エンドポイントを作成し、支局からの通信をエンドポイント経由にする。",
+      "correct": false,
+      "rationale": "ゲートウェイ VPC エンドポイントは、VPC 内のリソースから S3 に AWS のネットワークでアクセスするための機能です。インターネット経由でアップロードする遠隔の支局には適用されず、距離による遅延の改善にもなりません。"
+    },
+    {
+      "id": "b",
+      "text": "バケットで S3 Transfer Acceleration を有効にし、支局のアップロードにアクセラレーションエンドポイントを使う。",
+      "correct": true,
+      "rationale": "Transfer Acceleration は、CloudFront のエッジロケーションでデータを受け、最適化された経路で S3 に転送します。遠く離れた支局から大きなファイルを送る場合に、距離による遅さを軽減できます。バケット名がピリオドを含まないので利用できます。"
+    },
+    {
+      "id": "c",
+      "text": "動画の保存先を S3 Express One Zone ストレージクラスのディレクトリバケットに変更する。",
+      "correct": false,
+      "rationale": "S3 Express One Zone は、単一のアベイラビリティーゾーン内で低レイテンシーのアクセスを実現するものです。遠隔地からインターネットを通るときの距離による遅延を解消せず、単一接続の遅さや中断時のやり直しにも対処しません。"
+    },
+    {
+      "id": "d",
+      "text": "バケットのサーバー側の暗号化を SSE-KMS から SSE-S3 に変更する。",
+      "correct": false,
+      "rationale": "暗号化方式の変更は、KMS のリクエスト数の制約に関わる場合の対策です。この問題のボトルネックは、遠隔地からの単一接続の転送速度と中断時のやり直しで、暗号化方式とは関係がありません。"
+    },
+    {
+      "id": "e",
+      "text": "アップロードにマルチパートアップロードを使い、ファイルを分割したパートを並列に送信する。",
+      "correct": true,
+      "rationale": "マルチパートアップロードは、複数のパートを並列に送ってスループットを高め、失敗したパートだけを再送できます。単一の接続が遅く、中断のたびに最初からやり直しになる問題の両方に対応します。"
+    }
+  ],
+  "explanation": "距離が離れたクライアントから S3 へ大きなオブジェクトを送る場合は、転送経路と転送方法の両面から対策します。\n\nS3 Transfer Acceleration は、CloudFront のグローバルなエッジロケーションにデータを送り、エッジから S3 へは最適化された経路で転送する機能です。クライアントが S3 のリージョンから遠いほど効果が大きくなります。バケット単位で有効にし、専用のエンドポイント（バケット名.s3-accelerate.amazonaws.com）を使います。バケット名が DNS 準拠でピリオドを含まないことが条件です。\n\nマルチパートアップロードは、1 つのオブジェクトを複数のパートに分けて、並列かつ独立に送る方式です。並列化でスループットが上がり、失敗したパートだけを再送すれば済むため、中断の影響も小さくなります。100 MB 以上のオブジェクトには推奨されています。2 つを組み合わせると効果が大きくなります。\n\nVPC エンドポイントは VPC 内からのアクセスの経路を変えるもので、インターネット経由の遠隔拠点には関係がありません。S3 Express One Zone は単一 AZ 内の低レイテンシー向けで、距離の問題は解決しません。",
+  "keyPoints": [
+    "遠隔地から S3 へ大きなファイルを送る → Transfer Acceleration（エッジ経由）＋マルチパートアップロード（並列・部分再送）",
+    "Transfer Acceleration はバケット名が DNS 準拠でピリオドを含まないことが条件。専用エンドポイントを使う",
+    "100 MB 以上のオブジェクトにはマルチパートアップロードが推奨。VPC エンドポイントは VPC 内からのアクセス用"
+  ],
+  "references": [
+    {
+      "title": "Configuring fast, secure file transfers using Amazon S3 Transfer Acceleration",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+    },
+    {
+      "title": "Uploading and copying objects using multipart upload in Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+    },
+    {
+      "title": "Performance design patterns for Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

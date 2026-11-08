@@ -1,0 +1,76 @@
+{
+  "id": "saa-basics-w2c-018",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K6"
+  ],
+  "services": [
+    "AWS Identity and Access Management (IAM)"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "ルートユーザー",
+    "MFA",
+    "最小権限"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社は、新しい AWS アカウントを作成しました。現在サインインできるのは、アカウント作成時のメールアドレスとパスワードによる、ルートユーザーだけです。セキュリティ担当者は、AWS が推奨するルートユーザーの扱いに従いたいと考えています。適切な対応を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ルートユーザーのアクセスキーを作成して、自動化スクリプトに使う。",
+      "correct": false,
+      "rationale": "ルートユーザーはアカウントのすべての権限を持つため、アクセスキーは作らないのが原則です。スクリプトには権限を絞った IAM ロールなどを使います。"
+    },
+    {
+      "id": "b",
+      "text": "ルートユーザーのパスワードを開発チーム全員で共有して、日常の作業に使う。",
+      "correct": false,
+      "rationale": "日常の作業にルートユーザーを使ってはいけません。共有すると、だれが何をしたかも分からなくなります。"
+    },
+    {
+      "id": "c",
+      "text": "ルートユーザーに多要素認証（MFA）を設定する。",
+      "correct": true,
+      "rationale": "ルートユーザーのパスワードが漏れても、MFA があればサインインを防げます。ルートユーザーには必ず MFA を設定します。"
+    },
+    {
+      "id": "d",
+      "text": "日常の作業には、必要な権限だけを付けた IAM ユーザーやロールを使い、ルートユーザーは使わない。",
+      "correct": true,
+      "rationale": "日常の作業は、権限を絞った IAM のユーザーやロールで行うのが最小権限の原則に沿った使い方です。ルートユーザーは、ルートユーザーでしかできない作業のときだけ使います。"
+    },
+    {
+      "id": "e",
+      "text": "作業しやすいように、すべての担当者の IAM ユーザーに AdministratorAccess のポリシーを付ける。",
+      "correct": false,
+      "rationale": "全員に管理者権限を与えると、不要な権限まで持つことになります。作業に必要な操作とリソースだけを許可する最小権限の原則に反します。"
+    }
+  ],
+  "explanation": "ルートユーザーは、AWS アカウントを作ったときのメールアドレスとパスワードでサインインするユーザーで、アカウントのすべての権限を持ちます。そのため、次のように扱います。日常の作業には使わない。MFA を設定する。アクセスキーを作らない。\n\n日常の作業には、IAM ユーザーやロールを作り、必要な権限だけを付けます（最小権限の原則）。人の権限は、グループにまとめて管理すると、異動のときに所属を変えるだけで済みます。パスワードの共有や、全員への管理者権限の付与は、責任の追跡や最小権限の面で問題があります。",
+  "keyPoints": [
+    "ルートユーザー: 日常に使わない、MFA を設定する、アクセスキーを作らない",
+    "作業には必要な権限だけの IAM ユーザーやロールを使う（最小権限の原則）"
+  ],
+  "references": [
+    {
+      "title": "AWS account root user",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+    },
+    {
+      "title": "Security best practices in IAM",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-iam"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

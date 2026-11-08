@@ -1,0 +1,73 @@
+{
+  "id": "saa-3.3-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-K1",
+    "3.3-S2"
+  ],
+  "services": [
+    "Amazon Aurora"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "Aurora Global Database",
+    "スイッチオーバー",
+    "フェイルオーバー",
+    "リージョン障害",
+    "クロスリージョン"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある保険会社は、東京リージョンの Amazon Aurora MySQL-Compatible Edition で契約管理システムを運用しています。リージョン全体の障害に備えて、大阪リージョンに災害対策用の構成を持ち、障害時はなるべく少ないデータ損失で数分以内に大阪で書き込みを再開したいと考えています。また、年に 1 回のリージョン切り替えの訓練では、データを一切失わずに主従を入れ替えたいと考えています。さらに、平常時は本番の書き込み性能に影響を与えないようにする必要があります。どの設計が要件を満たしますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Global Database を構成し、大阪にセカンダリを作る。障害時はフェイルオーバー、年 1 回の訓練ではスイッチオーバーを使う。",
+      "correct": true,
+      "rationale": "Global Database はストレージ層の専用インフラでセカンダリへ複製するため、書き込み性能への影響が小さく、通常は 1 秒未満の遅延です。リージョン障害にはフェイルオーバーを、データを失わない訓練にはスイッチオーバーを使い分けます。"
+    },
+    {
+      "id": "b",
+      "text": "Global Database を構成し、大阪にセカンダリを作る。リージョン障害時も訓練時も、常にフェイルオーバーを実行する。",
+      "correct": false,
+      "rationale": "フェイルオーバーは、障害後にセカンダリを昇格して復旧するための操作で、非同期の複製の遅れ分のデータが失われる可能性があります。データを失わずに主従を入れ替える訓練には、スイッチオーバーを使うべきです。"
+    },
+    {
+      "id": "c",
+      "text": "東京リージョンの 3 つの AZ に Aurora レプリカを配置し、AZ をまたぐ高可用性の構成にする。",
+      "correct": false,
+      "rationale": "AZ の障害には強くなりますが、すべてが東京リージョン内にあるため、リージョン全体の障害には備えられません。大阪で書き込みを再開するという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "東京の Aurora クラスターのスナップショットを 1 時間ごとに大阪リージョンへコピーし、障害時に大阪でクラスターを復元する。",
+      "correct": false,
+      "rationale": "最悪で 1 時間分のデータが失われ、復元にも時間がかかります。少ないデータ損失で数分以内に書き込みを再開するという要件を満たしません。"
+    }
+  ],
+  "explanation": "Aurora Global Database は、1 つのプライマリリージョンと最大 10 のセカンダリリージョンで構成され、ストレージ層の専用インフラでレプリケーションを行います。データベースエンジンを使わないので、プライマリの性能への影響が小さく、遅延は通常 1 秒未満です。セカンダリを素早く昇格でき、従来のレプリケーションよりも RTO と RPO を小さくできます。\n\nプライマリリージョンを変更する操作は 2 種類あります。正常なグローバルデータベースを計画的に切り替える場合は、データを失わないスイッチオーバー（旧称: マネージド計画フェイルオーバー）を使います。リージョンの障害から復旧する場合は、障害時のフェイルオーバーを使います。Multi-AZ の構成は AZ の障害にしか備えられず、スナップショットのコピーは RPO・RTO が大きくなります。",
+  "keyPoints": [
+    "リージョン障害への備え + 低 RPO・低 RTO → Aurora Global Database（ストレージ層で複製、遅延は通常 1 秒未満）",
+    "計画的な切り替え（訓練・保守）はスイッチオーバー（データ損失なし）、障害後の復旧はフェイルオーバー",
+    "Multi-AZ は AZ 障害に強いがリージョン障害には備えられない",
+    "スナップショットのコピーは RPO・RTO が大きい"
+  ],
+  "references": [
+    {
+      "title": "Using Amazon Aurora Global Database - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+    },
+    {
+      "title": "Using switchover or failover in Amazon Aurora Global Database",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

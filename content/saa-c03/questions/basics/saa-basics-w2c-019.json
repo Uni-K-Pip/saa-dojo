@@ -1,0 +1,67 @@
+{
+  "id": "saa-basics-w2c-019",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K4"
+  ],
+  "services": [
+    "Amazon VPC",
+    "Amazon EC2"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "CIDR",
+    "サブネット",
+    "予約アドレス"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、VPC の中に CIDR が 10.0.1.0/24 のサブネットを作ります。このサブネットには、EC2 インスタンスをできるだけ多く起動する予定です。AWS が予約するアドレスを考慮したとき、このサブネットでインスタンスなどに割り当てられるプライベート IPv4 アドレスの数は最大でいくつですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "256 個",
+      "correct": false,
+      "rationale": "/24 の範囲が表すアドレスの数は 256 個ですが、そのうちの 5 個は AWS が予約しており、インスタンスには割り当てられません。"
+    },
+    {
+      "id": "b",
+      "text": "254 個",
+      "correct": false,
+      "rationale": "254 は、先頭と末尾の 2 つ（ネットワークアドレスとブロードキャスト）だけを引いた数で、一般的なネットワークの計算です。VPC のサブネットでは 5 個が予約されます。"
+    },
+    {
+      "id": "c",
+      "text": "250 個",
+      "correct": false,
+      "rationale": "予約されるアドレスは 5 個なので、256 から引くと 251 個です。250 個は引きすぎです。"
+    },
+    {
+      "id": "d",
+      "text": "251 個",
+      "correct": true,
+      "rationale": "/24 は 2 の 8 乗で 256 個のアドレスを表し、そのうち先頭の 4 つと最後の 1 つ、合計 5 個を AWS が予約します。256 − 5 で 251 個が割り当てられます。"
+    }
+  ],
+  "explanation": "CIDR 表記の「/24」は、先頭の 24 ビットを固定する意味で、残りの 32 − 24 = 8 ビットを自由に使えるため、2 の 8 乗 = 256 個のアドレスを表します。\n\nVPC のサブネットでは、先頭の 4 つ（ネットワークアドレス、VPC のルーター、DNS サーバー用、将来の利用のための予約）と最後の 1 つ（ブロードキャストアドレス）の合計 5 個を AWS が予約し、インスタンスには割り当てられません。そのため、/24 のサブネットで使えるのは 256 − 5 = 251 個です。必要なアドレスの数を計算するときは、この 5 個を引きます。",
+  "keyPoints": [
+    "/24 のサブネットで使えるアドレスは 256 個ではなく 251 個（AWS が 5 個を予約）",
+    "「/」の後ろの数字が大きいほど、範囲は狭くなる"
+  ],
+  "references": [
+    {
+      "title": "Subnets for your VPC",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,367 @@
+{
+  "deck": "w2c-services-a",
+  "title": "サービスの役割と使い分け（前半）",
+  "createdBy": "w2c",
+  "cards": [
+    {
+      "id": "fc-w2c-001",
+      "front": "第三者が提供するデータセットを購読して、自社の S3 に取り込みたい。使うサービスは？",
+      "back": "AWS Data Exchange。AWS Marketplace 上のプロバイダーのデータ製品を購読し、権利を得たデータを自分の Amazon S3 などにエクスポートして分析に使う。データ形式はファイル、API、Amazon Redshift のデータ共有など。自社データを製品として提供する側にもなれる。",
+      "taskStatements": ["3.5"],
+      "services": ["AWS Data Exchange", "Amazon Simple Storage Service"],
+      "tags": ["データ取り込み", "サードパーティデータ"]
+    },
+    {
+      "id": "fc-w2c-002",
+      "front": "AWS Data Pipeline を新しく採用してよいか。代わりに何を選ぶか。",
+      "back": "新規には選ばない。AWS Data Pipeline は新規顧客に提供されておらず、保守モード（新機能やリージョン拡大なし）。EC2 や EMR でデータ移動・変換をスケジュール実行する旧来の仕組みなので、新しく作るなら AWS Glue や AWS Step Functions を選ぶ。",
+      "taskStatements": ["3.5"],
+      "services": ["AWS Data Pipeline", "AWS Glue", "AWS Step Functions"],
+      "tags": ["新規受付停止", "オーケストレーション"]
+    },
+    {
+      "id": "fc-w2c-003",
+      "front": "アプリのログを全文検索・集計して可視化したい。マネージドの検索・ログ分析基盤は？",
+      "back": "Amazon OpenSearch Service。OpenSearch クラスターをマネージドで提供し、全文検索、ログ・メトリクスの分析、ダッシュボード表示に使う。Amazon Data Firehose や CloudWatch Logs から取り込める。可用性を上げるには複数 AZ にノードを配置する。S3 上のデータを SQL で都度クエリするなら Amazon Athena。",
+      "taskStatements": ["3.5", "3.3"],
+      "services": ["Amazon OpenSearch Service", "Amazon Data Firehose", "Amazon Athena"],
+      "tags": ["検索", "ログ分析"]
+    },
+    {
+      "id": "fc-w2c-004",
+      "front": "Amazon Quick と、旧称の Amazon QuickSight の関係は？ BI ダッシュボードで使う機能は？",
+      "back": "Amazon QuickSight が発展して Amazon Quick（途中の名称は Quick Suite）になった。BI（ダッシュボード作成・可視化・埋め込み）の機能は Amazon Quick Sight として Quick の中で続き、既存の QuickSight の API や SDK はそのまま動く。試験の「可視化」の選択肢はこのサービス。",
+      "taskStatements": ["3.5"],
+      "services": ["Amazon Quick"],
+      "tags": ["可視化", "BI", "改称"]
+    },
+    {
+      "id": "fc-w2c-005",
+      "front": "Salesforce などの SaaS と S3 や Redshift の間で、コードを書かずにデータを転送したい。",
+      "back": "Amazon AppFlow。SaaS アプリと AWS サービスの間のデータ転送をフルマネージドで設定する。実行はオンデマンド、スケジュール、イベント起動から選べ、転送中に項目のマッピングやフィルタリングもできる。自前の Lambda 転送コードの運用が不要になる点が決め手。",
+      "taskStatements": ["3.5", "2.1"],
+      "services": ["Amazon AppFlow", "Amazon Simple Storage Service", "Amazon Redshift"],
+      "tags": ["SaaS連携", "データ転送"]
+    },
+    {
+      "id": "fc-w2c-006",
+      "front": "サーバーレスアプリを組織内や一般に公開・共有し、他の人が数クリックでデプロイできるようにしたい。",
+      "back": "AWS Serverless Application Repository。AWS SAM のテンプレートと一緒にアプリを公開し、利用者は検索して設定値を入れ、CloudFormation 経由でデプロイする。公開先は一般公開か、特定アカウントや組織に限定した非公開から選べ、Lambda コンソールからも探せる。",
+      "taskStatements": ["2.1"],
+      "services": ["AWS Serverless Application Repository", "AWS Lambda", "AWS CloudFormation"],
+      "tags": ["サーバーレス", "共有"]
+    },
+    {
+      "id": "fc-w2c-007",
+      "front": "オンプレミスの VMware vSphere 環境を、アプリを改修せず同じ運用ツールのまま AWS へ拡張・移行したい。",
+      "back": "VMware Cloud on AWS。AWS のベアメタル上に VMware のソフトウェア定義データセンターを動かし、VM を同じ管理ツールで移行・拡張できる。アプリの作り直しが不要で、AWS の他サービスとも接続できる。注意：2024年以降、販売窓口は Broadcom に移っている。",
+      "taskStatements": ["3.2", "2.1"],
+      "services": ["VMware Cloud on AWS"],
+      "tags": ["ハイブリッド", "VMware", "変更最小"]
+    },
+    {
+      "id": "fc-w2c-008",
+      "front": "オンプレミスのサーバーを Amazon ECS のクラスターに登録して、同じ API で運用できるか。",
+      "back": "できる。Amazon ECS Anywhere は外部インスタンス（オンプレミスの物理・仮想マシン）をクラスターに登録し、EXTERNAL 起動タイプでタスクを動かす。AWS 側のコントロールプレーンで管理する。制約として、サービスのロードバランサー連携（ELB）は使えない。外向き通信やデータ処理向き。",
+      "taskStatements": ["2.1", "3.2"],
+      "services": ["Amazon ECS Anywhere", "Amazon Elastic Container Service"],
+      "tags": ["コンテナ", "ハイブリッド"]
+    },
+    {
+      "id": "fc-w2c-009",
+      "front": "Amazon EKS Anywhere は何をするサービスか。コントロールプレーンは誰が運用するか。",
+      "back": "オンプレミスやエッジの自社インフラ上で、EKS と同じ Kubernetes ディストリビューション（EKS Distro）を使ったクラスターを構築・運用する仕組み。クラスターのライフサイクル運用は利用者の責任で、AWS がコントロールプレーンを管理する Amazon EKS とは運用責任が異なる。",
+      "taskStatements": ["2.1", "3.2"],
+      "services": ["Amazon EKS Anywhere", "Amazon EKS Distro", "Amazon Elastic Kubernetes Service"],
+      "tags": ["コンテナ", "ハイブリッド", "Kubernetes"]
+    },
+    {
+      "id": "fc-w2c-010",
+      "front": "Amazon EKS Distro とは何か。EKS Anywhere との関係は？",
+      "back": "Amazon EKS で使われているのと同じビルド・依存関係の Kubernetes をオープンソースで配布するディストリビューション。利用者が自分の環境で EKS と一貫したバージョンを動かせる。EKS Anywhere はこの EKS Distro を土台に、クラスターの作成・管理ツールを加えたもの。",
+      "taskStatements": ["2.1"],
+      "services": ["Amazon EKS Distro", "Amazon EKS Anywhere"],
+      "tags": ["コンテナ", "Kubernetes"]
+    },
+    {
+      "id": "fc-w2c-011",
+      "front": "既存の MongoDB アプリを大きく変えず、マネージドのドキュメントデータベースへ移したい。",
+      "back": "Amazon DocumentDB (with MongoDB compatibility)。MongoDB 互換の API を持つマネージドのドキュメント DB で、ストレージは 3 つの AZ に 6 コピーで保持され、自動で拡張される。リードレプリカで読み取りをスケールできる。MongoDB 自体ではなく API 互換である点に注意。",
+      "taskStatements": ["3.3"],
+      "services": ["Amazon DocumentDB (with MongoDB compatibility)"],
+      "tags": ["ドキュメントDB", "MongoDB互換"]
+    },
+    {
+      "id": "fc-w2c-012",
+      "front": "Apache Cassandra のアプリを、クラスター運用なしでそのまま動かしたい。",
+      "back": "Amazon Keyspaces (for Apache Cassandra)。Cassandra Query Language（CQL）と互換のサーバーレスなワイドカラム DB で、サーバーやパッチの管理が不要。容量はオンデマンドとプロビジョンドから選べ、ポイントインタイムリカバリも使える。KV やドキュメントの新規設計なら DynamoDB を検討。",
+      "taskStatements": ["3.3"],
+      "services": ["Amazon Keyspaces (for Apache Cassandra)", "Amazon DynamoDB"],
+      "tags": ["ワイドカラムDB", "Cassandra互換", "サーバーレス"]
+    },
+    {
+      "id": "fc-w2c-013",
+      "front": "マイクロサービス間の呼び出しで、どこが遅いか・エラーかを特定する分散トレースのサービスは？",
+      "back": "AWS X-Ray。リクエストを追跡してトレースとサービスマップを作り、遅延やエラーの原因となっている下流サービスを特定する。Lambda や API Gateway などは連携済み。X-Ray SDK とデーモンは保守モードに入っており、新規の計装は OpenTelemetry が推奨されるが、X-Ray サービス自体は継続。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS X-Ray", "AWS Lambda", "Amazon API Gateway"],
+      "tags": ["分散トレース", "可観測性"]
+    },
+    {
+      "id": "fc-w2c-014",
+      "front": "フロントエンド開発者が、Web・モバイルアプリのホスティングと認証・API などのバックエンドをまとめて素早く用意したい。",
+      "back": "AWS Amplify。フロントエンドのホスティングと CI/CD、およびバックエンド（認証に Amazon Cognito、API、ストレージなど）を、フロントエンド開発者向けのツールでまとめて構築・デプロイする。インフラ設計の知識を最小限にして短期間で公開できる点が決め手。",
+      "taskStatements": ["2.1"],
+      "services": ["AWS Amplify", "Amazon Cognito"],
+      "tags": ["フルスタック", "モバイル", "ホスティング"]
+    },
+    {
+      "id": "fc-w2c-015",
+      "front": "自社のモバイル・Web アプリを、多数の実機やブラウザの組み合わせでテストしたい。",
+      "back": "AWS Device Farm。AWS が用意する実機のスマートフォンやタブレット、デスクトップブラウザ上で、アプリの自動テストや手動操作を並列に実行できる。自前で端末を揃えて保守する必要がなく、テスト結果として動画やログも得られる。",
+      "taskStatements": ["2.1"],
+      "services": ["AWS Device Farm"],
+      "tags": ["テスト", "モバイル"]
+    },
+    {
+      "id": "fc-w2c-016",
+      "front": "音声・テキストで対話するチャットボットを作るサービスは？ 旧バージョンの扱いは？",
+      "back": "Amazon Lex。Alexa と同じ技術で、音声認識と自然言語理解を使い、会話型のボットを構築する。注文受付やコールセンターの自動応答などに使い、Lambda でビジネスロジックを呼び出せる。Lex V1 は2025年9月に終了済みで、使うのは V2。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Lex", "AWS Lambda"],
+      "tags": ["機械学習", "チャットボット"]
+    },
+    {
+      "id": "fc-w2c-017",
+      "front": "機械学習の知識なしで、画像や動画から顔・物体・文字・不適切なコンテンツを検出したい。",
+      "back": "Amazon Rekognition。学習済みモデルを API で呼び出すだけで、画像・動画内の物体、顔、テキストなどを検出できる。モデルを自分で学習・運用する必要がない。帳票からの項目抽出は Amazon Textract、モデルの独自開発は Amazon SageMaker AI が向く。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Rekognition", "Amazon Textract", "Amazon SageMaker AI"],
+      "tags": ["機械学習", "画像認識"]
+    },
+    {
+      "id": "fc-w2c-018",
+      "front": "スキャンした請求書や申込書から、文字だけでなく表やフォームの項目も取り出したい。",
+      "back": "Amazon Textract。OCR に加えて、フォームのキーと値、表、身分証などの構造を理解して抽出する。単なる画像内の文字検出ではなく、帳票の項目を取り出したいときの選択肢。後続処理は Lambda や Step Functions で組み合わせることが多い。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Textract"],
+      "tags": ["機械学習", "OCR"]
+    },
+    {
+      "id": "fc-w2c-019",
+      "front": "AWS Auto Scaling（スケーリングプラン）と Amazon EC2 Auto Scaling の違いは？",
+      "back": "EC2 Auto Scaling は EC2 の Auto Scaling グループを増減する。AWS Auto Scaling はスケーリングプランで、EC2 に加え ECS タスク、DynamoDB の容量、Aurora レプリカ、スポットフリートなど複数リソースの拡張を一括設定する。予測スケーリングだけが目的なら、EC2 Auto Scaling の予測スケーリングポリシーを直接使う方が推奨。",
+      "taskStatements": ["3.2", "2.1"],
+      "services": ["AWS Auto Scaling", "Amazon EC2 Auto Scaling"],
+      "tags": ["スケーリング", "弾力性"]
+    },
+    {
+      "id": "fc-w2c-020",
+      "front": "AWS CLI から AWS を操作するとき、長期のアクセスキーを避けて認証する方法は？",
+      "back": "IAM Identity Center でサインインする（aws configure sso）か、IAM ロールを引き受けて一時認証情報を使う。名前付きプロファイルで切り替える。EC2 上ならインスタンスプロファイルのロールを使う。アクセスキーを端末やコードに置くより漏えいリスクが小さい。",
+      "taskStatements": ["1.1", "1.2"],
+      "services": ["AWS Command Line Interface", "AWS IAM Identity Center", "AWS Identity and Access Management"],
+      "tags": ["認証", "一時認証情報", "CLI"]
+    },
+    {
+      "id": "fc-w2c-021",
+      "front": "自分のアカウントのリソースに影響する AWS 側の障害・メンテナンスを通知で受け取るには？",
+      "back": "AWS Health Dashboard。AWS 全体のサービス状態と、自分のアカウントに影響するイベント（アカウントの状況）を確認できる。Amazon EventBridge と連携して、イベントを検知しメール、SNS、Lambda などで通知・自動対応できる。Trusted Advisor はベストプラクティスの診断で、役割が異なる。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS Health Dashboard", "Amazon EventBridge", "AWS Trusted Advisor"],
+      "tags": ["運用", "障害通知"]
+    },
+    {
+      "id": "fc-w2c-022",
+      "front": "手持ちのソフトウェアライセンス（BYOL）の使用数を管理し、超過した起動を防ぎたい。",
+      "back": "AWS License Manager。ライセンス条件（vCPU 数やインスタンス数など）をルールとして定義し、EC2 などでの使用量を追跡する。上限を超える起動を拒否でき、AWS Organizations を使えば複数アカウントを横断して管理できる。ライセンス違反のリスクとコストを抑える用途。",
+      "taskStatements": ["4.2"],
+      "services": ["AWS License Manager", "AWS Organizations"],
+      "tags": ["ライセンス", "BYOL", "ガバナンス"]
+    },
+    {
+      "id": "fc-w2c-023",
+      "front": "既存の Grafana ダッシュボードを、サーバー運用なしで使い続けたい。複数のデータソースを一つの画面で見るには？",
+      "back": "Amazon Managed Grafana。Grafana ワークスペースをフルマネージドで提供し、Amazon CloudWatch、Amazon Managed Service for Prometheus、Amazon OpenSearch Service など複数のデータソースを一つのダッシュボードで可視化する。ユーザー認証は IAM Identity Center や SAML と連携できる。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon Managed Grafana", "Amazon CloudWatch"],
+      "tags": ["可視化", "モニタリング"]
+    },
+    {
+      "id": "fc-w2c-024",
+      "front": "Kubernetes のコンテナのメトリクスを、Prometheus 互換のまま、収集・保存の運用なしで扱いたい。",
+      "back": "Amazon Managed Service for Prometheus。Prometheus 互換のメトリクスの収集・保存・クエリ（PromQL）をサーバーレスで提供し、容量は自動でスケールする。EKS や ECS のコンテナ監視向きで、可視化は Amazon Managed Grafana と組み合わせる。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon Managed Service for Prometheus", "Amazon Managed Grafana"],
+      "tags": ["モニタリング", "コンテナ", "Prometheus"]
+    },
+    {
+      "id": "fc-w2c-025",
+      "front": "AWS マネジメントコンソールへのサインインで、日常運用とルートユーザーをどう使い分けるか。",
+      "back": "日常の操作は IAM Identity Center やフェデレーション、IAM ロールで行い、ルートユーザーは使わない。ルートユーザーが必要な作業（アカウント設定の変更や解約など、ルート限定の作業）だけに限定し、必ず MFA を有効にする。コンソールは Web UI で、同じ操作は CLI・SDK からも行える。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Management Console", "AWS Identity and Access Management", "AWS IAM Identity Center"],
+      "tags": ["ルートユーザー", "MFA", "ベストプラクティス"]
+    },
+    {
+      "id": "fc-w2c-026",
+      "front": "AWS Proton はまだ使えるか。インフラのテンプレートを標準化して開発者に配る用途には何を使うか。",
+      "back": "使えない。AWS Proton は2026年10月7日にサポートが終了し、以後はコンソールやリソースにアクセスできない（デプロイ済みの CloudFormation スタックは残る）。代替は CloudFormation の Git 同期、AWS CodePipeline と AWS CodeBuild の組み合わせなど。試験では正解にしない。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS Proton", "AWS CloudFormation"],
+      "tags": ["提供終了", "IaC"]
+    },
+    {
+      "id": "fc-w2c-027",
+      "front": "自分のワークロードが AWS のベストプラクティスに沿っているか、設計をレビューして改善点を洗い出すツールは？",
+      "back": "AWS Well-Architected Tool。質問に答える形でワークロードを評価し、リスクと改善計画を得る。観点は運用上の優秀性、セキュリティ、信頼性、パフォーマンス効率、コスト最適化、持続可能性の6本柱。Trusted Advisor のような自動チェックではなく、設計の自己評価を支援する。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS Well-Architected Tool", "AWS Trusted Advisor"],
+      "tags": ["設計レビュー", "6本柱"]
+    },
+    {
+      "id": "fc-w2c-028",
+      "front": "監視カメラなど多数のデバイスの映像を AWS に取り込み、保存・再生・分析したい。",
+      "back": "Amazon Kinesis Video Streams。デバイスからの動画やその他の時系列メディアを安全に取り込み、保存し、HLS などでの再生や WebRTC によるリアルタイム双方向通信を行える。保存した映像を機械学習の分析サービスと連携させる使い方が典型。データ（数値）のストリームは Kinesis Data Streams。",
+      "taskStatements": ["3.5"],
+      "services": ["Amazon Kinesis Video Streams", "Amazon Kinesis Data Streams"],
+      "tags": ["動画ストリーミング", "メディア"]
+    },
+    {
+      "id": "fc-w2c-029",
+      "front": "AWS Application Discovery Service は今から使えるか。オンプレミスの稼働状況を調べる目的は？",
+      "back": "新規顧客は2025年11月7日から利用できない（既存顧客は継続）。移行前にサーバーの構成、利用状況、依存関係を収集して移行計画に役立てるサービスで、後継として AWS Transform が案内されている。新規構成の正解には選ばない。",
+      "taskStatements": ["4.2", "3.2"],
+      "services": ["AWS Application Discovery Service"],
+      "tags": ["移行", "新規受付停止"]
+    },
+    {
+      "id": "fc-w2c-030",
+      "front": "オンプレミスのサーバーを、アプリを改修せず（リフト＆シフト）最小のダウンタイムで EC2 へ移行したい。",
+      "back": "AWS Application Migration Service。ソースサーバーのディスクを継続的にブロックレベルで AWS へレプリケーションし、テスト起動で動作を確認してから、切り替え（カットオーバー）で本番の EC2 インスタンスを起動する。再構築が不要でダウンタイムは切り替え時のみ。",
+      "taskStatements": ["3.2", "2.2"],
+      "services": ["AWS Application Migration Service", "Amazon Elastic Compute Cloud"],
+      "tags": ["移行", "リフト＆シフト", "変更最小"]
+    },
+    {
+      "id": "fc-w2c-031",
+      "front": "AWS Snow Family（Snowball Edge）の現状と、大容量データ転送の代替は？",
+      "back": "Snowball Edge は2025年11月から新規顧客の受付が止まり、Snow Family の新規注文はできない（既存顧客は継続）。オンライン転送なら AWS DataSync、物理媒体なら AWS Data Transfer Terminal、エッジの計算なら AWS Outposts が案内されている。用途は出題されうるが、新規の正解にはしない。",
+      "taskStatements": ["3.5", "4.1"],
+      "services": ["AWS Snow Family", "AWS DataSync", "AWS Outposts"],
+      "tags": ["データ移行", "新規受付停止"]
+    },
+    {
+      "id": "fc-w2c-032",
+      "front": "監査人に AWS の SOC や ISO などのコンプライアンスレポートを渡したい。どこから入手するか。",
+      "back": "AWS Artifact。AWS のセキュリティ・コンプライアンスレポート（SOC、ISO、PCI など）をセルフサービスでダウンロードでき、BAA などの契約を結ぶこともできる。AWS 側の統制の証明が得られるもので、自分のリソースの設定状態を調べる AWS Config とは目的が違う。",
+      "taskStatements": ["1.3"],
+      "services": ["AWS Artifact", "AWS Config"],
+      "tags": ["コンプライアンス", "監査"]
+    },
+    {
+      "id": "fc-w2c-033",
+      "front": "暗号鍵を自社専用の（他の顧客と共有しない）ハードウェアで管理したい、という要件で選ぶサービスは？",
+      "back": "AWS CloudHSM。専有（シングルテナント）の HSM を VPC 内に置き、鍵は利用者だけが管理する。AWS は鍵にアクセスできない。FIPS 140 に準拠した鍵管理が必要な場合や、独自の暗号 API を使う場合に選ぶ。要件がなければマネージドな AWS KMS が運用負荷の小さい標準的な選択。",
+      "taskStatements": ["1.3"],
+      "services": ["AWS CloudHSM", "AWS Key Management Service"],
+      "tags": ["暗号化", "鍵管理", "HSM"]
+    },
+    {
+      "id": "fc-w2c-034",
+      "front": "AWS Identity and Access Management（IAM）の特徴と、人・アプリへの権限付与の基本方針は？",
+      "back": "IAM はユーザー、グループ、ロール、ポリシーで認証・認可を管理する、リージョンに依存しないグローバルなサービスで、追加料金はない。人にはフェデレーション、アプリや AWS サービスにはロールの一時認証情報を使い、長期キーは避ける。権限は最小権限で、ルートユーザーには MFA を設定する。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Identity and Access Management"],
+      "tags": ["最小権限", "ロール", "基本"]
+    },
+    {
+      "id": "fc-w2c-035",
+      "front": "オンプレミスや他リージョンのサーバーを、低コストで短い RPO・RTO の災害対策にしたい。",
+      "back": "AWS Elastic Disaster Recovery。ソースサーバーを継続的にブロックレベルでレプリケーションし、AWS 側のステージング領域には小さなリソースだけを置いて費用を抑える。災害時に復旧用の EC2 を起動する。RPO は秒単位、RTO は分単位が目安で、パイロットライト型に近い。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS Elastic Disaster Recovery", "Amazon Elastic Compute Cloud"],
+      "tags": ["災害対策", "レプリケーション", "RPO・RTO"]
+    },
+    {
+      "id": "fc-w2c-036",
+      "front": "Kinesis Data Streams で、データの保持期間と容量の考え方は？ 容量管理を避けるには？",
+      "back": "レコードの保持期間は既定で24時間、最長365日に延長できる（24時間超は追加料金）。順序はシャード内で保たれ、複数のコンシューマーが同じデータを読める。容量はプロビジョンドモードならシャード数で管理し、管理を避けたいときはオンデマンドモードで自動スケールにする。",
+      "taskStatements": ["3.5", "2.1"],
+      "services": ["Amazon Kinesis Data Streams"],
+      "tags": ["ストリーミング", "リアルタイム"]
+    },
+    {
+      "id": "fc-w2c-037",
+      "front": "EC2 スポットインスタンスの割引率の目安と、向く・向かないワークロードは？",
+      "back": "オンデマンドより最大90%安いが、EC2 の需要により中断される。中断の2分前に通知される。向くのは、バッチ処理、データ分析、CI/CD、ステートレスなウェブ層など中断や再実行が許容できるもの。常時稼働が必要でデータ損失が許されない DB などには向かない。",
+      "taskStatements": ["4.2"],
+      "services": ["Amazon EC2 Spot Instances", "Amazon Elastic Compute Cloud"],
+      "tags": ["コスト最適化", "購入オプション"]
+    },
+    {
+      "id": "fc-w2c-038",
+      "front": "IoT センサーの時系列データ用に Amazon Timestream を選ぶとき、何に注意するか。",
+      "back": "時系列データ向けのマネージド DB だが、Timestream for LiveAnalytics は2025年6月20日から新規顧客の受付を停止している。新規で使うのは Amazon Timestream for InfluxDB が案内されている。LiveAnalytics 前提の構成は正解にしない。",
+      "taskStatements": ["4.3"],
+      "services": ["Amazon Timestream"],
+      "tags": ["時系列DB", "新規受付停止"]
+    },
+    {
+      "id": "fc-w2c-039",
+      "front": "コンテナをオンプレミスで動かしたい。ECS Anywhere、EKS Anywhere、AWS Outposts の使い分けは？",
+      "back": "ECS Anywhere は既存サーバーを ECS に登録して運用する。EKS Anywhere は自社環境で Kubernetes クラスターを自分で運用する。AWS Outposts は AWS が管理する AWS インフラ一式を設置する。既存ハードを活かすなら前の二つ、ECS か Kubernetes かで選ぶ。AWS と同じサービスをオンプレミスに置くなら Outposts。",
+      "taskStatements": ["2.1", "3.2"],
+      "services": ["Amazon ECS Anywhere", "Amazon EKS Anywhere", "AWS Outposts"],
+      "tags": ["ハイブリッド", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-040",
+      "front": "ストリーミングデータの取り込みで、Kinesis Data Streams と Amazon Data Firehose はどう選ぶか。",
+      "back": "Kinesis Data Streams は自前のコンシューマーでリアルタイム処理し、保持と再読み取りができる。Amazon Data Firehose（旧称 Amazon Kinesis Data Firehose）は S3、Redshift、OpenSearch Service などの配信先へ自動でバッファして届け、コンシューマーの開発や運用が不要。配信だけが目的なら Firehose。",
+      "taskStatements": ["3.5"],
+      "services": ["Amazon Kinesis Data Streams", "Amazon Data Firehose"],
+      "tags": ["ストリーミング", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-041",
+      "front": "MongoDB 互換、Cassandra 互換、キーバリューの新規設計。それぞれ DocumentDB、Keyspaces、DynamoDB のどれか。",
+      "back": "MongoDB のアプリを移すなら Amazon DocumentDB (with MongoDB compatibility)。Cassandra の CQL アプリを移すなら Amazon Keyspaces。既存資産がなくスケールと運用負荷の小ささを重視する新規のキーバリュー・ドキュメント設計は Amazon DynamoDB。選択の決め手は既存アプリの API 互換性。",
+      "taskStatements": ["3.3"],
+      "services": ["Amazon DocumentDB (with MongoDB compatibility)", "Amazon Keyspaces (for Apache Cassandra)", "Amazon DynamoDB"],
+      "tags": ["データベース選択", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-042",
+      "front": "画像の文字検出、帳票の項目抽出、会話ボット。Rekognition、Textract、Lex のどれを選ぶか。",
+      "back": "画像・動画の物体、顔、ラベルの検出は Amazon Rekognition。帳票やフォームの文字、表、キーと値の抽出は Amazon Textract。ユーザーと音声やテキストで対話するボットは Amazon Lex。入力が画像か、帳票か、会話かで決まる。機械学習の専門知識は不要で、API で使える。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Rekognition", "Amazon Textract", "Amazon Lex"],
+      "tags": ["機械学習", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-043",
+      "front": "サーバーの移行と災害対策。Application Migration Service と Elastic Disaster Recovery は何が違うか。",
+      "back": "どちらもソースサーバーを継続的にレプリケーションする仕組みだが、目的が違う。Application Migration Service は移行が目的で、切り替え後はレプリケーションを終える。Elastic Disaster Recovery は災害対策が目的で、レプリケーションを続けて被災時に復旧用の EC2 を起動し、復旧後に戻す（フェイルバック）。",
+      "taskStatements": ["2.2", "3.2"],
+      "services": ["AWS Application Migration Service", "AWS Elastic Disaster Recovery"],
+      "tags": ["移行", "災害対策", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-044",
+      "front": "AWS KMS と AWS CloudHSM はどう使い分けるか。",
+      "back": "AWS KMS はマネージドで、IAM やキーポリシーによるアクセス制御と AWS サービス連携が容易で、運用負荷が小さい。AWS CloudHSM は専有の HSM を利用者が管理し、鍵の完全な管理権限と独自の暗号要件に応える。厳格な要件がなければ KMS。専有ハードウェアの明示要件があれば CloudHSM。",
+      "taskStatements": ["1.3"],
+      "services": ["AWS Key Management Service", "AWS CloudHSM"],
+      "tags": ["暗号化", "鍵管理", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-045",
+      "front": "処理の遅延の原因調査、メトリクスの監視、API 呼び出しの監査。X-Ray、CloudWatch、CloudTrail のどれか。",
+      "back": "リクエストの経路をたどって遅延やエラーの原因を調べるのは AWS X-Ray（分散トレース）。CPU 使用率やログの監視とアラームは Amazon CloudWatch。誰がいつどの API を呼んだかの監査記録は AWS CloudTrail。トレース、メトリクス、監査証跡で目的が異なる。",
+      "taskStatements": ["2.2", "1.3"],
+      "services": ["AWS X-Ray", "Amazon CloudWatch", "AWS CloudTrail"],
+      "tags": ["可観測性", "使い分け"]
+    }
+  ]
+}

@@ -1,0 +1,397 @@
+{
+  "createdBy": "w2c",
+  "entries": [
+    {
+      "term": "RPO",
+      "en": "Recovery Point Objective",
+      "definition": "障害が起きたときに「どの時点までのデータなら失ってもよいか」を時間で表した目標です。たとえば RPO が 15 分なら、最大 15 分前のデータまで戻せれば足ります。RPO が短いほどバックアップやレプリケーションの頻度を上げる必要があり、コストも増えます。",
+      "services": [],
+      "related": ["RTO", "バックアップと復元", "クロスリージョンレプリケーション"]
+    },
+    {
+      "term": "RTO",
+      "en": "Recovery Time Objective",
+      "definition": "障害が起きてからサービスを再開するまでに許される最大の時間を表した目標です。RTO が短いほど、待機環境をあらかじめ動かしておくなどの準備が必要になり、費用が高くなります。RPO(失ってよいデータ量)とセットで、災害対策の方式を選ぶ基準にします。",
+      "services": [],
+      "related": ["RPO", "パイロットライト", "ウォームスタンバイ", "フェイルオーバー"]
+    },
+    {
+      "term": "バックアップと復元",
+      "en": "Backup and restore",
+      "definition": "災害対策の方式のうち最も安価なものです。データのバックアップを別のリージョンなどに保存しておき、障害時にインフラを作り直してデータを復元します。復旧に時間がかかる(RTO と RPO が長い)ので、止まってもよいシステム向けです。",
+      "services": ["AWS Backup", "Amazon S3", "AWS CloudFormation"],
+      "related": ["RPO", "RTO", "パイロットライト", "EBS スナップショット", "Infrastructure as Code"]
+    },
+    {
+      "term": "パイロットライト",
+      "en": "Pilot light",
+      "definition": "別リージョンにデータベースなど最小限の中核部分だけを常に動かしてデータを複製しておき、アプリケーションのサーバーは停止または未作成にしておく災害対策の方式です。障害時にサーバーを起動して増強します。バックアップと復元より復旧が速く、ウォームスタンバイより安く済みます。",
+      "services": ["Amazon RDS", "AWS Elastic Disaster Recovery", "Amazon Route 53"],
+      "related": ["ウォームスタンバイ", "バックアップと復元", "RTO", "RPO"]
+    },
+    {
+      "term": "ウォームスタンバイ",
+      "en": "Warm standby",
+      "definition": "別リージョンに、本番を縮小した完全な環境を常時動かしておく災害対策の方式です。パイロットライトと違い、障害直後から縮小した容量でリクエストを処理でき、あとは台数を増やすだけで済みます。復旧は速くなりますが、待機環境の費用が常にかかります。",
+      "services": ["Amazon EC2 Auto Scaling", "Amazon Route 53"],
+      "related": ["パイロットライト", "マルチサイト アクティブ/アクティブ", "RTO", "Auto Scaling グループ"]
+    },
+    {
+      "term": "マルチサイト アクティブ/アクティブ",
+      "en": "Multi-site active/active",
+      "definition": "複数のリージョンで同時に本番の処理を行う災害対策の方式です。1 つのリージョンが止まっても他のリージョンがそのまま処理を続けるため、復旧時間をほぼゼロにできます。最も高コストで設計も複雑なので、非常に厳しい RTO と RPO が求められる場合に選びます。",
+      "services": ["Amazon Route 53", "AWS Global Accelerator", "Amazon DynamoDB"],
+      "related": ["ウォームスタンバイ", "グローバルテーブル", "RTO", "RPO"]
+    },
+    {
+      "term": "フェイルオーバー",
+      "en": "Failover",
+      "definition": "稼働中の系(プライマリ)に障害が起きたときに、待機している系へ処理を切り替えることです。RDS の Multi-AZ や Route 53 のフェイルオーバールーティングなどで使われ、ヘルスチェックの失敗をきっかけに自動で行う設定もできます。計画した切り替えと、障害時の切り替えを区別する機能もあります。",
+      "services": ["Amazon RDS", "Amazon Route 53"],
+      "related": ["Multi-AZ 配置", "ヘルスチェック", "RTO", "Aurora グローバルデータベース"]
+    },
+    {
+      "term": "Multi-AZ 配置",
+      "en": "Multi-AZ deployment",
+      "definition": "RDS で、別のアベイラビリティーゾーンに待機用(スタンバイ)のデータベースを置き、データを同期して複製する構成です。障害時には自動でスタンバイに切り替わり、高可用性を実現します。1 台のスタンバイは読み取りには使えないため、読み取りの負荷分散にはリードレプリカを使います。",
+      "services": ["Amazon RDS"],
+      "related": ["リードレプリカ", "フェイルオーバー", "アベイラビリティーゾーン", "RDS Proxy"]
+    },
+    {
+      "term": "リードレプリカ",
+      "en": "Read replica",
+      "definition": "データベースの読み取り専用のコピーで、元のデータベースから非同期にデータが複製されます。読み取りの多いアプリケーションの負荷を分散するために使い、別リージョンに作ることも、障害時に単独のデータベースへ昇格させることもできます。非同期なので、元のデータとわずかにずれる(結果整合性)ことがあります。",
+      "services": ["Amazon RDS", "Amazon Aurora"],
+      "related": ["Multi-AZ 配置", "結果整合性", "RDS Proxy", "Aurora グローバルデータベース"]
+    },
+    {
+      "term": "RDS Proxy",
+      "en": "Amazon RDS Proxy",
+      "definition": "アプリケーションとデータベースの間に入り、データベースへの接続をまとめて使い回す(接続プーリング)マネージドなプロキシです。接続数の急増からデータベースを守り、フェイルオーバー中も接続を保ちやすくなります。接続を大量に開く Lambda からの利用でよく使われます。",
+      "services": ["Amazon RDS Proxy", "Amazon RDS", "Amazon Aurora", "AWS Lambda", "AWS Secrets Manager"],
+      "related": ["Multi-AZ 配置", "フェイルオーバー", "スロットリング", "サーバーレス"]
+    },
+    {
+      "term": "Aurora グローバルデータベース",
+      "en": "Amazon Aurora Global Database",
+      "definition": "1 つの Aurora データベースを複数のリージョンにまたがって複製する機能です。専用のインフラでセカンダリリージョンへ通常 1 秒未満の遅延で複製し、他リージョンの読み取りを速くしたり、リージョン障害時にセカンダリを昇格させて復旧したりできます。計画的な切り替え(Switchover)と障害時の切り替え(Failover)があります。",
+      "services": ["Amazon Aurora"],
+      "related": ["グローバルテーブル", "フェイルオーバー", "RPO", "リードレプリカ"]
+    },
+    {
+      "term": "グローバルテーブル",
+      "en": "DynamoDB global tables",
+      "definition": "DynamoDB のテーブルを複数のリージョンに自動で複製し、どのリージョンのレプリカでも読み書きできるようにする機能です。世界中のユーザーに近いリージョンで低遅延に処理でき、リージョン障害への備えにもなります。同じ項目を同時に更新した場合の競合は、最後に書き込まれた値が採用されます。",
+      "services": ["Amazon DynamoDB"],
+      "related": ["Aurora グローバルデータベース", "マルチサイト アクティブ/アクティブ", "結果整合性", "RPO"]
+    },
+    {
+      "term": "DAX",
+      "en": "DynamoDB Accelerator",
+      "definition": "DynamoDB の前に置くインメモリのキャッシュで、読み取りの応答をミリ秒からマイクロ秒レベルに高速化します。DynamoDB の API と互換性があるので、アプリのコード変更はクライアントの差し替え程度で済みます。強い整合性の読み取りはキャッシュを通さず DynamoDB に渡されます。",
+      "services": ["Amazon DynamoDB Accelerator (DAX)", "Amazon DynamoDB", "Amazon ElastiCache"],
+      "related": ["結果整合性", "強い整合性", "TTL", "DynamoDB のキャパシティモード"]
+    },
+    {
+      "term": "DynamoDB のキャパシティモード",
+      "en": "DynamoDB capacity modes",
+      "definition": "DynamoDB の読み書き容量の課金と管理の方式で、オンデマンドとプロビジョニングの 2 種類があります。オンデマンドは使った分だけ支払い、予測しにくい負荷に向きます。プロビジョニングは必要な容量を事前に指定し、Auto Scaling と組み合わせて、安定した負荷でコストを抑えるのに向きます。",
+      "services": ["Amazon DynamoDB"],
+      "related": ["スロットリング", "DAX", "従量課金", "スケーラビリティ"]
+    },
+    {
+      "term": "グローバルセカンダリインデックス",
+      "en": "Global secondary index (GSI)",
+      "definition": "DynamoDB のテーブルとは異なるパーティションキーとソートキーで検索できるようにする追加のインデックスです。テーブルの作成後にも追加でき、本来のキーでは引けない属性による検索に使います。インデックスへの読み取りは結果整合性のみです。",
+      "services": ["Amazon DynamoDB"],
+      "related": ["パーティションキー", "結果整合性", "DynamoDB のキャパシティモード"]
+    },
+    {
+      "term": "ポイントインタイムリカバリ",
+      "en": "Point-in-time recovery (PITR)",
+      "definition": "バックアップの保持期間内であれば、好きな時点の状態にデータを戻せる機能です。RDS では自動バックアップとトランザクションログを使い、DynamoDB では継続的バックアップを有効にして使います。誤ってデータを消したり壊したりしたときに、直前の状態へ復元するために使います。",
+      "services": ["Amazon RDS", "Amazon DynamoDB", "AWS Backup"],
+      "related": ["RPO", "バックアップと復元", "EBS スナップショット"]
+    },
+    {
+      "term": "結果整合性",
+      "en": "Eventual consistency",
+      "definition": "データを更新した直後は、読み取る場所によって古い値が返ることがあるが、少し待てばすべて最新になるという性質です。DynamoDB の既定の読み取りや、RDS のリードレプリカ、DAX のキャッシュなどが該当します。最新の値が必ず必要な処理には、強い整合性の読み取りを選びます。",
+      "services": ["Amazon DynamoDB", "Amazon RDS"],
+      "related": ["強い整合性", "リードレプリカ", "DAX", "グローバルテーブル"]
+    },
+    {
+      "term": "強い整合性",
+      "en": "Strong consistency",
+      "definition": "データを更新したあとは、どこから読み取っても必ず最新の値が返る性質です。DynamoDB では読み取り時に強い整合性を指定でき、S3 は通常のオブジェクトの読み書きで強い整合性を提供します。結果整合性より遅延や費用がやや大きくなることがあります。",
+      "services": ["Amazon S3", "Amazon DynamoDB"],
+      "related": ["結果整合性", "DAX", "グローバルテーブル"]
+    },
+    {
+      "term": "指数バックオフ",
+      "en": "Exponential backoff",
+      "definition": "リクエストが失敗したときに、再試行の待ち時間を 1 秒、2 秒、4 秒のように倍々に伸ばしていく方法です。待ち時間にランダムなばらつき(ジッター)を加えると、多数のクライアントが同時に再試行して障害を悪化させるのを防げます。スロットリングを受けたときの標準的な対処です。",
+      "services": [],
+      "related": ["スロットリング", "べき等性", "デッドレターキュー"]
+    },
+    {
+      "term": "Elastic Volumes",
+      "en": "Amazon EBS Elastic Volumes",
+      "definition": "稼働中の EBS ボリュームの容量、ボリュームタイプ、IOPS、スループットを、インスタンスを止めずに変更できる機能です。容量が足りなくなったときや性能を上げたいときに、デタッチや再作成をせずに対応できます。容量を増やしたあとは、OS 側でファイルシステムを拡張する必要があります。",
+      "services": ["Amazon EBS", "Amazon EC2"],
+      "related": ["プロビジョンド IOPS", "汎用 SSD (gp3)", "EBS スナップショット"]
+    },
+    {
+      "term": "バーストクレジット",
+      "en": "Burst credits",
+      "definition": "普段は低い基準性能で動き、負荷が高まったときだけ貯めておいたクレジットを使って一時的に性能を引き上げる仕組みです。T 系の EC2 インスタンスの CPU や、gp2 の EBS ボリュームの IOPS などで使われます。高い負荷が長く続いてクレジットが尽きると、性能が基準まで下がります。",
+      "services": ["Amazon EC2", "Amazon EBS"],
+      "related": ["プロビジョンド IOPS", "インスタンスタイプ", "スロットリング"]
+    },
+    {
+      "term": "プロビジョンド IOPS",
+      "en": "Provisioned IOPS",
+      "definition": "ストレージやデータベースに必要な IOPS(1 秒あたりの入出力回数)を事前に指定して確保する方式です。EBS の io2 や io1 のボリュームが代表で、データベースのように安定した高い IOPS と低い遅延が必要な処理に向きます。高性能な分、汎用 SSD より費用が高くなります。",
+      "services": ["Amazon EBS", "Amazon RDS"],
+      "related": ["汎用 SSD (gp3)", "Elastic Volumes", "バーストクレジット"]
+    },
+    {
+      "term": "汎用 SSD (gp3)",
+      "en": "General Purpose SSD (gp3)",
+      "definition": "容量とは独立して、IOPS とスループットを設定できる汎用の EBS ボリュームタイプです。多くのワークロードで性能と価格のバランスがよく、起動ボリュームや開発環境、中規模のデータベースなどに使います。より高い IOPS や低遅延が必要な場合は、プロビジョンド IOPS の io2 を検討します。",
+      "services": ["Amazon EBS"],
+      "related": ["プロビジョンド IOPS", "Elastic Volumes", "バーストクレジット"]
+    },
+    {
+      "term": "インスタンスストア",
+      "en": "Instance store",
+      "definition": "EC2 インスタンスが動くサーバーに直接付いている一時的なストレージです。非常に高速ですが、インスタンスを停止・終了したときやハードウェアが故障したときにデータが失われます。キャッシュや一時ファイルなど、失ってもよいデータにだけ使い、重要なデータは EBS や S3 に置きます。",
+      "services": ["Amazon EC2", "Amazon EBS"],
+      "related": ["EBS スナップショット", "インスタンスタイプ", "プレイスメントグループ"]
+    },
+    {
+      "term": "EBS スナップショット",
+      "en": "Amazon EBS snapshot",
+      "definition": "EBS ボリュームのある時点のバックアップで、2 回目以降は変更があった部分だけを保存する増分方式です。別のリージョンやアカウントにコピーでき、そこから新しいボリュームや AMI を作れます。AWS Backup でスケジュールを管理することもできます。",
+      "services": ["Amazon EBS", "AWS Backup"],
+      "related": ["AMI", "バックアップと復元", "ポイントインタイムリカバリ", "ライフサイクルルール"]
+    },
+    {
+      "term": "SCP",
+      "en": "Service control policy",
+      "definition": "AWS Organizations で、組織内のメンバーアカウントが使える権限の上限を決めるポリシーです。SCP 自体は権限を与えず、許可できる範囲に「ガードレール」をかけるだけで、実際の許可は IAM ポリシーで与えます。管理アカウントや、サービスにリンクされたロールには効きません。",
+      "services": ["AWS Organizations", "AWS Identity and Access Management (IAM)"],
+      "related": ["組織単位", "権限の境界", "最小権限の原則", "一括請求"]
+    },
+    {
+      "term": "組織単位",
+      "en": "Organizational unit (OU)",
+      "definition": "AWS Organizations で、複数のアカウントをまとめて階層的に管理するためのグループです。部門や環境(本番と開発など)ごとに OU を作り、SCP をまとめて適用できます。上位の OU に付けた SCP は、配下のアカウントすべてに引き継がれます。",
+      "services": ["AWS Organizations"],
+      "related": ["SCP", "一括請求", "SCP"]
+    },
+    {
+      "term": "一括請求",
+      "en": "Consolidated billing",
+      "definition": "AWS Organizations で、組織内の複数のアカウントの請求を 1 つにまとめる機能です。利用量が合算されるため、ボリュームディスカウントを受けやすくなり、リザーブドインスタンスや Savings Plans の割引を組織内で共有できます。アカウントごとの利用額は、引き続き個別に確認できます。",
+      "services": ["AWS Organizations", "AWS Cost Explorer"],
+      "related": ["組織単位", "リザーブドインスタンス", "Savings Plans", "コスト配分タグ"]
+    },
+    {
+      "term": "権限の境界",
+      "en": "Permissions boundary",
+      "definition": "IAM のユーザーやロールに付けられる権限の上限を、管理ポリシーで決める機能です。実際に使える権限は、アイデンティティベースのポリシーと権限の境界の両方が許可した範囲になります。開発者に IAM ロールの作成を任せつつ、与えられる権限の範囲を制限したいときに使います。",
+      "services": ["AWS Identity and Access Management (IAM)"],
+      "related": ["SCP", "最小権限の原則", "リソースベースポリシー"]
+    },
+    {
+      "term": "リソースベースポリシー",
+      "en": "Resource-based policy",
+      "definition": "S3 バケットや SQS キュー、KMS キーなどのリソース側に付けるポリシーで、「誰がこのリソースに何をできるか」を書きます。Principal(対象者)を指定でき、別のアカウントへ直接アクセスを許可することもできます。IAM ユーザーやロールに付けるアイデンティティベースのポリシーと併用します。",
+      "services": ["Amazon S3", "Amazon SQS", "AWS Key Management Service (AWS KMS)", "AWS Identity and Access Management (IAM)"],
+      "related": ["権限の境界", "クロスアカウントロール", "KMS キーポリシー", "信頼ポリシー"]
+    },
+    {
+      "term": "信頼ポリシー",
+      "en": "Trust policy",
+      "definition": "IAM ロールに付ける、「誰がこのロールを引き受けられるか」を決めるポリシーです。ロールには、できることを決める権限ポリシーと、この信頼ポリシーの 2 つが必要です。別アカウントのユーザーや AWS サービスにロールを使わせるときは、信頼ポリシーでそれらを許可します。",
+      "services": ["AWS Identity and Access Management (IAM)", "AWS Security Token Service (AWS STS)"],
+      "related": ["クロスアカウントロール", "外部 ID", "一時的なセキュリティ認証情報", "リソースベースポリシー"]
+    },
+    {
+      "term": "クロスアカウントロール",
+      "en": "Cross-account role",
+      "definition": "別の AWS アカウントのユーザーやサービスが引き受けて、自分のアカウントのリソースを操作できるようにする IAM ロールです。アクセスキーを共有せず、AssumeRole で一時的な認証情報を受け取る形で安全に権限を委譲します。複数アカウントの管理や、外部の事業者へのアクセス許可に使います。",
+      "services": ["AWS Identity and Access Management (IAM)", "AWS Security Token Service (AWS STS)"],
+      "related": ["信頼ポリシー", "外部 ID", "一時的なセキュリティ認証情報", "リソースベースポリシー"]
+    },
+    {
+      "term": "外部 ID",
+      "en": "External ID",
+      "definition": "第三者の事業者にクロスアカウントロールを使わせるときに、信頼ポリシーの条件として要求する識別子です。事業者が複数の顧客のロールを扱うとき、他の顧客のロールを誤って(または悪意で)操作してしまう「混乱した代理」問題を防ぎます。外部 ID は秘密の値ではなく、事業者が顧客ごとに一意に発行します。",
+      "services": ["AWS Identity and Access Management (IAM)", "AWS Security Token Service (AWS STS)"],
+      "related": ["クロスアカウントロール", "信頼ポリシー", "最小権限の原則"]
+    },
+    {
+      "term": "最小権限の原則",
+      "en": "Principle of least privilege",
+      "definition": "作業に必要な最小限の権限だけを与えるという、セキュリティの基本方針です。最初は少ない権限で始め、必要に応じて追加し、使われていない権限は減らしていきます。IAM ポリシーでは、アクションとリソースをできるだけ絞って指定します。",
+      "services": ["AWS Identity and Access Management (IAM)"],
+      "related": ["権限の境界", "SCP", "責任共有モデル"]
+    },
+    {
+      "term": "一時的なセキュリティ認証情報",
+      "en": "Temporary security credentials",
+      "definition": "アクセスキー、シークレットキー、セッショントークンから成る、有効期限が付いた認証情報です。AWS STS が発行し、IAM ロールを引き受けたときに受け取ります。長期のアクセスキーと違い、漏れても期限が来れば無効になるため、EC2 やアカウント間のアクセスではこちらを使うのが推奨です。",
+      "services": ["AWS Security Token Service (AWS STS)", "AWS Identity and Access Management (IAM)"],
+      "related": ["クロスアカウントロール", "信頼ポリシー", "インスタンスメタデータ"]
+    },
+    {
+      "term": "エンベロープ暗号化",
+      "en": "Envelope encryption",
+      "definition": "データそのものはデータキーで暗号化し、そのデータキーをさらに別のキー(KMS キー)で暗号化して保存する方式です。大きなデータを KMS に送らずに済むため高速で、KMS キーを外に出さずに管理できます。S3 の SSE-KMS や EBS の暗号化など、AWS の多くのサービスがこの仕組みを使っています。",
+      "services": ["AWS Key Management Service (AWS KMS)", "Amazon S3", "Amazon EBS"],
+      "related": ["KMS キーポリシー", "カスタマーマネージドキー", "サーバー側暗号化"]
+    },
+    {
+      "term": "KMS キーポリシー",
+      "en": "AWS KMS key policy",
+      "definition": "KMS キーに必ず 1 つ付いているリソースベースのポリシーで、キーを誰がどう使えるかを決める最も基本的なアクセス制御です。キーポリシーが許可していない限り、IAM ポリシーだけではキーへのアクセスを許可できません。既定のキーポリシーは、アカウントの IAM ポリシーでの制御を有効にします。",
+      "services": ["AWS Key Management Service (AWS KMS)", "AWS Identity and Access Management (IAM)"],
+      "related": ["カスタマーマネージドキー", "リソースベースポリシー", "エンベロープ暗号化", "AWS マネージドキー"]
+    },
+    {
+      "term": "カスタマーマネージドキー",
+      "en": "Customer managed key",
+      "definition": "利用者が自分で作成して管理する KMS キーです。キーポリシーの編集、ローテーションの設定、無効化や削除のスケジュール設定、別アカウントへの共有など、細かい制御ができます。AWS マネージドキーより自由度が高い反面、管理の手間と、キーごとの月額費用がかかります。",
+      "services": ["AWS Key Management Service (AWS KMS)"],
+      "related": ["AWS マネージドキー", "KMS キーポリシー", "エンベロープ暗号化", "サーバー側暗号化"]
+    },
+    {
+      "term": "AWS マネージドキー",
+      "en": "AWS managed key",
+      "definition": "S3 や EBS などの AWS サービスが、利用者のアカウント内に自動で作って管理する KMS キーです。利用者はキーポリシーの変更や削除ができませんが、手軽に暗号化を始められ、キーの管理も不要です。キーの共有や細かいアクセス制御が必要なときは、カスタマーマネージドキーを使います。",
+      "services": ["AWS Key Management Service (AWS KMS)"],
+      "related": ["カスタマーマネージドキー", "KMS キーポリシー", "サーバー側暗号化"]
+    },
+    {
+      "term": "サーバー側暗号化",
+      "en": "Server-side encryption (SSE)",
+      "definition": "データを保存するときに、サービス側(S3 など)が自動で暗号化し、読み出すときに復号する方式です。S3 では、S3 が管理するキーを使う SSE-S3、KMS キーを使う SSE-KMS、利用者が用意したキーを使う SSE-C から選べます。SSE-KMS は、キーの使用履歴を CloudTrail で確認できるのが利点です。",
+      "services": ["Amazon S3", "AWS Key Management Service (AWS KMS)", "AWS CloudTrail"],
+      "related": ["エンベロープ暗号化", "カスタマーマネージドキー", "AWS マネージドキー"]
+    },
+    {
+      "term": "署名付き URL",
+      "en": "Presigned URL",
+      "definition": "S3 のオブジェクトに、AWS にサインインしていない人でも一定時間だけアクセスできるようにする、署名入りの URL です。バケットを公開せずに、特定のファイルのダウンロードやアップロードを一時的に許可したいときに使います。URL を作った人の権限で動き、その権限や認証情報が失効すると使えなくなります。",
+      "services": ["Amazon S3", "Amazon CloudFront"],
+      "related": ["ブロックパブリックアクセス", "オリジンアクセスコントロール", "一時的なセキュリティ認証情報"]
+    },
+    {
+      "term": "ブロックパブリックアクセス",
+      "en": "S3 Block Public Access",
+      "definition": "S3 のバケットやアカウント全体で、ACL やバケットポリシーによる公開設定を一括で禁止する機能です。設定ミスでデータが意図せず公開されるのを防ぎます。静的サイトを CloudFront 経由で配信する場合も、バケットは非公開のまま、オリジンアクセスコントロールで CloudFront にだけアクセスを許可するのが定石です。",
+      "services": ["Amazon S3", "Amazon CloudFront"],
+      "related": ["署名付き URL", "オリジンアクセスコントロール", "リソースベースポリシー"]
+    },
+    {
+      "term": "S3 バージョニング",
+      "en": "S3 Versioning",
+      "definition": "同じキーのオブジェクトを上書きや削除したときに、以前のバージョンを残しておく S3 の機能です。誤って消したり上書きしたりしても、前のバージョンから元に戻せます。有効にしたバケットでは、削除すると削除マーカーが付くだけで、旧バージョンの保存料金は引き続きかかります。",
+      "services": ["Amazon S3"],
+      "related": ["MFA Delete", "S3 Object Lock", "クロスリージョンレプリケーション", "ライフサイクルルール"]
+    },
+    {
+      "term": "ライフサイクルルール",
+      "en": "S3 Lifecycle rule",
+      "definition": "S3 のオブジェクトを、作成から決めた日数が経ったら別のストレージクラスへ移したり、削除したりする自動ルールです。古いログを安価なクラスに移して、一定期間後に削除するといった、コスト削減に使います。バージョニング有効時の旧バージョンや、未完了のマルチパートアップロードの削除もできます。",
+      "services": ["Amazon S3"],
+      "related": ["S3 Intelligent-Tiering", "S3 バージョニング", "マルチパートアップロード", "EBS スナップショット"]
+    },
+    {
+      "term": "S3 Intelligent-Tiering",
+      "en": "S3 Intelligent-Tiering",
+      "definition": "オブジェクトへのアクセス頻度を S3 が監視し、アクセスのない期間に応じて自動で低コストの階層へ移すストレージクラスです。取り出し料金はかからず、アクセスパターンが予測できないデータに向いています。オプションで、アクセスが非同期でよいデータ向けのアーカイブ階層も有効にできます。",
+      "services": ["Amazon S3"],
+      "related": ["ライフサイクルルール", "S3 バージョニング"]
+    },
+    {
+      "term": "S3 Object Lock",
+      "en": "S3 Object Lock",
+      "definition": "S3 のオブジェクトを、一定期間または無期限に、削除も上書きもできないようにする WORM(書き込みは 1 回、読み取りは何度でも)の機能です。保持モードにはガバナンスとコンプライアンスがあり、コンプライアンスモードではルートユーザーでも保持期間中は削除できません。バージョニングが有効なバケットで使います。",
+      "services": ["Amazon S3"],
+      "related": ["S3 バージョニング", "MFA Delete", "ライフサイクルルール"]
+    },
+    {
+      "term": "MFA Delete",
+      "en": "MFA Delete",
+      "definition": "S3 のバージョニングが有効なバケットで、オブジェクトバージョンの完全な削除や、バージョニング状態の変更に MFA の認証コードを必須にする機能です。認証情報が漏れても、勝手にデータを消されにくくなります。有効にできるのはバケット所有者のルートユーザーだけで、コンソールからは設定できません。",
+      "services": ["Amazon S3", "AWS Identity and Access Management (IAM)"],
+      "related": ["S3 バージョニング", "S3 Object Lock", "ライフサイクルルール"]
+    },
+    {
+      "term": "クロスリージョンレプリケーション",
+      "en": "Cross-Region Replication (CRR)",
+      "definition": "S3 のバケットに書き込まれたオブジェクトを、別のリージョンのバケットへ非同期に自動コピーする機能です。災害対策や、ユーザーに近い場所での低遅延アクセス、規制によるデータの複製要件に使います。元と先の両方でバージョニングが必要で、既存のオブジェクトのコピーには別途 S3 Batch Replication を使います。",
+      "services": ["Amazon S3"],
+      "related": ["S3 バージョニング", "RPO", "バックアップと復元", "パイロットライト"]
+    },
+    {
+      "term": "S3 Transfer Acceleration",
+      "en": "S3 Transfer Acceleration",
+      "definition": "最寄りのエッジロケーションからアップロードを受け付け、AWS の高速なネットワーク経由で S3 のバケットへ転送する機能です。遠く離れたリージョンのバケットに、世界中のユーザーが大きなファイルをアップロードする場合に、転送を速くできます。専用のエンドポイントを使い、追加料金がかかります。",
+      "services": ["Amazon S3", "Amazon CloudFront"],
+      "related": ["エッジロケーション", "マルチパートアップロード", "データ転送料金"]
+    },
+    {
+      "term": "マルチパートアップロード",
+      "en": "Multipart upload",
+      "definition": "大きなオブジェクトを複数のパートに分割し、並列にアップロードして S3 側で結合する方法です。転送が速くなり、失敗したパートだけをやり直せます。1 回の PUT では 5 GB までなので、それを超えるオブジェクトでは必須で、100 MB 以上では推奨です。",
+      "services": ["Amazon S3"],
+      "related": ["S3 Transfer Acceleration", "ライフサイクルルール"]
+    },
+    {
+      "term": "データレイク",
+      "en": "Data lake",
+      "definition": "構造化・非構造化を問わず、さまざまな形式のデータを元の形のまま大量に集めて保存する場所です。AWS では S3 を保存先にし、Glue でカタログ化し、Athena や EMR、Redshift で分析するのが一般的です。使う目的が決まる前でも先にデータを貯めておける点が、あらかじめ形を整えるデータウェアハウスとの違いです。",
+      "services": ["Amazon S3", "AWS Glue", "AWS Lake Formation", "Amazon Athena"],
+      "related": ["Glue Data Catalog", "ETL", "S3 Intelligent-Tiering"]
+    },
+    {
+      "term": "ETL",
+      "en": "Extract, Transform, Load",
+      "definition": "データを元のシステムから取り出し(Extract)、使いやすい形に変換し(Transform)、分析先へ書き込む(Load)処理のことです。AWS Glue は、サーバーを管理せずに ETL ジョブを実行できるサービスです。バッチ処理が中心ですが、ストリームの ETL にも対応しています。",
+      "services": ["AWS Glue", "Amazon EMR", "Amazon Data Firehose"],
+      "related": ["データレイク", "Glue Data Catalog", "バッチ処理"]
+    },
+    {
+      "term": "Glue Data Catalog",
+      "en": "AWS Glue Data Catalog",
+      "definition": "データのある場所、テーブルの定義、スキーマなどのメタデータを一元的に管理するカタログです。クローラーで S3 のデータからスキーマを自動で推定して登録でき、Athena、EMR、Redshift Spectrum、Lake Formation から共通で参照されます。データレイクを分析するときの「目次」の役割です。",
+      "services": ["AWS Glue", "Amazon Athena", "Amazon EMR", "AWS Lake Formation", "Amazon Redshift"],
+      "related": ["データレイク", "ETL"]
+    },
+    {
+      "term": "Spot 中断通知",
+      "en": "Spot Instance interruption notice",
+      "definition": "EC2 が空き容量の都合でスポットインスタンスを停止または終了する 2 分前に出す警告です。EventBridge のイベントと、インスタンスメタデータの両方で受け取れます。この間に処理の保存や終了処理を行えるよう、中断されても問題ない設計(状態を外部に保存するなど)にしておくのが前提です。",
+      "services": ["Amazon EC2 Spot Instances", "Amazon EventBridge", "Amazon EC2"],
+      "related": ["スポットインスタンス", "インスタンスメタデータ", "疎結合"]
+    },
+    {
+      "term": "コスト配分タグ",
+      "en": "Cost allocation tag",
+      "definition": "リソースに付けたタグを、請求や Cost Explorer のコストレポートで集計の軸として使えるように有効化したものです。部門、プロジェクト、環境ごとの費用を把握するために使います。タグ付けのルールを決めて徹底しないと、タグのないリソースの費用が把握できなくなります。",
+      "services": ["AWS Cost Explorer"],
+      "related": ["タグ", "一括請求", "従量課金"]
+    },
+    {
+      "term": "データ転送料金",
+      "en": "Data transfer charges",
+      "definition": "AWS では、データの転送方向によって課金が異なります。インターネットから AWS への受信は原則として無料で、AWS からインターネットへの送信や、リージョン間、AZ 間の通信には料金がかかります。AZ をまたぐ構成やリージョン間の複製では、この費用も設計時に考慮します。",
+      "services": ["Amazon VPC", "Amazon CloudFront"],
+      "related": ["NAT ゲートウェイ", "VPC エンドポイント", "アベイラビリティーゾーン", "S3 Transfer Acceleration"]
+    }
+  ]
+}

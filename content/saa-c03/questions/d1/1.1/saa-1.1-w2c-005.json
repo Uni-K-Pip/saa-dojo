@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.1-w2c-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S6", "1.1-K2"],
+  "services": ["AWS Directory Service", "Amazon RDS", "Amazon EC2", "AWS Direct Connect"],
+  "qualifier": "operational",
+  "tags": ["AWS Managed Microsoft AD", "信頼関係", "RDS for SQL Server", "Windows 認証", "AD Connector"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会計ソフト会社は、オンプレミスの Active Directory（AD）で社員を管理しています。AWS 上に Amazon RDS for SQL Server と Windows の Amazon EC2 インスタンスで動く社内システムを構築し、社員は今の AD のアカウントのまま、Windows 認証でデータベースに接続したいと考えています。オンプレミスとは AWS Direct Connect で接続されています。ドメインコントローラーのサーバーを自分たちで構築・運用する作業は避けたいです。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AD Connector を作成してオンプレミスの AD に接続し、RDS for SQL Server と EC2 インスタンスを AD Connector のディレクトリに参加させる。",
+      "correct": false,
+      "rationale": "AD Connector は認証要求をオンプレミスの AD に転送するプロキシで、RDS for SQL Server とは互換性がありません。Windows 認証で RDS for SQL Server に接続するという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Simple AD を作成して RDS for SQL Server と EC2 インスタンスを参加させ、オンプレミスの AD と Simple AD の間に信頼関係を設定する。",
+      "correct": false,
+      "rationale": "Simple AD は信頼関係に対応しておらず、RDS for SQL Server とも互換性がありません。オンプレミスの AD のアカウントをそのまま使うという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Managed Microsoft AD を作成してオンプレミスの AD との間に信頼関係を設定し、RDS for SQL Server と EC2 インスタンスを AWS Managed Microsoft AD に参加させる。",
+      "correct": true,
+      "rationale": "AWS Managed Microsoft AD は AWS が管理する実際の Microsoft AD で、RDS for SQL Server の Windows 認証に対応しています。オンプレミスの AD との信頼関係で、社員は今のアカウントのまま使え、ドメインコントローラーの運用も AWS に任せられます。"
+    },
+    {
+      "id": "d",
+      "text": "EC2 インスタンスに Windows Server のドメインコントローラーを構築してオンプレミスの AD とレプリケーションし、RDS for SQL Server をそのドメインに参加させる。",
+      "correct": false,
+      "rationale": "RDS for SQL Server の Windows 認証には AWS Managed Microsoft AD を使う構成が案内されており、EC2 上の自己管理のドメインコントローラーに頼る構成にはなりません。ドメインコントローラーの構築、パッチ適用、レプリケーション監視を自分たちで運用することになり、運用しないという要件も満たしません。"
+    }
+  ],
+  "explanation": "AWS Directory Service には、目的が異なる複数の選択肢があります。AWS Managed Microsoft AD は AWS が管理する実際の Microsoft Active Directory で、Windows ワークロードや RDS for SQL Server の Windows 認証など、AD に対応するアプリケーションと AWS のサービスで使えます。オンプレミスの AD との間に信頼関係を設定すれば、社員は今のアカウントのまま AWS 上のリソースを使えます。\n\nAD Connector はオンプレミスの AD に認証を転送するだけのプロキシで、ディレクトリそのものを AWS 上には作りません。WorkSpaces など対応するアプリケーションや、EC2 インスタンスのドメイン参加、AWS マネジメントコンソールのサインインなどには向きますが、RDS for SQL Server とは互換性がありません。Simple AD は Samba 4 ベースの互換ディレクトリで、信頼関係や MFA には対応しません。\n\n「AD に参加させたいサービスは何か」「オンプレミスの AD のアカウントを使うか」「信頼関係が必要か」で選びます。RDS for SQL Server が登場したら、AWS Managed Microsoft AD を第一候補にします。",
+  "keyPoints": [
+    "RDS for SQL Server の Windows 認証 → AWS Managed Microsoft AD。AD Connector と Simple AD は対応しない",
+    "オンプレミスの AD のアカウントを AWS 上のリソースで使う → AWS Managed Microsoft AD に信頼関係を設定する",
+    "AD Connector は認証をオンプレミスに転送するプロキシ。ディレクトリは AWS 上にできない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Directory Service? - AWS Directory Service",
+      "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+    },
+    {
+      "title": "Working with AWS Directory Service for Microsoft Active Directory - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-roles-federation"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

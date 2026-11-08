@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.1-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-S1", "3.1-K3"],
+  "services": ["Amazon EBS", "Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["EBS", "io2 Block Express", "プロビジョンド IOPS", "低レイテンシー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある証券会社は、Nitro System ベースの Amazon EC2 インスタンス 1 台で、取引の照合を行うデータベースを運用しています。データベースのデータ用に、単一のブロックボリュームで 150,000 IOPS を継続的に提供し、平均レイテンシーを 1 ミリ秒未満で安定させる必要があります。インスタンスを停止して起動し直してもデータは保持されなければなりません。この要件を満たすストレージ構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "汎用 SSD（gp3）の Amazon EBS ボリュームを作成し、IOPS を上限までプロビジョニングする。",
+      "correct": false,
+      "rationale": "gp3 の最大 IOPS は 80,000 で、150,000 IOPS には届きません。ボリュームを 1 つのブロックデバイスとして 150,000 IOPS を提供するという要件を満たせません。"
+    },
+    {
+      "id": "b",
+      "text": "プロビジョンド IOPS SSD（io2）の Amazon EBS ボリュームを作成し、150,000 IOPS をプロビジョニングする。",
+      "correct": true,
+      "rationale": "io2（Block Express）は Nitro ベースのインスタンスで最大 256,000 IOPS までプロビジョニングでき、平均レイテンシーが 1 ミリ秒を大きく下回る設計です。EBS ボリュームなので、停止・起動後もデータが残ります。"
+    },
+    {
+      "id": "c",
+      "text": "プロビジョンド IOPS SSD（io1）の Amazon EBS ボリュームを作成し、IOPS を上限までプロビジョニングする。",
+      "correct": false,
+      "rationale": "io1 の最大 IOPS は 64,000 で、150,000 IOPS には届きません。io1 は io2 より低い耐久性の設計で、1 つのボリュームでの IOPS の上限もはるかに低くなります。"
+    },
+    {
+      "id": "d",
+      "text": "NVMe SSD のインスタンスストアにデータを置く。",
+      "correct": false,
+      "rationale": "インスタンスストアは高い IOPS と低レイテンシーを出せますが、インスタンスの停止や終了、基盤ホストの障害でデータが失われます。停止・起動後もデータを保持するという要件を満たしません。"
+    }
+  ],
+  "explanation": "EBS のボリュームタイプは、必要な IOPS とレイテンシー、耐久性の水準で選びます。汎用 SSD の gp3 は最大 80,000 IOPS・2,000 MiB/s、io1 は最大 64,000 IOPS・1,000 MiB/s までです。これらを超える IOPS や、一貫したミリ秒未満のレイテンシーが必要な場合は io2（Block Express）を選びます。\n\nio2 は 1 ボリュームあたり最大 256,000 IOPS、4,000 MiB/s、64 TiB までで、プロビジョニングできる IOPS は容量 1 GiB あたり最大 1,000 です（150,000 IOPS なら 150 GiB 以上）。この性能は Nitro System ベースのインスタンスで得られます。耐久性も 99.999% で、gp3 や io1 より高く設計されています。\n\nインスタンスストアは性能面では有利ですが、永続的なストレージではありません。EBS は停止や再起動をまたいでデータを保持します。",
+  "keyPoints": [
+    "gp3 は最大 80,000 IOPS、io1 は最大 64,000 IOPS。それ以上、または一貫したミリ秒未満のレイテンシー → io2（Block Express）",
+    "io2 は最大 256,000 IOPS・4,000 MiB/s・64 TiB。プロビジョンドは容量 1 GiB あたり最大 1,000 IOPS。性能の全体は Nitro のインスタンスで出る",
+    "インスタンスストアは高速でも一時的。停止・終了でデータが消えるので永続データには使えない"
+  ],
+  "references": [
+    {
+      "title": "Amazon EBS Provisioned IOPS SSD volumes",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html"
+    },
+    {
+      "title": "Amazon EBS volume types",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

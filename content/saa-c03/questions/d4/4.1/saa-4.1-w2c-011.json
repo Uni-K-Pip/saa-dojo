@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-011",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K8",
+    "4.1-S7"
+  ],
+  "services": [
+    "AWS Transfer Family",
+    "Amazon S3",
+    "AWS DataSync",
+    "AWS Storage Gateway"
+  ],
+  "qualifier": "minimal-change",
+  "tags": [
+    "AWS Transfer Family",
+    "SFTP",
+    "マネージドサービス",
+    "S3 へのファイル受け取り"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある貿易会社は、取引先約 40 社から毎日送られてくる受注ファイルを、オンプレミスの Linux の SFTP サーバーで受け取っています。サーバーの老朽化に伴い、受け取ったファイルを Amazon S3 に直接保存する構成に移したいと考えています。取引先は SFTP クライアントと接続先のホスト名、SSH 鍵による認証を設定済みで、取引先に設定変更を依頼するのは難しい状況です。また、サーバーの OS の管理は減らしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 に SFTP サーバーを構築して EBS に受け取り、cron で S3 に同期する。",
+      "correct": false,
+      "rationale": "SFTP のまま使えますが、EC2 の OS の管理やパッチ適用、冗長化を自分で行う必要があります。サーバーの OS の管理を減らすという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Transfer Family で SFTP サーバーのエンドポイントを作成してストレージに S3 バケットを指定し、取引先の SSH 公開鍵をユーザーに登録する。現行のホスト名は、DNS でそのエンドポイントに向ける。",
+      "correct": true,
+      "rationale": "Transfer Family は SFTP などのプロトコルでファイルを S3 に直接送受信できるマネージドサーバーです。取引先は同じ SFTP クライアントと SSH 鍵を使い、接続先のホスト名を DNS で切り替えるだけで済み、OS の管理も不要です。"
+    },
+    {
+      "id": "c",
+      "text": "オンプレミスに S3 File Gateway を配備し、NFS 共有を公開して取引先からマウントしてもらう。",
+      "correct": false,
+      "rationale": "File Gateway が提供するのは NFS と SMB のファイル共有で、SFTP ではありません。取引先に接続方法の変更を求めることになり、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync のエージェントをオンプレミスに配備し、取引先から受け取ったファイルを S3 に転送する。",
+      "correct": false,
+      "rationale": "DataSync は、ストレージ間のデータ転送のサービスで、取引先が SFTP で接続するサーバーの機能は持ちません。引き続きオンプレミスのサーバーが必要になり、老朽化の問題が残ります。"
+    }
+  ],
+  "explanation": "AWS Transfer Family は、SFTP、FTPS、FTP、AS2 などのプロトコルで、ファイルを Amazon S3 や Amazon EFS に直接送受信できるフルマネージドのサービスです。サーバーのエンドポイントを作成し、ストレージとして S3 バケットを指定して、ユーザーに SSH 公開鍵などの認証情報を登録します。取引先は使い慣れた SFTP クライアントと SSH 鍵をそのまま使え、接続先は DNS（Amazon Route 53 など）で既存のホスト名を新しいエンドポイントに向ければ切り替えられます。サーバーの OS の管理、パッチ適用、冗長化は不要です。\n\nEC2 上に自前の SFTP サーバーを立てると OS の管理が残ります。Storage Gateway の S3 File Gateway は NFS／SMB の共有で、SFTP とは異なります。DataSync はストレージ間の転送サービスで、外部の取引先が接続する窓口にはなりません。",
+  "keyPoints": [
+    "外部の取引先が SFTP／FTPS で S3 や EFS にファイルを送る、クライアント側の変更を避けたい → AWS Transfer Family",
+    "既存のホスト名は DNS でエンドポイントに向けて切り替える",
+    "S3 File Gateway は NFS／SMB のファイル共有。SFTP は提供しない",
+    "DataSync はストレージ間の転送サービスで、外部クライアントを受け付けるサーバーではない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Transfer Family? - AWS Transfer Family",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
+    },
+    {
+      "title": "AWS Transfer Family",
+      "url": "https://aws.amazon.com/aws-transfer-family/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

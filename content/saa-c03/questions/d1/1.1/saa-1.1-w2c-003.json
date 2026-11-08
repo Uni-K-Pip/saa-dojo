@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.1-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S1", "1.1-K1"],
+  "services": ["AWS Organizations", "AWS Identity and Access Management (IAM)", "AWS Security Token Service (AWS STS)", "Amazon S3"],
+  "qualifier": "security",
+  "tags": ["ルートユーザー", "ルートアクセスの一元管理", "sts:AssumeRoot", "特権タスク", "AWS Organizations"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Organizations で約 120 個のメンバーアカウントを管理しています。監査で、多くのメンバーアカウントのルートユーザーにパスワードと MFA が残っていることが指摘されました。セキュリティ部門は、メンバーアカウントのルートユーザーの認証情報をなくして攻撃面を減らしつつ、Amazon S3 のバケットポリシーの誤設定で全員がバケットにアクセスできなくなったときは、自分たちで復旧できるようにしたいと考えています。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべてのメンバーアカウントのルートユーザーにハードウェア MFA デバイスを登録して金庫で保管し、復旧が必要なときに取り出して、ルートユーザーでサインインする。",
+      "correct": false,
+      "rationale": "ルートユーザーの認証情報が各アカウントに残り続けるので、攻撃面を減らすという要件を満たしません。120 個のアカウントでデバイスとパスワードを管理する運用も重くなります。"
+    },
+    {
+      "id": "b",
+      "text": "SCP で、メンバーアカウントのルートユーザーによるすべての操作を拒否する。",
+      "correct": false,
+      "rationale": "SCP でルートユーザーの操作を拒否しても、ルートユーザーのパスワードや MFA などの認証情報は残ったままです。また、ルートユーザーでしかできない復旧作業も SCP の拒否で行えなくなり、要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "各メンバーアカウントに管理者権限を持つ IAM ロールを用意しておき、バケットポリシーの誤設定が起きたら、そのロールでバケットポリシーを修正する。",
+      "correct": false,
+      "rationale": "バケットポリシーが全プリンシパルを明示的に拒否していると、管理者権限を持つ IAM ロールもアクセスを拒否されます。ルートユーザーの認証情報も削除されません。"
+    },
+    {
+      "id": "d",
+      "text": "IAM でルートアクセスの一元管理を有効にし、メンバーアカウントのルート認証情報を削除する。復旧時は管理アカウントから sts:AssumeRoot で S3UnlockBucketPolicy の特権セッションを開始し、バケットポリシーを削除する。",
+      "correct": true,
+      "rationale": "ルートアクセスの一元管理で、メンバーアカウントのルートユーザーのパスワード、アクセスキー、署名証明書を削除し、MFA を無効化できます。特権セッションは短時間で、タスクのポリシーに絞られた一時的な認証情報なので、ルートユーザーでサインインせずに全員を拒否するバケットポリシーを削除できます。"
+    }
+  ],
+  "explanation": "メンバーアカウントのルートユーザーは、通常の IAM の権限では制限できない強力な認証情報を持っています。AWS Organizations を使う場合は、IAM の「ルートアクセスの一元管理」を有効にすると、管理アカウントまたは IAM の委任管理者アカウントから、メンバーアカウントのルートユーザーのパスワード、アクセスキー、署名証明書を削除し、MFA を無効化できます。Organizations で新しく作成するアカウントには、既定でルートユーザーの認証情報がありません。\n\n以前はルートユーザーでしかできなかった作業の一部（全プリンシパルを拒否する S3 バケットポリシーの削除、同じ状態の SQS キューポリシーの削除、ルート認証情報の削除と再有効化など）は、sts:AssumeRoot による特権セッションで行えます。タスクごとに S3UnlockBucketPolicy、SQSUnlockQueuePolicy、IAMDeleteRootUserCredentials などの AWS 管理ポリシーを指定して、そのタスクだけに権限を絞った短期間の認証情報を得ます。グローバルエンドポイントは使えず、リージョンの STS エンドポイントを使います。\n\nSCP でルートユーザーを拒否する方法は認証情報そのものをなくさず、管理者ロールも明示的な拒否には勝てません。",
+  "keyPoints": [
+    "Organizations のメンバーアカウントのルート認証情報は一元管理で削除する。各アカウントで MFA を持つ運用はしない",
+    "ルートユーザーが必要だった一部の作業（S3/SQS の全拒否ポリシーの削除など）は sts:AssumeRoot の特権セッションで行える",
+    "明示的な Deny は管理者ロールでも上書きできない。SCP は認証情報を消さない"
+  ],
+  "references": [
+    {
+      "title": "Centrally manage root access for member accounts - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+    },
+    {
+      "title": "Perform a privileged task on an AWS Organizations member account - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user-privileged-task.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-multi-account", "lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

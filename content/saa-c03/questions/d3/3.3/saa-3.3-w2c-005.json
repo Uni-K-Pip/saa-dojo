@@ -1,0 +1,75 @@
+{
+  "id": "saa-3.3-w2c-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S4",
+    "3.3-K8"
+  ],
+  "services": [
+    "Amazon Neptune",
+    "Amazon Aurora",
+    "Amazon DynamoDB",
+    "Amazon DocumentDB (with MongoDB compatibility)"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "Amazon Neptune",
+    "グラフデータベース",
+    "関係の走査",
+    "データベースの種類の選択"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるソーシャルアプリの会社は、利用者同士のフォロー関係から「友達の友達」を 3〜4 段先までたどっておすすめを出す機能を作っています。現在は Amazon Aurora MySQL-Compatible Edition のテーブルに関係を保存し、結合を重ねる SQL で検索していますが、段数が増えるとクエリが極端に遅くなります。数億件規模の関係を保存しながら、段数をたどる検索をミリ秒単位で返せるようにし、データベースの管理はマネージドサービスに任せたいと考えています。どのデータベースを選ぶべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Neptune のグラフデータベースにフォロー関係を保存し、Gremlin や openCypher で検索する。",
+      "correct": true,
+      "rationale": "Neptune は、数十億件の関係を保存し、関係をたどるクエリをミリ秒単位で処理することを目的としたマネージドのグラフデータベースです。複数段の関係を直接たどる検索を簡潔に書けて、リーダーやマルチ AZ による高可用性も備えます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon DynamoDB のテーブルを作成し、フォロー関係ごとに項目を保存してクエリを繰り返す。",
+      "correct": false,
+      "rationale": "キーでの高速な取得には向きますが、複数段の関係をたどるには、アプリケーションがクエリを何度も繰り返すことになります。段数が増えるほど往復が増え、関係をたどる検索に最適化された選択肢ではありません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon DocumentDB（MongoDB 互換）のコレクションに、利用者ごとのフォロー一覧を JSON のドキュメントとして保存する。",
+      "correct": false,
+      "rationale": "ドキュメントに柔軟な形式のデータを保存するには向きますが、複数段の関係をたどる処理は、やはり検索の繰り返しや結合に近い処理が必要です。関係の走査が中心の問題には、グラフデータベースが適しています。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon ElastiCache を前段に置いて、Aurora のクエリ結果をキャッシュする。",
+      "correct": false,
+      "rationale": "同じクエリの結果は高速化できますが、利用者ごとに異なる多段の検索は、キャッシュのヒット率が低くなります。キャッシュミスのたびに、遅い結合クエリがそのまま実行されます。"
+    }
+  ],
+  "explanation": "データベースは、データの形と主なアクセスパターンで選びます。関係（エッジ）そのものが中心で、「友達の友達」のように複数段をたどる検索が多い場合は、グラフデータベースの Amazon Neptune が適しています。Neptune は、Apache TinkerPop Gremlin、openCypher、SPARQL をサポートし、数十億件の関係をミリ秒単位でたどれるように作られたマネージドサービスです。レコメンデーションや不正検知、ナレッジグラフなどに使われます。\n\nDynamoDB はキーによる取得、DocumentDB は JSON ドキュメントの保存に向いています。リレーショナルデータベースでも関係は表現できますが、結合を重ねる多段の走査は段数が増えると極端に遅くなります。キャッシュは、同じクエリが繰り返される場合にしか効きません。",
+  "keyPoints": [
+    "関係をたどる検索（友達の友達、不正検知、レコメンド）→ グラフデータベース Amazon Neptune",
+    "キーでの取得中心 → DynamoDB、JSON ドキュメント → DocumentDB、結合中心 → リレーショナル",
+    "多段の結合クエリは段数が増えると遅くなる。関係の走査にはグラフが有利",
+    "キャッシュは同じクエリの繰り返しにしか効かない"
+  ],
+  "references": [
+    {
+      "title": "What Is Amazon Neptune? - Amazon Neptune",
+      "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+    },
+    {
+      "title": "Amazon Neptune",
+      "url": "https://aws.amazon.com/neptune/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

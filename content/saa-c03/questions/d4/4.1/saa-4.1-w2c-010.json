@@ -1,0 +1,77 @@
+{
+  "id": "saa-4.1-w2c-010",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S1"
+  ],
+  "services": [
+    "Amazon S3"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "マルチパートアップロード",
+    "S3 Transfer Acceleration",
+    "大容量ファイル",
+    "長距離転送"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある映像制作会社のシドニーのスタジオは、撮影した 1 本あたり約 200 GB の映像ファイルを、インターネット経由で米国東部（バージニア北部）リージョンの S3 バケットにアップロードしています。バケットは分析基盤の都合で米国東部に置く必要があります。回線の帯域には余裕があるのに、遠距離のためアップロードに時間がかかり、途中で接続が切れると最初からやり直しになっています。機器の追加購入やデータの物理的な輸送は避けたい場合、アップロードの速度と信頼性を上げる対応を 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "シドニーのスタジオと AWS の間に、AWS Direct Connect の専用接続を新規に契約する。",
+      "correct": false,
+      "rationale": "Direct Connect は開通まで時間がかかり、専用回線の費用もかかります。接続が切れたときに最初からやり直しになる問題の解決にもなりません。"
+    },
+    {
+      "id": "b",
+      "text": "米国東部のバケットで S3 Transfer Acceleration を有効にし、アクセラレートエンドポイントを使ってアップロードする。",
+      "correct": true,
+      "rationale": "Transfer Acceleration は、世界中のエッジロケーションを経由して、最適化された AWS のネットワーク経路で S3 に転送します。遠距離のアップロードで、インターネットの帯域を使い切れないときに速度を上げられます。バケットのリージョンも変わりません。"
+    },
+    {
+      "id": "c",
+      "text": "ファイル全体を 1 回の PutObject リクエストでアップロードし、失敗したら再試行する。",
+      "correct": false,
+      "rationale": "1 回の PutObject でアップロードできるのは 5 GB までです。200 GB のファイルには使えません。また、失敗するたびに最初からやり直しになります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS CLI や SDK のマルチパートアップロードを使い、ファイルを分割してパートを並列にアップロードする。失敗したパートだけを再送する。",
+      "correct": true,
+      "rationale": "マルチパートアップロードは、大きなオブジェクトをパートに分けて並列に送り、スループットを上げられます。接続が切れても、失敗したパートだけを再送すればよく、最初からやり直す必要がありません。"
+    },
+    {
+      "id": "e",
+      "text": "AWS Snowball Edge を取り寄せ、映像ファイルを保存して AWS に送り返す。",
+      "correct": false,
+      "rationale": "物理的な輸送を避けるという要件に反します。また、毎回のデバイスの手配と輸送に時間がかかります。"
+    }
+  ],
+  "explanation": "この問題は、大きなファイルを S3 にアップロードするときの 2 つの課題を解く組み合わせです。\n\n1 つ目は、遠距離による速度の低下です。S3 Transfer Acceleration は、バケットの機能として有効にし、専用のアクセラレートエンドポイントを使うと、近くのエッジロケーションから AWS のネットワークを通って S3 に届きます。遠く離れた場所から大きなデータを送るときに有効で、速くならない場合は追加料金がかからない設計です。\n\n2 つ目は、失敗時のやり直しです。マルチパートアップロードは、1 つのオブジェクトをパートに分け、並列にアップロードしてスループットを上げられます。通信エラーでは、失敗したパートだけを再送でき、最初からやり直さずに済みます。100 MB 以上のオブジェクトで推奨されており、AWS CLI や SDK は大きなファイルを自動でマルチパートアップロードします。なお、1 回の PutObject でアップロードできるのは 5 GB までです。\n\nDirect Connect は継続的な大量転送に向く専用回線で、Snowball Edge は物理輸送が前提のため、今回の要件に合いません。",
+  "keyPoints": [
+    "大きなファイル（100 MB 以上）→ マルチパートアップロード。並列で速く、失敗したパートだけ再送できる",
+    "遠距離・世界各地からのアップロードを速くしたい → S3 Transfer Acceleration（アクセラレートエンドポイント）",
+    "1 回の PutObject でアップロードできるのは 5 GB まで。それ以上はマルチパートが必須",
+    "完了しなかったマルチパートアップロードのパートは保存料金がかかるので、ライフサイクルで中止ルールを設定する"
+  ],
+  "references": [
+    {
+      "title": "Uploading and copying objects using multipart upload in Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+    },
+    {
+      "title": "Configuring fast, secure file transfers using Amazon S3 Transfer Acceleration",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

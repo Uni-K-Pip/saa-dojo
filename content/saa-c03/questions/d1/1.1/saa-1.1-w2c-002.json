@@ -1,0 +1,67 @@
+{
+  "id": "saa-1.1-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K5"],
+  "services": ["Amazon RDS", "Amazon VPC", "AWS Identity and Access Management (IAM)"],
+  "qualifier": "security",
+  "tags": ["責任共有モデル", "Amazon RDS", "マネージドサービス", "セキュリティグループ", "データベースユーザー"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある出版社は、Amazon EC2 インスタンス上に自前で構築した MySQL データベースを、Amazon RDS for MySQL に移行します。セキュリティ責任者は、移行後も出版社自身の責任として残る作業を整理して、監査の担当者に説明する必要があります。AWS の責任共有モデルに照らして、移行後も出版社の責任として残る作業はどれですか。（2 つ選択してください。）",
+  "options": [
+    {
+      "id": "a",
+      "text": "DB インスタンスが動作するホストのオペレーティングシステムにセキュリティパッチを適用する。",
+      "correct": false,
+      "rationale": "RDS ではホストの OS のインストールとパッチ適用は AWS の責任です。EC2 上に自前で構築した場合は利用者の責任でしたが、RDS に移行すると利用者の作業ではなくなります。"
+    },
+    {
+      "id": "b",
+      "text": "DB インスタンスを動かすサーバーのハードウェアが故障したときに部品を交換する。",
+      "correct": false,
+      "rationale": "ハードウェアの保守と交換、およびデータセンターの電源・ネットワーク・冷却は、RDS でも EC2 でも AWS の責任です。"
+    },
+    {
+      "id": "c",
+      "text": "DB インスタンスに関連付けるセキュリティグループを設定し、データベースへ接続できる送信元を必要最小限に絞る。",
+      "correct": true,
+      "rationale": "ネットワークのアクセス制御は利用者の責任です。RDS を使っても、どの送信元からどのポートへの接続を許可するかはセキュリティグループで利用者が設計して設定します。"
+    },
+    {
+      "id": "d",
+      "text": "MySQL のデータベースソフトウェアをインストールして、エンジンの更新プログラムを適用する作業そのものを行う。",
+      "correct": false,
+      "rationale": "RDS ではデータベースソフトウェアのインストールとパッチ適用の作業は AWS が行います。利用者はメンテナンスウィンドウやマイナーバージョンの自動更新の設定を選ぶ立場です。"
+    },
+    {
+      "id": "e",
+      "text": "データベース内のユーザーを作成し、各ユーザーに付与するデータベースの権限とパスワードを管理する。",
+      "correct": true,
+      "rationale": "データベース内のユーザーと権限の管理は、RDS でも利用者の責任です。AWS はデータベースを動かす基盤を管理しますが、データへの誰がどこまで触れるかの設計は利用者が行います。"
+    }
+  ],
+  "explanation": "AWS の責任共有モデルでは、AWS が「クラウドのセキュリティ」（データセンター、ハードウェア、ネットワーク、ホストのソフトウェア基盤など）を、利用者が「クラウド内のセキュリティ」（データ、アクセス管理、設定）を担当します。どこまでが AWS の責任になるかは、使うサービスの抽象度で変わります。\n\nEC2 上に自前でデータベースを構築する場合、OS とデータベースソフトウェアのインストールとパッチ適用は利用者の仕事です。Amazon RDS に移行すると、OS とデータベースソフトウェアのインストール、パッチ適用、バックアップ、高可用性の仕組みは AWS が担当し、利用者の責任は軽くなります。\n\n一方で、利用者の責任として残るのは、セキュリティグループなどのネットワークのアクセス制御、データベース内のユーザーと権限、保存データと転送中データの暗号化の設定、アプリケーションとクエリの最適化などです。「マネージドサービスを使えばセキュリティの責任がすべて AWS に移る」わけではない点が、よく出る落とし穴です。",
+  "keyPoints": [
+    "マネージドサービスほど AWS の責任範囲が広がる。EC2 は OS から利用者、RDS は OS・DB ソフトウェアも AWS",
+    "どのサービスでも利用者に残る責任: データ、アクセス権限、ネットワークの許可設定、暗号化の設定",
+    "ハードウェアとデータセンターの保守は常に AWS の責任"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Relational Database Service (Amazon RDS)? - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "Shared Responsibility Model - Amazon Web Services",
+      "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

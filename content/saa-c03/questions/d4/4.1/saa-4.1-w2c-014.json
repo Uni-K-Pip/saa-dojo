@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-014",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S3",
+    "4.1-S7"
+  ],
+  "services": [
+    "AWS Snow Family",
+    "AWS DataSync",
+    "AWS Direct Connect",
+    "Amazon S3"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Snow Family",
+    "Snowball Edge",
+    "オフライン移行",
+    "帯域とデータ量"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある海洋調査会社は、洋上の観測拠点にある約 150 TB の観測データを Amazon S3 に移します。拠点の衛星回線は上り 20 Mbps で、ほかの業務と共用のため、使える帯域は半分程度です。移行の期限は 2 か月後です。同社は 3 年前から AWS Snowball Edge を利用しており、現在もそのアカウントで Snowball Edge のジョブを作成できます。回線の増強費用を避け、最も低いコストで期限までに移行できる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Snowball Edge のインポートジョブを作成し、拠点でデバイスにデータをコピーして AWS に返送して、S3 に取り込む。",
+      "correct": true,
+      "rationale": "150 TB は、使える帯域が 10 Mbps 程度の回線では、何年もかかる量です。ネットワーク経由での転送が期限に間に合わない場合は、デバイスを物理的に輸送するオフライン転送が最も低コストです。Snowball Edge はデバイス利用料と輸送のみで、回線の増強は不要です。"
+    },
+    {
+      "id": "b",
+      "text": "AWS DataSync のエージェントを拠点に配備し、衛星回線を通して S3 へ転送する。",
+      "correct": false,
+      "rationale": "DataSync でも、転送速度は回線の帯域が上限です。10 Mbps 程度では 150 TB の転送に千日以上かかり、2 か月の期限に間に合いません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Direct Connect の専用接続を拠点まで新たに敷設し、そこから S3 へ転送する。",
+      "correct": false,
+      "rationale": "洋上の拠点に専用線を敷設するのは現実的ではなく、回線の増強費用を避けるという要件にも反します。開通までの期間も期限に収まりません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 Transfer Acceleration を有効にして、衛星回線から S3 へアップロードする。",
+      "correct": false,
+      "rationale": "Transfer Acceleration は、遠距離の転送で S3 に至る経路を速くする機能で、拠点の回線の帯域自体は増えません。上りの帯域がボトルネックのため、期限に間に合いません。"
+    }
+  ],
+  "explanation": "データ移行の方法は、データ量と使える帯域から転送にかかる日数を計算して選びます。150 TB を 10 Mbps で転送すると、約 1.2 × 10^8 秒、つまり千日を超えます。2 か月の期限では、ネットワーク経由（DataSync、Transfer Acceleration、CLI など）はどれも間に合いません。専用線の Direct Connect も、洋上の拠点には敷設できず、開通にも時間がかかります。\n\nこのように、帯域に対してデータ量が大きすぎる場合は、物理デバイスにデータをコピーして輸送するオフライン転送が最も現実的で、低コストです。Snowball Edge は、デバイスを拠点に送ってもらい、データをコピーして返送すると、AWS が S3 に取り込みます。\n\nなお、AWS Snowball Edge は新規のお客様には提供されていません。この問題は、すでに利用しているアカウントが前提です。新規のお客様は、オンライン転送なら AWS DataSync、物理的な持ち込みなら AWS Data Transfer Terminal や AWS パートナーのソリューションを検討します。",
+  "keyPoints": [
+    "データ量 ÷ 使える帯域 で転送日数を概算する。期限に収まらないならオフライン転送（Snow ファミリー）を検討する",
+    "帯域が足りるなら、ネットワーク経由（CLI、DataSync）のほうが低コストなことが多い",
+    "Transfer Acceleration は回線の帯域を増やさない。Direct Connect は継続的な転送向けで、開通に時間がかかる",
+    "Snowball Edge は新規のお客様には提供されていない（既存のお客様向け）。新規は DataSync や Data Transfer Terminal を検討"
+  ],
+  "references": [
+    {
+      "title": "What is Snowball Edge? - AWS Snowball Edge",
+      "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
+    },
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

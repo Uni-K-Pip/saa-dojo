@@ -1,0 +1,764 @@
+{
+  "deck": "w2c-perf-cost-a",
+  "title": "性能とコストの使い分け（ストレージ・コンピューティング）",
+  "createdBy": "w2c",
+  "cards": [
+    {
+      "id": "fc-w2c-091",
+      "front": "EC2 に付ける汎用 SSD の EBS ボリュームを新規に作るとき、gp2 と gp3 のどちらを選ぶ？",
+      "back": "gp3。容量に関係なく基本で 3,000 IOPS・125 MiB/秒が使え、IOPS とスループットを容量と別に追加できる。GB 単価も gp2 より低い。gp2 は IOPS が容量に比例するので、性能のために容量を増やす無駄が出る。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "Amazon EBS"
+      ],
+      "tags": [
+        "EBS",
+        "gp3",
+        "ボリュームタイプ"
+      ]
+    },
+    {
+      "id": "fc-w2c-092",
+      "front": "1 台の DB サーバーのブロックストレージで、gp3 の上限を超える IOPS とサブミリ秒の遅延が必要。どの EBS タイプ？",
+      "back": "io2 Block Express（プロビジョンド IOPS SSD）。最大 256,000 IOPS・4,000 MiB/秒で、耐久性も gp3 より高い（99.999%）。gp3 の最大は 80,000 IOPS・2,000 MiB/秒。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon EBS"
+      ],
+      "tags": [
+        "EBS",
+        "io2",
+        "プロビジョンドIOPS"
+      ]
+    },
+    {
+      "id": "fc-w2c-093",
+      "front": "EBS の st1 と sc1 の違いと、共通する制限は？",
+      "back": "st1 は順次読み取りが多いビッグデータやログ処理向けのスループット最適化 HDD。sc1 は低頻度アクセスのデータを最安で置く Cold HDD。どちらも起動ボリュームには使えず、IOPS 重視のランダム I/O にも向かない。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "Amazon EBS"
+      ],
+      "tags": [
+        "EBS",
+        "st1",
+        "sc1",
+        "HDD"
+      ]
+    },
+    {
+      "id": "fc-w2c-094",
+      "front": "EBS Multi-Attach で 1 つのボリュームを複数の EC2 につなげるのは、どのタイプで、どんな条件？",
+      "back": "プロビジョンド IOPS SSD（io1・io2）のみ。同じ AZ の Nitro ベースのインスタンスに限られる。gp3 などは非対応。クラスター対応のファイルシステムやアプリが必要で、一般的な共有ファイルには EFS を使う。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon EBS",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "EBS",
+        "Multi-Attach"
+      ]
+    },
+    {
+      "id": "fc-w2c-095",
+      "front": "EFS のパフォーマンスモードは、新しく作るときにどれを選ぶ？",
+      "back": "General Purpose。遅延が最も低く、既定で、AWS も常に推奨している。Max I/O は旧世代で操作あたりの遅延が高く、One Zone ファイルシステムや Elastic スループットでは使えない。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon EFS"
+      ],
+      "tags": [
+        "EFS",
+        "パフォーマンスモード"
+      ]
+    },
+    {
+      "id": "fc-w2c-096",
+      "front": "負荷の波が読めない EFS のスループットモードは？ Provisioned を選ぶのはどんなとき？",
+      "back": "Elastic（推奨）。需要に合わせて自動で増減し、読み書きした量だけ支払う。必要な性能が分かっていて平均/ピーク比が高い（目安 5% 以上）なら Provisioned。Bursting は保存容量に比例した基本性能で足りるとき。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "Amazon EFS"
+      ],
+      "tags": [
+        "EFS",
+        "スループットモード"
+      ]
+    },
+    {
+      "id": "fc-w2c-097",
+      "front": "EFS のコストを下げる 2 つの方法は？",
+      "back": "(1) ライフサイクル管理で、しばらく読まれないファイルを自動で IA やアーカイブのストレージクラスへ移す。(2) 複数 AZ の冗長が不要なら One Zone ファイルシステムを使う。ただし One Zone は 1 つの AZ が失われるとデータも失う。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon EFS"
+      ],
+      "tags": [
+        "EFS",
+        "ライフサイクル",
+        "One Zone"
+      ]
+    },
+    {
+      "id": "fc-w2c-098",
+      "front": "HPC や機械学習で、S3 のデータを高スループットで処理するファイルシステムは？ 一時処理だけなら安くする方法は？",
+      "back": "Amazon FSx for Lustre。S3 バケットとリンクして読み込み、結果を書き戻せる。一時的な処理は、データを複製しないスクラッチ型にすると安いが、障害時にデータを失う。長期利用は永続型を選ぶ。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "Amazon FSx",
+        "Amazon S3"
+      ],
+      "tags": [
+        "FSx",
+        "Lustre",
+        "HPC"
+      ]
+    },
+    {
+      "id": "fc-w2c-099",
+      "front": "Windows アプリの SMB 共有と Active Directory 連携が必要。選ぶ共有ストレージは？",
+      "back": "Amazon FSx for Windows File Server。SMB と Active Directory に対応したマネージドな Windows ファイルサーバー。EFS は Linux 向けの NFS で、Windows からは使えない。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon FSx",
+        "Amazon EFS"
+      ],
+      "tags": [
+        "FSx",
+        "Windows",
+        "SMB"
+      ]
+    },
+    {
+      "id": "fc-w2c-100",
+      "front": "オンプレミスの NetApp から移行し、NFS・SMB・iSCSI を同時に使いたい。選ぶ FSx は？",
+      "back": "Amazon FSx for NetApp ONTAP。複数プロトコルに対応し、ONTAP のスナップショットやレプリケーションも使える。重複排除や圧縮、容量プールへの階層化でコストも下げられる。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "Amazon FSx"
+      ],
+      "tags": [
+        "FSx",
+        "ONTAP",
+        "移行"
+      ]
+    },
+    {
+      "id": "fc-w2c-101",
+      "front": "オンプレミスの ZFS や Linux のファイルサーバーから、NFS のまま低遅延で移行したい。選ぶ FSx は？",
+      "back": "Amazon FSx for OpenZFS。NFS で使え、スナップショットやクローンなど ZFS の機能も引き継げる。SMB が必要なら Windows File Server か ONTAP を選ぶ。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon FSx"
+      ],
+      "tags": [
+        "FSx",
+        "OpenZFS",
+        "移行"
+      ]
+    },
+    {
+      "id": "fc-w2c-102",
+      "front": "アクセス頻度が不明または変わる S3 データで、運用の手間なしにコストを下げたい。どのクラス？ 小さなオブジェクトの注意点は？",
+      "back": "S3 Intelligent-Tiering。アクセスに応じてオブジェクトを自動で階層間移動し、取り出し料金はない（監視・自動化の料金はある）。128 KB 未満のオブジェクトは自動階層化されず、常に Frequent Access 階層の料金になる。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "tags": [
+        "S3",
+        "Intelligent-Tiering"
+      ]
+    },
+    {
+      "id": "fc-w2c-103",
+      "front": "S3 Standard-IA と One Zone-IA の違いと、共通する課金上の注意は？",
+      "back": "Standard-IA は 3 つ以上の AZ に保存し、One Zone-IA は 1 つの AZ のみ（安いが AZ 障害で失う。作り直せるデータ向け）。どちらも最低保存期間が 30 日、取り出し料金があり、128 KB 未満も 128 KB として課金される。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "tags": [
+        "S3",
+        "Standard-IA",
+        "One Zone-IA"
+      ]
+    },
+    {
+      "id": "fc-w2c-104",
+      "front": "めったに読まないが、読むときはミリ秒で取り出したいアーカイブ（四半期に 1 回程度）に向く S3 クラスは？",
+      "back": "S3 Glacier Instant Retrieval。ミリ秒で取り出せて、保存料金は Standard-IA より安い。最低保存期間は 90 日で、取り出し料金がある。Flexible Retrieval は復元が必要で即時に読めない。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3",
+        "Amazon S3 Glacier"
+      ],
+      "tags": [
+        "S3",
+        "Glacier Instant Retrieval"
+      ]
+    },
+    {
+      "id": "fc-w2c-105",
+      "front": "S3 Glacier Flexible Retrieval と Deep Archive の使い分けは？",
+      "back": "数分〜数時間待てる年 1〜2 回のアーカイブなら Flexible Retrieval（最低 90 日、迅速は 1〜5 分）。ほとんど読まず 12 時間以上待てる長期保管なら Deep Archive（最低 180 日で最安）。どちらも読むには復元が必要。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3",
+        "Amazon S3 Glacier"
+      ],
+      "tags": [
+        "S3",
+        "Glacier",
+        "Deep Archive"
+      ]
+    },
+    {
+      "id": "fc-w2c-106",
+      "front": "S3 ライフサイクルルールでの移行の向きの制約は？",
+      "back": "移行は Standard から下のクラスへ進む一方向（waterfall）。Glacier Deep Archive から他のクラスへはルールで戻せず、復元してコピーし直す必要がある。さらに、最低保存期間より前の移行や削除には残りの日数分が課金される。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3",
+        "Amazon S3 Glacier"
+      ],
+      "tags": [
+        "S3",
+        "ライフサイクル"
+      ]
+    },
+    {
+      "id": "fc-w2c-107",
+      "front": "バージョニングを有効にした S3 バケットで、古いバージョンが溜まって保存料金が増えている。どうする？",
+      "back": "ライフサイクルルールで、非現行バージョンを一定日数後に安いクラスへ移行したり、期限切れで削除したりする。あわせて、未完了のマルチパートアップロードを自動で中止するルールも入れると、見えない保存料金を減らせる。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "tags": [
+        "S3",
+        "バージョニング",
+        "ライフサイクル"
+      ]
+    },
+    {
+      "id": "fc-w2c-108",
+      "front": "S3 のダウンロード料金を、データの利用者（別アカウント）に負担させたい。どうする？",
+      "back": "リクエスタ支払い（Requester Pays）を有効にする。リクエスト料金とデータ転送料金は要求した側が払い、バケット所有者は保存料金だけ払う。要求者は認証されている必要があり、匿名アクセスは使えない。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "tags": [
+        "S3",
+        "リクエスタ支払い",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-109",
+      "front": "S3 へ大きなファイルを速く読み書きするための基本の方法は？",
+      "back": "マルチパートアップロードで分割して並列に送る（大きなオブジェクトで推奨）。読み取りはバイト範囲フェッチで並列化する。S3 はプレフィックスごとに秒間 3,500 件の書き込み系と 5,500 件の読み取り系をこなせるので、プレフィックスを分けて並列度を上げる。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "Amazon S3"
+      ],
+      "tags": [
+        "S3",
+        "マルチパート",
+        "性能"
+      ]
+    },
+    {
+      "id": "fc-w2c-110",
+      "front": "オンプレミスのアプリが NFS/SMB のまま S3 にファイルを置き、よく使うデータはローカルでキャッシュしたい。選ぶものは？",
+      "back": "AWS Storage Gateway の S3 File Gateway。オンプレミスの VM かハードウェアで動き、ファイルが S3 のオブジェクトとして保存される。ライフサイクルやレプリケーションなど S3 の機能も使える。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "AWS Storage Gateway",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Storage Gateway",
+        "S3 File Gateway"
+      ]
+    },
+    {
+      "id": "fc-w2c-111",
+      "front": "Storage Gateway の Volume Gateway の cached と stored の違いは？",
+      "back": "どちらも iSCSI。cached は主データを S3 に置き、よく使う分だけローカルにキャッシュするので、オンプレミスの容量を節約できる。stored は主データ全体をオンプレミスに置き、スナップショットを非同期に AWS へ送るので、低遅延でデータ全体を読みたいとき向き。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "AWS Storage Gateway"
+      ],
+      "tags": [
+        "Storage Gateway",
+        "Volume Gateway"
+      ]
+    },
+    {
+      "id": "fc-w2c-112",
+      "front": "物理テープのバックアップ運用を、既存のバックアップソフトを変えずにクラウドへ置き換えたい。選ぶものは？",
+      "back": "Storage Gateway の Tape Gateway。仮想テープライブラリとして見え、仮想テープは S3 に保存され、アーカイブすると S3 Glacier の低コストなクラスに置かれる。テープの保管・輸送のコストをなくせる。",
+      "taskStatements": [
+        "4.1"
+      ],
+      "services": [
+        "AWS Storage Gateway",
+        "Amazon S3 Glacier"
+      ],
+      "tags": [
+        "Storage Gateway",
+        "Tape Gateway"
+      ]
+    },
+    {
+      "id": "fc-w2c-113",
+      "front": "FSx for Windows File Server のデータを、オンプレミスから低遅延で使うために Amazon FSx File Gateway を新規に導入してよい？",
+      "back": "いいえ。FSx File Gateway は 2024 年 10 月 28 日から新規顧客の受付を停止している（既存顧客は継続利用可）。新規なら FSx for Windows File Server へ直接アクセスする構成を考える。オンプレミスからのファイルアクセスなら S3 File Gateway も候補。",
+      "taskStatements": [
+        "3.1"
+      ],
+      "services": [
+        "AWS Storage Gateway",
+        "Amazon FSx"
+      ],
+      "tags": [
+        "Storage Gateway",
+        "FSx File Gateway",
+        "提供終了"
+      ]
+    },
+    {
+      "id": "fc-w2c-114",
+      "front": "AWS DataSync と Storage Gateway の使い分けは？",
+      "back": "DataSync は、オンプレミスの NFS/SMB などから S3・EFS・FSx へ、大量のデータを一括または定期スケジュールで高速に転送・移行する（帯域制御や検証つき）。Storage Gateway は、オンプレミスのアプリから継続的にクラウドのストレージを使うための入口（キャッシュつき）。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "AWS DataSync",
+        "AWS Storage Gateway"
+      ],
+      "tags": [
+        "DataSync",
+        "Storage Gateway",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-115",
+      "front": "取引先が SFTP でファイルを送ってくる。サーバーを運用せずに S3 で受け取るには？",
+      "back": "AWS Transfer Family。SFTP・FTPS・FTP（AS2 も）に対応したマネージドなエンドポイントで、データは S3 や EFS に入る。既存のクライアントや認証方式を変えずに、サーバーの運用をなくせる。エンドポイントは起動している時間で課金される。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "AWS Transfer Family",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Transfer Family",
+        "SFTP"
+      ]
+    },
+    {
+      "id": "fc-w2c-116",
+      "front": "回線が細く、数百 TB を AWS へ移したい。旧来の定石だった Snowball Edge は今も新規に選べる？",
+      "back": "選べない。AWS Snowball Edge は 2025 年 11 月から新規顧客の受付を停止している（既存顧客は継続利用可）。オンライン転送は DataSync、物理的な持ち込みは AWS Data Transfer Terminal、エッジでの計算は AWS Outposts が代替になる。",
+      "taskStatements": [
+        "3.1",
+        "4.1"
+      ],
+      "services": [
+        "AWS Snow Family",
+        "AWS DataSync",
+        "AWS Outposts"
+      ],
+      "tags": [
+        "Snowball Edge",
+        "新規受付停止",
+        "移行"
+      ]
+    },
+    {
+      "id": "fc-w2c-117",
+      "front": "24 時間 365 日動き、構成を数年変えない EC2 のコストを下げるには、オンデマンドよりどれが向く？",
+      "back": "Savings Plans かリザーブドインスタンスで 1 年か 3 年のコミットを買う。同じインスタンスファミリーとリージョンを使い続けるなら EC2 Instance Savings Plans（最大 72%）が最も割引が大きい。割引だけで、キャパシティの確保にはならない。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "Amazon EC2",
+        "Savings Plans"
+      ],
+      "tags": [
+        "EC2",
+        "購入オプション",
+        "Savings Plans"
+      ]
+    },
+    {
+      "id": "fc-w2c-118",
+      "front": "Compute Savings Plans と EC2 Instance Savings Plans の違いは？",
+      "back": "Compute は割引が最大 66% で、ファミリー・サイズ・リージョン・OS を変えても適用され、Fargate と Lambda の利用にも効く。EC2 Instance は最大 72% の代わりに、リージョンとインスタンスファミリーを固定する。構成が変わるかもしれないなら Compute。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "Savings Plans",
+        "Amazon EC2",
+        "AWS Fargate",
+        "AWS Lambda"
+      ],
+      "tags": [
+        "Savings Plans",
+        "Compute",
+        "EC2 Instance"
+      ]
+    },
+    {
+      "id": "fc-w2c-119",
+      "front": "リージョンのリザーブドインスタンスとゾーンのリザーブドインスタンス、スタンダードとコンバーティブルの違いは？",
+      "back": "リージョンの RI は割引のみで、キャパシティは確保しない。特定 AZ のゾーン RI は割引に加えてキャパシティも予約する。スタンダードは属性を変えられず割引が大きい。コンバーティブルは別の属性のものと交換でき、構成が変わる見込みのとき向き。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "Amazon EC2"
+      ],
+      "tags": [
+        "EC2",
+        "リザーブドインスタンス"
+      ]
+    },
+    {
+      "id": "fc-w2c-120",
+      "front": "特定の AZ で、決まった日に確実に EC2 を起動したい。割引は後回しでよい。何を使う？",
+      "back": "オンデマンドキャパシティ予約。期間の約束なしに AZ のキャパシティを確保できるが、予約している間は使わなくても課金される。割引を得たいなら Savings Plans と組み合わせる。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "Amazon EC2",
+        "Savings Plans"
+      ],
+      "tags": [
+        "EC2",
+        "キャパシティ予約"
+      ]
+    },
+    {
+      "id": "fc-w2c-121",
+      "front": "スポットインスタンスの中断の影響を小さくする設計上の工夫は？",
+      "back": "回収の 2 分前に通知が来るので、その間に処理の状態を保存して終了できるようにする（チェックポイント、キューで再実行）。1 種類のインスタンスタイプや 1 つの AZ に頼らず、複数を指定してプールを分散し、price-capacity-optimized の配分戦略にする。DB のプライマリなど止められない処理には使わない。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "Amazon EC2 Spot Instances",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "Spot",
+        "EC2",
+        "耐障害性",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-122",
+      "front": "Auto Scaling グループで、最低限の台数は確実に動かしつつ、増える分は安くしたい。どう設計する？",
+      "back": "混合インスタンスポリシーで、基本台数（ベース）をオンデマンドにし、それを超える分をスポットにする。複数のインスタンスタイプと AZ を指定し、price-capacity-optimized の配分戦略にすると、スポットが中断されにくい。",
+      "taskStatements": [
+        "4.2",
+        "3.2"
+      ],
+      "services": [
+        "Amazon EC2 Auto Scaling",
+        "Amazon EC2 Spot Instances"
+      ],
+      "tags": [
+        "Auto Scaling",
+        "Spot",
+        "混合インスタンス"
+      ]
+    },
+    {
+      "id": "fc-w2c-123",
+      "front": "AWS Graviton（Arm）ベースのインスタンスを選ぶ利点と、移行の注意点は？",
+      "back": "同等の x86 インスタンスより価格性能比が良く、コスト削減策として定番。EC2 のほか、RDS・Aurora・ElastiCache・Lambda（arm64）・Fargate でも使える。ただし Arm 向けにビルドされたバイナリやコンテナイメージが必要で、互換性の確認が要る。",
+      "taskStatements": [
+        "4.2",
+        "3.2"
+      ],
+      "services": [
+        "Amazon EC2",
+        "AWS Lambda",
+        "AWS Fargate"
+      ],
+      "tags": [
+        "Graviton",
+        "Arm",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-124",
+      "front": "EC2 の過剰なサイズを見つけ、変更の推奨を出してくれるサービスは？",
+      "back": "AWS Compute Optimizer。CloudWatch の使用状況を機械学習で分析し、EC2・Auto Scaling グループ・EBS・Lambda などの最適なサイズや種類を推奨する。まず適切なサイズにしてから、Savings Plans などの購入オプションを決める順序が定石。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "AWS Compute Optimizer",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "Compute Optimizer",
+        "ライトサイジング"
+      ]
+    },
+    {
+      "id": "fc-w2c-125",
+      "front": "Lambda 関数の処理が遅い。メモリを増やすと何が起きる？ 料金は必ず増える？",
+      "back": "メモリに比例して CPU も増える（128〜10,240 MB で、1,769 MB で 1 vCPU 相当）。CPU 律速の関数は実行時間が短くなり、料金（メモリ × 実行時間）が同じか下がることもある。最適値は AWS Lambda Power Tuning などで測る。",
+      "taskStatements": [
+        "3.2",
+        "4.2"
+      ],
+      "services": [
+        "AWS Lambda"
+      ],
+      "tags": [
+        "Lambda",
+        "メモリ",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-126",
+      "front": "Lambda、Fargate、EC2 のうち、利用が断続的な処理と常時高稼働の処理で、コスト面の向き不向きは？",
+      "back": "断続的・短時間・イベント駆動は Lambda（使った分だけで、アイドル課金なし。最大 15 分）。常時高稼働で使用率が高いなら、EC2 を Savings Plans などで買う方が安いことが多い。Fargate はサーバー管理を減らしたいコンテナ向け。",
+      "taskStatements": [
+        "4.2",
+        "3.2"
+      ],
+      "services": [
+        "AWS Lambda",
+        "AWS Fargate",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "Lambda",
+        "Fargate",
+        "EC2",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-127",
+      "front": "Lambda のコールドスタートを減らして遅延を安定させたい。どうする？ 追加のコストは？",
+      "back": "プロビジョニング済み同時実行を設定すると、実行環境を事前に初期化して待機させる。使っていなくても確保した分が課金される。Java などの起動が遅い言語には SnapStart（初期化済みのスナップショットから起動）という手もある。",
+      "taskStatements": [
+        "3.2"
+      ],
+      "services": [
+        "AWS Lambda"
+      ],
+      "tags": [
+        "Lambda",
+        "コールドスタート",
+        "プロビジョニング済み同時実行"
+      ]
+    },
+    {
+      "id": "fc-w2c-128",
+      "front": "ECS でコンテナを動かすとき、Fargate 起動タイプと EC2 起動タイプの使い分けは？",
+      "back": "Fargate はサーバーやクラスターの管理が要らず、タスクの vCPU とメモリで課金される。運用負荷を最小にしたいときの定石。EC2 起動タイプは、使用率を高く保てる常時の大規模ワークロードや、GPU など特殊なインスタンスが必要なときに安く、細かく制御できる。",
+      "taskStatements": [
+        "3.2",
+        "4.2"
+      ],
+      "services": [
+        "AWS Fargate",
+        "Amazon ECS",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "Fargate",
+        "ECS",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-129",
+      "front": "中断されても再試行できるコンテナタスクを Fargate で安く動かすには？",
+      "back": "Fargate Spot の容量プロバイダーを使う。予備の容量で割引価格になる代わりに、回収の 2 分前に警告（SIGTERM）が来てタスクが止まる。キャパシティが足りないと遅れることもあるので、通常の Fargate と組み合わせる。",
+      "taskStatements": [
+        "4.2"
+      ],
+      "services": [
+        "AWS Fargate",
+        "Amazon ECS"
+      ],
+      "tags": [
+        "Fargate Spot",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-130",
+      "front": "バッチジョブをキューで管理し、サーバーの用意を自動にしたい。コストを抑えるには？",
+      "back": "AWS Batch。ジョブキューとコンピューティング環境を定義すると、必要な台数を自動で起動・終了する。Batch 自体に追加料金はなく、基盤の料金だけ。コンピューティング環境にスポットを使えば大幅に安くなる（Fargate も選べる）。",
+      "taskStatements": [
+        "3.2",
+        "4.2"
+      ],
+      "services": [
+        "AWS Batch",
+        "Amazon EC2 Spot Instances"
+      ],
+      "tags": [
+        "Batch",
+        "Spot",
+        "バッチ"
+      ]
+    },
+    {
+      "id": "fc-w2c-131",
+      "front": "Amazon EMR のコストを下げる定番の設計は？",
+      "back": "データは S3 に置いて、処理のときだけクラスターを起動・終了する一時クラスターにする。マスターとコアはオンデマンドで確保し、増減しても困らないタスクノードにスポットを使う。複数のインスタンスタイプを混ぜるインスタンスフリートで、スポット不足を避ける。",
+      "taskStatements": [
+        "3.2",
+        "4.2"
+      ],
+      "services": [
+        "Amazon EMR",
+        "Amazon S3",
+        "Amazon EC2 Spot Instances"
+      ],
+      "tags": [
+        "EMR",
+        "Spot",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-132",
+      "front": "負荷の変化に合わせて EC2 を自動で増減するとき、いちばん手軽なスケーリングポリシーは？",
+      "back": "ターゲット追跡スケーリング。たとえば平均 CPU 使用率 50% のように目標値を決めると、維持するようにグループが増減する。ステップスケーリングは閾値ごとに細かく増減幅を決めたいとき、スケジュールは時刻が決まった変化に使う。",
+      "taskStatements": [
+        "3.2"
+      ],
+      "services": [
+        "Amazon EC2 Auto Scaling"
+      ],
+      "tags": [
+        "Auto Scaling",
+        "ターゲット追跡"
+      ]
+    },
+    {
+      "id": "fc-w2c-133",
+      "front": "毎日同じ時間帯に負荷が急増する。Auto Scaling で、増える前にあらかじめ台数を増やしておくには？",
+      "back": "予測スケーリング。過去の負荷パターンを機械学習で分析し、先読みして台数を増やす。時刻が完全に決まっているならスケジュールスケーリングでもよい。ターゲット追跡と併用でき、予測しきれない分は追跡側が補う。",
+      "taskStatements": [
+        "3.2"
+      ],
+      "services": [
+        "Amazon EC2 Auto Scaling"
+      ],
+      "tags": [
+        "Auto Scaling",
+        "予測スケーリング"
+      ]
+    },
+    {
+      "id": "fc-w2c-134",
+      "front": "起動に時間がかかるアプリで、スケールアウトの遅れを減らしつつアイドル中のコストも抑えるには？",
+      "back": "Auto Scaling のウォームプールを使う。事前に初期化したインスタンスを停止状態などで待機させ、必要になったらすばやく投入する。停止中は EC2 の料金がかからない（EBS などは課金される）。",
+      "taskStatements": [
+        "3.2",
+        "4.2"
+      ],
+      "services": [
+        "Amazon EC2 Auto Scaling"
+      ],
+      "tags": [
+        "Auto Scaling",
+        "ウォームプール"
+      ]
+    },
+    {
+      "id": "fc-w2c-135",
+      "front": "SQS のメッセージを処理するワーカー群を、キューの溜まり具合に合わせて増減するには？",
+      "back": "キューの深さ（ApproximateNumberOfMessages）を、グループの台数で割った「インスタンスあたりのバックログ」をカスタム指標にし、ターゲット追跡スケーリングで目標値を保つ。CPU 使用率では待ち行列の増加を反映できない。",
+      "taskStatements": [
+        "3.2"
+      ],
+      "services": [
+        "Amazon EC2 Auto Scaling",
+        "Amazon Simple Queue Service",
+        "Amazon CloudWatch"
+      ],
+      "tags": [
+        "Auto Scaling",
+        "SQS",
+        "カスタム指標"
+      ]
+    }
+  ]
+}

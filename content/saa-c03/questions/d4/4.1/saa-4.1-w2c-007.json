@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K7",
+    "4.1-S9",
+    "4.1-S5"
+  ],
+  "services": [
+    "Amazon S3"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "S3 ライフサイクル",
+    "最小保存期間",
+    "S3 Standard-IA",
+    "有効期限"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるデータ分析会社は、バッチ処理の中間出力ファイル（1 個あたり数百 MB）を Amazon S3 の S3 Standard ストレージクラスに保存しています。ファイルは作成から 5 日を過ぎると読まれる頻度が大きく下がりますが、15 日目までは念のため即時に読める必要があります。ファイルは作成から 15 日目に必ず削除し、それ以降は保持しません。各ストレージクラスの最小保存期間に伴う課金も含めた総額で、ストレージコストを最も下げるライフサイクルの設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "作成から 5 日後に S3 Standard-IA へ移行するルールと、15 日後に削除するルールを設定する。",
+      "correct": false,
+      "rationale": "S3 Standard-IA の最小保存期間は 30 日で、それより早く削除や移行をしても 30 日分の料金がかかります。移行してから 10 日で削除すると、Standard に置いたままにするより高くなります。"
+    },
+    {
+      "id": "b",
+      "text": "S3 Intelligent-Tiering に保存し、15 日後に削除するルールを設定する。",
+      "correct": false,
+      "rationale": "S3 Intelligent-Tiering は、30 日間アクセスがないオブジェクトから低コストの階層へ移ります。15 日で削除するファイルは安くなる階層に到達せず、オブジェクトごとの監視料金が加わるだけです。"
+    },
+    {
+      "id": "c",
+      "text": "S3 Standard のままにして、作成から 15 日後に削除するライフサイクルの有効期限ルールだけを設定する。",
+      "correct": true,
+      "rationale": "15 日で削除するデータは、最小保存期間のあるクラスへ移すと、短期間の保存に対して最小保存期間分の料金がかかります。移行せず Standard のまま有効期限ルールで確実に削除するのが、最も低コストです。"
+    },
+    {
+      "id": "d",
+      "text": "作成から 5 日後に S3 Glacier Instant Retrieval へ移行するルールと、15 日後に削除するルールを設定する。",
+      "correct": false,
+      "rationale": "S3 Glacier Instant Retrieval の最小保存期間は 90 日で、15 日で削除しても 90 日分の保存料金がかかります。短期間しか保存しないデータには向きません。"
+    }
+  ],
+  "explanation": "S3 のストレージクラスを下げれば必ず安くなるわけではありません。S3 Standard-IA と S3 One Zone-IA には 30 日、S3 Glacier Instant Retrieval と Flexible Retrieval には 90 日、Glacier Deep Archive には 180 日の最小保存期間があり、それより早く移行・削除・上書きをしても、残りの日数分が課金されます。IA 系は取り出しのたびに料金もかかります。\n\nこの問題の中間ファイルは、15 日で削除する予定です。5 日目に S3 Standard-IA や Glacier Instant Retrieval へ移すと、短い期間しか置かないのに 30 日分や 90 日分の保存料金がかかり、Standard に置いたままより高くなります。S3 Intelligent-Tiering も、アクセスがない状態が 30 日続くまで低コストの階層に移らないため、15 日で消えるデータでは効果が出ません。\n\nよって、ストレージクラスは変えずに、15 日後にオブジェクトを削除するライフサイクルの有効期限ルールだけを設定するのが最適です。ライフサイクルの設計では、保存する日数と、各クラスの最小保存期間を必ず照らし合わせます。",
+  "keyPoints": [
+    "最小保存期間: Standard-IA／One Zone-IA は 30 日、Glacier Instant／Flexible Retrieval は 90 日、Deep Archive は 180 日",
+    "最小保存期間より短く置いて削除するデータは、低コストのクラスに移すとかえって高くなる",
+    "短命なデータは Standard のまま、ライフサイクルの有効期限ルールで確実に削除する",
+    "Intelligent-Tiering は、アクセスがない状態が 30 日続くまで低コストの階層に移らない"
+  ],
+  "references": [
+    {
+      "title": "Understanding and managing Amazon S3 storage classes - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    },
+    {
+      "title": "Transitioning objects using Amazon S3 Lifecycle - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
