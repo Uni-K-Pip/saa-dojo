@@ -1,0 +1,62 @@
+{
+  "id": "saa-3.4-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": ["3.4-K1", "3.4-S1"],
+  "services": ["Amazon CloudFront", "Elastic Load Balancing", "Amazon Virtual Private Cloud", "Amazon Elastic Compute Cloud"],
+  "qualifier": "security",
+  "tags": ["CloudFront", "VPCオリジン", "内部ALB", "プライベートサブネット"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、東京リージョンの VPC で、Application Load Balancer（ALB）の背後の Amazon EC2 インスタンスで Web アプリケーションを公開し、前段に Amazon CloudFront を置いています。ALB は現在、パブリックサブネットに置いた internet-facing の構成です。セキュリティ部門の新しい基準で、ロードバランサーにパブリック IP アドレスを持たせてはならず、インターネットからの通信は CloudFront だけを入口にすることが求められました。この基準を満たし、CloudFront の IP アドレス範囲を自分で追跡する運用を避ける方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ALB は internet-facing のまま、ALB のセキュリティグループのインバウンドルールを、CloudFront のマネージドプレフィックスリストからの HTTPS だけに限定する。",
+      "correct": false,
+      "rationale": "セキュリティグループで CloudFront 以外の通信は遮断できますが、ALB はパブリックサブネットに置かれてパブリック IP アドレスを持ち続けます。パブリック IP アドレスを持たせないという基準を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "ALB を internal スキームでプライベートサブネットに作り直し、CloudFront に VPC オリジンを作成して、その ALB をオリジンにする。ALB のセキュリティグループでは CloudFront からの通信だけを許可する。",
+      "correct": true,
+      "rationale": "VPC オリジンを使うと、プライベートサブネットにある ALB、NLB、EC2 インスタンスを CloudFront のオリジンにできます。ロードバランサーにパブリック IP アドレスは要らず、CloudFront が唯一の入口になります。CloudFront が管理する経路なので、IP アドレス範囲を自分で追跡する必要もありません。"
+    },
+    {
+      "id": "c",
+      "text": "CloudFront のオリジンに秘密の値を持つカスタムヘッダーを追加し、internet-facing の ALB のリスナールールで、そのヘッダーが一致するリクエストだけをターゲットに転送する。",
+      "correct": false,
+      "rationale": "ヘッダーが一致しないリクエストは拒否できますが、ALB はパブリックサブネットにパブリック IP アドレスを持ったままです。基準を満たさず、ヘッダーの秘密の値を定期的に更新する運用も加わります。"
+    },
+    {
+      "id": "d",
+      "text": "CloudFront のオリジンアクセスコントロール（OAC）を ALB のオリジンに設定し、ALB が CloudFront からの署名付きのリクエストだけを受け付けるようにする。",
+      "correct": false,
+      "rationale": "OAC は、Amazon S3 や Lambda 関数 URL などの AWS オリジンへのアクセスを制限する機能で、ALB のオリジンには使えません。ALB をプライベートにして CloudFront だけに公開するには、VPC オリジンを使います。"
+    }
+  ],
+  "explanation": "CloudFront のオリジンを保護する方法はオリジンの種類で異なります。S3 や Lambda 関数 URL のような AWS のオリジンには、オリジンアクセスコントロール（OAC）で署名付きのリクエストだけを許可します。ALB、NLB、EC2 インスタンスのようなオリジンには、VPC オリジンを使います。\n\nVPC オリジンは、プライベートサブネットに置いたロードバランサーや EC2 インスタンスを、CloudFront のオリジンとして使う機能です。CloudFront が VPC 内にサービスが管理するネットワークインターフェイスを作り、プライベートな接続でオリジンにアクセスします。VPC にはインターネットゲートウェイが必要ですが、オリジンはパブリックな IP アドレスを持たず、インターネットから直接アクセスできません。オリジンのセキュリティグループでは、CloudFront のマネージドプレフィックスリストなどで CloudFront からの通信を許可します。\n\n従来は、internet-facing の ALB に CloudFront のマネージドプレフィックスリストやカスタムヘッダーによる制限をかける方法が使われてきました。これらはアクセスを制限できますが、ロードバランサーがパブリックなまま残るため、パブリック IP アドレスを禁止する基準には合いません。なお、Gateway Load Balancer と TLS リスナーを持つ NLB は VPC オリジンにできません。",
+  "keyPoints": [
+    "ALB、NLB、EC2 をインターネットに公開せず CloudFront だけを入口にする → CloudFront の VPC オリジン（オリジンはプライベートサブネット）",
+    "OAC は S3、Lambda 関数 URL などの AWS オリジン向け。ALB には使えない",
+    "プレフィックスリストやカスタムヘッダーによる制限は、internet-facing の ALB をパブリックのまま残す",
+    "VPC オリジンの VPC にはインターネットゲートウェイが必要。Gateway Load Balancer と TLS リスナーの NLB は対象外"
+  ],
+  "references": [
+    {
+      "title": "Restrict access with VPC origins - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html"
+    },
+    {
+      "title": "Restrict access to an AWS origin - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-origin.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.4-edge-and-load-balancing"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

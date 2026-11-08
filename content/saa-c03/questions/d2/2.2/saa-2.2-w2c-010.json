@@ -1,0 +1,68 @@
+{
+  "id": "saa-2.2-w2c-010",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K2", "2.2-S8"],
+  "services": ["Amazon Transcribe", "Amazon Comprehend", "Amazon Polly", "Amazon Translate", "Amazon Rekognition", "Amazon Simple Storage Service"],
+  "qualifier": "operational",
+  "tags": ["専用マネージドサービス", "Transcribe", "Comprehend", "感情分析", "コールセンター"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある通信販売会社のコールセンターでは、日本語の通話録音（音声ファイル）を Amazon S3 に保存しています。品質管理チームは、通話ごとに文字起こしを作成し、顧客の発言が好意的か否定的かを集計したいと考えています。機械学習の専門人材はおらず、モデルの学習やサーバーの運用は避けたい方針です。運用上のオーバーヘッドを最小にしてこの分析を実現するために、組み合わせて使うサービスを 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Transcribe の文字起こしジョブを日本語で実行し、S3 の通話録音をテキストに変換する。",
+      "correct": true,
+      "rationale": "Amazon Transcribe は音声をテキストに変換するマネージドサービスで、日本語（ja-JP）のバッチ文字起こしに対応しています。S3 上の音声ファイルを指定してジョブを実行するだけで、サーバーもモデルの学習も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Polly で通話録音の音声ファイルを読み込み、発言内容をテキストに変換する。",
+      "correct": false,
+      "rationale": "Amazon Polly はテキストを音声に変換する（音声合成）サービスで、方向が逆です。音声からテキストへの変換はできないため、文字起こしには使えません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Translate で通話録音の音声を英語のテキストに変換する。",
+      "correct": false,
+      "rationale": "Amazon Translate はテキストを別の言語のテキストに翻訳するサービスで、音声は入力にできません。文字起こしの代わりにはならず、要件の感情判定にも直接つながりません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Comprehend の感情分析（DetectSentiment）で、文字起こししたテキストの感情（肯定・否定・中立・混在）を判定する。",
+      "correct": true,
+      "rationale": "Amazon Comprehend の感情分析は、テキストが肯定、否定、中立、混在のどれかをスコア付きで返します。日本語を含む Comprehend の主要言語に対応しているため、翻訳を挟まずに文字起こしの結果をそのまま分析できます。"
+    },
+    {
+      "id": "e",
+      "text": "Amazon Rekognition で通話録音を解析し、話者の感情を判定する。",
+      "correct": false,
+      "rationale": "Amazon Rekognition は画像や動画の分析サービス（顔の表情の分析を含む）です。音声ファイルの内容を解析して発言の好意的・否定的を判定する機能はありません。"
+    }
+  ],
+  "explanation": "音声からテキスト、テキストから感情という二段の処理は、それぞれに専用のマネージドサービスがあります。音声をテキストにするのは Amazon Transcribe、テキストの感情を判定するのは Amazon Comprehend です。どちらも API やジョブを呼び出すだけで使え、サーバーの管理やモデルの学習は不要なので、機械学習の専門人材がいなくても運用負荷を抑えられます。S3 の音声ファイルを指定して Transcribe のジョブを実行し、出力されたテキストを Comprehend に渡す流れを、イベント駆動で自動化することもできます。\n\n誤答になりやすいサービスは入出力の種類で見分けます。Amazon Polly はテキストから音声、Amazon Translate はテキストから別言語のテキスト、Amazon Rekognition は画像・動画の分析です。Comprehend の感情分析は日本語に対応しているため、わざわざ翻訳してから分析する必要はありません。",
+  "keyPoints": [
+    "音声→テキストは Transcribe、テキスト→音声は Polly。方向を取り違えない",
+    "テキストの感情・キーフレーズ・エンティティの分析は Comprehend。日本語にも対応している",
+    "Translate はテキストの翻訳、Rekognition は画像・動画の分析。入力の種類でサービスを選ぶ",
+    "専用サービスを API でつなぐ構成は、独自モデルの運用より運用負荷が小さい"
+  ],
+  "references": [
+    {
+      "title": "Supported languages and language-specific features - Amazon Transcribe",
+      "url": "https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html"
+    },
+    {
+      "title": "Sentiment - Amazon Comprehend",
+      "url": "https://docs.aws.amazon.com/comprehend/latest/dg/how-sentiment.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

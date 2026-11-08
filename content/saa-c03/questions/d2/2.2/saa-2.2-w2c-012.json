@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-012",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K4", "2.2-S6"],
+  "services": ["AWS Elastic Disaster Recovery", "AWS Backup", "AWS DataSync", "Amazon Elastic Compute Cloud"],
+  "qualifier": "cost",
+  "tags": ["災害対策", "AWS Elastic Disaster Recovery", "パイロットライト", "RPO", "RTO"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造会社は、オンプレミスのデータセンターで稼働する基幹業務システム（Windows Server の仮想マシン約 30 台）の災害対策先として AWS を使います。要件は、被災時に分単位でシステムを AWS 上で再開できること、データ損失をできるだけ少なくすること、平常時の AWS 側のコストを抑えること（本番と同規模のインスタンスは常時稼働させない）です。さらに、本番を止めずに復旧手順を定期的に訓練できる必要があります。これらの要件を満たす、最もコスト効率の高い災害対策はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各サーバーに AWS Elastic Disaster Recovery のレプリケーションエージェントを導入し、AWS のステージングエリアのサブネットへ継続的に複製する。訓練や被災時には復旧用のインスタンスを起動する。",
+      "correct": true,
+      "rationale": "Elastic Disaster Recovery はブロックレベルで継続的に複製し、平常時は安価なストレージと最小限のコンピューティングだけを使います。被災時や訓練時に復旧用インスタンスを数分で起動でき、本番に影響しない訓練もできます。分単位の復旧、少ないデータ損失、低い平常時コストをすべて満たします。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Backup で仮想マシンのバックアップを毎日取得してクラウドに保管し、被災時にバックアップから復元して AWS 上で再開する。",
+      "correct": false,
+      "rationale": "バックアップと復元は低コストですが、復旧できる時点が最後のバックアップ時点になるため、最大で 1 日分のデータが失われます。復元作業にも時間がかかり、分単位の復旧とデータ損失を最小にする要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS 上に本番と同数・同サイズの EC2 インスタンスを常時稼働させ、データを同期して待機させる。被災時は DNS の切り替えだけで再開する。",
+      "correct": false,
+      "rationale": "復旧は最も速くなりますが、本番と同規模の環境を常時稼働させる構成は最もコストが高くなります。「本番と同規模のインスタンスは常時稼働させない」という制約に反します。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync で仮想マシンのディスクイメージを毎晩 S3 にコピーしておき、被災時に VM のインポート機能で AMI を作成して EC2 インスタンスを起動する。",
+      "correct": false,
+      "rationale": "夜間のコピーでは最大約 1 日分のデータが失われます。さらに、被災後にイメージをインポートして AMI を作る作業は時間がかかるため、分単位で再開する要件を満たしません。"
+    }
+  ],
+  "explanation": "災害対策の戦略は、バックアップと復元、パイロットライト、ウォームスタンバイ、マルチサイトのアクティブ／アクティブの順に、コストと複雑さが上がり、RPO（許容できるデータ損失の時間）と RTO（復旧にかかる時間）が小さくなります。この問題は「分単位の RTO」「少ないデータ損失」に「平常時のコストを抑える」が加わるため、データは常時複製し、サーバーは必要になるまで起動しないパイロットライトに当たります。\n\nAWS Elastic Disaster Recovery（DRS）は、オンプレミスや他のクラウド、EC2 上のサーバーのデータを AWS のステージングエリアのサブネットに継続的にブロックレベルで複製します。ステージングには安価なストレージと最小限のコンピューティングだけを使うため、平常時のコストを抑えられます。被災時や訓練時には、最新または過去の時点の状態から復旧用インスタンスを数分で起動できます。\n\nバックアップと復元は RPO と RTO が大きく、常時稼働の同規模環境はコストが過大です。DRS は、サーバー単位の複製が必要なオンプレミスの仮想マシンに適した専用サービスです。",
+  "keyPoints": [
+    "RPO と RTO が小さいほど、コストと構成の複雑さは上がる。要件の数字と予算の両方で戦略を選ぶ",
+    "データは常時複製しサーバーは起動しない → パイロットライト。縮小構成が常に稼働して即座に処理できる → ウォームスタンバイ",
+    "オンプレミスや他クラウドのサーバーの DR を継続複製と数分の起動で実現する → AWS Elastic Disaster Recovery",
+    "定期バックアップや夜間コピーの RPO は、最悪でその間隔ぶんになる"
+  ],
+  "references": [
+    {
+      "title": "What is Elastic Disaster Recovery? - AWS Elastic Disaster Recovery",
+      "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+    },
+    {
+      "title": "Disaster recovery options in the cloud - Disaster Recovery of Workloads on AWS",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-016",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K9", "2.2-K6"],
+  "services": ["Amazon RDS Proxy", "Amazon Relational Database Service", "Amazon Elastic Compute Cloud", "AWS Secrets Manager"],
+  "qualifier": "minimal-change",
+  "tags": ["RDS Proxy", "フェイルオーバー", "コネクションプール", "マルチAZ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社の在庫管理システムは、Amazon EC2 インスタンス上の Java アプリケーションから、マルチ AZ DB インスタンス配置の Amazon RDS for PostgreSQL に接続しています。メンテナンスやフェイルオーバーのたびに、アプリケーションのコネクションプール内の接続がすべて切断され、再接続と DNS の切り替わりの待ちでエラーが長く続きます。DB のエンジンやデプロイ形態、アプリケーションのコードと JVM を含む実行環境の設定は変更できません（接続先エンドポイントの変更のみ可能）。フェイルオーバーによる影響を小さくする方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "リードレプリカを追加し、参照クエリをレプリカに分散して、プライマリの負荷を下げる。",
+      "correct": false,
+      "rationale": "参照の負荷は分散できますが、書き込みを受けるプライマリのフェイルオーバーで接続が切断される問題は変わりません。リードレプリカの追加は、フェイルオーバー時の影響を小さくする手段ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "DB インスタンスクラスをより大きいものにスケールアップして、処理性能に余裕を持たせる。",
+      "correct": false,
+      "rationale": "処理性能は上がりますが、障害時にスタンバイへ切り替わる仕組みやアプリケーションの接続が切れる挙動は変わりません。フェイルオーバーの影響を小さくする効果はありません。"
+    },
+    {
+      "id": "c",
+      "text": "アプリケーションの JVM の DNS キャッシュの有効期間と、接続エラー時の再接続の間隔を短くする。",
+      "correct": false,
+      "rationale": "JVM などの設定変更が必要で、変更できないという制約に反します。また、変更できたとしても新しい接続の確立が早くなるだけで、フェイルオーバーでコネクションプール内の接続が切断されること自体は防げません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon RDS Proxy を作成して DB インスタンスをターゲットに登録し、アプリケーションの接続先をプロキシのエンドポイントに変更する。",
+      "correct": true,
+      "rationale": "RDS Proxy はフェイルオーバー時に、アプリケーションからの接続を保ったままスタンバイ（新しいプライマリ）へ接続し直します。DNS の伝播やキャッシュの影響を受けず、処理中でない接続は切断されません。変更は接続先のエンドポイントだけで済みます。"
+    }
+  ],
+  "explanation": "Amazon RDS Proxy は、アプリケーションと RDS のあいだに入って接続をプール・共有するマネージドなプロキシです。フェイルオーバーが起きると、元のインスタンスに代わってスタンバイに接続し直すあいだ、アイドルな接続を切断せずに保ちます。クライアントは同じプロキシのエンドポイントに接続し続けるため、DNS の伝播の遅れやローカルの DNS キャッシュ、どのインスタンスが現在のライターかという不確かさの影響を受けません。処理中のトランザクションや SQL 文の接続だけが取り消され、新しい接続はすぐに受け付けられます。\n\nコードを変えずに使えるのが利点で、接続先を DB のエンドポイントからプロキシのエンドポイントに変えるだけです。Secrets Manager の認証情報を使い、IAM 認証をプロキシで強制することもできます。リードレプリカの追加やインスタンスのスケールアップは負荷対策であり、フェイルオーバー時の接続断を解消しません。なお、プロキシは DB と同じ VPC に置きます。",
+  "keyPoints": [
+    "フェイルオーバー時の接続断と復旧の遅れを小さくしたい → RDS Proxy（接続を保持し、新しいライターへ振り向ける）",
+    "RDS Proxy は接続プールで DB の接続数も抑える。アプリの変更は接続先エンドポイントの切り替えだけ",
+    "リードレプリカやスケールアップはフェイルオーバーの影響を減らす手段ではない",
+    "DNS ベースの切り替えに頼ると、キャッシュや TTL の影響で復旧が遅れる"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS Proxy - Amazon RDS User Guide",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+    },
+    {
+      "title": "RDS Proxy concepts and terminology - Amazon RDS User Guide",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

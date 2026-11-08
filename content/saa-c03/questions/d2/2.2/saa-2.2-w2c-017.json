@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-017",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-S1"],
+  "services": ["AWS CloudFormation", "AWS CloudTrail", "Amazon Elastic Compute Cloud"],
+  "qualifier": "operational",
+  "tags": ["CloudFormation", "ドリフト検出", "変更セット", "スタックポリシー", "構成の整合性"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、本番環境のネットワークとアプリケーション基盤を AWS CloudFormation のスタックで管理しています。先日の障害対応で、運用担当者が緊急対応としてコンソールからセキュリティグループのインバウンドルールを直接変更しました。その後、テンプレートに反映したかどうかが分からなくなっています。スタック内のリソースのうち、テンプレートの定義と実際の設定が食い違っているものを、運用負荷を抑えて洗い出したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "現在のテンプレートで変更セットを作成し、スタックの更新で変わる内容のプレビューを確認する。",
+      "correct": false,
+      "rationale": "変更セットは、スタックを更新したときに何が変わるかを事前に確認する機能です。コンソールなどスタックの外で行われた変更の有無を検出するものではありません。"
+    },
+    {
+      "id": "b",
+      "text": "スタックでドリフト検出を実行し、ドリフトしたリソースのプロパティの差分を確認する。",
+      "correct": true,
+      "rationale": "ドリフト検出は、テンプレートとパラメータから求めた期待値と、リソースの実際のプロパティ値を比較し、スタックの外で行われた変更や削除を、リソースごとの差分として報告します。必要な作業は検出の実行と結果の確認だけです。"
+    },
+    {
+      "id": "c",
+      "text": "スタックポリシーを設定して、セキュリティグループなどの重要なリソースの更新を禁止する。",
+      "correct": false,
+      "rationale": "スタックポリシーは、スタックの更新操作でのリソースの更新を制限するものです。すでに行われたコンソールからの変更を検出する機能ではなく、直接変更そのものを防ぐものでもありません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS CloudTrail のイベント履歴からセキュリティグループの変更イベントを検索し、内容をテンプレートと突き合わせる。",
+      "correct": false,
+      "rationale": "変更した人や時刻は調べられますが、テンプレートとの食い違いを自動で比較する機能ではありません。スタックの全リソースについて手作業で突き合わせることになり、運用負荷が大きくなります。"
+    }
+  ],
+  "explanation": "CloudFormation で管理しているリソースを、コンソールや CLI で直接変更すると、実際の構成がテンプレートと食い違います（ドリフト）。これを放置すると、次回のスタック更新や削除が予期せず失敗したり、変更が上書きされたりします。\n\nドリフト検出は、スタック全体または個別のリソースについて、テンプレートで定義した期待値と実際の設定を比較します。リソースごとに IN_SYNC、MODIFIED、DELETED などの状態と、プロパティの差分が示されるので、どのリソースのどの項目が変わったかが分かります。あとは、テンプレートを実態に合わせるか、リソースをテンプレートの内容に戻すかを判断します。\n\n名前が似た機能との違いも押さえます。変更セットは更新前のプレビュー、スタックポリシーは更新操作からの保護、StackSets は複数のアカウントやリージョンへの一括展開です。インフラの整合性を保つ自動化では、変更はテンプレート経由に統一し、定期的にドリフトを検出するのが基本です。",
+  "keyPoints": [
+    "スタックの外で行われた変更の検出 → CloudFormation のドリフト検出（テンプレートの期待値と実際の設定を比較）",
+    "変更セットは更新前のプレビュー。すでに行われた変更の検出には使えない",
+    "スタックポリシーはスタック更新時のリソース保護。コンソールからの直接変更は防がない",
+    "インフラの整合性は、変更をテンプレート経由に統一し、定期的にドリフトを確認して保つ"
+  ],
+  "references": [
+    {
+      "title": "Detect unmanaged configuration changes to stacks and resources with drift detection - AWS CloudFormation",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+    },
+    {
+      "title": "What is AWS CloudFormation? - AWS CloudFormation",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

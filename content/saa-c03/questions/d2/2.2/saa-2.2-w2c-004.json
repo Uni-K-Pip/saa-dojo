@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K12"],
+  "services": ["Amazon CloudWatch", "Amazon ECS", "AWS X-Ray"],
+  "qualifier": "operational",
+  "tags": ["CloudWatch Application Signals", "SLO", "サービスマップ", "ワークロードの可視化", "Container Insights"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある配車アプリの運営会社は、Java で書かれた複数のマイクロサービスを Amazon ECS で運用しています。運用チームは、サービスと依存関係の構成を自動で把握し、サービスごとの呼び出し数、レイテンシー、エラー率を確認したうえで、「99 パーセンタイルのレイテンシーが 500 ミリ秒以内」という目標を下回りそうなときにアラームで知りたいと考えています。アラームが鳴ったら、関連するトレースにそのまま掘り下げたいのですが、アプリケーションのコードは変更せず、ダッシュボードを一から作る作業も避けたいと考えています。運用負荷が最も小さい方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各サービスのログに処理時間を出力し、CloudWatch Logs Insights のクエリで集計するダッシュボードとアラームを作成する。",
+      "correct": false,
+      "rationale": "ログ出力の追加でコードの変更が必要になり、クエリやダッシュボードも自作することになります。サービスの依存関係の自動把握や、目標に対する状態の管理、トレースへの掘り下げも自前で組む必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon CloudWatch Container Insights を有効にして、タスクの CPU・メモリのメトリクスにアラームを設定する。",
+      "correct": false,
+      "rationale": "Container Insights が提供するのはコンテナのリソース使用状況です。サービス間の依存関係やサービスごとのレイテンシー・エラー率、レイテンシーの目標に対する状態は得られず、トレースにも掘り下げられません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudTrail の証跡を Amazon Athena で分析し、遅いリクエストを定期的に調べる。",
+      "correct": false,
+      "rationale": "CloudTrail は AWS API 呼び出しの操作履歴であり、アプリケーションのリクエストのレイテンシーは含まれません。目標に対するアラームも、サービスの依存関係の把握もできません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon CloudWatch Application Signals を有効にして Java アプリケーションを自動計装し、レイテンシーの SLO（サービスレベル目標）を作成してアラームを設定する。",
+      "correct": true,
+      "rationale": "Application Signals は、コードを書かずにメトリクスとトレースを収集して、サービスと依存関係のマップ、呼び出し数・レイテンシー・エラー率を自動で表示します。SLO とアラームを設定でき、グラフから関連するトレースにそのまま掘り下げられます。"
+    }
+  ],
+  "explanation": "CloudWatch Application Signals は、Amazon EC2、Amazon ECS、Amazon EKS などで動くアプリケーションからメトリクスとトレースを自動で収集し、サービスの一覧、アプリケーションのトポロジーマップ、主要なメトリクス（呼び出し数、可用性、レイテンシー、障害、エラー）を表示します。対応する言語は Java、Python、Node.js、.NET で、自動計装を使えば、アプリケーションのコードを変更せずに始められます。\n\nさらに、サービスレベル目標（SLO）を作って現在の状態を追跡し、アラームを設定できます。グラフ上の点を選ぶと、関連する AWS X-Ray のトレースが表示されるので、原因の調査もつながります。\n\nログの自前集計は実装と運用の負荷が大きく、Container Insights はコンテナのリソース使用状況向け、CloudTrail は API の監査向けです。要件の「依存関係の自動把握、目標に対する状態、トレースへの掘り下げ」を一つで満たすのは Application Signals です。なお、従来の ServiceLens のマップは X-Ray のトレースマップと統合されており、サービス単位のヘルスや SLO の確認には Application Signals を使います。",
+  "keyPoints": [
+    "サービスと依存関係の自動把握、SLO、トレースへの掘り下げをコード変更なしで → CloudWatch Application Signals",
+    "Container Insights はコンテナのリソース使用状況。アプリケーションレベルのレイテンシーや依存関係は見えない",
+    "SLO はレイテンシーなどの目標に対する状態を追跡し、アラームで通知できる",
+    "原因調査は Application Signals から関連する X-Ray のトレースへ掘り下げる"
+  ],
+  "references": [
+    {
+      "title": "Application Signals - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Monitoring-Sections.html"
+    },
+    {
+      "title": "Using the X-Ray trace map - AWS X-Ray",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-servicemap.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

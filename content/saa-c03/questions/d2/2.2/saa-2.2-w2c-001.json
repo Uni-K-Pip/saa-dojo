@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.2-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K11", "2.2-S5"],
+  "services": ["Amazon S3"],
+  "qualifier": "availability",
+  "tags": ["S3 レプリケーション", "クロスリージョンレプリケーション", "S3 Replication Time Control", "Batch Replication"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある医療機器メーカーは、検査記録のスキャン PDF を東京リージョンの Amazon S3 バケットに保存しており、すでに約 12 TB が蓄積されています。新しい監査基準により、記録の複製を大阪リージョンにも保持すること、今後保存する記録は 15 分以内に複製が完了すること、15 分を超えた場合は通知で検知できることが求められました。蓄積済みの記録も大阪に複製する必要があります。これらの要件を満たす対応の組み合わせを 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "東京リージョンのバケットから、同じ東京リージョンの別のバケットへ、S3 Replication Time Control を有効にした Same-Region Replication（SRR）のルールを作成する。",
+      "correct": false,
+      "rationale": "SRR は同一リージョン内のバケット間で複製するため、大阪リージョンに記録を保持するという要件を満たしません。S3 Replication Time Control は SRR でも使えますが、複製先のリージョンが違います。"
+    },
+    {
+      "id": "b",
+      "text": "送信元と複製先の両方のバケットでバージョニングを有効にし、大阪リージョンのバケットへ S3 Replication Time Control を有効にした Cross-Region Replication（CRR）のルールを作成する。",
+      "correct": true,
+      "rationale": "CRR で別リージョンのバケットへ複製でき、レプリケーションにはバージョニングが必須です。S3 Replication Time Control を有効にすると 15 分の複製時間の目標が設定され、15 分を超えたときの S3 イベント通知も使えるため、時間と検知の要件を満たします。"
+    },
+    {
+      "id": "c",
+      "text": "大阪リージョンのバケットへの Cross-Region Replication のルールを、S3 Replication Time Control を有効にせずに作成する。",
+      "correct": false,
+      "rationale": "通常のレプリケーションは複製時間の保証がなく、15 分以内という要件を担保できません。15 分を超えたことを知らせるイベント通知も、S3 Replication Time Control を有効にしたルールの機能です。"
+    },
+    {
+      "id": "d",
+      "text": "S3 ライフサイクルルールを設定し、蓄積済みのオブジェクトを大阪リージョンのバケットへ移行する。",
+      "correct": false,
+      "rationale": "S3 ライフサイクルルールは同じバケット内でストレージクラスを移行したり、オブジェクトを失効させたりするもので、別のバケットやリージョンへ複製する機能はありません。"
+    },
+    {
+      "id": "e",
+      "text": "S3 Batch Replication のジョブを実行して、レプリケーションを設定する前から存在するオブジェクトを大阪リージョンのバケットへ複製する。",
+      "correct": true,
+      "rationale": "ライブレプリケーションはルールを設定した後に書き込まれたオブジェクトだけが対象で、既存のオブジェクトは複製されません。既存のオブジェクトはオンデマンドの S3 Batch Replication で複製でき、蓄積済みの 12 TB をカバーできます。"
+    }
+  ],
+  "explanation": "Amazon S3 は、1 つのリージョン内の複数のアベイラビリティーゾーンにオブジェクトを冗長保存し、高い耐久性（99.999999999%）を備えています。ただし、別リージョンにも記録を保持する要件は、リージョン内の冗長性だけでは満たせません。バケット間のレプリケーションで別リージョンにコピーを持つ必要があります。\n\nこの問題には 2 つの要件があります。1 つ目は、今後保存する記録を 15 分以内に大阪へ複製し、超過を検知することです。これは、バージョニングを有効にしたバケット間の Cross-Region Replication に S3 Replication Time Control を組み合わせて満たします。S3 Replication Time Control は複製時間の目標を 15 分とし、レプリケーションのメトリクスと、15 分のしきい値を超えたことを知らせるイベントを提供します。2 つ目は、蓄積済みの記録の複製です。ライブレプリケーション（CRR・SRR）はルール設定後の新規・更新オブジェクトだけを複製するため、既存のオブジェクトには S3 Batch Replication を使います。S3 Replication Time Control は Batch Replication には適用されないので、役割を分けて組み合わせます。\n\nSame-Region Replication は同じリージョン内のコピー（ログの集約や、データ所在地の規制への対応など）向けで、別リージョンの要件には合いません。",
+  "keyPoints": [
+    "別リージョンにコピーを持つ → Cross-Region Replication（要バージョニング）。同一リージョン内のコピーは Same-Region Replication",
+    "複製時間を保証して超過を検知したい → S3 Replication Time Control（15 分、メトリクスとイベント通知）",
+    "ライブレプリケーションは設定後の新しいオブジェクトだけが対象。既存オブジェクトは S3 Batch Replication",
+    "S3 ライフサイクルは別バケット・別リージョンへの複製には使えない"
+  ],
+  "references": [
+    {
+      "title": "Replicating objects within and across Regions - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+    },
+    {
+      "title": "Meeting compliance requirements with S3 Replication Time Control - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html"
+    },
+    {
+      "title": "Replicating existing objects with Batch Replication - Amazon S3",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-batch-replication-batch.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

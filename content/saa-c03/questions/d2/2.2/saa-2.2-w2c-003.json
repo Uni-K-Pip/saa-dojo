@@ -1,0 +1,75 @@
+{
+  "id": "saa-2.2-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K12"
+  ],
+  "services": [
+    "AWS X-Ray",
+    "Amazon ECS",
+    "Elastic Load Balancing",
+    "Amazon DynamoDB"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "AWS X-Ray",
+    "分散トレース",
+    "トレースマップ",
+    "ボトルネックの特定",
+    "マイクロサービス"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるネット書店は、注文、在庫、決済連携の 3 つのマイクロサービスを Amazon ECS で動かし、Application Load Balancer 経由で公開しています。注文は Amazon DynamoDB と外部の決済 API も呼び出します。最近、チェックアウトの応答が断続的に遅いという問い合わせが増えましたが、各サービスの CPU とメモリの使用率は平常で、どの呼び出しが遅いのか分かりません。リクエスト単位で、サービス間や DynamoDB、外部 API への呼び出しにかかった時間の内訳を確認し、ボトルネックを特定したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudWatch Container Insights を有効にして、ECS タスクごとの CPU とメモリのメトリクスを詳しく分析する。",
+      "correct": false,
+      "rationale": "Container Insights はコンテナの CPU・メモリなどのリソース使用状況を見るためのものです。すでに使用率は平常と分かっており、リクエストごとの呼び出し先別の所要時間は分かりません。"
+    },
+    {
+      "id": "b",
+      "text": "各サービスを OpenTelemetry で計装して AWS X-Ray にトレースを送り、トレースマップと個々のトレースのタイムラインで呼び出しごとの所要時間を確認する。",
+      "correct": true,
+      "rationale": "分散トレースは 1 つのリクエストがサービス間や下流の DynamoDB、外部 API を通る様子を、区間ごとの所要時間つきで記録します。トレースマップで遅いノードを見つけ、遅いトレースのタイムラインで原因の呼び出しを特定できます。"
+    },
+    {
+      "id": "c",
+      "text": "VPC フローログを有効にして、サービス間の通信量や接続の拒否の状況を分析し、遅い通信を探す。",
+      "correct": false,
+      "rationale": "VPC フローログはネットワークインターフェイスを通る通信の記録（送信元・宛先・ポート・バイト数など）で、アプリケーションの呼び出しごとの所要時間は含まれません。遅い呼び出しの特定には使えません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS CloudTrail の管理イベントを分析して、遅くなったリクエストに関連する API 呼び出しを調べる。",
+      "correct": false,
+      "rationale": "CloudTrail は AWS API 呼び出しの操作履歴を監査するサービスです。アプリケーション内部のリクエスト処理やサービス間呼び出しの所要時間は記録しないため、ボトルネックの特定には向きません。"
+    }
+  ],
+  "explanation": "複数のサービスが連なって 1 つのリクエストを処理する構成では、CPU やメモリのメトリクスが平常でも、特定の下流呼び出しの遅れが全体の遅さを生むことがあります。AWS X-Ray は、リクエストが通ったサービスや下流の AWS リソース、外部 API を、トレースとして記録する分散トレースのサービスです。トレースマップで遅延やエラーが出ているノードや接続を見つけ、遅いトレースを開いて、どの呼び出しにどれだけ時間がかかったかを確認できます。\n\nアプリケーションからトレースを送るには計装が必要です。現在は、AWS Distro for OpenTelemetry（ADOT）による計装が推奨され、X-Ray SDK とデーモンはメンテナンスモードに入っています。Application Load Balancer や AWS Lambda など、X-Ray と統合されたサービスはトレース用のヘッダーやデータを扱えます。\n\nContainer Insights はリソース使用状況、VPC フローログはネットワーク通信、CloudTrail は API の操作履歴を見るもので、リクエストごとの呼び出し時間の内訳は得られません。",
+  "keyPoints": [
+    "リクエストがどのサービスや下流で遅いかを特定したい → 分散トレース（AWS X-Ray）。トレースマップと個々のトレースを使う",
+    "リソース使用率が平常でも遅いなら、使用率ではなく呼び出しごとの所要時間を見る",
+    "X-Ray への計装は AWS Distro for OpenTelemetry が推奨。X-Ray SDK とデーモンはメンテナンスモード",
+    "CloudTrail は API の監査、VPC フローログはネットワーク通信の記録で、アプリケーションの遅延の内訳は見えない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS X-Ray? - AWS X-Ray",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+    },
+    {
+      "title": "Instrumenting your application for AWS X-Ray",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-instrumenting-your-app.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,62 @@
+{
+  "id": "saa-2.2-w2c-015",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K8", "2.2-S4"],
+  "services": ["Elastic Load Balancing", "Amazon Elastic Compute Cloud"],
+  "qualifier": "performance",
+  "tags": ["Network Load Balancer", "クロスゾーン負荷分散", "負荷の偏り", "マルチAZ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるゲーム会社は、独自のバイナリプロトコルの TCP で通信するゲームサーバーを、Network Load Balancer（NLB）の背後の Amazon EC2 インスタンスで運用しています。NLB は 2 つのアベイラビリティーゾーン（AZ）に配置され、AZ-a に 2 台、AZ-c に 6 台のインスタンスがあります。クライアントは両方の AZ の NLB に均等に接続しますが、AZ-a の 2 台だけ CPU 使用率が高い状態が続いています。クロスゾーン負荷分散は無効です。インスタンスの配置は変えずに、すべてのインスタンスへの負荷を均等にするにはどうすればよいですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "NLB のクロスゾーン負荷分散を有効にする。",
+      "correct": true,
+      "rationale": "クロスゾーン負荷分散が無効の NLB は、各 AZ のノードが同じ AZ のターゲットにだけ転送するため、AZ-a の 2 台に全体の約半分が集中します。有効にすると各ノードが全 AZ のターゲットへ振り分けるので、8 台に均等に分散されます。"
+    },
+    {
+      "id": "b",
+      "text": "ターゲットグループのヘルスチェックの間隔を短くし、負荷の高いインスタンスを早く異常と判定させる。",
+      "correct": false,
+      "rationale": "ヘルスチェックは応答の有無で正常か異常かを判断するもので、CPU 使用率の高さによる負荷の偏りを均すものではありません。異常と判定されると残りの 1 台にさらに負荷が集中します。"
+    },
+    {
+      "id": "c",
+      "text": "NLB を Application Load Balancer に置き換える。",
+      "correct": false,
+      "rationale": "ALB は HTTP/HTTPS 向けのロードバランサーで、独自のバイナリプロトコルの TCP 通信は扱えません。プロトコルが要件に合わないため、置き換えられません。"
+    },
+    {
+      "id": "d",
+      "text": "NLB のアイドルタイムアウトを延長して、接続を長く維持する。",
+      "correct": false,
+      "rationale": "アイドルタイムアウトは、通信のない接続を何秒で切断するかの設定です。どの AZ のターゲットに振り分けるかとは関係がなく、負荷の偏りは解消しません。"
+    }
+  ],
+  "explanation": "NLB には AZ ごとにロードバランサーノードがあり、クライアントへの DNS の応答で各ノードに接続が分かれます。クロスゾーン負荷分散が無効のとき、各ノードは自分と同じ AZ のターゲットにだけ転送します。そのため、AZ ごとのターゲット数が異なると、台数の少ない AZ のインスタンスに多くの負荷がかかります。クロスゾーン負荷分散を有効にすると、各ノードが有効なすべての AZ のターゲットに振り分けるため、台数の差に関わらず均等になります。\n\nNLB のクロスゾーン負荷分散は、ロードバランサーまたはターゲットグループの属性で切り替えられます。有効にすると AZ をまたぐ通信が増えるため、AZ 間のデータ転送料金に注意が必要です。一方、ALB はロードバランサーのレベルでは常にクロスゾーン負荷分散が有効です。\n\n運用の関連事項として、ターゲットを登録解除すると、処理中のリクエストが終わるまで登録解除の遅延の間は draining の状態で待ちます。Auto Scaling のスケールインや入れ替えの際にも、この設定が処理中の接続を守ります。",
+  "keyPoints": [
+    "クロスゾーン負荷分散が無効のとき、ノードは同じ AZ のターゲットにだけ転送する。AZ ごとの台数差は負荷の偏りになる",
+    "NLB のクロスゾーンは属性で切り替え可能（AZ 間のデータ転送料金に注意）。ALB は常に有効",
+    "AZ ごとの台数を揃える方法もあるが、変更できないならクロスゾーン負荷分散を有効にする",
+    "登録解除の遅延は、解除するターゲットが処理中のリクエストを完了する猶予時間"
+  ],
+  "references": [
+    {
+      "title": "Network Load Balancers - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html"
+    },
+    {
+      "title": "Target groups for your Application Load Balancers - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

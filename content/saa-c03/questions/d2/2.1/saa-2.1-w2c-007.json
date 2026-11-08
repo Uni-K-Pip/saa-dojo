@@ -1,0 +1,68 @@
+{
+  "id": "saa-2.1-w2c-007",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K16", "2.1-K12"],
+  "services": ["AWS Step Functions", "AWS Lambda", "Amazon Simple Storage Service"],
+  "qualifier": "performance",
+  "tags": ["Step Functions", "Distributed Map", "大規模並列処理", "許容失敗率"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある画像解析企業は、Amazon S3 の 1 つのプレフィックスに保存された 300 万個の画像ファイルのそれぞれに、AWS Lambda 関数で解析処理を実行します。数時間以内に全件を処理するため、数千の並列で実行したいと考えています。一部のファイルは破損していて処理に失敗することがありますが、失敗が全体の 1% 以内なら全体の処理は成功として続行し、処理結果と失敗の記録は S3 に残したいと考えています。AWS Step Functions でこの要件を満たす方法として適切なものを 2 つ選択してください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インラインモードの Map ステートで MaxConcurrency に 3000 を指定し、最初の Lambda 関数が S3 から取得した 300 万個のオブジェクトのキーの一覧を、配列として Map ステートに渡す。",
+      "correct": false,
+      "rationale": "インラインモードの Map は、データセットの大きさが 256 KiB 以内で、同時の反復も 40 程度までの規模で使うものです。300 万個のキーの一覧は状態の入力のサイズ制限を超えるので、この方法では実行できません。"
+    },
+    {
+      "id": "b",
+      "text": "親のステートマシンを Standard ワークフローにし、Distributed モードの Map ステートの ItemReader で対象の S3 プレフィックスを指定する。各オブジェクトを子ワークフローの実行として Lambda 関数に渡す。",
+      "correct": true,
+      "rationale": "Distributed Map は、S3 上の大量のオブジェクトや CSV、JSON の行を直接読み込み、各項目を子ワークフローの実行として高い並列度（既定で最大 10,000）で処理できます。キーの一覧を状態の入力に載せる必要もありません。"
+    },
+    {
+      "id": "c",
+      "text": "親のステートマシンを Express ワークフローにして、その中に Distributed モードの Map ステートを置く。",
+      "correct": false,
+      "rationale": "Distributed モードの Map ステートは、Standard ワークフローの中で使います。Express ワークフローの中では使えません（子ワークフローの実行タイプに Express を指定することはできます）。"
+    },
+    {
+      "id": "d",
+      "text": "Map ステートに ToleratedFailurePercentage を 1 に設定し、ResultWriter で子ワークフローの実行結果を S3 のバケットに出力する。",
+      "correct": true,
+      "rationale": "許容する失敗の割合を設定すると、失敗した項目の割合がその値を超えたときだけ Map Run が失敗します。既定の 0 では 1 件の失敗でも全体が失敗します。ResultWriter は子ワークフローの実行の入出力や状態を、状態ごとのファイルとして S3 に書き出すので、失敗した項目の記録も残せます。"
+    },
+    {
+      "id": "e",
+      "text": "Map ステートの中の Lambda タスクに Catch を設定してすべてのエラーを成功として扱い、失敗の記録は Lambda 関数のコードから S3 に書き込む。",
+      "correct": false,
+      "rationale": "すべての失敗を握りつぶすと、失敗の割合が 1% を超えても全体が成功してしまい、許容する割合を超えたときに全体を失敗させるという要件を満たせません。記録用のコードも自分で書く必要があります。"
+    }
+  ],
+  "explanation": "Step Functions の Map ステートには、インラインモードと Distributed モードがあります。データセットが 256 KiB を超える、ワークフローの実行履歴が 25,000 件を超える、または 40 を超える並列度が必要といった大規模な並列処理には、Distributed モードを使います。Distributed モードの Map は、各項目を子ワークフローの実行として処理します。子ワークフローの実行はそれぞれ別の実行履歴を持ち、MaxConcurrency を省略すると最大 10,000 の並列で動きます。\n\nデータの入力には ItemReader を使い、S3 のオブジェクトの一覧や、S3 上の CSV、JSON ファイルを直接読み込めます。失敗の扱いには ToleratedFailurePercentage（または ToleratedFailureCount）を使い、許容する失敗の割合や件数を超えたときだけ Map Run を失敗させます。ResultWriter を指定すると、子ワークフローの実行結果が S3 に書き出されます。\n\nDistributed Map は Standard ワークフローでのみ使えます。Express ワークフローは対象外ですが、子ワークフローの実行タイプには Express を選べます。",
+  "keyPoints": [
+    "S3 上の大量のオブジェクトや大きな CSV を数千並列で処理する → Step Functions の Distributed Map（親は Standard ワークフロー）",
+    "一部の失敗を許容して続行する → ToleratedFailurePercentage／ToleratedFailureCount。既定は 0 で、1 件の失敗でも全体が失敗する",
+    "子ワークフローの結果を S3 に残す → ResultWriter",
+    "インラインの Map はデータが 256 KiB 以内で、並列度が小さい用途向け"
+  ],
+  "references": [
+    {
+      "title": "Using Map state in Distributed mode for large-scale parallel workloads in Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html"
+    },
+    {
+      "title": "Choosing workflow type in Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
