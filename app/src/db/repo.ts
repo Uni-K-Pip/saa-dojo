@@ -96,3 +96,13 @@ export async function pruneSessions(maxAgeMs = 7 * 24 * 3600 * 1000): Promise<vo
   const old = await db.sessions.filter((s) => s.updatedAt < limit && (s.finishedAt !== undefined || s.kind !== 'mock')).primaryKeys();
   if (old.length) await db.sessions.bulkDelete(old);
 }
+
+/** 学習記録・進行中のセッション・メタ情報を消す（同期のトークンは残す） */
+export async function resetAllData(): Promise<void> {
+  await db.transaction('rw', db.events, db.sessions, db.meta, async () => {
+    await db.events.clear();
+    await db.sessions.clear();
+    await db.meta.clear();
+  });
+  forgetDeviceId();
+}

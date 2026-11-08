@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.2-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S6",
+    "2.2-S7",
+    "2.2-K4"
+  ],
+  "services": [
+    "AWS Elastic Disaster Recovery",
+    "Amazon Elastic Compute Cloud",
+    "Amazon Elastic Block Store"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AWS Elastic Disaster Recovery",
+    "継続的レプリケーション",
+    "オンプレミスの DR"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "オンプレミスのデータセンターで動く約 40 台の Windows と Linux のサーバーについて、AWS を使った災害対策を用意します。RPO は秒単位、RTO は数十分以内とし、通常時の DR 環境の費用は最小限にしたいと考えています。障害時にだけ Amazon EC2 インスタンスを起動し、アプリケーションの改修はしません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS DataSync で、サーバーのファイルを Amazon S3 に定期的にコピーする。",
+      "correct": false,
+      "rationale": "ファイルのコピーで、OS やアプリケーションの構成を含むサーバー全体の復旧はできません。RPO も秒単位にはなりません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Elastic Disaster Recovery のレプリケーションエージェントを各サーバーにインストールし、AWS 上の低コストのステージングエリアにブロックレベルで継続的に複製する。障害時にリカバリーインスタンスを起動する。",
+      "correct": true,
+      "rationale": "Elastic Disaster Recovery は、ブロックレベルで継続的に複製して、RPO を秒単位にできます。通常時は小さなレプリケーションサーバーとストレージだけで済み、障害時にだけ EC2 を起動するため、費用も抑えられます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS に、本番と同じ構成の 40 台の EC2 インスタンスを常時起動し、アプリケーションのデータを定期的に同期する。",
+      "correct": false,
+      "rationale": "通常時も本番と同等の費用がかかり、DR 環境の費用を最小限にする要件に反します。定期的な同期では、RPO も秒単位になりません。"
+    },
+    {
+      "id": "d",
+      "text": "各サーバーのイメージを毎日取得して Amazon S3 に保存し、障害時にイメージから EC2 インスタンスを作成する。",
+      "correct": false,
+      "rationale": "RPO が最大 1 日になり、秒単位の要件を満たしません。イメージからの復旧作業にも時間がかかります。"
+    }
+  ],
+  "explanation": "AWS Elastic Disaster Recovery（旧称 CloudEndure Disaster Recovery）は、物理サーバー、仮想サーバー、クラウド上のサーバーを AWS に継続的に複製し、障害時に素早く復旧できるサービスです。サーバーにレプリケーションエージェントをインストールすると、ディスクの内容がブロックレベルで、AWS 上のステージングエリアの低コストなリソース（小さなレプリケーションサーバーと EBS ボリューム）に継続的に複製されます。RPO は秒単位、RTO は通常数分から数十分とされます。\n\n障害時には、復旧の起動を実行して、リカバリーインスタンスを EC2 で起動します。平常時はフル構成の EC2 を動かさないため、ウォームスタンバイやマルチサイトよりも費用を抑えられます。\n\nイメージの定期取得では RPO が長くなり、フル構成の常時稼働は費用が高くなります。DataSync はデータの転送サービスで、サーバーの復旧用ではありません。",
+  "keyPoints": [
+    "オンプレミスや他クラウドのサーバーの DR（RPO が秒、費用は低く） → AWS Elastic Disaster Recovery",
+    "平常時はステージングエリアのみ、障害時に EC2 を起動",
+    "アプリケーションの改修は不要（サーバー単位のレプリケーション）"
+  ],
+  "references": [
+    {
+      "title": "AWS Elastic Disaster Recovery とは - AWS Elastic Disaster Recovery ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

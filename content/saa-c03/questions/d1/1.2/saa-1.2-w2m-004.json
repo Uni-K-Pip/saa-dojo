@@ -1,0 +1,74 @@
+{
+  "id": "saa-1.2-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K1",
+    "1.2-S3"
+  ],
+  "services": [
+    "AWS Systems Manager",
+    "AWS Secrets Manager",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Parameter Store",
+    "Secrets Manager",
+    "設定値の管理"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の Web アプリケーションは Amazon EC2 インスタンス上で動き、外部の決済 API の接続先 URL や機能フラグなどの設定値と、データベースのパスワードを使います。設定値は頻繁には変わらず、ローテーションは不要です。データベースのパスワードは 30 日ごとの自動ローテーションが求められています。設定値をアプリケーションに埋め込むことは避け、費用も抑えたいと考えています。最も適切な組み合わせはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべて Parameter Store の SecureString に保存し、30 日ごとに Amazon EventBridge ルールから Lambda 関数を起動してパスワードを更新する。",
+      "correct": false,
+      "rationale": "Parameter Store には自動ローテーションの機能がなく、ローテーション用の処理を自作して運用することになります。要件を満たすマネージドの機能を使うほうが、運用負荷が低くなります。"
+    },
+    {
+      "id": "b",
+      "text": "設定値もデータベースのパスワードも、すべて Secrets Manager に保存し、自動ローテーションを設定する。",
+      "correct": false,
+      "rationale": "動作はしますが、Secrets Manager はシークレットごとに月額料金がかかります。ローテーションが不要な設定値まで保存すると、費用が不必要に増えます。"
+    },
+    {
+      "id": "c",
+      "text": "すべてを EC2 の起動テンプレートのユーザーデータに環境変数として記述し、変更時は Auto Scaling グループでインスタンスを入れ替える。",
+      "correct": false,
+      "rationale": "ユーザーデータはインスタンスから参照でき、パスワードが平文で残ります。ローテーションも手作業になり、アクセス制御や監査もできません。"
+    },
+    {
+      "id": "d",
+      "text": "設定値は AWS Systems Manager Parameter Store の標準パラメータに保存し、データベースのパスワードは AWS Secrets Manager に保存して 30 日ごとの自動ローテーションを設定する。",
+      "correct": true,
+      "rationale": "標準パラメータは追加料金なしで使えるため、ローテーションが不要な設定値に向きます。自動ローテーションが必要なパスワードには、ローテーションを備えた Secrets Manager が適しています。"
+    }
+  ],
+  "explanation": "設定値や秘密情報をアプリケーションの外に保管するサービスとして、AWS Systems Manager Parameter Store と AWS Secrets Manager があります。\n\nParameter Store は、設定値やパスワードを階層的に保存でき、標準パラメータは追加料金なしで使えます。SecureString で AWS KMS による暗号化もできますが、自動ローテーションの機能は備えていません。Secrets Manager は、シークレットごとに月額料金がかかる一方、Amazon RDS などと連携した自動ローテーションを備えています。\n\nローテーションの要否とコストで使い分けます。ローテーションが不要な一般的な設定値は Parameter Store、ローテーションが必要なデータベースの認証情報は Secrets Manager とするのが、費用を抑えて要件を満たす組み合わせです。",
+  "keyPoints": [
+    "自動ローテーションが必要な認証情報 → Secrets Manager",
+    "ローテーション不要の設定値や低コスト → Parameter Store（標準パラメータは無料）",
+    "ユーザーデータや環境変数への秘密情報の埋め込みは避ける"
+  ],
+  "references": [
+    {
+      "title": "AWS Systems Manager Parameter Store - AWS Systems Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    },
+    {
+      "title": "AWS Secrets Manager とは - AWS Secrets Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

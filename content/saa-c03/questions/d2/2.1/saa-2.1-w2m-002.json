@@ -1,0 +1,67 @@
+{
+  "id": "saa-2.1-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-S3",
+    "2.1-K11"
+  ],
+  "services": [
+    "Amazon Simple Queue Service",
+    "Amazon CloudWatch"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "デッドレターキュー",
+    "maxReceiveCount",
+    "ポイズンメッセージ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "注文処理のワーカーは、Amazon SQS の標準キューからメッセージを受信して処理しています。不正な形式の一部のメッセージは、何度処理しても失敗してキューに戻り、繰り返し受信されるため、他のメッセージの処理が遅れています。失敗したメッセージは破棄せず、後で原因を調査できるようにしたいと考えています。運用負荷を抑えられる最適な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "元のキューにデッドレターキューを設定し、maxReceiveCount を 5 に指定する。デッドレターキューのメッセージ数に対する CloudWatch アラームを設定する。",
+      "correct": true,
+      "rationale": "受信回数が maxReceiveCount を超えたメッセージが、自動的にデッドレターキューへ移されます。本流の処理を妨げず、メッセージも残るため、後で調査できます。"
+    },
+    {
+      "id": "b",
+      "text": "元のキューのメッセージ保持期間を最小の 1 分に変更する。",
+      "correct": false,
+      "rationale": "失敗したメッセージだけでなく、処理待ちの正常なメッセージも期限切れで失われます。メッセージを残して調査する要件にも反します。"
+    },
+    {
+      "id": "c",
+      "text": "ワーカーのコードで、失敗したメッセージを検出したらログだけ出力して、DeleteMessage で削除する。",
+      "correct": false,
+      "rationale": "メッセージを削除すると、後で原因を調べるための元のメッセージが残りません。ログだけでは不十分なことがあります。"
+    },
+    {
+      "id": "d",
+      "text": "元のキューの可視性タイムアウトを最大の 12 時間に変更する。",
+      "correct": false,
+      "rationale": "失敗したメッセージが再び見えるまでの時間が延びるだけで、繰り返し失敗する状況は変わりません。正常なメッセージの処理にも影響します。"
+    }
+  ],
+  "explanation": "SQS のデッドレターキュー（DLQ）は、処理に成功しなかったメッセージの移動先となるキューです。元のキューのリドライブポリシーで maxReceiveCount を指定すると、メッセージの受信回数がそれを超えたとき、メッセージが自動的に DLQ へ移されます。繰り返し失敗するメッセージ（ポイズンメッセージ）が本流の処理を妨げるのを防ぎ、メッセージ自体は DLQ に残るため、原因の調査や再処理ができます。\n\nDLQ の保持期間は元のキューよりも長めに設定し、メッセージ数のメトリクス（ApproximateNumberOfMessagesVisible）に CloudWatch アラームを設定すると、運用上の異常に気づけます。原因を解消した後は、DLQ から元のキューへメッセージを戻す（リドライブ）機能も使えます。\n\n可視性タイムアウトの延長や保持期間の短縮は、問題を解決しません。メッセージの削除は、調査に必要なデータを失います。",
+  "keyPoints": [
+    "繰り返し失敗するメッセージの隔離 → デッドレターキュー＋maxReceiveCount",
+    "DLQ のメッセージ数をアラームで監視し、原因を調べて再処理する",
+    "FIFO キューの DLQ は FIFO キューにする"
+  ],
+  "references": [
+    {
+      "title": "Amazon SQS のデッドレターキュー - Amazon SQS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

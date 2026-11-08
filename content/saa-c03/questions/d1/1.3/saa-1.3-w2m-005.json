@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.3-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S5",
+    "1.3-K2"
+  ],
+  "services": [
+    "AWS Backup",
+    "Amazon Elastic Block Store",
+    "Amazon Relational Database Service",
+    "AWS Organizations"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "AWS Backup Vault Lock",
+    "ランサムウェア対策",
+    "不変バックアップ"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、ランサムウェア対策として、AWS Backup で取得した Amazon EBS と Amazon RDS のバックアップを、管理者のアカウントが侵害されても、削除や保持期間の短縮ができない状態で 35 日間保持したいと考えています。バックアップは別の AWS アカウントにも複製し、運用は AWS Backup のポリシーで一元的に行います。最も適切な設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バックアップボールトに Vault Lock をガバナンスモードで設定する。バックアップのコピールールで、別アカウントのボールトへ複製する。",
+      "correct": false,
+      "rationale": "ガバナンスモードでは、十分な権限を持つユーザーがロックの設定を変更または削除できます。管理者のアカウントが侵害された場合に、保持期間の短縮や削除を防げません。"
+    },
+    {
+      "id": "b",
+      "text": "Lambda 関数でスナップショットを定期的に Amazon S3 にエクスポートし、S3 オブジェクトロックを設定する。",
+      "correct": false,
+      "rationale": "実現できる可能性はありますが、AWS Backup のポリシーで一元的に運用する要件に反します。独自の処理を作って運用する負荷も大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "バックアップボールトに AWS Backup Vault Lock をコンプライアンスモードで設定し、最小保持期間を 35 日にする。バックアップのコピールールで、別アカウントの同様にロックしたボールトへ複製する。",
+      "correct": true,
+      "rationale": "Vault Lock のコンプライアンスモードでは、猶予期間の後は、ロックの変更や削除ができなくなり、保持期間内のバックアップは管理者権限でも削除できません。別アカウントへの複製と組み合わせて、侵害に備えられます。"
+    },
+    {
+      "id": "d",
+      "text": "IAM ポリシーで、バックアップの削除（backup:DeleteRecoveryPoint）を管理者を含むすべてのユーザーに対して拒否する。",
+      "correct": false,
+      "rationale": "IAM ポリシーは、権限のあるユーザーが変更または削除できます。管理者のアカウントが侵害されると、拒否のポリシーも外されてしまいます。"
+    }
+  ],
+  "explanation": "AWS Backup Vault Lock は、バックアップボールトに WORM（Write Once Read Many）の設定を追加し、バックアップの削除や保持期間の短縮を防ぐ機能です。2つのモードがあります。\n\nガバナンスモードでは、十分な IAM 権限を持つユーザーがロックの設定を変更または削除できます。コンプライアンスモードでは、指定した猶予期間（cooling-off）が過ぎるとロックが確定し、ルートユーザーや AWS も含めて、ロックの変更や削除ができなくなります。保持期間内のバックアップは削除できず、最小保持期間や最大保持期間の設定も変更できません。\n\n別アカウントへのコピールールと組み合わせれば、元のアカウントが侵害されても、複製先に不変のバックアップが残ります。IAM ポリシーの拒否は、権限のあるユーザーが外せるため、侵害に対する防御としては弱くなります。",
+  "keyPoints": [
+    "バックアップを管理者でも消せない状態に → AWS Backup Vault Lock のコンプライアンスモード",
+    "ガバナンスモードは権限のあるユーザーが解除できる",
+    "別アカウントへのコピーで、元アカウントの侵害に備える"
+  ],
+  "references": [
+    {
+      "title": "AWS Backup Vault Lock - AWS Backup デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-backup-and-retention"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

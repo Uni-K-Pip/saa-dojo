@@ -1,0 +1,71 @@
+{
+  "id": "saa-2.1-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K7",
+    "2.1-K3"
+  ],
+  "services": [
+    "Amazon CloudFront",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "CloudFront 署名付き URL",
+    "OAC",
+    "プライベートコンテンツ"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画学習サービスは、有料会員向けの動画ファイルを Amazon S3 に保存し、Amazon CloudFront で配信しています。S3 バケットへの直接のアクセスと、動画の URL を第三者へ共有して無料で視聴されることを防ぎたいと考えています。URL には数時間の有効期限を設けます。アプリケーションは、会員の認証後に URL を発行します。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オリジンアクセスコントロール（OAC）で S3 バケットへのアクセスを CloudFront だけに許可し、バケットのパブリックアクセスをブロックする。ビューアーのアクセスを制限して、アプリケーションが有効期限付きの CloudFront 署名付き URL を発行する。",
+      "correct": true,
+      "rationale": "OAC により S3 への直接のアクセスが止まります。署名付き URL は有効期限を設定でき、期限が切れたら共有された URL も使えなくなります。"
+    },
+    {
+      "id": "b",
+      "text": "S3 バケットを公開して、動画のキー名を推測しにくいランダムな文字列にする。",
+      "correct": false,
+      "rationale": "URL が分かれば誰でもアクセスでき、共有を防げません。有効期限もなく、直接のアクセスも止められません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS WAF で、会員の IP アドレスの範囲だけを許可する Web ACL を CloudFront に付ける。",
+      "correct": false,
+      "rationale": "会員の IP アドレスは固定ではなく、事前に把握できません。URL に有効期限を設ける要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "CloudFront の地理的制限で、サービス提供国以外のアクセスを拒否する。",
+      "correct": false,
+      "rationale": "国単位の制限で、会員かどうかや URL の共有は制御できません。有効期限の要件も満たしません。"
+    }
+  ],
+  "explanation": "CloudFront でプライベートコンテンツを配信するには、2つの制御を組み合わせます。1つ目は、オリジン（S3）へのアクセスを CloudFront に限定することです。オリジンアクセスコントロール（OAC）を設定し、S3 のバケットポリシーで CloudFront のディストリビューションだけを許可すると、S3 への直接のアクセスを止められます。\n\n2つ目は、ビューアーのアクセスの制限です。ビューアーのアクセスを制限する設定にして、信頼されたキーグループを指定すると、署名付き URL または署名付き Cookie がないリクエストは拒否されます。署名付き URL には有効期限を設定でき、特定の IP アドレスの範囲なども指定できます。1 つのファイルには署名付き URL、複数のファイルには署名付き Cookie が向いています。\n\nS3 の署名付き URL を使う方法は、CloudFront を経由せず、キャッシュの利点を失います。WAF や地理的制限は、個々の会員を識別できません。",
+  "keyPoints": [
+    "S3 を CloudFront 経由だけに → OAC（旧 OAI の後継）＋バケットポリシー",
+    "会員だけに有効期限付きで配信 → CloudFront の署名付き URL／署名付き Cookie",
+    "国や IP での制限は、ユーザーの識別には向かない"
+  ],
+  "references": [
+    {
+      "title": "CloudFront でプライベートコンテンツを配信する - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html"
+    },
+    {
+      "title": "Amazon S3 オリジンへのアクセスを制限する",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

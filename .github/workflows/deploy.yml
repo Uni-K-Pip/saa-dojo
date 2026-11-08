@@ -1,0 +1,74 @@
+name: Deploy
+
+# main への push で、コンテンツを検証してアプリをビルドし、GitHub Pages に公開する
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 公開は同時に1つだけ。実行中の公開は取り消さない
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+
+      - name: 依存パッケージのインストール（ルート）
+        run: npm ci
+
+      - name: 依存パッケージのインストール（app）
+        run: npm ci
+        working-directory: app
+
+      - name: コンテンツの検証
+        run: node scripts/validate.mjs
+
+      - name: コンテンツのビルド
+        run: npm run content
+        working-directory: app
+
+      - name: テスト
+        run: npm test
+        working-directory: app
+
+      - name: アプリのビルド
+        run: npm run build
+        working-directory: app
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
