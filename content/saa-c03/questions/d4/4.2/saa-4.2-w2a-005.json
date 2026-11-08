@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K9", "4.2-S2", "4.2-S4"],
+  "services": ["Amazon EC2", "Amazon Elastic Block Store"],
+  "qualifier": "cost",
+  "tags": ["EC2 休止状態", "Hibernate", "開発環境", "コスト削減"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある開発チームは、Amazon EC2 上の開発用インスタンスを平日の 9 時から 18 時まで使っています。アプリケーションは起動後にデータをメモリへ読み込むのに約 20 分かかり、読み込み済みのメモリの状態をそのまま翌朝に引き継ぎたいと考えています。夜間のコンピューティング料金は発生させたくありません。最も適切な方法はどれですか。ただし、インスタンスは休止状態に対応する構成にできるものとします。",
+  "options": [
+    {
+      "id": "a",
+      "text": "夜間はインスタンスを停止（Stop）し、翌朝に開始する。",
+      "correct": false,
+      "rationale": "インスタンスを停止すると、メモリ（RAM）の内容は失われます。翌朝に起動した後、アプリケーションが再びデータをメモリに読み込む約 20 分の待ち時間が発生するため、メモリの状態を引き継ぐ要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "夜間はインスタンスを休止状態（Hibernate）にし、翌朝に開始する。",
+      "correct": true,
+      "rationale": "休止状態にすると、メモリの内容が暗号化されたルート EBS ボリュームに保存され、インスタンスは停止します。再開すると、保存されたメモリの内容が復元され、アプリケーションは中断した状態から続けられます。停止中はインスタンスのコンピューティング料金がかかりません。"
+    },
+    {
+      "id": "c",
+      "text": "夜間はインスタンスを終了（Terminate）し、翌朝に同じ AMI から新しいインスタンスを起動する。",
+      "correct": false,
+      "rationale": "インスタンスを終了するとメモリの内容は失われ、再起動後に再びデータを読み込む必要があります。インスタンスストアなどに保存した内容も失われます。"
+    },
+    {
+      "id": "d",
+      "text": "Auto Scaling グループの最小台数を夜間に 0 にスケジュールし、翌朝に 1 に戻す。",
+      "correct": false,
+      "rationale": "スケールインでインスタンスが終了するため、メモリの状態は失われ、翌朝に再びデータの読み込みが必要です。要件を満たしません。"
+    }
+  ],
+  "explanation": "EC2 インスタンスの「停止」「休止状態」「終了」は、メモリとコストの扱いが異なります。\n\n・停止（Stop）: OS をシャットダウンする。メモリの内容は失われる。インスタンスのコンピューティング料金はかからないが、EBS ボリュームの料金は続く。\n・休止状態（Hibernate）: メモリの内容を、暗号化されたルート EBS ボリュームに書き出してから停止する。開始すると、メモリの内容が復元されるので、アプリケーションは中断した状態から再開できる。コンピューティング料金は停止中はかからず、EBS ボリュームと Elastic IP アドレスなどの料金は続く。\n・終了（Terminate）: インスタンスを削除する。\n\n休止状態は、起動後の初期化に時間がかかるアプリケーションや、メモリ上の状態を保ちたい開発環境などに向いています。休止状態を使うには、起動時に有効にしておく必要があり、対応するインスタンスファミリー、暗号化されたルート EBS ボリューム、メモリのサイズの制限などの条件があります。",
+  "keyPoints": [
+    "メモリの状態を保ったままコンピューティング料金を止める → EC2 の休止状態（Hibernate）",
+    "停止（Stop）ではメモリの内容は失われる。EBS の料金は停止中も続く",
+    "休止状態は起動時に有効にし、暗号化したルート EBS ボリュームが必要"
+  ],
+  "references": [
+    {
+      "title": "Hibernate your Amazon EC2 instance - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html"
+    },
+    {
+      "title": "Amazon EC2 instance state changes - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K4", "4.2-K8"],
+  "services": ["Savings Plans", "Amazon EC2", "AWS Fargate", "AWS Lambda"],
+  "qualifier": "cost",
+  "tags": ["Compute Savings Plans", "EC2 Instance Savings Plans", "購入オプション", "柔軟性"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon EC2 で常時稼働するアプリケーションを運用しており、今後 3 年間は一定量以上の利用が続く見込みです。ただし、今後、インスタンスファミリーの世代更新、リージョンの変更、一部のワークロードの AWS Fargate への移行が予定されています。これらの変更があっても、割引を受け続けられるようにしつつ、割引率はできるだけ高くしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "EC2 Instance Savings Plans を 3 年間の契約で購入する。",
+      "correct": false,
+      "rationale": "EC2 Instance Savings Plans は、特定のリージョンの特定のインスタンスファミリーに適用されます。ファミリーの変更やリージョンの変更では割引が適用されなくなり、Fargate にも適用されないため、柔軟性の要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "Compute Savings Plans を 3 年間の契約で購入する。",
+      "correct": true,
+      "rationale": "Compute Savings Plans は、1 時間あたりの利用額を約束して割引を受ける仕組みで、インスタンスファミリー、サイズ、リージョン、OS が変わっても、また AWS Fargate や AWS Lambda の利用にも適用されます。柔軟性が最も高く、変更の予定がある場合に適しています。"
+    },
+    {
+      "id": "c",
+      "text": "スタンダードリザーブドインスタンスを 3 年間の契約で購入する。",
+      "correct": false,
+      "rationale": "スタンダードリザーブドインスタンスは、インスタンスファミリーなどの属性を固定して約束します。ファミリーやリージョンの変更に対応しにくく、Fargate には適用されません。"
+    },
+    {
+      "id": "d",
+      "text": "すべてオンデマンドで運用し、必要に応じて Spot インスタンスを使う。",
+      "correct": false,
+      "rationale": "利用が安定して続くことが分かっているのに約束による割引を使わないため、コストが高くなります。また、常時稼働のアプリケーションを中断される可能性がある Spot だけに頼るのは適切ではありません。"
+    }
+  ],
+  "explanation": "Savings Plans は、1 年または 3 年の間、1 時間あたり一定額の利用を約束する代わりに、割引を受ける料金モデルです。主な種類は次のとおりです。\n\n・Compute Savings Plans: EC2 のインスタンスファミリー、サイズ、リージョン、OS、テナンシーを問わず適用され、AWS Fargate と AWS Lambda の利用にも適用される。割引率は最大で約 66%。柔軟性が最も高い。\n・EC2 Instance Savings Plans: 特定のリージョンの特定のインスタンスファミリーが対象。柔軟性は下がるが、割引率は高め（最大で約 72%）。\n\nリザーブドインスタンスは、インスタンスの属性を決めて約束する点で、Savings Plans より柔軟性が低くなります。この問題では、ファミリーの変更、リージョンの変更、Fargate への移行がすべて予定されているので、Compute Savings Plans が適切です。",
+  "keyPoints": [
+    "インスタンスファミリー・リージョンの変更や Fargate／Lambda への移行がありうる → Compute Savings Plans",
+    "特定のリージョンの特定のファミリーを使い続ける → EC2 Instance Savings Plans のほうが割引率は高い",
+    "Savings Plans は 1 時間あたりの金額で約束し、約束した量を超えた分はオンデマンド料金になる"
+  ],
+  "references": [
+    {
+      "title": "What are Savings Plans? - Savings Plans",
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+    },
+    {
+      "title": "Savings Plans types - Savings Plans",
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

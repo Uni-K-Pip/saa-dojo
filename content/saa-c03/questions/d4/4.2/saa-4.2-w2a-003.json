@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K7", "4.2-S5"],
+  "services": ["Amazon EC2"],
+  "qualifier": "cost",
+  "tags": ["インスタンスファミリー", "メモリ最適化", "R 系", "インメモリ処理"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある分析会社は、自社開発のインメモリ分析エンジンを Amazon EC2 で動かしています。エンジンは約 300 GB のデータセットを常にメモリ上に保持して処理します。モニタリングの結果、CPU 使用率は 10% 程度で低く、メモリ使用率が 90% 近くになっていることが分かりました。ワークロードに合い、コスト効率の高いインスタンスファミリーはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "汎用（M 系）の大きいサイズ",
+      "correct": false,
+      "rationale": "汎用インスタンスは vCPU あたりのメモリが少なめ（おおむね 1 vCPU あたり 4 GiB）で、必要なメモリを得るには大量の vCPU が付いてくる大きいサイズが必要になります。使わない CPU の分まで料金を払うことになります。"
+    },
+    {
+      "id": "b",
+      "text": "コンピューティング最適化（C 系）",
+      "correct": false,
+      "rationale": "C 系は CPU の性能が重要な処理（動画のエンコード、科学技術計算、高負荷なウェブサーバーなど）向けで、vCPU あたりのメモリが少なめです。CPU 使用率が低くメモリが足りないこのワークロードには合いません。"
+    },
+    {
+      "id": "c",
+      "text": "メモリ最適化（R 系）",
+      "correct": true,
+      "rationale": "R 系は、メモリ内に大きなデータセットを保持する処理（インメモリデータベース、インメモリ分析など）向けで、vCPU あたりのメモリの割合が高くなっています。必要なメモリを少ない vCPU で得られるため、このワークロードに最も合います。"
+    },
+    {
+      "id": "d",
+      "text": "バースト可能（T 系）のアンリミテッドモード",
+      "correct": false,
+      "rationale": "T 系は、通常は CPU 使用率が低く、ときどき急に高くなる処理向けです。大量のメモリが必要な処理には、メモリを多く持つサイズがなく、アンリミテッドモードではバースト分の追加料金もかかります。"
+    }
+  ],
+  "explanation": "EC2 のインスタンスファミリーは、ワークロードのボトルネックに合わせて選びます。\n\n・汎用（M 系、T 系）: CPU、メモリ、ネットワークのバランスがよい。迷ったら最初の候補。T 系は低い基準性能にバーストを組み合わせる。\n・コンピューティング最適化（C 系）: CPU 性能が重要な処理向け。\n・メモリ最適化（R 系、X 系）: メモリを大量に使う処理向け。インメモリデータベースやインメモリ分析、大規模なキャッシュなど。\n・ストレージ最適化（I 系、D 系）: ローカルストレージの I/O が重要な処理向け。\n・高速コンピューティング（P 系、G 系など）: GPU などのアクセラレーターを使う処理向け。\n\n問題文の「CPU 使用率は低く、メモリ使用率が高い」が、メモリ最適化を選ぶサインです。ワークロードに合わないファミリーでは、使わないリソースの分まで料金を払うことになります。",
+  "keyPoints": [
+    "メモリ使用率が高く CPU は余っている・インメモリ処理 → メモリ最適化（R 系、X 系）",
+    "CPU が足りない・計算が中心 → コンピューティング最適化（C 系）",
+    "ボトルネックのリソースを基準にファミリーを選ぶと、使わないリソースへの支払いを避けられる"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 instance types - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-types.html"
+    },
+    {
+      "title": "Memory optimized instances - Amazon EC2",
+      "url": "https://docs.aws.amazon.com/ec2/latest/instancetypes/mo.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
