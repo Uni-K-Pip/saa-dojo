@@ -1,0 +1,70 @@
+{
+  "id": "saa-4.1-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K3",
+    "4.1-S5",
+    "4.1-K7"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "AWS Organizations"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "S3 Storage Lens",
+    "不完全なマルチパートアップロード",
+    "非現行バージョン"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Organizations で管理する 40 のアカウントに、数百の Amazon S3 バケットを持っています。S3 の費用が増え続けています。どのバケットで、不完全なマルチパートアップロードのデータや、古い非現行バージョンが容量を占めているかを、アカウントをまたいで一覧で把握し、見つけた無駄は、バケットごとにライフサイクルルールで削除したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Cost Explorer で S3 の使用タイプ別の費用を確認して、費用の多いバケットを特定する。",
+      "correct": false,
+      "rationale": "Cost Explorer は、サービスや使用タイプ別の費用は示しますが、バケットごとの内訳や、不完全なマルチパートアップロードなどの原因は示しません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Trusted Advisor のコスト最適化のチェックを確認して、S3 の無駄な容量が報告されるのを待つ。",
+      "correct": false,
+      "rationale": "Trusted Advisor は、バケットごとの不完全なマルチパートアップロードや非現行バージョンの容量を一覧で示す機能を持ちません。"
+    },
+    {
+      "id": "c",
+      "text": "組織全体の S3 Storage Lens のダッシュボードを有効にして、不完全なマルチパートアップロードや非現行バージョンの指標でバケットを比較する。該当のバケットに、それらを削除するライフサイクルルールを設定する。",
+      "correct": true,
+      "rationale": "Storage Lens は、組織全体のバケットの使用状況とアクティビティを一覧できる分析機能です。コスト最適化の指標で無駄の多いバケットを特定し、ライフサイクルルールで削除できます。"
+    },
+    {
+      "id": "d",
+      "text": "すべてのバケットで S3 インベントリを有効にし、各アカウントで Athena を使って、データを個別に集計する。",
+      "correct": false,
+      "rationale": "実現はできますが、数百のバケットでインベントリとクエリの環境を個別に用意することになり、運用の手間が大きくなります。組織全体の一覧に適した機能が別にあります。"
+    }
+  ],
+  "explanation": "Amazon S3 Storage Lens は、組織全体の S3 の使用状況とアクティビティを、バケットやプレフィックス単位で可視化するクラウドストレージの分析機能です。AWS Organizations と連携して、組織のすべてのアカウントを対象にしたダッシュボードを作れます。無料の指標に加えて、高度な指標（有料）もあり、コスト最適化の指標として、不完全なマルチパートアップロードのバイト数や、非現行バージョンのストレージのバイト数などを確認できます。\n\nこれらの指標で無駄の多いバケットを見つけたら、ライフサイクルルールで、不完全なマルチパートアップロードの中止（一定日数後に破棄）と、非現行バージョンの有効期限切れ（一定日数後に削除）を設定して、容量を削減します。\n\nCost Explorer は費用を集計する分析ツールで、バケット内の原因の特定には向きません。S3 インベントリと Athena でも可能ですが、組織全体への展開に手間がかかります。",
+  "keyPoints": [
+    "組織全体の S3 の使用状況・コスト最適化の指標をバケット単位で可視化 → S3 Storage Lens（Organizations 連携）",
+    "不完全なマルチパートアップロードと非現行バージョンはライフサイクルルールで削除",
+    "Cost Explorer はバケット内の内訳までは示さない"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 Storage Lens を使用したストレージのアクティビティと使用状況の評価",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

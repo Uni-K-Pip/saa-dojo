@@ -1,0 +1,69 @@
+{
+  "id": "saa-4.2-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": [
+    "4.2-S6",
+    "4.2-S5",
+    "4.2-K7"
+  ],
+  "services": [
+    "AWS Compute Optimizer",
+    "Amazon Elastic Compute Cloud",
+    "Amazon CloudWatch"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AWS Compute Optimizer",
+    "ライトサイジング",
+    "メモリ使用率"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、約 200 台の Amazon EC2 インスタンスを運用しています。多くはピーク時を想定して大きめに作ったままで、CPU 使用率は常に低いと考えています。手作業の分析をせずに、インスタンスごとの実際の利用状況に基づいて、費用を下げられる適切なインスタンスタイプとサイズを知りたいと考えています。メモリの使用率も判断に使いたく、複数のアカウントをまとめて確認できる必要があります。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべてのインスタンスを 1 つ小さいサイズに一括で変更して、問題が出たインスタンスだけ元に戻す。",
+      "correct": false,
+      "rationale": "実際の利用状況の根拠がなく、メモリやネットワークが不足すると、本番の障害の原因になります。戻す作業の手間もかかります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon CloudWatch のダッシュボードを作って、インスタンスごとの CPU とメモリのグラフを、担当者が 1 台ずつ確認する。",
+      "correct": false,
+      "rationale": "200 台を手作業で分析することになり、手作業の分析をしない要件に反します。適切なサイズの判断も、担当者の経験に依存します。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Trusted Advisor の使用率の低い EC2 インスタンスのチェックだけを確認して、報告されたインスタンスを小さいタイプに変更する。",
+      "correct": false,
+      "rationale": "使用率の低いインスタンスを示しますが、適切なインスタンスタイプやサイズの具体的な推奨は示しません。メモリの使用率も判断に使えません。"
+    },
+    {
+      "id": "d",
+      "text": "組織全体で AWS Compute Optimizer を有効にして、各インスタンスに CloudWatch エージェントを導入しメモリ使用率を収集する。推奨事項を確認して、インスタンスのサイズを見直す。",
+      "correct": true,
+      "rationale": "Compute Optimizer は、実際の利用状況のメトリクスを機械学習で分析し、最適なインスタンスタイプとサイズを推奨します。メモリのメトリクスは CloudWatch エージェントで収集すると、推奨に反映されます。"
+    }
+  ],
+  "explanation": "AWS Compute Optimizer は、AWS リソース（EC2 インスタンス、Auto Scaling グループ、EBS ボリューム、Lambda 関数など）の設定と、過去の利用状況のメトリクス（CloudWatch）を分析して、最適なリソースの構成を推奨するサービスです。EC2 インスタンスについては、CPU、ネットワーク、ディスクなどのメトリクスから、現在のインスタンスが過剰または不足かを判定し、適切なインスタンスタイプとサイズ、削減できる費用の目安を示します。\n\nメモリの使用率は、既定では CloudWatch に出力されないため、CloudWatch エージェントをインストールして収集すると、推奨に反映されます。AWS Organizations の管理アカウントで有効にすると、組織内の複数のアカウントを対象にできます。\n\nTrusted Advisor の使用率の低いインスタンスのチェックは、候補の抽出にとどまり、具体的な推奨は示しません。",
+  "keyPoints": [
+    "実績に基づくインスタンスのライトサイジング → AWS Compute Optimizer（Organizations で複数アカウント対応）",
+    "メモリ使用率は CloudWatch エージェントで収集すると推奨に反映される",
+    "サイズの縮小は実績の根拠に基づいて行う"
+  ],
+  "references": [
+    {
+      "title": "AWS Compute Optimizer とは - AWS Compute Optimizer ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

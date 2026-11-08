@@ -1,0 +1,74 @@
+{
+  "id": "saa-4.1-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S1",
+    "4.1-S9",
+    "4.1-S8"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "Amazon S3 Glacier"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "小さなオブジェクト",
+    "S3 Glacier Deep Archive",
+    "オブジェクトの集約"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、約 3 億個の小さなログファイル（平均 10 KB）を Amazon S3 Standard に保存しています。法令により 7 年間の保管が必要ですが、ほとんど参照しません。ライフサイクルルールで個々のオブジェクトを S3 Glacier Deep Archive に移行する計画でしたが、見積もりでは、削減効果が小さく、リクエストの料金も大きいことが分かりました。ログを事前にまとめて保存し直せる場合、費用を最も下げられる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "小さなオブジェクトのまま S3 Intelligent-Tiering に移して、アーカイブ階層への自動移動を有効にする。",
+      "correct": false,
+      "rationale": "128 KB 未満の小さなオブジェクトは、自動の階層化の対象にならず、Frequent Access 階層のままになります。オブジェクト数が多いと、モニタリングの料金も無駄になります。"
+    },
+    {
+      "id": "b",
+      "text": "日付ごとにログファイルを tar などで 1 つのアーカイブにまとめ、数百 MB 以上の大きなオブジェクトにしてから、S3 Glacier Deep Archive に保存する。",
+      "correct": true,
+      "rationale": "アーカイブ系のストレージクラスは、オブジェクトごとにメタデータ分のオーバーヘッドとリクエストの料金がかかります。大きなオブジェクトにまとめれば、オブジェクト数が減り、Deep Archive の低い単価を活かせます。"
+    },
+    {
+      "id": "c",
+      "text": "小さなオブジェクトのまま S3 Standard-IA に移行して、7 年間保存する。",
+      "correct": false,
+      "rationale": "Standard-IA は、128 KB 未満のオブジェクトを 128 KB として課金します。10 KB のオブジェクトでは、課金される容量が大きくなり、Standard より割高になることもあります。"
+    },
+    {
+      "id": "d",
+      "text": "小さなオブジェクトのまま、ライフサイクルルールで S3 Glacier Flexible Retrieval に移行し、取り出しはまれな利用にとどめる。",
+      "correct": false,
+      "rationale": "Flexible Retrieval でも、オブジェクトごとのメタデータのオーバーヘッドと、移行のリクエストの料金がかかります。オブジェクト数が多い限り、割高の問題は解消しません。"
+    }
+  ],
+  "explanation": "S3 Glacier Flexible Retrieval と Glacier Deep Archive では、オブジェクトごとにメタデータが追加されます（およそ 40 KB。そのうちの大部分はアーカイブ側の単価で課金され、一部は S3 Standard の単価で課金）。ライフサイクルでの移行も、オブジェクトごとのリクエストとして課金されます。そのため、平均 10 KB のような小さなオブジェクトを大量にアーカイブすると、メタデータの容量と移行のリクエストの料金が大きくなり、アーカイブの単価が低いメリットを活かせません。\n\n対策は、アーカイブする前に、複数のファイルを tar や zip でまとめ、大きなオブジェクトにすることです。オブジェクト数が大きく減り、メタデータのオーバーヘッドとリクエストの料金も減ります。取り出しはまれなので、まとめ単位は、日付などの取り出しやすい単位にします。\n\nIntelligent-Tiering は 128 KB 未満のオブジェクトを自動の階層化の対象にせず、Standard-IA は 128 KB 未満でも 128 KB として課金します。",
+  "keyPoints": [
+    "小さなオブジェクトの大量アーカイブ → 事前に tar などで集約して大きなオブジェクトにする",
+    "Glacier 系はオブジェクトごとのメタデータのオーバーヘッドと移行のリクエスト料金がかかる",
+    "Intelligent-Tiering は 128 KB 未満は自動の階層化の対象外、Standard-IA は最小課金サイズ 128 KB"
+  ],
+  "references": [
+    {
+      "title": "S3 のストレージクラスの比較 - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    },
+    {
+      "title": "Amazon S3 の料金",
+      "url": "https://aws.amazon.com/s3/pricing/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
