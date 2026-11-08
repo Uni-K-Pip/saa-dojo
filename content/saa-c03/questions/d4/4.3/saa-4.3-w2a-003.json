@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K3", "4.3-S3"],
+  "services": ["Amazon ElastiCache", "Amazon Relational Database Service"],
+  "qualifier": "cost",
+  "tags": ["ElastiCache", "キャッシュ戦略", "キャッシュアサイド", "読み取りの負荷"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある EC サイトの商品カタログは Amazon RDS for MySQL に保存されています。カタログの参照は更新よりはるかに多く、同じ商品のデータが繰り返し読まれています。キャンペーン期間はデータベースの CPU 使用率が高くなり、応答が遅くなります。データベースのインスタンスを大きくするコストを避けて、性能を改善したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon ElastiCache をデータベースの前に置き、アプリケーションが先にキャッシュを調べ、なければデータベースから読んでキャッシュに保存する。",
+      "correct": true,
+      "rationale": "キャッシュアサイド（レイジーロード）は、読み取りが多く同じデータが繰り返し読まれる場合に有効です。頻繁に読まれるデータをメモリ上のキャッシュから返すことで、データベースへのクエリを大きく減らせ、インスタンスを大きくするよりもコストを抑えられます。"
+    },
+    {
+      "id": "b",
+      "text": "データベースのインスタンスクラスを大きくする。",
+      "correct": false,
+      "rationale": "CPU の余力は増えますが、インスタンスの料金が上がり、繰り返し読まれるデータを毎回データベースで処理する無駄は残ります。コストを避けたいという要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "マルチ AZ 配置にして、スタンバイインスタンスからも読み取る。",
+      "correct": false,
+      "rationale": "RDS のマルチ AZ DB インスタンス配置のスタンバイは、障害時のフェイルオーバーのためのもので、通常は読み取りを受け付けません。読み取りの負荷を下げる手段ではなく、料金も増えます。"
+    },
+    {
+      "id": "d",
+      "text": "データベースのバックアップの保持期間を短くする。",
+      "correct": false,
+      "rationale": "バックアップの保持期間は、保存コストと復旧の要件に関わる設定で、読み取りのクエリの負荷や応答の速さには影響しません。"
+    }
+  ],
+  "explanation": "データベースの前にキャッシュを置くと、読み取りの負荷を減らし、応答を速くできます。Amazon ElastiCache は、Valkey、Redis OSS、Memcached に対応するマネージドなインメモリキャッシュです。\n\n代表的なキャッシュの戦略は次のとおりです。\n\n・キャッシュアサイド（レイジーロード）: アプリケーションがまずキャッシュを調べ、なければ（キャッシュミス）データベースから読んでキャッシュに保存する。必要なデータだけがキャッシュされるが、初回は遅く、データベースが更新されるとキャッシュが古くなることがある。\n・ライトスルー: データベースへの書き込みと同時にキャッシュも更新する。キャッシュは常に新しいが、書き込みは遅くなり、読まれないデータもキャッシュされる。\n\nキャッシュには有効期限（TTL）を設定して、古いデータが残り続けるのを防ぎます。読み取りが多く、更新が少ない、同じデータが繰り返し読まれる、という条件のときに最も効果的です。",
+  "keyPoints": [
+    "読み取りが多く同じデータが繰り返し読まれる → ElastiCache でキャッシュして DB の負荷とコストを下げる",
+    "キャッシュアサイド＝キャッシュミスのときに DB から読んでキャッシュに保存、ライトスルー＝書き込み時にキャッシュも更新",
+    "マルチ AZ DB インスタンス配置のスタンバイは通常読み取りに使えない（フェイルオーバー用）"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon ElastiCache? - Amazon ElastiCache",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+    },
+    {
+      "title": "Caching strategies - Amazon ElastiCache",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

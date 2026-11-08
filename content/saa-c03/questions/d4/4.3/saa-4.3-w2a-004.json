@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K8", "4.3-S3"],
+  "services": ["Amazon Relational Database Service"],
+  "qualifier": "performance",
+  "tags": ["リードレプリカ", "マルチ AZ", "レポートクエリ", "レプリケーション"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の基幹システムは、Amazon RDS for PostgreSQL のマルチ AZ DB インスタンス配置で運用されています。経理部門が毎日昼間に実行する、売上の集計レポートのクエリが重く、実行中は注文を処理する本番のトランザクションの応答が遅くなります。レポートのデータは数分前のものでもかまいません。本番の性能に影響させず、コストも抑えながら解決する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "リードレプリカを 1 つ作成し、レポートのクエリをリードレプリカに向ける。",
+      "correct": true,
+      "rationale": "リードレプリカは、非同期のレプリケーションでプライマリのデータを複製し、読み取りのクエリを受け付けます。レポートのクエリをレプリカに向けると、プライマリの負荷が増えません。数分前のデータでよいという要件は、非同期のレプリケーションの遅れと合っています。"
+    },
+    {
+      "id": "b",
+      "text": "マルチ AZ のスタンバイインスタンスに接続して、レポートのクエリを実行する。",
+      "correct": false,
+      "rationale": "マルチ AZ DB インスタンス配置のスタンバイは、障害時のフェイルオーバーのための同期レプリカで、接続して読み取りに使うことはできません。"
+    },
+    {
+      "id": "c",
+      "text": "プライマリのインスタンスクラスを 2 段階大きくする。",
+      "correct": false,
+      "rationale": "インスタンスの料金が常に増え、レポートのクエリと本番のトランザクションが同じインスタンスで競合する構造は変わりません。コストを抑える要件にも反します。"
+    },
+    {
+      "id": "d",
+      "text": "レポートを実行する時間帯だけ、本番のデータベースへの接続を制限する。",
+      "correct": false,
+      "rationale": "接続を制限しても、重いクエリが本番のリソースを使う点は変わらず、経理部門のレポートが実行できなくなる可能性もあります。"
+    }
+  ],
+  "explanation": "RDS のレプリケーションには目的の異なる 2 つの仕組みがあります。\n\n・マルチ AZ: 別のアベイラビリティーゾーンに同期レプリケーションでスタンバイを持ち、障害時に自動でフェイルオーバーする。可用性と耐久性のための機能で、マルチ AZ DB インスタンス配置のスタンバイは読み取りに使えない。\n・リードレプリカ: 非同期レプリケーションで読み取り専用のコピーを作る。読み取りの負荷を分散し、レポートや分析のクエリを本番から切り離すために使う。別のリージョンにも作成できる。\n\nリードレプリカは非同期なので、レプリカの遅れ（レプリカラグ）があり、最新のデータが必要なクエリには向きません。この問題は数分前のデータでよいので、リードレプリカが適しています。なお、マルチ AZ DB クラスター配置では、読み取り可能なスタンバイが 2 つあります。",
+  "keyPoints": [
+    "レポートや分析のクエリを本番から切り離す → リードレプリカ",
+    "マルチ AZ DB インスタンス配置のスタンバイは可用性のためで、読み取りには使えない",
+    "リードレプリカは非同期なので、レプリカラグがありうる"
+  ],
+  "references": [
+    {
+      "title": "Working with DB instance read replicas - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    },
+    {
+      "title": "Multi-AZ DB instance deployments - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

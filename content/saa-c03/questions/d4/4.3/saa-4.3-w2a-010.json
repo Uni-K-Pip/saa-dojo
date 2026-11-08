@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-010",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K3", "4.3-K9"],
+  "services": ["Amazon DynamoDB", "Amazon DynamoDB Accelerator (DAX)"],
+  "qualifier": "minimal-change",
+  "tags": ["DAX", "DynamoDB Accelerator", "キャッシュ", "読み取りの最適化"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社のゲームのランキング画面は、Amazon DynamoDB のテーブルから、上位プレイヤーの同じ少数のアイテムを毎秒数万回読み取っています。読み取りキャパシティのコストが高く、応答時間もマイクロ秒単位まで短縮したいと考えています。結果整合性の読み取りで問題ありません。アプリケーションのコードの変更は最小限にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "DynamoDB Accelerator（DAX）クラスターを作成し、アプリケーションの DynamoDB クライアントを DAX クライアントに置き換える。",
+      "correct": true,
+      "rationale": "DAX は DynamoDB 専用のインメモリキャッシュで、API 互換のため、クライアントを置き換えるだけで使えます。繰り返し読まれるアイテムをキャッシュから返すので、読み取りキャパシティの消費が減り、応答時間もマイクロ秒単位に短縮できます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon ElastiCache for Redis OSS を前に置き、アプリケーションにキャッシュの読み書きのロジックを実装する。",
+      "correct": false,
+      "rationale": "キャッシュ可能ですが、キャッシュの確認、保存、無効化のコードを自分で実装する必要があり、コードの変更を最小限にしたいという要件に反します。DynamoDB 専用の DAX のほうが変更が少なく済みます。"
+    },
+    {
+      "id": "c",
+      "text": "DynamoDB の読み取りキャパシティを、さらに大きく増やす。",
+      "correct": false,
+      "rationale": "読み取りの料金がさらに増え、コストが高いという問題が悪化します。ミリ秒単位の応答時間をマイクロ秒単位に短縮することもできません。"
+    },
+    {
+      "id": "d",
+      "text": "DynamoDB の強力な整合性のある読み取りに切り替える。",
+      "correct": false,
+      "rationale": "強力な整合性のある読み取りは、結果整合性の読み取りの 2 倍の読み取りキャパシティを消費します。コストが増え、応答時間も短縮されません。"
+    }
+  ],
+  "explanation": "DynamoDB Accelerator（DAX）は、DynamoDB 用のフルマネージドなインメモリキャッシュで、読み取りの応答時間をミリ秒単位からマイクロ秒単位に短縮します。DynamoDB の API と互換性があるので、アプリケーションは DynamoDB のクライアントを DAX のクライアントに置き換え、エンドポイントを DAX クラスターにするだけで使えます。\n\nDAX が効果的なのは、同じアイテムが繰り返し読まれる、読み取りが多く更新が少ない、結果整合性の読み取りで問題ない、という場合です。キャッシュから返されるデータの分、DynamoDB の読み取りキャパシティを消費しなくなるため、コストの削減にもなります。強力な整合性のある読み取りは、DAX を通さずに DynamoDB に直接送られるので、DAX の効果はありません。\n\n汎用のキャッシュ（ElastiCache）は、DynamoDB 以外の RDS などにも使えますが、キャッシュのロジックをアプリケーションに実装する必要があります。",
+  "keyPoints": [
+    "DynamoDB の読み取りをマイクロ秒に、読み取りコスト削減、コードの変更を最小限に → DAX",
+    "DAX は結果整合性の読み取りをキャッシュする。強力な整合性のある読み取りはキャッシュされない",
+    "RDS など DynamoDB 以外のキャッシュ → ElastiCache（キャッシュのロジックの実装が必要）"
+  ],
+  "references": [
+    {
+      "title": "In-memory acceleration with DynamoDB Accelerator (DAX) - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+    },
+    {
+      "title": "DAX: How it works - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
