@@ -33,6 +33,7 @@ createdBy: w2a
 | AWS Storage Gateway | オンプレミスのアプリケーションが、AWS のストレージをファイル／ボリューム／テープとして使い続ける |
 | AWS Transfer Family | SFTP／FTPS／FTP で S3 や EFS にファイルを転送する |
 | AWS Snow Family | 大容量データを専用の物理デバイスで運ぶ |
+| Amazon AppFlow | Salesforce などの SaaS と AWS サービスの間で、コードを書かずにデータを転送する |
 
 > AWS Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっています。新しい設計では、ネットワーク経由の転送を基本に考えます。
 
@@ -110,3 +111,6 @@ CSV や JSON は、列指向の **Parquet** や **ORC** に変換すると、Ath
 - `saa-3.5-w2a-006`: NFS のまま S3 に保存するゲートウェイを選ぶ問題
 - `saa-3.5-w2a-007`: CSV を Parquet に変換する夜間バッチの方法を選ぶ問題
 - `saa-3.5-w2a-010`: Spark／Hive の夜間処理を低コストで実行する構成を選ぶ問題
+- `saa-3.5-w2a-016`: 物理テープの代わりにバックアップソフトを使い続ける方法を選ぶ問題
+- `saa-3.5-w2a-018`: SaaS のデータをコードなしで S3 に取り込む問題
+- `saa-3.5-w2a-019`: パートナーの SFTP アップロードを受ける方法を選ぶ問題

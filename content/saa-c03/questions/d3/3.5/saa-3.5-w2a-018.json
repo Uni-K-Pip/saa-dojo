@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-018",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K2", "3.5-S6", "3.5-K3"],
+  "services": ["Amazon AppFlow", "Amazon Simple Storage Service", "AWS Lambda"],
+  "qualifier": "operational",
+  "tags": ["Amazon AppFlow", "SaaS 連携", "データ取り込み", "ノーコード"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社のマーケティング部門は、SaaS アプリケーション（Salesforce）の顧客データを、毎日 Amazon S3 のデータレイクに取り込んで分析したいと考えています。取り込みのためのコードの開発や、API の呼び出しの運用は避け、コードを書かずにスケジュールで実行できる方法にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon AppFlow でソースを Salesforce、宛先を S3 にしたフローを作成し、毎日のスケジュールで実行する。",
+      "correct": true,
+      "rationale": "Amazon AppFlow は、Salesforce、SAP、Zendesk などの SaaS アプリケーションと、S3 や Redshift などの AWS サービスの間で、コードを書かずにデータを転送するフルマネージドなサービスです。スケジュール、イベント、オンデマンドで実行できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda 関数で Salesforce の API を呼び出し、結果を S3 に書き込む。EventBridge のスケジュールで毎日起動する。",
+      "correct": false,
+      "rationale": "API の呼び出し、ページング、認証情報の管理、エラー処理などのコードを開発・運用する必要があり、コードを書かずに実現するという要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EC2 インスタンスで cron を使い、スクリプトで Salesforce のデータをエクスポートして S3 にアップロードする。",
+      "correct": false,
+      "rationale": "インスタンスとスクリプトの運用が必要で、コードを書かないという要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Snowball Edge で、Salesforce のデータを S3 に取り込む。",
+      "correct": false,
+      "rationale": "Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっています。また、オンプレミスの大容量データの搬送のためのデバイスで、SaaS アプリケーションの連携には使えません。"
+    }
+  ],
+  "explanation": "データの取り込みのパターンには、データの発生元に応じて次のようなものがあります。\n\n・ストリーミング: センサー、ログ、クリックストリーム → Kinesis Data Streams、Firehose、MSK\n・ファイル／ストレージ: オンプレミスのファイルサーバー → DataSync、Storage Gateway、Transfer Family\n・データベース: 他のデータベース → AWS DMS\n・SaaS アプリケーション: Salesforce、SAP、ServiceNow、Zendesk など → Amazon AppFlow\n\nAmazon AppFlow は、フローを設定するだけで、データのマッピング、フィルタリング、変換、暗号化を含めて、SaaS と AWS のサービスの間でデータを転送できます。通信は PrivateLink にも対応しており、インターネットを経由させないこともできます。スケジュール実行にも対応しているので、この問題の要件に合います。",
+  "keyPoints": [
+    "SaaS（Salesforce など）のデータを AWS に、コードを書かずに → Amazon AppFlow",
+    "ファイルの転送 → DataSync／Transfer Family、データベースの移行 → DMS、ストリーム → Kinesis／MSK",
+    "取り込み方法はデータの発生元と頻度（スケジュール、イベント、継続）で選ぶ"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon AppFlow? - Amazon AppFlow",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html"
+    },
+    {
+      "title": "Flow triggers in Amazon AppFlow - Amazon AppFlow",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/flow-triggers.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

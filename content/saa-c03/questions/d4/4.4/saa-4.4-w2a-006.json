@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-006",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K6", "4.4-S3"],
+  "services": ["Amazon Virtual Private Cloud", "AWS Transit Gateway"],
+  "qualifier": "cost",
+  "tags": ["VPC ピアリング", "Transit Gateway", "データ処理料金", "2 つの VPC"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、同じリージョンにある 2 つの VPC（アプリケーション用とデータ処理用）の間で、毎日大量のデータを転送しています。2 つの VPC は同じアカウントにあり、CIDR ブロックは重複していません。今後、VPC を増やす予定はありません。VPC 間の接続のコストを最小にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Transit Gateway を作成し、2 つの VPC をアタッチする。",
+      "correct": false,
+      "rationale": "Transit Gateway には、アタッチメントの時間あたりの料金と、処理したデータ量に応じた料金がかかります。VPC が 2 つだけで大量のデータを転送する場合、これらの料金が不要に積み上がります。"
+    },
+    {
+      "id": "b",
+      "text": "2 つの VPC の間に VPC ピアリング接続を作成し、双方のルートテーブルにルートを追加する。",
+      "correct": true,
+      "rationale": "VPC ピアリング接続そのものには、時間あたりの料金も処理量に応じた料金もかかりません（AZ をまたぐ通信などのデータ転送料金は別です）。VPC が 2 つで増える予定がなければ、最もコストが低く、シンプルな接続方法です。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Site-to-Site VPN で、2 つの VPC を接続する。",
+      "correct": false,
+      "rationale": "VPN 接続には時間あたりの料金とデータ転送の料金がかかり、トンネルの帯域にも上限があります。同じリージョンの VPC 同士には過剰で、コストも高くなります。"
+    },
+    {
+      "id": "d",
+      "text": "それぞれの VPC にインターネットゲートウェイを設定し、パブリック IP アドレス経由で通信する。",
+      "correct": false,
+      "rationale": "インターネット経由の通信になり、セキュリティも低下し、パブリック IPv4 アドレスの料金とデータ転送料金もかかります。プライベートな接続のほうが安全で低コストです。"
+    }
+  ],
+  "explanation": "VPC 同士を接続する方法には、主に VPC ピアリングと Transit Gateway があります。\n\n・VPC ピアリング: 2 つの VPC を 1 対 1 でつなぐ。ピアリング接続自体に料金はかからない。ただし、推移的なルーティングに対応せず、多数の VPC をつなぐと接続数が n×(n−1)/2 本に増えて管理が大変になる。\n・Transit Gateway: ハブアンドスポーク型で、多数の VPC とオンプレミスを集約する。アタッチメントの時間あたりの料金と、処理したデータ量に応じた料金がかかる。\n\nVPC が 2 つだけで増える予定もなければ、VPC ピアリングのほうがコスト面で有利です。VPC が多数あって、接続の管理を簡素化したい場合や、オンプレミスと集約して接続する場合は、Transit Gateway を選びます。",
+  "keyPoints": [
+    "VPC が少数（2 つなど）で増えない、コストを最小に → VPC ピアリング（接続自体は無料）",
+    "多数の VPC やオンプレミスを集約、推移的なルーティング → Transit Gateway（アタッチメントとデータ量に課金）",
+    "VPC ピアリングは推移的なルーティングに対応しない"
+  ],
+  "references": [
+    {
+      "title": "What is VPC peering? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html"
+    },
+    {
+      "title": "AWS Transit Gateway pricing",
+      "url": "https://aws.amazon.com/transit-gateway/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

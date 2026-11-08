@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K5", "4.4-S2"],
+  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN", "AWS Transit Gateway"],
+  "qualifier": "cost",
+  "tags": ["Direct Connect", "VPN のバックアップ", "コスト効率", "冗長化"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、オンプレミスと AWS を 1 本の AWS Direct Connect 接続で結んでいます。この接続が切れたときに備え、バックアップの経路を用意することになりました。通常時の通信は Direct Connect を使い、障害時はバックアップの経路に自動で切り替えます。バックアップの経路の通信量は少なく、帯域の低下は許容できます。コストを最小に抑えたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "別のロケーションに 2 本目の Direct Connect 接続を追加する。",
+      "correct": false,
+      "rationale": "耐障害性は高くなりますが、2 本目の専用接続には、ポート料金と回線の費用がかかります。通信量が少なく、帯域の低下も許容できるバックアップの経路としては、コストが過剰です。"
+    },
+    {
+      "id": "b",
+      "text": "インターネット経由の Site-to-Site VPN をバックアップとして構成し、BGP で Direct Connect を優先する。",
+      "correct": true,
+      "rationale": "Site-to-Site VPN は、専用線に比べて低コストで構築でき、バックアップとして適しています。BGP で Direct Connect の経路を優先するように設定すれば、通常時は Direct Connect を使い、障害時は自動で VPN に切り替わります。"
+    },
+    {
+      "id": "c",
+      "text": "バックアップは用意せず、障害時に手作業で新しい接続を申し込む。",
+      "correct": false,
+      "rationale": "専用接続の申し込みには数週間以上かかる場合があり、障害の間、通信が止まります。自動で切り替えるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "オンプレミスの各サーバーを、インターネット経由のパブリックエンドポイントに接続し直す。",
+      "correct": false,
+      "rationale": "プライベートな通信をインターネットの公開エンドポイントに変える大きな変更となり、セキュリティも低下します。自動で切り替える仕組みにもなりません。"
+    }
+  ],
+  "explanation": "ハイブリッド接続の可用性を高めるには、経路を冗長化します。冗長化の方法とコストは次のとおりです。\n\n・Direct Connect を 2 本（別のロケーション）: 最も高い耐障害性。ただし、ポート料金と回線の費用が 2 本分かかる。\n・Direct Connect＋Site-to-Site VPN: Direct Connect が主、VPN が予備。VPN は低コストで、すぐに作れる。BGP で経路の優先度を調整し、Direct Connect を優先する。\n\nバックアップの経路に求める帯域が小さく、帯域の低下を許容できるなら、VPN をバックアップにする構成が、コスト面で最も効率的です。重要な通信で帯域の低下も許されない場合は、Direct Connect を 2 本にします。",
+  "keyPoints": [
+    "Direct Connect のコスト効率のよいバックアップ → Site-to-Site VPN（BGP で Direct Connect を優先）",
+    "帯域の低下も許されない最高の可用性 → Direct Connect を別ロケーションに 2 本",
+    "専用接続の申し込みには数週間以上かかるため、障害後に手配する方法は不可"
+  ],
+  "references": [
+    {
+      "title": "Resiliency recommendations - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/resiliency_toolkit.html"
+    },
+    {
+      "title": "AWS Direct Connect and AWS Site-to-Site VPN - Network-to-Amazon VPC connectivity options",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-managed-vpn.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

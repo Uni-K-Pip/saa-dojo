@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-016",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K3", "3.5-S3"],
+  "services": ["AWS Storage Gateway", "Amazon S3 Glacier", "Amazon Simple Storage Service"],
+  "qualifier": "minimal-change",
+  "tags": ["テープゲートウェイ", "Storage Gateway", "バックアップ", "仮想テープ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造会社は、物理的な磁気テープライブラリーとバックアップソフトウェアを使って、毎晩バックアップを取り、テープを外部の倉庫に保管しています。テープの管理と保管のコストを削減し、バックアップを長期間低コストで保管するために、AWS へ移行します。バックアップソフトウェアと現在のバックアップの運用手順は変更したくありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Storage Gateway のテープゲートウェイを配置し、バックアップソフトウェアから仮想テープライブラリーとして使う。",
+      "correct": true,
+      "rationale": "テープゲートウェイは、iSCSI の仮想テープライブラリー（VTL）としてバックアップソフトウェアから認識されます。ソフトウェアと運用手順を変えずに、テープのデータを S3 に保存し、アーカイブした仮想テープを S3 Glacier のストレージクラスに長期保管できます。"
+    },
+    {
+      "id": "b",
+      "text": "S3 File Gateway を配置し、バックアップソフトウェアの保存先を NFS 共有に変更する。",
+      "correct": false,
+      "rationale": "バックアップソフトウェアの出力先の変更が必要で、テープとして扱う運用手順も変わります。テープの運用を変えずに移行するという要件に合いません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS DataSync で、物理テープのデータを S3 にコピーする。",
+      "correct": false,
+      "rationale": "DataSync は、ファイルシステムなどのデータ転送のサービスで、バックアップソフトウェアのテープの運用を置き換えるものではありません。ソフトウェアの運用手順の変更が必要です。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EBS ボリュームをバックアップサーバーに接続し、バックアップの保存先にする。",
+      "correct": false,
+      "rationale": "EBS は長期保管には高コストで、テープとして扱えないため、バックアップソフトウェアの設定と運用手順の変更が必要です。"
+    }
+  ],
+  "explanation": "AWS Storage Gateway のテープゲートウェイは、物理テープの代わりに、クラウド上の仮想テープを使えるようにするサービスです。\n\n・オンプレミスにゲートウェイ（仮想マシンまたはハードウェアアプライアンス）を置き、iSCSI の仮想テープライブラリー（VTL）として、バックアップソフトウェア（Veeam、Veritas、Commvault など主要な製品に対応）から使う。\n・仮想テープは S3 に保存される。アーカイブした仮想テープは、S3 Glacier Flexible Retrieval または S3 Glacier Deep Archive に保管され、長期保管のコストが低い。\n・物理テープの保管、搬送、管理が不要になる。\n\nバックアップソフトウェアとテープの運用手順を変えずに移行したいときは、テープゲートウェイが答えになります。",
+  "keyPoints": [
+    "物理テープの代わりにバックアップソフトウェアをそのまま使う → Storage Gateway のテープゲートウェイ（仮想テープライブラリー）",
+    "アーカイブした仮想テープは S3 Glacier Flexible Retrieval／Deep Archive に低コストで長期保管",
+    "NFS／SMB のファイル共有 → S3 File Gateway、iSCSI のブロック → ボリュームゲートウェイ"
+  ],
+  "references": [
+    {
+      "title": "What is Tape Gateway? - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+    },
+    {
+      "title": "Supported third-party backup applications for a Tape Gateway - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/Requirements.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

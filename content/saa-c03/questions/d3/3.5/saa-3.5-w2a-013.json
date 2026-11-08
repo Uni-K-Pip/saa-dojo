@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-013",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-S6", "3.5-K6", "3.5-K2"],
+  "services": ["Amazon Redshift", "Amazon Simple Storage Service"],
+  "qualifier": "performance",
+  "tags": ["Amazon Redshift", "COPY コマンド", "並列ロード", "バッチ取り込み"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社は、毎晩、約 500 GB の売上データを Amazon S3 に出力し、Amazon Redshift のクラスターに取り込んでいます。現在は 1 つの巨大な CSV ファイルを COPY コマンドで読み込んでおり、ロードに数時間かかっています。クラスターのノード数を変えずに、ロード時間を短縮する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データを圧縮した、ほぼ同じサイズの複数のファイルに分割して S3 に出力し、COPY コマンドでプレフィックスを指定して読み込む。",
+      "correct": true,
+      "rationale": "COPY コマンドは、複数のファイルを、クラスターのスライス（コンピュートノードの処理単位）で並列に読み込めます。ほぼ同じサイズの複数のファイル（圧縮可）に分割すると、全スライスが並列に動いてロードが速くなります。1 つの巨大なファイルは 1 つのスライスで処理され、並列化されません。"
+    },
+    {
+      "id": "b",
+      "text": "データを 1 行ずつ INSERT 文で Redshift に書き込む。",
+      "correct": false,
+      "rationale": "1 行ずつの INSERT は、COPY に比べて非常に遅く、大量のデータの取り込みには向きません。大量のデータの取り込みには COPY を使うのが基本です。"
+    },
+    {
+      "id": "c",
+      "text": "ファイルをさらに大きな 1 つにまとめ直して COPY する。",
+      "correct": false,
+      "rationale": "1 つのファイルは並列に読み込めず、大きくなるほど 1 つのスライスの処理が長くなるため、ロード時間は短くなりません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 インスタンスに JDBC 接続で、ファイルを読み込んで Redshift に送る。",
+      "correct": false,
+      "rationale": "EC2 を経由する分のデータ転送と処理が増え、並列ロードも活かせません。S3 から COPY で直接読み込むほうが速く、運用も単純です。"
+    }
+  ],
+  "explanation": "Amazon Redshift にデータを大量に取り込むには、COPY コマンドを使うのが基本です。COPY は、Amazon S3、Amazon DynamoDB、EMR などから、クラスターの全ノードのスライスが並列にデータを読み込みます。\n\n並列ロードを最大限に活かすコツは次のとおりです。\n\n・データを複数のファイルに分割する。ファイルの数をクラスターのスライス数の倍数にし、各ファイルのサイズをほぼ均等にする（圧縮後で 1 MB〜1 GB が目安）。\n・ファイルを圧縮（gzip など）して転送量を減らす。\n・COPY にはプレフィックスまたはマニフェストファイルを指定して、複数のファイルをまとめて読み込む。\n・可能なら列指向の形式（Parquet など）で出力する。\n\n1 つの巨大なファイルや、1 行ずつの INSERT は、並列化されないので遅くなります。",
+  "keyPoints": [
+    "Redshift への大量データの取り込み → S3 から COPY コマンド（並列ロード）",
+    "ファイルは同じサイズの複数に分割、スライス数の倍数、圧縮する",
+    "1 つの巨大なファイルや 1 行ずつの INSERT は並列化されず遅い"
+  ],
+  "references": [
+    {
+      "title": "Loading data from Amazon S3 - Amazon Redshift",
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html"
+    },
+    {
+      "title": "Loading data files - Amazon Redshift",
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-use-multiple-files.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

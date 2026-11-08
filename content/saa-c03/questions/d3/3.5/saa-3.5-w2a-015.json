@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-015",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K1", "3.5-S7", "3.5-K6"],
+  "services": ["Amazon Athena", "AWS Glue", "Amazon Simple Storage Service"],
+  "qualifier": "cost",
+  "tags": ["Amazon Athena", "クエリコストの削減", "Parquet", "パーティション"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある広告会社は、Amazon S3 に保存した約 20 TB の CSV 形式のアクセスログに、Amazon Athena で分析クエリを実行しています。クエリは毎回、特定の日付の範囲とごく一部の列だけを使いますが、1 回のクエリで全データをスキャンしており、料金と実行時間が増えています。アクセスログは日付ごとのフォルダー構成にはなっていません。Athena のクエリのスキャン量とコストを最も減らす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Glue の ETL ジョブで、データを Parquet に変換し、日付でパーティション分割して S3 に書き出す。Athena のテーブルをそのデータに向ける。",
+      "correct": true,
+      "rationale": "Parquet は列指向の形式で、必要な列だけを読み、圧縮率も高いため、スキャン量が大きく減ります。日付でパーティション分割すると、条件に合うパーティションだけをスキャンします。Athena はスキャン量に応じて課金されるので、コストも減ります。"
+    },
+    {
+      "id": "b",
+      "text": "Athena のワークグループで、クエリごとのデータスキャン量の上限を設定する。",
+      "correct": false,
+      "rationale": "上限を超えるクエリが失敗するだけで、スキャン量そのものは減りません。コストの暴走を防ぐ安全策にはなりますが、根本的な削減にはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "CSV ファイルを 1 つの大きなファイルにまとめる。",
+      "correct": false,
+      "rationale": "ファイルをまとめても、クエリは全データをスキャンします。ファイルが少なすぎると並列処理もできず、スキャン量もコストも減りません。"
+    },
+    {
+      "id": "d",
+      "text": "Athena の代わりに、20 TB のデータを Amazon RDS for MySQL に取り込んでクエリする。",
+      "correct": false,
+      "rationale": "20 TB のデータをデータベースに取り込む運用とコストが大きく、分析クエリにも向きません。S3 のデータを列指向の形式にするほうが低コストです。"
+    }
+  ],
+  "explanation": "Athena の料金はスキャンしたデータ量に応じてかかるため、スキャン量を減らす工夫が最も効果的です。\n\n・列指向の形式（Parquet、ORC）に変換する: 必要な列だけを読み、圧縮率も高い。CSV や JSON のような行指向のテキスト形式より、スキャン量が大きく減る。\n・パーティション分割する: 日付、リージョンなど、クエリの条件によく使う列でフォルダーを分け、WHERE 句で条件に合うパーティションだけをスキャンする。\n・圧縮する（Snappy、gzip など）。\n・適切なサイズのファイルにする（小さすぎるファイルを大量に作らない）。\n\nCSV を Parquet に変換して日付でパーティション分割するには、AWS Glue の ETL ジョブが定番です（Athena の CTAS でも可能です）。ワークグループのスキャン量の上限は、コストの暴走を防ぐ安全策で、スキャン量そのものは減らしません。",
+  "keyPoints": [
+    "Athena のコスト削減の基本 → Parquet などの列指向形式、パーティション分割、圧縮",
+    "Glue の ETL ジョブ（または Athena の CTAS）で形式の変換とパーティション分割ができる",
+    "ワークグループのスキャン量の上限は安全策で、スキャン量を減らす対策ではない"
+  ],
+  "references": [
+    {
+      "title": "Top 10 performance tuning tips for Amazon Athena - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/performance-tuning.html"
+    },
+    {
+      "title": "Use columnar storage formats - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/columnar-storage.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

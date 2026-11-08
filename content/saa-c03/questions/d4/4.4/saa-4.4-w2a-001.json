@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K4", "4.4-S1"],
+  "services": ["NAT gateway", "Amazon Virtual Private Cloud"],
+  "qualifier": "availability",
+  "tags": ["NAT ゲートウェイ", "アベイラビリティーゾーン", "AZ 間のデータ転送", "高可用性"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、3 つのアベイラビリティーゾーン（AZ）にまたがる本番の VPC で、プライベートサブネットのアプリケーションサーバーが、NAT ゲートウェイ経由でインターネット上の外部 API を呼び出しています。現在は NAT ゲートウェイが 1 つだけで、1 つの AZ のパブリックサブネットにあります。ほかの AZ のサーバーからの通信は、AZ をまたいで NAT ゲートウェイに届いており、AZ 間のデータ転送料金がかかっています。NAT ゲートウェイがある AZ に障害が起きると、ほかの AZ のサーバーも外部 API を呼べなくなる点も問題です。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AZ ごとにパブリックサブネットに NAT ゲートウェイを作成し、各 AZ のプライベートサブネットのルートテーブルで、同じ AZ の NAT ゲートウェイにデフォルトルートを向ける。",
+      "correct": true,
+      "rationale": "NAT ゲートウェイは 1 つの AZ の中に作られるサービスです。AZ ごとに作成して同じ AZ のサーバーからの通信を向ければ、AZ をまたぐデータ転送が発生せず、ある AZ に障害が起きても、ほかの AZ の外部への通信は影響を受けません。"
+    },
+    {
+      "id": "b",
+      "text": "今の NAT ゲートウェイをより大きなサイズに変更する。",
+      "correct": false,
+      "rationale": "NAT ゲートウェイは自動でスケールするため、サイズを選ぶ設定はありません。1 つの AZ に依存する点も、AZ 間のデータ転送料金がかかる点も変わりません。"
+    },
+    {
+      "id": "c",
+      "text": "NAT ゲートウェイを 1 つのままにして、Elastic IP アドレスを追加で関連付ける。",
+      "correct": false,
+      "rationale": "Elastic IP アドレスを増やしても、NAT ゲートウェイが 1 つの AZ にだけ存在する点は変わらず、AZ 障害の影響も AZ 間のデータ転送料金も解決しません。"
+    },
+    {
+      "id": "d",
+      "text": "NAT ゲートウェイをやめて、Auto Scaling グループの NAT インスタンスに切り替える。",
+      "correct": false,
+      "rationale": "NAT インスタンスはパッチ適用、スケーリング、障害時の切り替えを自分で運用する必要があります。可用性を高めるための追加の運用が増え、AZ ごとに配置しない限りは AZ 間の転送料金も解決しません。"
+    }
+  ],
+  "explanation": "NAT ゲートウェイは、プライベートサブネットのリソースがインターネットへ送信するための、マネージドなサービスです。1 つの AZ のパブリックサブネットに作られ、その AZ の中で冗長化されます。AZ をまたいで可用性を持つ仕組みではありません。\n\nそのため、本番では次のように構成するのが基本です。\n\n・AZ ごとに NAT ゲートウェイを作成する。\n・各 AZ のプライベートサブネットのルートテーブルを分け、同じ AZ の NAT ゲートウェイをデフォルトルートの送信先にする。\n\nこうすると、ある AZ に障害が起きても他の AZ の通信は影響を受けず、AZ をまたぐデータ転送料金もかかりません。一方、開発・検証環境など可用性の要件が低い環境では、NAT ゲートウェイを 1 つにしてコストを抑える選択もあります。NAT ゲートウェイには時間あたりの料金と処理したデータ量に応じた料金がかかるため、台数を増やすと時間あたりの料金は増えますが、本番の可用性と AZ 間の転送料金の削減を優先する場合には妥当な設計です。",
+  "keyPoints": [
+    "本番の NAT ゲートウェイは AZ ごとに作成し、同じ AZ のサブネットから向ける（可用性と AZ 間転送料金の回避）",
+    "開発・検証環境など可用性の要件が低ければ、NAT ゲートウェイ 1 つでコストを抑える",
+    "NAT ゲートウェイは時間あたりの料金と処理データ量に応じた料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "NAT gateways - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+    },
+    {
+      "title": "NAT gateway use cases - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-scenarios.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-nat-endpoints-and-data-transfer"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
