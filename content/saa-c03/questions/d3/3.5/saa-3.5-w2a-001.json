@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.5-w2a-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K2", "3.5-K7", "3.5-S6"],
+  "services": [
+    "Amazon Data Firehose",
+    "Amazon Simple Storage Service",
+    "Amazon Athena",
+    "Amazon Kinesis"
+  ],
+  "qualifier": "operational",
+  "tags": ["Amazon Data Firehose", "バッファリング", "ストリーミング取り込み", "S3"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社は、数千台の店舗端末から毎秒数百件のイベントを受け取り、約 1 分以内の遅れでデータレイクの Amazon S3 に保存して Amazon Athena で分析したいと考えています。受信側サーバーやコンシューマーアプリケーションの開発・運用、シャードの容量管理はしたくありません。バッファリングと S3 への書き込みはマネージドサービスに任せたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Kinesis Data Streams のストリームを作成し、AWS Lambda 関数をコンシューマーにして、イベントをまとめて S3 に書き込む。",
+      "correct": false,
+      "rationale": "Kinesis Data Streams ではシャードの数や容量モードの管理が必要で、S3 へ書き込むコンシューマー（Lambda 関数のコード）も自分で作って保守する必要があります。バッファリングと配信をマネージドに任せたいという要件に合わず、運用負荷が大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Data Firehose の配信ストリームを作成して宛先を S3 バケットにし、バッファの時間を 60 秒に設定する。",
+      "correct": true,
+      "rationale": "Amazon Data Firehose は、サーバーレスでデータの受信、バッファリング、S3 への配信までをマネージドに行います。容量は自動でスケールするため、シャードやコンシューマーの管理が要りません。バッファの時間を 60 秒にすれば、約 1 分間隔でまとまった S3 オブジェクトとして保存できます。"
+    },
+    {
+      "id": "c",
+      "text": "イベントを Amazon SQS キューに送り、Amazon EC2 インスタンスのワーカーがキューを取り出して S3 に書き込む。",
+      "correct": false,
+      "rationale": "ワーカーの EC2 インスタンスの管理、台数の調整、書き込みの再試行処理を自分で運用する必要があります。マネージドな配信機能を使う場合に比べて運用上のオーバーヘッドが大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "各端末がイベントごとに S3 へ直接オブジェクトを書き込む。",
+      "correct": false,
+      "rationale": "イベントごとに小さなオブジェクトが大量にでき、PUT リクエストの料金がかさみ、Athena のクエリも遅くなります。端末に認証情報を配る管理も必要で、バッファリングをマネージドに任せるという要件を満たしません。"
+    }
+  ],
+  "explanation": "ストリーミングデータの取り込みでは、「自分でデータを読み出して処理する必要があるか」で選びます。Amazon Kinesis Data Streams は、シャード単位でデータを保持し、複数のコンシューマーが独自のコードで読み出す用途に向いています。一方、Amazon Data Firehose（旧称 Amazon Kinesis Data Firehose）は、受け取ったデータをバッファリングして、Amazon S3、Amazon Redshift、Amazon OpenSearch Service などの宛先へ自動で届けるマネージドサービスです。容量は自動でスケールし、バッファのサイズと時間、圧縮、形式変換を設定で指定できます。\n\nこの問題は、S3 に保存するだけでコンシューマーのコードを書きたくないため、Firehose が最も運用負荷の少ない方法です。バッファの時間を短くすれば遅延も抑えられ、オブジェクトをまとめるので PUT リクエストの数も減ります。",
+  "keyPoints": [
+    "宛先（S3 など）へ届けるだけでコンシューマーを書きたくない → Amazon Data Firehose",
+    "独自のコードで複数のコンシューマーが読み出す、再読み込みが必要 → Kinesis Data Streams",
+    "Firehose のバッファ（サイズと時間）で S3 のオブジェクトをまとめ、小さなオブジェクトの大量発生を避ける"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Data Firehose? - Amazon Data Firehose",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    },
+    {
+      "title": "What is Amazon Kinesis Data Streams? - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
