@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.5-w2a-009",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K5", "3.5-S2"],
+  "services": [
+    "Amazon Kinesis",
+    "VPC endpoints",
+    "AWS PrivateLink",
+    "Amazon Virtual Private Cloud",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "security",
+  "tags": ["インターフェイス VPC エンドポイント", "Kinesis Data Streams", "PrivateLink", "最小権限"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造業の企業では、工場の機器からのデータを、VPC のプライベートサブネットにあるデータ集約サーバーが Amazon Kinesis Data Streams のストリームに書き込みます。セキュリティ方針により、この通信はインターネットを経由してはならず、NAT ゲートウェイやインターネットゲートウェイも使えません。また、ストリームに書き込めるのはデータ集約サーバーの IAM ロールだけにする必要があります。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Kinesis Data Streams 用のゲートウェイ VPC エンドポイントを作成し、プライベートサブネットのルートテーブルにルートを追加する。",
+      "correct": false,
+      "rationale": "ゲートウェイ VPC エンドポイントに対応しているのは Amazon S3 と Amazon DynamoDB だけです。Kinesis Data Streams にはゲートウェイエンドポイントがなく、作成できません。"
+    },
+    {
+      "id": "b",
+      "text": "パブリックサブネットに NAT ゲートウェイを作成し、プライベートサブネットからの送信を NAT ゲートウェイ経由にする。",
+      "correct": false,
+      "rationale": "NAT ゲートウェイはインターネットゲートウェイを経由してパブリックのエンドポイントにアクセスするため、NAT ゲートウェイやインターネットゲートウェイを使わないという要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "Kinesis Data Streams 用のインターフェイス VPC エンドポイント（AWS PrivateLink）を作成し、データ集約サーバーの IAM ロールにだけ kinesis:PutRecord などの書き込み権限を付与する。",
+      "correct": true,
+      "rationale": "インターフェイス VPC エンドポイントは、VPC の中にプライベート IP アドレスを持つネットワークインターフェイスを作り、AWS のネットワーク内だけで Kinesis に接続します。IAM ロールに書き込み権限を限定することで、書き込める主体を絞れます。"
+    },
+    {
+      "id": "d",
+      "text": "インターネットゲートウェイを使って Kinesis のパブリックエンドポイントに接続し、データ集約サーバーの送信元 IP アドレスだけを許可する。",
+      "correct": false,
+      "rationale": "インターネットゲートウェイを経由して通信するため、インターネットを経由してはならないという要件に反します。"
+    }
+  ],
+  "explanation": "データの取り込み口（Kinesis のストリームなど）へのアクセスは、「ネットワークの経路」と「IAM による認可」の 2 つで守ります。\n\nネットワークの経路では、VPC エンドポイントを使います。VPC エンドポイントには 2 種類あります。ゲートウェイエンドポイントは Amazon S3 と Amazon DynamoDB だけが対象です。それ以外の多くのサービスは、AWS PrivateLink を使うインターフェイスエンドポイントで、VPC 内にプライベート IP アドレスのネットワークインターフェイスが作られます。これにより、インターネットゲートウェイや NAT ゲートウェイを使わず、AWS のネットワーク内で Kinesis に接続できます。\n\n認可では、データ集約サーバーの IAM ロールにだけ kinesis:PutRecord／PutRecords などを許可する最小権限のポリシーを付けます。さらに、VPC エンドポイントのポリシーで、そのエンドポイントを通じて許可する操作や対象のストリームを絞ることもできます。",
+  "keyPoints": [
+    "VPC エンドポイントのゲートウェイ型は S3 と DynamoDB だけ。そのほかの多くのサービスはインターフェイス型（PrivateLink）",
+    "インターネットを経由せず AWS サービスに接続 → インターフェイス VPC エンドポイント",
+    "取り込み口へのアクセスは、ネットワーク経路（VPC エンドポイント）と IAM の最小権限の両方で守る"
+  ],
+  "references": [
+    {
+      "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
+    },
+    {
+      "title": "Using Amazon Kinesis Data Streams with interface VPC endpoints - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/vpc.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

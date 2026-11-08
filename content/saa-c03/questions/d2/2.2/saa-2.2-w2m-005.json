@@ -1,0 +1,71 @@
+{
+  "id": "saa-2.2-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S5",
+    "2.2-K11",
+    "2.2-S2"
+  ],
+  "services": [
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "S3 クロスリージョンレプリケーション",
+    "Replication Time Control",
+    "データの耐久性"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある医療機関は、診断画像を東京リージョンの Amazon S3 バケットに保存しています。コンプライアンスにより、画像のコピーを大阪リージョンにも保持する必要があります。新しいオブジェクトは、ほとんどが 15 分以内に複製されることを SLA で担保し、複製の進捗はメトリクスとイベントで監視できるようにしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バージョニングを有効にして、S3 RTC を使わずにクロスリージョンレプリケーションを設定する。",
+      "correct": false,
+      "rationale": "レプリケーションはできますが、複製の完了時間の SLA はありません。15 分以内の複製を担保する要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS DataSync のタスクを 15 分ごとに実行して、東京のバケットから大阪のバケットにオブジェクトをコピーする。",
+      "correct": false,
+      "rationale": "定期的なコピーを自分たちで運用することになり、完了時間の SLA もありません。S3 のレプリケーション機能のほうが、運用が少なく、確実です。"
+    },
+    {
+      "id": "c",
+      "text": "両方のバケットでバージョニングを有効にして、クロスリージョンレプリケーションを設定する。S3 Replication Time Control（S3 RTC）を有効にして、レプリケーションのメトリクスとイベント通知を有効にする。",
+      "correct": true,
+      "rationale": "S3 RTC は、ほとんどのオブジェクトを 15 分以内に複製することを SLA で保証する機能です。メトリクスとイベントで、複製の進捗や遅延も監視できます。"
+    },
+    {
+      "id": "d",
+      "text": "東京のバケットにライフサイクルルールを設定し、一定時間後にオブジェクトを大阪のバケットに移行する。",
+      "correct": false,
+      "rationale": "ライフサイクルルールで移行できるのは、同じバケット内のストレージクラスの変更や削除で、別のバケットやリージョンへの複製には使えません。"
+    }
+  ],
+  "explanation": "S3 のレプリケーションには、リージョンをまたぐクロスリージョンレプリケーション（CRR）と、同じリージョン内の SRR があります。使うには、ソースとコピー先の両方のバケットでバージョニングを有効にします。\n\nS3 Replication Time Control（S3 RTC）は、レプリケーションに SLA を付ける機能で、新しいオブジェクトの 99.99% を 15 分以内に複製することを目標とします。RTC を有効にすると、レプリケーションのメトリクスが CloudWatch に出力され、複製が 15 分を超えたときなどに EventBridge でイベント通知を受けられます。コンプライアンスで複製の時間を保証する必要がある場合に適しています。\n\nなお、レプリケーションは設定後に作成された新しいオブジェクトが対象で、既存のオブジェクトは S3 バッチレプリケーションで複製します。ライフサイクルルールは、別バケットへのコピーには使えません。",
+  "keyPoints": [
+    "別リージョンへの複製＋15 分以内の SLA → CRR＋S3 Replication Time Control",
+    "レプリケーションにはバージョニングが必須。既存オブジェクトにはバッチレプリケーション",
+    "ライフサイクルルールは別バケットへのコピーには使えない"
+  ],
+  "references": [
+    {
+      "title": "S3 Replication Time Control を使用したレプリケーション - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html"
+    },
+    {
+      "title": "オブジェクトのレプリケーション - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

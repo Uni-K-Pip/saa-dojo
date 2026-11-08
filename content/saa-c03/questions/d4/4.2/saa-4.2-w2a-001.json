@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K4", "4.2-S4"],
+  "services": ["Amazon EC2 Spot Instances", "Amazon EC2", "Amazon EC2 Auto Scaling"],
+  "qualifier": "cost",
+  "tags": ["Spot インスタンス", "購入オプション", "バッチ処理", "中断への耐性"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある映像制作会社は、毎晩、数百台の Amazon EC2 インスタンスでレンダリング処理を実行しています。各フレームの処理は独立しており、途中で中断されても、そのフレームをやり直すだけで済みます。処理は数時間以内に終わればよく、開始時刻や終了時刻にも柔軟性があります。コストを最も低く抑えるには、どの購入オプションを使うべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "3 年間のスタンダードリザーブドインスタンスを購入する。",
+      "correct": false,
+      "rationale": "リザーブドインスタンスは 1 年または 3 年の利用を約束して割引を得る仕組みです。夜間にしか使わないワークロードでは、使っていない時間の分まで約束した料金を支払うことになり、中断に耐えられる処理に対して最も安い選択ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "オンデマンドインスタンスを使い、処理が終わったらすぐに停止する。",
+      "correct": false,
+      "rationale": "オンデマンドは必要なときだけ料金を払えますが、単価は Spot インスタンスより高くなります。中断されても再実行できる処理なら、さらに安い選択肢があります。"
+    },
+    {
+      "id": "c",
+      "text": "複数のインスタンスタイプとアベイラビリティーゾーンを指定した Spot インスタンスを使う。",
+      "correct": true,
+      "rationale": "Spot インスタンスは、オンデマンドに比べて大幅に（最大 90% ほど）安く使える余剰容量で、AWS が容量を必要としたときは中断されます。独立して再実行できる処理に最も向いています。複数のタイプとアベイラビリティーゾーンを指定すると、容量を確保しやすく、中断の影響も小さくなります。"
+    },
+    {
+      "id": "d",
+      "text": "Dedicated Host を購入して専有で使う。",
+      "correct": false,
+      "rationale": "Dedicated Host は、ソフトウェアのライセンスの要件や規制のために物理サーバーを専有するときの選択肢で、コストを下げる手段ではありません。"
+    }
+  ],
+  "explanation": "EC2 の購入オプションは、「どれだけ安定して使うか」と「中断に耐えられるか」で選びます。\n\n・オンデマンド: 約束なしで使った分だけ払う。短期、予測できない用途。\n・Savings Plans／リザーブドインスタンス: 1 年または 3 年の利用を約束して割引を受ける。安定して使い続ける用途。\n・Spot インスタンス: 余剰容量を大幅な割引で使える。AWS が容量を必要としたときは、2 分前の通知で中断される。バッチ処理、レンダリング、データ分析など、中断に耐えられる処理向け。\n\nこの問題の処理は、独立していて再実行でき、時間にも柔軟性があるので、Spot が最も安くなります。Spot を使うときは、複数のインスタンスタイプとアベイラビリティーゾーンを指定して容量プールを分散させ、Auto Scaling グループの混合インスタンスポリシーや EC2 フリートでまとめて管理するのが基本です。",
+  "keyPoints": [
+    "中断されても再実行できるバッチ処理・レンダリング・分析 → Spot インスタンス",
+    "Spot は複数のインスタンスタイプとアベイラビリティーゾーンに分散して中断の影響を減らす",
+    "安定して使い続ける基礎需要 → Savings Plans／リザーブドインスタンス"
+  ],
+  "references": [
+    {
+      "title": "Spot Instances - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+    },
+    {
+      "title": "Amazon EC2 billing and purchasing options - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

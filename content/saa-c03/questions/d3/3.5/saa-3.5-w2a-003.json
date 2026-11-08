@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K1", "3.5-K6"],
+  "services": ["Amazon Athena", "Amazon Simple Storage Service", "AWS Glue"],
+  "qualifier": "operational",
+  "tags": ["Amazon Athena", "サーバーレス", "アドホッククエリ", "Data Catalog"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社は、アプリケーションのアクセスログ（CSV 形式、1 日あたり約 50 GB）を Amazon S3 に保存しています。分析担当者が月に数回、障害の調査のために、SQL で必要な期間のログを検索します。サーバーやクラスターの管理はしたくなく、クエリを実行したときだけ料金がかかる方法にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Athena を使い、AWS Glue Data Catalog にログのテーブルを定義して、S3 のデータに直接 SQL でクエリする。",
+      "correct": true,
+      "rationale": "Athena はサーバーレスで、S3 上のデータに標準 SQL で直接クエリできます。インフラの管理が要らず、料金はクエリでスキャンしたデータ量に応じてかかるため、月に数回の利用に向いています。Data Catalog にテーブルを定義しておけば、日付などで絞り込めます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Redshift のプロビジョンドクラスターを作成し、ログを読み込んでクエリする。",
+      "correct": false,
+      "rationale": "プロビジョンドクラスターは、クエリを実行していない時間も料金がかかり、ノードの構成や管理も必要です。月に数回の調査には、サーバーを管理せずクエリ時だけ課金される方法のほうが適しています。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EMR クラスターを常時起動し、Presto で S3 のログにクエリする。",
+      "correct": false,
+      "rationale": "クラスターのノードの管理が必要で、常時起動しているので使わない時間も料金がかかります。クラスターの管理をしたくないという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon RDS for PostgreSQL のデータベースを作成し、AWS Lambda 関数でログを毎日読み込んでクエリする。",
+      "correct": false,
+      "rationale": "データベースのインスタンスの管理と常時の料金、毎日の読み込み処理の開発が必要になります。S3 に置いたまま直接クエリできる方法に比べて、運用負荷もコストも大きくなります。"
+    }
+  ],
+  "explanation": "Amazon Athena は、Amazon S3 に置いたデータに標準 SQL で直接クエリできるサーバーレスのサービスです。データを別の場所に読み込む必要がなく、インフラの管理も不要です。料金はクエリでスキャンしたデータ量に応じてかかるので、たまにしか使わない分析に向いています。テーブルの定義（スキーマ）は AWS Glue Data Catalog に登録します。\n\nスキャン量を減らして料金と時間を下げるには、日付などでデータをパーティション分割し、Parquet のような列指向の形式に変換し、圧縮します。常時起動のクラスター（Amazon Redshift、Amazon EMR）やデータベースは、利用頻度が低いワークロードでは割高になり、管理の手間もかかります。",
+  "keyPoints": [
+    "S3 のデータにサーバーなしで SQL → Amazon Athena（スキャン量に応じた課金）",
+    "Athena のテーブル定義は AWS Glue Data Catalog に登録する",
+    "スキャン量を減らす → パーティション分割、列指向形式（Parquet など）、圧縮"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Athena? - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    },
+    {
+      "title": "Partition your data - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/partitions.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.2-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S4",
+    "2.2-K8",
+    "2.2-K6"
+  ],
+  "services": [
+    "Amazon EC2 Auto Scaling",
+    "Elastic Load Balancing",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "Auto Scaling",
+    "ELB ヘルスチェック",
+    "インスタンスの自動置き換え"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "Application Load Balancer の背後にある Auto Scaling グループで、Web アプリケーションを運用しています。アプリケーションのプロセスが停止して、HTTP の 5xx エラーを返すインスタンスが時々発生します。このときもインスタンスの EC2 ステータスチェックは正常のままで、Auto Scaling グループはそのインスタンスを置き換えず、障害が続いてしまいます。障害のインスタンスを自動で入れ替えるために、最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Auto Scaling グループのヘルスチェックのタイプに ELB を有効にして、ヘルスチェックの猶予期間を設定する。ターゲットグループのヘルスチェックでアプリケーションの状態を確認する。",
+      "correct": true,
+      "rationale": "ELB のヘルスチェックを有効にすると、ロードバランサーが異常と判断したインスタンスを、Auto Scaling グループも異常とみなし、終了して新しいインスタンスに置き換えます。"
+    },
+    {
+      "id": "b",
+      "text": "ALB のターゲットグループのヘルスチェックの間隔としきい値を短くする。",
+      "correct": false,
+      "rationale": "ALB は異常なターゲットへの振り分けを止めますが、Auto Scaling グループのヘルスチェックのタイプが EC2 のままでは、インスタンスは置き換えられません。"
+    },
+    {
+      "id": "c",
+      "text": "Auto Scaling グループの最小台数を増やして、異常なインスタンスの影響を小さくする。",
+      "correct": false,
+      "rationale": "台数を増やしても、異常なインスタンスは置き換えられません。費用が増えるだけで、根本的な解決になりません。"
+    },
+    {
+      "id": "d",
+      "text": "EC2 インスタンスの詳細モニタリングを有効にして、メトリクスを 1 分間隔にする。",
+      "correct": false,
+      "rationale": "メトリクスの間隔が短くなるだけで、アプリケーションの異常を検出して、インスタンスを置き換える設定にはなりません。"
+    }
+  ],
+  "explanation": "Auto Scaling グループは、既定では EC2 のステータスチェック（インスタンスの状態）だけでインスタンスの正常性を判断します。そのため、OS は動いているが、アプリケーションが応答しないインスタンスは、正常とみなされます。\n\nグループのヘルスチェックのタイプに ELB を追加すると、ロードバランサー（ターゲットグループ）のヘルスチェックの結果も使われ、異常と判断されたインスタンスは、Auto Scaling グループによって終了され、新しいインスタンスに置き換えられます。起動直後のインスタンスが、アプリケーションの初期化中に異常と判断されて入れ替えが続かないよう、ヘルスチェックの猶予期間を適切に設定します。\n\nALB のヘルスチェックの調整だけでは、トラフィックの振り分けは止まっても、置き換えは行われません。ターゲットグループのヘルスチェックのパスは、アプリケーションの状態を確認できるものにします。",
+  "keyPoints": [
+    "アプリケーションの異常でインスタンスを自動で置き換えたい → ASG のヘルスチェックタイプに ELB を追加",
+    "猶予期間（grace period）で起動直後の誤判定を防ぐ",
+    "ALB の異常判定は振り分けの停止で、置き換えは ASG のヘルスチェックの設定次第"
+  ],
+  "references": [
+    {
+      "title": "Auto Scaling グループのヘルスチェック - Amazon EC2 Auto Scaling ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

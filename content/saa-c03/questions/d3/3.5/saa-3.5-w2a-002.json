@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K7", "3.5-S2", "3.5-K6"],
+  "services": ["Amazon Kinesis"],
+  "qualifier": "performance",
+  "tags": ["Kinesis Data Streams", "パーティションキー", "保持期間", "拡張ファンアウト"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある配車サービスは、車両から送られる位置情報を、料金計算、不正検知、運行ダッシュボードの 3 つのアプリケーションが、それぞれ独立してほぼリアルタイムに読み取る必要があります。各アプリケーションは障害から復旧した後、直近 2 日間のデータを同じ順序で読み直せなければならず、同じ車両のデータは送信された順に処理される必要があります。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Data Firehose の配信ストリームで Amazon S3 にデータを保存し、3 つのアプリケーションがそれぞれ S3 からファイルを読み取る。",
+      "correct": false,
+      "rationale": "Firehose はバッファリングしてから S3 に配信するため、ほぼリアルタイムの読み取りには向きません。車両ごとの順序を保ったまま 3 つのアプリケーションが並行してストリームを読み、任意の時点から読み直すという使い方にも合いません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Kinesis Data Streams のストリームを作成し、パーティションキーに車両 ID を指定する。保持期間を 2 日以上に延長し、3 つのアプリケーションをそれぞれコンシューマーにする。",
+      "correct": true,
+      "rationale": "Kinesis Data Streams は、同じパーティションキーのレコードを同じシャードに順序を保って格納します。保持期間（既定 24 時間、最長 365 日）を延ばせば、復旧後に過去のデータを同じ順序で読み直せます。複数のコンシューマーが同じストリームを独立して読めます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon SQS 標準キューを作成し、3 つのアプリケーションが同じキューからメッセージを取り出す。",
+      "correct": false,
+      "rationale": "1 つのキューを共有すると、あるアプリケーションが処理して削除したメッセージはほかのアプリケーションが読めません。標準キューは順序の保証もベストエフォートで、過去のデータを読み直すこともできません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SNS トピックに位置情報を発行し、3 つのアプリケーションの HTTPS エンドポイントをサブスクライブする。",
+      "correct": false,
+      "rationale": "SNS はメッセージを購読先へ配信するだけで、データをストリームとして保持して読み直す機能がありません。車両ごとの順序も保証されないため、要件を満たしません。"
+    }
+  ],
+  "explanation": "Amazon Kinesis Data Streams は、レコードをシャードに順序付きで保持し、複数のコンシューマーが同じデータを独立して読める点が特徴です。レコードは送信時に指定したパーティションキーのハッシュ値でシャードに振り分けられ、同じパーティションキーのレコードは同じシャードの中で到着順に並びます。このため、車両 ID をパーティションキーにすれば、車両ごとの順序が保たれます。\n\nレコードの保持期間は既定で 24 時間で、最長 365 日まで延長できます。保持期間内であれば、コンシューマーは過去の位置から読み直せるので、障害からの復旧後に再処理できます。コンシューマーが複数あって読み取りの帯域が競合する場合は、拡張ファンアウトを使うと、コンシューマーごとに専用のスループットで読み取れます。SQS や SNS は、メッセージを複数の読み手に同じ順序で再読み込みさせる用途には向きません。",
+  "keyPoints": [
+    "同じキーのデータの順序を保つ → Kinesis Data Streams のパーティションキー（同じキーは同じシャード）",
+    "過去のデータの読み直し、複数のコンシューマーが独立して読む → Kinesis Data Streams（保持期間は最長 365 日）",
+    "SQS はメッセージを処理後に削除するキュー。ストリームのように再読み込みや複数読み手には使わない"
+  ],
+  "references": [
+    {
+      "title": "Amazon Kinesis Data Streams terminology and concepts - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+    },
+    {
+      "title": "Change the data retention period - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

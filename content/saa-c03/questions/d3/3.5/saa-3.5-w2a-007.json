@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-007",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K4", "3.5-S7", "3.5-S6"],
+  "services": ["AWS Glue", "Amazon Simple Storage Service", "Amazon Athena", "AWS Lambda"],
+  "qualifier": "operational",
+  "tags": ["AWS Glue", "ETL", "Parquet", "クローラー", "Data Catalog"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある広告会社には、毎晩 Amazon S3 に約 500 GB の CSV 形式のクリックログが届きます。このデータを複数のマスターデータと結合したうえで、Parquet 形式に変換して日付ごとにパーティション分割し、Amazon Athena で分析できるようにしたいと考えています。スキーマはデータカタログに登録します。クラスターのプロビジョニングや管理を避け、処理を毎晩自動で実行する必要があります。最も運用上のオーバーヘッドが少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 にファイルが届くたびに AWS Lambda 関数を起動し、1 ファイルずつ Parquet に変換して書き出す。",
+      "correct": false,
+      "rationale": "Lambda には実行時間（最大 15 分）とメモリの上限があり、数百 GB の結合処理を含む変換には向きません。複数のデータとの結合も、関数のコードで自前で実装することになります。"
+    },
+    {
+      "id": "b",
+      "text": "常時稼働の Amazon EMR クラスターを作成し、Spark のジョブを cron で毎晩実行する。",
+      "correct": false,
+      "rationale": "常時稼働のクラスターは使わない時間も料金がかかり、ノードの管理やバージョンの更新も必要です。クラスターの管理を避けたいという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Glue のクローラーでスキーマを Data Catalog に登録し、Spark ベースの Glue ETL ジョブで変換した結果を Parquet でパーティション分割して S3 に書き出す。ジョブはトリガーで毎晩起動する。",
+      "correct": true,
+      "rationale": "AWS Glue はサーバーレスの ETL サービスで、クラスターを管理せずに Spark のジョブを実行できます。クローラーがスキーマを Data Catalog に登録し、ETL ジョブが結合と Parquet への変換、パーティション分割を行い、スケジュールのトリガーで毎晩自動実行できます。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 インスタンスで Python スクリプトを cron で実行し、pandas で変換して S3 に書き出す。",
+      "correct": false,
+      "rationale": "1 台のインスタンスのメモリでは 500 GB の結合処理を扱いにくく、スケールの設計、障害時の再実行、パッチ適用などをすべて自分で運用する必要があります。"
+    }
+  ],
+  "explanation": "AWS Glue は、データの抽出、変換、読み込み（ETL）を行うサーバーレスのデータ統合サービスです。主な構成要素は次のとおりです。\n\n・AWS Glue Data Catalog: テーブルの定義（スキーマ）を保存する中央のメタデータ置き場。Athena、Redshift Spectrum、EMR などから参照できます。\n・クローラー: S3 などのデータを調べて、スキーマを推測し Data Catalog に登録します。\n・ETL ジョブ: Apache Spark などでデータを変換するジョブで、サーバーレスに実行され、スケジュールやイベントのトリガーで起動できます。\n\nCSV から Parquet のような列指向の形式への変換と日付でのパーティション分割は、Athena のスキャン量を減らして速度と料金を改善するための典型的な変換です。大きなデータの結合を含む定期的な変換は、クラスターを管理せずに実行できる Glue の ETL ジョブが適しています。",
+  "keyPoints": [
+    "サーバーレスの ETL、スキーマの登録 → AWS Glue（ETL ジョブ、クローラー、Data Catalog）",
+    "CSV／JSON → Parquet／ORC に変換して Athena のスキャン量と料金を減らす",
+    "Lambda は実行時間とメモリに上限があるので、大規模なデータ変換には向かない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Glue? - AWS Glue",
+      "url": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    {
+      "title": "Using crawlers to populate the Data Catalog - AWS Glue",
+      "url": "https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

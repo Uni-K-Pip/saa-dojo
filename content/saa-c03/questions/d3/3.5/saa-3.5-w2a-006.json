@@ -1,0 +1,66 @@
+{
+  "id": "saa-3.5-w2a-006",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K3", "3.5-S3"],
+  "services": [
+    "AWS Storage Gateway",
+    "Amazon Simple Storage Service",
+    "AWS DataSync",
+    "Amazon Elastic File System"
+  ],
+  "qualifier": "minimal-change",
+  "tags": ["S3 File Gateway", "ハイブリッドストレージ", "NFS", "ローカルキャッシュ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるメディア企業のオンプレミスの編集アプリケーションは、NFS でマウントした共有フォルダーに素材ファイルを書き込みます。アプリケーションは変更できません。直近のファイルは低レイテンシーで読みたい一方、すべてのデータは Amazon S3 に長期保存し、S3 のライフサイクルルールでアーカイブしたいと考えています。オンプレミスのストレージ容量は増やしたくありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスに AWS Storage Gateway の S3 File Gateway を配置し、アプリケーションの書き込み先を、ゲートウェイの NFS 共有に変更する。",
+      "correct": true,
+      "rationale": "S3 File Gateway は、NFS や SMB のファイル共有として使え、ファイルは S3 のオブジェクトとして保存されます。最近使ったデータはゲートウェイのローカルキャッシュから低レイテンシーで読めます。S3 にあるので、ライフサイクルルールでアーカイブでき、オンプレミスのストレージ容量は増やさずに済みます。"
+    },
+    {
+      "id": "b",
+      "text": "既存のファイルサーバーに書き込み続け、AWS DataSync で夜間に S3 へコピーする。",
+      "correct": false,
+      "rationale": "ファイルサーバー側にすべてのデータを保持し続けるため、オンプレミスのストレージ容量は増え続けます。ストレージ容量を増やしたくないという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "Storage Gateway のボリュームゲートウェイ（キャッシュ型ボリューム）を配置し、iSCSI でマウントして書き込む。",
+      "correct": false,
+      "rationale": "ボリュームゲートウェイは iSCSI のブロックストレージで、データは S3 上のボリュームとして保存されます。NFS の共有を前提にしたアプリケーションは、変更なしでは使えず、S3 にファイルとして保存されず、ライフサイクルルールでファイル単位にアーカイブすることもできません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EFS のファイルシステムを作成し、AWS Direct Connect 経由でオンプレミスから NFS でマウントする。",
+      "correct": false,
+      "rationale": "データは S3 ではなく EFS に保存されます。ローカルのキャッシュがないため、読み取りのたびに AWS へのネットワーク往復が発生し、S3 のライフサイクルルールによるアーカイブという要件も満たしません。"
+    }
+  ],
+  "explanation": "AWS Storage Gateway は、オンプレミスのアプリケーションから AWS のストレージを使うための、ハイブリッドクラウドのゲートウェイです。種類には、S3 File Gateway（NFS／SMB で S3 にファイルをオブジェクトとして保存）、FSx File Gateway、ボリュームゲートウェイ（iSCSI のブロックストレージ）、テープゲートウェイ（仮想テープ）があります。\n\nS3 File Gateway は、ファイルを 1 対 1 のオブジェクトとして S3 に保存するので、S3 のライフサイクルルールやバージョニング、イベント通知などをそのまま使えます。頻繁にアクセスするデータはゲートウェイのローカルキャッシュに置かれ、低レイテンシーで読み書きできます。DataSync は転送のためのツールで、アプリケーションが使い続けるファイル共有の役割は持ちません。",
+  "keyPoints": [
+    "オンプレミスのアプリが NFS／SMB のまま S3 にファイルを保存、ローカルキャッシュあり → S3 File Gateway",
+    "iSCSI のブロックストレージ → ボリュームゲートウェイ、バックアップソフトの仮想テープ → テープゲートウェイ",
+    "File Gateway のファイルは S3 のオブジェクトになるので、ライフサイクルルールが使える"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon S3 File Gateway? - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+    },
+    {
+      "title": "How Storage Gateway works - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/userguide/StorageGatewayConcepts.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

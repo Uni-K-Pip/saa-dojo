@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K4", "4.3-S1"],
+  "services": ["Amazon DynamoDB"],
+  "qualifier": "cost",
+  "tags": ["DynamoDB TTL", "データ保持ポリシー", "有効期限", "自動削除"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon DynamoDB のテーブルに、ユーザーのセッション情報を保存しています。セッション情報は作成から 30 日を過ぎたら不要になり、増え続けるデータの保存コストを抑えるため削除したいと考えています。削除のために読み書きキャパシティを追加で消費せず、削除のためのコードの開発・運用も最小限にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各アイテムに有効期限のタイムスタンプ属性を持たせ、その属性を DynamoDB の TTL に設定する。",
+      "correct": true,
+      "rationale": "TTL（Time to Live）を設定すると、有効期限を過ぎたアイテムが DynamoDB によってバックグラウンドで自動削除されます。削除のために書き込みキャパシティを消費せず、追加の料金もかからず、コードの開発も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda 関数を毎日実行し、テーブル全体をスキャンして古いアイテムを削除する。",
+      "correct": false,
+      "rationale": "スキャンは読み取りキャパシティを大量に消費し、削除のたびに書き込みキャパシティも消費します。Lambda 関数の開発と運用も必要になり、要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3 にテーブルを毎月エクスポートして、古いテーブルを削除し、新しいテーブルを作る。",
+      "correct": false,
+      "rationale": "テーブルの作り直しとデータの引き継ぎの運用が複雑になり、現在使われているセッションの扱いも難しくなります。エクスポートの処理も増えます。"
+    },
+    {
+      "id": "d",
+      "text": "DynamoDB Streams を有効にして、ストリームから古いアイテムを検出して削除する。",
+      "correct": false,
+      "rationale": "DynamoDB Streams は、アイテムの変更を記録するもので、古いアイテムを見つける仕組みではありません。削除のコードが必要で、書き込みキャパシティも消費します。"
+    }
+  ],
+  "explanation": "データの保持ポリシーは、不要になったデータを自動で削除して、ストレージのコストと管理の手間を減らすために設計します。\n\nDynamoDB の TTL（Time to Live）は、アイテムごとの有効期限（エポック秒の数値の属性）を指定し、期限を過ぎたアイテムを自動で削除する機能です。削除に書き込みキャパシティは消費されず、追加料金もかかりません。削除は期限の直後ではなく、通常は期限から数日以内に行われるので、期限が過ぎたアイテムを確実に読ませない用途では、アプリケーション側で期限切れを判定するフィルターも併用します。\n\n同様に、S3 ではライフサイクルルール、ログでは CloudWatch Logs の保持期間、バックアップでは AWS Backup の保持期間が、自動削除の仕組みです。",
+  "keyPoints": [
+    "DynamoDB の古いデータを自動で削除 → TTL（キャパシティを消費せず無料）",
+    "TTL の削除は期限の直後ではなく少し遅れることがあるので、読み取り側でも期限切れを判定する",
+    "S3 はライフサイクルルール、ログは保持期間、バックアップは AWS Backup の保持期間"
+  ],
+  "references": [
+    {
+      "title": "Using time to live (TTL) in DynamoDB - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html"
+    },
+    {
+      "title": "Time to Live: How it works - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/howitworks-ttl.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

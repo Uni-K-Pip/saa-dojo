@@ -1,0 +1,66 @@
+{
+  "id": "saa-4.2-w2a-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-S3", "4.2-K8"],
+  "services": [
+    "AWS Fargate",
+    "Amazon Elastic Container Service",
+    "Amazon EventBridge",
+    "AWS Lambda"
+  ],
+  "qualifier": "cost",
+  "tags": ["AWS Fargate", "スケジュール実行", "コンテナ", "サーバーレス"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、毎日午前 2 時に約 1 時間かけて売上レポートを生成する処理を、コンテナイメージとして用意しています。処理には 4 vCPU と 16 GiB のメモリが必要です。チームは、サーバーの管理をせず、処理を実行している時間の分だけ料金を払う構成にしたいと考えています。最もコスト効率の高い方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon ECS のクラスターを Amazon EC2 インスタンスで常時稼働させ、リザーブドインスタンスを購入する。",
+      "correct": false,
+      "rationale": "1 日に 1 時間しか使わないのに、インスタンスは 24 時間分の料金がかかります。インスタンスの管理（OS のパッチ適用など）も必要で、サーバーの管理をしたくないという要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EventBridge のスケジュールで、AWS Fargate の ECS タスクを毎日起動する。",
+      "correct": true,
+      "rationale": "Fargate はサーバーを管理せずにコンテナを実行でき、料金はタスクが使う vCPU とメモリを、実行している時間に応じて払います。スケジュールで毎日 1 時間だけ起動すれば、その時間分の料金で済みます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Lambda 関数としてコンテナイメージをデプロイし、EventBridge のスケジュールで毎日起動する。",
+      "correct": false,
+      "rationale": "Lambda には 1 回の実行時間に最大 15 分の上限があり、約 1 時間かかる処理は完了できません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EKS のクラスターにマネージドノードグループを作成し、ノードを常時稼働させてジョブを実行する。",
+      "correct": false,
+      "rationale": "クラスターの料金とノードの常時稼働の料金がかかり、ノードの管理も必要です。1 日に 1 時間の処理には割高で、サーバーを管理しない要件にも反します。"
+    }
+  ],
+  "explanation": "コンピューティングサービスは、「実行時間」と「管理の手間」で選びます。\n\n・AWS Lambda: イベント駆動で短時間の処理向け。1 回の実行は最大 15 分。実行した分だけの課金。\n・AWS Fargate: コンテナをサーバーの管理なしで実行する。実行時間に応じた課金で、Lambda の時間制限を超える処理に使える。ECS と EKS で使える。\n・Amazon EC2: インスタンスを自分で管理する。常時稼働で安定して使うなら、Savings Plans などで割引を受けられる。\n\nこの問題の処理は、1 日 1 時間のバッチで、コンテナ化されています。Fargate のタスクをスケジュールで起動すれば、使った時間分だけの料金で、サーバー管理も不要になります。",
+  "keyPoints": [
+    "コンテナのバッチをサーバー管理なしで、使った時間分だけの料金で実行 → AWS Fargate（スケジュール起動）",
+    "Lambda は 1 回の実行が最大 15 分。長時間の処理には使えない",
+    "常時使う安定した負荷なら EC2＋Savings Plans のほうが安くなることがある"
+  ],
+  "references": [
+    {
+      "title": "AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    },
+    {
+      "title": "Run an Amazon ECS task on a schedule - Amazon EventBridge",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduled_tasks.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

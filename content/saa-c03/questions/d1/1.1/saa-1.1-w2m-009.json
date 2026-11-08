@@ -1,0 +1,69 @@
+{
+  "id": "saa-1.1-w2m-009",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S4",
+    "1.1-K1"
+  ],
+  "services": [
+    "AWS Organizations",
+    "Amazon GuardDuty"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "委任管理者",
+    "GuardDuty",
+    "マルチアカウント"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で 60 のアカウントを運用し、3 つのリージョンを使っています。新しいアカウントは毎月作成されます。すべてのアカウントとリージョンで Amazon GuardDuty を有効にして、検出結果を 1 つのセキュリティアカウントで一元的に確認したいと考えています。管理アカウントにはセキュリティ運用の作業を持たせない方針です。最も運用負荷が少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS CloudFormation StackSets で各アカウントとリージョンに GuardDuty の検出器を作成し、検出結果を S3 に出力して Amazon Athena で集約する。",
+      "correct": false,
+      "rationale": "検出結果の集約や管理の仕組みを自作することになり、GuardDuty の組織連携の機能を使う場合より運用が増えます。"
+    },
+    {
+      "id": "b",
+      "text": "各アカウントの管理者が GuardDuty を手動で有効にして、セキュリティアカウントからメンバーとして招待する。",
+      "correct": false,
+      "rationale": "アカウントとリージョンごとの手作業と招待が必要で、新しいアカウントが増えるたびに作業が発生します。運用負荷が大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "管理アカウントを GuardDuty の管理者にして、組織のアカウントを自動で有効にする。",
+      "correct": false,
+      "rationale": "動作はしますが、管理アカウントにセキュリティ運用を持たせない方針に反します。管理アカウントの利用は最小限にするのがベストプラクティスです。"
+    },
+    {
+      "id": "d",
+      "text": "セキュリティアカウントを GuardDuty の委任管理者に指定し、組織の新しいアカウントで GuardDuty を自動的に有効にする設定を各リージョンで行う。",
+      "correct": true,
+      "rationale": "委任管理者を使うと、管理アカウントを使わずに組織全体の GuardDuty を管理できます。自動有効化により、新しいアカウントにも手作業なしで適用され、検出結果は委任管理者に集約されます。"
+    }
+  ],
+  "explanation": "GuardDuty は AWS Organizations と統合されていて、管理アカウントから、組織内の別のアカウントを「委任管理者」に指定できます。委任管理者のアカウントは、組織のすべてのメンバーアカウントで GuardDuty を有効にし、検出結果を集約して確認でき、新しく組織に参加するアカウントの自動有効化も設定できます。\n\n管理アカウントは、SCP の対象にならず、強い権限を持つため、ワークロードや日常の運用には使わず、できるだけ最小限の用途にとどめます。そのため、セキュリティの運用は専用のセキュリティアカウントに委任するのが一般的です。GuardDuty はリージョンのサービスなので、設定は使用するリージョンごとに行います。\n\n手動の招待や StackSets による独自の集約は、動作しても運用負荷が大きく、組織統合の機能を使う場合に劣ります。",
+  "keyPoints": [
+    "組織全体のセキュリティサービスの運用 → 委任管理者＋新規アカウントの自動有効化",
+    "管理アカウントにはワークロードや日常の運用を置かない",
+    "GuardDuty はリージョンごとの設定が必要"
+  ],
+  "references": [
+    {
+      "title": "Amazon GuardDuty と AWS Organizations の連携 - Amazon GuardDuty ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K9", "4.2-S2"],
+  "services": ["Amazon EC2 Auto Scaling", "Amazon EC2", "Elastic Load Balancing"],
+  "qualifier": "performance",
+  "tags": ["スケジュールに基づくスケーリング", "ターゲット追跡スケーリング", "Auto Scaling", "予測できる負荷"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の社内業務システムは、Application Load Balancer の背後の Auto Scaling グループで運用されています。平日の 8 時 50 分に始業すると、数分のうちにアクセスが通常の約 10 倍になります。現在はターゲット追跡スケーリングで CPU 使用率を保っていますが、始業直後の数分は、台数が増えるまで応答が遅くなります。夜間と休日はほとんど利用されません。コストを抑えながら、始業直後の応答の遅さも改善する方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ターゲット追跡スケーリングの目標 CPU 使用率を大きく下げ、常に余裕のある台数を保つ。",
+      "correct": false,
+      "rationale": "目標値を下げると、アクセスが少ない夜間や休日も多めの台数を保つことになり、コストが増えます。始業時の急な増加に対しては、メトリクスが上がってから台数を増やす仕組みなので、遅れの問題も根本的には解決しません。"
+    },
+    {
+      "id": "b",
+      "text": "平日 8 時 40 分に最小台数を増やし、夜間と休日には減らすスケジュールに基づくスケーリングを追加する。ターゲット追跡スケーリングもそのまま併用する。",
+      "correct": true,
+      "rationale": "アクセスが増える時刻が予測できるので、スケジュールに基づくスケーリングで事前に台数を増やしておけば、始業直後から処理できます。夜間と休日は最小台数を減らしてコストを抑え、想定外の増減にはターゲット追跡スケーリングで対応できます。"
+    },
+    {
+      "id": "c",
+      "text": "最大台数と同じ台数を終日固定して稼働させる。",
+      "correct": false,
+      "rationale": "始業直後の遅れは解消しますが、夜間や休日も最大台数分の料金がかかり、コストを抑える要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "運用担当者が毎朝、手作業で Auto Scaling グループの希望容量を変更する。",
+      "correct": false,
+      "rationale": "手作業は担当者の負担になり、休日や担当者の不在時に漏れる危険があります。スケジュールに基づくスケーリングで自動化できます。"
+    }
+  ],
+  "explanation": "EC2 Auto Scaling には、主に次のスケーリングの方式があります。\n\n・ターゲット追跡スケーリング: CPU 使用率などのメトリクスを目標値に保つように、台数を自動で増減する。メトリクスが変化してから対応するため、急な増加には遅れが出る。\n・スケジュールに基づくスケーリング: 日時を指定して、最小・最大・希望の容量を変更する。負荷の変化があらかじめ分かっているときに向く。\n・予測スケーリング: 過去の負荷のパターンから、将来の負荷を予測して、事前に台数を調整する。\n\nこの問題は、始業時刻の急な増加が予測できるので、スケジュールに基づくスケーリングで事前に台数を増やすのが適切です。夜間と休日は台数を減らしてコストを抑え、ターゲット追跡スケーリングも併用して、予測を超える増加にも対応します。",
+  "keyPoints": [
+    "負荷の増減する時刻が決まっている → スケジュールに基づくスケーリングで事前に台数を調整",
+    "想定外の増減には、ターゲット追跡スケーリングを併用する",
+    "ターゲット追跡はメトリクスの変化に反応するため、急な増加では遅れが出る"
+  ],
+  "references": [
+    {
+      "title": "Scheduled scaling for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+    },
+    {
+      "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

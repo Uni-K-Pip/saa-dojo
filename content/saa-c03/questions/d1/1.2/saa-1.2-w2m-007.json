@@ -1,0 +1,74 @@
+{
+  "id": "saa-1.2-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S4",
+    "1.2-K3"
+  ],
+  "services": [
+    "AWS Direct Connect",
+    "AWS Site-to-Site VPN",
+    "Amazon Virtual Private Cloud"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "Direct Connect の暗号化",
+    "IPsec VPN",
+    "パブリック仮想インターフェイス"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスのデータセンターと VPC を、1 Gbps の AWS Direct Connect 専用接続で接続しています。新しい規制により、オンプレミスと AWS の間の通信を暗号化することが必須になりました。既存の Direct Connect の接続を引き続き使い、新しい専用線の追加契約は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "VPC に AWS Network Firewall を配置して、Direct Connect 経由の通信を検査し、暗号化する。",
+      "correct": false,
+      "rationale": "Network Firewall は通信を検査・フィルタリングするサービスで、通信を暗号化する機能ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "既存の Direct Connect 接続にパブリック仮想インターフェイスを作成し、その上に AWS Site-to-Site VPN 接続を構成して、IPsec で通信を暗号化する。",
+      "correct": true,
+      "rationale": "Direct Connect の接続そのものは通信を暗号化しません。パブリック仮想インターフェイス上で Site-to-Site VPN を使えば、専用線の安定した経路の上で IPsec による暗号化ができます。"
+    },
+    {
+      "id": "c",
+      "text": "Direct Connect の接続で MACsec を有効にして、データセンターから VPC までの全区間の通信を暗号化する。",
+      "correct": false,
+      "rationale": "MACsec は、10 Gbps 以上などの特定の専用接続でだけ使える Layer 2 の暗号化で、1 Gbps の接続では使えません。また、暗号化されるのは接続区間に限られます。"
+    },
+    {
+      "id": "d",
+      "text": "Direct Connect の専用接続は物理的に分離された専用線なので、通信は自動的に暗号化されており、追加の設定は不要である。",
+      "correct": false,
+      "rationale": "Direct Connect は専用線ですが、通信は標準では暗号化されません。暗号化が必要な場合は、VPN などの追加の仕組みを使います。"
+    }
+  ],
+  "explanation": "AWS Direct Connect は、専用線で AWS に接続するサービスですが、その上を流れる通信は標準では暗号化されません。暗号化が必要な場合は、次の方法があります。(1) Direct Connect の上に AWS Site-to-Site VPN を構成する（パブリック仮想インターフェイス経由。IPsec で暗号化）。(2) 対応する専用接続で MACsec を有効にする（10 Gbps、100 Gbps、400 Gbps の専用接続など。Layer 2 の暗号化で、接続区間が対象）。(3) アプリケーション層で TLS を使う。\n\nこの問題の接続は 1 Gbps の専用接続なので、MACsec は選べません。Direct Connect の経路の上で、Site-to-Site VPN を使えば、専用線の安定した帯域とレイテンシーに、IPsec の暗号化を組み合わせることができます。\n\nNetwork Firewall は暗号化の機能を持ちません。",
+  "keyPoints": [
+    "Direct Connect は標準では暗号化されない → VPN（IPsec）や MACsec、TLS を追加",
+    "MACsec は高速な専用接続（10 Gbps 以上）が対象",
+    "Direct Connect＋VPN で、専用線の品質と暗号化を両立"
+  ],
+  "references": [
+    {
+      "title": "AWS Direct Connect と AWS Site-to-Site VPN - Amazon VPC 接続オプション",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-plus-vpn.html"
+    },
+    {
+      "title": "AWS Direct Connect の MACsec - AWS Direct Connect ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-private-connectivity"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

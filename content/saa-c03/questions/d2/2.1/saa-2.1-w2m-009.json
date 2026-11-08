@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-009",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-S6",
+    "2.1-S5"
+  ],
+  "services": [
+    "AWS Elastic Beanstalk",
+    "Amazon Elastic Compute Cloud",
+    "Elastic Load Balancing",
+    "Amazon EC2 Auto Scaling"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Elastic Beanstalk",
+    "PaaS",
+    "簡易なデプロイ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "少人数のスタートアップが、Java で開発した Web アプリケーションを AWS で公開します。EC2 インスタンス、ロードバランサー、Auto Scaling の構成を個別に作って管理することは避け、アプリケーションのコードをアップロードするだけでデプロイしたいと考えています。アプリケーションのコードの大きな書き換えやコンテナ化も避けたく、必要になれば、インスタンスの設定を自分で調整できることも望んでいます。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスを手動で起動して、Auto Scaling グループと ALB を AWS CloudFormation で構築する。",
+      "correct": false,
+      "rationale": "ネットワークやスケーリング、デプロイの構成を個別に設計し、管理する必要があり、構成の管理を避けたい要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションをコンテナイメージにして Amazon ECR に登録し、Amazon ECS と AWS Fargate で実行する。",
+      "correct": false,
+      "rationale": "コンテナ化とタスク定義などの構成が必要で、コンテナ化を避けたい要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "アプリケーションを AWS Lambda の関数と Amazon API Gateway に書き直す。",
+      "correct": false,
+      "rationale": "アプリケーションの大きな書き換えが必要になります。コードの大きな書き換えを避ける要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Elastic Beanstalk に Java の Web アプリケーションとしてアップロードし、環境を作成する。",
+      "correct": true,
+      "rationale": "Elastic Beanstalk は、コードをアップロードするだけで、EC2、ロードバランサー、Auto Scaling などの構成を自動で作ってデプロイします。リソースは自分のアカウントに作られ、必要に応じて設定を調整できます。"
+    }
+  ],
+  "explanation": "AWS Elastic Beanstalk は、アプリケーションのコードをアップロードするだけで、EC2 インスタンス、Auto Scaling、ロードバランサー、ヘルスモニタリングなどの環境を自動でプロビジョニングしてデプロイするサービスです。Java、.NET、PHP、Node.js、Python、Ruby、Go、Docker などに対応します。リソースは自分のアカウントに作成されるため、インスタンスタイプや設定の調整もできます。\n\nインフラの構成を意識せずに、既存のアプリケーションを素早く AWS で動かしたい場合に適しています。Lambda は関数としての書き換えが前提で、ECS と Fargate はコンテナ化が前提です。EC2 と CloudFormation で個別に構築すると、自由度は高い反面、構成の設計と管理の負荷が大きくなります。",
+  "keyPoints": [
+    "コードのアップロードだけでデプロイ・既存アプリのまま → AWS Elastic Beanstalk",
+    "Lambda は関数への書き換え、ECS/Fargate はコンテナ化が必要",
+    "Beanstalk のリソースは自分のアカウントにあり、設定を調整できる"
+  ],
+  "references": [
+    {
+      "title": "AWS Elastic Beanstalk とは - AWS Elastic Beanstalk デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

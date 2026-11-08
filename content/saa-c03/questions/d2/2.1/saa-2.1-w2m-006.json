@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K12",
+    "2.1-K5",
+    "2.1-S3"
+  ],
+  "services": [
+    "AWS Lambda",
+    "Amazon Simple Storage Service",
+    "Amazon Simple Queue Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Lambda 非同期呼び出し",
+    "再試行",
+    "失敗時の送信先"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "画像がアップロードされると、Amazon S3 のイベント通知で AWS Lambda 関数が非同期に呼び出されます。関数は外部 API を呼び出しますが、API が一時的に失敗することがあります。失敗した場合は自動で再試行し、再試行しても失敗したイベントは失わずに、あとで調べて再処理できるようにしたいと考えています。関数コードの変更は最小限にします。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "関数のタイムアウトを最大の 15 分に変更して、外部 API の一時的な障害が回復するまで待たせる。",
+      "correct": false,
+      "rationale": "待ち時間が増えて費用がかかり、API の回復が遅れると失敗します。失敗したイベントを残す仕組みにもなりません。"
+    },
+    {
+      "id": "b",
+      "text": "関数の同時実行数の上限を引き上げて、外部 API の呼び出しを並列に増やす。",
+      "correct": false,
+      "rationale": "API の一時的な失敗は、並列性で解決しません。失敗したイベントを保持する仕組みにもなりません。"
+    },
+    {
+      "id": "c",
+      "text": "関数のコードで例外を捕捉して、失敗したイベントを Amazon DynamoDB のテーブルに書き込む処理を追加する。",
+      "correct": false,
+      "rationale": "コードの変更が必要になり、関数自体が失敗する場合（タイムアウトなど）には記録できないことがあります。コードの変更を最小限にする要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数の非同期呼び出しの設定で、再試行の回数とイベントの最大有効期間を調整し、失敗時の送信先として Amazon SQS キューを指定する。",
+      "correct": true,
+      "rationale": "Lambda は、非同期呼び出しが失敗すると自動で再試行します。再試行しても失敗したイベントを、送信先（またはデッドレターキュー）の SQS キューに送れるため、イベントを失わずに、コードの変更なしで調べられます。"
+    }
+  ],
+  "explanation": "S3 のイベント通知などから Lambda を非同期に呼び出すと、Lambda は呼び出しをキューに入れ、関数がエラーを返したときは、既定で最大 2 回再試行します。再試行の回数（0〜2）と、イベントをキューに保持する最大有効期間（最大 6 時間）は、非同期呼び出しの設定で変更できます。\n\n再試行しても失敗した、または有効期間を過ぎたイベントは、破棄されます。これを防ぐには、失敗時の送信先（Destinations の On failure）に SQS キュー、SNS トピック、別の Lambda 関数、EventBridge のイベントバスを指定するか、デッドレターキュー（SQS または SNS）を設定します。送信先は、失敗の理由や呼び出しの情報も含むため、調査しやすい特徴があります。\n\nコードで記録する方法は、コードの変更が必要で、タイムアウトなどの場合に漏れます。タイムアウトの延長や同時実行数の引き上げは、イベントの保持には役立ちません。",
+  "keyPoints": [
+    "Lambda の非同期呼び出しは既定で最大 2 回再試行 → 失敗したイベントは送信先（On failure）か DLQ に保存",
+    "S3 のイベント通知、EventBridge、SNS などからの呼び出しは非同期",
+    "同期呼び出しのエラーは呼び出し元に返る（再試行は呼び出し元の責任）"
+  ],
+  "references": [
+    {
+      "title": "Lambda での非同期呼び出し - AWS Lambda デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
