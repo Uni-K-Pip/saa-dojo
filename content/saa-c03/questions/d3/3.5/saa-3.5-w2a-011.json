@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.5-w2a-011",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-S7", "3.5-S6", "3.5-K7"],
+  "services": ["Amazon Data Firehose", "AWS Glue", "Amazon Simple Storage Service", "Amazon Athena"],
+  "qualifier": "operational",
+  "tags": ["Amazon Data Firehose", "レコード形式の変換", "動的パーティショニング", "Parquet"],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある SaaS 企業は、顧客のアプリケーションが生成する JSON 形式のログイベントを、Amazon Data Firehose で Amazon S3 に保存しています。分析担当者は Amazon Athena で顧客 ID ごとにクエリしており、クエリの時間と料金を減らしたいと考えています。ストリームの処理のためのコードや、変換用のクラスターは運用したくありません。この目的を満たすために、Firehose で設定するべきものはどれですか。（2 つ選択してください。）",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Glue Data Catalog のテーブルでスキーマを定義し、Firehose のレコード形式の変換で JSON を Apache Parquet に変換する。",
+      "correct": true,
+      "rationale": "Firehose は、AWS Glue Data Catalog のテーブルのスキーマを使って、JSON を Parquet や ORC などの列指向の形式に変換して配信できます。列指向の形式はスキャン量が減り、Athena のクエリが速く安くなります。コードは不要です。"
+    },
+    {
+      "id": "b",
+      "text": "動的パーティショニングを有効にし、レコード内の顧客 ID をキーにして S3 のプレフィックスを分ける。",
+      "correct": true,
+      "rationale": "動的パーティショニングを使うと、レコードの内容（顧客 ID など）に基づいて、S3 のプレフィックスを動的に分けて保存できます。顧客 ID で絞るクエリが、必要なプレフィックスだけをスキャンするようになり、スキャン量が減ります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Kinesis Data Analytics for SQL Applications で JSON を変換して S3 に書き出す。",
+      "correct": false,
+      "rationale": "Amazon Kinesis Data Analytics for SQL Applications は提供を終了しており、新しい設計では使いません。Apache Flink を使う後継のサービスもありますが、運用するコードやアプリケーションが増えます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Lambda 関数をデータ変換に設定し、関数のコードで Parquet に書き換える。",
+      "correct": false,
+      "rationale": "Firehose の標準機能であるレコード形式の変換で Parquet への変換ができるため、関数のコードを書いて運用する必要はありません。コードを運用したくないという要件に反します。"
+    },
+    {
+      "id": "e",
+      "text": "S3 に保存した JSON を、毎日、Amazon EMR のクラスターで Parquet に変換し直す。",
+      "correct": false,
+      "rationale": "クラスターを運用する必要があり、変換用のクラスターを運用したくないという要件に反します。取り込みの時点で Firehose が変換できます。"
+    }
+  ],
+  "explanation": "Amazon Data Firehose には、S3 に保存する前にデータを整える次の機能があります。\n\n・レコード形式の変換: JSON の入力を Apache Parquet または Apache ORC に変換する。スキーマは AWS Glue Data Catalog のテーブルから取得する。\n・動的パーティショニング: レコードの中のキーの値（顧客 ID、日付など）に応じて、S3 のプレフィックスを動的に分けて保存する。\n・バッファリング、圧縮、Lambda による変換。\n\nAthena はスキャンしたデータ量に応じて課金されるので、列指向の形式への変換と、パーティション分割は、クエリの時間と料金を減らす基本の対策です。どちらも Firehose の設定だけで実現できるので、コードやクラスターの運用が不要です。なお、Amazon Kinesis Data Analytics for SQL Applications は提供を終了しています。",
+  "keyPoints": [
+    "JSON を Parquet／ORC に変換して S3 へ → Firehose のレコード形式の変換（Glue Data Catalog のスキーマ）",
+    "キーの値で S3 のプレフィックスを分ける → Firehose の動的パーティショニング",
+    "Athena のスキャン量を減らす → 列指向の形式、パーティション分割、圧縮"
+  ],
+  "references": [
+    {
+      "title": "Convert input data format in Amazon Data Firehose - Amazon Data Firehose",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html"
+    },
+    {
+      "title": "Dynamic partitioning in Amazon Data Firehose - Amazon Data Firehose",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

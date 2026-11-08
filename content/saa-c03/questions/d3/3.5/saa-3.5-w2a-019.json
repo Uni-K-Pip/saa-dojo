@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-019",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K3", "3.5-S3", "3.5-K5"],
+  "services": ["AWS Transfer Family", "Amazon Simple Storage Service", "AWS DataSync"],
+  "qualifier": "operational",
+  "tags": ["AWS Transfer Family", "SFTP", "パートナー連携", "S3"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある貿易会社は、取引先企業が毎日 SFTP クライアントでアップロードする納品データのファイルを、Amazon S3 に保存して分析したいと考えています。取引先は既存の SFTP クライアントと運用手順を変えられません。SFTP サーバーの OS やソフトウェアの管理は避けたいと考えています。最も運用上のオーバーヘッドが少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Transfer Family の SFTP サーバーを作成し、宛先を S3 バケットにして、取引先のユーザーを登録する。",
+      "correct": true,
+      "rationale": "AWS Transfer Family は、SFTP、FTPS、FTP でファイルを S3 や EFS に転送できるフルマネージドなサービスです。取引先は既存の SFTP クライアントのまま使え、サーバーの管理は要りません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EC2 インスタンスに SFTP サーバーを構築し、受け取ったファイルを S3 にアップロードするスクリプトを cron で実行する。",
+      "correct": false,
+      "rationale": "インスタンスの OS やソフトウェアのパッチ適用、障害対応、スクリプトの運用を自分で行う必要があり、サーバーの管理を避けたいという要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "取引先に S3 の署名付き URL を発行し、ブラウザーや API でアップロードしてもらう。",
+      "correct": false,
+      "rationale": "取引先は既存の SFTP クライアントと運用手順を変えられないため、アップロードの方法の変更を求める方法は要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync のエージェントを取引先に配置して、S3 にファイルを転送してもらう。",
+      "correct": false,
+      "rationale": "DataSync は自社のストレージのデータ転送のためのサービスで、取引先にエージェントの導入を求めることになり、取引先の運用を変えられないという要件に反します。"
+    }
+  ],
+  "explanation": "ファイル転送のサービスは、プロトコルと使う側の制約で選びます。\n\n・AWS Transfer Family: SFTP、FTPS、FTP、AS2 のプロトコルで、S3 や EFS にファイルを転送する。マネージドなので、サーバーの管理が不要。既存のクライアントやパートナーの運用をそのまま使える。認証は、サービス管理のユーザー、AWS Directory Service、独自の ID プロバイダーなどに対応する。\n・AWS DataSync: 自社のストレージ間の大量データの転送、移行。\n・AWS Storage Gateway: オンプレミスのアプリケーションが AWS のストレージを使い続ける。\n\n外部のパートナーが SFTP などの標準プロトコルで S3 にファイルを送る要件では、Transfer Family が最も運用負荷の低い選択肢です。取り込み口のセキュリティは、ユーザーごとに IAM ロールで S3 のアクセス範囲（ホームディレクトリ）を制限して守ります。",
+  "keyPoints": [
+    "パートナーが SFTP／FTPS／FTP で S3 にファイルを送る、サーバー管理なし → AWS Transfer Family",
+    "自社ストレージ間の大量データの転送・移行 → DataSync",
+    "Transfer Family のユーザーは、IAM ロールとホームディレクトリで S3 のアクセス範囲を制限する"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Transfer Family? - AWS Transfer Family",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
+    },
+    {
+      "title": "Create an SFTP-enabled server - AWS Transfer Family",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-server-sftp.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

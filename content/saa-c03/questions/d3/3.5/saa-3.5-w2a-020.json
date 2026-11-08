@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.5-w2a-020",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K6", "3.5-S2", "3.5-K7"],
+  "services": ["Amazon Kinesis"],
+  "qualifier": "performance",
+  "tags": ["Kinesis Data Streams", "ホットシャード", "パーティションキー", "スループット超過"],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある IoT 企業は、Kinesis Data Streams のプロビジョニング済みモードのストリームに、デバイスのデータを書き込んでいます。パーティションキーにはデバイスの種別（5 種類）を使っています。データ量が増えるにつれ、書き込みで ProvisionedThroughputExceededException が頻発しますが、CloudWatch で見ると、ストリーム全体のスループットの合計は上限に余裕があり、複数のパーティションキーが同じシャードに割り当てられ、そのシャードだけが上限に達しています。この問題を解決するために有効な対応はどれですか。（2 つ選択してください。）",
+  "options": [
+    {
+      "id": "a",
+      "text": "パーティションキーを、より多くの値に分散する値（デバイス ID など）に変更する。",
+      "correct": true,
+      "rationale": "5 種類の少ない値をキーにすると、データが特定のシャードに集中します（ホットシャード）。デバイス ID のように値が多く均等に分散するキーにすれば、各シャードに均等にデータが振り分けられ、特定のシャードだけが上限に達する問題が解消します。"
+    },
+    {
+      "id": "b",
+      "text": "ホットになっているシャードを分割（スプリット）して、シャードの数を増やす。",
+      "correct": true,
+      "rationale": "シャードを分割すると、そのシャードが担当していたハッシュキーの範囲が 2 つに分かれ、書き込みの容量が増えます。キーの分散と合わせて、特定のシャードの書き込み容量を確保できます。"
+    },
+    {
+      "id": "c",
+      "text": "データの保持期間を最長の 365 日に延長する。",
+      "correct": false,
+      "rationale": "保持期間は、データを保存する期間の設定で、書き込みのスループットの上限には影響しません。"
+    },
+    {
+      "id": "d",
+      "text": "コンシューマーに拡張ファンアウトを有効にする。",
+      "correct": false,
+      "rationale": "拡張ファンアウトは、読み取り側の帯域をコンシューマーごとに確保する機能で、書き込みの上限（ProvisionedThroughputExceededException の原因）は解決しません。"
+    },
+    {
+      "id": "e",
+      "text": "書き込み側の Kinesis Producer Library（KPL）を使わず、1 レコードずつ PutRecord で送信する。",
+      "correct": false,
+      "rationale": "レコードを 1 件ずつ送ると、リクエスト数が増えて効率が下がります。KPL の集約や、PutRecords によるバッチ送信は、スループットを高める手段です。"
+    }
+  ],
+  "explanation": "Kinesis Data Streams のプロビジョニング済みモードでは、1 シャードあたりの書き込みの上限（毎秒 1 MB または 1,000 レコード）があります。ストリーム全体の容量に余裕があっても、特定のキーにデータが集中すると、そのキーを担当する 1 つのシャードだけが上限に達します。これをホットシャードと呼びます。\n\n対処は次のとおりです。\n\n・パーティションキーを分散させる: 値の種類が多く、均等に出現するキー（デバイス ID、ユーザー ID など）にする。順序を保ちたい単位より細かい単位にならないよう注意する。\n・ホットなシャードを分割して容量を増やす（スプリット）。\n・オンデマンドモードにして、容量の管理をなくす。\n\n保持期間や拡張ファンアウトは、書き込みの上限とは別の設定です。",
+  "keyPoints": [
+    "特定のシャードだけが上限に達する → パーティションキーの分散（ホットシャード対策）、ホットなシャードの分割",
+    "書き込みの上限の問題に、保持期間や拡張ファンアウト（読み取り側）は無関係",
+    "レコードはバッチ送信（PutRecords、KPL の集約）でスループットを高める"
+  ],
+  "references": [
+    {
+      "title": "Resharding a stream - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/kinesis-using-sdk-java-resharding.html"
+    },
+    {
+      "title": "Handle write throughput exceeded errors - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/troubleshooting-producers.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
