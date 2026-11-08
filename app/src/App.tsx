@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { StudyProvider, useStudy } from './state/study';
 import { applyAppearance } from './appearance';
 import { UpdateToast } from './components/UpdateToast';
+import { startAutoSync } from './sync/sync';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const PracticeSetupPage = lazy(() => import('./pages/PracticeSetupPage'));
@@ -35,11 +36,13 @@ function Appearance() {
   return null;
 }
 
-// ブラウザがデータを勝手に消さないよう、永続化を求める（結果は設定画面で表示する）
-function PersistStorage() {
+// 起動時の処理: ブラウザがデータを勝手に消さないよう永続化を求め（結果は設定画面で表示する）、同期を始める
+function BackgroundTasks() {
   useEffect(() => {
     void navigator.storage?.persist?.().catch(() => false);
   }, []);
+  // 同期（トークンがあるときだけ動く）
+  useEffect(() => startAutoSync(), []);
   return null;
 }
 
@@ -77,7 +80,7 @@ export default function App() {
   return (
     <StudyProvider>
       <Appearance />
-      <PersistStorage />
+      <BackgroundTasks />
       <HashRouter>
         <AppRoutes />
       </HashRouter>
