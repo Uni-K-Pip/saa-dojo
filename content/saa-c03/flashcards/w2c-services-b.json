@@ -1,0 +1,367 @@
+{
+  "deck": "w2c-services-b",
+  "title": "サービスの役割と使い分け（後半）",
+  "createdBy": "w2c",
+  "cards": [
+    {
+      "id": "fc-w2c-046",
+      "front": "SCP と IAM ポリシーの違いは？ SCP を付ければ権限が付与されるか。",
+      "back": "付与されない。SCP は AWS Organizations のメンバーアカウントに対する権限の上限（ガードレール）で、許可は IAM ポリシー側で与える。実効権限は両方が許可した範囲の共通部分。メンバーアカウントのルートユーザーも制限されるが、管理アカウントとサービスリンクロールには効かない。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Organizations", "AWS Identity and Access Management"],
+      "tags": ["SCP", "マルチアカウント", "ガードレール"]
+    },
+    {
+      "id": "fc-w2c-047",
+      "front": "KMS のキーポリシーと IAM ポリシーは、アクセス許可でどう関係するか。",
+      "back": "キーポリシーは KMS キーに必須のリソースポリシーで、他のサービスと違いアカウントを自動では信頼しない。キーポリシーにアカウントを許可する文（IAM ポリシーを有効にする文）があって初めて、IAM ポリシーで許可できる。別アカウントから使うには、キーポリシーと呼び出し側の IAM ポリシーの両方で許可が必要。",
+      "taskStatements": ["1.3", "1.1"],
+      "services": ["AWS Key Management Service", "AWS Identity and Access Management"],
+      "tags": ["KMS", "キーポリシー", "クロスアカウント"]
+    },
+    {
+      "id": "fc-w2c-048",
+      "front": "許可と拒否が混在するとき、IAM の評価はどう決まるか。クロスアカウントではどうか。",
+      "back": "既定は暗黙の拒否で、明示的な Deny は常に Allow に勝つ。同一アカウントでは、IAM ポリシーかリソースポリシーのどちらかが許可していれば足りる。別アカウントのアクセスは、リソース側と呼び出し側の双方が許可する必要がある。SCP や権限境界があれば、それらも許可している必要がある。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Identity and Access Management"],
+      "tags": ["ポリシー評価", "明示的な拒否"]
+    },
+    {
+      "id": "fc-w2c-049",
+      "front": "開発者に IAM ロールの作成を任せつつ、与えられる権限の上限を決めたい。何を使うか。",
+      "back": "権限境界（Permissions Boundary）。IAM ユーザーやロールに付けられる権限の最大範囲を定めるもので、自身では許可を与えない。実効権限は ID ベースのポリシーと境界の共通部分になる。委任された管理者が作るロールにも同じ境界を必須にすれば、権限の昇格を防げる。アカウント単位の上限は SCP。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Identity and Access Management", "AWS Organizations"],
+      "tags": ["権限境界", "委任", "最小権限"]
+    },
+    {
+      "id": "fc-w2c-050",
+      "front": "別アカウントのリソースへアクセスさせる方法は、IAM ロールの引き受けとリソースベースポリシーでどう違うか。",
+      "back": "ロールの引き受けは、相手アカウントのロール（信頼ポリシーで呼び出し元を許可）に AWS STS で切り替え、一時認証情報でそのアカウントの権限で動く。リソースベースポリシー（S3 バケットポリシーなど）は、自分の ID のままリソースへ直接アクセスさせる。複数アカウントのリソースを横断して扱う運用ではロールが一般的。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Security Token Service (AWS STS)", "AWS Identity and Access Management", "Amazon Simple Storage Service"],
+      "tags": ["クロスアカウント", "STS", "リソースベースポリシー"]
+    },
+    {
+      "id": "fc-w2c-051",
+      "front": "社員が複数の AWS アカウントやアプリにシングルサインオンするには、IAM ユーザーと IAM Identity Center のどちらか。",
+      "back": "AWS IAM Identity Center。社員の ID を一元管理し（外部 IdP や Active Directory とも連携）、権限セットで複数アカウントへのアクセスを割り当て、一時認証情報で使う。人ごとに IAM ユーザーを各アカウントに作る方法は、長期認証情報が増え運用負荷も高いため避ける。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS IAM Identity Center", "AWS Identity and Access Management"],
+      "tags": ["SSO", "フェデレーション", "運用負荷"]
+    },
+    {
+      "id": "fc-w2c-052",
+      "front": "新しいアカウントを標準構成で量産し、禁止事項を組織全体に強制したい。何を使うか。",
+      "back": "AWS Control Tower。ランディングゾーン（Organizations のマルチアカウント基盤）を自動構築し、Account Factory でアカウントを払い出す。コントロール（ガードレール）で統制し、予防は SCP、検知は AWS Config で実装される。個別に Organizations と Config を組み立てるより運用負荷が小さい。",
+      "taskStatements": ["1.1"],
+      "services": ["AWS Control Tower", "AWS Organizations", "AWS Config"],
+      "tags": ["ガバナンス", "ランディングゾーン"]
+    },
+    {
+      "id": "fc-w2c-053",
+      "front": "DB のパスワードを自動ローテーションしたい。Secrets Manager と Parameter Store のどちらか。",
+      "back": "AWS Secrets Manager。Lambda を使った自動ローテーション（RDS などは組み込み対応）と、リージョン間のレプリケーションを備える。Systems Manager Parameter Store は設定値や SecureString の保管に向き、標準パラメータは追加料金なしだが、シークレットの自動ローテーションの機能はない。",
+      "taskStatements": ["1.2"],
+      "services": ["AWS Secrets Manager", "AWS Systems Manager"],
+      "tags": ["シークレット", "ローテーション", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-054",
+      "front": "セキュリティグループとネットワーク ACL の違いは？ 特定 IP を拒否するにはどちらか。",
+      "back": "セキュリティグループはインスタンス（ENI）単位でステートフル、許可ルールのみ。ネットワーク ACL はサブネット単位でステートレス、許可と拒否の両方があり、番号の小さい順に評価される。特定 IP の明示的な拒否はネットワーク ACL。戻りの通信は NACL では明示的に許可が必要。",
+      "taskStatements": ["1.2"],
+      "services": ["Amazon Virtual Private Cloud"],
+      "tags": ["セキュリティグループ", "NACL", "ステートフル"]
+    },
+    {
+      "id": "fc-w2c-055",
+      "front": "SQL インジェクション対策、DDoS 対策、VPC 内の通信検査。AWS WAF、AWS Shield、AWS Network Firewall のどれか。",
+      "back": "SQL インジェクションや XSS など L7 のウェブ攻撃とレート制限は AWS WAF（CloudFront、ALB、API Gateway などに適用）。DDoS は AWS Shield（Standard は自動・無料、Advanced は強化検知と対応支援）。VPC のトラフィックの検査やドメインフィルタリングは AWS Network Firewall。",
+      "taskStatements": ["1.2"],
+      "services": ["AWS WAF", "AWS Shield", "AWS Network Firewall"],
+      "tags": ["DDoS", "ウェブ攻撃", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-056",
+      "front": "脅威検知、脆弱性スキャン、S3 の機密データ検出、調査。GuardDuty、Inspector、Macie、Detective の担当は？",
+      "back": "Amazon GuardDuty は CloudTrail、VPC フローログ、DNS ログから不審な挙動を検知する。Amazon Inspector は EC2、コンテナイメージ、Lambda の脆弱性をスキャンする。Amazon Macie は S3 内の機密データ（PII など）を検出する。Amazon Detective は検知結果の原因を関連付けて調査する。",
+      "taskStatements": ["1.2", "1.3"],
+      "services": ["Amazon GuardDuty", "Amazon Inspector", "Amazon Macie", "Amazon Detective"],
+      "tags": ["セキュリティサービス", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-057",
+      "front": "アプリのユーザー認証と、ユーザーに S3 を直接操作させる権限付与は、Cognito のどちらの機能か。",
+      "back": "ユーザーのサインアップ・サインイン（ユーザーディレクトリ）と JWT の発行はユーザープール。ユーザーに一時的な AWS 認証情報を渡して S3 などの AWS リソースを直接使わせるのは ID プール。外部 IdP や SNS ログインのフェデレーションも使える。両者を組み合わせるのが典型。",
+      "taskStatements": ["1.2", "1.1"],
+      "services": ["Amazon Cognito"],
+      "tags": ["認証", "ユーザープール", "IDプール"]
+    },
+    {
+      "id": "fc-w2c-058",
+      "front": "VPC のプライベートサブネットから S3 へインターネットを経由せずアクセスするとき、ゲートウェイ型とインターフェイス型のエンドポイントはどう選ぶか。",
+      "back": "ゲートウェイ型は S3 と DynamoDB 専用で、ルートテーブルにルートを追加して使い、追加料金はない。インターフェイス型（AWS PrivateLink）は ENI にプライベート IP を持ち、多くのサービスに使え、Direct Connect や VPN 経由のオンプレミスからも到達できるが、時間料金とデータ処理料金がかかる。",
+      "taskStatements": ["1.2", "2.1"],
+      "services": ["Amazon Virtual Private Cloud", "AWS PrivateLink", "Amazon Simple Storage Service"],
+      "tags": ["VPCエンドポイント", "PrivateLink", "コスト"]
+    },
+    {
+      "id": "fc-w2c-059",
+      "front": "S3 のサーバー側暗号化で、鍵の使用履歴の監査やアクセス制御が必要なとき、どの方式を選ぶか。",
+      "back": "SSE-KMS。KMS キーのキーポリシーと IAM でアクセスを制御でき、CloudTrail で鍵の使用を監査できる。SSE-S3 は S3 が鍵を管理し運用が最も簡単。SSE-C は リクエストごとに自分で鍵を渡す。KMS は呼び出し回数に応じた料金とクォータがあるため、大量リクエストでは注意する。",
+      "taskStatements": ["1.3"],
+      "services": ["Amazon Simple Storage Service", "AWS Key Management Service"],
+      "tags": ["暗号化", "SSE-KMS", "監査"]
+    },
+    {
+      "id": "fc-w2c-060",
+      "front": "KMS キーのローテーションは、AWS 管理キー、カスタマー管理キー、インポートしたキーマテリアルでどう違うか。",
+      "back": "AWS 管理キーは毎年自動でローテーションされ、設定は変えられない。カスタマー管理キーは自動ローテーションを有効にでき、既定は365日ごとで、期間も指定できる。外部からインポートしたキーマテリアルは自動ローテーションに非対応で、オンデマンドか手動で行う。キー ID と ARN は変わらない。",
+      "taskStatements": ["1.3"],
+      "services": ["AWS Key Management Service"],
+      "tags": ["キーローテーション", "KMS"]
+    },
+    {
+      "id": "fc-w2c-061",
+      "front": "ALB で HTTPS を終端し、証明書の更新運用をなくしたい。何を使うか。",
+      "back": "AWS Certificate Manager（ACM）。ACM で発行した公開証明書を ALB、CloudFront、API Gateway に関連付けて TLS を終端する。ACM が管理する証明書は更新も自動で行われる（DNS 検証にしておくと確実）。転送中の暗号化の運用負荷を最小にする標準的な方法。",
+      "taskStatements": ["1.3", "2.1"],
+      "services": ["AWS Certificate Manager", "Elastic Load Balancing", "Amazon CloudFront"],
+      "tags": ["TLS", "証明書", "転送中の暗号化"]
+    },
+    {
+      "id": "fc-w2c-062",
+      "front": "S3 Object Lock のガバナンスモードとコンプライアンスモードは何が違うか。",
+      "back": "どちらも WORM（書き込み後の変更・削除を防ぐ）で、バージョニングが必要。ガバナンスモードは特別な権限（s3:BypassGovernanceRetention）を持つユーザーなら保持期間中でも解除できる。コンプライアンスモードは、ルートユーザーを含め誰も保持期間を短縮できず削除できない。規制で厳格な保持が必要ならコンプライアンスモード。",
+      "taskStatements": ["1.3"],
+      "services": ["Amazon Simple Storage Service"],
+      "tags": ["WORM", "データ保持", "コンプライアンス"]
+    },
+    {
+      "id": "fc-w2c-063",
+      "front": "複数のサービス・アカウントのバックアップを一元管理し、削除や改ざんからも守るには？",
+      "back": "AWS Backup。バックアッププランで EBS、RDS、EFS、DynamoDB、S3 などを横断して世代管理し、別リージョン・別アカウントへのコピーもできる。バックアップボールトにロック（Vault Lock）を掛ければ WORM となり、削除や保持期間の変更を防げる。サービスごとにスクリプトを組むより運用が簡単。",
+      "taskStatements": ["1.3", "2.2"],
+      "services": ["AWS Backup"],
+      "tags": ["バックアップ", "Vault Lock", "一元管理"]
+    },
+    {
+      "id": "fc-w2c-064",
+      "front": "オンプレミスと AWS の接続で、通信を暗号化したい。Site-to-Site VPN と Direct Connect はどう違うか。",
+      "back": "Site-to-Site VPN はインターネット上に IPsec で暗号化したトンネルを作り、短時間で安価に始められる。Direct Connect は専用線で帯域と遅延が安定するが、既定では暗号化されない。暗号化が必要なら Direct Connect 上に VPN を重ねるか、対応する専用接続で MACsec を使う。導入には数週間かかることがある。",
+      "taskStatements": ["1.2", "2.2"],
+      "services": ["AWS Site-to-Site VPN", "AWS Direct Connect"],
+      "tags": ["ハイブリッド接続", "暗号化", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-065",
+      "front": "EC2 上に自分で入れた DB と Amazon RDS で、責任共有モデルの違いは？",
+      "back": "EC2 上の DB は OS とデータベースソフトのパッチ適用、バックアップ、高可用性の構成が利用者の責任。RDS は OS やエンジンのパッチ適用の基盤、バックアップ機能などを AWS が管理する。どちらも、データ、アクセス制御（セキュリティグループ、DB ユーザー）、暗号化の設定は利用者の責任。",
+      "taskStatements": ["1.1", "2.2"],
+      "services": ["Amazon Elastic Compute Cloud", "Amazon Relational Database Service"],
+      "tags": ["責任共有モデル", "マネージドサービス"]
+    },
+    {
+      "id": "fc-w2c-066",
+      "front": "誰がいつ API を呼んだかの調査と、リソース設定の変更履歴・準拠チェックは、CloudTrail と Config のどちらか。",
+      "back": "AWS CloudTrail は API 呼び出しの記録（誰が、いつ、何を）で、監査や不正調査に使う。AWS Config はリソースの設定の変更履歴を記録し、ルールで準拠を継続的に評価し、非準拠を検知・是正する。操作の証跡は CloudTrail、設定の状態は Config。",
+      "taskStatements": ["1.3", "1.1"],
+      "services": ["AWS CloudTrail", "AWS Config"],
+      "tags": ["監査", "コンプライアンス", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-067",
+      "front": "Amazon SQS の標準キューと FIFO キューは、順序と重複でどう違うか。",
+      "back": "標準キューは少なくとも1回の配信で、順序は保証されず（ベストエフォート）、まれに重複する。ほぼ無制限のスループット。FIFO キューは順序（メッセージグループ内）と、重複排除（5分間）による exactly-once の処理を保証し、キュー名は .fifo で終わる。順序や重複が許されないなら FIFO。",
+      "taskStatements": ["2.1"],
+      "services": ["Amazon Simple Queue Service"],
+      "tags": ["SQS", "FIFO", "疎結合"]
+    },
+    {
+      "id": "fc-w2c-068",
+      "front": "SQS で、処理に失敗し続けるメッセージがキューを塞がないようにするには？ 可視性タイムアウトの役割は？",
+      "back": "デッドレターキュー（DLQ）を設定し、受信回数が上限（maxReceiveCount）を超えたメッセージを退避させる。可視性タイムアウト（既定30秒）は、コンシューマーが受信したメッセージを他のコンシューマーから隠す時間で、処理時間より長くして二重処理を防ぐ。FIFO の DLQ は FIFO にする。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Simple Queue Service"],
+      "tags": ["SQS", "DLQ", "可視性タイムアウト"]
+    },
+    {
+      "id": "fc-w2c-069",
+      "front": "Amazon SNS と Amazon EventBridge は、どう使い分けるか。",
+      "back": "SNS はトピックに発行したメッセージを多数のサブスクライバー（SQS、Lambda、HTTP、メールなど）へ一斉に配信する pub/sub。EventBridge はイベントの内容に基づくルールで、AWS サービス、SaaS、自作アプリのイベントを選別して複数のターゲットへルーティングし、スケジュール実行やアーカイブ・再生もできる。",
+      "taskStatements": ["2.1"],
+      "services": ["Amazon Simple Notification Service", "Amazon EventBridge"],
+      "tags": ["イベント駆動", "pub/sub", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-070",
+      "front": "1つのイベントを複数の処理系統に、確実に並行して配りたい。SNS と SQS をどう組み合わせるか。",
+      "back": "ファンアウトパターン。SNS トピックに発行し、系統ごとの SQS キューをサブスクライブさせる。各キューが独立してメッセージを保持するため、一方の処理が遅くても失敗しても他に影響せず、再処理も個別にできる。SNS 直接の配信より耐久性と負荷調整に優れる。",
+      "taskStatements": ["2.1"],
+      "services": ["Amazon Simple Notification Service", "Amazon Simple Queue Service"],
+      "tags": ["ファンアウト", "疎結合"]
+    },
+    {
+      "id": "fc-w2c-071",
+      "front": "SQS と Kinesis Data Streams の違いは？ 同じデータを複数のアプリが読み、再読み取りもしたいときはどちらか。",
+      "back": "SQS は処理後に削除する作業キューで、各メッセージは1つのコンシューマーが処理し、再読み取りはできない。Kinesis Data Streams はレコードを保持期間の間残し、複数のコンシューマーが同じデータを読め、再読み取りもできる（順序はシャード内）。複数アプリ・再生が要るなら Kinesis。",
+      "taskStatements": ["2.1"],
+      "services": ["Amazon Simple Queue Service", "Amazon Kinesis Data Streams"],
+      "tags": ["メッセージング", "ストリーミング", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-072",
+      "front": "AWS Step Functions のスタンダードワークフローとエクスプレスワークフローは、どう選ぶか。",
+      "back": "スタンダードは最長1年の長時間実行向きで、各ステップの実行履歴を保持し、ワークフローは正確に1回実行される。エクスプレスは最長5分の短時間・高頻度（大量のイベント処理など）向きで、実行は少なくとも1回。人の承認待ちや長い処理はスタンダード、大量のストリーム処理はエクスプレス。",
+      "taskStatements": ["2.1"],
+      "services": ["AWS Step Functions"],
+      "tags": ["ワークフロー", "オーケストレーション"]
+    },
+    {
+      "id": "fc-w2c-073",
+      "front": "ALB、NLB、GWLB の使い分けは？",
+      "back": "ALB は L7（HTTP/HTTPS）で、パスやホスト名によるルーティングができる。NLB は L4（TCP/UDP/TLS）で超低遅延・高スループット、AZ ごとに固定 IP（Elastic IP）を持てる。GWLB は L3 で、ファイアウォールなどのサードパーティ仮想アプライアンスを透過的に挟み、スケールさせる（GENEVE）。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Elastic Load Balancing"],
+      "tags": ["ALB", "NLB", "GWLB", "ロードバランサー"]
+    },
+    {
+      "id": "fc-w2c-074",
+      "front": "Auto Scaling グループで、アプリが応答しなくなった EC2 を自動で入れ替えるには、何を設定するか。",
+      "back": "ELB のヘルスチェックをグループで有効にする。既定は EC2 のステータスチェックだけなので、アプリが応答しなくてもインスタンスが正常と扱われる。ELB のヘルスチェックを有効にすると、ロードバランサーが異常と判断したインスタンスが終了され、新しいインスタンスに置き換わる。複数 AZ にまたがる構成も併せて使う。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon EC2 Auto Scaling", "Elastic Load Balancing"],
+      "tags": ["ヘルスチェック", "高可用性", "自己修復"]
+    },
+    {
+      "id": "fc-w2c-075",
+      "front": "RDS のマルチ AZ とリードレプリカは、目的と同期方式がどう違うか。",
+      "back": "マルチ AZ は可用性のためで、別 AZ のスタンバイへ同期レプリケーションし、障害時に自動フェイルオーバーする（スタンバイは読み取り不可、同一リージョン）。リードレプリカは読み取りのスケールのためで、非同期レプリケーション、別リージョンにも作れ、昇格して独立した DB にもできる。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Relational Database Service"],
+      "tags": ["マルチAZ", "リードレプリカ", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-076",
+      "front": "RDS のマルチ AZ DB インスタンス配置とマルチ AZ DB クラスター配置は何が違うか。",
+      "back": "DB インスタンス配置はスタンバイが1台で、フェイルオーバー専用であり読み取りには使えない。DB クラスター配置は3つの AZ にライターと2台のリーダー（スタンバイ）を置き、リーダーは読み取りにも使え、フェイルオーバーも速い。読み取り分散も兼ねたいときに選ぶ。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon Relational Database Service"],
+      "tags": ["マルチAZ", "DBクラスター"]
+    },
+    {
+      "id": "fc-w2c-077",
+      "front": "Amazon Aurora の高可用性の仕組みと、読み取りの分散方法は？",
+      "back": "クラスターのストレージは3つの AZ に6コピーで保持され、自動で修復される。別 AZ に最大15個のAurora レプリカを置け、障害時はレプリカがライターに昇格する。読み取りはリーダーエンドポイントに接続すると、レプリカへ分散される。書き込みはクラスターエンドポイント。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Aurora"],
+      "tags": ["Aurora", "エンドポイント", "高可用性"]
+    },
+    {
+      "id": "fc-w2c-078",
+      "front": "Aurora グローバルデータベースは、どんな要件のときに選ぶか。切り替えの種類は？",
+      "back": "リージョン障害に備えた災害対策と、複数リージョンでの低遅延の読み取りが要件のとき。ストレージ層でレプリケーションし、遅延は通常1秒未満で、RPO は非常に短い。計画的な切り替え（Switchover）と、障害時のフェイルオーバー（Failover）を区別する。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon Aurora"],
+      "tags": ["Aurora", "グローバルデータベース", "災害対策"]
+    },
+    {
+      "id": "fc-w2c-079",
+      "front": "Lambda から RDS へ接続が急増して DB の接続数が尽きる。フェイルオーバーも速くしたい。",
+      "back": "Amazon RDS Proxy。接続をプールして多重化し、DB の接続数と負荷を抑える。フェイルオーバー時はアプリの接続を保ったまま新しいライターにつなぎ替えるため、復旧が速い。IAM 認証や Secrets Manager との連携で認証情報の管理も楽になる。アプリの大幅な修正は不要。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Relational Database Service", "AWS Lambda", "Amazon Aurora"],
+      "tags": ["RDS Proxy", "接続プール", "プロキシ"]
+    },
+    {
+      "id": "fc-w2c-080",
+      "front": "DynamoDB のグローバルテーブルとポイントインタイムリカバリは、それぞれ何に備えるものか。",
+      "back": "グローバルテーブルは複数リージョンにマルチアクティブでレプリケーション（非同期）し、リージョン障害への備えと低遅延な読み書きを実現する。ポイントインタイムリカバリ（PITR）は誤削除や誤更新に対し、最大35日以内の任意の時点へテーブルを復元する。レプリケーションは誤操作を元に戻せない。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon DynamoDB"],
+      "tags": ["DynamoDB", "グローバルテーブル", "PITR"]
+    },
+    {
+      "id": "fc-w2c-081",
+      "front": "災害対策の4つの戦略を、コストが低い順に並べると？ それぞれの特徴は？",
+      "back": "バックアップと復元（データだけ別の場所に保管し、障害後に再構築）、パイロットライト（データを常時複製し、中核だけを稼働）、ウォームスタンバイ（縮小した全体を常時稼働し、障害時に拡張）、マルチサイト／アクティブ-アクティブ（複数拠点で本番稼働）。右へ行くほど RTO・RPO は短く、コストは高い。",
+      "taskStatements": ["2.2"],
+      "services": ["AWS Backup", "Amazon Route 53"],
+      "tags": ["災害対策", "RPO・RTO", "戦略"]
+    },
+    {
+      "id": "fc-w2c-082",
+      "front": "RPO と RTO はそれぞれ何を表すか。RPO を短くするのに有効な手段は？",
+      "back": "RPO（目標復旧時点）は許容できるデータ損失の時間で、直近のバックアップやレプリケーションの時点で決まる。RTO（目標復旧時間）は、障害発生からサービス復旧までに許容される時間。RPO を短くするには、バックアップの頻度を上げるか、継続的なレプリケーションにする。",
+      "taskStatements": ["2.2"],
+      "services": [],
+      "tags": ["RPO", "RTO", "災害対策"]
+    },
+    {
+      "id": "fc-w2c-083",
+      "front": "Route 53 のルーティングポリシーを、要件別に選ぶと？（重み、レイテンシー、フェイルオーバー、地理的位置情報）",
+      "back": "重み付けは割合を指定して振り分け（段階的な切り替え、テスト）。レイテンシーは複数リージョンで遅延が最小のものへ。フェイルオーバーはアクティブ-パッシブの切り替え。位置情報（ジオロケーション）は利用者の場所で振り分け（法規制や言語対応）。ジオプロキシミティは リソースの位置とバイアスで調整する。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Route 53"],
+      "tags": ["Route 53", "ルーティングポリシー", "DNS"]
+    },
+    {
+      "id": "fc-w2c-084",
+      "front": "Route 53 のフェイルオーバーが働くための前提は？ ALB を指すレコードは何で作るか。",
+      "back": "プライマリのレコードにヘルスチェック（またはエイリアスの対象の正常性評価）を関連付け、異常時にセカンダリへ応答を切り替える。AWS リソース（ALB、CloudFront など）を指すレコードはエイリアスレコードにすると、ゾーンの頂点（example.com）にも使え、AWS リソースへのクエリには料金がかからない。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Route 53", "Elastic Load Balancing"],
+      "tags": ["Route 53", "ヘルスチェック", "エイリアスレコード"]
+    },
+    {
+      "id": "fc-w2c-085",
+      "front": "S3 の耐久性は高いが、AZ 障害には強いか。S3 Standard と S3 One Zone-IA で何が違うか。",
+      "back": "S3 は99.999999999%（イレブンナイン）の耐久性を設計目標とし、Standard は複数 AZ にデータを保存するため AZ 障害に強い。S3 One Zone-IA は1つの AZ にしか保存せず、AZ が失われるとデータも失われるため、再作成できるデータ向き。耐久性（消えない）と可用性（使える）は別の指標。",
+      "taskStatements": ["2.2"],
+      "services": ["Amazon Simple Storage Service"],
+      "tags": ["S3", "耐久性", "ストレージクラス"]
+    },
+    {
+      "id": "fc-w2c-086",
+      "front": "S3 のレプリケーション（CRR・SRR）の前提と、設定前から存在するオブジェクトの扱いは？",
+      "back": "送信元と送信先の両方でバージョニングを有効にし、IAM ロールで許可する。設定後の新規・更新オブジェクトだけがライブ複製の対象で、既存のオブジェクトは S3 バッチレプリケーションで複製する。CRR は別リージョン（災害対策、低遅延）、SRR は同一リージョン（ログ集約など）。15分以内のSLAが必要なら S3 RTC。",
+      "taskStatements": ["2.2", "1.3"],
+      "services": ["Amazon Simple Storage Service"],
+      "tags": ["S3", "レプリケーション", "CRR"]
+    },
+    {
+      "id": "fc-w2c-087",
+      "front": "EBS、インスタンスストア、EFS を、耐久性と AZ 障害の観点で比べると？",
+      "back": "EBS は同じ AZ 内で冗長化され、AZ 障害に備えるにはスナップショット（S3 に保存）を別 AZ・リージョンで復元する。インスタンスストアは一時的で、インスタンスの停止や障害で消える。EFS は リージョン内の複数 AZ にデータを保存し、複数の AZ のインスタンスから同時に使える。",
+      "taskStatements": ["2.2", "2.1"],
+      "services": ["Amazon Elastic Block Store", "Amazon Elastic File System", "Amazon Elastic Compute Cloud"],
+      "tags": ["ストレージ", "耐久性", "AZ"]
+    },
+    {
+      "id": "fc-w2c-088",
+      "front": "CloudFront と Global Accelerator は、どう使い分けるか。",
+      "back": "CloudFront はエッジにコンテンツをキャッシュする CDN で、HTTP/HTTPS の静的・動的コンテンツの配信向き。Global Accelerator は固定のエニーキャスト IP を提供し、AWS のグローバルネットワーク経由で最適なエンドポイントへ TCP/UDP を転送する。キャッシュはせず、ヘルスチェックによる高速な切り替えができる。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon CloudFront", "AWS Global Accelerator"],
+      "tags": ["エッジ", "CDN", "使い分け"]
+    },
+    {
+      "id": "fc-w2c-089",
+      "front": "急なアクセス増加で、下流の DB を過負荷から守りながらリクエストを取りこぼさない構成は？",
+      "back": "リクエストを SQS キューで受けてバッファし、Lambda の予約済み同時実行数（reserved concurrency）で処理の並列度に上限を設けて DB への負荷を平準化する。キューによる疎結合で、突発的な負荷を吸収して後から処理できる。API 側は API Gateway のスロットリングで入口も制限できる。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon Simple Queue Service", "AWS Lambda", "Amazon API Gateway"],
+      "tags": ["バッファリング", "スロットリング", "疎結合"]
+    },
+    {
+      "id": "fc-w2c-090",
+      "front": "ElastiCache で、フェイルオーバーやデータの永続化が必要なときは Redis 系と Memcached のどちらか。",
+      "back": "Redis OSS 互換（Valkey を含む）のエンジン。レプリカとマルチ AZ の自動フェイルオーバー、永続化、豊富なデータ構造（ソート済みセットなど）に対応する。Memcached はマルチスレッドでシンプルなキャッシュに向くが、レプリケーションや永続化がなく、ノード障害でそのデータは失われる。",
+      "taskStatements": ["2.1", "2.2"],
+      "services": ["Amazon ElastiCache"],
+      "tags": ["キャッシュ", "Redis", "Memcached"]
+    }
+  ]
+}
