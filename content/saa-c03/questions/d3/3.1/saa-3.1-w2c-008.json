@@ -1,0 +1,57 @@
+{
+  "id": "saa-3.1-w2c-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K1", "3.1-K2", "3.1-K3"],
+  "services": ["Amazon FSx", "Amazon EFS", "Amazon EC2"],
+  "qualifier": "minimal-change",
+  "tags": ["Amazon FSx for NetApp ONTAP", "NFS", "SMB", "SnapMirror", "マルチプロトコル"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある精密機器メーカーは、オンプレミスの NetApp ストレージで同じ設計データセットを、Linux の設計サーバーには NFS で、Windows の品質管理端末には SMB で提供しています。データは SnapMirror で別拠点に複製し、運用チームは ONTAP の CLI とスクリプトで管理しています。これを AWS に移行します。プロトコル、SnapMirror による複製、運用ツールは変えず、アクセス頻度の低いデータは自動で低コストの階層に移したいと考えています。ファイルサーバーの構築や保守は避けます。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon FSx for Windows File Server のマルチ AZ ファイルシステムを作成し、SMB 共有として提供する。",
+      "correct": false,
+      "rationale": "FSx for Windows File Server は SMB のファイル共有に対応しますが、Linux サーバーが使う NFS は提供しません。NetApp の SnapMirror や ONTAP の CLI による運用も引き継げません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon FSx for NetApp ONTAP のファイルシステムを作成し、同じボリュームを NFS と SMB の両方で公開する。",
+      "correct": true,
+      "rationale": "FSx for NetApp ONTAP は、同じデータに NFS・SMB・iSCSI でアクセスでき、SnapMirror による複製と ONTAP の CLI・REST API による管理に対応します。アクセス頻度の低いデータはキャパシティプールに自動で階層化でき、完全マネージドです。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon FSx for OpenZFS のファイルシステムを作成し、ZFS のスナップショットとクローンで運用する。",
+      "correct": false,
+      "rationale": "FSx for OpenZFS は ZFS ベースで、スナップショットやクローンを備えますが、NetApp ONTAP ではありません。SnapMirror による複製や ONTAP の CLI を使った既存の運用ツールは引き継げません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EFS を Linux サーバーに NFS でマウントし、Windows 端末向けには Amazon EC2 上に Samba サーバーを構築して SMB で提供する。",
+      "correct": false,
+      "rationale": "EFS は NFS 専用で、SMB を提供するには EC2 上に Samba サーバーを自前で構築して保守する必要があります。ファイルサーバーの構築や保守を避ける条件を満たさず、SnapMirror や ONTAP ツールも使えません。"
+    }
+  ],
+  "explanation": "Amazon FSx for NetApp ONTAP は、NetApp ONTAP ファイルシステムを完全マネージドで提供するサービスです。NFS、SMB、iSCSI（および NVMe）で同じデータにマルチプロトコルでアクセスでき、スナップショットやクローン、SnapMirror によるレプリケーション、ONTAP の CLI・REST API による管理に対応します。アクセス頻度の低いデータは、低コストのキャパシティプールに自動で階層化できます。オンプレミスで NetApp ONTAP を使っている環境を、アプリケーションや運用の方法を変えずに AWS へ移行・バックアップ・バーストする用途に向いています。\n\nFSx for Windows File Server は SMB 専用、EFS は NFS 専用です。FSx for OpenZFS は NFS 向けの高性能なファイルシステムで、ZFS のスナップショットやクローンを備えますが、ONTAP 固有の SnapMirror や管理ツールは使えません。「NFS と SMB の両方」「既存の NetApp の複製と運用を維持」「自動階層化」の 3 点がそろえば、FSx for NetApp ONTAP が答えです。",
+  "keyPoints": [
+    "オンプレミスの NetApp ONTAP の運用（SnapMirror、ONTAP CLI）をそのまま AWS へ → FSx for NetApp ONTAP",
+    "同じデータに NFS と SMB（さらに iSCSI）で同時にアクセス → FSx for NetApp ONTAP。Windows File Server は SMB 専用、EFS は NFS 専用",
+    "FSx は 4 種類（Windows File Server、Lustre、NetApp ONTAP、OpenZFS）。要件のキーワードで選び分ける"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon FSx for NetApp ONTAP?",
+      "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
