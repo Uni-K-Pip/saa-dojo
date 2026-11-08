@@ -1,0 +1,82 @@
+{
+  "id": "saa-1.2-w2m-014",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K5",
+    "1.2-S3"
+  ],
+  "services": [
+    "AWS Security Hub",
+    "Amazon GuardDuty",
+    "Amazon Inspector",
+    "Amazon Macie",
+    "AWS Organizations"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "AWS Security Hub",
+    "委任管理者",
+    "検出結果の集約"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、AWS Organizations で 40 のアカウントを運用しています。Amazon GuardDuty、Amazon Inspector、Amazon Macie の検出結果と、セキュリティ基準へのコンプライアンスのチェック結果を、1 つのアカウントで一元的に確認し、優先度を付けて対応したいと考えています。この要件を満たす適切な設定を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各アカウントの担当者が、各サービスのコンソールで検出結果を確認し、スプレッドシートにまとめる。",
+      "correct": false,
+      "rationale": "40 のアカウントで手作業になり、集約と優先度の判断に時間がかかります。一元的な確認と継続的な把握に向きません。"
+    },
+    {
+      "id": "b",
+      "text": "すべての検出結果を S3 にエクスポートし、Athena とダッシュボードを自作して、一覧にする。",
+      "correct": false,
+      "rationale": "集約の仕組みを自作して運用することになります。セキュリティ基準へのコンプライアンスのチェックも、別に用意する必要があります。"
+    },
+    {
+      "id": "c",
+      "text": "GuardDuty、Inspector、Macie の Security Hub との統合を有効にして、各サービスの検出結果が、Security Hub に標準の形式で送られるようにする。",
+      "correct": true,
+      "rationale": "統合により、各サービスの検出結果が AWS Security Finding Format（ASFF）で Security Hub に集約され、重要度で並べ替えたり、フィルターしたりできます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Security Hub を有効にして、セキュリティアカウントを委任管理者に指定し、組織の新規および既存のアカウントで Security Hub を自動で有効にする。",
+      "correct": true,
+      "rationale": "Security Hub は、組織全体のセキュリティの状況を 1 つのアカウントで確認できるサービスです。委任管理者と自動有効化で、アカウントの追加に追従できます。"
+    },
+    {
+      "id": "e",
+      "text": "AWS CloudTrail の組織の証跡を作成して、検出結果を集約する。",
+      "correct": false,
+      "rationale": "CloudTrail は API 呼び出しの記録で、GuardDuty、Inspector、Macie の検出結果を集約する機能ではありません。"
+    }
+  ],
+  "explanation": "AWS Security Hub は、AWS のセキュリティサービスやパートナー製品の検出結果を集約し、セキュリティ基準（AWS の基礎的なセキュリティのベストプラクティス、CIS など）に対するコンプライアンスを自動でチェックする、クラウドセキュリティ態勢管理のサービスです。\n\nAWS Organizations と統合して、管理アカウントから委任管理者アカウントを指定すれば、そのアカウントで、組織のすべてのメンバーアカウントの Security Hub を有効化・管理し、検出結果を一元的に確認できます。新しいアカウントの自動有効化も設定できます。また、GuardDuty、Inspector、Macie などとの統合を有効にすると、各サービスの検出結果が ASFF 形式で Security Hub に送られます。複数のリージョンの検出結果も、集約リージョンにまとめられます。\n\n手作業やスプレッドシート、自作のダッシュボードは、運用負荷が大きく、CloudTrail は検出結果の集約には使えません。",
+  "keyPoints": [
+    "複数のセキュリティサービスの検出結果とコンプライアンスチェックの一元化 → AWS Security Hub（委任管理者＋自動有効化＋サービス統合）",
+    "検出結果は ASFF 形式で集約される",
+    "自作の集約より、マネージドの集約サービスを選ぶ"
+  ],
+  "references": [
+    {
+      "title": "AWS Security Hub とは - AWS Security Hub ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
+    },
+    {
+      "title": "Security Hub と AWS Organizations の統合",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/designate-orgs-admin-account.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
