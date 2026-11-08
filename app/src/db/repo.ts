@@ -3,6 +3,9 @@ import { db } from './db';
 import { isEventLike, sortEvents, uuid, type AppEvent, type NewEvent } from '../domain/events';
 import type { SessionRecord } from '../domain/session';
 
+/** 最後に書き出し・同期した時刻（meta のキー） */
+export const LAST_BACKUP_KEY = 'lastBackupAt';
+
 let deviceIdPromise: Promise<string> | null = null;
 
 export function getDeviceId(): Promise<string> {
