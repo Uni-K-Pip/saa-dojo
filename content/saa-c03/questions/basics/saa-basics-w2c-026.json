@@ -1,0 +1,80 @@
+{
+  "id": "saa-basics-w2c-026",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K12"
+  ],
+  "services": [
+    "AWS Budgets",
+    "AWS Cost Explorer",
+    "AWS CloudTrail",
+    "AWS Config",
+    "Amazon CloudWatch"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AWS Budgets",
+    "Cost Explorer",
+    "料金の管理"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社の経理部は、AWS の料金について 2 つのことを求めています。1 つは、1 か月の料金が決めた予算を超えそうになったら、自動で通知を受けること。もう 1 つは、どのサービスの料金が先月から増えたのかを、グラフで調べることです。この 2 つの要件に使うサービスを 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS CloudTrail",
+      "correct": false,
+      "rationale": "CloudTrail は AWS の API 操作の記録で、料金の予算管理や料金の推移の分析には使いません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Budgets",
+      "correct": true,
+      "rationale": "AWS Budgets は予算を決め、実際の料金や見込みが予算を超えそうなときに通知します。1 つ目の要件を満たします。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Cost Explorer",
+      "correct": true,
+      "rationale": "AWS Cost Explorer は、料金と利用状況の推移をグラフで分析できます。どのサービスの料金が増えたかを調べる 2 つ目の要件を満たします。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Config",
+      "correct": false,
+      "rationale": "AWS Config はリソースの設定と変更の履歴を記録するサービスで、料金の通知や分析の機能はありません。"
+    },
+    {
+      "id": "e",
+      "text": "Amazon CloudWatch Logs",
+      "correct": false,
+      "rationale": "CloudWatch Logs はアプリケーションや OS のログを集めて検索するサービスで、料金の予算管理や分析には使いません。"
+    }
+  ],
+  "explanation": "料金を管理するツールは、目的で使い分けます。AWS Budgets は、予算を決めて、実際の料金や見込みが予算を超えそうなときに通知します。AWS Cost Explorer は、料金と利用状況の推移をグラフで分析し、今後の見込みも予測します。このほかに、最も詳しい明細を出力する AWS Cost and Usage Report や、タグごとに料金を集計するコスト配分タグがあります。\n\n「予算を超えそうになったら通知したい」なら AWS Budgets、「料金の傾向を分析したい」なら AWS Cost Explorer です。CloudTrail、AWS Config、CloudWatch Logs は料金の管理のためのサービスではありません。",
+  "keyPoints": [
+    "予算を超えそうになったら通知 → AWS Budgets",
+    "料金の傾向やサービス別の増減を分析 → AWS Cost Explorer"
+  ],
+  "references": [
+    {
+      "title": "Managing your costs with AWS Budgets",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "title": "Analyzing your costs and usage with AWS Cost Explorer",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-pricing"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-013",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S7",
+    "4.1-K8"
+  ],
+  "services": [
+    "AWS DataSync",
+    "Amazon FSx",
+    "Amazon S3",
+    "AWS Storage Gateway"
+  ],
+  "qualifier": "minimal-change",
+  "tags": [
+    "DataSync",
+    "FSx for Windows File Server",
+    "NTFS ACL",
+    "ファイルサーバー移行"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある法律事務所は、オンプレミスの Windows ファイルサーバー（約 15 TB、SMB 共有）を Amazon FSx for Windows File Server に移行します。共有フォルダーには部署ごとの NTFS アクセス権（ACL）が細かく設定されており、移行後も同じ権限をそのまま維持する必要があります。最初の全量の転送のあと、切り替えまでの 2 週間は、変更されたファイルだけを繰り返し同期したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS CLI の s3 sync でファイルを S3 バケットにアップロードし、S3 から FSx for Windows File Server にコピーする。",
+      "correct": false,
+      "rationale": "S3 にはファイルのオブジェクトとして保存されるだけで、NTFS の ACL は保持されません。FSx へコピーする時点では、権限を再設定する必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "AWS DataSync でオンプレミスの SMB 共有から S3 バケットに転送し、続けて、S3 から FSx for Windows File Server へ DataSync で転送する。",
+      "correct": false,
+      "rationale": "SMB から S3 への転送では、Windows のメタデータ（ACL など）が保存されません。S3 を経由した時点で権限が失われ、同じ権限を維持するという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "オンプレミスに S3 File Gateway を配備し、SMB 共有としてファイルを S3 に保存し、そこから FSx for Windows File Server へ移行する。",
+      "correct": false,
+      "rationale": "File Gateway は SMB 共有で S3 に保存するためのゲートウェイで、FSx for Windows File Server への移行手段ではありません。権限の維持も保証されず、余計な構成が増えます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync のエージェントをオンプレミスに配備し、SMB 共有を送信元、FSx for Windows File Server を送信先とするタスクで、DACL を含めて転送する。タスクは切り替えまで繰り返し実行する。",
+      "correct": true,
+      "rationale": "DataSync は SMB 間（SMB と FSx for Windows File Server）の転送で、NTFS の DACL や所有者、タイムスタンプなどを保持してコピーできます。タスクを繰り返し実行すれば、変更分だけを同期できます。"
+    }
+  ],
+  "explanation": "AWS DataSync は、オンプレミスのストレージと AWS のストレージサービスの間で、データを転送・同期するサービスです。SMB の共有と Amazon FSx for Windows File Server の間の転送では、ファイルの所有者、タイムスタンプ、標準ファイル属性、NTFS の DACL（アクセス制御リスト）などのメタデータを保持してコピーできます（DACL や SACL の転送には、DataSync が使う Windows ユーザーに適切な権限が必要です）。タスクを繰り返し実行すると、変更された分だけを転送するため、切り替えまでの差分の同期にも使えます。\n\n一方、SMB から S3 に転送すると、Windows 固有のメタデータ（ACL など）は保持されません。そのため、S3 を経由する構成では、権限の維持という要件を満たせません。ファイルサーバーの権限を維持したまま移行する場合は、移行元と移行先のメタデータの構造が同じ組み合わせ（SMB 同士）を選びます。",
+  "keyPoints": [
+    "Windows ファイルサーバー（SMB）の移行で NTFS ACL を維持する → DataSync で SMB から FSx for Windows File Server へ直接転送",
+    "SMB から S3 や EFS への転送では、Windows の ACL は保持されない",
+    "DataSync のタスクを繰り返し実行すれば、変更分だけを同期できる（切り替えまでの差分同期）",
+    "Storage Gateway は移行ツールではなく、オンプレミスから AWS のストレージを使い続けるためのもの"
+  ],
+  "references": [
+    {
+      "title": "Understanding how DataSync handles file and object metadata - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+    },
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

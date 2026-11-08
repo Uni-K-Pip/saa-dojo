@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.1-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S5", "1.1-S3"],
+  "services": ["Amazon Simple Queue Service", "AWS Identity and Access Management (IAM)", "Amazon ECS"],
+  "qualifier": "minimal-change",
+  "tags": ["リソースベースポリシー", "キューポリシー", "クロスアカウント", "Amazon SQS", "アイデンティティベースポリシー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある物流会社では、受注システムのアカウント A に Amazon SQS のキューがあります。別のアカウント B で動く出荷管理アプリケーションが、このキューにメッセージを送信する必要があります。アプリケーションは Amazon ECS のタスクとして動き、アカウント B のタスクロールを使って AWS を呼び出しています。アプリケーションのコードは変更せず、現在のタスクロールのまま送信できるようにしたいと考えています。この要件を満たす設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アカウント A のキューのアクセスポリシーで、アカウント B のタスクロールに sqs:SendMessage を許可する。さらに、アカウント B のタスクロールの IAM ポリシーでも、このキューへの sqs:SendMessage を許可する。",
+      "correct": true,
+      "rationale": "SQS のキューはリソースベースポリシー（アクセスポリシー）を持てます。別アカウントのロールを Principal に指定して許可し、ロールの所属するアカウント側でも許可することで、ロールを切り替えずにクロスアカウントで送信できます。コードの変更も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "アカウント A のキューのアクセスポリシーでだけ、アカウント B のタスクロールに sqs:SendMessage を許可する。アカウント B のタスクロールの IAM ポリシーは変更しない。",
+      "correct": false,
+      "rationale": "クロスアカウントのアクセスでは、リソースを持つアカウントの許可に加えて、呼び出すプリンシパルが所属するアカウントの IAM ポリシーでも許可が必要です。タスクロール側に許可がないと、送信は拒否されます。"
+    },
+    {
+      "id": "c",
+      "text": "アカウント A に sqs:SendMessage を許可した IAM ロールを作成してアカウント B を信頼させ、アプリケーションを変更して実行時にそのロールを AssumeRole してから送信する。",
+      "correct": false,
+      "rationale": "クロスアカウントのロールを使う方法は有効ですが、アプリケーションが AssumeRole を呼び出して一時的な認証情報を切り替えるコードの変更が必要です。コードを変更しないという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "アカウント A に IAM ユーザーを作成して sqs:SendMessage を許可し、そのアクセスキーを AWS Secrets Manager に保存して、アプリケーションが取り出して使うようにする。",
+      "correct": false,
+      "rationale": "長期的なアクセスキーの管理が必要になり、アプリケーションもシークレットを取得して認証情報を切り替えるコードの変更が必要になります。コードを変更しない、ロールのまま送信するという要件を満たしません。"
+    }
+  ],
+  "explanation": "リソースベースポリシーは、キューやバケットのようなリソースに直接アタッチするポリシーで、Principal に別アカウントのプリンシパルを指定できます。このとき、リソースがあるアカウントの許可（リソースベースポリシー）と、呼び出す側のアカウントの IAM ポリシー（アイデンティティベースポリシー）の両方が必要です。同じアカウント内ではどちらか一方の許可で足りますが、クロスアカウントでは両方が必要になる点が重要です。\n\nリソースベースポリシーでアクセスを許可する場合、呼び出し側のプリンシパルは自分の IAM ロールのまま、別のアカウントのリソースを直接使えます。ロールを切り替える必要がないので、既存のコードを変更せずに済みます。Amazon SQS、Amazon SNS、Amazon S3、AWS Lambda、AWS KMS などが、リソースベースポリシーでのクロスアカウントアクセスに対応しています。\n\n別アカウントのロールを AssumeRole する方法は柔軟ですが、コードの変更が必要です。IAM ユーザーのアクセスキーは長期的な認証情報になるため、避けます。",
+  "keyPoints": [
+    "クロスアカウントで IAM ロールを切り替えずに使いたい → リソースベースポリシーを持つサービス（SQS、SNS、S3、Lambda、KMS）",
+    "クロスアカウントのアクセスは、リソース側の許可と呼び出し側の IAM ポリシーの許可が両方必要",
+    "AssumeRole を使う方法はコードの変更が要る。長期的なアクセスキーは避ける"
+  ],
+  "references": [
+    {
+      "title": "Cross account resource access in IAM - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html"
+    },
+    {
+      "title": "Basic examples of Amazon SQS policies - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-basic-examples-of-sqs-policies.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-roles-federation"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

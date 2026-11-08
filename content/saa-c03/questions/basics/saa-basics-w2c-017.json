@@ -1,0 +1,71 @@
+{
+  "id": "saa-basics-w2c-017",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K6"
+  ],
+  "services": [
+    "AWS Identity and Access Management (IAM)",
+    "Amazon S3"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "明示的な拒否",
+    "ポリシー評価",
+    "Deny"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の開発者の IAM ユーザーには、S3 バケット reports-bucket のオブジェクトを読めるようにする許可（Allow）のポリシーが付いています。しかし、このユーザーがオブジェクトを読もうとすると、アクセスが拒否されます。調べると、同じユーザーに付いている別のポリシーに、同じバケットへの明示的な拒否（Deny）がありました。アクセスが拒否される理由として正しいものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "最初に評価されたポリシーの結果が採用され、あとから評価される Allow のポリシーは無視されるため。",
+      "correct": false,
+      "rationale": "IAM はポリシーの評価順で結果を決めません。順番にかかわらず、すべての該当するポリシーを見たうえで、明示的な拒否があれば拒否します。"
+    },
+    {
+      "id": "b",
+      "text": "Allow と Deny が両方あると互いに打ち消し合い、暗黙的な拒否になるため。",
+      "correct": false,
+      "rationale": "打ち消し合うのではありません。明示的な Deny が優先される結果として拒否になります。打ち消し合うなら、Allow が別にあれば許可される場合が生じてしまいます。"
+    },
+    {
+      "id": "c",
+      "text": "明示的な Deny は、ほかのどのポリシーの Allow よりも優先されるため。",
+      "correct": true,
+      "rationale": "許可されるかの判断では、どこかに明示的な Deny があれば、Allow があっても拒否が優先されます。「許可しているのにアクセスできない」ときは、拒否がないかを疑います。"
+    },
+    {
+      "id": "d",
+      "text": "同じユーザーに複数のポリシーが付いていると、IAM がすべてのポリシーを無効にするため。",
+      "correct": false,
+      "rationale": "複数のポリシーを付けても無効にはなりません。ポリシーは合わせて評価され、明示的な拒否がある操作だけが拒否されます。"
+    }
+  ],
+  "explanation": "IAM のアクセスの判断は、次の順で考えます。何も書かれていなければ、すべて拒否されます（暗黙的な拒否）。ポリシーで明示的に許可（Allow）されていれば許可されます。ただし、どこかのポリシーに明示的な拒否（Deny）があれば、許可があっても拒否が優先されます。\n\nこの問題では、Allow のポリシーがあっても、別のポリシーの明示的な Deny が優先されるため、アクセスが拒否されます。ポリシーが評価される順番は結果に影響しません。「許可しているのにアクセスできない」という場面では、どこかに Deny がないかを調べるのが基本です。",
+  "keyPoints": [
+    "明示的な Deny は、どの Allow よりも優先される",
+    "何も書かれていなければ暗黙的に拒否される。ポリシーの評価順は結果に影響しない"
+  ],
+  "references": [
+    {
+      "title": "Policy evaluation logic",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+    },
+    {
+      "title": "What is IAM?",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-iam"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,73 @@
+{
+  "id": "saa-3.2-w2c-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-S4",
+    "3.2-K5"
+  ],
+  "services": [
+    "AWS Fargate",
+    "Amazon ECS"
+  ],
+  "qualifier": "minimal-change",
+  "tags": [
+    "Fargate",
+    "タスクサイズ",
+    "メモリ不足",
+    "vCPU とメモリの組み合わせ"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Java で書いた社内向けの帳票生成 API を、AWS Fargate で動く Amazon ECS のサービスとして運用しています。タスク定義のタスクサイズは 0.5 vCPU とメモリ 1 GB ですが、月末の大きな帳票を作るたびに、メモリ不足でコンテナが強制終了されます。モニタリングでは、終了の直前にタスクのメモリ使用率が 100% に達していました。アプリケーションのコードは変更せず、サーバーの管理は増やさずに解消したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ECS サービスのタスク数（希望数）を現在の数倍に増やす。",
+      "correct": false,
+      "rationale": "タスクを増やしても、1 つのタスクが使えるメモリは増えません。大きな帳票を作る 1 つのリクエストが同じ 1 GB で処理されるため、メモリ不足は解消されません。"
+    },
+    {
+      "id": "b",
+      "text": "ECS のクラスターに EC2 インスタンスを追加し、サービスのタスクを EC2 に配置する。",
+      "correct": false,
+      "rationale": "タスクのメモリはタスク定義のサイズで決まるので、EC2 に移しただけでは足りません。EC2 のインスタンスの管理が必要になり、サーバーの管理は増やさないという要件にも反します。"
+    },
+    {
+      "id": "c",
+      "text": "コンテナのメモリのソフトリミット（memoryReservation）だけを 2 GB に変更する。",
+      "correct": false,
+      "rationale": "ソフトリミットは配置の予約のための値で、Fargate ではタスク全体のメモリ（タスクサイズ）の範囲内で動きます。タスクのメモリが 1 GB のままでは、使えるメモリは増えません。"
+    },
+    {
+      "id": "d",
+      "text": "タスク定義のタスクサイズを 1 vCPU とメモリ 4 GB に変更し、サービスを更新する。",
+      "correct": true,
+      "rationale": "Fargate ではタスク全体の vCPU とメモリをタスクレベルで指定し、有効な組み合わせから選びます。1 vCPU では 2 GB から 8 GB までを選べるので、メモリ 4 GB に増やして更新するだけでコードを変えずに解消できます。"
+    }
+  ],
+  "explanation": "AWS Fargate では、タスクが使える CPU とメモリの量をタスク定義のタスクサイズ（cpu と memory）で決めます。値は自由に組み合わせられず、たとえば 0.5 vCPU ではメモリ 1〜4 GB、1 vCPU では 2〜8 GB のように、vCPU ごとに選べるメモリの範囲が決まっています。メモリ不足でコンテナが終了している場合は、タスクサイズを有効な組み合わせの大きなものに変更し、新しいリビジョンでサービスを更新します。\n\nタスク数を増やすのは、全体の処理能力を上げる方法であり、1 つの処理に使えるメモリは増えません。コンテナの memoryReservation はソフトリミットで、タスクサイズを超えて使えるようにするものではありません。EC2 に移すと、サーバーの管理が必要になります。",
+  "keyPoints": [
+    "Fargate のリソースは、タスクレベルの vCPU とメモリ（タスクサイズ）で決まる",
+    "vCPU とメモリは有効な組み合わせから選ぶ（例: 1 vCPU は 2〜8 GB）",
+    "メモリ不足はタスク数ではなく 1 タスクのサイズを大きくして解消する",
+    "サーバーの管理を増やさない → EC2 に戻さず Fargate のまま調整する"
+  ],
+  "references": [
+    {
+      "title": "Amazon ECS task definition parameters for Fargate - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html"
+    },
+    {
+      "title": "AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

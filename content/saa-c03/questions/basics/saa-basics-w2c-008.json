@@ -1,0 +1,72 @@
+{
+  "id": "saa-basics-w2c-008",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K11"
+  ],
+  "services": [
+    "Amazon SNS",
+    "Amazon SQS",
+    "AWS Step Functions"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "SNS",
+    "ファンアウト",
+    "Pub/Sub"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社では、新しい注文が入ると、在庫管理システム、発送システム、売上集計システムの 3 つに同じ通知を届ける必要があります。送り手の注文システムは、受け手の数を意識せずに通知を 1 回だけ出したいと考えています。受け手は今後も増える予定です。どの設計が最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "注文システムが、3 つのシステムの API を順番に呼び出す。",
+      "correct": false,
+      "rationale": "注文システムが受け手を全部知っている必要があり、受け手が増えるたびに改修が必要です。1 つが止まると注文システムも影響を受けます。"
+    },
+    {
+      "id": "b",
+      "text": "注文システムが Amazon SNS のトピックに通知を発行し、3 つのシステムがそれぞれ受け手として登録する。",
+      "correct": true,
+      "rationale": "SNS は 1 つのメッセージを、登録された複数の受け手にまとめて届けます。送り手は 1 回発行するだけで、受け手が増えても登録を追加するだけで済みます。"
+    },
+    {
+      "id": "c",
+      "text": "通知を 1 本の Amazon SQS 標準キューに入れ、3 つのシステムが同じキューから取り出す。",
+      "correct": false,
+      "rationale": "キューのメッセージは、取り出した 1 つの受け手が処理して削除します。3 つのシステムがキューを取り合うので、全員に同じ通知を届けることはできません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Step Functions のワークフローで、3 つのシステムを順番に呼び出す。",
+      "correct": false,
+      "rationale": "Step Functions は処理の順番や分岐を管理するサービスで、1 つの通知を多くの受け手に届ける用途の仕組みではありません。ワークフローが受け手を知る必要もあります。"
+    }
+  ],
+  "explanation": "1 つのメッセージを複数の受け手に同時に届けたいときは、Pub/Sub 型の Amazon SNS を使います。送り手は「トピック」にメッセージを発行し、SNS が登録された受け手（SQS のキュー、Lambda 関数、メールなど）へ押し出します。受け手が増えても、送り手の仕組みを変える必要はありません。\n\nSQS のキューは、1 つのメッセージを 1 つの受け手が処理する仕組みなので、全員に同じ通知を届ける用途には向きません。受け手のペースで確実に処理したいときは、SNS の受け手に SQS キューを指定する「ファンアウト」にします。",
+  "keyPoints": [
+    "1 つの知らせを複数のシステムに同時に届ける → SNS（必要なら受け手を SQS キューにするファンアウト）",
+    "SQS は 1 つのメッセージを 1 つの受け手が処理する"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon SNS?",
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html"
+    },
+    {
+      "title": "What is Amazon SQS?",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-decoupling-serverless"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

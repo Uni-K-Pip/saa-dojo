@@ -1,0 +1,78 @@
+{
+  "id": "saa-basics-w2c-012",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K5"
+  ],
+  "services": [
+    "Amazon VPC",
+    "Elastic Load Balancing",
+    "Amazon RDS"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "セキュリティグループ",
+    "ポート番号",
+    "3 層構成"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社は、ロードバランサー、アプリケーションサーバー、MySQL のデータベースからなる 3 層の構成を作ります。インターネットの利用者には HTTPS だけで公開し、データベースにはアプリケーションサーバーからだけ接続させたいと考えています。セキュリティグループの設定として適切なものを 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ロードバランサーのセキュリティグループで、ポート 443 の受信を 0.0.0.0/0 から許可する。",
+      "correct": true,
+      "rationale": "HTTPS はポート 443 です。インターネットの利用者からの HTTPS だけを、ロードバランサーが受けられるようになります。"
+    },
+    {
+      "id": "b",
+      "text": "データベースのセキュリティグループで、ポート 3306 の受信を 0.0.0.0/0 から許可する。",
+      "correct": false,
+      "rationale": "0.0.0.0/0 はインターネット全体です。データベースにアプリケーションサーバーからだけ接続させるという要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "データベースのセキュリティグループで、ポート 3306 の受信を、アプリケーションサーバーのセキュリティグループから許可する。",
+      "correct": true,
+      "rationale": "送信元にアプリケーションサーバーのセキュリティグループを指定すれば、そのサーバーからの MySQL（3306）の接続だけが通ります。サーバーが増えても設定を変えずに済みます。"
+    },
+    {
+      "id": "d",
+      "text": "ロードバランサーのセキュリティグループで、ポート 80 と 443 の受信を許可する。",
+      "correct": false,
+      "rationale": "ポート 80 は暗号化されない HTTP です。HTTPS だけで公開するという要件に反します。"
+    },
+    {
+      "id": "e",
+      "text": "データベースのセキュリティグループで、ポート 3306 の受信を、ロードバランサーのセキュリティグループから許可する。",
+      "correct": false,
+      "rationale": "データベースに接続するのはアプリケーションサーバーで、ロードバランサーではありません。接続を許可すべき送信元が間違っています。"
+    }
+  ],
+  "explanation": "セキュリティグループは、ポート番号と送信元を指定して通信を許可します。新しく作ったセキュリティグループには受信のルールがなく、許可したものだけが入れます。3 層の構成では、各層の受信を前の層だけに絞ります。\n\nロードバランサーは、インターネットからの HTTPS（443）を 0.0.0.0/0 から許可します。データベースは、MySQL のポート 3306 を、送信元にアプリケーションサーバーのセキュリティグループを指定して許可します。IP アドレスで指定するより、サーバーが増えても設定を変えずに済みます。80 番の許可や、データベースを 0.0.0.0/0 に開ける設定は、要件に反します。",
+  "keyPoints": [
+    "HTTPS は 443、HTTP は 80、MySQL は 3306、SSH は 22、RDP は 3389",
+    "データベースへの接続を限定する → 送信元にアプリケーションサーバーのセキュリティグループを指定する"
+  ],
+  "references": [
+    {
+      "title": "Control traffic to your AWS resources using security groups",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"
+    },
+    {
+      "title": "Elastic Load Balancing とは",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-dns-http-tls"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

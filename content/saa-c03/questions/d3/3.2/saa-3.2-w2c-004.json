@@ -1,0 +1,79 @@
+{
+  "id": "saa-3.2-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-K3",
+    "3.2-S1"
+  ],
+  "services": [
+    "Amazon SQS",
+    "AWS Lambda"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "SQS FIFO",
+    "メッセージグループ ID",
+    "順序保証",
+    "並列処理"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "あるオンライン証券会社の注文受付システムでは、顧客ごとの注文の変更・取消しを、受け付けた順番どおりに処理する必要があります。一方で、顧客数が多いため、異なる顧客の注文は複数のコンシューマーで並列に処理して、全体の処理時間を短くしたいと考えています。メッセージの重複処理も避けたく、キューは Amazon SQS を使います。この要件を満たす設計を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "標準キューを使い、各メッセージにシーケンス番号を付けて、コンシューマー側で受信順を並べ替えてから処理する。",
+      "correct": false,
+      "rationale": "標準キューは順序が保証されず、少なくとも 1 回の配信なので重複もあり得ます。並べ替えは、すべてのメッセージが届くまで待たないと正しく行えず、順番どおりの処理と重複の回避という要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "FIFO キューを使い、すべてのメッセージに同じメッセージグループ ID を付ける。",
+      "correct": false,
+      "rationale": "メッセージ全体の順序は保たれますが、同じグループのメッセージは前のメッセージが削除されるまで次が受信できません。並列処理ができなくなり、処理時間を短くするという要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "FIFO キューを使い、メッセージごとに一意のメッセージグループ ID を付ける。",
+      "correct": false,
+      "rationale": "グループがメッセージごとに別になるので並列には処理できますが、順序が保証されるのはグループの中だけです。同じ顧客の注文の順番が保たれず、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "FIFO キューに、顧客 ID をメッセージグループ ID としてメッセージを送信する。",
+      "correct": true,
+      "rationale": "FIFO キューでは、同じメッセージグループ ID のメッセージが順番どおりに配信されます。顧客 ID をグループにすれば、顧客ごとに順番が保たれ、異なる顧客のメッセージは別のコンシューマーが並列に処理できます。"
+    },
+    {
+      "id": "e",
+      "text": "FIFO キューに、メッセージ重複排除 ID（またはコンテンツベースの重複排除）を有効にしてメッセージを送信する。",
+      "correct": true,
+      "rationale": "FIFO キューは順序を保ち、重複排除 ID（またはコンテンツベースの重複排除）により、重複排除の期間内に同じメッセージが再送されても 1 つしか保存しません。順序と重複排除という要件を満たすために必要な土台になります。"
+    }
+  ],
+  "explanation": "Amazon SQS の FIFO キューは、メッセージグループ ID ごとに順序を保証し、重複排除 ID で重複を避けます。順序が保証される単位はグループ内であり、異なるグループのメッセージは別々のコンシューマーが同時に処理できます。そのため、「顧客ごとの順序」と「顧客間の並列」を両立するには、顧客 ID のような順序を守りたい単位をメッセージグループ ID にします。\n\nすべてのメッセージを同じグループ ID にすると、全体の順序は守れますが、前のメッセージを削除するまで同じグループの次のメッセージを受信できないため、並列に処理できません。メッセージごとに別のグループにすると、並列にはなりますが順序は保たれません。標準キューは順序を保証しないので、コンシューマー側での並べ替えは確実な方法になりません。",
+  "keyPoints": [
+    "順序の保証単位は FIFO キューのメッセージグループ ID。順序を守りたい単位（顧客 ID など）をグループにする",
+    "同じグループ ID は並列処理できず、グループが多いほど並列度が上がる",
+    "標準キューは順序の保証なし・少なくとも 1 回の配信",
+    "FIFO は重複排除 ID（またはコンテンツベースの重複排除）で重複を避ける"
+  ],
+  "references": [
+    {
+      "title": "FIFO queue delivery logic in Amazon SQS - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-understanding-logic.html"
+    },
+    {
+      "title": "Amazon SQS FIFO queues - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,76 @@
+{
+  "id": "saa-basics-w2c-025",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K12"
+  ],
+  "services": [
+    "Amazon EC2",
+    "Amazon EC2 Spot Instances",
+    "Savings Plans"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "スポットインスタンス",
+    "購入オプション",
+    "バッチ処理"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある研究所は、夜間に大量の画像データを変換するバッチ処理を EC2 で実行しています。処理は小さな単位に分かれており、途中で止まっても未完了の分をやり直せます。納期に余裕があり、できるだけ安く実行したいと考えています。どの購入オプションが最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンデマンドインスタンス",
+      "correct": false,
+      "rationale": "オンデマンドは長期の約束なしで使えますが、スポットインスタンスより割引がありません。中断されてもよい処理なので、より安いオプションを選べます。"
+    },
+    {
+      "id": "b",
+      "text": "3 年間の Savings Plans",
+      "correct": false,
+      "rationale": "Savings Plans は、長期間、安定して使い続ける処理向けの割引で、使わなかった時間分も支払います。夜間のバッチ処理だけに 3 年の約束をするのは合いません。"
+    },
+    {
+      "id": "c",
+      "text": "スポットインスタンス",
+      "correct": true,
+      "rationale": "スポットインスタンスは、AWS の余っている容量をオンデマンドより大幅に安く（最大 90% 引き）使えます。中断されてもやり直せるバッチ処理が向いています。"
+    },
+    {
+      "id": "d",
+      "text": "Dedicated Hosts",
+      "correct": false,
+      "rationale": "Dedicated Hosts は物理サーバーを専有する購入オプションで、ソケットやコアの数で決まるライセンスの持ち込みなどに使います。要件にはなく、費用も高くなります。"
+    }
+  ],
+  "explanation": "EC2 の購入オプションは、使い方に合わせて選びます。オンデマンドインスタンスは、長期の約束なしで使った時間だけ支払い、短期間の利用や需要が予測できない処理に向きます。Savings Plans やリザーブドインスタンスは、1 年か 3 年の約束をして割引を受けるので、長期間安定して動かすサーバー向けです。\n\nスポットインスタンスは、AWS の余っている容量を大幅に安く使えますが、AWS が容量を必要とすると、2 分前の通知の後に中断されることがあります。そのため、中断されてもやり直せるバッチ処理や画像の変換に向きます。「中断されても問題ない」「最もコスト効率が高い」という制約語はスポットインスタンスを示します。",
+  "keyPoints": [
+    "中断されてもやり直せる処理を最も安く → スポットインスタンス（最大 90% 引き、中断あり）",
+    "1 年以上安定して動かす → Savings Plans かリザーブドインスタンス。短期や予測できない処理 → オンデマンド"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 Spot Instances",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+    },
+    {
+      "title": "Amazon EC2 instance purchasing options",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+    },
+    {
+      "title": "Amazon EC2 pricing",
+      "url": "https://aws.amazon.com/ec2/pricing/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-pricing"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

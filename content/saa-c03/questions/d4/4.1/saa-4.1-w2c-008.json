@@ -1,0 +1,75 @@
+{
+  "id": "saa-4.1-w2c-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K8",
+    "4.1-S7"
+  ],
+  "services": [
+    "AWS DataSync",
+    "AWS Storage Gateway",
+    "AWS Transfer Family",
+    "Amazon S3"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "DataSync",
+    "Storage Gateway",
+    "S3 File Gateway",
+    "定期複製"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある設計会社の拠点では、NFS の NAS に作業ファイルがあり、毎晩、その日に更新したファイル（数十 GB）だけを Amazon S3 にバックアップとして複製しています。S3 のデータは AWS 側の分析ジョブが読むだけで、拠点のユーザーが S3 のデータを直接開くことはありません。NAS は今後も、そのまま使い続けます。運用の手間とコストを最小にしたい場合、最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスに S3 File Gateway を仮想マシンとして配備し、拠点のユーザーが使う共有を NAS から File Gateway の NFS 共有に切り替える。",
+      "correct": false,
+      "rationale": "File Gateway は、オンプレミスのアプリケーションが S3 を NFS／SMB の共有として直接読み書きするためのものです。今回は NAS を使い続け、拠点から S3 を開く必要もないため、常時稼働のゲートウェイとキャッシュ用ディスクの運用が不要な負担になります。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Transfer Family の SFTP エンドポイントを作成し、拠点から毎晩、変更ファイルを SFTP でアップロードするスクリプトを作る。",
+      "correct": false,
+      "rationale": "Transfer Family のエンドポイントは、有効な時間ぶんの料金が継続的にかかります。差分の検出や再試行を行うスクリプトも自作・運用することになり、運用の手間とコストを最小にできません。"
+    },
+    {
+      "id": "c",
+      "text": "Storage Gateway のテープゲートウェイを配備し、バックアップソフトウェアから毎晩、仮想テープに書き込む。",
+      "correct": false,
+      "rationale": "テープゲートウェイは、既存のバックアップソフトウェアが物理テープの代わりに使う仮想テープライブラリです。ファイルを S3 のオブジェクトとして複製する用途や、AWS 側の分析ジョブが読む用途には合いません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS DataSync のエージェントを拠点に配備し、NAS を送信元、S3 バケットを送信先とするタスクを毎晩のスケジュールで実行して、変更分だけを転送する。",
+      "correct": true,
+      "rationale": "DataSync は、オンプレミスの NFS と S3 の間でデータを転送するサービスで、スケジュール実行や変更分のみの転送ができます。ゲートウェイを常時配備して利用者の共有を切り替える必要がなく、転送量に応じた料金で済みます。"
+    }
+  ],
+  "explanation": "オンプレミスと AWS の間でデータを動かすサービスは、役割で使い分けます。AWS DataSync は、オンプレミスのストレージ（NFS、SMB など）と S3、EFS、FSx などの間で、データを転送・同期するサービスです。スケジュール実行、変更分のみの転送、検証、再試行を備え、転送したデータ量に応じた料金で使えます。\n\nAWS Storage Gateway は、オンプレミスのアプリケーションから、NFS／SMB（S3 File Gateway）、iSCSI（Volume Gateway）、仮想テープ（Tape Gateway）といった使い慣れたプロトコルのまま AWS のストレージを使うためのものです。ローカルキャッシュで低レイテンシーを保てますが、ゲートウェイを常時稼働させる運用が必要です。AWS Transfer Family は、SFTP などのプロトコルでファイルを S3 や EFS に送受信するためのマネージドなサーバーです。\n\n今回は、NAS を残したまま、毎晩の差分を S3 に複製するだけなので、スケジュールできる DataSync が最も手間もコストも小さくなります。",
+  "keyPoints": [
+    "定期的な差分の複製・移行（オンプレミス → S3／EFS／FSx）→ AWS DataSync",
+    "オンプレミスのアプリが S3 を共有やボリュームとして使い続ける、低レイテンシーのキャッシュが必要 → Storage Gateway",
+    "外部と SFTP／FTPS でファイルをやり取りする → AWS Transfer Family",
+    "Tape Gateway は、既存のバックアップソフトウェアが仮想テープに書き込む用途"
+  ],
+  "references": [
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    },
+    {
+      "title": "What is Amazon S3 File Gateway - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

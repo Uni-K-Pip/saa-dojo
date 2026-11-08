@@ -1,0 +1,77 @@
+{
+  "id": "saa-basics-w2c-022",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K14"
+  ],
+  "services": [
+    "AWS CloudTrail",
+    "Amazon CloudWatch",
+    "AWS Config",
+    "Amazon RDS"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "CloudTrail",
+    "API 操作の記録",
+    "監査"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社で、昨夜、本番の Amazon RDS の DB インスタンスが削除されました。管理者は、だれが、いつ、どの方法で削除の操作を行ったのかを調べたいと考えています。この目的に最も適したサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon CloudWatch のメトリクス",
+      "correct": false,
+      "rationale": "CloudWatch のメトリクスは、CPU 使用率などリソースの状態を表す数値です。API の操作をだれが行ったかは記録されません。"
+    },
+    {
+      "id": "b",
+      "text": "VPC フローログ",
+      "correct": false,
+      "rationale": "VPC フローログは、ネットワークインターフェイスを出入りする IP 通信の情報を記録します。AWS の API 操作をだれが行ったかは分かりません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudTrail",
+      "correct": true,
+      "rationale": "CloudTrail は、マネジメントコンソール、AWS CLI、プログラムからの API の呼び出しを記録します。「だれが、いつ、何の操作をしたか」を調べられます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Config のルールによる準拠状況の評価",
+      "correct": false,
+      "rationale": "AWS Config は、リソースの設定とその変更の履歴、ルールへの準拠を調べるサービスです。API の操作をだれが行ったかを調べる中心的なサービスではありません。"
+    }
+  ],
+  "explanation": "AWS の 3 つの監視・記録のサービスは、答えてくれる問いが違います。Amazon CloudWatch は「今どのくらい元気に動いているか」（メトリクスとログ）、AWS CloudTrail は「だれが、いつ、何の操作をしたか」（API の呼び出しの記録）、AWS Config は「リソースの設定はどうなっていて、いつどう変わったか、ルールに合っているか」に答えます。\n\n「だれが DB インスタンスを削除したか」は、API 操作の監査なので CloudTrail です。CloudTrail は既定で有効になっていて、イベント履歴で過去 90 日間の管理イベントを無料で見られます。それより長く残すには、証跡（トレイル）を作って S3 に保存します。",
+  "keyPoints": [
+    "だれが何をしたか（API 操作の監査）→ CloudTrail",
+    "状態の監視とアラーム → CloudWatch。設定の変更履歴とルールへの準拠 → AWS Config"
+  ],
+  "references": [
+    {
+      "title": "What is AWS CloudTrail?",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    },
+    {
+      "title": "What is Amazon CloudWatch?",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    },
+    {
+      "title": "What is AWS Config?",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-monitoring-logging"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
