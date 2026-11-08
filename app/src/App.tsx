@@ -16,6 +16,9 @@ const LessonPage = lazy(() => import('./pages/LessonPage'));
 const ReviewPage = lazy(() => import('./pages/ReviewPage'));
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
 const ReadinessPage = lazy(() => import('./pages/ReadinessPage'));
+const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
+const DocsPage = lazy(() => import('./pages/DocsPage'));
+const DocPage = lazy(() => import('./pages/DocsPage').then((m) => ({ default: m.DocPage })));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -52,6 +55,9 @@ export function AppRoutes() {
         <Route path="review" element={<ReviewPage />} />
         <Route path="flashcards" element={<FlashcardsPage />} />
         <Route path="readiness" element={<ReadinessPage />} />
+        <Route path="glossary" element={<GlossaryPage />} />
+        <Route path="docs" element={<DocsPage />} />
+        <Route path="docs/:id" element={<DocPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
         <Route path="*" element={<NotFoundPage />} />
