@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.2-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K8",
+    "2.2-S4",
+    "2.2-K3"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "NLB",
+    "クロスゾーン負荷分散",
+    "AZ 間の偏り"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、3 つの AZ に配置した Network Load Balancer の背後で、TCP の API サーバーを動かしています。AZ-a に 6 台、AZ-b と AZ-c に 2 台ずつのインスタンスがあり、クロスゾーン負荷分散は無効です。AZ-b と AZ-c のインスタンスに負荷が偏って障害が発生しています。クライアントからの接続は、AZ ごとのロードバランサーノードに、ほぼ均等に届いています。ライセンスの都合で、AZ ごとのインスタンスの台数は変更できません。負荷の偏りを解消する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ターゲットグループのヘルスチェックの間隔としきい値を短くして、負荷の高いインスタンスを早めにターゲットから外すように設定する。",
+      "correct": false,
+      "rationale": "ヘルスチェックは、障害の検知のための設定で、正常なインスタンスへの負荷の偏りは変わりません。インスタンスが外れると、さらに偏りが大きくなることもあります。"
+    },
+    {
+      "id": "b",
+      "text": "ターゲットグループでスティッキーセッションを有効にして、同じクライアントからの接続を同じインスタンスに固定する。",
+      "correct": false,
+      "rationale": "接続が特定のインスタンスに固定されるため、負荷の偏りは、むしろ解消しにくくなります。AZ をまたいだ分散にもなりません。"
+    },
+    {
+      "id": "c",
+      "text": "NLB のクロスゾーン負荷分散を有効にする。",
+      "correct": true,
+      "rationale": "クロスゾーン負荷分散を有効にすると、各ロードバランサーノードが、すべての AZ の登録済みターゲットに均等に分散します。AZ ごとの台数が違っても、インスタンスあたりの負荷がそろいます。"
+    },
+    {
+      "id": "d",
+      "text": "各 AZ のロードバランサーノードに、Elastic IP アドレスを追加で割り当てて、クライアントからの接続の経路を増やす。",
+      "correct": false,
+      "rationale": "IP アドレスを追加しても、AZ ごとのノードが受ける接続の割合や、ターゲットへの分散の方法は変わりません。"
+    }
+  ],
+  "explanation": "ロードバランサーは、AZ ごとにロードバランサーノードを持ち、クライアントからのトラフィックは各ノードに分散して届きます。クロスゾーン負荷分散が無効の場合、各ノードは、自分の AZ に登録されたターゲットにだけ分散します。そのため、AZ ごとのターゲットの数が異なると、ターゲットあたりの負荷に差が出ます。たとえば、各 AZ のノードに 33% ずつ届く場合、AZ-a の 6 台は各 5.5% ずつ、AZ-b と AZ-c の 2 台は各 16.5% ずつの負荷になります。\n\nクロスゾーン負荷分散を有効にすると、各ノードがすべての AZ のターゲットに分散するので、インスタンスあたりの負荷が均等になります。ALB では既定で有効ですが、NLB と Gateway Load Balancer では既定で無効で、有効にした場合は AZ をまたぐデータ転送の料金が発生します。\n\nなお、AZ ごとのターゲット数をそろえる方法もありますが、この問題では台数を変更できません。",
+  "keyPoints": [
+    "AZ ごとのターゲット数が違うと負荷が偏る → クロスゾーン負荷分散を有効にする（NLB は既定で無効）",
+    "クロスゾーン負荷分散の有効化で、AZ 間のデータ転送料金が発生する（NLB）",
+    "ALB のクロスゾーン負荷分散は既定で有効"
+  ],
+  "references": [
+    {
+      "title": "Network Load Balancer のクロスゾーン負荷分散 - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#cross-zone-load-balancing"
+    },
+    {
+      "title": "Elastic Load Balancing のクロスゾーン負荷分散",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

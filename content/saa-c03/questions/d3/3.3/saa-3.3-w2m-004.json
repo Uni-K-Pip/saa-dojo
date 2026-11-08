@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.3-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S4",
+    "3.3-K8",
+    "3.3-K4"
+  ],
+  "services": [
+    "Amazon Keyspaces (for Apache Cassandra)"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Amazon Keyspaces",
+    "Apache Cassandra 互換",
+    "CQL"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスの Apache Cassandra クラスターで、センサーデータの書き込みと時系列の参照を行うアプリケーションを運用しています。アプリケーションは CQL と Cassandra のドライバーを使っています。クラスターのノードの管理、パッチの適用、ノード数の調整にかかる運用の手間をなくし、書き込みの急増にも自動で対応したいと考えています。CQL のコードの変更は最小限にします。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスに Cassandra をインストールして、複数のノードのクラスターを構成する。",
+      "correct": false,
+      "rationale": "互換性は高いですが、ノードの管理、パッチの適用、スケーリングを自分たちで行います。運用の手間をなくす要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Keyspaces（Apache Cassandra 向け）にキースペースとテーブルを作成して、既存のドライバーと CQL で接続する。",
+      "correct": true,
+      "rationale": "Keyspaces は、Cassandra 互換のサーバーレスのマネージドなデータベースです。CQL とドライバーを使え、ノードの管理が不要で、オンデマンドキャパシティーで急増にも自動で対応できます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon DynamoDB のテーブルに移行し、アプリケーションを DynamoDB の API に書き換える。",
+      "correct": false,
+      "rationale": "データモデルは似ていますが、API が異なり、CQL のコードの書き換えが必要です。コードの変更を最小限にする要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon DocumentDB（MongoDB 互換）のクラスターを作成し、データをドキュメントとして保存する。",
+      "correct": false,
+      "rationale": "DocumentDB は MongoDB 互換で、CQL も Cassandra のドライバーも使えません。アプリケーションの書き換えが必要になります。"
+    }
+  ],
+  "explanation": "Amazon Keyspaces（Apache Cassandra 向け）は、Apache Cassandra と互換性のある、スケーラブルで高可用性のマネージドなデータベースサービスです。Cassandra のアプリケーションコード、Apache 2.0 ライセンスのドライバー、CQL（Cassandra Query Language）を使えるため、コードの変更を抑えて移行できます。サーバーレスで、サーバーのプロビジョニング、パッチ適用、管理が不要です。オンデマンドキャパシティーモードを使うと、アプリケーションのトラフィックに応じて、自動でスケールします。データは 3 つの AZ に複製され、ポイントインタイムリカバリにも対応します。\n\nDocumentDB は MongoDB 互換、DynamoDB は独自の API のキーバリュー/ドキュメント型で、どちらも CQL は使えません。EC2 上の Cassandra は、運用の手間が残ります。",
+  "keyPoints": [
+    "Cassandra（CQL）のアプリを運用の手間なしで移行 → Amazon Keyspaces",
+    "MongoDB は DocumentDB、グラフは Neptune、独自 API のキーバリューは DynamoDB",
+    "Keyspaces はサーバーレスでオンデマンドのスケーリングに対応"
+  ],
+  "references": [
+    {
+      "title": "Amazon Keyspaces (Apache Cassandra 向け) とは",
+      "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

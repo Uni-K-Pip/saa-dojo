@@ -1,0 +1,68 @@
+{
+  "id": "saa-2.1-w2m-011",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K16",
+    "2.1-K12"
+  ],
+  "services": [
+    "AWS Step Functions",
+    "AWS Lambda",
+    "Amazon API Gateway"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Step Functions",
+    "Express ワークフロー",
+    "高スループット"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画配信企業は、アップロードされた動画のメタデータを検証して変換する処理を、AWS Step Functions でオーケストレーションしています。処理は 1 日に数百万回実行され、1 回の実行は 30 秒以内に終わります。各ステップは冪等で、実行履歴を長期間保持する必要はありません。Standard ワークフローでは、状態遷移の料金が高くなっています。最も適切な見直しはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Standard ワークフローの代わりに、Amazon EC2 インスタンスで常時動くワークフローエンジンを自前で構築する。",
+      "correct": false,
+      "rationale": "エンジンの構築と運用が必要で、可用性やスケーリングも自分たちで管理します。運用の負荷が大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "ワークフローを Standard のまま使い、ステートの数を減らすために、処理を 1 つの Lambda 関数にまとめる。",
+      "correct": false,
+      "rationale": "ステートを減らすと費用は下がりますが、オーケストレーションの利点を失い、関数が複雑になります。大量の短い処理には、Express ワークフローのほうが適しています。"
+    },
+    {
+      "id": "c",
+      "text": "ワークフローを Express ワークフローに変更する。実行の履歴は、必要に応じて Amazon CloudWatch Logs に出力する。",
+      "correct": true,
+      "rationale": "Express ワークフローは、短時間で大量に実行される処理向けで、実行回数と実行時間で課金されます。最大 5 分で、冪等な処理に適しており、この要件に合います。"
+    },
+    {
+      "id": "d",
+      "text": "Standard ワークフローを、1 つのリージョンから複数のリージョンに分けて実行する。",
+      "correct": false,
+      "rationale": "リージョンを分けても、状態遷移あたりの料金は変わりません。実行回数に応じた費用は、減りません。"
+    }
+  ],
+  "explanation": "AWS Step Functions のワークフローには、Standard と Express の2種類があります。\n\nStandard ワークフローは、最大 1 年間実行でき、実行履歴を保持し、各ステップは正確に 1 回実行される設計です。料金は状態遷移の回数に応じて決まります。長時間の処理や、人による承認を待つ処理、実行履歴の監査が必要な処理に向いています。\n\nExpress ワークフローは、最大 5 分で、1 秒間に非常に多くの実行を開始できる、高スループット向けです。料金は実行回数と実行時間（メモリ）に応じて決まるため、短時間の処理が大量にあるイベント処理、ストリームの処理、IoT のデータの取り込みなどで、費用を抑えられます。非同期実行は少なくとも 1 回、同期実行は最大 1 回の実行で、履歴は CloudWatch Logs に出力します。したがって、ステップは冪等にしておく必要があります。",
+  "keyPoints": [
+    "短時間（5 分以内）・大量・冪等な処理 → Step Functions の Express ワークフロー（実行回数と時間で課金）",
+    "長時間・人の承認・実行履歴の保持 → Standard ワークフロー",
+    "Express の履歴は CloudWatch Logs に出力"
+  ],
+  "references": [
+    {
+      "title": "Step Functions Standard と Express ワークフロー - AWS Step Functions デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-standard-vs-express.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

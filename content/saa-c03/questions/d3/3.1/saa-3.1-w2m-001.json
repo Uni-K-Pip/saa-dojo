@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.1-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": [
+    "3.1-S1",
+    "3.1-K2"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "S3 Express One Zone",
+    "ディレクトリバケット",
+    "低レイテンシー"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の機械学習の学習ジョブは、同じ AZ の多数の Amazon EC2 GPU インスタンスから、小さなオブジェクト（数 KB〜数百 KB）を、1 秒あたり数十万回の頻度で読み書きします。既存のコードは S3 の API を使っていますが、S3 Standard では、リクエストのレイテンシーが学習の速度を制限しています。データは再生成でき、単一の AZ に保存してもかまいません。リクエストのレイテンシーを最も下げられる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 Intelligent-Tiering の高頻度アクセス階層に、オブジェクトを保存する。",
+      "correct": false,
+      "rationale": "アクセス頻度に応じて、費用を自動で最適化するストレージクラスで、リクエストのレイテンシーを下げるものではありません。S3 Standard と同じ性能特性です。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon EFS のファイルシステムを作成して、すべてのインスタンスからマウントし、データを置く。",
+      "correct": false,
+      "rationale": "S3 の API を使っている既存のコードの変更が必要です。小さなファイルを非常に高い頻度でやり取りする用途でも、S3 Express One Zone ほどの低レイテンシーは期待できません。"
+    },
+    {
+      "id": "c",
+      "text": "S3 Standard のバケットに対して、S3 Transfer Acceleration を有効にして、エッジロケーション経由でアクセスさせる。",
+      "correct": false,
+      "rationale": "Transfer Acceleration は、遠く離れたクライアントとバケット間の転送を高速化する機能です。同じ AZ の EC2 からのリクエストのレイテンシーは下がりません。"
+    },
+    {
+      "id": "d",
+      "text": "EC2 インスタンスと同じ AZ に、S3 Express One Zone のストレージクラスを使うディレクトリバケットを作成して、使う。",
+      "correct": true,
+      "rationale": "S3 Express One Zone は、1 つの AZ に保存し、一貫した 1 桁ミリ秒のレイテンシーを提供するストレージクラスです。S3 の API に近い形で使え、リクエストの多いワークロードに向いています。"
+    }
+  ],
+  "explanation": "Amazon S3 Express One Zone は、頻繁にアクセスするデータと、レイテンシーに厳しいアプリケーションのために設計された S3 のストレージクラスです。1 つの AZ にデータを保存し、リクエストのレイテンシーは一貫した 1 桁ミリ秒です。S3 Standard と比べて、レイテンシーが大幅に低く、リクエストの料金も低く設定されています。ディレクトリバケットという専用のバケットで使い、コンピューティングと同じ AZ に置くことで、レイテンシーをさらに下げられます。機械学習のトレーニング、分析、メディア処理などで、小さなオブジェクトへの大量のリクエストに向いています。\n\nデータが 1 つの AZ にしか保存されないため、AZ の障害でデータを失う可能性があり、再生成できるデータや、別の場所にコピーがあるデータに使います。\n\nTransfer Acceleration は長距離の転送、Intelligent-Tiering は費用の最適化、EFS はファイルシステムで、いずれもこの要件のレイテンシーの改善にはなりません。",
+  "keyPoints": [
+    "S3 の API で、同じ AZ から 1 桁ミリ秒のレイテンシー → S3 Express One Zone（ディレクトリバケット）",
+    "単一 AZ のため、再生成できるデータや別にコピーがあるデータ向け",
+    "Transfer Acceleration は遠距離の転送の高速化"
+  ],
+  "references": [
+    {
+      "title": "S3 Express One Zone - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

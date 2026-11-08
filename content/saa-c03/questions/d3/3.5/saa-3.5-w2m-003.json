@@ -1,0 +1,69 @@
+{
+  "id": "saa-3.5-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": [
+    "3.5-K2",
+    "3.5-K5",
+    "3.5-S6"
+  ],
+  "services": [
+    "Amazon AppFlow",
+    "Amazon Simple Storage Service",
+    "AWS Glue"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Amazon AppFlow",
+    "SaaS 連携",
+    "データ取り込み"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるマーケティング部門は、Salesforce の取引先と商談のデータを、毎日、Amazon S3 のデータレイクに取り込んで分析します。取り込みのための独自のプログラムを書いたり、サーバーを運用したりせず、設定だけで実現したいと考えています。S3 に取り込む前に、一部の項目のマスキングと、必須項目の検証も、コードを書かずに設定したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon AppFlow で、Salesforce をソース、S3 をコピー先とするフローを作成し、スケジュールトリガーで毎日実行する。マスキングと検証は、フローのデータ変換の設定で指定する。",
+      "correct": true,
+      "rationale": "AppFlow は、SaaS と AWS のサービス間で、コードなしでデータを転送できるマネージドサービスです。スケジュールの実行、項目のマスキング、検証、フィルターなどを設定で行えます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda 関数で、Salesforce の API を呼び出して、データを取得して S3 に書き込むプログラムを作成し、EventBridge のスケジュールで毎日実行する。",
+      "correct": false,
+      "rationale": "API の呼び出し、ページング、再試行、マスキングなどのコードを自分たちで書き、保守する必要があります。コードを書かずに設定だけで実現する要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EC2 インスタンスに cron ジョブとスクリプトを置いて、Salesforce から取得した CSV を、毎日 S3 にアップロードする。",
+      "correct": false,
+      "rationale": "サーバーの運用とスクリプトの保守が必要です。マスキングや検証も、コードで実装する必要があります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Database Migration Service（AWS DMS）のレプリケーションタスクで、Salesforce から S3 に継続的にデータを複製する。",
+      "correct": false,
+      "rationale": "DMS は、データベースを対象にした移行と複製のサービスで、Salesforce のような SaaS のアプリケーションをソースにはできません。"
+    }
+  ],
+  "explanation": "Amazon AppFlow は、Salesforce、SAP、Google Analytics、Slack などの SaaS アプリケーションと、Amazon S3、Amazon Redshift などの AWS のサービスとの間で、データを安全に転送できる、完全マネージドの統合サービスです。コードを書かずに、フローを設定して作成できます。\n\nフローは、オンデマンド、スケジュール、イベントのトリガーで実行できます。転送時には、項目のマッピング、マスキング、検証、フィルター、結合などの変換を設定で行えます。転送中のデータは暗号化され、SaaS の API の呼び出しの上限も考慮した形で転送されます。データレイクへの取り込みのように、SaaS からのデータ取得を、運用の手間をかけずに実現したい場合に適しています。\n\nLambda や EC2 での自作は、コードと運用の手間が増えます。DMS はデータベース向けのサービスで、SaaS はソースにできません。",
+  "keyPoints": [
+    "SaaS（Salesforce など）と AWS のサービス間でノーコードのデータ転送 → Amazon AppFlow",
+    "AppFlow はスケジュール・イベント・オンデマンドのトリガーに対応し、マスキングや検証も設定できる",
+    "DMS はデータベースの移行・複製用で、SaaS のソースには使えない"
+  ],
+  "references": [
+    {
+      "title": "Amazon AppFlow とは - Amazon AppFlow ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

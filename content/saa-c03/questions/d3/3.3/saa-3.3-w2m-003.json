@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.3-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S4",
+    "3.3-K6",
+    "3.3-K8"
+  ],
+  "services": [
+    "Amazon DocumentDB (with MongoDB compatibility)"
+  ],
+  "qualifier": "minimal-change",
+  "tags": [
+    "Amazon DocumentDB",
+    "MongoDB 互換",
+    "ドキュメントデータベース"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスの MongoDB で動かしている会員管理のアプリケーションを AWS に移行します。アプリケーションは MongoDB のドライバーとクエリの構文に依存しており、コードの変更は最小限にしたいと考えています。データはドキュメント形式で、読み取りの負荷に応じてレプリカを追加でき、自動バックアップとストレージの自動拡張があり、データベースサーバーの運用の手間を減らしたいと考えています。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Aurora MySQL に JSON 列でドキュメントを保存して、アプリケーションを SQL を使うように書き換える。",
+      "correct": false,
+      "rationale": "ドキュメントのクエリを SQL に書き換える必要があり、コードの変更が大きくなります。MongoDB のドライバーも使えません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon DocumentDB（MongoDB 互換）のクラスターを作成して、既存のドライバーとクエリで接続する。",
+      "correct": true,
+      "rationale": "DocumentDB は、MongoDB の API と互換性のあるマネージドなドキュメントデータベースです。レプリカの追加、自動バックアップ、ストレージの自動拡張に対応し、コードの変更を抑えて移行できます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon DynamoDB のテーブルを作成して、データを移行し、アプリケーションを DynamoDB の API に書き換える。",
+      "correct": false,
+      "rationale": "DynamoDB は、MongoDB と API もデータモデルも異なります。アプリケーションの書き換えが大きくなり、コードの変更を最小限にする要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 インスタンスに MongoDB を自分でインストールし、レプリカセットを構成して運用する。",
+      "correct": false,
+      "rationale": "互換性は高いですが、パッチの適用、バックアップ、レプリカ、ストレージの拡張を自分たちで運用します。運用の手間を減らす要件に反します。"
+    }
+  ],
+  "explanation": "Amazon DocumentDB（MongoDB 互換）は、MongoDB のワークロードを実行できる、完全マネージドなドキュメントデータベースです。MongoDB のドライバーやツール、アプリケーションのコードを、ほとんど変更せずに利用できます。ストレージとコンピューティングが分離されたアーキテクチャで、ストレージは自動で拡張され、データは 3 つの AZ に 6 コピー保存されます。読み取りの負荷に応じてレプリカを追加でき、自動バックアップとポイントインタイムリカバリにも対応します。\n\nなお、MongoDB のすべての機能と完全に互換というわけではなく、サポートされる API のバージョンや機能は確認が必要です。\n\nDynamoDB や Aurora への移行は、データモデルとクエリの書き換えが大きく必要になります。EC2 で MongoDB を自前運用すると、運用の負荷が減りません。",
+  "keyPoints": [
+    "MongoDB のアプリをコード変更を抑えて移行 → Amazon DocumentDB（MongoDB 互換）",
+    "Cassandra なら Amazon Keyspaces、グラフなら Neptune、キーバリューなら DynamoDB",
+    "データベースの種類（ドキュメント型・キーバリュー型・グラフ型など）に合うサービスを選ぶ"
+  ],
+  "references": [
+    {
+      "title": "Amazon DocumentDB とは - Amazon DocumentDB デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/what-is.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
