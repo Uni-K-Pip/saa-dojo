@@ -19,6 +19,8 @@ const ReadinessPage = lazy(() => import('./pages/ReadinessPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const DocsPage = lazy(() => import('./pages/DocsPage'));
 const DocPage = lazy(() => import('./pages/DocsPage').then((m) => ({ default: m.DocPage })));
+const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
+const DrillPage = lazy(() => import('./pages/DrillPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -58,6 +60,8 @@ export function AppRoutes() {
         <Route path="glossary" element={<GlossaryPage />} />
         <Route path="docs" element={<DocsPage />} />
         <Route path="docs/:id" element={<DocPage />} />
+        <Route path="analysis" element={<AnalysisPage />} />
+        <Route path="drill" element={<DrillPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
         <Route path="*" element={<NotFoundPage />} />

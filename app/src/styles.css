@@ -670,6 +670,19 @@ details.filter[open] > summary {
   background: var(--ok-bg);
 }
 
+button.option {
+  grid-template-columns: auto 1fr;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+button.option:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .option.is-wrong {
   border-color: var(--ng);
   background: var(--ng-bg);
