@@ -1,0 +1,72 @@
+{
+  "id": "saa-1.3-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S3",
+    "1.3-K4"
+  ],
+  "services": [
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "転送中の暗号化",
+    "aws:SecureTransport",
+    "s3:TlsVersion"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、取引データを扱う複数の社内アプリケーションが、機密データを保存する Amazon S3 バケットに対して、HTTP（暗号化されない接続）によるアクセスと、TLS 1.2 より古いバージョンの接続を拒否したいと考えています。アプリケーション側の修正はせずに、バケット側の設定で強制します。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットポリシーに Deny ステートメントを追加し、aws:SecureTransport が false のリクエストと、s3:TlsVersion が 1.2 より小さいリクエストを拒否する。",
+      "correct": true,
+      "rationale": "aws:SecureTransport で HTTP を拒否し、s3:TlsVersion の条件で古い TLS のバージョンを拒否できます。バケット側の設定だけで、すべてのクライアントに強制できます。"
+    },
+    {
+      "id": "b",
+      "text": "CloudFront のビューアープロトコルポリシーを HTTPS のみに設定する。",
+      "correct": false,
+      "rationale": "CloudFront 経由のアクセスだけに効く設定です。S3 のエンドポイントに直接アクセスする HTTP や古い TLS の接続は、止められません。"
+    },
+    {
+      "id": "c",
+      "text": "バケットの既定の暗号化を SSE-KMS に変更する。",
+      "correct": false,
+      "rationale": "SSE-KMS は保存データの暗号化の設定で、転送中の通信を暗号化する設定ではありません。HTTP の接続も拒否されません。"
+    },
+    {
+      "id": "d",
+      "text": "バケットのブロックパブリックアクセスをすべて有効にする。",
+      "correct": false,
+      "rationale": "ブロックパブリックアクセスは、公開を防ぐ設定で、通信の暗号化や TLS のバージョンとは関係ありません。"
+    }
+  ],
+  "explanation": "S3 への通信を暗号化することを強制するには、バケットポリシーで条件キーを使います。aws:SecureTransport は、リクエストが HTTPS で送られたときに true になるため、値が false のリクエストを Deny すると、HTTP のアクセスを拒否できます。s3:TlsVersion は、リクエストに使われた TLS のバージョンを示す条件キーで、1.2 より小さい値を Deny すると、古い TLS の接続も拒否できます。\n\nバケットポリシーはバケット側で強制されるため、クライアントのアプリケーションを変更する必要はありません。ただし、古いクライアントは接続できなくなるため、事前に利用状況を確認します。\n\nSSE-KMS は保存時の暗号化、ブロックパブリックアクセスは公開の防止、CloudFront の設定は経由する場合だけの制御で、いずれも S3 への直接の通信の暗号化を強制しません。",
+  "keyPoints": [
+    "S3 への HTTP を拒否 → バケットポリシーで aws:SecureTransport が false を Deny",
+    "古い TLS を拒否 → s3:TlsVersion の条件",
+    "保存時の暗号化（SSE）と転送中の暗号化（TLS）は別の設定"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 のセキュリティのベストプラクティス",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
+    },
+    {
+      "title": "Amazon S3 のポリシーキー",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-encryption-and-keys"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
