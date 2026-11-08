@@ -1,0 +1,82 @@
+{
+  "id": "saa-basics-w2c-030",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K8"
+  ],
+  "services": [
+    "Amazon EBS",
+    "Amazon EC2",
+    "Amazon S3"
+  ],
+  "qualifier": "other",
+  "tags": [
+    "EBS",
+    "インスタンスストア",
+    "ブロックストレージ"
+  ],
+  "difficulty": 1,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある会社は、EC2 インスタンス上でデータベースを動かし、画像を変換する処理も同じインスタンスで実行します。データベースのデータファイルは、インスタンスを停止しても残る必要があります。変換中にできる一時ファイルは、処理が終われば消えて構いませんが、速く読み書きできる必要があります。ストレージの使い分けとして適切なものを 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データベースのデータファイルを、Amazon EBS ボリュームに置く。",
+      "correct": true,
+      "rationale": "EBS ボリュームは、インスタンスとは別に存在するので、インスタンスを停止してもデータが残ります。細かい読み書きを速く処理でき、データベースに向きます。"
+    },
+    {
+      "id": "b",
+      "text": "データベースのデータファイルを、インスタンスストアに置く。",
+      "correct": false,
+      "rationale": "インスタンスストアは、インスタンスを停止・休止・終了するとデータが消えます。停止しても残す必要があるデータファイルには使えません。"
+    },
+    {
+      "id": "c",
+      "text": "変換中の一時ファイルを、インスタンスストアに置く。",
+      "correct": true,
+      "rationale": "インスタンスストアは、物理サーバーに直接付いた速いディスクで、一時的な領域です。消えて構わない一時ファイルを速く読み書きする用途に向きます。"
+    },
+    {
+      "id": "d",
+      "text": "変換中の一時ファイルを、別の AZ にあるインスタンスの EBS ボリュームに置く。",
+      "correct": false,
+      "rationale": "EBS ボリュームは、別の AZ のインスタンスには接続できません。同じ AZ にあることが必要で、一時ファイルの置き場所としても手間がかかります。"
+    },
+    {
+      "id": "e",
+      "text": "データベースのデータファイルを、Amazon S3 のバケットにオブジェクトとして置き、直接更新する。",
+      "correct": false,
+      "rationale": "S3 は、オブジェクトの一部を書き換えるのではなく、オブジェクト単位で置き換えるのが基本です。細かい更新を繰り返すデータベースには向きません。"
+    }
+  ],
+  "explanation": "ブロックストレージには、Amazon EBS とインスタンスストアがあります。EBS はインスタンスとは別に存在し、インスタンスを停止してもデータが残ります。細かい読み書きを速く処理できるため、OS の起動ディスクやデータベースに向きます。インスタンスストアは、物理サーバーに直接付いているとても速いディスクですが、インスタンスを停止・終了するとデータが消えるため、キャッシュや一時ファイルに使います。\n\nS3 はオブジェクトストレージで、データベースのように細かい更新を繰り返す用途には向きません。また、EBS ボリュームは同じ AZ のインスタンスにしか接続できません。",
+  "keyPoints": [
+    "停止しても残すデータ、データベースのデータファイル → EBS。消えてよい一時データを速く → インスタンスストア",
+    "S3 はオブジェクト単位の置き換えが基本で、細かい更新を繰り返す用途には向かない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EBS?",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    },
+    {
+      "title": "Amazon EC2 instance store",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+    },
+    {
+      "title": "What is Amazon S3?",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-storage-types"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

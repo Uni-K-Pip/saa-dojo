@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.1-w2c-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-S1", "1.1-K4"],
+  "services": ["AWS Identity and Access Management (IAM)", "AWS Security Token Service (AWS STS)", "Amazon EC2", "Amazon RDS"],
+  "qualifier": "security",
+  "tags": ["MFA", "aws:MultiFactorAuthPresent", "BoolIfExists", "IAM ユーザー", "アクセスキー", "get-session-token"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある開発会社の開発者は、IAM ユーザーのアクセスキーを使って AWS CLI で作業しています。全員が仮想 MFA デバイスを登録済みです。セキュリティ部門は、日常の作業は今のまま行えるようにしつつ、Amazon EC2 インスタンスの削除（ec2:TerminateInstances）と Amazon RDS の DB インスタンスの削除（rds:DeleteDBInstance）は、MFA で認証したときだけ許可したいと考えています。CLI からの操作でも確実に MFA を強制できる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "IAM ユーザーに MFA デバイスを登録済みなので、追加の設定はしない。アクセスキーでの API 呼び出しにも、登録済みの MFA が自動で適用される。",
+      "correct": false,
+      "rationale": "MFA デバイスを登録しただけでは、アクセスキーによる API 呼び出しには MFA が求められません。IAM ポリシーの条件で MFA を要求する必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "2 つの削除アクションを Deny し、条件に BoolIfExists で aws:MultiFactorAuthPresent が false を指定したポリシーを付ける。開発者は MFA コードを指定して sts get-session-token で一時的な認証情報を取得し、それを使って削除を行う。",
+      "correct": true,
+      "rationale": "アクセスキーなどの長期的な認証情報による呼び出しでは aws:MultiFactorAuthPresent キーが存在しません。BoolIfExists はキーがない場合も条件が一致するので、MFA なしの呼び出しを拒否できます。MFA 付きの一時的な認証情報ではキーが true になり、拒否されません。"
+    },
+    {
+      "id": "c",
+      "text": "2 つの削除アクションを Deny し、条件に Bool で aws:MultiFactorAuthPresent が false を指定したポリシーを付ける。",
+      "correct": false,
+      "rationale": "Bool はキーが存在しないと一致しません。アクセスキーによる呼び出しでは aws:MultiFactorAuthPresent が存在しないため、この Deny は適用されず、MFA なしでも削除できてしまいます。"
+    },
+    {
+      "id": "d",
+      "text": "2 つの削除アクションを、会社のオフィスのパブリック IP アドレスの範囲からのリクエストだけに許可する。",
+      "correct": false,
+      "rationale": "送信元 IP アドレスの制限は MFA の強制になりません。オフィスのネットワークからなら MFA なしで削除でき、MFA で認証したときだけ許可するという要件を満たしません。"
+    }
+  ],
+  "explanation": "aws:MultiFactorAuthPresent は、リクエストの一時的な認証情報が MFA で認証されたかどうかを示す条件キーです。AssumeRole や GetSessionToken で得た一時的な認証情報、または MFA でサインインしたコンソールのセッションにだけ含まれます。IAM ユーザーのアクセスキー（長期的な認証情報）をそのまま使った API 呼び出しには、このキー自体がありません。\n\nそのため、MFA を強制する Deny ポリシーは BoolIfExists を使って書きます。BoolIfExists はキーが存在しない場合も一致するので、MFA なしの呼び出しとキーが false の呼び出しの両方を拒否できます。Bool で書くと、キーがない長期的な認証情報の呼び出しが素通りしてしまいます。MFA で認証した一時的な認証情報（sts get-session-token に MFA のシリアル番号とコードを指定して取得）を使えば、キーが true になり、拒否されません。\n\nMFA は登録するだけでは API には効かないこと、IP 制限は別の統制であることも整理しておきます。なお、フェデレーションや IAM Identity Center のユーザーでは、このキーが使えない場合があるため、別の方法（セッションタグなど）が案内されています。",
+  "keyPoints": [
+    "MFA の強制は IAM ポリシーの条件で行う。登録しただけでは API 呼び出しに効かない",
+    "長期的なアクセスキーの呼び出しには aws:MultiFactorAuthPresent がない → Deny は BoolIfExists で書く",
+    "CLI で MFA を使うには sts get-session-token（または MFA 付きの AssumeRole）で一時的な認証情報を得る"
+  ],
+  "references": [
+    {
+      "title": "AWS global condition context keys - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+    },
+    {
+      "title": "Secure API access with MFA - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-iam-basics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

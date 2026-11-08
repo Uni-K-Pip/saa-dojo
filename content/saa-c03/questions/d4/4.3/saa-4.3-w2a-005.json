@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-S1", "4.3-K4"],
+  "services": ["AWS Backup", "Amazon Relational Database Service"],
+  "qualifier": "operational",
+  "tags": ["AWS Backup", "保持ポリシー", "バックアップ", "長期保存"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融会社は、Amazon RDS for MySQL の本番データベースを運用しています。自動バックアップの保持期間は 7 日に設定されています。新たな規制により、毎月末時点のバックアップを 7 年間保持することが求められました。バックアップの作成と期限切れの削除は自動化し、運用の手間をできるだけ少なくしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "RDS の自動バックアップの保持期間を、7 年に設定する。",
+      "correct": false,
+      "rationale": "RDS の自動バックアップの保持期間は、最大で 35 日です。7 年には設定できません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Backup のバックアップ計画で、毎月末のスケジュールのルールを作成し、保持期間を 7 年にして、RDS データベースをリソースとして割り当てる。",
+      "correct": true,
+      "rationale": "AWS Backup は、バックアップ計画で、スケジュールと保持期間を一元的に管理できます。毎月のバックアップを 7 年間保持するルールを設定すれば、作成も期限切れの削除も自動で行われ、運用の手間が最も少なくなります。"
+    },
+    {
+      "id": "c",
+      "text": "毎月末に AWS Lambda 関数で手動スナップショットを作成し、7 年後に削除するスクリプトも自作する。",
+      "correct": false,
+      "rationale": "手動スナップショットは自動では削除されないため、削除の仕組みも含めて自分で作って保守する必要があります。AWS Backup の標準機能で実現できるので、運用の手間が大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "RDS の自動バックアップを有効にしたまま、データベースを削除しないようにする。",
+      "correct": false,
+      "rationale": "自動バックアップの保持期間は最大 35 日で、毎月末のバックアップを 7 年間保持する要件を満たしません。データベースを残すことと、過去の時点のバックアップを保持することは別です。"
+    }
+  ],
+  "explanation": "RDS のバックアップには、自動バックアップと手動スナップショットがあります。\n\n・自動バックアップ: 保持期間（0〜35 日）を設定し、その期間内の任意の時点に復元できる。期限が過ぎると自動で削除される。\n・手動スナップショット: 自分で作成するスナップショットで、削除するまで保持される。自動では削除されない。\n\nそれより長い期間の保持や、複数のサービスにまたがるバックアップの一元管理には、AWS Backup を使います。AWS Backup は、バックアップ計画で、スケジュール、保持期間（ライフサイクル）、コピー先（別のリージョンやアカウント）を定義し、RDS、DynamoDB、EBS、EFS などのリソースに割り当てます。バックアップの作成と期限切れの削除が自動で行われ、バックアップボールトロックで削除を防止することもできます。\n\nバックアップの保持ポリシーは、コンプライアンス（法令・規制）の保持期間と、保存コスト、復旧に必要な時点（RPO）のバランスで決めます。",
+  "keyPoints": [
+    "RDS の自動バックアップの保持期間は最大 35 日。それ以上の長期保持は AWS Backup や手動スナップショット",
+    "長期保持と期限切れの削除まで自動化 → AWS Backup のバックアップ計画（スケジュール＋保持期間）",
+    "手動スナップショットは自動では削除されない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Backup? - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+    },
+    {
+      "title": "Working with backups - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

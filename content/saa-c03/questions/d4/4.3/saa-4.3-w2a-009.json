@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-009",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-S3", "4.3-K9", "4.3-K4"],
+  "services": ["Amazon DynamoDB"],
+  "qualifier": "cost",
+  "tags": ["DynamoDB Standard-IA", "テーブルクラス", "ストレージコスト", "低頻度アクセス"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、過去の取引記録を Amazon DynamoDB のテーブルに数十 TB 保存しています。参照される頻度は低く、読み書きのリクエストにかかる料金より、ストレージの料金のほうがはるかに大きくなっています。データは引き続き DynamoDB から低レイテンシーで読めるようにしておく必要があります。アプリケーションの変更を最小限にして、コストを下げる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "テーブルクラスを DynamoDB Standard-IA（Standard-Infrequent Access）に変更する。",
+      "correct": true,
+      "rationale": "DynamoDB Standard-IA は、ストレージの料金が標準のクラスより低く、読み書きの料金がやや高いテーブルクラスです。ストレージ料金が支配的で、アクセスが少ないテーブルに向いています。テーブルの設定の変更だけで済み、アプリケーションの変更も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "テーブルのデータをすべて Amazon S3 Glacier Deep Archive にエクスポートして削除する。",
+      "correct": false,
+      "rationale": "Deep Archive からの取り出しには数時間〜数十時間かかり、DynamoDB から低レイテンシーで読めるようにしておく要件を満たしません。アプリケーションの改修も必要になります。"
+    },
+    {
+      "id": "c",
+      "text": "プロビジョニング済みの読み書きキャパシティを、可能な限り小さくする。",
+      "correct": false,
+      "rationale": "問題は読み書きの料金ではなくストレージの料金が大きいことです。キャパシティを小さくしても、ストレージ料金は変わらず、アクセス時にスロットリングが起きるおそれもあります。"
+    },
+    {
+      "id": "d",
+      "text": "テーブルを Global Tables にして、別のリージョンにも同じデータを保存する。",
+      "correct": false,
+      "rationale": "データの保存量が増えるためストレージの料金がさらに増えます。耐障害性や低レイテンシーの機能で、コストを下げる手段ではありません。"
+    }
+  ],
+  "explanation": "DynamoDB には 2 つのテーブルクラスがあります。\n\n・DynamoDB Standard: 既定のクラス。ストレージの料金は高めで、読み書きの料金が低め。アクセスが多いテーブルに向く。\n・DynamoDB Standard-IA: ストレージの料金が約 60% 安く、読み書きの料金は約 25% 高い。ストレージのコストが全体の大きな部分（目安として、スループットの料金の半分以上）を占める、アクセス頻度の低いテーブルに向く。\n\nどちらのクラスも、同じ性能と可用性、同じ API で使えます。テーブルクラスはいつでも変更でき、アプリケーションの変更は要りません。\n\nなお、このクラスの選択は、ストレージ料金と読み書きの料金の割合で判断します。コストの内訳（Cost Explorer などで確認できる）を調べてから切り替えるのが基本です。",
+  "keyPoints": [
+    "ストレージ料金が支配的でアクセスが少ない DynamoDB テーブル → Standard-IA テーブルクラス",
+    "テーブルクラスは設定で変更でき、アプリケーションの変更は不要",
+    "アクセスが多いテーブルは Standard。切り替え前にストレージと読み書きの料金の割合を確認する"
+  ],
+  "references": [
+    {
+      "title": "Table classes - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html"
+    },
+    {
+      "title": "Amazon DynamoDB pricing",
+      "url": "https://aws.amazon.com/dynamodb/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

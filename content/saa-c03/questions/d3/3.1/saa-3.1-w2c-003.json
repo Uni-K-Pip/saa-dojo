@@ -1,0 +1,65 @@
+{
+  "id": "saa-3.1-w2c-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K1", "3.1-K2"],
+  "services": ["AWS DataSync", "Amazon EFS", "AWS Storage Gateway", "AWS Direct Connect"],
+  "qualifier": "operational",
+  "tags": ["ハイブリッドストレージ", "DataSync", "NFS", "EFS", "データ移行"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある広告会社は、オンプレミスの NAS（NFS）に約 120 TB の素材ファイルを保管しており、Linux の Amazon EC2 インスタンスから共有して使うため Amazon EFS に移します。AWS Direct Connect 接続は日中の業務でも使うので、移行が使う帯域を制限する必要があります。切り替えの日まで毎晩、変更分だけを同期し、転送後の整合性も検証したいと考えています。カスタムスクリプトの開発と運用は最小限にします。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスに NAS をマウントし、rsync と cron で毎晩 EFS へ同期するスクリプトを自作する。",
+      "correct": false,
+      "rationale": "rsync でも転送自体はできますが、帯域の制限、並列化による高速化、再試行、整合性の検証、進捗の監視を自前のスクリプトと EC2 の運用で作り込む必要があり、カスタム開発と運用を最小限にする要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "オンプレミスに S3 File Gateway をデプロイして NAS のデータを S3 に書き込み、その後 S3 から EFS へ別の手段でコピーする。",
+      "correct": false,
+      "rationale": "S3 File Gateway の保存先は S3 です。EFS には直接書き込めないため、S3 から EFS へのコピー手段を別に用意する必要があり、構成が増えて運用が重くなります。"
+    },
+    {
+      "id": "c",
+      "text": "EFS のマウントターゲットを Direct Connect 経由でオンプレミスのサーバーにマウントし、cp コマンドで毎晩コピーする。",
+      "correct": false,
+      "rationale": "EFS はオンプレミスからもマウントできますが、コピーは手作業やスクリプト頼みです。帯域の制限、変更分だけの転送、転送後の整合性検証の仕組みがなく、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "オンプレミスに AWS DataSync エージェントをデプロイし、NFS を転送元、EFS を転送先とするタスクを作成して、毎晩実行するスケジュールと帯域の上限を設定する。",
+      "correct": true,
+      "rationale": "DataSync は NFS から EFS への転送をマネージドに行い、タスクのスケジュール実行、帯域の上限設定、変更分の転送、転送データの整合性検証に対応しています。スクリプトの開発と運用をほぼ不要にできます。"
+    }
+  ],
+  "explanation": "AWS DataSync は、オンプレミスのストレージ（NFS、SMB など）と AWS のストレージサービス（S3、EFS、FSx の各種）の間でデータを転送するマネージドサービスです。オンプレミスには DataSync エージェントを配置し、転送元の NFS と転送先の EFS をロケーションとして登録して、タスクを作ります。\n\nタスクには、cron や rate 式によるスケジュール（最短 1 時間間隔）、実行ごとの帯域の上限、変更分だけを転送する設定、転送後の整合性の検証を指定できます。専用のプロトコルと並列処理で転送し、暗号化にも対応しているため、大量のファイルを移行する用途で運用負荷を最小にできます。\n\nrsync や cp の自作スクリプトは、帯域制御や検証、監視を自分で作り込む必要があります。S3 File Gateway は S3 に保存するゲートウェイで、EFS への移行用ではありません。",
+  "keyPoints": [
+    "オンプレミスのファイルを EFS／S3／FSx へ移行・定期同期 → DataSync（エージェント＋タスク）",
+    "DataSync はスケジュール、帯域制限、変更分のみ転送、整合性検証を標準で備える。自作スクリプトより運用が軽い",
+    "File Gateway は日常的にファイル共有として使い続ける用途。一度きりの移行や同期は DataSync"
+  ],
+  "references": [
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    },
+    {
+      "title": "Scheduling when your AWS DataSync task runs",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html"
+    },
+    {
+      "title": "Setting bandwidth limits for your AWS DataSync task",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/configure-bandwidth.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

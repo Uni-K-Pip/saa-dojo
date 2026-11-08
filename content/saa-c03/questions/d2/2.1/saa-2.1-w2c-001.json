@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.1-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K7"],
+  "services": ["Amazon Simple Storage Service", "Amazon CloudFront", "AWS Global Accelerator", "AWS Direct Connect"],
+  "qualifier": "performance",
+  "tags": ["S3 Transfer Acceleration", "アップロード高速化", "エッジロケーション", "グローバル"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製薬会社は、東京リージョンの Amazon S3 バケットに、世界各地の研究拠点から実験機器の測定データ（1 ファイルあたり数 GB）をアップロードしています。欧州や南米の拠点では公衆インターネットを長く経由するため、アップロードに時間がかかっています。アップロードは各拠点の AWS SDK を使うプログラムが S3 に直接行っており、データは東京のバケットに集約する必要があります。プログラムの変更は接続先エンドポイントの変更だけにとどめ、遠方の拠点からのアップロードを高速化したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "世界各地の拠点と東京リージョンを、拠点ごとに AWS Direct Connect で接続し、専用線経由でアップロードする。",
+      "correct": false,
+      "rationale": "専用線は通信品質を安定させられますが、世界中の拠点ごとに回線の手配と接続の構築が必要で、期間もコストも大きくなります。バケットの設定を変えるだけで済ませたいという要件にも合いません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Global Accelerator のアクセラレーターを作成し、S3 バケットをエンドポイントに登録して、拠点のプログラムの接続先をアクセラレーターの静的 IP アドレスにする。",
+      "correct": false,
+      "rationale": "Global Accelerator の標準アクセラレーターで登録できるエンドポイントは、Application Load Balancer、Network Load Balancer、Amazon EC2 インスタンス、Elastic IP アドレスです。S3 バケットは登録できません。"
+    },
+    {
+      "id": "c",
+      "text": "バケットで S3 Transfer Acceleration を有効にし、拠点のプログラムの接続先をバケット名.s3-accelerate.amazonaws.com の専用エンドポイントに変更する。",
+      "correct": true,
+      "rationale": "Transfer Acceleration は、遠く離れたクライアントと S3 バケットの間の転送を速くするバケット単位の機能です。データは最寄りのエッジロケーションで受け取られ、最適化された経路で S3 に送られます。バケットは東京のまま、接続先エンドポイントを変えるだけで利用できます。"
+    },
+    {
+      "id": "d",
+      "text": "欧州と南米のリージョンにもバケットを作成し、各拠点は最寄りのバケットにアップロードして、クロスリージョンレプリケーションで東京のバケットに集める。",
+      "correct": false,
+      "rationale": "各拠点が最寄りのバケットに書き込めば速くなりますが、リージョンごとのバケットの作成、レプリケーションの設定、プログラムの接続先バケット名の変更が必要です。「接続先エンドポイントの変更だけ」という要件を満たさず、運用の手間も増えます。"
+    }
+  ],
+  "explanation": "Amazon S3 Transfer Acceleration は、クライアントが世界各地から 1 つの S3 バケットにアップロードする場合や、大陸をまたいで数 GB から数 TB を転送する場合に使う、バケット単位の機能です。有効にすると、データは Amazon CloudFront のグローバルなエッジロケーションのうち最寄りの場所で受け取られ、そこから AWS のネットワークを通る最適化された経路で S3 に届きます。クライアントは、バケット名.s3-accelerate.amazonaws.com のアクセラレーション用エンドポイントを使います。バケットの場所を変える必要はなく、通常のエンドポイントも引き続き使えます。使うには、バケット名が DNS に準拠し、ピリオドを含まないことが条件です。\n\nGlobal Accelerator は ALB や NLB、EC2 インスタンスなどの前段に置くサービスで、S3 は対象外です。Direct Connect は拠点ごとの専用線の構築が必要で、リージョンごとのバケットとレプリケーションは構成と運用が複雑になります。なお、CloudFront は本来キャッシュによる配信の高速化が中心で、アップロードの高速化を目的にした機能が S3 Transfer Acceleration です。",
+  "keyPoints": [
+    "遠方のクライアントから 1 つの S3 バケットへのアップロードを速くする → S3 Transfer Acceleration（専用のアクセラレーションエンドポイントを使う）",
+    "Global Accelerator のエンドポイントは ALB、NLB、EC2、Elastic IP。S3 は登録できない",
+    "Transfer Acceleration を使うバケット名は DNS 準拠でピリオドを含まない"
+  ],
+  "references": [
+    {
+      "title": "Configuring fast, secure file transfers using Amazon S3 Transfer Acceleration",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+    },
+    {
+      "title": "How AWS Global Accelerator works",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

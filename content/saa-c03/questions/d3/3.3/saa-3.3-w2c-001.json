@@ -1,0 +1,72 @@
+{
+  "id": "saa-3.3-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-K1",
+    "3.3-K7"
+  ],
+  "services": [
+    "Amazon RDS"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Multi-AZ",
+    "自動フェイルオーバー",
+    "スタンバイ",
+    "リードレプリカとの違い"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社は、Amazon RDS for MySQL の単一の DB インスタンス（Single-AZ）で在庫管理システムを運用しています。最近のアベイラビリティーゾーン（AZ）の障害で、システムが長時間停止しました。同じ AWS リージョンの中で、AZ の障害が起きても運用担当者の操作なしに自動で別の AZ に切り替わり、同じ接続エンドポイントで利用を続けられるようにしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "別の AZ にリードレプリカを作成し、障害時にはレプリカを昇格させて接続先を切り替える。",
+      "correct": false,
+      "rationale": "リードレプリカへの切り替えは、運用担当者が昇格の操作をして接続先も変更する必要があります。レプリケーションは非同期なので、データも一部失われるおそれがあり、自動で切り替えるという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "別のリージョンにクロスリージョンのリードレプリカを作成する。",
+      "correct": false,
+      "rationale": "別のリージョンのレプリカは、リージョン全体の障害への備えです。昇格の操作が必要で、接続先のエンドポイントも変わります。同じリージョン内での AZ の障害時に自動で切り替わる要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "毎日の自動バックアップを、別の AZ に復元できるように保持する。",
+      "correct": false,
+      "rationale": "バックアップからの復元には時間がかかり、新しい DB インスタンスを手動で作る操作が必要です。自動で切り替わり、同じエンドポイントで使い続けるという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "DB インスタンスを変更して、Multi-AZ DB インスタンスのデプロイにする。",
+      "correct": true,
+      "rationale": "Multi-AZ DB インスタンスのデプロイでは、別の AZ にスタンバイを置いてデータを同期的に複製します。障害時には自動でスタンバイに切り替わり、DB のエンドポイントはそのまま使えます。"
+    }
+  ],
+  "explanation": "Amazon RDS の Multi-AZ DB インスタンスのデプロイは、別の AZ にスタンバイ DB インスタンスを作り、プライマリのデータを同期的に複製します。プライマリや AZ に障害が起きると、RDS が自動でスタンバイに切り替え、接続は同じ DB エンドポイントのまま使えます。スタンバイは読み取りの処理には使われません。可用性の向上が目的です。\n\nリードレプリカは非同期に複製される読み取り用の複製で、読み取りのスケールアウトが主な目的です。障害時の切り替えには昇格の操作が必要で、自動ではありません。クロスリージョンのレプリカはリージョン障害への備え、バックアップからの復元は時間と手作業がかかる復旧手段です。",
+  "keyPoints": [
+    "AZ 障害に自動で備える → Multi-AZ（同期レプリケーション、自動フェイルオーバー、同じエンドポイント）",
+    "Multi-AZ DB インスタンスのスタンバイは読み取りに使えない",
+    "リードレプリカは非同期で、主目的は読み取りの分散。昇格は手動",
+    "クロスリージョンのレプリカはリージョン障害・遠隔地の読み取り向け"
+  ],
+  "references": [
+    {
+      "title": "Configuring and managing a Multi-AZ deployment for Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
+    },
+    {
+      "title": "Working with DB instance read replicas - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

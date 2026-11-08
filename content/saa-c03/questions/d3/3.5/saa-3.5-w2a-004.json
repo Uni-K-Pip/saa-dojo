@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K1", "3.5-S4"],
+  "services": ["Amazon Quick", "Amazon Athena", "Amazon Redshift"],
+  "qualifier": "operational",
+  "tags": ["Amazon QuickSight", "BI", "ダッシュボード", "SPICE"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社の営業部門では、管理職 200 人が、Amazon S3 のデータを Amazon Athena 経由で、また Amazon Redshift のデータを、ブラウザーとモバイル端末のダッシュボードで見たいと考えています。利用者が増えても自動でスケールし、BI ツールのサーバーの構築や管理は避けたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon QuickSight でデータセットを作成してダッシュボードを公開し、利用者を招待して共有する。",
+      "correct": true,
+      "rationale": "Amazon QuickSight は、サーバーレスの BI サービスで、Athena や Redshift などのデータソースに接続してダッシュボードを作成し、ブラウザーやモバイルから共有できます。利用者数の増加にも自動でスケールし、サーバーの管理は不要です。"
+    },
+    {
+      "id": "b",
+      "text": "管理職に Athena のコンソールを使わせ、SQL でクエリして結果を確認してもらう。",
+      "correct": false,
+      "rationale": "Athena のコンソールは SQL を書いて結果を得るツールで、可視化されたダッシュボードをモバイルも含めて共有する用途には向きません。管理職に SQL の知識も求めることになります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EC2 インスタンスにオープンソースの BI ツールを構築して Auto Scaling グループで運用する。",
+      "correct": false,
+      "rationale": "サーバーの構築、パッチ適用、スケーリングの設定など、BI ツールの基盤を自分で管理することになり、サーバーの管理を避けたいという要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Athena のクエリ結果を CSV で出力し、メールで管理職に配布する。",
+      "correct": false,
+      "rationale": "データの更新のたびに手作業の配布が必要で、対話的に絞り込むダッシュボードにもなりません。データの取り扱いのリスクも増え、運用負荷が大きい方法です。"
+    }
+  ],
+  "explanation": "Amazon QuickSight は、AWS のフルマネージドな BI（ビジネスインテリジェンス）サービスです。Athena、Redshift、S3、RDS など多くのデータソースに接続してダッシュボードを作り、ブラウザーやモバイルアプリから閲覧できます。サーバーレスなので、利用者数が増えても自動でスケールします。SPICE という高速なインメモリエンジンにデータを取り込んで表示を速くすることも、データソースに直接クエリすることもできます。\n\n分析の流れを整理すると、S3 のデータの検索は Athena、アクセス権の管理は Lake Formation、変換は AWS Glue、可視化は QuickSight という役割分担です。Athena はクエリのためのサービスで、ダッシュボードを共有する機能は持ちません。",
+  "keyPoints": [
+    "ダッシュボードで可視化、サーバーなし、利用者増に自動対応 → Amazon QuickSight",
+    "QuickSight は Athena、Redshift、S3 などに接続でき、SPICE で高速化できる",
+    "Athena はクエリ、QuickSight は可視化と役割が違う"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Quick Sight? - Amazon Quick Sight",
+      "url": "https://docs.aws.amazon.com/quicksight/latest/user/welcome.html"
+    },
+    {
+      "title": "Supported data sources - Amazon Quick Sight",
+      "url": "https://docs.aws.amazon.com/quicksight/latest/user/supported-data-sources.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

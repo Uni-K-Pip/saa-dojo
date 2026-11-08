@@ -1,0 +1,72 @@
+{
+  "id": "saa-3.2-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-K2"
+  ],
+  "services": [
+    "AWS Wavelength",
+    "Amazon EC2"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "AWS Wavelength",
+    "5G",
+    "エッジコンピューティング",
+    "モバイルの低レイテンシー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるスポーツ興行会社は、スタジアムの観客が 5G 対応のスマートフォンで遊べる拡張現実（AR）ゲームを提供します。端末のカメラ映像をサーバーで解析して結果を返すため、端末とサーバーの間の往復遅延を数十ミリ秒以内に抑える必要があります。解析サーバーは Amazon EC2 で動かし、スコアの集計などは既存のリージョンのサービスと連携させたいと考えています。この要件を満たす構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "解析サーバーを、最寄りのリージョンの Auto Scaling グループに配置し、Application Load Balancer 経由でアクセスさせる。",
+      "correct": false,
+      "rationale": "通信事業者のネットワークからインターネット経由でリージョンまで往復するため、遅延を数十ミリ秒以内に抑えにくい構成です。端末に近い場所へコンピューティングを置くという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "VPC を AWS Wavelength Zone に拡張し、Wavelength Zone のサブネットに解析用の EC2 インスタンスを配置して、リージョンのサービスとは VPC 内で連携する。",
+      "correct": true,
+      "rationale": "Wavelength Zone は通信事業者の 5G ネットワークの内部に AWS のコンピューティングとストレージを置くため、モバイル端末からの通信がインターネットを通らず、低遅延で済みます。VPC を拡張して EC2 を動かし、リージョンのサービスとも同じ VPC で連携できます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon CloudFront のディストリビューションを作成し、解析 API のレスポンスをエッジロケーションにキャッシュする。",
+      "correct": false,
+      "rationale": "観客ごとにカメラ映像が異なる動的な解析は、キャッシュで応答できません。CloudFront は配信の高速化には有効ですが、映像の解析処理自体を端末の近くで実行する手段にはなりません。"
+    },
+    {
+      "id": "d",
+      "text": "スタジアムの施設内に AWS Outposts を設置し、解析用の EC2 インスタンスを動かす。",
+      "correct": false,
+      "rationale": "Outposts はスタジアム内の機器や施設内ネットワークからの利用には向きますが、観客のスマートフォンは通信事業者の 5G ネットワーク経由で接続します。設置と運用の負担も大きく、5G 端末向けの低遅延という要件には Wavelength のほうが適しています。"
+    }
+  ],
+  "explanation": "AWS Wavelength は、通信事業者（CSP）のネットワークの内部に標準的な AWS のコンピューティングとストレージを置くサービスです。VPC を Wavelength Zone に拡張し、そのサブネットで Amazon EC2 や Amazon EBS などを動かします。5G 端末からのトラフィックは事業者のネットワーク内で処理されるので、インターネットを経由する場合より遅延が小さくなります。親のリージョンのサービスとは、VPC を通じて連携できます。\n\nリージョンに置く構成は、端末からの往復距離が長くなり遅延が大きくなります。CloudFront はキャッシュ可能なコンテンツの配信に向いており、利用者ごとに変わる動的な処理を端末の近くで動かす用途ではありません。Outposts は、オンプレミスの設備の近くで AWS のインフラを動かしたいときの選択肢で、モバイル端末の通信経路を短くするものではありません。",
+  "keyPoints": [
+    "5G のモバイル端末に超低遅延で提供したい → AWS Wavelength（通信事業者のネットワーク内の Wavelength Zone）",
+    "Wavelength Zone は VPC を拡張して使い、リージョンのサービスと連携できる",
+    "CloudFront はキャッシュ向き。端末ごとに変わる動的な処理をエッジで動かす用途とは違う",
+    "顧客の施設内に置くなら Outposts、携帯網の中に置くなら Wavelength"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Wavelength? - AWS Wavelength",
+      "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+    },
+    {
+      "title": "AWS Wavelength",
+      "url": "https://aws.amazon.com/wavelength/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

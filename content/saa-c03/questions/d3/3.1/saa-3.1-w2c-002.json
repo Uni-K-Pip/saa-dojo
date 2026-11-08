@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.1-w2c-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": ["3.1-K1", "3.1-S1"],
+  "services": ["AWS Storage Gateway", "Amazon S3", "Amazon EBS"],
+  "qualifier": "performance",
+  "tags": ["ハイブリッドストレージ", "Volume Gateway", "保管型ボリューム", "iSCSI"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある運送会社の配車システムは、オンプレミスの仮想サーバー上の業務データベースが、SAN の iSCSI ボリューム（合計約 6 TB）にデータを置いています。システムは全データに低レイテンシーでアクセスする必要があり、AWS との WAN 回線が止まっても稼働を続けなければなりません。あわせて、災害に備えたオフサイトのバックアップを AWS に持ちたいと考えています。アプリケーションの構成は変更しません。この要件を満たすソリューションはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスに Volume Gateway を保管型ボリュームで構成し、iSCSI で接続して、スナップショットを定期的に AWS へバックアップする。",
+      "correct": true,
+      "rationale": "保管型ボリュームは、プライマリデータをオンプレミスのディスクに置き、変更分を非同期に EBS スナップショットとして AWS に保存します。全データをローカルで低レイテンシーに読み書きでき、WAN が止まっても稼働を続けられ、オフサイトのバックアップも持てます。"
+    },
+    {
+      "id": "b",
+      "text": "オンプレミスに Volume Gateway をキャッシュ型ボリュームで構成し、iSCSI で接続して、データを S3 に保存する。",
+      "correct": false,
+      "rationale": "キャッシュ型ボリュームはプライマリデータを S3 に置き、最近使ったデータだけをローカルにキャッシュします。キャッシュにないデータは WAN 越しに取得するため、全データへの低レイテンシーなアクセスを保証できず、回線停止時には読めないデータが出ます。"
+    },
+    {
+      "id": "c",
+      "text": "オンプレミスに S3 File Gateway をデプロイし、NFS 共有にデータベースのデータファイルを置いて S3 に保存する。",
+      "correct": false,
+      "rationale": "S3 File Gateway は NFS/SMB のファイル共有を提供するゲートウェイです。現在の iSCSI ブロックボリュームを置き換えるにはアプリケーションの構成変更が必要で、データベースのデータファイルの置き場所としても適しません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EBS ボリュームを作成し、AWS Direct Connect 経由でオンプレミスのサーバーに接続して、データベースのデータを置く。",
+      "correct": false,
+      "rationale": "EBS ボリュームは Amazon EC2 インスタンスにアタッチして使うもので、オンプレミスのサーバーに直接接続することはできません。回線経由では低レイテンシーも保てず、回線停止時に稼働を続けることもできません。"
+    }
+  ],
+  "explanation": "Volume Gateway は iSCSI のブロックボリュームをオンプレミスのサーバーに提供するゲートウェイで、保管型（stored）とキャッシュ型（cached）の 2 つの方式があります。\n\n保管型はプライマリデータをオンプレミスのディスクに置き、アプリケーションは全データをローカルのブロックストレージと同じ低レイテンシーで使えます。ゲートウェイは変更分を非同期にアップロードし、EBS スナップショットとして AWS に保存するので、オフサイトのバックアップや災害復旧に使えます。ローカルにデータがあるため、WAN が止まっても稼働を続けられます。\n\nキャッシュ型はプライマリデータが S3 にあり、ローカルには頻繁に使うデータだけを置きます。オンプレミスのストレージ容量を増やしたくない場合に向きますが、キャッシュにないデータの読み取りは WAN に依存します。「全データにローカルの低レイテンシー」が条件なら保管型、「ローカル容量を抑えたい」ならキャッシュ型を選びます。",
+  "keyPoints": [
+    "全データにローカルで低レイテンシー＋AWS にバックアップ → Volume Gateway の保管型ボリューム",
+    "キャッシュ型はプライマリが S3。ローカルのディスクを減らしたい場合向きで、キャッシュ外の読み取りは WAN 依存",
+    "ボリュームのバックアップは EBS スナップショットとして保存される。EBS ボリュームはオンプレミスに直接つなげない"
+  ],
+  "references": [
+    {
+      "title": "How Volume Gateway works - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html"
+    },
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-006",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-S1", "4.2-K8"],
+  "services": ["Elastic Load Balancing", "Amazon Elastic Container Service"],
+  "qualifier": "cost",
+  "tags": ["Application Load Balancer", "パスベースルーティング", "マイクロサービス", "ロードバランサーの統合"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon ECS 上で 10 個のマイクロサービスを運用しており、現在はサービスごとに Application Load Balancer（ALB）を 1 つずつ用意しています。すべてのサービスは HTTPS の通信を受け、同じドメイン名のパス（/orders/*、/users/* など）で呼び分けられるようにできます。ロードバランサーのコストを減らしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "1 つの ALB に統合し、パスベースのルーティングルールで、リクエストをサービスごとのターゲットグループに振り分ける。",
+      "correct": true,
+      "rationale": "ALB はパスやホスト名に基づくルーティングルールを持ち、1 つの ALB で複数のターゲットグループ（サービス）に振り分けられます。ALB の台数が減るため、時間あたりの料金を大きく減らせます。"
+    },
+    {
+      "id": "b",
+      "text": "サービスごとに Network Load Balancer（NLB）を作り、ALB から置き換える。",
+      "correct": false,
+      "rationale": "NLB はレイヤー 4 のロードバランサーで、HTTP のパスに基づく振り分けができません。サービスごとにロードバランサーが必要な点も変わらず、コストを減らせません。"
+    },
+    {
+      "id": "c",
+      "text": "1 つの Classic Load Balancer に統合する。",
+      "correct": false,
+      "rationale": "Classic Load Balancer は旧世代のロードバランサーで、パスベースのルーティングに対応していません。新しい設計では使わず、ALB を使います。"
+    },
+    {
+      "id": "d",
+      "text": "Gateway Load Balancer に置き換える。",
+      "correct": false,
+      "rationale": "Gateway Load Balancer は、ファイアウォールなどの仮想アプライアンスにトラフィックを通すためのロードバランサーで、アプリケーションの振り分けの用途ではありません。"
+    }
+  ],
+  "explanation": "Elastic Load Balancing には、用途の異なる複数の種類があります。\n\n・Application Load Balancer（ALB）: レイヤー 7（HTTP／HTTPS）。パス、ホスト名、ヘッダー、クエリ文字列などに基づいてルーティングできる。マイクロサービスやコンテナと相性がよい。\n・Network Load Balancer（NLB）: レイヤー 4（TCP／UDP／TLS）。非常に高い性能と低レイテンシー、固定 IP アドレスが必要なときに使う。\n・Gateway Load Balancer（GWLB）: ファイアウォールや侵入検知などの仮想アプライアンスにトラフィックを通す。\n\nロードバランサーは、台数に応じた時間あたりの料金がかかります。ALB のパスベースやホストベースのルーティングを使えば、1 つの ALB で多数のサービスを振り分けられるので、サービスごとに ALB を持つ構成よりもコストを抑えられます。",
+  "keyPoints": [
+    "HTTP のパスやホスト名で複数のサービスに振り分ける → 1 つの ALB のルーティングルールで統合してコスト削減",
+    "TCP／UDP の高性能や固定 IP アドレス → NLB、アプライアンスへの経路 → Gateway Load Balancer",
+    "ロードバランサーは台数に応じた料金がかかるので、不要に増やさない"
+  ],
+  "references": [
+    {
+      "title": "What is an Application Load Balancer? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    },
+    {
+      "title": "Listener rules for your Application Load Balancer - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

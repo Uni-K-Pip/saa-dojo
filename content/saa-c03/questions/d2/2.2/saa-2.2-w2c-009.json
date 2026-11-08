@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.2-w2c-009",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": ["2.2-K2", "2.2-S8"],
+  "services": ["Amazon Textract", "Amazon Rekognition", "Amazon Comprehend", "Amazon SageMaker AI"],
+  "qualifier": "operational",
+  "tags": ["専用マネージドサービス", "Textract", "AnalyzeExpense", "請求書"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある輸入商社では、海外の取引先から届く英語の請求書（PDF や画像）を、経理担当者が目で見て会計システムに手入力しています。請求書のレイアウトは取引先ごとに異なります。会社は、請求書から請求元、請求日、合計金額、明細行などの項目を自動で取り出し、構造化データとして会計システムに渡したいと考えています。機械学習の専門人材はおらず、モデルの学習やサーバーの管理は避けたいと考えています。運用上のオーバーヘッドが最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Rekognition の DetectText API で請求書の画像から文字列を読み取り、文字列の並びから請求元や合計金額を判別するプログラムを自作する。",
+      "correct": false,
+      "rationale": "Rekognition の DetectText は画像内の単語や行といった文字列を返すだけで、請求書の項目をキーと値の組として抽出する機能ではありません。項目を判別するコードを自作して取引先ごとのレイアウト差を吸収する必要があり、運用負荷が大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Textract の AnalyzeExpense API（複数ページの PDF は非同期の経費分析）で請求書を解析し、返された項目と明細行を会計システムに渡す。",
+      "correct": true,
+      "rationale": "Textract は請求書や領収書向けの AnalyzeExpense API を提供し、レイアウトが異なる請求書からも請求元、日付、合計金額、明細行などを構造化して返します。サーバーも学習済みモデルの管理も不要で、必要な分だけ API を呼び出すので運用負荷が最小です。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Comprehend の DetectEntities API に請求書の PDF ファイルをそのまま渡し、日付や金額のエンティティを抽出する。",
+      "correct": false,
+      "rationale": "Comprehend の DetectEntities は UTF-8 のテキストを入力とする API で、PDF や画像から文字を読み取る OCR の機能はありません。請求書のファイルを直接渡して項目を取り出すことはできないため、要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SageMaker AI で OCR と項目抽出のモデルを学習させ、リアルタイムエンドポイントにデプロイして請求書を処理する。",
+      "correct": false,
+      "rationale": "実現はできますが、学習データの準備、モデルの学習と更新、エンドポイントの運用が必要です。専用のマネージドサービスで同じことができる場面で、機械学習の専門人材がいない会社が選ぶと運用上のオーバーヘッドが最大になります。"
+    }
+  ],
+  "explanation": "請求書のように定型でなくても項目の意味が決まっている文書から、文字の読み取りとキーと値の抽出まで行うのは Amazon Textract の役割です。AnalyzeExpense API は請求書や領収書に特化しており、請求元、日付、合計金額、明細行などを構造化して返します。フルマネージドなので、サーバーの用意やモデルの学習は不要です。\n\n似たサービスとの違いも押さえます。Amazon Rekognition は画像や動画の分析（物体、顔、画像内の文字列など）で、文書の項目抽出には向きません。Amazon Comprehend は読み取り済みのテキストを分析する自然言語処理のサービスで、PDF や画像の文字は読み取れません。Amazon SageMaker AI は独自のモデルを作って運用するためのサービスで、既存の専用サービスで足りる要件では運用負荷が増えるだけです。\n\nなお、Textract が対応する言語には限りがあるため、日本語の帳票を扱う場合は公式ドキュメントで対応言語を確認します。",
+  "keyPoints": [
+    "画像・PDF の文書から文字、フォーム、表、請求書の項目を取り出す → Amazon Textract（請求書・領収書は AnalyzeExpense）",
+    "Rekognition は画像・動画の分析、Comprehend は読み取り済みテキストの自然言語処理。文書の OCR ではない",
+    "専用マネージドサービスで足りるなら、独自モデルを SageMaker AI で運用するより運用負荷が小さい"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Textract? - Amazon Textract",
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html"
+    },
+    {
+      "title": "What is Amazon Rekognition? - Amazon Rekognition",
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

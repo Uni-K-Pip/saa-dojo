@@ -1,0 +1,79 @@
+{
+  "id": "saa-3.3-w2c-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S1",
+    "3.3-K7"
+  ],
+  "services": [
+    "Amazon Aurora"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Aurora Auto Scaling",
+    "Aurora レプリカ",
+    "リーダーエンドポイント",
+    "ターゲット追跡",
+    "読み取りのスケール"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある学習サービスは、Amazon Aurora MySQL-Compatible Edition のクラスターを使っています。授業時間帯の昼間は、受講者の閲覧による読み取りが増えて Aurora レプリカの CPU 使用率が高くなりますが、夜間はほとんど読み取りがありません。ライターの負荷は常に低い状態です。運用担当者の手作業なしに、読み取りの負荷に合わせてレプリカの台数を増減し、夜間の費用を抑えたいと考えています。この要件を満たす設計を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Aurora Auto Scaling で、ライターの CPU 使用率を指標としたターゲット追跡ポリシーを設定する。",
+      "correct": false,
+      "rationale": "Aurora Auto Scaling はレプリカ（リーダー）の台数を調整する機能で、ライターの負荷には適用されません。ライターの負荷は低いままなので、そもそもスケールアウトも起きません。"
+    },
+    {
+      "id": "b",
+      "text": "Aurora Auto Scaling で、レプリカの平均 CPU 使用率を目標値にしたターゲット追跡ポリシーと、最小・最大のレプリカ数を設定する。",
+      "correct": true,
+      "rationale": "Aurora Auto Scaling は、読み取りの負荷に応じてレプリカの数を自動で増減します。レプリカの平均 CPU 使用率を目標値に保つ設定にすれば、昼間は増やし、夜間は減らせます。"
+    },
+    {
+      "id": "c",
+      "text": "ライターの DB インスタンスクラスを、現在より大きいものに変更する。",
+      "correct": false,
+      "rationale": "ライターを大きくしても、読み取りを処理するレプリカの能力は増えません。夜間も大きいインスタンスの費用がかかり続けます。"
+    },
+    {
+      "id": "d",
+      "text": "アプリケーションの読み取りの接続先を、クラスターのリーダーエンドポイントにする。",
+      "correct": true,
+      "rationale": "リーダーエンドポイントは、利用可能なレプリカに接続を振り分けます。Auto Scaling が追加したレプリカも対象に含まれ、アプリケーションは変更せずに新しいレプリカを使えます。"
+    },
+    {
+      "id": "e",
+      "text": "アプリケーションの設定ファイルに、レプリカ 3 台の各インスタンスエンドポイントを書いて、順番に接続する。",
+      "correct": false,
+      "rationale": "Auto Scaling が追加したレプリカの接続先は設定ファイルにないので使われません。減らされたレプリカの接続先にはつながらなくなります。台数が変わる構成にはリーダーエンドポイントを使う必要があります。"
+    }
+  ],
+  "explanation": "Aurora Auto Scaling は、Application Auto Scaling を使って、Aurora レプリカの数を最小値と最大値の範囲で自動的に増減します。指標には、レプリカの平均 CPU 使用率や平均接続数などを使い、目標値に近づくように調整します。ライターには適用されず、リーダーの負荷だけが対象です。\n\nレプリカの台数が変わるため、アプリケーションは個々のインスタンスエンドポイントではなく、クラスターのリーダーエンドポイントを使います。新しく追加されたレプリカも自動的に接続の振り分けの対象になります。ライターの拡大は読み取りの負荷に効かず、インスタンスエンドポイントの固定は、増減するレプリカに追随できません。",
+  "keyPoints": [
+    "読み取りの負荷に合わせてレプリカを増減 → Aurora Auto Scaling（ターゲット追跡、最小・最大のレプリカ数）",
+    "Aurora Auto Scaling が調整するのはレプリカ（リーダー）。ライターには効かない",
+    "台数が変わる構成ではリーダーエンドポイントに接続する",
+    "個々のインスタンスエンドポイントの固定は、増減するレプリカに追随できない"
+  ],
+  "references": [
+    {
+      "title": "Amazon Aurora Auto Scaling with Aurora Replicas - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html"
+    },
+    {
+      "title": "Amazon Aurora endpoint connections - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

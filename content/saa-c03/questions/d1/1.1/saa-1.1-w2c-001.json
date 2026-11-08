@@ -1,0 +1,61 @@
+{
+  "id": "saa-1.1-w2c-001",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": ["1.1-K3"],
+  "services": ["AWS Identity and Access Management (IAM)", "Amazon EC2", "AWS Key Management Service (AWS KMS)"],
+  "qualifier": "operational",
+  "tags": ["IAM はグローバル", "リージョン", "災害対策", "IAM ロール", "インスタンスプロファイル"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある印刷会社は、東京リージョン（ap-northeast-1）の Amazon EC2 インスタンスで基幹システムを運用しており、災害対策として大阪リージョン（ap-northeast-3）に同じ構成を用意することにしました。EC2 インスタンスは、東京リージョンで作成した IAM ロールとインスタンスプロファイルを使って Amazon S3 にアクセスしています。大阪リージョンの EC2 インスタンスにも同じアクセス権限を与えるとき、IAM について最も運用負荷の少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "IAM ロールとポリシーを大阪リージョンの IAM コンソールで同じ名前で作り直し、大阪リージョンのインスタンスにはそちらを使う。",
+      "correct": false,
+      "rationale": "IAM のユーザー、ロール、ポリシーはリージョンごとのリソースではなく、アカウントで 1 つだけ存在します。大阪リージョン用に作り直す必要はなく、作業とメンテナンスの手間が増えるだけです。"
+    },
+    {
+      "id": "b",
+      "text": "東京リージョンで作成した IAM ロールとインスタンスプロファイルを、そのまま大阪リージョンの EC2 インスタンスにも関連付ける。",
+      "correct": true,
+      "rationale": "IAM はリージョンを選ばずに使うグローバルなサービスで、ロールやポリシーはどのリージョンのリソースからでも使えます。大阪リージョンでの追加の IAM 作業は不要で、ロールの権限を変えれば両方のリージョンに同時に反映されます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudFormation StackSets で、東京リージョンの IAM ロールと同じ内容のロールを大阪リージョンにデプロイする。",
+      "correct": false,
+      "rationale": "StackSets で IAM リソースを複数リージョンに展開することはできますが、IAM リソースは元々リージョンをまたいで使えます。不要な仕組みを導入することになり、運用負荷が増えます。"
+    },
+    {
+      "id": "d",
+      "text": "大阪リージョン用に別の AWS アカウントを作成し、東京リージョンのロールを信頼するクロスアカウントロールを設定する。",
+      "correct": false,
+      "rationale": "同じアカウントの別リージョンでロールをそのまま使えるので、別アカウントとクロスアカウントの設定は必要ありません。アカウントの管理とロールの信頼関係の運用が増え、最も運用負荷が少ない方法になりません。"
+    }
+  ],
+  "explanation": "IAM のユーザー、グループ、ロール、ポリシーは特定のリージョンに属さないグローバルなリソースです。IAM のエンドポイントも 1 つで、どのリージョンの EC2 インスタンスや AWS Lambda 関数でも、同じ IAM ロールを関連付けて使えます。そのため、リージョンを追加するときに IAM の作り直しやコピーは必要ありません。\n\n一方で、リージョンごとに用意が必要なリソースもあります。たとえば、AWS KMS のキー、AWS Secrets Manager のシークレット、Amazon S3 バケット、VPC などはリージョンのリソースです。大阪リージョンの構成では、これらを大阪に用意し、IAM ロールの権限に新しいリソースの ARN が含まれているかを確認します。\n\n「リージョンごとにロールを作る」「別アカウントに分ける」といった設計は、IAM がグローバルであることを知らないと選んでしまう誤りです。アクセス制御を設計するときは、グローバルなもの（IAM）とリージョンのもの（KMS キーなど）を分けて考えます。",
+  "keyPoints": [
+    "IAM のユーザー・ロール・ポリシーはグローバル。リージョンを増やしても作り直さない",
+    "KMS キー、シークレット、S3 バケットなどはリージョンのリソース。リージョンごとに用意する",
+    "ロールの ARN にリージョンは含まれない。リソースの ARN にはリージョンが入る"
+  ],
+  "references": [
+    {
+      "title": "What is IAM? - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
+    },
+    {
+      "title": "AWS Identity and Access Management endpoints and quotas - AWS General Reference",
+      "url": "https://docs.aws.amazon.com/general/latest/gr/iam-service.html"
+    }
+  ],
+  "lessonRefs": ["lesson-1.1-multi-account"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

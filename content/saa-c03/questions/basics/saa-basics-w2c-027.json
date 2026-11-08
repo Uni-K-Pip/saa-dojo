@@ -1,0 +1,71 @@
+{
+  "id": "saa-basics-w2c-027",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K12"
+  ],
+  "services": [
+    "Amazon EC2",
+    "Amazon EBS"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "EBS の料金",
+    "停止中の料金",
+    "コスト"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある開発チームは、検証用の EC2 インスタンスを毎晩停止して、費用を抑えています。ところが、月末の請求を見ると、インスタンスを停止していた間も続いている料金がありました。インスタンスを停止している間も、料金がかかり続けるものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "インスタンスに接続されている EBS ボリューム",
+      "correct": true,
+      "rationale": "EBS ボリュームは、確保した容量と期間に対して料金がかかります。インスタンスを停止しても、ボリュームを削除するまで料金がかかり続けます。"
+    },
+    {
+      "id": "b",
+      "text": "オンデマンドインスタンスのコンピューティング料金",
+      "correct": false,
+      "rationale": "オンデマンドインスタンスは動いている時間に対して課金され、停止中はインスタンスの料金がかかりません。"
+    },
+    {
+      "id": "c",
+      "text": "インターネットから AWS へのデータ受信",
+      "correct": false,
+      "rationale": "インターネットから AWS へのデータ受信は無料です。停止中にかかり続ける料金ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "IAM ユーザーの利用",
+      "correct": false,
+      "rationale": "IAM は追加料金なしで使えます。停止中のインスタンスとも関係がありません。"
+    }
+  ],
+  "explanation": "AWS の料金は、リソースごとに単位が違います。オンデマンドの EC2 インスタンスは動いている時間に対して課金されるので、停止すると、インスタンスの料金はかかりません。一方、EBS ボリュームは確保した容量と期間に対して課金されるため、インスタンスを停止しても、ボリュームを削除するまで料金がかかり続けます。\n\n不要になったボリュームやスナップショットは、削除して費用を抑えます。ほかにも、S3 の保存料金や NAT ゲートウェイの時間の料金、確保しているパブリック IPv4 アドレス（Elastic IP アドレスを含む）の料金は、使っていなくても削除や解放するまでかかります。",
+  "keyPoints": [
+    "EC2 を停止してもインスタンスの料金は止まるが、EBS ボリュームの料金は削除するまで続く",
+    "不要になったボリューム、スナップショット、NAT ゲートウェイ、Elastic IP アドレスは削除や解放する"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 pricing",
+      "url": "https://aws.amazon.com/ec2/pricing/"
+    },
+    {
+      "title": "What is Amazon EBS?",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-pricing"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

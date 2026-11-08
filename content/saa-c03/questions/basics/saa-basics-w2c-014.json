@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-014",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K7"
+  ],
+  "services": [
+    "Amazon S3",
+    "AWS Key Management Service",
+    "AWS CloudHSM",
+    "AWS CloudTrail"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "KMS",
+    "SSE-KMS",
+    "カスタマーマネージドキー"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融系のスタートアップは、Amazon S3 に保存するデータを暗号化しています。規程により、暗号鍵を使えるユーザーを自社で決め、いつだれが鍵を使ったのかを後から監査できる必要があります。専用のハードウェアを自社だけで管理する要件はありません。どの方法が最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 が管理する鍵による暗号化（SSE-S3）を使う。",
+      "correct": false,
+      "rationale": "SSE-S3 の鍵は S3 が管理します。利用者が鍵を使えるユーザーを決めたり、鍵の使用を個別に監査したりすることはできません。"
+    },
+    {
+      "id": "b",
+      "text": "データを暗号化せず、IAM ポリシーだけでアクセスを制御する。",
+      "correct": false,
+      "rationale": "IAM ポリシーはアクセス権を決めるだけで、データの暗号化にはなりません。保存データを暗号化するという前提も満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudHSM で専用の HSM を用意し、そこで鍵を管理する。",
+      "correct": false,
+      "rationale": "専用のハードウェアで自社だけが鍵を管理する要件はありません。CloudHSM は要件を超えた構成で、導入と運用の手間も増えます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS KMS のカスタマーマネージドキーを使う SSE-KMS で暗号化する。",
+      "correct": true,
+      "rationale": "カスタマーマネージドキーは、キーポリシーと IAM ポリシーで鍵を使えるユーザーを自社で決められます。鍵の使用の記録は AWS CloudTrail に残るので、後から監査できます。"
+    }
+  ],
+  "explanation": "「暗号鍵の使用を監査したい」「鍵を使える人を自分で決めたい」という要件には、AWS KMS のカスタマーマネージドキーが適しています。S3 では SSE-KMS で使います。キーポリシーと IAM ポリシーで鍵へのアクセスを細かく制御でき、鍵を使った記録は AWS CloudTrail に残ります。\n\nS3 の既定の暗号化（SSE-S3）は手間がかからない反面、鍵は S3 が管理するため、この要件には足りません。AWS CloudHSM は、専用のハードウェアで自社だけが鍵を管理したいといった厳しい要件に使うもので、今回の問題では過剰です。",
+  "keyPoints": [
+    "鍵の使用の監査、鍵を使える人を自社で制御 → AWS KMS のカスタマーマネージドキー（S3 なら SSE-KMS）",
+    "専用ハードウェアで自社だけが鍵を管理したい → CloudHSM。それ以外は KMS で足りることが多い"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Key Management Service?",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    },
+    {
+      "title": "What is Amazon S3?",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-encryption"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

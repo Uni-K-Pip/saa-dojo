@@ -1,0 +1,72 @@
+{
+  "id": "saa-basics-w2c-024",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K14"
+  ],
+  "services": [
+    "Amazon CloudWatch",
+    "Amazon SNS",
+    "Amazon EC2"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "CloudWatch エージェント",
+    "メモリ使用率",
+    "アラーム"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、EC2 インスタンスで動くアプリケーションのメモリ使用率が 85% を超えたら、運用チームにメールで知らせたいと考えています。EC2 インスタンスには、追加のソフトウェアをまだ何も入れていません。この要件を満たす方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "CloudWatch が EC2 インスタンスで既定で集めているメモリ使用率のメトリクスに、アラームを設定する。",
+      "correct": false,
+      "rationale": "メモリ使用率は、CloudWatch が EC2 インスタンスで既定では集めないメトリクスです。既定のメトリクスだけでは、アラームを設定できません。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスに CloudWatch エージェントをインストールしてメモリ使用率を送り、アラームを設定して Amazon SNS のトピックからメールで通知する。",
+      "correct": true,
+      "rationale": "CloudWatch エージェントを入れると、メモリ使用率などを CloudWatch に送れます。アラームのしきい値を 85% にして、Amazon SNS でメールを送れます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS CloudTrail でメモリ使用率を記録し、85% を超えた操作を検出する。",
+      "correct": false,
+      "rationale": "CloudTrail は API の呼び出しを記録するサービスで、メモリ使用率のような性能の数値は記録しません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Config のルールで、メモリ使用率が 85% を超えたリソースを非準拠にする。",
+      "correct": false,
+      "rationale": "AWS Config はリソースの設定を評価するサービスで、メモリ使用率のように刻々と変わる性能の数値の監視には使いません。"
+    }
+  ],
+  "explanation": "Amazon CloudWatch は、EC2 インスタンスの CPU 使用率やネットワークの通信量を自動で集めます。しかし、メモリの使用率やディスクの空き容量は既定では集められません。これらを監視するには、インスタンスに CloudWatch エージェントを入れて CloudWatch に送ります。\n\nメトリクスが集まれば、CloudWatch アラームでしきい値（この問題では 85%）を決め、超えたときに Amazon SNS でメールを送れます。CloudTrail は API 操作の記録、AWS Config は設定の評価で、性能の数値の監視には使いません。",
+  "keyPoints": [
+    "EC2 のメモリ使用率とディスクの空き容量は既定のメトリクスにない → CloudWatch エージェントが必要",
+    "メトリクスがしきい値を超えたら通知 → CloudWatch アラーム + Amazon SNS"
+  ],
+  "references": [
+    {
+      "title": "Installing the CloudWatch agent",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+    },
+    {
+      "title": "What is Amazon CloudWatch?",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-monitoring-logging"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

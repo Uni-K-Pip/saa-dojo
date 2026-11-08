@@ -1,0 +1,793 @@
+{
+  "deck": "w2c-perf-cost-b",
+  "title": "性能とコストの使い分け（データベース・ネットワーク・データ取り込み）",
+  "createdBy": "w2c",
+  "cards": [
+    {
+      "id": "fc-w2c-136",
+      "front": "Aurora が標準の RDS（MySQL/PostgreSQL）より性能・可用性面で優れる点は？",
+      "back": "データが 3 つの AZ にまたがる共有クラスターボリュームに保存され（自動で拡張）、リードレプリカを最大 15 個まで持てる。レプリカは同じ共有ストレージを読むので追加が速く、障害時のフェイルオーバーも速い。小規模でコスト優先なら標準の RDS が安いこともある。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon Aurora",
+        "Amazon Relational Database Service"
+      ],
+      "tags": [
+        "Aurora",
+        "RDS",
+        "比較"
+      ]
+    },
+    {
+      "id": "fc-w2c-137",
+      "front": "Aurora の Standard と I/O-Optimized の選び方は？",
+      "back": "I/O のリクエスト課金が Aurora の総費用の 25% 以上を占めるなら I/O-Optimized（I/O の従量課金なしで、予測もしやすい）。それ未満なら Standard。切り替えは、Standard から I/O-Optimized へは 30 日に 1 回まで、戻すのはいつでも可能。",
+      "taskStatements": [
+        "4.3"
+      ],
+      "services": [
+        "Amazon Aurora"
+      ],
+      "tags": [
+        "Aurora",
+        "I/O-Optimized",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-138",
+      "front": "負荷の変動が大きく予測しにくい DB や、開発・テスト用 DB の容量管理とコストを減らすには？",
+      "back": "Aurora serverless（Aurora Serverless v2 の改称）。ACU 単位で最小 0.5 ずつ秒単位で自動スケールし、使った分だけ課金される。最小を 0 ACU にすると、アイドル時に自動停止できる。Aurora Serverless v1 は提供が終了している。",
+      "taskStatements": [
+        "3.3",
+        "4.3"
+      ],
+      "services": [
+        "Amazon Aurora Serverless",
+        "Amazon Aurora"
+      ],
+      "tags": [
+        "Aurora serverless",
+        "コスト",
+        "可変負荷"
+      ]
+    },
+    {
+      "id": "fc-w2c-139",
+      "front": "RDS の Multi-AZ とリードレプリカの目的の違いは？",
+      "back": "Multi-AZ は可用性（同期レプリケーションで自動フェイルオーバー）。Multi-AZ DB インスタンス構成のスタンバイは読み取りに使えない。リードレプリカは読み取り性能の分散（非同期）で、別リージョンにも作れる。性能が課題なら、レプリカかキャッシュを選ぶ。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon Relational Database Service"
+      ],
+      "tags": [
+        "RDS",
+        "Multi-AZ",
+        "リードレプリカ"
+      ]
+    },
+    {
+      "id": "fc-w2c-140",
+      "front": "Lambda などから RDS へ短時間に大量の接続が来て、DB の接続数や CPU が逼迫する。どう解決する？",
+      "back": "Amazon RDS Proxy を DB の前に置き、接続をプールして共有する。フェイルオーバー時の接続の切り替えも速くなり、IAM 認証や Secrets Manager の認証情報も使える。アプリの大きな変更は不要で、エンドポイントを変えるだけ。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon RDS Proxy",
+        "AWS Lambda",
+        "Amazon Relational Database Service"
+      ],
+      "tags": [
+        "RDS Proxy",
+        "接続プール"
+      ]
+    },
+    {
+      "id": "fc-w2c-141",
+      "front": "数年間ずっと動かす RDS・Aurora のコストを下げる方法は？",
+      "back": "リザーブド DB インスタンス（1 年か 3 年）、または新しい Database Savings Plans。後者は Aurora・RDS・DynamoDB・ElastiCache などの時間あたり利用額をコミットし、エンジンやインスタンスサイズ、リージョンを変えても割引が続く。DB を止めて使う期間が短い開発用には向かない。",
+      "taskStatements": [
+        "4.3"
+      ],
+      "services": [
+        "Amazon Relational Database Service",
+        "Amazon Aurora",
+        "Savings Plans"
+      ],
+      "tags": [
+        "RDS",
+        "リザーブド",
+        "Database Savings Plans"
+      ]
+    },
+    {
+      "id": "fc-w2c-142",
+      "front": "DynamoDB のオンデマンドモードとプロビジョンドモードはどう選ぶ？",
+      "back": "オンデマンドは容量計画なしで、リクエスト分だけ課金（新しいテーブルや予測できない負荷、AWS も既定の推奨）。プロビジョンドは、予測できる安定した負荷で、Auto Scaling と組み合わせて秒単位の読み書き容量を指定し、割り当てた分を課金される。後者の方が安くなることが多い。",
+      "taskStatements": [
+        "3.3",
+        "4.3"
+      ],
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "tags": [
+        "DynamoDB",
+        "オンデマンド",
+        "プロビジョンド"
+      ]
+    },
+    {
+      "id": "fc-w2c-143",
+      "front": "DynamoDB の予約キャパシティが使える条件は？",
+      "back": "標準テーブルクラスで、プロビジョンドモードのテーブルのみ。オンデマンドモードと Standard-IA テーブルクラスには適用できない。リージョン単位で、100 単位から 1 年か（一部リージョンで）3 年の約束。キャンセルや他リージョンへの移転はできない。",
+      "taskStatements": [
+        "4.3"
+      ],
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "tags": [
+        "DynamoDB",
+        "予約キャパシティ"
+      ]
+    },
+    {
+      "id": "fc-w2c-144",
+      "front": "読み取りはほとんどなく、ほぼ保存料金が支配的な DynamoDB テーブルのコストを下げるには？",
+      "back": "DynamoDB Standard-IA テーブルクラスにする。ストレージ料金が低い代わりに、読み書きの料金が高めになる。ストレージが料金の大半を占め、アクセスが少ないテーブル向き。ワークロードが変わればテーブルクラスは後から切り替えられる。",
+      "taskStatements": [
+        "4.3"
+      ],
+      "services": [
+        "Amazon DynamoDB"
+      ],
+      "tags": [
+        "DynamoDB",
+        "Standard-IA",
+        "テーブルクラス"
+      ]
+    },
+    {
+      "id": "fc-w2c-145",
+      "front": "DynamoDB の読み取りをマイクロ秒に速めたい。アプリの変更も最小にするには？",
+      "back": "DynamoDB Accelerator（DAX）。DynamoDB 専用のインメモリキャッシュで、DAX クライアントに切り替えるだけで使える。結果整合性の読み取りがキャッシュされ、強力な整合性のある読み取りは DynamoDB に直接渡される。書き込みはライトスルー。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon DynamoDB Accelerator (DAX)",
+        "Amazon DynamoDB"
+      ],
+      "tags": [
+        "DAX",
+        "キャッシュ"
+      ]
+    },
+    {
+      "id": "fc-w2c-146",
+      "front": "DAX と ElastiCache はどう使い分ける？",
+      "back": "DAX は DynamoDB 専用で、API 互換なのでコード変更が小さい。ElastiCache（Valkey、Redis OSS、Memcached）は汎用で、RDS のクエリ結果、セッション、リーダーボードなど、さまざまなデータのキャッシュに使う。アプリ側でキャッシュの読み書きを実装する必要がある。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon DynamoDB Accelerator (DAX)",
+        "Amazon ElastiCache"
+      ],
+      "tags": [
+        "DAX",
+        "ElastiCache",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-147",
+      "front": "ElastiCache の Memcached と Valkey/Redis OSS の選び分けは？",
+      "back": "Memcached はシンプルなマルチスレッドの分散キャッシュ（永続化・レプリケーションなし）。Valkey/Redis OSS は豊富なデータ構造、レプリケーション、Multi-AZ の自動フェイルオーバー、永続化に対応する。耐障害性やデータ構造が必要なら Valkey/Redis OSS。",
+      "taskStatements": [
+        "3.3",
+        "2.1"
+      ],
+      "services": [
+        "Amazon ElastiCache"
+      ],
+      "tags": [
+        "ElastiCache",
+        "Memcached",
+        "Valkey",
+        "Redis"
+      ]
+    },
+    {
+      "id": "fc-w2c-148",
+      "front": "Redshift と RDS/Aurora の使い分けは？",
+      "back": "Redshift は列指向の分析（OLAP）用データウェアハウスで、大量データの集計・結合を並列に処理する。RDS/Aurora は、頻繁な小さな読み書きの OLTP 用。分析クエリを OLTP の DB に直接流すと、業務の性能に影響する。",
+      "taskStatements": [
+        "3.3"
+      ],
+      "services": [
+        "Amazon Redshift",
+        "Amazon Aurora"
+      ],
+      "tags": [
+        "Redshift",
+        "OLAP",
+        "OLTP"
+      ]
+    },
+    {
+      "id": "fc-w2c-149",
+      "front": "使う頻度が低い、または予測しにくい分析ワークロードの Redshift のコストは？",
+      "back": "Redshift Serverless。RPU（処理能力）を自動で増減し、使った秒数分だけ課金される。常時安定して使うならプロビジョンドクラスターにリザーブドノードを組み合わせるのが安い。",
+      "taskStatements": [
+        "4.3",
+        "3.3"
+      ],
+      "services": [
+        "Amazon Redshift"
+      ],
+      "tags": [
+        "Redshift",
+        "Serverless",
+        "リザーブドノード"
+      ]
+    },
+    {
+      "id": "fc-w2c-150",
+      "front": "S3 にある大量のデータを、ロードせずに Redshift から SQL で分析するには？",
+      "back": "Redshift Spectrum。S3 上のデータを外部テーブルとして直接クエリでき、データをクラスターへコピーする時間とストレージのコストを避けられる。頻繁に使う分だけクラスターにロードし、残りは S3 に置く構成にする。",
+      "taskStatements": [
+        "3.3",
+        "4.3"
+      ],
+      "services": [
+        "Amazon Redshift",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Redshift",
+        "Spectrum",
+        "S3"
+      ]
+    },
+    {
+      "id": "fc-w2c-151",
+      "front": "オンプレミスの DB を、移行中も稼働させたまま AWS へ移し、変更を継続的に反映するには？",
+      "back": "AWS DMS。フルロード後に CDC（変更データキャプチャ）で継続的にレプリケーションし、切り替え時のダウンタイムを短くする。同じエンジン同士（同種）はそのまま、異なるエンジン間（異種）はスキーマ変換が別に必要。",
+      "taskStatements": [
+        "3.3",
+        "4.3"
+      ],
+      "services": [
+        "AWS Database Migration Service (AWS DMS)"
+      ],
+      "tags": [
+        "DMS",
+        "CDC",
+        "移行"
+      ]
+    },
+    {
+      "id": "fc-w2c-152",
+      "front": "Oracle から Aurora PostgreSQL のように異なるエンジンへ移すとき、スキーマはどうする？",
+      "back": "AWS Schema Conversion Tool（SCT）でスキーマとコードを変換し、データの移行は DMS で行う。変換できない部分は手作業で直す。商用エンジンからの移行は、ライセンス費用の削減が目的になりやすい。",
+      "taskStatements": [
+        "4.3",
+        "3.3"
+      ],
+      "services": [
+        "AWS Schema Conversion Tool (AWS SCT)",
+        "AWS Database Migration Service (AWS DMS)",
+        "Amazon Aurora"
+      ],
+      "tags": [
+        "SCT",
+        "DMS",
+        "異種移行"
+      ]
+    },
+    {
+      "id": "fc-w2c-153",
+      "front": "世界中の利用者へのコンテンツ配信を速くし、オリジンの負荷と転送料金も減らすには？",
+      "back": "Amazon CloudFront。エッジロケーションでキャッシュし、静的・動的コンテンツを配信する。AWS のオリジン（S3、ALB など）から CloudFront への転送は無料で、キャッシュヒットした分はオリジンの負荷と送信量が減る。",
+      "taskStatements": [
+        "3.4",
+        "4.4"
+      ],
+      "services": [
+        "Amazon CloudFront"
+      ],
+      "tags": [
+        "CloudFront",
+        "CDN",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-154",
+      "front": "CloudFront のキャッシュヒット率を上げるための基本の方法は？",
+      "back": "キャッシュキーを必要最小限にし（不要なクエリ文字列やヘッダーを含めない）、TTL を適切に長くする。リージョン間でオリジンへのリクエストを集約する Origin Shield も使える。ヒット率が上がるほど、オリジンの負荷と転送料金が下がる。",
+      "taskStatements": [
+        "3.4",
+        "4.4"
+      ],
+      "services": [
+        "Amazon CloudFront"
+      ],
+      "tags": [
+        "CloudFront",
+        "キャッシュ",
+        "Origin Shield"
+      ]
+    },
+    {
+      "id": "fc-w2c-155",
+      "front": "CloudFront の料金を下げるために、配信するエッジロケーションを限定できる？",
+      "back": "できる。価格クラス（Price Class）で、料金の高いリージョンのエッジロケーションを除外できる。ただし利用者の一部は遠いエッジから配信され、遅延が増える可能性がある。利用者が特定の地域に集中するときに向く。",
+      "taskStatements": [
+        "4.4"
+      ],
+      "services": [
+        "Amazon CloudFront"
+      ],
+      "tags": [
+        "CloudFront",
+        "価格クラス",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-156",
+      "front": "Global Accelerator と CloudFront の使い分けは？",
+      "back": "CloudFront は HTTP/HTTPS コンテンツのキャッシュ配信。Global Accelerator は静的な任意の IP アドレス（エニーキャスト）を提供し、AWS のグローバルネットワーク経由で TCP/UDP をエンドポイントに届ける。キャッシュはしない。",
+      "taskStatements": [
+        "3.4"
+      ],
+      "services": [
+        "AWS Global Accelerator",
+        "Amazon CloudFront"
+      ],
+      "tags": [
+        "Global Accelerator",
+        "CloudFront",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-157",
+      "front": "ゲームや VoIP などの UDP、または固定の IP アドレスでの許可リストが必要な、グローバルなサービスの性能と可用性を高めるには？",
+      "back": "AWS Global Accelerator。固定のエニーキャスト IP を 2 つ受け取り、最寄りのエッジから AWS のネットワークへ入れる。正常なエンドポイントへ自動で振り分け、リージョン障害時のフェイルオーバーも速い（DNS キャッシュに依存しない）。",
+      "taskStatements": [
+        "3.4"
+      ],
+      "services": [
+        "AWS Global Accelerator"
+      ],
+      "tags": [
+        "Global Accelerator",
+        "UDP",
+        "固定IP"
+      ]
+    },
+    {
+      "id": "fc-w2c-158",
+      "front": "多数の VPC とオンプレミスをつなぎ、ピアリングのフルメッシュを避けるには？ 料金のかかり方は？",
+      "back": "AWS Transit Gateway をハブにするハブ&スポーク構成にする。VPC・VPN・Direct Connect をアタッチし、ルートテーブルで通信を制御する。アタッチメントの時間料金と処理したデータ量の料金がかかるので、少数の VPC ならピアリングが安い。",
+      "taskStatements": [
+        "3.4",
+        "4.4"
+      ],
+      "services": [
+        "AWS Transit Gateway",
+        "Amazon Virtual Private Cloud"
+      ],
+      "tags": [
+        "Transit Gateway",
+        "VPC ピアリング"
+      ]
+    },
+    {
+      "id": "fc-w2c-159",
+      "front": "Direct Connect と Site-to-Site VPN の使い分けは？",
+      "back": "Direct Connect は専用線で、帯域が安定し遅延も低く、大量の転送では転送単価も低い。ただし開通まで時間がかかる。VPN はインターネット経由で IPsec 暗号化され、すぐ使え低コストだが帯域と品質は安定しない。Direct Connect のバックアップに VPN を使う構成も定番。",
+      "taskStatements": [
+        "3.4",
+        "4.4"
+      ],
+      "services": [
+        "AWS Direct Connect",
+        "AWS Site-to-Site VPN"
+      ],
+      "tags": [
+        "Direct Connect",
+        "VPN",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-160",
+      "front": "Direct Connect の通信を暗号化したい。または VPN の速度が足りない。どうする？",
+      "back": "Direct Connect は既定では暗号化されない。VPN over Direct Connect（パブリック VIF で IPsec）で暗号化するか、対応する接続で MACsec を使う。VPN は 1 トンネル最大 1.25 Gbps なので、Transit Gateway の ECMP で複数トンネルを束ねて帯域を増やす。",
+      "taskStatements": [
+        "3.4"
+      ],
+      "services": [
+        "AWS Direct Connect",
+        "AWS Site-to-Site VPN",
+        "AWS Transit Gateway"
+      ],
+      "tags": [
+        "Direct Connect",
+        "VPN",
+        "ECMP",
+        "暗号化"
+      ]
+    },
+    {
+      "id": "fc-w2c-161",
+      "front": "自社の SaaS を、CIDR が重複する他の VPC・他の AWS アカウントのみに安全に提供したい。ピアリングは使えない。どうする？",
+      "back": "AWS PrivateLink。提供側は NLB（または GWLB）の背後にサービスを置いてエンドポイントサービスとして公開し、利用側は自分の VPC にインターフェイスエンドポイントを作る。VPC 全体はつながらず、CIDR が重複していても使える。",
+      "taskStatements": [
+        "3.4",
+        "1.2"
+      ],
+      "services": [
+        "AWS PrivateLink",
+        "Amazon Virtual Private Cloud"
+      ],
+      "tags": [
+        "PrivateLink",
+        "インターフェイスエンドポイント"
+      ]
+    },
+    {
+      "id": "fc-w2c-162",
+      "front": "プライベートサブネットの EC2 から S3 へ大量にアクセスし、NAT ゲートウェイの料金が高い。まず何をする？",
+      "back": "S3 のゲートウェイ型 VPC エンドポイントを作り、ルートテーブルに追加する。追加料金がかからず、NAT ゲートウェイを経由しないのでデータ処理料金もなくなる。DynamoDB も同様。他のサービスはインターフェイス型で、時間料金とデータ処理料金がかかる。",
+      "taskStatements": [
+        "4.4",
+        "3.4"
+      ],
+      "services": [
+        "VPC endpoints",
+        "NAT gateway",
+        "Amazon S3"
+      ],
+      "tags": [
+        "VPC エンドポイント",
+        "NAT",
+        "コスト"
+      ]
+    },
+    {
+      "id": "fc-w2c-163",
+      "front": "VPC の外（オンプレミスや別リージョン）から、プライベートな経路で S3 にアクセスしたい。ゲートウェイ型エンドポイントで足りる？",
+      "back": "足りない。ゲートウェイ型は VPC 内のルートテーブルからの通信だけで、オンプレミスや別リージョンからは使えない。S3 のインターフェイス型エンドポイント（PrivateLink）なら、Direct Connect や VPN 経由でも、別リージョンの VPC からも利用できる。ただし料金がかかる。",
+      "taskStatements": [
+        "1.2",
+        "4.4"
+      ],
+      "services": [
+        "VPC endpoints",
+        "AWS PrivateLink",
+        "Amazon S3"
+      ],
+      "tags": [
+        "VPC エンドポイント",
+        "S3",
+        "PrivateLink"
+      ]
+    },
+    {
+      "id": "fc-w2c-164",
+      "front": "NAT ゲートウェイの課金のしくみと、AZ をまたぐ料金を避ける置き方は？",
+      "back": "時間あたりの料金と、通過したデータ量（GB）あたりのデータ処理料金の両方がかかる。ゾーン型の NAT ゲートウェイは AZ ごとに置き、各 AZ のサブネットは同じ AZ のものを使うと、AZ 間転送料金を避けられ可用性も上がる。複数 AZ をカバーするリージョン型もある。",
+      "taskStatements": [
+        "4.4",
+        "3.4"
+      ],
+      "services": [
+        "NAT gateway",
+        "Amazon Virtual Private Cloud"
+      ],
+      "tags": [
+        "NAT",
+        "コスト",
+        "AZ"
+      ]
+    },
+    {
+      "id": "fc-w2c-165",
+      "front": "IPv6 のみで、インターネットへの送信だけを許可したい。NAT ゲートウェイは必要？",
+      "back": "不要。Egress-only インターネットゲートウェイを使う。IPv6 の送信専用で、外からの接続は受けない。NAT ゲートウェイのような時間料金やデータ処理料金がかからない。IPv4 では NAT が必要。",
+      "taskStatements": [
+        "4.4",
+        "1.2"
+      ],
+      "services": [
+        "Amazon Virtual Private Cloud",
+        "NAT gateway"
+      ],
+      "tags": [
+        "IPv6",
+        "Egress-only IGW",
+        "NAT"
+      ]
+    },
+    {
+      "id": "fc-w2c-166",
+      "front": "AWS のデータ転送料金の基本ルールは？",
+      "back": "インターネットからの受信は無料。AWS からインターネットへの送信は有料。同じ AZ 内のプライベート IP 間は無料で、AZ 間・リージョン間は有料。パブリック IP 宛ては同じリージョンでも課金される。設計では、通信量の多いもの同士を同じ AZ に置くとよい（可用性の要件が優先）。",
+      "taskStatements": [
+        "4.4"
+      ],
+      "services": [
+        "Amazon Virtual Private Cloud",
+        "Amazon EC2"
+      ],
+      "tags": [
+        "データ転送",
+        "コスト",
+        "AZ"
+      ]
+    },
+    {
+      "id": "fc-w2c-167",
+      "front": "1 つのデータストリームを、リアルタイム処理と S3 へのアーカイブの両方に使いたい。構成は？",
+      "back": "Kinesis Data Streams にデータを集め、リアルタイム処理は Lambda や Managed Service for Apache Flink などのコンシューマーが読む。S3 への保存は、Amazon Data Firehose（旧称 Amazon Kinesis Data Firehose）がデータストリームをソースにして自動で配信する。保存側にコードは要らない。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "Amazon Kinesis Data Streams",
+        "Amazon Data Firehose",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Kinesis",
+        "Firehose",
+        "アーカイブ"
+      ]
+    },
+    {
+      "id": "fc-w2c-168",
+      "front": "Kinesis Data Streams で、特定のシャードだけが書き込みで詰まる。原因と対処は？",
+      "back": "偏ったパーティションキーでレコードが 1 つのシャードに集中し、シャードの上限（書き込み 1 MB/秒または 1,000 レコード/秒）を超えている。キーを高カーディナリティにして分散させる。プロビジョンドモードなら詰まったシャードを分割する。オンデマンドは自動で分割するが、1 つのキー自体が上限を超えるなら解消しない。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "Amazon Kinesis Data Streams"
+      ],
+      "tags": [
+        "Kinesis",
+        "ホットシャード",
+        "パーティションキー"
+      ]
+    },
+    {
+      "id": "fc-w2c-169",
+      "front": "同じ Kinesis データストリームを複数のアプリが読むと、読み取りが競合して遅い。解決策は？",
+      "back": "拡張ファンアウト（Enhanced Fan-Out）。コンシューマーごとにシャードあたり専用の 2 MB/秒の読み取りスループットが得られ、プッシュ型で低遅延になる。通常の GetRecords は、シャードの読み取り 2 MB/秒を全コンシューマーで共有する。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "Amazon Kinesis Data Streams"
+      ],
+      "tags": [
+        "Kinesis",
+        "拡張ファンアウト"
+      ]
+    },
+    {
+      "id": "fc-w2c-170",
+      "front": "ストリームのログを、管理なしで Parquet に変換して S3 に置き、Athena のコストも下げたい。どうする？",
+      "back": "Amazon Data Firehose の形式変換機能で、JSON を Parquet や ORC に変換して S3 に配信する（スキーマは Glue のデータカタログから取得）。必要なら Lambda でレコードも変換できる。列指向にすると Athena のスキャン量が減る。",
+      "taskStatements": [
+        "3.5",
+        "4.3"
+      ],
+      "services": [
+        "Amazon Data Firehose",
+        "AWS Glue",
+        "Amazon Athena",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Firehose",
+        "Parquet",
+        "Athena"
+      ]
+    },
+    {
+      "id": "fc-w2c-171",
+      "front": "サーバー管理なしの ETL と、データのスキーマを自動で見つける機能は？",
+      "back": "AWS Glue。サーバーレスの Spark ベースの ETL ジョブ（使った処理能力で課金）に加え、クローラーが S3 などのスキーマを検出して Glue データカタログに登録する。カタログは Athena・EMR・Redshift Spectrum が共通のメタデータとして使う。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "AWS Glue",
+        "Amazon Athena",
+        "Amazon EMR",
+        "Amazon Redshift"
+      ],
+      "tags": [
+        "Glue",
+        "ETL",
+        "データカタログ"
+      ]
+    },
+    {
+      "id": "fc-w2c-172",
+      "front": "AWS Glue と Amazon EMR の使い分けは？",
+      "back": "運用負荷を最小にしたいなら Glue（サーバーレスで、クラスター管理が不要）。Hadoop や Spark の細かい設定、既存のジョブの持ち込み、長時間の大規模処理や多様なフレームワークが必要なら EMR。EMR にもサーバーレス版（EMR Serverless）がある。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "AWS Glue",
+        "Amazon EMR"
+      ],
+      "tags": [
+        "Glue",
+        "EMR",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-173",
+      "front": "S3 のデータにサーバーレスで SQL を実行する。コストを下げるにはデータをどう置く？",
+      "back": "Amazon Athena は、スキャンしたデータ量で課金される。Parquet/ORC などの列指向形式にし、圧縮し、日付などでパーティション分割すると、スキャン量が減って安く速くなる。小さなファイルを大量に作らないことも重要。",
+      "taskStatements": [
+        "3.5",
+        "4.1"
+      ],
+      "services": [
+        "Amazon Athena",
+        "Amazon S3"
+      ],
+      "tags": [
+        "Athena",
+        "パーティション",
+        "Parquet"
+      ]
+    },
+    {
+      "id": "fc-w2c-174",
+      "front": "S3 のデータレイクに、列・行レベルの細かいアクセス制御を一元的にかけたい。使うサービスは？",
+      "back": "AWS Lake Formation。データレイクの構築を簡単にし、Glue データカタログのデータベース/テーブル/列/行に対する権限を一元管理する（LF-タグによる管理も可）。Athena、Redshift Spectrum、EMR などの分析サービスからのアクセスに適用される。",
+      "taskStatements": [
+        "3.5",
+        "1.3"
+      ],
+      "services": [
+        "AWS Lake Formation",
+        "AWS Glue",
+        "Amazon Athena"
+      ],
+      "tags": [
+        "Lake Formation",
+        "データレイク",
+        "権限"
+      ]
+    },
+    {
+      "id": "fc-w2c-175",
+      "front": "ストリームデータをリアルタイムで集計・変換したい（ウィンドウ集計など）。Kinesis Data Analytics for SQL Applications は使える？",
+      "back": "使えない（提供終了）。Amazon Managed Service for Apache Flink（旧称 Amazon Kinesis Data Analytics for Apache Flink）を使う。Java・Python・Scala・SQL で書け、Kinesis Data Streams や MSK のストリームを処理する。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "Amazon Kinesis Data Streams",
+        "Amazon MSK"
+      ],
+      "tags": [
+        "Flink",
+        "ストリーム処理",
+        "提供終了"
+      ]
+    },
+    {
+      "id": "fc-w2c-176",
+      "front": "既存の Apache Kafka アプリを、ほぼそのまま AWS へ移したい。Kinesis Data Streams とどちらを選ぶ？",
+      "back": "Amazon MSK。Kafka API 互換のマネージドサービスで、既存のクライアントやツールが使える。AWS ネイティブな連携を最小の運用で作るなら Kinesis Data Streams。MSK Serverless を選ぶと、容量の管理も不要になる。",
+      "taskStatements": [
+        "3.5"
+      ],
+      "services": [
+        "Amazon MSK",
+        "Amazon Kinesis Data Streams"
+      ],
+      "tags": [
+        "MSK",
+        "Kafka",
+        "使い分け"
+      ]
+    },
+    {
+      "id": "fc-w2c-177",
+      "front": "過去のコストの傾向を確認し、将来を予測し、Savings Plans の購入推奨も見たい。何を使う？",
+      "back": "AWS Cost Explorer。サービス・アカウント・タグなどで分けて可視化し、将来の費用を予測する。Savings Plans とリザーブドインスタンスの推奨、使用率、カバレッジも確認できる。",
+      "taskStatements": [
+        "4.2",
+        "4.1"
+      ],
+      "services": [
+        "AWS Cost Explorer",
+        "Savings Plans"
+      ],
+      "tags": [
+        "Cost Explorer",
+        "コスト管理"
+      ]
+    },
+    {
+      "id": "fc-w2c-178",
+      "front": "予算を超えそうなときに通知を受け、さらに自動で対応も取りたい。何を使う？",
+      "back": "AWS Budgets。実績や予測が閾値を超えると、メールや SNS で通知する。Budget Actions を設定すると、IAM ポリシーや SCP の適用、EC2/RDS の停止などを自動化できる。Savings Plans やリザーブドの使用率・カバレッジの予算も作れる。",
+      "taskStatements": [
+        "4.1",
+        "4.2"
+      ],
+      "services": [
+        "AWS Budgets",
+        "Amazon Simple Notification Service"
+      ],
+      "tags": [
+        "Budgets",
+        "通知",
+        "コスト管理"
+      ]
+    },
+    {
+      "id": "fc-w2c-179",
+      "front": "最も詳細なコストと使用状況のデータを、S3 に出力して Athena などで分析したい。何を使う？",
+      "back": "AWS Cost and Usage Report（CUR）。リソース単位・時間単位まで含む、最も詳細なデータを S3 に定期的に配信する。Athena や Redshift、QuickSight で分析できる。新しい形式は Data Exports の CUR 2.0。",
+      "taskStatements": [
+        "4.2",
+        "4.1"
+      ],
+      "services": [
+        "AWS Cost and Usage Report",
+        "Amazon Athena",
+        "Amazon S3"
+      ],
+      "tags": [
+        "CUR",
+        "Athena",
+        "コスト分析"
+      ]
+    },
+    {
+      "id": "fc-w2c-180",
+      "front": "プロジェクトや部署ごとにコストを分けて見たい。タグを付けたのにコストの画面に出ない。なぜ？",
+      "back": "コスト配分タグは、請求コンソールで有効化しないとコストデータに表示されない。付けただけでは足りず、有効化後に表示されるまで最大 24 時間かかり、有効化前の期間には遡って反映されない。Organizations では管理アカウントで有効化する。",
+      "taskStatements": [
+        "4.1",
+        "4.2"
+      ],
+      "services": [
+        "AWS Cost Explorer",
+        "AWS Organizations"
+      ],
+      "tags": [
+        "コスト配分タグ",
+        "タグ付け"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "saa-basics-w2c-013",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K7"
+  ],
+  "services": [
+    "Amazon S3",
+    "AWS Key Management Service",
+    "Amazon EBS"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "転送時の暗号化",
+    "HTTPS",
+    "保存時の暗号化"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、顧客の個人情報を Amazon S3 に保存しており、保存されたデータはサーバー側の暗号化で保護されています。しかし監査で、利用者のブラウザと Web アプリケーションの間の通信が HTTP のままで、通信の途中で盗み見られるおそれがあると指摘されました。指摘に対応する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 のサーバー側の暗号化を、SSE-KMS に変更する。",
+      "correct": false,
+      "rationale": "保存時の暗号化の方式を変えるだけで、ネットワークを流れる通信は守れません。指摘されたのは通信の途中の盗み見です。"
+    },
+    {
+      "id": "b",
+      "text": "Web アプリケーションとの通信を HTTPS（TLS）にする。",
+      "correct": true,
+      "rationale": "HTTPS は通信を TLS で暗号化し、途中での盗み見や改ざんを防ぎます。指摘された「通信の途中」を守る転送時の暗号化にあたります。"
+    },
+    {
+      "id": "c",
+      "text": "EBS の「デフォルトで暗号化」を有効にする。",
+      "correct": false,
+      "rationale": "EBS の暗号化は、ディスクに保存されるデータを守る保存時の暗号化です。ネットワーク上の通信は暗号化されません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS KMS の鍵の自動ローテーションを有効にする。",
+      "correct": false,
+      "rationale": "鍵のローテーションは鍵の管理に関する設定です。通信の暗号化の有無には関係しません。"
+    }
+  ],
+  "explanation": "暗号化には、ディスクやストレージに置かれたデータを守る「保存時の暗号化」と、ネットワークを流れるデータを守る「転送時の暗号化」があります。守る場面が違うので、片方を設定してももう片方の代わりにはなりません。\n\nこの会社は S3 のデータをすでに保存時に暗号化していますが、指摘されたのはブラウザとアプリケーションの間の通信です。通信を TLS で保護する HTTPS にするのが転送時の暗号化で、正しい対応です。SSE-KMS への変更、EBS の暗号化、鍵のローテーションは、いずれも保存時や鍵の管理の話で、通信の途中は守れません。",
+  "keyPoints": [
+    "保存時の暗号化と転送時の暗号化は別。「通信の途中」を守る → HTTPS（TLS）や VPN",
+    "保存データの暗号化（S3、EBS、RDS）を設定しても、通信は守られない"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Certificate Manager?",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+    },
+    {
+      "title": "What is AWS Key Management Service?",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    },
+    {
+      "title": "What is Amazon S3?",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-encryption"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

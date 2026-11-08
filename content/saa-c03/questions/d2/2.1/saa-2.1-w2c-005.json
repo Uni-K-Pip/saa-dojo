@@ -1,0 +1,61 @@
+{
+  "id": "saa-2.1-w2c-005",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": ["2.1-K14", "2.1-K8"],
+  "services": ["Amazon Elastic Container Service", "AWS Fargate", "Amazon Elastic Kubernetes Service", "Amazon EC2 Auto Scaling", "AWS Lambda"],
+  "qualifier": "operational",
+  "tags": ["コンテナオーケストレーション", "Amazon ECS", "ECSサービス", "自動復旧"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Docker でコンテナ化した社内向け Web アプリケーションを、2 台の Amazon EC2 インスタンスで docker run コマンドを使って起動しています。コンテナが異常終了したときは担当者が手動で再起動し、新しいバージョンへの更新も手作業です。チームに Kubernetes の経験者はいません。コンテナの異常終了時の自動再起動、複数のアベイラビリティーゾーンへの配置、ロードバランサーへの登録、バージョン更新の自動化を、運用の手間を最小限にして実現したいと考えています。最も適切なものはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "EC2 Auto Scaling グループの起動テンプレートのユーザーデータに docker run コマンドを書き、インスタンスが起動するたびにコンテナを起動する。",
+      "correct": false,
+      "rationale": "Auto Scaling グループが置き換えるのは、異常と判断された EC2 インスタンスです。コンテナだけが異常終了した場合の再起動や、コンテナの数を保つこと、ローリングでのバージョン更新は、コンテナのオーケストレーションの機能で、この構成にはありません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon ECS のサービスを作成し、タスクの希望数、複数の AZ のサブネット、ALB のターゲットグループを指定する。新しいバージョンへの更新は、サービスのローリング更新で行う。",
+      "correct": true,
+      "rationale": "ECS のサービススケジューラーが、希望数のタスクを維持し、停止したタスクや、ヘルスチェックで異常と判断されたタスクを自動で置き換えます。タスクは複数の AZ に配置でき、ALB のターゲットにも自動で登録されます。タスク定義を更新すればローリング更新も行われ、Kubernetes の知識も要りません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EKS クラスターを作成し、Kubernetes の Deployment と Service のマニフェストを書いて、アプリケーションをデプロイする。",
+      "correct": false,
+      "rationale": "EKS も自己修復やローリング更新を提供するオーケストレーターですが、Kubernetes のマニフェストや概念を理解して運用する必要があります。チームに経験者がいないという条件では、運用の手間を最小にする選択ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "Docker のイメージを AWS Lambda 関数に置き換え、アプリケーションをそのまま Lambda 上で常駐する Web サーバーとして動かす。",
+      "correct": false,
+      "rationale": "Lambda は、リクエストごとに関数を実行するモデルです。常駐する Web サーバーをそのまま動かす実行環境ではなく、アプリケーションの作り直しや追加の仕組みが必要になります。コンテナを今の形のまま管理したいという目的に合いません。"
+    }
+  ],
+  "explanation": "コンテナが増えて複数のホストで動かすようになると、どのホストで起動するか、異常終了したら誰が再起動するか、新しいバージョンにどう切り替えるか、といった管理が必要になります。これを自動化する仕組みがコンテナオーケストレーションで、AWS では Amazon ECS と Amazon EKS が代表的なサービスです。\n\nECS のサービスは、指定した数のタスクを維持し続けます。タスクが停止したり、コンテナのヘルスチェックやロードバランサーのヘルスチェックで異常と判断されたりすると、サービススケジューラーが新しいタスクを起動して置き換えます。複数の AZ のサブネットを指定すればタスクが分散して配置され、ALB のターゲットグループに関連付ければタスクが自動で登録、解除されます。Fargate を使えば、タスクを動かす EC2 インスタンスの管理も不要です。\n\nKubernetes の経験があり、既存のマニフェストや Helm などのツールを使いたい場合は EKS が向きます。AWS のサービスで簡単に始めたい、Kubernetes の知識がない場合は ECS が向きます。",
+  "keyPoints": [
+    "コンテナの数の維持、異常時の自動置き換え、ローリング更新はオーケストレーターの役割。AWS では ECS か EKS",
+    "Kubernetes の経験がなく運用を最小にしたい → ECS（Fargate なら EC2 の管理も不要）",
+    "Auto Scaling グループが置き換えるのは EC2 インスタンス。コンテナ単位の管理は行わない"
+  ],
+  "references": [
+    {
+      "title": "Amazon ECS services - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+    },
+    {
+      "title": "What is Amazon Elastic Container Service?",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

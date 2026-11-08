@@ -1,0 +1,76 @@
+{
+  "id": "saa-4.1-w2c-012",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S4",
+    "4.1-K11"
+  ],
+  "services": [
+    "Amazon EBS",
+    "Amazon EC2",
+    "Amazon EFS"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "EBS Elastic Volumes",
+    "ボリュームの拡張",
+    "ストレージの自動拡張",
+    "ダウンタイムなし"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon EC2 上の PostgreSQL のデータを 1 TiB の gp3 EBS ボリュームに置いています。データは毎月 100 GiB ほど増えており、近いうちに容量が不足しそうです。データベースは 24 時間稼働しており、停止やボリュームの付け替えは避けたいと考えています。また、使っていない容量への課金を避けるため、最初から大きなボリュームを確保することはしません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "データベースを停止し、ボリュームのスナップショットから大きなボリュームを作成して、付け替える。",
+      "correct": false,
+      "rationale": "データベースの停止とボリュームの付け替えが必要になり、停止を避けるという要件を満たしません。EBS には、ボリュームをつないだまま拡張する機能があります。"
+    },
+    {
+      "id": "b",
+      "text": "データを Amazon EFS のファイルシステムに移す。EFS は容量が自動で増減する。",
+      "correct": false,
+      "rationale": "EFS は容量が自動で増減しますが、NFS 上のファイルシステムです。データベースが必要とする、低レイテンシーのブロック単位の読み書きには EBS のほうが適しており、移行の作業も大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "EBS の Elastic Volumes で、稼働中にボリュームのサイズを増やし、OS 上でファイルシステムを拡張する。",
+      "correct": true,
+      "rationale": "Elastic Volumes を使うと、ボリュームをデタッチしたりインスタンスを再起動したりせずに、サイズの増加、タイプの変更、性能の調整ができます。サイズを増やしたあとは OS 上でファイルシステムを拡張します。必要に応じて増やせるため、最初から余分な容量を確保する必要がありません。"
+    },
+    {
+      "id": "d",
+      "text": "最初から 10 TiB の gp3 ボリュームを作成して、データを移しておく。",
+      "correct": false,
+      "rationale": "容量が足りなくなる心配は消えますが、使っていない容量にもプロビジョンした分の料金がかかり続けます。使っていない容量への課金を避けるという要件を満たしません。"
+    }
+  ],
+  "explanation": "ストレージの種類によって、容量の増やし方は異なります。Amazon S3 は容量の上限がなく、保存した分だけに課金されます。Amazon EFS は、ファイルの増減に合わせて容量が自動で増減します。Amazon FSx の各ファイルシステムは、容量の増やし方が種類によって異なります。一方、Amazon EBS は、ボリュームの作成時にサイズを決めるブロックストレージで、自動では拡張されません。\n\nただし EBS には Elastic Volumes という機能があり、ボリュームをアタッチしたまま、停止や再起動もせずに、サイズの増加、ボリュームタイプの変更、IOPS やスループットの調整ができます。サイズを増やしたあとは、OS 上でパーティションとファイルシステムを拡張します。EBS ボリュームのサイズは増やすことしかできず、減らせない点にも注意が必要です。そのため、最初は必要な分に近い容量で作成し、使用量を監視しながら増やしていくのが、無駄がなく、停止も不要な運用です。",
+  "keyPoints": [
+    "稼働中の EBS ボリュームの容量・タイプ・性能を、デタッチや停止なしで変更 → Elastic Volumes",
+    "EBS のサイズは増やせるが減らせない。サイズ増加後は OS 上でファイルシステムを拡張する",
+    "容量が自動で増減するのは S3 や EFS。EBS は自動拡張しない",
+    "データベースのようなブロック I/O は EBS が向く。EFS は共有ファイルシステム向け"
+  ],
+  "references": [
+    {
+      "title": "Modify an Amazon EBS volume using Elastic Volumes operations - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+    },
+    {
+      "title": "What is Amazon EFS? - Amazon EFS",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-storage-types"
+  ],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-028",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K8"
+  ],
+  "services": [
+    "Amazon EFS",
+    "Amazon EBS",
+    "Amazon S3",
+    "Amazon EC2"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "ファイルストレージ",
+    "EFS",
+    "NFS"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、2 つの AZ に配置した複数の Linux の EC2 インスタンスで、コンテンツ管理システムを動かします。すべてのインスタンスから同じファイルを、通常のフォルダー（ファイルシステム）のパスで同時に読み書きできる必要があります。保存する容量は予測しにくく、容量の管理はしたくありません。どのストレージが最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EBS ボリュームを 1 つ作成して、すべてのインスタンスに接続する。",
+      "correct": false,
+      "rationale": "EBS ボリュームは、同じ AZ のインスタンスにしか接続できません。2 つの AZ のインスタンスで共有することはできず、容量も事前に決める必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "各インスタンスのインスタンスストアを使う。",
+      "correct": false,
+      "rationale": "インスタンスストアはインスタンスごとのディスクで、ほかのインスタンスと共有できません。停止・終了するとデータも消えます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3 のバケットを使う。",
+      "correct": false,
+      "rationale": "S3 はオブジェクトストレージで、HTTP(S) の API で読み書きします。通常のファイルシステムのパスで読み書きする前提のアプリケーションには、そのままでは使えません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EFS のファイルシステムを使う。",
+      "correct": true,
+      "rationale": "EFS は Linux 向けのファイルストレージ（NFS）で、複数の AZ の多くの EC2 インスタンスから同時に使えます。ファイルの追加や削除に合わせて容量が自動で増減します。"
+    }
+  ],
+  "explanation": "ストレージは、データの扱い方でブロック、ファイル、オブジェクトの 3 種類に分けられます。複数のサーバーがネットワーク経由で同じファイルを共有するのは、ファイルストレージの役割です。Linux では NFS を使う Amazon EFS が代表的で、リージョン型のファイルシステムはデータを複数の AZ に保存し、多くの EC2 インスタンスから同時にマウントできます。容量は自動で増減するので、事前に決める必要がありません。\n\nEBS は 1 台のインスタンス向けのブロックストレージで、同じ AZ のインスタンスにしか接続できません。インスタンスストアは一時的な領域です。S3 はオブジェクトストレージで、ファイルシステムとは使い方が違います。",
+  "keyPoints": [
+    "複数の Linux の EC2 から同じファイルシステムを同時にマウント → Amazon EFS",
+    "EBS は同じ AZ のインスタンスにしか接続できず、一般的なファイル共有には使わない"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic File System?",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "What is Amazon EBS?",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-storage-types"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

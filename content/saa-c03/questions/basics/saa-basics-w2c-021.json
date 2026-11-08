@@ -1,0 +1,71 @@
+{
+  "id": "saa-basics-w2c-021",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K4"
+  ],
+  "services": [
+    "Amazon VPC",
+    "NAT gateway"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "NAT ゲートウェイ",
+    "プライベートサブネット",
+    "ルーティング"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、アプリケーションのサーバーを VPC のプライベートサブネットに置いています。サーバーはソフトウェアの更新ファイルをインターネットから取得する必要がありますが、インターネットから新しく接続されることは避けなければなりません。どの構成が最も適していますか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "パブリックサブネットに NAT ゲートウェイを作成し、プライベートサブネットのルートテーブルで 0.0.0.0/0 の宛先を NAT ゲートウェイに向ける。",
+      "correct": true,
+      "rationale": "NAT ゲートウェイは、内側から始めた通信の応答は戻しますが、インターネット側から新しく接続を始めることはできません。更新の取得だけを許す要件に合います。"
+    },
+    {
+      "id": "b",
+      "text": "プライベートサブネットのルートテーブルに、0.0.0.0/0 の宛先をインターネットゲートウェイに向けるルートを追加する。",
+      "correct": false,
+      "rationale": "インターネットゲートウェイへの直接のルートを持つサブネットは、パブリックサブネットになります。パブリック IP を持てば、インターネットから接続される可能性が生じます。"
+    },
+    {
+      "id": "c",
+      "text": "プライベートサブネットのサーバーに、Elastic IP アドレスを割り当てる。",
+      "correct": false,
+      "rationale": "Elastic IP アドレスだけでは、インターネットへのルートがなく通信できません。ルートを追加して通信できるようにすると、外から接続される可能性も生じます。"
+    },
+    {
+      "id": "d",
+      "text": "ネットワーク ACL で、0.0.0.0/0 への送信を許可する。",
+      "correct": false,
+      "rationale": "ネットワーク ACL は通信を許可・拒否するだけで、通信の行き先を決めるのはルートテーブルです。許可しても、インターネットへのルートがなければ通信できません。"
+    }
+  ],
+  "explanation": "プライベートサブネットのサーバーが、インターネットへ「出ていく」通信だけをしたいときは、NAT ゲートウェイを使います。NAT ゲートウェイをパブリックサブネットに置き、プライベートサブネットのルートテーブルで 0.0.0.0/0 の宛先を NAT ゲートウェイに向けます。内側から始めた通信の応答は戻ってきますが、インターネット側から新しく接続を始めることはできません。\n\nプライベートサブネットにインターネットゲートウェイへの直接のルートを入れると、そのサブネットはパブリックサブネットになってしまいます。通信の行き先を決めるのはルートテーブルで、ネットワーク ACL やセキュリティグループは通信を許可するかどうかを決めるものです。NAT ゲートウェイは、時間と処理したデータ量に応じて料金がかかります。",
+  "keyPoints": [
+    "プライベートサブネットから出ていく通信だけを許す → NAT ゲートウェイ（パブリックサブネットに置く）",
+    "パブリックサブネットかどうかは、ルートテーブルに IGW への直接のルートがあるかで決まる"
+  ],
+  "references": [
+    {
+      "title": "NAT gateways",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+    },
+    {
+      "title": "Enable VPC internet access using internet gateways",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

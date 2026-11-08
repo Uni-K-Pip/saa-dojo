@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-001",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K5", "4.3-S3", "4.3-K9"],
+  "services": ["Amazon DynamoDB"],
+  "qualifier": "cost",
+  "tags": ["DynamoDB", "プロビジョニング済みキャパシティ", "オンデマンド", "Auto Scaling"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の注文管理システムは、Amazon DynamoDB のテーブルを使っています。過去 1 年のメトリクスでは、読み取りと書き込みのリクエスト数は 1 日を通してほぼ一定で、予測しやすいことが分かっています。現在はオンデマンドモードですが、コストを下げたいと考えています。可用性と性能を保ちながら、最もコスト効率が高くなる見直しはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プロビジョニング済みキャパシティに切り替え、Application Auto Scaling で読み書きキャパシティを調整する。基礎となる分には予約キャパシティの購入を検討する。",
+      "correct": true,
+      "rationale": "負荷が安定して予測できる場合、プロビジョニング済みキャパシティのほうが、オンデマンドより単価が低くなります。Auto Scaling で多少の変動にも対応でき、一定量を使い続けることが分かっている分には予約キャパシティでさらに割引を受けられます。"
+    },
+    {
+      "id": "b",
+      "text": "オンデマンドモードのままにして、テーブルのデータを定期的に削除する。",
+      "correct": false,
+      "rationale": "オンデマンドはリクエスト数が予測できない場合や、ほとんど使われない場合に向くモードです。負荷が安定している場合は、同じ処理量でもプロビジョニング済みのほうが安くなります。データの削除は読み書きのコストの削減にはつながりません。"
+    },
+    {
+      "id": "c",
+      "text": "DynamoDB の代わりに、Amazon RDS のマルチ AZ 配置に移行する。",
+      "correct": false,
+      "rationale": "データモデルの変更とアプリケーションの改修が必要で、移行コストが大きくなります。DynamoDB 自体の料金モデルの見直しで解決できるため、データベースを変える必要はありません。"
+    },
+    {
+      "id": "d",
+      "text": "テーブルを Global Tables にして、別のリージョンにレプリカを作成する。",
+      "correct": false,
+      "rationale": "Global Tables は、複数リージョンでの低レイテンシーな読み書きや耐障害性のための機能です。レプリケーションの書き込み料金などが追加され、コストを下げる手段ではありません。"
+    }
+  ],
+  "explanation": "DynamoDB の読み書きキャパシティのモードは 2 つあります。\n\n・オンデマンドモード: リクエストした分だけ料金を払い、容量の計画が要らない。トラフィックが予測できない、急に変動する、ほとんど使われない時間が長い場合に向く。1 リクエストあたりの単価は高め。\n・プロビジョニング済みモード: 読み書きの容量（RCU／WCU）をあらかじめ指定する。負荷が予測できて安定している場合は、オンデマンドより安くなる。Application Auto Scaling で負荷に応じて自動で増減でき、予約キャパシティ（1 年または 3 年）で、基礎となる分をさらに安くできる。\n\nこの問題は、負荷が安定して予測できるので、プロビジョニング済みモードが適しています。モードの切り替えは 24 時間に 1 回まで行え、テーブルを作り直す必要はありません。",
+  "keyPoints": [
+    "負荷が予測できず変動が大きい／ほとんど使われない → DynamoDB オンデマンド",
+    "負荷が安定していて予測できる → プロビジョニング済み＋Auto Scaling（予約キャパシティでさらに割引）",
+    "DynamoDB のキャパシティモードの切り替えは、テーブルを作り直さず設定で行える（24 時間に 1 回まで）"
+  ],
+  "references": [
+    {
+      "title": "Amazon DynamoDB read/write capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html"
+    },
+    {
+      "title": "DynamoDB provisioned capacity mode - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

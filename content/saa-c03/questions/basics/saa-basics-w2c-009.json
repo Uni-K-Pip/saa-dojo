@@ -1,0 +1,73 @@
+{
+  "id": "saa-basics-w2c-009",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K11"
+  ],
+  "services": [
+    "AWS Fargate",
+    "AWS Lambda",
+    "Amazon EC2",
+    "Amazon SQS"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "サーバーレス",
+    "Fargate",
+    "Lambda の制限"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある制作会社は、動画を変換するプログラムをコンテナイメージにしています。1 回の変換に約 40 分かかり、依頼があったときだけ動かせば十分です。小さなチームなので、サーバーの OS の更新や台数の管理はしたくありません。運用の手間が最も少ない実行方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "プログラムを 1 つの AWS Lambda 関数として実行する。",
+      "correct": false,
+      "rationale": "通常の Lambda 関数は、1 回の実行が最大 15 分までです。約 40 分かかる処理を 1 回の実行で終わらせることはできません。"
+    },
+    {
+      "id": "b",
+      "text": "EC2 インスタンスを常時 1 台起動し、そこでプログラムを実行する。",
+      "correct": false,
+      "rationale": "EC2 は OS の更新や台数の管理が必要です。依頼がないときも動かし続けるので、サーバーを管理したくないという要件にも合いません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Fargate で、コンテナのタスクとして実行する。",
+      "correct": true,
+      "rationale": "Fargate はサーバーを管理せずにコンテナを動かせます。Lambda のような 15 分の実行時間の制限がなく、動かした分だけの支払いで、OS の更新も不要です。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SQS のキューにプログラムを登録して、キューの中で実行する。",
+      "correct": false,
+      "rationale": "SQS はメッセージをためておくサービスで、プログラムを実行する機能はありません。実行するコンピューティングのサービスが別に必要です。"
+    }
+  ],
+  "explanation": "サーバーレスは、利用者がサーバーを用意・管理しなくてよいという意味です。AWS Lambda は代表的なサーバーレスのコンピューティングですが、通常の関数は 1 回の実行が最大 15 分（900 秒）までなので、約 40 分かかる処理には使えません。\n\nすでにコンテナイメージになっているなら、サーバーを管理せずにコンテナを動かせる AWS Fargate が適しています。Amazon EC2 は OS の更新や台数の調整を利用者が行う必要があります。SQS は処理の指示をためておくために使えますが、それ自体はプログラムを実行しません。",
+  "keyPoints": [
+    "通常の Lambda 関数は 1 回の実行が最大 15 分。長い処理は分割するか、Fargate や EC2 などを使う",
+    "コンテナをサーバー管理なしで動かす → AWS Fargate"
+  ],
+  "references": [
+    {
+      "title": "Lambda quotas",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
+    {
+      "title": "AWS Fargate for Amazon ECS",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-decoupling-serverless"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}

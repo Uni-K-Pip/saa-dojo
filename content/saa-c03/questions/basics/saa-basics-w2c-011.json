@@ -1,0 +1,72 @@
+{
+  "id": "saa-basics-w2c-011",
+  "exam": "SAA-C03",
+  "domain": 0,
+  "taskStatement": "basics",
+  "knowledgeRefs": [
+    "basics-K5"
+  ],
+  "services": [
+    "AWS Certificate Manager",
+    "Elastic Load Balancing",
+    "AWS Key Management Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "HTTPS",
+    "TLS 証明書",
+    "ACM"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Application Load Balancer の背後にある Web サイトを、利用者のブラウザから HTTPS（ポート 443）で公開します。TLS の証明書を購入して更新する手間を避けたく、証明書の有効期限切れによる障害も防ぎたいと考えています。運用の手間が最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "自己署名の証明書を作成して EC2 インスタンスにインストールし、有効期限の前に手作業で更新する。",
+      "correct": false,
+      "rationale": "手作業の更新が必要で、期限切れの事故を防げません。自己署名の証明書は、ブラウザが信頼しないため警告が表示されます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS KMS で TLS の証明書を発行し、ロードバランサーに設定する。",
+      "correct": false,
+      "rationale": "AWS KMS は暗号化の鍵を管理するサービスで、TLS の証明書は発行しません。証明書の発行と更新を引き受けるのは AWS Certificate Manager です。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Certificate Manager（ACM）で証明書を発行し、ロードバランサーの HTTPS リスナーに設定する。",
+      "correct": true,
+      "rationale": "ACM は証明書の発行・保管・更新を引き受けます。ロードバランサーで使う証明書は追加料金なしで発行でき、ACM が発行した証明書は自動で更新されます。"
+    },
+    {
+      "id": "d",
+      "text": "ロードバランサーのセキュリティグループで、ポート 443 の受信を許可する。",
+      "correct": false,
+      "rationale": "セキュリティグループで 443 を許可するのは通信の通り道を開けるだけです。TLS で通信を保護するには、証明書の設定が別に必要です。"
+    }
+  ],
+  "explanation": "HTTPS は HTTP を TLS で保護したもので、サーバーが本物であることを証明する「証明書」が必要です。証明書には有効期限があり、期限が切れるとブラウザに警告が出て、通信できなくなることもあります。\n\nAWS Certificate Manager（ACM）は、証明書の発行・保管・更新を引き受けるサービスです。Elastic Load Balancing や Amazon CloudFront など連携するサービスで使う証明書を追加料金なしで発行でき、ACM が発行した証明書は自動で更新されます。ロードバランサーに ACM の証明書を設定し、ロードバランサーで TLS を終端するのが基本の構成です。",
+  "keyPoints": [
+    "HTTPS の証明書の発行と更新の手間を減らす → AWS Certificate Manager（ACM）",
+    "セキュリティグループでポートを許可することと、TLS の証明書を設定することは別"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Certificate Manager?",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+    },
+    {
+      "title": "Elastic Load Balancing とは",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-basics-dns-http-tls"
+  ],
+  "pool": "basics",
+  "needsSourceCheck": false,
+  "createdBy": "w2c",
+  "createdAt": "2026-11-08"
+}
