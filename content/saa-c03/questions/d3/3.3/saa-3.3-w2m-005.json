@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.3-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-K4",
+    "3.3-S2"
+  ],
+  "services": [
+    "Amazon Relational Database Service",
+    "Amazon CloudWatch"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Performance Insights",
+    "DB の負荷の分析",
+    "待機イベント"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon RDS for MySQL のデータベースを運用しています。特定の時間帯に、CPU 使用率が高くなり、アプリケーションの応答が遅くなります。どの SQL クエリや待機イベントが、データベースの負荷の原因になっているのかを、時間帯ごとに可視化して調べたいと考えています。DB インスタンスへのエージェントの導入は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Enhanced Monitoring を有効にして、OS レベルの CPU とメモリのメトリクスを確認する。",
+      "correct": false,
+      "rationale": "Enhanced Monitoring は、DB インスタンスの OS のメトリクスを、細かい間隔で収集します。どの SQL が負荷の原因かは分かりません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS CloudTrail のログを調べて、データベースに対して実行された API を確認する。",
+      "correct": false,
+      "rationale": "CloudTrail は、RDS の管理 API の呼び出しの記録で、データベース内で実行された SQL クエリの記録ではありません。"
+    },
+    {
+      "id": "c",
+      "text": "RDS の Performance Insights を有効にして、DB の負荷を、SQL、待機イベント、ユーザー、ホストごとに分析する。",
+      "correct": true,
+      "rationale": "Performance Insights は、DB の負荷（平均アクティブセッション）を可視化し、負荷の原因になっている上位の SQL や待機イベントを特定できます。エージェントの導入は不要です。"
+    },
+    {
+      "id": "d",
+      "text": "CloudWatch の標準メトリクス（CPUUtilization など）のグラフを確認する。",
+      "correct": false,
+      "rationale": "CPU 使用率が高い時間帯は分かりますが、原因の SQL や待機イベントは分かりません。"
+    }
+  ],
+  "explanation": "RDS と Aurora のデータベースの性能を分析するには、目的別のツールを使い分けます。Performance Insights は、データベースの負荷を可視化して、性能の問題の原因を特定するための機能です。DB の負荷を平均アクティブセッション（AAS）で表し、待機イベント、SQL、ユーザー、ホストなどの切り口で、どこが負荷の原因になっているかを、時間帯を指定して調べられます。有効にするだけで使え、エージェントの導入は不要です。\n\nEnhanced Monitoring は、DB インスタンスが動作する OS のメトリクス（プロセス、メモリ、ファイルシステムなど）を、最短 1 秒間隔で収集します。CloudWatch の標準メトリクスは、CPU や接続数などの全体の指標です。CloudTrail は API の記録です。\n\n負荷の原因になっている SQL を特定するには、Performance Insights が最も適しています。",
+  "keyPoints": [
+    "DB の負荷の原因（SQL・待機イベント）を可視化 → Performance Insights",
+    "OS のメトリクスは Enhanced Monitoring、全体の指標は CloudWatch の標準メトリクス",
+    "CloudTrail は API の記録で、SQL の記録ではない"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS の Performance Insights - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

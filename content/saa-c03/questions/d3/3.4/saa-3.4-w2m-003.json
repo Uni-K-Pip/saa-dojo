@@ -1,0 +1,73 @@
+{
+  "id": "saa-3.4-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": [
+    "3.4-S4",
+    "3.4-K3",
+    "3.4-S1"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon Elastic Container Service",
+    "AWS Fargate"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "Network Load Balancer",
+    "プロキシプロトコル v2",
+    "クライアント IP"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、独自の TCP プロトコルで通信するサービスを、AWS Fargate で動く Amazon ECS のタスクで運用し、前面に Network Load Balancer を置いています。ターゲットグループのターゲットタイプは IP です。アプリケーションで、接続元のクライアントの IP アドレスに基づいて、アクセス制御とログの記録を行いたいのですが、アプリケーションからは、ロードバランサーの IP アドレスしか見えません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ロードバランサーに X-Forwarded-For ヘッダーを付けさせて、アプリケーションでヘッダーを読み取る。",
+      "correct": false,
+      "rationale": "X-Forwarded-For は HTTP のヘッダーで、HTTP を理解する ALB が付加します。独自の TCP プロトコルを扱う NLB は、HTTP ヘッダーを付加しません。"
+    },
+    {
+      "id": "b",
+      "text": "ECS タスクのセキュリティグループで、クライアントの IP アドレスの範囲を指定して、アクセスを制御する。",
+      "correct": false,
+      "rationale": "通信の許可と拒否はできますが、アプリケーション内で個々のクライアントの IP アドレスを使ったログ記録や制御はできません。ロードバランサーの IP アドレスしか見えない点も解決しません。"
+    },
+    {
+      "id": "c",
+      "text": "ターゲットグループでプロキシプロトコル v2 を有効にして、アプリケーションでプロキシプロトコルのヘッダーを解析し、クライアントの IP アドレスを取得する。",
+      "correct": true,
+      "rationale": "プロキシプロトコル v2 は、接続元の情報を、TCP の接続の先頭にヘッダーとして付ける仕組みです。アプリケーションがヘッダーを解析すれば、クライアントの IP アドレスを取得できます。"
+    },
+    {
+      "id": "d",
+      "text": "VPC フローログを有効にして、クライアントの IP アドレスを記録し、アプリケーションに連携する。",
+      "correct": false,
+      "rationale": "フローログは、ネットワークレベルの記録で、アプリケーションの内部でクライアントの IP アドレスを使うための仕組みではありません。ロードバランサーから先の接続の情報も、元の IP アドレスではありません。"
+    }
+  ],
+  "explanation": "Network Load Balancer は、レイヤー 4（TCP、UDP、TLS）で動作します。インスタンスタイプのターゲットでは、クライアントの IP アドレスが保持され、ターゲットから見える送信元になります。一方、IP タイプのターゲットなど、構成によっては、ターゲットから見える送信元がロードバランサーの IP アドレスになり、クライアントの IP アドレスが分からなくなる場合があります。\n\nこのような場合は、プロキシプロトコル v2 を使います。ターゲットグループの属性で有効にすると、NLB は、各接続の先頭に、クライアントの IP アドレスやポートなどを含むヘッダーを付けて、ターゲットに送ります。アプリケーションは、そのヘッダーを解析して、クライアントの情報を取得します。アプリケーションがプロキシプロトコルに対応する必要があります。\n\nX-Forwarded-For は HTTP の ALB 向けの仕組みです。セキュリティグループやフローログでは、アプリケーション内でクライアントの IP アドレスを使えません。",
+  "keyPoints": [
+    "NLB の背後のアプリケーションでクライアントの IP アドレスが必要 → プロキシプロトコル v2（またはクライアント IP の保持）",
+    "X-Forwarded-For は HTTP の ALB の仕組みで、NLB（L4）にはない",
+    "プロキシプロトコルは、アプリケーションが解析に対応する必要がある"
+  ],
+  "references": [
+    {
+      "title": "Network Load Balancer のターゲットグループ - プロキシプロトコル - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html#proxy-protocol"
+    },
+    {
+      "title": "Network Load Balancer とは",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.3-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S4",
+    "3.3-K8"
+  ],
+  "services": [
+    "Amazon OpenSearch Service",
+    "Amazon Relational Database Service"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "Amazon OpenSearch Service",
+    "全文検索",
+    "データベースの種類"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるオンラインストアは、商品カタログの検索機能を、Amazon RDS for MySQL の LIKE 検索で実装しています。商品数が増えて検索が遅くなりました。部分一致、あいまい検索、日本語の形態素解析、カテゴリごとの絞り込みと件数の集計を、高速に行いたいと考えています。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon OpenSearch Service のドメインに商品データをインデックスして、検索を OpenSearch で実行する。",
+      "correct": true,
+      "rationale": "OpenSearch Service は、全文検索、あいまい検索、形態素解析、ファセット（絞り込みと集計）に対応した検索エンジンのマネージドサービスです。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon DynamoDB にデータを移行して、Scan で全文検索を実行する。",
+      "correct": false,
+      "rationale": "DynamoDB は、キーによる高速なアクセスに向いています。全文検索の機能がなく、Scan は大量のデータでは遅く、費用も大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "RDS にリードレプリカを追加して、LIKE 検索を、複数のレプリカに分散させる。",
+      "correct": false,
+      "rationale": "読み取りの負荷は分散できますが、LIKE 検索の遅さや、あいまい検索、形態素解析などの機能不足は解決しません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon ElastiCache に商品データをすべてキャッシュして、検索を高速化する。",
+      "correct": false,
+      "rationale": "キーによる取得を高速化できますが、全文検索やあいまい検索の機能はありません。条件に合う商品を検索する用途には使えません。"
+    }
+  ],
+  "explanation": "データベースやデータストアは、データの種類とアクセスのパターンに合わせて選びます。リレーショナルデータベース（RDS、Aurora）は、構造化されたデータと、結合、トランザクションに向いています。LIKE の部分一致検索は、インデックスを使いにくく、データが増えると遅くなります。\n\nAmazon OpenSearch Service は、Elasticsearch／OpenSearch を、マネージドで提供するサービスで、全文検索、あいまい検索、日本語などの言語ごとの分析（形態素解析）、ファセット検索（絞り込みと集計）、ログの分析などに向いています。データを OpenSearch にインデックスして検索し、元のデータは RDS などに保持する構成が一般的です。\n\nリードレプリカは負荷の分散で、検索機能の拡張にならず、DynamoDB と ElastiCache は、全文検索の用途に向きません。",
+  "keyPoints": [
+    "全文検索・あいまい検索・形態素解析・絞り込みの集計 → Amazon OpenSearch Service",
+    "RDS の LIKE 検索はデータが増えると遅くなる",
+    "DynamoDB と ElastiCache は、キーによるアクセス向けで、全文検索には向かない"
+  ],
+  "references": [
+    {
+      "title": "Amazon OpenSearch Service とは - Amazon OpenSearch Service デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
