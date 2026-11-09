@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-023",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K11",
+    "2.1-S3",
+    "2.1-K5"
+  ],
+  "services": [
+    "Amazon Kinesis",
+    "Amazon Simple Queue Service",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Kinesis Data Streams",
+    "SQS との違い",
+    "複数のコンシューマー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、数千台の端末から送られるアクセスログを、リアルタイムに取り込みます。同じログを、不正検知、リアルタイムの集計、アーカイブの3つのアプリケーションが、それぞれ独立して読み取る必要があります。障害時には、過去 24 時間のログを、順序を保ったまま、もう一度読み直して処理できるようにしたいと考えています。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon SNS のトピックにログを発行して、3つのアプリケーションが、それぞれ HTTPS エンドポイントで購読して受信する。",
+      "correct": false,
+      "rationale": "SNS は、メッセージを購読者に配信するだけで、データを保持しません。障害時に過去のログを読み直すことができません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Kinesis Data Streams にログを送り、3つのアプリケーションが、それぞれコンシューマーとして読み取る。",
+      "correct": true,
+      "rationale": "Kinesis Data Streams は、データを一定期間保持し、複数のコンシューマーが同じデータを独立して読み取れます。順序はシャード内で保たれ、過去のデータの読み直しもできます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon S3 のバケットにログを時間単位のファイルで書き込み、3つのアプリケーションが、一定間隔で新しいファイルを検索する。",
+      "correct": false,
+      "rationale": "リアルタイムの要件を満たしにくく、新しいファイルを検索する処理も自作する必要があります。順序を保った再読み込みの管理も複雑になります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SQS の標準キューにログを送り、可視性タイムアウトを調整して、3つのアプリケーションが、同じキューからメッセージを受信する。",
+      "correct": false,
+      "rationale": "SQS のメッセージは、1 つのコンシューマーが処理して削除すると、他のコンシューマーは読み取れません。順序の保証と過去のデータの再読み込みもできません。"
+    }
+  ],
+  "explanation": "ストリーミングデータとメッセージキューは、似ていますが性質が違います。\n\nAmazon Kinesis Data Streams は、ストリーム内にデータを一定期間（既定で 24 時間、最大 365 日）保持します。複数のコンシューマー（アプリケーション）が同じデータを独立して読み取れ、シャード内のレコードの順序が保たれます。コンシューマーは、位置（シーケンス番号やタイムスタンプ）を指定して、過去のデータを読み直せます。リアルタイムの分析、複数のアプリケーションへの同じデータの配信、再処理が必要な場合に向きます。\n\nSQS は、メッセージを 1 つのコンシューマーが処理して削除するキューで、疎結合と負荷の平準化に向きますが、複数コンシューマーの独立した読み取りや、過去のデータの再読み込みはできません。SNS は配信用で、データを保持しません。S3 のポーリングはリアルタイム性に欠けます。",
+  "keyPoints": [
+    "同じデータを複数のコンシューマーが独立して読む＋再読み込み＋順序 → Kinesis Data Streams",
+    "SQS はメッセージを 1 つのコンシューマーが処理して削除する",
+    "SNS はデータを保持しない（配信のみ）"
+  ],
+  "references": [
+    {
+      "title": "Amazon Kinesis Data Streams とは - Amazon Kinesis Data Streams デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

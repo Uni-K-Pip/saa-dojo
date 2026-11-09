@@ -1,0 +1,72 @@
+{
+  "id": "saa-3.4-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": [
+    "3.4-S2",
+    "3.4-S1",
+    "3.4-K2"
+  ],
+  "services": [
+    "Amazon Virtual Private Cloud",
+    "AWS Resource Access Manager",
+    "AWS Transit Gateway",
+    "AWS Organizations"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "VPC 共有",
+    "AWS RAM",
+    "サブネットの共有"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Organizations で 30 のアカウントを運用していて、アカウントごとに VPC を作成しています。ネットワーク管理チームは、IP アドレスの管理、ルーティング、オンプレミスとの接続を一元管理したいと考えています。アカウント数の増加に伴い、VPC の数と Transit Gateway のアタッチメントの数を増やしたくありません。各アカウントのチームは、自分たちの EC2 や RDS を、共通のネットワーク内に作成できる必要があります。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各アカウントの VPC を、ネットワーク用のアカウントの Transit Gateway にアタッチして、ルートテーブルでオンプレミスとの接続を一元管理する。",
+      "correct": false,
+      "rationale": "現在の構成そのもので、アカウントごとの VPC とアタッチメントが増えます。要件の VPC の数を増やさない点に反します。"
+    },
+    {
+      "id": "b",
+      "text": "各アカウントの VPC をすべて VPC ピアリングで接続して、ルートテーブルに相手の CIDR を追加し、フルメッシュにする。",
+      "correct": false,
+      "rationale": "アカウントが増えるとピアリングの数が急増して、管理が複雑になります。IP アドレスの管理の一元化にも、なりません。"
+    },
+    {
+      "id": "c",
+      "text": "アカウントごとに独立した VPC を維持して、IP アドレスの管理を IPAM で一元的に行い、VPC 間は接続しない。",
+      "correct": false,
+      "rationale": "IPAM は IP アドレスの割り当てを一元的に管理できますが、アカウントごとの VPC は残ります。VPC の数は減らず、共通のネットワークにリソースを作成する要件も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "ネットワーク用のアカウントのサブネットを AWS RAM で共有する（VPC 共有）。各アカウントは、共有されたサブネットにリソースを作成する。",
+      "correct": true,
+      "rationale": "VPC 共有では、サブネットの所有者が、サブネットを他のアカウントと共有します。VPC、ルート、オンプレミスとの接続は所有者が一元管理し、参加アカウントは、サブネットにリソースを作成できます。"
+    }
+  ],
+  "explanation": "VPC 共有（VPC sharing）は、AWS Resource Access Manager（RAM）を使って、VPC のサブネットを、同じ組織内の他の AWS アカウントと共有する機能です。サブネットを所有するアカウント（オーナー）が、VPC、サブネット、ルートテーブル、ゲートウェイ、Transit Gateway のアタッチメントなどのネットワークを一元管理します。共有を受けたアカウント（参加者）は、共有されたサブネットに、自分のアカウントのリソース（EC2、RDS、Lambda の VPC 接続など）を作成し、管理できます。参加者は、ネットワークの設定を変更できません。\n\nこの構成なら、VPC の数が少なく、VPC 間の接続（ピアリングや Transit Gateway のアタッチメント）の数も減ります。IP アドレスの管理も 1 か所で行えます。通信の分離が必要な場合は、セキュリティグループとネットワーク ACL を使います。\n\nフルメッシュのピアリングや、アカウントごとのアタッチメントは、アカウントの増加とともに、複雑になります。",
+  "keyPoints": [
+    "VPC を一元管理しつつ、複数のアカウントがリソースを作成 → VPC 共有（AWS RAM でサブネットを共有）",
+    "参加者はネットワークの設定を変更できず、所有者が一元管理",
+    "VPC の数と、VPC 間の接続の数を減らせる"
+  ],
+  "references": [
+    {
+      "title": "VPC をほかのアカウントと共有する - Amazon VPC ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-vpc-design"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

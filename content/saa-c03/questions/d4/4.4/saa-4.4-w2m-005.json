@@ -1,0 +1,71 @@
+{
+  "id": "saa-4.4-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": [
+    "4.4-S4",
+    "4.4-K7",
+    "4.4-K2"
+  ],
+  "services": [
+    "Amazon CloudFront"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "CloudFront の料金クラス",
+    "エッジロケーション",
+    "データ転送料金"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon CloudFront で動画のサムネイルと Web アプリケーションの静的ファイルを配信しています。利用者の大半は、日本、東南アジア、北米、欧州にいて、南米とオセアニアの利用者はごく少数で、そちらでの遅延は許容できます。CloudFront のデータ転送の費用を、必要以上に高くしないために、最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "料金クラスを、Price Class All（すべてのエッジロケーション）のままにする。",
+      "correct": false,
+      "rationale": "すべての地域のエッジロケーションが使われ、料金の高い地域でのデータ転送も含まれます。費用を高くしない要件に合いません。"
+    },
+    {
+      "id": "b",
+      "text": "ディストリビューションの料金クラスを、Price Class 200（北米、欧州、アジア、中東、アフリカのエッジロケーション）に設定する。",
+      "correct": true,
+      "rationale": "Price Class 200 は、料金の高い地域（南米、オセアニアなど）のエッジロケーションを除外します。主な利用者の地域をカバーしながら、料金を抑えられます。"
+    },
+    {
+      "id": "c",
+      "text": "CloudFront を使うのをやめて、Amazon S3 のバケットから直接配信する。",
+      "correct": false,
+      "rationale": "S3 から直接配信すると、インターネットへのデータ転送料金が、CloudFront の場合より高くなることがあります。キャッシュの利点も失い、遅延も大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "料金クラスを、Price Class 100（北米と欧州のエッジロケーションのみ）に設定する。",
+      "correct": false,
+      "rationale": "費用は最も低くなりますが、日本と東南アジアの利用者が、北米や欧州のエッジロケーションから配信されることになります。遅延が大きくなります。"
+    }
+  ],
+  "explanation": "CloudFront のデータ転送の料金は、リクエストを処理するエッジロケーションの地域によって異なります。料金クラス（Price Class）の設定で、ディストリビューションが使うエッジロケーションの範囲を絞り、費用を抑えられます。\n\nPrice Class All は、すべてのエッジロケーションを使い、最良のパフォーマンスを提供します。Price Class 200 は、最も料金の高い地域（南米、オセアニアなど）を除いたエッジロケーションを使います。Price Class 100 は、最も料金の低い地域（北米と欧州）のエッジロケーションだけを使います。\n\n除外された地域の利用者のリクエストは、含まれる地域のエッジロケーションに誘導されるため、遅延が大きくなる可能性があります。利用者の分布と遅延の許容度に合わせて選びます。この問題では、日本と東南アジアも含めたいため、Price Class 200 が適しています。Price Class 100 では、アジアの利用者が遠くのエッジから配信されます。",
+  "keyPoints": [
+    "CloudFront の費用を抑える設定 → 料金クラス（Price Class）でエッジロケーションの地域を限定",
+    "Price Class 100: 北米・欧州、200: ＋アジア・中東・アフリカ、All: すべて",
+    "除外した地域の利用者は、遠いエッジから配信され、遅延が大きくなる"
+  ],
+  "references": [
+    {
+      "title": "料金クラスの選択 - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PriceClass.html"
+    },
+    {
+      "title": "Amazon CloudFront の料金",
+      "url": "https://aws.amazon.com/cloudfront/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

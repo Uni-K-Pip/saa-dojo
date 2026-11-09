@@ -10,7 +10,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある開発会社の開発者は、IAM ユーザーのアクセスキーを使って AWS CLI で作業しています。全員が仮想 MFA デバイスを登録済みです。セキュリティ部門は、日常の作業は今のまま行えるようにしつつ、Amazon EC2 インスタンスの削除（ec2:TerminateInstances）と Amazon RDS の DB インスタンスの削除（rds:DeleteDBInstance）は、MFA で認証したときだけ許可したいと考えています。CLI からの操作でも確実に MFA を強制できる方法はどれですか。",
+  "stem": "ある開発会社の開発者は、IAM ユーザーのアクセスキーを使って AWS CLI で作業しています。全員が仮想 MFA デバイスを登録済みで、対象の削除アクションを許可する IAM ポリシーも開発者には既に付与されています。セキュリティ部門は、日常の作業は今のまま行えるようにしつつ、Amazon EC2 インスタンスの削除（ec2:TerminateInstances）と Amazon RDS の DB インスタンスの削除（rds:DeleteDBInstance）は、MFA で認証したときだけ許可したいと考えています。CLI からの操作でも確実に MFA を強制できる方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -37,11 +37,11 @@
       "rationale": "送信元 IP アドレスの制限は MFA の強制になりません。オフィスのネットワークからなら MFA なしで削除でき、MFA で認証したときだけ許可するという要件を満たしません。"
     }
   ],
-  "explanation": "aws:MultiFactorAuthPresent は、リクエストの一時的な認証情報が MFA で認証されたかどうかを示す条件キーです。AssumeRole や GetSessionToken で得た一時的な認証情報、または MFA でサインインしたコンソールのセッションにだけ含まれます。IAM ユーザーのアクセスキー（長期的な認証情報）をそのまま使った API 呼び出しには、このキー自体がありません。\n\nそのため、MFA を強制する Deny ポリシーは BoolIfExists を使って書きます。BoolIfExists はキーが存在しない場合も一致するので、MFA なしの呼び出しとキーが false の呼び出しの両方を拒否できます。Bool で書くと、キーがない長期的な認証情報の呼び出しが素通りしてしまいます。MFA で認証した一時的な認証情報（sts get-session-token に MFA のシリアル番号とコードを指定して取得）を使えば、キーが true になり、拒否されません。\n\nMFA は登録するだけでは API には効かないこと、IP 制限は別の統制であることも整理しておきます。なお、フェデレーションや IAM Identity Center のユーザーでは、このキーが使えない場合があるため、別の方法（セッションタグなど）が案内されています。",
+  "explanation": "aws:MultiFactorAuthPresent は、リクエストの認証情報が MFA で認証されたかどうかを示す条件キーです。長期アクセスキーによるリクエストにはこのキーは存在しません。MFA を指定した GetSessionToken の認証情報では true となり、MFA なしの一時認証情報では false となる場合があります。\n\nそのため、MFA を強制する Deny ポリシーは BoolIfExists を使って書きます。BoolIfExists はキーが存在しない場合も一致するので、MFA なしの呼び出しとキーが false の呼び出しの両方を拒否できます。Bool で書くと、キーがない長期的な認証情報の呼び出しが素通りしてしまいます。MFA で認証した一時的な認証情報（sts get-session-token に MFA のシリアル番号とコードを指定して取得）を使えば、キーが true になり、この Deny には一致しません。なお、Deny に一致しないこと自体は操作を許可するものではなく、削除は開発者に付与済みの許可ポリシーによって行えます。\n\nAssumeRole を利用する設計では、ロールの信頼ポリシーで引受時に MFA を要求します。AssumeRole が返す認証情報には、後続の API 呼び出しで MFA を判定するための情報が含まれないためです。\n\nMFA は登録するだけでは API には効かないこと、IP 制限は別の統制であることも整理しておきます。なお、フェデレーションや IAM Identity Center のユーザーでは、このキーが使えない場合があるため、別の方法（セッションタグなど）が案内されています。",
   "keyPoints": [
     "MFA の強制は IAM ポリシーの条件で行う。登録しただけでは API 呼び出しに効かない",
     "長期的なアクセスキーの呼び出しには aws:MultiFactorAuthPresent がない → Deny は BoolIfExists で書く",
-    "CLI で MFA を使うには sts get-session-token（または MFA 付きの AssumeRole）で一時的な認証情報を得る"
+    "この設計では、MFA のシリアル番号とコードを指定した aws sts get-session-token を使う"
   ],
   "references": [
     {

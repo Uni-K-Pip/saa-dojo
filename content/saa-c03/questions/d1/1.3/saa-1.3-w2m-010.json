@@ -1,0 +1,81 @@
+{
+  "id": "saa-1.3-w2m-010",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S2",
+    "1.3-K4",
+    "1.3-S1"
+  ],
+  "services": [
+    "Amazon Elastic Block Store",
+    "AWS Organizations",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "EBS の暗号化",
+    "SCP",
+    "ec2:Encrypted"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、AWS Organizations の全メンバーアカウントで、新しく作成されるすべての Amazon EBS ボリュームが暗号化されることを保証したいと考えています。開発者が暗号化なしのボリュームを作成することを、禁止します。既存のボリュームの暗号化は別途対応します。この要件を満たす設定を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "EBS の既定の暗号化を、管理アカウント 1 つで有効にすれば、すべてのメンバーアカウントに適用される。",
+      "correct": false,
+      "rationale": "既定の暗号化は、アカウントとリージョンごとの設定です。管理アカウントで有効にしても、メンバーアカウントには適用されません。"
+    },
+    {
+      "id": "b",
+      "text": "SCP で、ec2:Encrypted 条件キーが false の場合の ec2:CreateVolume と ec2:RunInstances の操作を拒否する。",
+      "correct": true,
+      "rationale": "SCP で、暗号化されていないボリュームの作成を拒否すれば、アカウントの管理者であっても、暗号化なしのボリュームを作成できません。"
+    },
+    {
+      "id": "c",
+      "text": "各メンバーアカウントのリージョンごとに、EBS の既定の暗号化を有効にする。",
+      "correct": true,
+      "rationale": "既定の暗号化を有効にすると、新しく作成されるボリュームとスナップショットのコピーは、自動で暗号化されます。開発者が暗号化のオプションを付け忘れても、暗号化されます。"
+    },
+    {
+      "id": "d",
+      "text": "開発者向けに、EBS のボリュームを暗号化して作成する手順書と研修を用意する。",
+      "correct": false,
+      "rationale": "人の運用に依存し、技術的な強制がありません。手順を守らなかった場合に、暗号化なしのボリュームが作成されます。"
+    },
+    {
+      "id": "e",
+      "text": "AWS Config のルールで、暗号化されていないボリュームを検出して、セキュリティチームに通知する。",
+      "correct": false,
+      "rationale": "事後の検出と通知で、暗号化なしのボリュームの作成そのものは防げません。作成を禁止する要件を満たしません。"
+    }
+  ],
+  "explanation": "EBS の暗号化を組織全体で保証するには、予防的な統制を組み合わせます。\n\n(1) SCP で、暗号化されていないボリュームの作成を拒否します。ec2:Encrypted 条件キーは、リクエストされるボリュームが暗号化されるかどうかを示し、false の場合の ec2:CreateVolume や ec2:RunInstances（ボリュームを同時に作成する操作）を Deny します。メンバーアカウントの管理者も、この制限を回避できません。\n\n(2) 各アカウント・各リージョンで、EBS の既定の暗号化を有効にします。有効にすると、新しく作成するボリュームが自動で暗号化されます。この設定はアカウントとリージョンごとなので、組織全体に展開するには、自動化（CloudFormation StackSets など）が必要です。\n\nConfig ルールによる検出は事後の対応です。手順書や研修は強制力がありません。",
+  "keyPoints": [
+    "作成時の暗号化の強制 → SCP（ec2:Encrypted が false を Deny）＋EBS の既定の暗号化",
+    "EBS の既定の暗号化は、アカウントとリージョンごとの設定",
+    "事後の検出（Config）は、予防的な統制の代わりにならない"
+  ],
+  "references": [
+    {
+      "title": "EBS の暗号化 - Amazon EBS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html"
+    },
+    {
+      "title": "サービスコントロールポリシーの例 - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-encryption-and-keys"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

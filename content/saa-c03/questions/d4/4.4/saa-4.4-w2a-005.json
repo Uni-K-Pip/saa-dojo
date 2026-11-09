@@ -10,13 +10,13 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある会社は、オンプレミスと AWS を Site-to-Site VPN で接続しています。標準の VPN トンネル 1 本の帯域では足りなくなり、約 3 Gbps の帯域が必要になりました。AWS Direct Connect は導入できず、複数の VPN 接続で帯域を合算して使う必要があります。オンプレミスのルーターは BGP に対応しています。VPN 接続の終端をどこに置くべきですか。",
+  "stem": "ある会社は、オンプレミスと AWS を Site-to-Site VPN で接続しています。標準の VPN トンネル 1 本の帯域では足りなくなり、多数の同時フローの合計で約 3 Gbps の帯域が必要になりました。使用するトンネルはすべて標準帯域（最大 1.25 Gbps）とします。AWS Direct Connect は導入できず、複数の VPN 接続で帯域を合算して使う必要があります。オンプレミスのルーターは BGP と ECMP に対応しています。VPN 接続の終端をどこに置くべきですか。",
   "options": [
     {
       "id": "a",
       "text": "仮想プライベートゲートウェイに複数の VPN 接続を作成し、トラフィックを自動で分散させる。",
       "correct": false,
-      "rationale": "仮想プライベートゲートウェイは、複数の VPN 接続を使った ECMP（等コストマルチパス）による帯域の合算に対応していません。複数の接続を作っても、通信は 1 つのトンネルを通ります。"
+      "rationale": "仮想プライベートゲートウェイは、複数の VPN 接続を使った ECMP（等コストマルチパス）による帯域の合算に対応していません。同一宛先への等コスト経路を ECMP で分散できないため、複数の接続を作っても、通信は 1 つのトンネルを通ります。"
     },
     {
       "id": "b",
@@ -28,7 +28,7 @@
       "id": "c",
       "text": "1 つの VPN 接続を作成し、両方のトンネルを同時に使うよう、オンプレミスのルーターで負荷分散する。",
       "correct": false,
-      "rationale": "1 つの VPN 接続の 2 本のトンネルは、冗長化のためのもので、仮想プライベートゲートウェイ側では、通常は片方のトンネルにだけ通信が流れます。帯域を合算する用途には使えません。"
+      "rationale": "Transit Gateway 終端では 1 つの VPN 接続の両トンネルを ECMP で利用できますが、標準トンネル 2 本の合計上限は 2.5 Gbps のため、約 3 Gbps の要件を満たしません。"
     },
     {
       "id": "d",
@@ -37,7 +37,7 @@
       "rationale": "VPC ピアリングは VPC 同士の接続で、オンプレミスとの VPN の帯域を増やす機能はありません。"
     }
   ],
-  "explanation": "Site-to-Site VPN の標準のトンネル 1 本には、帯域の上限（約 1.25 Gbps）があります。それ以上の帯域が必要な場合の方法は次のとおりです。\n\n・Transit Gateway で、複数の VPN 接続を作成し、ECMP（等コストマルチパス）を有効にする。BGP の動的ルーティングが必要で、通信が複数のトンネルに分散されて、帯域を合算できる。\n・Direct Connect を使う（この問題では導入できない）。\n\nVPN の終端が仮想プライベートゲートウェイの場合は、ECMP に対応しておらず、帯域の合算はできません。なお、ECMP を使うと、通信が複数のトンネルに分散されるため、1 つの通信（フロー）あたりの帯域は 1 本のトンネルの上限に制限されます。また、Transit Gateway で ECMP を使う VPN 接続は、データ転送の処理に応じた Transit Gateway の料金もかかります。",
+  "explanation": "Site-to-Site VPN の標準のトンネル 1 本には、帯域の上限（約 1.25 Gbps）があります。それ以上の帯域が必要な場合の方法は次のとおりです。\n\n・Transit Gateway で、複数の VPN 接続を作成し、ECMP（等コストマルチパス）を有効にする。BGP の動的ルーティングが必要で、通信が複数のトンネルに分散されて、帯域を合算できる。\n・Direct Connect を使う（この問題では導入できない）。\n\nVPN の終端が仮想プライベートゲートウェイの場合は、ECMP に対応しておらず、帯域の合算はできません。最大 5 Gbps の大容量トンネルもありますが、本問では標準トンネルだけを使う前提です。標準トンネル 2 本（1 接続）の合計は 2.5 Gbps のため、約 3 Gbps には 2 つ以上の VPN 接続が必要です。なお、ECMP を使うと、通信が複数のトンネルに分散されるため、1 つの通信（フロー）あたりの帯域は 1 本のトンネルの上限に制限されます。また、Transit Gateway で ECMP を使う VPN 接続は、データ転送の処理に応じた Transit Gateway の料金もかかります。",
   "keyPoints": [
     "VPN の帯域を合算したい → Transit Gateway の VPN 接続で ECMP（BGP の動的ルーティング）",
     "仮想プライベートゲートウェイは VPN 接続の ECMP に対応していない",
@@ -45,8 +45,8 @@
   ],
   "references": [
     {
-      "title": "Equal Cost Multipath (ECMP) routing - AWS Site-to-Site VPN",
-      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/Route-Priority.html"
+      "title": "Route tables and AWS Site-to-Site VPN route priority - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/vpn-route-priority.html"
     },
     {
       "title": "Transit Gateway VPN attachments - Amazon VPC Transit Gateways",

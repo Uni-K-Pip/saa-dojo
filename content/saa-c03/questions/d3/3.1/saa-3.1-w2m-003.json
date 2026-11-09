@@ -1,0 +1,68 @@
+{
+  "id": "saa-3.1-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": [
+    "3.1-K3",
+    "3.1-S1"
+  ],
+  "services": [
+    "Amazon Elastic Compute Cloud",
+    "Amazon Elastic Block Store",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "インスタンスストア",
+    "NVMe SSD",
+    "一時データ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon EC2 上で動くデータ処理のアプリケーションで、処理の途中で生成する大きな一時ファイル（シャッフルデータ）を、1 秒あたり数十万回の I/O でランダムに読み書きします。一時ファイルは処理が終われば不要で、入力と最終結果は Amazon S3 に保存します。ストレージの追加費用を抑えながら、最も高い I/O 性能と低いレイテンシーを得るために、一時ファイルをどこに置くのが最も適切ですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS のファイルシステムを作成して、すべてのインスタンスからマウントし、一時ファイルを置く。",
+      "correct": false,
+      "rationale": "ネットワーク経由のファイルシステムのため、ローカルの NVMe よりレイテンシーが大きくなります。ストレージの追加費用もかかります。"
+    },
+    {
+      "id": "b",
+      "text": "汎用 SSD（gp3）の EBS ボリュームを作成して、IOPS とスループットを上限までプロビジョニングし、一時ファイルを置く。",
+      "correct": false,
+      "rationale": "gp3 は 1 つのボリュームでプロビジョニングできる IOPS に上限があり、1 秒あたり数十万回の I/O には足りません。ボリュームの追加費用もかかります。"
+    },
+    {
+      "id": "c",
+      "text": "NVMe SSD のインスタンスストアを持つインスタンスタイプを使い、一時ファイルをインスタンスストアに置く。",
+      "correct": true,
+      "rationale": "インスタンスストアは、ホストに直接接続されたストレージで、高い IOPS と低いレイテンシーを提供します。インスタンスの料金に含まれ、追加費用がありません。再生成できる一時データに向いています。"
+    },
+    {
+      "id": "d",
+      "text": "一時ファイルを Amazon S3 に直接書き込み、必要なときに読み取る。",
+      "correct": false,
+      "rationale": "小さなランダム I/O を、1 秒に数十万回行う用途では、オブジェクトストレージのリクエストのレイテンシーや費用が大きくなり、適しません。"
+    }
+  ],
+  "explanation": "EC2 のストレージには、永続的なブロックストレージの EBS と、ホストに物理的に接続されたインスタンスストアがあります。インスタンスストアは、NVMe SSD などを使い、非常に高い IOPS と低いレイテンシーを、インスタンスの料金に含めて提供します。一方で、データはインスタンスの停止、休止、終了、または基盤のドライブの障害で失われるため、キャッシュ、バッファー、シャッフルデータ、一時ファイルのような、再生成できるデータに向いています。\n\nEBS の io2 Block Express は、永続的で耐久性が高く、高い IOPS を出せますが、ボリュームと IOPS の料金が追加でかかります。一時データには過剰になります。EFS や S3 は、ネットワーク経由で、ローカルの NVMe ほどのレイテンシーは出せません。\n\n永続化が必要なデータは、インスタンスストアに置かず、EBS や S3 に保存します。",
+  "keyPoints": [
+    "再生成できる一時データで最高の I/O 性能・追加費用なし → インスタンスストア（NVMe SSD）",
+    "インスタンスストアは停止・終了・障害でデータが消える",
+    "永続データは EBS や S3 に保存"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 インスタンスストア - Amazon EC2 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

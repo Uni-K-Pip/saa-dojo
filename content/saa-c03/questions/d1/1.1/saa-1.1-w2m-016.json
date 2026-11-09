@@ -1,0 +1,74 @@
+{
+  "id": "saa-1.1-w2m-016",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S5",
+    "1.1-K1"
+  ],
+  "services": [
+    "Amazon Simple Notification Service",
+    "Amazon Simple Queue Service",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "SQS キューポリシー",
+    "クロスアカウント",
+    "aws:SourceArn"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "本社の AWS アカウントの Amazon SNS トピックから、子会社の別の AWS アカウントにある Amazon SQS キューへ、メッセージを配信します。サブスクリプションの設定は完了しており、キューポリシーには他の SNS トピックからの送信を許可するステートメントはありません。子会社のキューの管理者は、本社の SNS トピックからの配信だけを受け付け、他のトピックからの送信は受け付けたくないと考えています。子会社のアカウント側で行う、最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "本社と子会社の VPC を VPC ピアリングで接続して、プライベートな経路で SNS から SQS へ配信する。",
+      "correct": false,
+      "rationale": "SNS と SQS は、VPC の外のマネージドサービスで、ピアリングでは接続を限定できません。ピアリングは、アクセスの許可の代わりにもなりません。"
+    },
+    {
+      "id": "b",
+      "text": "SQS キューのアクセスポリシーで、sns.amazonaws.com に sqs:SendMessage を許可し、Condition の aws:SourceArn に本社の SNS トピックの ARN を指定する。",
+      "correct": true,
+      "rationale": "SQS キューのリソースベースポリシーで、送信元のトピックを ARN で限定します。本社のトピックからのメッセージだけが受け付けられ、他のトピックの送信は拒否されます。"
+    },
+    {
+      "id": "c",
+      "text": "SQS キューのアクセスポリシーで、Principal を \"*\" とし、送信元を制限する Condition を付けずに sqs:SendMessage を許可する。キューの URL は非公開にしておき、他のアカウントには共有しない。",
+      "correct": false,
+      "rationale": "URL を知っている誰でも、キューにメッセージを送れます。URL の秘匿はアクセス制御にならず、本社のトピックだけに限定する要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "子会社のアカウントに IAM ロールを作成し、SNS がそのロールを引き受けて、キューにメッセージを送る構成にする。",
+      "correct": false,
+      "rationale": "SNS から SQS への配信は、SQS のキューポリシーで許可します。SNS が IAM ロールを引き受けて送信する仕組みではありません。"
+    }
+  ],
+  "explanation": "AWS のサービス間でクロスアカウントのメッセージ配信をするときは、受け側のリソースのリソースベースポリシー（SQS ではキューのアクセスポリシー）で、送信元を許可します。\n\nSNS トピックから SQS キューへの配信では、キューのポリシーで、Principal を sns.amazonaws.com（サービスプリンシパル）として、sqs:SendMessage を許可し、Condition の aws:SourceArn（ArnEquals）に、送信元の SNS トピックの ARN を指定します。これで、そのトピックからの送信だけが許可されます。この問題では、他のトピックからの送信を許可するステートメントがないので、他のアカウントや他のトピックから、サービスプリンシパルを経由して送られるメッセージは受け付けられません。\n\nPrincipal を \"*\" とし、送信元を制限する条件も付けない設定では、本社のトピック以外にも送信を許可してしまいます。SNS から SQS への配信は IAM ロールの引き受けでは行われません。VPC ピアリングは、この通信の制御に関係ありません。",
+  "keyPoints": [
+    "SNS から SQS への配信 → キューポリシーで sns.amazonaws.com を許可し、aws:SourceArn でトピックを限定",
+    "クロスアカウントはリソースベースポリシーで受け側を許可",
+    "URL の秘匿はアクセス制御ではない"
+  ],
+  "references": [
+    {
+      "title": "Amazon SNS トピックを Amazon SQS キューに登録する - Amazon SNS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/subscribe-sqs-queue-to-sns-topic.html"
+    },
+    {
+      "title": "別のアカウントの Amazon SQS キューに Amazon SNS メッセージを送信する - Amazon SNS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-send-message-to-sqs-cross-account.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

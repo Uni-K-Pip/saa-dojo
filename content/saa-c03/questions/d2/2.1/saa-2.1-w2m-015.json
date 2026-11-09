@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-015",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-S3",
+    "2.1-K11",
+    "2.1-K7"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "Amazon Elastic Compute Cloud",
+    "Amazon Cognito"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "S3 署名付き URL",
+    "サーバー負荷の削減",
+    "直接アップロード"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある写真共有サービスでは、利用者がアップロードする写真（1 枚あたり最大 200 MB）を、Amazon EC2 の Web サーバーが受け取って、Amazon S3 に保存しています。アップロードが集中すると、Web サーバーのネットワークと CPU の負荷が高くなります。Web サーバーを経由せずに、認証済みの利用者だけが、S3 に直接アップロードできる構成に変えたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Web サーバーの EC2 インスタンスを Auto Scaling グループで増やして、アップロードの負荷を複数のサーバーに分散する。",
+      "correct": false,
+      "rationale": "負荷は分散できますが、写真のデータが Web サーバーを通る構造は変わりません。ファイルの中継のためのサーバー費用が増えます。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションが利用者を認証したうえで、有効期限が短い S3 の署名付き URL（PUT）を発行し、クライアントが直接アップロードする。",
+      "correct": true,
+      "rationale": "署名付き URL を使うと、認証済みの利用者に限り、一時的に S3 へ直接アップロードする権限を与えられます。ファイルのデータが Web サーバーを通らないため、負荷が下がります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon API Gateway と AWS Lambda を経由してアップロードを受け取り、Lambda から S3 に保存する。",
+      "correct": false,
+      "rationale": "API Gateway にはペイロードのサイズ制限があり、200 MB の写真は受け取れません。Lambda の実行時間と料金も増えます。"
+    },
+    {
+      "id": "d",
+      "text": "S3 バケットのパブリックアクセスのブロックを解除し、すべての利用者に PutObject を許可して、クライアントが直接アップロードする。",
+      "correct": false,
+      "rationale": "誰でもアップロードできてしまい、認証済みの利用者だけに限定する要件を満たしません。不正な利用や、費用が増加するリスクがあります。"
+    }
+  ],
+  "explanation": "大きなファイルのアップロードを、アプリケーションのサーバーで中継すると、サーバーのネットワーク帯域と CPU が消費され、スケールの制約になります。S3 の署名付き URL を使うと、アップロードをクライアントから S3 に直接行わせ、サーバーの負荷と構成を軽くできます。\n\nアプリケーションは、利用者を認証したうえで、署名付き URL（またはマルチパートアップロードの場合は、各パートの署名付き URL、あるいは署名付き POST）を、AWS SDK で発行します。URL には有効期限があり、発行した IAM のプリンシパルの権限の範囲でアクセスできます。クライアントは、その URL に PUT するだけでアップロードできます。アップロードの完了は、S3 のイベント通知で、後続の処理（サムネイルの作成など）に連携できます。\n\nバケットの公開は不適切です。API Gateway にはペイロードサイズの上限（10 MB）があります。EC2 の増設は、構造の問題を解決しません。",
+  "keyPoints": [
+    "大きなファイルのアップロードをサーバーを介さずに行う → S3 の署名付き URL（短い有効期限）",
+    "API Gateway のペイロードの上限は 10 MB",
+    "アップロード完了後の処理は S3 のイベント通知で疎結合に連携"
+  ],
+  "references": [
+    {
+      "title": "署名付き URL を使用したオブジェクトのアップロード - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -68,7 +68,7 @@
     },
     {
       "title": "Amazon SQS FIFO queues - Amazon Simple Queue Service",
-      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html"
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-fifo-queues.html"
     }
   ],
   "lessonRefs": [],

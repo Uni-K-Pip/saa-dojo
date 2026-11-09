@@ -1,0 +1,70 @@
+{
+  "id": "saa-1.1-w2m-018",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S6",
+    "1.1-K2",
+    "1.1-S3"
+  ],
+  "services": [
+    "AWS Identity and Access Management",
+    "AWS Security Token Service (AWS STS)"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "SAML 2.0 フェデレーション",
+    "IAM ID プロバイダー",
+    "シングルサインオン"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小規模な企業は、AWS アカウントを 1 つだけ使っています。従業員は、SAML 2.0 に対応した社内の ID プロバイダーで認証されます。従業員が、社内のポータルから AWS マネジメントコンソールにシングルサインオンできるようにしたいと考えています。従業員ごとの IAM ユーザーは作成したくありません。AWS Organizations や IAM Identity Center の導入の予定はありません。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "共有用の IAM ユーザーを 1 人分だけ作成し、必要な権限を付けて、そのパスワードを社内ポータルで従業員全員に共有して、コンソールにサインインさせる。",
+      "correct": false,
+      "rationale": "誰が何をしたかを区別できず、共有の認証情報は漏えいの危険が高くなります。セキュリティのベストプラクティスに反します。"
+    },
+    {
+      "id": "b",
+      "text": "従業員ごとに IAM ユーザーを作成して、社内の ID プロバイダーのパスワードと定期的に同期するスクリプトを Lambda で作り、実行する。",
+      "correct": false,
+      "rationale": "従業員ごとの IAM ユーザーを作らない要件に反します。パスワードの同期の仕組みの運用も増え、セキュリティ上のリスクがあります。"
+    },
+    {
+      "id": "c",
+      "text": "IAM に SAML ID プロバイダーを作成して IdP のメタデータを登録し、信頼するロールを作って、アサーションでロールを指定する。",
+      "correct": true,
+      "rationale": "IAM の SAML フェデレーションで、IdP の認証結果を使って、IAM ロールを引き受けさせます。従業員ごとの IAM ユーザーは不要で、IAM Identity Center がなくても実現できます。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Cognito のユーザープールを作成し、従業員をユーザーとして登録して、社内の IdP と連携し、コンソールのサインインに使う。",
+      "correct": false,
+      "rationale": "Cognito のユーザープールは、アプリケーションの利用者のサインインのためのもので、AWS マネジメントコンソールのシングルサインオンには使えません。"
+    }
+  ],
+  "explanation": "社内の ID プロバイダー（IdP）の認証情報を使って、AWS マネジメントコンソールへのシングルサインオンを実現する方法は、主に2つあります。複数のアカウントを持つ組織では、IAM Identity Center が推奨されます。単一のアカウントなど、IAM Identity Center を使わない場合は、IAM の SAML 2.0 フェデレーションを使えます。\n\n設定の流れは、(1) IAM に SAML ID プロバイダーを作成して、IdP のメタデータドキュメントを登録する、(2) IAM ロールを作成して、信頼ポリシーで SAML プロバイダーを Principal として許可する（sts:AssumeRoleWithSAML）、(3) IdP で、アサーションの属性に、引き受けるロールの ARN などを設定する、(4) 従業員は、IdP のポータルから、AWS のサインイン URL にアクセスして、ロールの一時的な認証情報でサインインする、というものです。\n\nCognito のユーザープールはアプリケーション向けです。IAM ユーザーの作成や共有は、フェデレーションの利点を活かせません。",
+  "keyPoints": [
+    "単一アカウントで IAM Identity Center なしの SSO → IAM の SAML ID プロバイダー＋ロール（AssumeRoleWithSAML）",
+    "IAM ユーザーを従業員ごとに作らず、一時的な認証情報を使う",
+    "Cognito のユーザープールはアプリの利用者向けで、コンソールの SSO には使わない"
+  ],
+  "references": [
+    {
+      "title": "SAML 2.0 フェデレーション - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

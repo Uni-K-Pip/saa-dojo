@@ -1,0 +1,75 @@
+{
+  "id": "saa-1.3-w2m-014",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S3",
+    "1.3-S7",
+    "1.3-K4"
+  ],
+  "services": [
+    "AWS Certificate Manager",
+    "Amazon CloudFront",
+    "Amazon Route 53"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "ACM",
+    "CloudFront の証明書",
+    "DNS 検証"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、東京リージョンで運用している Web アプリケーションの前に、Amazon CloudFront を配置し、独自ドメイン www.example.com で HTTPS 配信します。ドメインは Amazon Route 53 で管理しています。証明書の取得と更新を、手作業なしで自動化したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "東京リージョンの ACM で DNS 検証の証明書をリクエストし、Route 53 に検証用レコードを作成して、CloudFront に関連付ける。",
+      "correct": false,
+      "rationale": "CloudFront で使える ACM の証明書は、us-east-1 リージョンのものだけです。東京リージョンの証明書は、CloudFront に関連付けられません。"
+    },
+    {
+      "id": "b",
+      "text": "us-east-1 の ACM で E メール検証の証明書をリクエストし、更新のたびに、ドメインの管理者が確認メールの承認を行って更新する。",
+      "correct": false,
+      "rationale": "更新のたびに、手作業の承認が必要になる場合があり、自動化の要件に反します。DNS 検証のほうが、自動更新に向いています。"
+    },
+    {
+      "id": "c",
+      "text": "us-east-1 の ACM で証明書をリクエストし、DNS 検証用のレコードを Route 53 に作成して、CloudFront に関連付ける。",
+      "correct": true,
+      "rationale": "CloudFront で使う ACM の証明書は、us-east-1 リージョンで作成する必要があります。DNS 検証を使えば、更新も自動で行われます。"
+    },
+    {
+      "id": "d",
+      "text": "外部の認証局で取得した証明書を us-east-1 の ACM にインポートして、CloudFront のディストリビューションに関連付けて配信する。",
+      "correct": false,
+      "rationale": "インポートした証明書は、ACM では自動更新されません。有効期限が切れる前に、手作業で更新して再インポートする必要があります。"
+    }
+  ],
+  "explanation": "AWS Certificate Manager（ACM）は、パブリックな SSL/TLS 証明書を無料でプロビジョニングし、管理するサービスです。ACM の証明書は、リージョンのリソースですが、Amazon CloudFront で使う証明書は、バージニア北部（us-east-1）リージョンで作成する必要があります。ALB や API Gateway のリージョナルエンドポイントでは、そのリソースと同じリージョンの証明書を使います。\n\n証明書の所有の検証には、DNS 検証と E メール検証があります。DNS 検証では、ACM が指定する CNAME レコードをドメインの DNS に追加します。Route 53 で管理しているドメインなら、ACM のコンソールからワンクリックでレコードを作成できます。レコードが存在する限り、ACM は証明書を自動で更新します。E メール検証は、更新のときに承認が必要になることがあります。外部からインポートした証明書は、ACM が自動更新しません。",
+  "keyPoints": [
+    "CloudFront の ACM 証明書は us-east-1 で作成",
+    "自動更新するなら DNS 検証（検証用レコードを残す）",
+    "ACM にインポートした証明書は自動更新されない"
+  ],
+  "references": [
+    {
+      "title": "AWS Certificate Manager とは - AWS Certificate Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+    },
+    {
+      "title": "CloudFront で HTTPS を使用するための要件",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-encryption-and-keys"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

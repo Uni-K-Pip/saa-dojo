@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.2-w2m-018",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K2",
+    "1.2-K4",
+    "1.2-S2"
+  ],
+  "services": [
+    "Amazon API Gateway",
+    "VPC endpoints",
+    "Amazon Virtual Private Cloud"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "プライベート API",
+    "execute-api エンドポイント",
+    "リソースポリシー"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の開発チームは、取引データを返す API を作成しており、セキュリティ部門からは、この API をインターネットから到達できない構成にするよう求められています。ある企業は、社内のアプリケーションだけが使う Amazon API Gateway の REST API を、インターネットに公開せず、VPC 内のクライアントからだけ呼び出せるようにしたいと考えています。クライアントは、複数の VPC に分かれています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "リージョナル API を作成し、API キーと使用量プランを設定する。キーを配布した社内のクライアントだけが呼び出せるようにして、利用量の上限も設ける。",
+      "correct": false,
+      "rationale": "API キーは、利用の識別と制限用で、アクセス制御の仕組みではありません。エンドポイントがインターネットから到達できる状態も、変わりません。"
+    },
+    {
+      "id": "b",
+      "text": "エッジ最適化 API を作成して、IAM 認証を有効にし、社内のユーザーとロールにだけ execute-api:Invoke の権限を付与して呼び出せるようにする。",
+      "correct": false,
+      "rationale": "エッジ最適化 API は、CloudFront 経由のインターネット向けのエンドポイントです。IAM 認証で呼び出しを制限しても、インターネットから到達できることは変わりません。"
+    },
+    {
+      "id": "c",
+      "text": "プライベート API を作成し、各 VPC の API Gateway 用インターフェイス VPC エンドポイントを接続元として、リソースポリシーで許可する。",
+      "correct": true,
+      "rationale": "プライベート API は、インターフェイス VPC エンドポイント経由でだけ呼び出せ、インターネットからは到達できません。リソースポリシーで、アクセス元のエンドポイントや VPC を限定できます。"
+    },
+    {
+      "id": "d",
+      "text": "リージョナル API を作成し、AWS WAF の IP アドレスセットで、社内の各 VPC の NAT ゲートウェイの Elastic IP アドレスだけを許可する。",
+      "correct": false,
+      "rationale": "API のエンドポイントは、インターネットから到達できる状態のままで、公開しないという要件を満たしません。IP アドレスで制限しても、公開エンドポイントであることは変わりません。"
+    }
+  ],
+  "explanation": "API Gateway の REST API のエンドポイントタイプには、エッジ最適化、リージョナル、プライベートの3種類があります。エッジ最適化は、CloudFront 経由で世界中のクライアントに向けた公開エンドポイント、リージョナルは、同じリージョンのクライアントに向けた公開エンドポイントです。プライベートは、インターネットに公開せず、API Gateway 用のインターフェイス VPC エンドポイント（execute-api）経由でだけアクセスできます。\n\n複数の VPC から呼び出す場合は、各 VPC に VPC エンドポイントを作成します（あるいは共有のエンドポイントを使います）。さらに、API のリソースポリシーで、Condition の aws:SourceVpce（エンドポイントの ID）または aws:SourceVpc（VPC の ID）を指定して、許可するエンドポイントや VPC からの呼び出しだけを許可します。\n\nWAF や IAM 認証、API キーは、公開エンドポイントへのアクセスを制御するもので、インターネットから到達できる点は解消されません。",
+  "keyPoints": [
+    "VPC 内のクライアントからだけ呼び出す REST API → プライベート API＋execute-api のインターフェイス VPC エンドポイント＋リソースポリシー（aws:SourceVpce）",
+    "エッジ最適化・リージョナルの API は、インターネットから到達できる",
+    "API キーはアクセス制御の仕組みではない"
+  ],
+  "references": [
+    {
+      "title": "API Gateway のプライベート REST API - Amazon API Gateway デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-private-apis.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-private-connectivity"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,73 @@
+{
+  "id": "saa-4.4-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": [
+    "4.4-S3",
+    "4.4-S5",
+    "4.4-K1"
+  ],
+  "services": [
+    "Amazon Virtual Private Cloud",
+    "Amazon Elastic Compute Cloud",
+    "NAT gateway"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "パブリック IPv4 アドレスの料金",
+    "Egress-only インターネットゲートウェイ",
+    "IPv6"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、約 300 台の Amazon EC2 インスタンスを、パブリックサブネットに配置し、それぞれにパブリック IPv4 アドレスを割り当てています。インスタンスはバッチ処理を行い、インターネット上の API にアウトバウンドで HTTPS 通信するだけで、インターネットからのインバウンド接続は受けません。パブリック IPv4 アドレスの料金と、今後の増加が懸念されています。接続先の API は IPv6 にも対応しています。NAT ゲートウェイの時間料金も避けたいと考えています。最も費用を抑えられる設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "パブリック IPv4 アドレスを維持して、セキュリティグループでインバウンドの通信をすべて拒否する。",
+      "correct": false,
+      "rationale": "セキュリティ面は安全になりますが、パブリック IPv4 アドレスの料金は、アドレスを保持している限りかかり続けます。費用は減りません。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスをプライベートサブネットに移し、AZ ごとに NAT ゲートウェイを作成して、IPv4 でインターネットに通信する。",
+      "correct": false,
+      "rationale": "パブリック IPv4 アドレスの料金は減りますが、NAT ゲートウェイの時間料金とデータ処理の料金がかかります。NAT ゲートウェイの料金を避けたい要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "インスタンスのパブリック IPv4 アドレスを、Elastic IP アドレスに置き換えて、アドレスの管理を明確にする。",
+      "correct": false,
+      "rationale": "Elastic IP アドレスにも、パブリック IPv4 アドレスと同様に、時間あたりの料金がかかります。費用は減りません。"
+    },
+    {
+      "id": "d",
+      "text": "VPC とサブネットに IPv6 CIDR ブロックを追加してデュアルスタックにし、インスタンスから Egress-only インターネットゲートウェイを経由して IPv6 でアウトバウンドの通信を行う。パブリック IPv4 アドレスは外す。",
+      "correct": true,
+      "rationale": "パブリック IPv4 アドレスには、使用中の時間に応じた料金がかかりますが、IPv6 アドレスは無料です。Egress-only インターネットゲートウェイは、アウトバウンドの IPv6 通信だけを許可し、インバウンドの開始は許可しません。"
+    }
+  ],
+  "explanation": "2024 年 2 月から、AWS はパブリック IPv4 アドレスに対して、使用中かどうかにかかわらず、1 時間あたりの料金を課金しています（Elastic IP アドレスを含みます）。大量のインスタンスにパブリック IPv4 アドレスを割り当てていると、費用が大きくなります。\n\nアウトバウンドだけの通信が必要で、通信先が IPv6 に対応しているなら、IPv6 を使うことで、パブリック IPv4 アドレスの料金をなくせます。VPC に IPv6 CIDR を関連付けてデュアルスタックにし、インスタンスに IPv6 アドレスを割り当て、Egress-only インターネットゲートウェイをルートテーブルに設定します。Egress-only インターネットゲートウェイは、IPv6 のアウトバウンド専用で、NAT ゲートウェイのような時間料金やデータ処理料金がかかりません。\n\nNAT ゲートウェイを使う方法は、NAT の料金が発生します。Elastic IP への変更や、セキュリティグループでの拒否では、アドレスの料金は変わりません。",
+  "keyPoints": [
+    "パブリック IPv4 アドレスは使用中の時間に応じて課金（Elastic IP も同様）",
+    "アウトバウンドだけの IPv6 通信 → Egress-only インターネットゲートウェイ（NAT ゲートウェイの料金なし）",
+    "接続先が IPv6 に対応しているかを確認する"
+  ],
+  "references": [
+    {
+      "title": "Egress-only インターネットゲートウェイを使用して IPv6 のアウトバウンドトラフィックを有効にする",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"
+    },
+    {
+      "title": "パブリック IPv4 アドレスの料金",
+      "url": "https://aws.amazon.com/vpc/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "saa-3.2-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-S1",
+    "3.2-S2",
+    "3.2-K3"
+  ],
+  "services": [
+    "Amazon Kinesis",
+    "AWS Lambda"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "Kinesis Data Streams",
+    "並列化係数",
+    "IteratorAge"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、4 つのシャードを持つ Amazon Kinesis Data Streams のデータを、AWS Lambda 関数で処理しています。関数の処理時間の大半は、外部 API の応答待ちで、バッチごとに数秒かかります。メトリクスの IteratorAge が増え続け、処理が遅れています。順序は、パーティションキー単位で保つ必要があり、シャード数を増やす構成変更は避けたいと考えています。最も適切な対応はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Kinesis のシャード数を 4 から 8 に増やして、再シャーディングで並列に処理するバッチの数を増やす。",
+      "correct": false,
+      "rationale": "シャードを増やす構成変更は避ける、という要件に反します。パーティションキーの設計の見直しも必要になる場合があります。"
+    },
+    {
+      "id": "b",
+      "text": "Lambda 関数のメモリを最大の 10,240 MB に増やして、割り当てられる CPU の性能を引き上げる。",
+      "correct": false,
+      "rationale": "処理時間の大半は外部 API の応答待ちなので、CPU を増やしても短くなりません。費用だけが増えます。"
+    },
+    {
+      "id": "c",
+      "text": "Lambda 関数の予約済み同時実行数を引き上げて、関数が同時に実行できる最大数を増やして、処理を並列化する。",
+      "correct": false,
+      "rationale": "Kinesis のイベントソースでは、並列度はシャードごとの設定で決まります。予約済み同時実行数を増やしても、1 つのシャードを同時に処理する数は増えません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda のイベントソースマッピングの並列化係数を引き上げ、1 つのシャードを複数のバッチで同時に処理する。",
+      "correct": true,
+      "rationale": "並列化係数を上げると、1 つのシャードあたり、最大 10 個のバッチを並列に処理できます。同じパーティションキーのレコードは、順序が保たれたまま、処理されます。"
+    }
+  ],
+  "explanation": "Kinesis Data Streams をイベントソースにした Lambda は、既定では、1 つのシャードにつき 1 つのバッチを、順番に処理します。関数の処理が遅いと、シャードごとの処理が追いつかず、IteratorAge（最後に読み取ったレコードの経過時間）が増え続けます。\n\n並列化係数（ParallelizationFactor）は、1 つのシャードから、同時に処理するバッチの数を 1〜10 の範囲で指定する設定です。同じパーティションキーのレコードは、同じ並列バッチ内で順序が保たれるので、パーティションキー単位の順序の要件を満たしたまま、処理能力を最大 10 倍にできます。シャードを増やす対応（スケールアウト）も有効ですが、構成の変更が必要です。\n\nメモリの増加は、CPU がボトルネックの場合に効果があります。この問題は外部 API の待ちが原因です。予約済み同時実行数は、シャード数と並列化係数で決まる並列度を、引き上げません。",
+  "keyPoints": [
+    "Kinesis＋Lambda の遅延（IteratorAge の増加）→ 並列化係数を上げる（シャードあたり最大 10 バッチ）",
+    "パーティションキー単位の順序は並列化係数を上げても保たれる",
+    "処理時間が外部の待ちなら、メモリ（CPU）の増加は効かない"
+  ],
+  "references": [
+    {
+      "title": "Kinesis を Lambda のイベントソースとして使用する - AWS Lambda デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.2-w2m-015",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K5",
+    "1.2-S3"
+  ],
+  "services": [
+    "Amazon Detective",
+    "Amazon GuardDuty",
+    "Amazon Macie",
+    "Amazon Inspector"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Amazon Detective",
+    "調査",
+    "根本原因の分析"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "Amazon GuardDuty が、本番アカウントの IAM ロールの認証情報が、外部から不正に使われた疑いを検出しました。セキュリティ担当者は、侵害された認証情報で、最初にどの API が呼び出され、どのリソースが影響を受け、時系列で何が起きたのかを調べたいと考えています。AWS CloudTrail のログや VPC フローログを個別に集計する作業は避けて、グラフや時系列で視覚的に調査したいと考えています。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Security Hub で GuardDuty の検出結果を集約し、重要度で並べ替えて、対応の優先度をダッシュボードで確認して担当者に割り当てる。",
+      "correct": false,
+      "rationale": "Security Hub は検出結果の集約と優先度の確認には役立ちますが、リソースのアクティビティを時系列で調査する機能は主目的ではありません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Detective で GuardDuty の検出結果から調査を始め、IAM ロールや関連する IP アドレスの動作を時系列で見る。",
+      "correct": true,
+      "rationale": "Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で収集・関連付けて、グラフで可視化するサービスです。検出結果の原因の調査に向いています。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Inspector で、EC2 インスタンスと Lambda 関数、ECR のイメージをスキャンして、脆弱性の状況を調べて一覧にする。",
+      "correct": false,
+      "rationale": "Inspector は、ソフトウェアの脆弱性とネットワークの到達性を評価するサービスで、認証情報の不正使用の原因調査には使いません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Macie で、S3 バケットのデータを調査して、機密データの有無と、バケットへのアクセスの履歴を確認して報告する。",
+      "correct": false,
+      "rationale": "Macie は、S3 内の機密データを検出・分類するサービスです。IAM ロールの認証情報の不正使用の調査には使いません。"
+    }
+  ],
+  "explanation": "AWS のセキュリティサービスは、役割が異なります。Amazon GuardDuty は、脅威を検出するサービスです。Amazon Inspector は、脆弱性を評価します。Amazon Macie は、S3 の機密データを検出します。AWS Security Hub は、検出結果を集約して態勢を管理します。\n\nAmazon Detective は、検出された問題の根本原因を調査するためのサービスです。AWS CloudTrail のログ、VPC フローログ、EKS の監査ログ、GuardDuty の検出結果などのデータを自動で収集し、機械学習、統計分析、グラフ理論を使って、リソース（IAM ロール、IP アドレス、EC2 インスタンスなど）の動作を時系列で関連付けて可視化します。GuardDuty や Security Hub の検出結果から、Detective の調査に直接移動できます。\n\nそのため、「検出された後の原因調査」には Detective が適しています。",
+  "keyPoints": [
+    "検出結果の根本原因を可視化して調査 → Amazon Detective",
+    "脅威の検出は GuardDuty、脆弱性は Inspector、機密データは Macie、集約は Security Hub",
+    "Detective は CloudTrail・フローログなどを自動で収集して関連付ける"
+  ],
+  "references": [
+    {
+      "title": "Amazon Detective とは - Amazon Detective 管理ガイド",
+      "url": "https://docs.aws.amazon.com/detective/latest/adminguide/what-is-detective.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

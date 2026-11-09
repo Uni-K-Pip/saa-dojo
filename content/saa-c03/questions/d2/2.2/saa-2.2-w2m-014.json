@@ -1,0 +1,72 @@
+{
+  "id": "saa-2.2-w2m-014",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S6",
+    "2.2-K4",
+    "2.2-S5"
+  ],
+  "services": [
+    "Amazon Relational Database Service",
+    "AWS CloudFormation"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "クロスリージョンリードレプリカ",
+    "パイロットライト",
+    "RPO と RTO"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、東京リージョンで、アプリケーション層の EC2 インスタンスと Amazon RDS for PostgreSQL のデータベースを運用しています。リージョン障害に備えて、大阪リージョンに災害対策を用意します。復旧時点の目標は数分、復旧時間の目標は 1 時間で、通常時の費用を抑えるため、大阪ではアプリケーション層のインスタンスを起動しておかない方針です。最も適切な戦略はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "日次の自動バックアップを大阪のリージョンにコピーしておき、障害時にバックアップからデータベースを復元して、アプリケーション層も新しく起動する。",
+      "correct": false,
+      "rationale": "復旧時点の目標が最大 1 日になり、数分の要件を満たしません。復元にも時間がかかります。"
+    },
+    {
+      "id": "b",
+      "text": "大阪にも東京と同じ規模のアプリケーション層とデータベースを常時稼働させ、Route 53 のヘルスチェックで、利用者を振り分ける。",
+      "correct": false,
+      "rationale": "復旧は最も早いですが、通常時も東京と同じ規模の費用がかかります。通常時の費用を抑える方針に反します。"
+    },
+    {
+      "id": "c",
+      "text": "東京の RDS を Multi-AZ 配置にして、別の AZ にスタンバイを置き、障害時に自動でフェイルオーバーさせる構成にする。",
+      "correct": false,
+      "rationale": "Multi-AZ は AZ の障害に備える構成で、リージョン全体の障害には備えられません。スタンバイが東京にあるため、大阪での復旧になりません。"
+    },
+    {
+      "id": "d",
+      "text": "大阪にクロスリージョンのリードレプリカを作成し、障害時に昇格して、AMI と CloudFormation でアプリケーション層を起動する。",
+      "correct": true,
+      "rationale": "パイロットライトの構成です。データは継続的に複製して復旧時点の目標を数分に抑え、アプリケーション層は障害時にだけ起動するため、通常時の費用も低くなります。"
+    }
+  ],
+  "explanation": "災害対策の戦略は、復旧時点の目標（RPO）と復旧時間の目標（RTO）、費用で選びます。バックアップと復元は、費用が最も低く、RPO と RTO は長くなります。パイロットライトは、データのレプリケーションだけを常時行い、アプリケーション層は停止したままにしておき、障害時に起動します。ウォームスタンバイは縮小した構成を常時稼働させ、マルチサイトはフル構成を常時稼働させます。\n\nこの問題の要件（RPO 数分、RTO 1 時間、通常時の費用を抑える、アプリケーション層は起動しない）は、パイロットライトに該当します。RDS のクロスリージョンリードレプリカで、データを非同期に継続して複製し、障害時にレプリカを昇格させて書き込み可能なインスタンスにします。アプリケーション層は、AMI と CloudFormation（IaC）で起動すれば、手順を自動化して、RTO を短縮できます。\n\nバックアップだけでは RPO が長くなります。Multi-AZ はリージョン障害に備えられません。フル構成の常時稼働は費用が高くなります。",
+  "keyPoints": [
+    "データだけ複製してアプリは停止 → パイロットライト（クロスリージョンのリードレプリカ＋障害時にアプリ層を起動）",
+    "Multi-AZ は AZ の障害対策で、リージョン障害には備えられない",
+    "IaC と AMI で、障害時の環境の起動を自動化する"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS のクロスリージョンリードレプリカ - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html"
+    },
+    {
+      "title": "AWS 上のワークロードの災害対策オプション",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

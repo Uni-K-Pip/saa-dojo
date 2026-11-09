@@ -1,0 +1,72 @@
+{
+  "id": "saa-4.4-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": [
+    "4.4-S1",
+    "4.4-S5",
+    "4.4-K6",
+    "4.4-K4"
+  ],
+  "services": [
+    "NAT gateway",
+    "AWS Transit Gateway",
+    "Amazon Virtual Private Cloud"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "集中型のエグレス",
+    "NAT ゲートウェイ",
+    "Transit Gateway"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Transit Gateway で接続された 40 の開発用 VPC を運用しています。各 VPC に NAT ゲートウェイを AZ ごとに 2 つずつ置いて、インターネットへのアウトバウンド通信を行っていますが、NAT ゲートウェイの時間料金が、大きな割合を占めています。通信量は、各 VPC で少なく、合計でも多くありません。開発用で、可用性の要件はそれほど高くありません。NAT ゲートウェイの数を減らして、費用を下げる最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべての VPC を、VPC ピアリングでフルメッシュに接続し、1 つの VPC の NAT ゲートウェイを共有する。",
+      "correct": false,
+      "rationale": "VPC ピアリングは、エッジからエッジへのルーティングに対応しません。ピアリング先の VPC の NAT ゲートウェイを経由して、インターネットへ出ることはできません。"
+    },
+    {
+      "id": "b",
+      "text": "共有のエグレス用 VPC に NAT ゲートウェイを置いて、各 VPC のデフォルトルートを Transit Gateway 経由でエグレス用 VPC に向ける集中型の構成に変更する。",
+      "correct": true,
+      "rationale": "NAT ゲートウェイの数を大きく減らせます。通信量が少ないため、Transit Gateway のデータ処理料金の増加は小さく、全体の費用を下げられます。"
+    },
+    {
+      "id": "c",
+      "text": "各 VPC の NAT ゲートウェイを維持して、使っていない時間帯だけ、削除する運用にする。",
+      "correct": false,
+      "rationale": "毎日の作成と削除の運用が必要で、Elastic IP の再割り当てなど、手間がかかります。削除の時間帯は、通信ができません。"
+    },
+    {
+      "id": "d",
+      "text": "各 VPC のインスタンスに、パブリック IPv4 アドレスを割り当て、インターネットゲートウェイ経由で通信させる。",
+      "correct": false,
+      "rationale": "パブリック IPv4 アドレスの料金がインスタンスの数だけかかります。インスタンスがインターネットに直接公開され、セキュリティ上も不適切です。"
+    }
+  ],
+  "explanation": "NAT ゲートウェイは、時間あたりの料金と、処理したデータ量に応じた料金がかかります。VPC ごと、AZ ごとに NAT ゲートウェイを置くと、VPC が多い環境では、時間料金が大きくなります。\n\n集中型のエグレス（centralized egress）は、インターネットへのアウトバウンドの通信を、共有のエグレス用 VPC の NAT ゲートウェイに集約する構成です。各スポーク VPC のルートテーブルのデフォルトルート（0.0.0.0/0）を Transit Gateway に向け、Transit Gateway のルートテーブルで、エグレス用 VPC のアタッチメントに転送し、エグレス用 VPC の NAT ゲートウェイからインターネットへ出ます。NAT ゲートウェイの数を大幅に減らせる一方、Transit Gateway のデータ処理料金が追加されるため、通信量が多いと割高になることがあります。通信量が少ない開発環境には向いています。可用性を高めるには、エグレス用 VPC の NAT ゲートウェイを、AZ ごとに置きます。\n\nVPC ピアリングは、エッジからエッジへのルーティングができません。",
+  "keyPoints": [
+    "多数の VPC の NAT ゲートウェイの費用削減（通信量が少ない場合）→ 集中型のエグレス（Transit Gateway ＋共有の NAT ゲートウェイ）",
+    "通信量が多いと、Transit Gateway のデータ処理料金が増えて割高になる場合がある",
+    "VPC ピアリングは、他の VPC の NAT ゲートウェイを経由できない"
+  ],
+  "references": [
+    {
+      "title": "集中型のエグレス - 複数の VPC を持つスケーラブルで安全なネットワーク設計",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-egress-to-internet.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-hybrid-and-multi-vpc"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

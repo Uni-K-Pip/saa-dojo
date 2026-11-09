@@ -21,7 +21,7 @@
   "difficulty": 1,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある金融系のスタートアップは、Amazon S3 に保存するデータを暗号化しています。規程により、暗号鍵を使えるユーザーを自社で決め、いつだれが鍵を使ったのかを後から監査できる必要があります。専用のハードウェアを自社だけで管理する要件はありません。どの方法が最も適していますか。",
+  "stem": "ある金融系のスタートアップは、Amazon S3 に保存するデータを暗号化しています。規程により、暗号鍵の利用を許可するユーザーを、キーポリシーを編集して自社で管理し、いつだれが鍵を使ったのかを後から監査できる必要があります。専用のハードウェアを自社だけで管理する要件はありません。どの方法が最も適していますか。",
   "options": [
     {
       "id": "a",
@@ -31,9 +31,9 @@
     },
     {
       "id": "b",
-      "text": "データを暗号化せず、IAM ポリシーだけでアクセスを制御する。",
+      "text": "AWS マネージドキー aws/s3 を使う SSE-KMS で暗号化する。",
       "correct": false,
-      "rationale": "IAM ポリシーはアクセス権を決めるだけで、データの暗号化にはなりません。保存データを暗号化するという前提も満たしません。"
+      "rationale": "鍵の使用は CloudTrail で監査できますが、AWS マネージドキーのキーポリシーは利用者が変更できません。キーポリシーを編集して鍵を使えるユーザーを自社で管理するという要件に適しません。"
     },
     {
       "id": "c",
@@ -43,14 +43,14 @@
     },
     {
       "id": "d",
-      "text": "AWS KMS のカスタマーマネージドキーを使う SSE-KMS で暗号化する。",
+      "text": "AWS KMS のカスタマーマネージドキーを使う SSE-KMS で暗号化し、キーポリシーで鍵を使えるユーザーを設定する。鍵の使用は AWS CloudTrail で監査する。",
       "correct": true,
-      "rationale": "カスタマーマネージドキーは、キーポリシーと IAM ポリシーで鍵を使えるユーザーを自社で決められます。鍵の使用の記録は AWS CloudTrail に残るので、後から監査できます。"
+      "rationale": "カスタマーマネージドキーは、利用者がキーポリシーを編集して、鍵を使えるユーザーを自社で決められます。鍵の使用の記録は AWS CloudTrail に残るので、後から監査できます。"
     }
   ],
-  "explanation": "「暗号鍵の使用を監査したい」「鍵を使える人を自分で決めたい」という要件には、AWS KMS のカスタマーマネージドキーが適しています。S3 では SSE-KMS で使います。キーポリシーと IAM ポリシーで鍵へのアクセスを細かく制御でき、鍵を使った記録は AWS CloudTrail に残ります。\n\nS3 の既定の暗号化（SSE-S3）は手間がかからない反面、鍵は S3 が管理するため、この要件には足りません。AWS CloudHSM は、専用のハードウェアで自社だけが鍵を管理したいといった厳しい要件に使うもので、今回の問題では過剰です。",
+  "explanation": "「暗号鍵の使用を監査したい」「鍵を使える人を自分で決めたい」という要件には、AWS KMS のカスタマーマネージドキーが適しています。S3 では SSE-KMS で使います。キーポリシーと IAM ポリシーで鍵へのアクセスを細かく制御でき、鍵を使った記録は AWS CloudTrail に残ります。\n\nS3 の既定の暗号化（SSE-S3）は手間がかからない反面、鍵は S3 が管理するため、この要件には足りません。SSE-KMS でも、AWS マネージドキー（aws/s3）は利用の記録を CloudTrail で確認できますが、キーポリシーを利用者が変更できないため、鍵を使えるユーザーを自社で管理する要件には合いません。AWS CloudHSM は、専用のハードウェアで自社だけが鍵を管理したいといった厳しい要件に使うもので、今回の問題では過剰です。",
   "keyPoints": [
-    "鍵の使用の監査、鍵を使える人を自社で制御 → AWS KMS のカスタマーマネージドキー（S3 なら SSE-KMS）",
+    "鍵を使える人をキーポリシーで自社が管理し、鍵の使用も監査したい → AWS KMS のカスタマーマネージドキー（S3 なら SSE-KMS）と CloudTrail。AWS マネージドキーはキーポリシーを変更できない",
     "専用ハードウェアで自社だけが鍵を管理したい → CloudHSM。それ以外は KMS で足りることが多い"
   ],
   "references": [
@@ -59,8 +59,12 @@
       "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
     },
     {
-      "title": "What is Amazon S3?",
-      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+      "title": "Using server-side encryption with AWS KMS keys (SSE-KMS)",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+    },
+    {
+      "title": "Logging AWS KMS API calls with AWS CloudTrail",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/logging-using-cloudtrail.html"
     }
   ],
   "lessonRefs": [

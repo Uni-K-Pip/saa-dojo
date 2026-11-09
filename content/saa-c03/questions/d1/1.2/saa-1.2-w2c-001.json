@@ -10,7 +10,7 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある旅行予約会社の Web アプリケーションは、Auto Scaling グループの Amazon EC2 インスタンスで動いています。アプリケーションは、接続先 URL や機能フラグなど約 30 個の設定値と、外部の決済 API を呼び出すための API キー 3 つを使います。設定値は 1 つあたり 4 KB 未満で、API キーの自動ローテーションやアカウント間での共有は必要ありません。コードや AMI に値を埋め込まず、安全に取得でき、最も低コストになる方法はどれですか。",
+  "stem": "ある旅行予約会社の Web アプリケーションは、Auto Scaling グループの Amazon EC2 インスタンスで動いています。アプリケーションは、接続先 URL や機能フラグなど約 30 個の設定値と、外部の決済 API を呼び出すための API キー 3 つを使います。API キーを含む各値は 1 つあたり 4 KB 未満で、取得頻度は標準スループットの範囲内です。API キーの自動ローテーションやアカウント間での共有は必要ありません。コードや AMI に値を埋め込まず、安全に取得でき、最も低コストになる方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -28,7 +28,7 @@
       "id": "c",
       "text": "AWS Systems Manager Parameter Store の標準パラメータとして保存し、API キーは SecureString にする。インスタンスプロファイルの IAM ロールに、必要なパラメータだけ取得できる権限を付けて、アプリケーションが起動時に取得する。",
       "correct": true,
-      "rationale": "Parameter Store の標準パラメータは追加料金なしで使え、SecureString なら API キーを KMS で暗号化して保存できます。IAM ロールで取得できるパラメータを制限するので、長期的な認証情報も不要です。ローテーションが不要という条件に合います。"
+      "rationale": "Parameter Store の標準パラメータの保存と標準スループットでの API 利用には追加料金がありません（AWS KMS の料金は別途適用される場合があります）。SecureString なら API キーを KMS で暗号化して保存できます。IAM ロールで取得できるパラメータを制限するので、長期的な認証情報も不要です。ローテーションが不要という条件に合います。"
     },
     {
       "id": "d",
@@ -37,11 +37,11 @@
       "rationale": "アクセスキーをアプリケーションに埋め込むのは、コードに認証情報を埋め込むのと同じ問題があります。ファイルの内容は設定の更新や取得の管理も手間で、IAM ロールを使うべきです。"
     }
   ],
-  "explanation": "アプリケーションの設定値と認証情報は、コードや AMI に埋め込まず、AWS のサービスから実行時に取得するのが基本です。取得する側のアクセス権限は、インスタンスプロファイルなどの IAM ロールで与え、アクセスキーを持たせません。\n\nAWS Systems Manager Parameter Store は、設定値と機密情報を階層的な名前で保存でき、機密情報は SecureString として AWS KMS で暗号化できます。標準パラメータ（1 つあたり 4 KB まで）は追加料金なしで使えます。AWS Secrets Manager は、シークレットの自動ローテーション、他のアカウントとの共有、ランダムなパスワード生成などの機能を持ち、シークレットごとに料金がかかります。\n\nこの問題では、ローテーションや共有が不要で、コストを最小にしたいので、Parameter Store の標準パラメータが適しています。データベースの認証情報を定期的に自動ローテーションしたい場合などは Secrets Manager を選びます。",
+  "explanation": "アプリケーションの設定値と認証情報は、コードや AMI に埋め込まず、AWS のサービスから実行時に取得するのが基本です。取得する側のアクセス権限は、インスタンスプロファイルなどの IAM ロールで与え、アクセスキーを持たせません。\n\nAWS Systems Manager Parameter Store は、設定値と機密情報を階層的な名前で保存でき、機密情報は SecureString として AWS KMS で暗号化できます。標準パラメータ（1 つあたり 4 KB まで）の保存と、標準スループットでの API 利用には追加料金がありません。ただし、AWS KMS の料金は別途適用される場合があります。AWS Secrets Manager は、シークレットの自動ローテーション、他のアカウントとの共有、ランダムなパスワード生成などの機能を持ち、シークレットごとに料金がかかります。なお、他のアカウントとの共有は、Parameter Store のアドバンストパラメータでも AWS RAM を使って行えます。\n\nこの問題では、ローテーションや共有が不要で、コストを最小にしたいので、Parameter Store の標準パラメータが適しています。データベースの認証情報を定期的に自動ローテーションしたい場合などは Secrets Manager を選びます。",
   "keyPoints": [
     "設定値と機密情報はコード・AMI・ユーザーデータに埋め込まず、実行時に取得する",
-    "ローテーション不要で低コスト → Parameter Store（標準パラメータは追加料金なし、機密は SecureString）",
-    "自動ローテーション、他アカウントとの共有 → Secrets Manager（シークレットごとに料金）",
+    "ローテーション不要で低コスト → Parameter Store（標準パラメータの保存と標準スループットでの API 利用に追加料金なし、機密は SecureString。AWS KMS の料金は別途適用される場合がある）",
+    "自動ローテーションが必要なら Secrets Manager が適する（シークレットごとに料金）。アカウント間共有は Secrets Manager に加え、Parameter Store のアドバンストパラメータでも可能",
     "取得の権限は IAM ロールで与え、アクセスキーを持たせない"
   ],
   "references": [
@@ -50,12 +50,16 @@
       "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
     },
     {
-      "title": "Choosing parameter tiers in Parameter Store - AWS Systems Manager",
-      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-advanced-parameters.html"
-    },
-    {
       "title": "What is AWS Secrets Manager? - AWS Secrets Manager",
       "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+    },
+    {
+      "title": "AWS Systems Manager pricing",
+      "url": "https://aws.amazon.com/systems-manager/pricing/"
+    },
+    {
+      "title": "Working with shared parameters in Parameter Store - AWS Systems Manager",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-shared-parameters.html"
     }
   ],
   "lessonRefs": ["lesson-1.2-app-protection"],

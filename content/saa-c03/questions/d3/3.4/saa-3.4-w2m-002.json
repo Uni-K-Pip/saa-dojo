@@ -1,0 +1,70 @@
+{
+  "id": "saa-3.4-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": [
+    "3.4-S1",
+    "3.4-K4",
+    "3.4-S3"
+  ],
+  "services": [
+    "AWS Transit Gateway",
+    "Amazon Virtual Private Cloud"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Transit Gateway ピアリング",
+    "リージョン間の接続",
+    "グローバルネットワーク"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、東京リージョンと米国東部（バージニア北部）リージョンに、それぞれ複数の VPC を持っています。各リージョン内の VPC は、リージョンごとの AWS Transit Gateway で接続されています。リージョンをまたぐ VPC 間の通信を、インターネットを経由せず、AWS のグローバルなバックボーンで、プライベートに行う必要があります。今後リージョンが増える予定で、VPC ごとの接続は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "東京と米国東部の VPC 同士を、すべて VPC ピアリングで接続して、各 VPC のルートテーブルに相手の CIDR を追加し、フルメッシュにする。",
+      "correct": false,
+      "rationale": "VPC の組み合わせの数だけピアリングが必要になり、リージョンが増えると管理が複雑になります。VPC ごとの接続を避ける要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "それぞれのリージョンに、AWS Direct Connect の接続を契約して、オンプレミス経由でリージョン間の通信を折り返す。",
+      "correct": false,
+      "rationale": "専用線の契約と、オンプレミス経由の折り返しが必要です。AWS のバックボーンで接続する要件と、費用の面で合いません。"
+    },
+    {
+      "id": "c",
+      "text": "2 つのリージョンの Transit Gateway の間にピアリングアタッチメントを作成して、静的ルートでリージョン間の通信を流す。",
+      "correct": true,
+      "rationale": "Transit Gateway のピアリングで、リージョン間の Transit Gateway を接続でき、通信は AWS のバックボーンを通って暗号化されます。リージョンが増えても、Transit Gateway 同士を接続するだけで済みます。"
+    },
+    {
+      "id": "d",
+      "text": "それぞれのリージョンの VPC に仮想プライベートゲートウェイを作成して、インターネット経由のサイト間 VPN で相互に接続する。",
+      "correct": false,
+      "rationale": "インターネットを経由する要件に反します。VPC ごとに VPN の設定が必要になり、帯域の制約もあります。"
+    }
+  ],
+  "explanation": "Transit Gateway は、同じリージョン内の VPC とオンプレミスを接続するハブです。複数のリージョンのネットワークを接続するには、Transit Gateway のピアリングアタッチメントを使います。\n\nピアリングアタッチメントを作ると、2 つのリージョン（またはアカウント）の Transit Gateway が接続され、通信は AWS のグローバルなバックボーンを通ります。通信は暗号化され、パブリックなインターネットを経由しません。ピアリングでは、動的ルーティング（伝播）は使えないため、各 Transit Gateway のルートテーブルに、相手側の CIDR への静的ルートを設定します。リージョンが増えても、Transit Gateway 同士のピアリングを追加するだけで済み、VPC ごとの接続は不要です。\n\nVPC ピアリングのフルメッシュは数が増え、インターネット VPN は経路の制約があります。専用線の折り返しは、費用と運用の面で不適切です。",
+  "keyPoints": [
+    "リージョンをまたぐ VPC 間のプライベート接続（スケーラブル）→ Transit Gateway のピアリングアタッチメント",
+    "ピアリングのルートは静的ルートで設定する",
+    "通信は AWS のバックボーンを通り、暗号化される"
+  ],
+  "references": [
+    {
+      "title": "Transit Gateway ピアリングアタッチメント - Amazon VPC Transit Gateway",
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-hybrid-and-multi-vpc"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

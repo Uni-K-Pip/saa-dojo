@@ -20,30 +20,30 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS DataSync のエージェントをオンプレミスに配置し、NFS をソース、S3 を宛先にしたタスクを作成して、帯域制限とスケジュールを設定する。",
+      "text": "AWS DataSync のエージェントをオンプレミスに配置し、NFS をソース、S3 を宛先にしたタスクを作成して、帯域制限とスケジュールを設定する。変更されたデータのみを転送する設定と整合性の検証を有効にする。",
       "correct": true,
-      "rationale": "DataSync は、オンプレミスのストレージと AWS のストレージの間のデータ転送を自動化するマネージドサービスです。帯域制限、スケジュール実行、転送後の整合性の検証、増分の同期を設定だけで行えます。Direct Connect も経路として使えます。"
+      "rationale": "DataSync は、オンプレミスのストレージと AWS のストレージの間のデータ転送を自動化するマネージドサービスです。帯域制限、スケジュール実行、転送後の整合性の検証、変更されたデータのみを転送する増分の同期を設定だけで行えます。Direct Connect も経路として使えます。"
     },
     {
       "id": "b",
       "text": "AWS Storage Gateway の S3 File Gateway を配置し、NFS ファイルサーバーのデータをゲートウェイの共有にコピーする。",
       "correct": false,
-      "rationale": "S3 File Gateway は、オンプレミスのアプリケーションが NFS や SMB で S3 に書き込み続けるためのゲートウェイで、継続的なハイブリッドのアクセス用です。大量データの移行と週次の同期を、帯域制限やスケジュール付きで自動化する用途には DataSync のほうが適しています。"
+      "rationale": "S3 File Gateway は、オンプレミスのアプリケーションが NFS や SMB で S3 に書き込み続けるためのゲートウェイで、継続的なハイブリッドのアクセス用で、この構成だけでは既存 NFS サーバーからの週次コピーを自動化できません。大量データの移行と週次の同期を、帯域制限やスケジュール付きで自動化する用途には DataSync のほうが適しています。"
     },
     {
       "id": "c",
       "text": "Amazon EC2 インスタンスに rsync と AWS CLI のスクリプトを書き、cron で定期的に aws s3 sync を実行する。",
       "correct": false,
-      "rationale": "スクリプトの開発と保守、失敗時の再試行、整合性の検証、帯域の制御をすべて自分で作る必要があります。自前のスクリプトを書かずに実現するという要件を満たしません。"
+      "rationale": "AWS CLI の既存機能を利用できても、EC2 インスタンス、コピー用スクリプト、スケジュール、監視・障害対応の構築と保守が必要で、自前のスクリプトを書かずに実現するという要件に反します。"
     },
     {
       "id": "d",
       "text": "AWS Snowball Edge デバイスを注文して 80 TB を搬送し、その後の更新分も Snowball Edge で週次に送る。",
       "correct": false,
-      "rationale": "AWS Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっています。また、週次の更新分の同期をデバイスの搬送で行うのは現実的ではなく、Direct Connect があるのでネットワーク経由で十分です。"
+      "rationale": "AWS Snowball Edge は 2025 年 11 月 7 日以降、既存のお客様のみ利用できます。既存のお客様であっても、週次の搬送には注文・コピー・発送などの作業が発生し、この問題では DataSync の定期転送のほうが運用負荷を抑えられます。"
     }
   ],
-  "explanation": "AWS DataSync は、オンプレミスのストレージ（NFS、SMB、HDFS など）や他のクラウドと、Amazon S3、Amazon EFS、Amazon FSx などの AWS のストレージとの間で、データ転送を自動化し高速化するサービスです。オンプレミスにエージェント（仮想マシン）を置き、タスクにソースと宛先、スケジュール、帯域制限、フィルターを設定します。転送時にはデータの整合性が検証され、2 回目以降は変更分だけを転送します。インターネットだけでなく Direct Connect や VPC エンドポイント経由でも転送できます。\n\nAWS Storage Gateway は、オンプレミスのアプリケーションが S3 などをファイルやボリューム、テープとして使い続ける「ハイブリッドのアクセス」の仕組みで、一括移行のためのツールではありません。AWS Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっており、新しい設計では選びません。",
+  "explanation": "AWS DataSync は、オンプレミスのストレージ（NFS、SMB、HDFS など）や他のクラウドと、Amazon S3、Amazon EFS、Amazon FSx などの AWS のストレージとの間で、データ転送を自動化し高速化するサービスです。オンプレミスにエージェント（仮想マシン）を置き、タスクにソースと宛先、スケジュール、帯域制限、フィルターを設定します。転送時のデータの整合性の検証を有効にでき、変更されたデータのみを転送する設定にすると、2 回目以降は変更分だけを転送します。インターネットだけでなく Direct Connect や VPC エンドポイント経由でも転送できます。\n\nAWS Storage Gateway は、オンプレミスのアプリケーションが S3 などをファイルやボリューム、テープとして使い続ける「ハイブリッドのアクセス」の仕組みで、この構成だけでは既存 NFS サーバーからの週次コピーを自動化できません。AWS Snowball Edge は 2025 年 11 月 7 日以降、既存のお客様のみ利用できます。既存のお客様であっても、搬送の手間がかかるため、継続的な同期にはネットワーク経由の DataSync のほうが運用負荷を抑えられます。",
   "keyPoints": [
     "オンプレミスから AWS への大量データの転送、スケジュール、帯域制限、整合性検証 → AWS DataSync",
     "継続してオンプレミスのアプリがファイル／ボリューム／テープとして AWS を使う → Storage Gateway",
@@ -57,6 +57,14 @@
     {
       "title": "What is Storage Gateway? - AWS Storage Gateway",
       "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+    },
+    {
+      "title": "Configuring how to handle files, objects, and metadata - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/configure-metadata.html"
+    },
+    {
+      "title": "What is Snowball Edge? - AWS Snowball Edge Developer Guide",
+      "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
     }
   ],
   "lessonRefs": ["lesson-3.5-transfer-and-transform"],

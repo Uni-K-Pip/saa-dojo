@@ -1,0 +1,71 @@
+{
+  "id": "saa-4.2-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": [
+    "4.2-K8",
+    "4.2-S3",
+    "4.2-K7"
+  ],
+  "services": [
+    "AWS Lambda"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Lambda の arm64",
+    "Graviton2",
+    "コード変更を最小に"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Python で書いた AWS Lambda 関数を、月に数億回呼び出しています。使用しているライブラリは、arm64 に対応しています。性能は維持しながら、Lambda の実行の費用を下げたいと考えています。長期のコミットメントは避けたく、コードの変更も最小限にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "関数のメモリを最小の 128 MB に設定して、時間あたりの料金を下げる。",
+      "correct": false,
+      "rationale": "メモリを減らすと、CPU も減って実行時間が延び、性能が落ちます。合計の費用が下がるとは限らず、性能を維持する要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "関数を Amazon EC2 インスタンスに移して、常時稼働のサーバーで実行する。",
+      "correct": false,
+      "rationale": "コードの大きな変更と、サーバーの運用が必要になります。負荷が変動する場合は、かえって割高になることもあります。"
+    },
+    {
+      "id": "c",
+      "text": "関数のアーキテクチャを x86_64 から arm64（AWS Graviton2）に変更して、動作を確認してから切り替える。",
+      "correct": true,
+      "rationale": "arm64 の Lambda は、x86_64 より実行時間あたりの料金が低く、多くのワークロードで、性能も同等以上です。コミットメントが不要で、Python のコードは、ほとんど変更せずに移行できます。"
+    },
+    {
+      "id": "d",
+      "text": "Compute Savings Plans を 3 年のコミットメントで購入して、Lambda の使用に適用する。",
+      "correct": false,
+      "rationale": "割引は得られますが、3 年の長期のコミットメントが必要です。長期のコミットメントを避ける要件に反します。"
+    }
+  ],
+  "explanation": "AWS Lambda の関数は、x86_64 と arm64（AWS Graviton2 プロセッサ）のどちらのアーキテクチャでも実行できます。arm64 は、x86_64 より実行時間あたりの料金が約 20% 低く、多くのワークロードで、性能も同等以上です。Python、Node.js、Java などのインタープリター型やバイトコード型の言語では、ネイティブの依存ライブラリが arm64 に対応していれば、コードを変更せずにアーキテクチャの設定を変更するだけで移行できます。移行前に、テストで動作と性能を確認します。\n\nCompute Savings Plans は Lambda にも適用できますが、長期のコミットメントが必要です。メモリの設定を下げると、実行時間が延びて、性能が落ちます。EC2 への移行は、書き換えや運用の負担があります。",
+  "keyPoints": [
+    "コード変更を抑えて Lambda の費用を下げる → arm64（Graviton2）への変更",
+    "arm64 はネイティブの依存ライブラリが対応している必要がある",
+    "Savings Plans はコミットメントが必要"
+  ],
+  "references": [
+    {
+      "title": "Lambda の命令セットアーキテクチャの選択 - AWS Lambda デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/foundation-arch.html"
+    },
+    {
+      "title": "AWS Lambda の料金",
+      "url": "https://aws.amazon.com/lambda/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

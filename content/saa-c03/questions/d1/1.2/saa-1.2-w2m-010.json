@@ -1,0 +1,79 @@
+{
+  "id": "saa-1.2-w2m-010",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K1",
+    "1.2-S3"
+  ],
+  "services": [
+    "Amazon Elastic Container Service",
+    "AWS Fargate",
+    "AWS Secrets Manager",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "minimal-change",
+  "tags": [
+    "ECS シークレット",
+    "タスク実行ロール",
+    "Secrets Manager"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon ECS on AWS Fargate で動くアプリケーションが使うデータベースのパスワードを、AWS Secrets Manager に保存しています。既存のアプリケーションは、環境変数からパスワードを読み取ります。パスワードを、コンテナイメージやタスク定義の平文の環境変数には含めたくありません。アプリケーションのコードの変更は、最小限にしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "タスク定義の secrets に Secrets Manager の ARN を指定し、タスク実行ロールに GetSecretValue を許可する。",
+      "correct": true,
+      "rationale": "ECS は、タスクの起動時に、Secrets Manager からシークレットを取得して、環境変数としてコンテナに渡せます。タスク定義に平文を書かず、アプリケーションのコードの変更も不要です。"
+    },
+    {
+      "id": "b",
+      "text": "パスワードをコンテナイメージの設定ファイルに書き込み、イメージを Amazon ECR のプライベートリポジトリに保存して、タスク定義から参照する。",
+      "correct": false,
+      "rationale": "パスワードがイメージに含まれ、イメージにアクセスできる人に漏れます。ローテーションのたびにイメージの再作成が必要です。"
+    },
+    {
+      "id": "c",
+      "text": "パスワードを暗号化した Amazon S3 の設定ファイルに保存し、タスクロールに GetObject を許可して、起動時のスクリプトで読み込む。",
+      "correct": false,
+      "rationale": "パスワードの保管先が Secrets Manager に加えて S3 にも増え、取得処理の管理も必要です。環境変数でそのまま渡せる方法より、起動スクリプトの変更と管理の手間が増えます。"
+    },
+    {
+      "id": "d",
+      "text": "アプリケーションのコードを変更して、起動時に AWS SDK で Secrets Manager を呼び出し、パスワードを取得する。タスクロールに権限を許可する。",
+      "correct": false,
+      "rationale": "実現はできますが、環境変数で渡す方法よりアプリケーションのコードの変更が増えます。コードの変更を最小限にする要件に合いません。"
+    }
+  ],
+  "explanation": "ECS では、タスク定義のコンテナ定義の secrets パラメータで、AWS Secrets Manager のシークレット、または AWS Systems Manager Parameter Store のパラメータを参照して、環境変数としてコンテナに渡せます（valueFrom に ARN を指定）。取得は、タスクの起動時に ECS のエージェントが、タスク実行ロールの権限で行います。そのため、タスク実行ロールに secretsmanager:GetSecretValue の権限が必要です。カスタマーマネージドキーで暗号化したシークレットの場合は、そのキーに対する kms:Decrypt も許可します。Secrets Manager は常に AWS KMS で秘密値を暗号化するため、AWS マネージドキーを使う場合は、追加の KMS 権限の設定は通常必要ありません。\n\nこの方法なら、パスワードがタスク定義やイメージに平文で書かれず、既存のアプリケーションは、これまでどおり環境変数を読むだけです。なお、実行中のコンテナの環境変数には復号された値が存在します。シークレットを更新した場合は、新しいタスクを起動して反映します。\n\nSDK で取得する方法も安全ですが、コードの変更が必要です。イメージにパスワードを置く方法は、イメージにアクセスできる人に漏れるリスクがあります。S3 の設定ファイルから読み込む方法は、暗号化したバケットとタスクロールで保護すれば安全に運用できますが、アプリケーションに読み込み処理が必要になり、ローテーションの管理も増えます。",
+  "keyPoints": [
+    "コンテナにシークレットを安全に注入・コード変更なし → タスク定義の secrets（valueFrom）",
+    "タスク実行ロールが起動時にシークレットを取得する（タスクロールではない）。GetSecretValue に加え、カスタマーマネージドキー使用時は kms:Decrypt も必要",
+    "イメージやタスク定義の environment に秘密値を直接記載しない（実行時のコンテナの環境変数には復号済みの値が存在する）"
+  ],
+  "references": [
+    {
+      "title": "Amazon ECS で AWS Secrets Manager のシークレットを環境変数に渡す - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html"
+    },
+    {
+      "title": "Amazon ECS コンテナに機密データを渡す - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html"
+    },
+    {
+      "title": "シークレットの暗号化と復号 - AWS Secrets Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/security-encryption.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

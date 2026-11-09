@@ -1,0 +1,73 @@
+{
+  "id": "saa-2.1-w2m-019",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K7",
+    "2.1-K3",
+    "2.1-S2"
+  ],
+  "services": [
+    "Amazon CloudFront",
+    "Elastic Load Balancing",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "CloudFront キャッシュポリシー",
+    "キャッシュヒット率",
+    "クエリ文字列"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon CloudFront の背後の Application Load Balancer で、商品画像と商品情報の API を配信しています。オリジンの負荷が高く、CloudFront のキャッシュヒット率が低いことが分かりました。調べると、リクエストの URL に、セッションごとに変わるトラッキング用のクエリ文字列と、Cookie が付いていて、コンテンツの内容には影響しないにもかかわらず、キャッシュキーに含まれていました。コンテンツの内容は変えずに、キャッシュヒット率を上げる最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "キャッシュポリシーで、トラッキング用のクエリ文字列と Cookie をキャッシュキーから除外し、必要なクエリ文字列だけを含める。",
+      "correct": true,
+      "rationale": "キャッシュキーに、コンテンツの内容を変えない値が含まれると、同じコンテンツが別々にキャッシュされ、ヒット率が下がります。キーを必要な値だけにすれば、キャッシュの共有が増えます。"
+    },
+    {
+      "id": "b",
+      "text": "CloudFront のディストリビューションの価格クラスを、すべてのエッジロケーションを使うものに変更して、配信の範囲を広げる。",
+      "correct": false,
+      "rationale": "エッジロケーションを増やすと、地理的な到達性は上がりますが、キャッシュがさらに分散して、ヒット率が下がることもあります。キャッシュキーの問題は解消しません。"
+    },
+    {
+      "id": "c",
+      "text": "キャッシュポリシーの最小・最大・既定の TTL を最小の値に設定して、オリジンに頻繁に最新の内容を確認させて配信する。",
+      "correct": false,
+      "rationale": "TTL を短くすると、オリジンへのリクエストが増え、ヒット率はさらに下がります。オリジンの負荷が高い問題が悪化します。"
+    },
+    {
+      "id": "d",
+      "text": "すべてのリクエストヘッダーとクエリ文字列、Cookie をオリジンに転送し、オリジンが応答を最適化するようにして配信する。",
+      "correct": false,
+      "rationale": "転送する値が増えると、それらがキャッシュキーに含まれる設定になり、同じコンテンツが別々にキャッシュされます。ヒット率が下がります。"
+    }
+  ],
+  "explanation": "CloudFront は、リクエストをキャッシュキーで識別して、同じキーのリクエストには、キャッシュしたコンテンツを返します。キャッシュキーには、既定で URL のパスとホスト名に加えて、キャッシュポリシーで指定した、クエリ文字列、ヘッダー、Cookie が含まれます。\n\nコンテンツの内容に影響しない値（セッションごとのトラッキング用のクエリ文字列や Cookie など）がキャッシュキーに含まれていると、同じコンテンツが別のオブジェクトとして何度もキャッシュされ、キャッシュヒット率が下がり、オリジンの負荷が高まります。\n\n対策は、キャッシュポリシーで、キャッシュキーを必要最小限の値に絞ることです。コンテンツに影響しないクエリ文字列や Cookie は、キャッシュキーから除外します（オリジンへの転送は、オリジンリクエストポリシーで別に制御できます）。TTL を短くしたり、転送する値を増やしたりすると、ヒット率は下がります。",
+  "keyPoints": [
+    "キャッシュヒット率を上げる → キャッシュキーを最小限に（不要なクエリ文字列・Cookie・ヘッダーを除外）",
+    "キャッシュキーに含めない値でも、オリジンリクエストポリシーでオリジンには転送できる",
+    "TTL を短くすると、オリジンの負荷が増える"
+  ],
+  "references": [
+    {
+      "title": "キャッシュキーの理解 - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/understanding-the-cache-key.html"
+    },
+    {
+      "title": "キャッシュヒット率の向上",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

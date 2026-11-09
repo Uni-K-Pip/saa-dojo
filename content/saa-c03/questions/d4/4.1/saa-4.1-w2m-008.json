@@ -1,0 +1,72 @@
+{
+  "id": "saa-4.1-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K8",
+    "4.1-S7",
+    "4.1-S10"
+  ],
+  "services": [
+    "AWS Transfer Family",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AWS Transfer Family",
+    "サーバーの統合",
+    "論理ディレクトリ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、取引先 50 社からのファイルを SFTP で受け取るために、取引先ごとに、AWS Transfer Family のサーバーを 1 つずつ作成しています。サーバーは、起動している間は時間単位で課金されるため、費用が大きくなっています。取引先ごとに、保存先の Amazon S3 のフォルダーと、認証の資格情報を分けたいという要件があります。費用を下げながら、この要件を満たす最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "取引先ごとのサーバーを維持して、使われていない夜間と休日は、スケジュールでサーバーを停止し、翌営業日に起動する運用にする。",
+      "correct": false,
+      "rationale": "サーバーを停止して再開する運用は、手間がかかります。SFTP の接続は、取引先がいつ接続するか分からないため、停止中は受け取れません。"
+    },
+    {
+      "id": "b",
+      "text": "取引先に、S3 の API を使って、直接ファイルをアップロードしてもらい、取引先ごとに IAM ユーザーとアクセスキーを発行する。",
+      "correct": false,
+      "rationale": "SFTP で受け取るという前提が崩れ、取引先のシステムの変更が必要になります。要件の変更が大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "1 つの Transfer Family のサーバーに取引先ごとのユーザーを作成し、ホームディレクトリと IAM ロールでフォルダーを分ける。",
+      "correct": true,
+      "rationale": "Transfer Family のサーバーは、複数のユーザーを持てます。ユーザーごとに、ホームディレクトリと IAM ロールを設定すれば、アクセスを分離できます。サーバーの数が減り、時間課金も減ります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 インスタンス 1 台に SFTP サーバーを構築して、取引先ごとにユーザーを作成し、ユーザーごとにフォルダーを分ける構成にする。",
+      "correct": false,
+      "rationale": "サーバーの構築、パッチ適用、冗長化を自分たちで運用することになります。マネージドサービスから、運用負荷が増える方向への変更です。"
+    }
+  ],
+  "explanation": "AWS Transfer Family の料金は、有効にしているプロトコルごとのサーバー（エンドポイント）の時間あたりの料金と、転送したデータ量に応じた料金で構成されます。サーバーを多く作ると、サーバーの時間料金が積み上がります。\n\n1 つのサーバーには、多数のユーザーを作成できます。ユーザーごとに、IAM ロール（アクセスできる S3 バケットやプレフィックスを制限するポリシー）と、ホームディレクトリ（論理ディレクトリのマッピングを使えば、S3 のパスを隠したまま、ユーザーごとのルートを見せられます）を設定できます。認証は、サービスマネージドの SSH 公開鍵、Active Directory、またはカスタムの ID プロバイダー（Lambda や API Gateway で連携）を使えます。\n\nサーバーを統合すれば、時間料金の削減と運用の簡素化の両方になります。サーバーの停止は現実的でなく、S3 API への変更や EC2 上の自作は、要件や運用の面で不適切です。",
+  "keyPoints": [
+    "取引先ごとの SFTP のアクセスの分離と費用削減 → 1 つの Transfer Family サーバーにユーザーを複数作成（ホームディレクトリ＋IAM ロール）",
+    "サーバーの数が多いほど、時間料金が増える",
+    "論理ディレクトリで、S3 のパスをユーザーに隠せる"
+  ],
+  "references": [
+    {
+      "title": "AWS Transfer Family のユーザーの管理 - AWS Transfer Family ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-user.html"
+    },
+    {
+      "title": "AWS Transfer Family の料金",
+      "url": "https://aws.amazon.com/aws-transfer-family/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

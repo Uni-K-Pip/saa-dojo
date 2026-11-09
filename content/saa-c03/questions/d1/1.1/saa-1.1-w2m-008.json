@@ -19,38 +19,39 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業では、約 200 人の従業員が IAM ユーザーで AWS マネジメントコンソールにサインインしています。セキュリティ方針が改訂され、すべてのユーザーに MFA が必須になりました。MFA を設定していないユーザーは、自分の MFA デバイスの登録とパスワードの変更だけができ、それ以外の AWS の操作はできないようにします。ユーザーはグループで管理されています。最も適切な方法はどれですか。",
+  "stem": "ある企業では、約 200 人の従業員が IAM ユーザーで AWS マネジメントコンソールにサインインし、一部のユーザーは AWS CLI でアクセスキーも使っています。セキュリティ方針が改訂され、すべてのユーザーに MFA が必須になりました。MFA を設定していないユーザーは、自分の MFA デバイスの登録とパスワードの変更だけができ、それ以外の AWS の操作はできないようにします。ユーザーはグループで管理されています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "IAM のアカウントのパスワードポリシーで、MFA を必須にする設定を有効にする。",
+      "text": "IAM のアカウントのパスワードポリシーで、MFA を必須にする設定を有効にして、全ユーザーに適用する。",
       "correct": false,
       "rationale": "パスワードポリシーで設定できるのは、文字数や文字種、有効期限などで、MFA を必須にする設定はありません。"
     },
     {
       "id": "b",
-      "text": "全ユーザーが属するグループに、MFA の認証を受けていない場合（aws:MultiFactorAuthPresent が false または存在しない場合）、MFA の管理とパスワードの変更以外のすべての操作を拒否する IAM ポリシーをアタッチする。",
+      "text": "全ユーザーが属するグループに次の IAM ポリシーをアタッチする。本人の MFA 登録とパスワード変更に必要な操作は、リソース ARN で本人に限定して別の Allow で許可する。BoolIfExists で aws:MultiFactorAuthPresent が false または存在しない場合は、NotAction で指定したそれらの操作以外を Deny する。",
       "correct": true,
-      "rationale": "MFA が使われていないリクエストを、自己管理用の操作を除いて拒否します。ユーザーは MFA を登録して再度サインインするまで、他の操作ができません。グループにアタッチすれば、新しいユーザーにも適用されます。"
+      "rationale": "MFA で認証されていないリクエストを、自己管理用の操作を除いて拒否します。例外にした操作は、別の Allow ステートメントで許可して初めて実行できます。ユーザーは MFA を登録して再度サインインするまで他の操作ができず、新規ユーザーも、このグループへ追加すれば同じ制限が適用されます。"
     },
     {
       "id": "c",
-      "text": "AWS Config のルールで MFA 未設定のユーザーを検出し、自動修復の処理でそのユーザーを削除する。",
+      "text": "AWS Config のルールで MFA 未設定のユーザーを定期的に検出し、自動修復の処理で、そのユーザーを削除する。",
       "correct": false,
       "rationale": "事後の検出で、ユーザーを削除する運用は業務への影響が大きすぎます。MFA を登録する機会を与える要件も満たしません。"
     },
     {
       "id": "d",
-      "text": "CloudTrail のログを毎週確認して、MFA を使っていないユーザーを見つけ、管理者が手作業でユーザーを無効にする。",
+      "text": "全ユーザーが属するグループに次の IAM ポリシーをアタッチする。本人の MFA 登録とパスワード変更に必要な操作は、リソース ARN で本人に限定して別の Allow で許可する。Bool 演算子で aws:MultiFactorAuthPresent が false の場合は、NotAction で指定したそれらの操作以外を Deny する。アクセスキーでの操作は対象外とする。",
       "correct": false,
-      "rationale": "事後の対応で、確認までの間は MFA なしで操作できてしまいます。200 人分を手作業で確認する運用負荷も大きくなります。"
+      "rationale": "Bool 演算子では、条件キーがリクエストに含まれない場合に条件が一致しません。アクセスキーなどの長期認証情報によるリクエストには aws:MultiFactorAuthPresent が含まれないため、拒否が適用されず、MFA なしで操作できてしまいます。BoolIfExists が必要です。"
     }
   ],
-  "explanation": "IAM ユーザーに MFA を強制するには、MFA で認証されていないリクエストを拒否する IAM ポリシーを使います。条件キー aws:MultiFactorAuthPresent は、MFA で認証されたセッションで true になります。MFA を使っていない場合は、キーが存在しないこともあるため、BoolIfExists で false または存在しないケースの両方を拒否します。\n\nこの拒否ポリシーでは、NotAction を使って、iam:CreateVirtualMFADevice、iam:EnableMFADevice、iam:ChangePassword など、自分の MFA とパスワードの管理に必要な操作だけを除外します。ユーザーは MFA を登録してからサインインし直すことで、本来の権限を使えるようになります。\n\nパスワードポリシーでは MFA は必須にできません。ログの確認や Config による事後の対応は、MFA なしの操作を許してしまうため、予防的な統制にはなりません。",
+  "explanation": "IAM ユーザーに MFA を強制するには、MFA で認証されていないリクエストを拒否する IAM ポリシーを使います。条件キー aws:MultiFactorAuthPresent は、MFA で認証されたセッションで true になります。アクセスキーなどの長期認証情報によるリクエストでは、このキーがリクエストに含まれないため、BoolIfExists で false または存在しない場合の両方を拒否します。Bool 演算子だけでは、キーが存在しないリクエストに拒否が適用されません。\n\nこの Deny では、NotAction で、自分の MFA の登録とパスワードの変更に必要な操作（iam:CreateVirtualMFADevice、iam:EnableMFADevice、iam:ListMFADevices、iam:ListVirtualMFADevices、iam:ResyncMFADevice、iam:GetUser、iam:ChangePassword、iam:GetAccountPasswordPolicy など）を除外します。ただし、NotAction の例外は拒否の対象から外すだけで、操作を許可するものではありません。これらの操作は、別の Allow ステートメントで許可して初めて実行できます。本人に限定できる操作は、リソース ARN に arn:aws:iam::*:user/${aws:username} を指定し、他のユーザーの MFA やパスワードを操作できないようにします。iam:DeactivateMFADevice のように、MFA なしで実行させたくない管理操作は、例外に含めません。\n\nユーザーは MFA を登録してからサインインし直すことで、本来の権限を使えるようになります。新しいユーザーにも、対象のグループへ追加すれば同じ制限が適用されます。\n\nパスワードポリシーでは MFA は必須にできません。Config による事後の対応は、MFA なしの操作を許してしまうため、予防的な統制になりません。",
   "keyPoints": [
-    "MFA の強制 → aws:MultiFactorAuthPresent を条件にした Deny（BoolIfExists）",
-    "MFA の登録とパスワードの変更だけは NotAction で除外する",
-    "事後の検知よりも、予防的な拒否ポリシーを選ぶ"
+    "MFA の強制 → aws:MultiFactorAuthPresent を条件にした Deny（キーが存在しない場合も拒否する BoolIfExists）",
+    "NotAction の例外は許可ではない。MFA の登録とパスワードの変更に必要な操作は、別の Allow で許可する",
+    "例外には iam:DeactivateMFADevice など不要な管理操作を含めず、本人に限定できる操作はリソース ARN で限定する",
+    "事後の検知よりも、予防的な拒否ポリシーを選ぶ。新規ユーザーは対象グループへの追加で適用される"
   ],
   "references": [
     {

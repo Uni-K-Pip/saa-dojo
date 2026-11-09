@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.5-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": [
+    "3.5-K7",
+    "3.5-K6",
+    "3.5-S2"
+  ],
+  "services": [
+    "Amazon Kinesis"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Kinesis Data Streams",
+    "オンデマンドモード",
+    "キャパシティ管理"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、IoT デバイスから送られるデータを、Amazon Kinesis Data Streams で取り込んでいます。キャンペーンやイベントのたびに、データ量が数倍に急増し、その後に元に戻ります。事前にピークの量を予測するのは難しく、シャード数を手動で調整する運用や、スロットリングへの対応に手間がかかっています。キャパシティの管理の手間を、できるだけ減らしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon SQS のキューに置き換えて、メッセージを受け付ける。",
+      "correct": false,
+      "rationale": "SQS は、取り込みの上限をほぼ意識せず使えますが、複数のコンシューマーによる再読み取りや順序、リアルタイム分析の機能がありません。Kinesis の機能が必要な要件が変わります。"
+    },
+    {
+      "id": "b",
+      "text": "データストリームのキャパシティモードを、オンデマンドモードに切り替える。",
+      "correct": true,
+      "rationale": "オンデマンドモードでは、Kinesis がデータの量に応じて、キャパシティを自動で調整します。シャード数の計画や手動の調整が不要です。"
+    },
+    {
+      "id": "c",
+      "text": "プロビジョニングモードのまま、予想されるピークに合わせた十分な数のシャードを、常時用意する。",
+      "correct": false,
+      "rationale": "ピークを予測するのが難しく、予測を超えるとスロットリングが起きます。ピーク以外の時間帯にも、使われないシャードの費用がかかります。"
+    },
+    {
+      "id": "d",
+      "text": "CloudWatch のアラームでスロットリングを検知して、担当者が手動でシャードを分割する。",
+      "correct": false,
+      "rationale": "手動の運用が残り、検知から対応までの間は、スロットリングが続きます。管理の手間を減らす要件に反します。"
+    }
+  ],
+  "explanation": "Kinesis Data Streams には、2つのキャパシティモードがあります。プロビジョニングモードは、シャード数を指定して、シャードあたりの書き込みと読み取りの上限（書き込み 1 MB／秒など）に基づき、容量を管理します。トラフィックの予測ができる場合や、費用を細かく最適化したい場合に向きます。シャードの数は、手動または Application Auto Scaling などで調整します。\n\nオンデマンドモードは、ストリームのスループットに応じて、Kinesis が自動でキャパシティを調整します。シャード数の計画や管理が不要で、予測の難しいトラフィックや、急激に変動するワークロードに向いています。料金は、ストリームの時間あたりと、データ量に応じた従量課金です。\n\nSQS への置き換えは、ストリームの特性（複数コンシューマー、再読み取り、順序）を失い、要件が変わってしまいます。",
+  "keyPoints": [
+    "予測できない急増に対応・シャードの管理を避ける → Kinesis Data Streams のオンデマンドモード",
+    "プロビジョニングモードはシャード数の計画と調整が必要",
+    "Kinesis と SQS は性質が違う"
+  ],
+  "references": [
+    {
+      "title": "Kinesis Data Streams のキャパシティモード - Amazon Kinesis Data Streams デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,81 @@
+{
+  "id": "saa-1.2-w2m-016",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S1",
+    "1.2-K3",
+    "1.2-S3"
+  ],
+  "services": [
+    "Amazon Virtual Private Cloud",
+    "AWS Resource Access Manager",
+    "AWS Organizations"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "プレフィックスリスト",
+    "AWS RAM",
+    "セキュリティグループ"
+  ],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、AWS Organizations の複数のアカウントにある数十個の VPC のセキュリティグループに、取引先の 80 個の CIDR ブロックからの HTTPS を許可するルールを、それぞれ登録しています。取引先の CIDR ブロックは頻繁に追加や変更があり、すべてのセキュリティグループを更新する作業が負担になっています。更新作業を 1 か所に集約したいと考えています。適切な設定を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "取引先の CIDR ブロックを、各サブネットのネットワーク ACL のルールにプレフィックスリストとして登録する。",
+      "correct": false,
+      "rationale": "ネットワーク ACL のルールでは、プレフィックスリストを参照できません。ルールごとに CIDR を指定する必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "カスタマーマネージドのプレフィックスリストに、取引先の CIDR ブロックを登録して、各セキュリティグループのルールの送信元に、そのプレフィックスリストを指定する。",
+      "correct": true,
+      "rationale": "プレフィックスリストは、CIDR ブロックの集合に名前を付けて、セキュリティグループのルールなどで参照できる機能です。CIDR を変更するときは、リストを更新するだけで、参照するすべてのルールに反映されます。"
+    },
+    {
+      "id": "c",
+      "text": "CIDR ブロックが変わるたびに、AWS CloudFormation StackSets で、すべてのセキュリティグループのルールを更新する。",
+      "correct": false,
+      "rationale": "更新作業の自動化にはなりますが、すべてのルールを更新する点は変わらず、更新に時間がかかります。1 か所の更新で済む方法が他にあります。"
+    },
+    {
+      "id": "d",
+      "text": "プレフィックスリストを AWS Resource Access Manager で、組織内の他のアカウントと共有する。",
+      "correct": true,
+      "rationale": "プレフィックスリストは、RAM で他のアカウントや組織と共有できます。共有を受けたアカウントのセキュリティグループからも、同じリストを参照でき、更新は 1 か所で済みます。"
+    },
+    {
+      "id": "e",
+      "text": "セキュリティグループを 1 つのアカウントで作成し、AWS RAM で他のアカウントの VPC に共有して使わせる。",
+      "correct": false,
+      "rationale": "セキュリティグループは、VPC のリソースで、RAM でアカウント間に共有して他のアカウントの VPC で使わせることはできません。"
+    }
+  ],
+  "explanation": "セキュリティグループのルールに、同じ CIDR ブロックの集合を何度も登録する場合は、プレフィックスリストを使うと管理を簡単にできます。カスタマーマネージドのプレフィックスリストは、CIDR ブロックの集合に名前を付けたもので、セキュリティグループのルールの送信元・宛先や、VPC のルートテーブルのルートの宛先として参照できます。リストの内容を更新すると、参照しているすべてのルールに反映されます。リストに登録できる最大エントリー数は、作成時に指定し、参照する各ルールが、その最大エントリー数のぶんだけルールの数のクォータを消費する点に注意します。\n\nさらに、AWS Resource Access Manager（RAM）でプレフィックスリストを共有すると、組織内の他のアカウントのセキュリティグループなどからも参照でき、複数のアカウントにまたがる更新も、1 か所で済みます。\n\nネットワーク ACL はプレフィックスリストを参照できません。セキュリティグループ自体を RAM で共有することはできません。StackSets による更新は、毎回すべてのルールを更新することになります。",
+  "keyPoints": [
+    "多数の CIDR を複数のセキュリティグループで共通管理 → プレフィックスリスト（更新が全ルールに反映）",
+    "複数アカウントで共有 → AWS RAM でプレフィックスリストを共有",
+    "NACL はプレフィックスリストを参照できない。セキュリティグループ自体は RAM で共有できない"
+  ],
+  "references": [
+    {
+      "title": "プレフィックスリストを使用して CIDR ブロックを管理する - Amazon VPC ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/managed-prefix-lists.html"
+    },
+    {
+      "title": "AWS Resource Access Manager で共有できるリソース",
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/shareable.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

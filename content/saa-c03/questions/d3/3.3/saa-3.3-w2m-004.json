@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.3-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.3",
+  "knowledgeRefs": [
+    "3.3-S4",
+    "3.3-K8",
+    "3.3-K4"
+  ],
+  "services": [
+    "Amazon Keyspaces (for Apache Cassandra)"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Amazon Keyspaces",
+    "Apache Cassandra 互換",
+    "CQL"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスの Apache Cassandra クラスターで、センサーデータの書き込みと時系列の参照を行うアプリケーションを運用しています。アプリケーションは CQL と Cassandra のドライバーを使っています。使用する CQL は移行先でサポートされ、想定する書き込みの急増は既存テーブルの過去のピークの 2 倍以内で、サービスクォータ内に収まります。クラスターのノードの管理、パッチの適用、ノード数の調整にかかる運用の手間をなくし、書き込みの急増にも自動で対応したいと考えています。CQL のコードの変更は最小限にします。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスに Cassandra をインストールして、複数のノードのクラスターを構成し、パッチ適用やノード数の調整を自分たちで行いながら運用する。",
+      "correct": false,
+      "rationale": "互換性は高いですが、ノードの管理、パッチの適用、スケーリングを自分たちで行います。運用の手間をなくす要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Keyspaces (for Apache Cassandra) にテーブルをオンデマンドキャパシティーモードで作成し、既存のドライバーと CQL で接続する。",
+      "correct": true,
+      "rationale": "Keyspaces は、Cassandra 互換のサーバーレスのマネージドなデータベースです。サポートされる CQL とドライバーを使え、ノードの管理が不要です。オンデマンドキャパシティーモードなら、過去のピークの 2 倍までの急増に即応でき、それを超える場合も容量を自動で割り当てます。ただし、短時間に 2 倍を超えて急増すると、容量不足のエラーが発生し得ます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon DynamoDB のテーブルに移行し、オンデマンドキャパシティーモードを使って、アプリケーションを DynamoDB の API に書き換える。",
+      "correct": false,
+      "rationale": "データモデルは似ていますが、API が異なり、CQL のコードの書き換えが必要です。コードの変更を最小限にする要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon DocumentDB (with MongoDB compatibility) のクラスターを作成し、データをドキュメントとして保存して、レプリカでスケールさせる。",
+      "correct": false,
+      "rationale": "DocumentDB は MongoDB 互換で、CQL も Cassandra のドライバーも使えません。アプリケーションの書き換えが必要になります。"
+    }
+  ],
+  "explanation": "Amazon Keyspaces (for Apache Cassandra) は、Apache Cassandra と互換性のある、スケーラブルで高可用性のマネージドなデータベースサービスです。Cassandra のアプリケーションコード、Apache 2.0 ライセンスのドライバー、CQL（Cassandra Query Language）を使えるため、コードの変更を抑えて移行できます。ただし、Cassandra との機能差があるため、使用する CQL が移行先でサポートされることの確認が必要です。サーバーレスで、サーバーのプロビジョニング、パッチ適用、管理が不要です。\n\nオンデマンドキャパシティーモードでは、アプリケーションのトラフィックに応じて自動でスケールします。テーブルの過去のピークの 2 倍までのトラフィックには即応できます。それを超える増加には容量を自動で割り当てますが、30 分以内に 2 倍を超えて増加すると、容量不足のエラーが発生し得ます。また、サービスクォータの範囲内である必要があります。データは 3 つの AZ に複製され、ポイントインタイムリカバリにも対応します。\n\nDocumentDB は MongoDB 互換、DynamoDB は独自の API のキーバリュー/ドキュメント型で、どちらも CQL は使えません。EC2 上の Cassandra は、運用の手間が残ります。",
+  "keyPoints": [
+    "Cassandra（CQL）のアプリで、ノード管理・パッチ適用を不要にして移行 → Amazon Keyspaces (for Apache Cassandra)",
+    "MongoDB は DocumentDB、グラフは Neptune、独自 API のキーバリューは DynamoDB",
+    "オンデマンドモードは過去のピークの 2 倍まで即応。30 分以内に 2 倍を超える急増では容量不足のエラーが発生し得る"
+  ],
+  "references": [
+    {
+      "title": "Amazon Keyspaces (for Apache Cassandra) とは - Amazon Keyspaces デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

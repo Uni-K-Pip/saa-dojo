@@ -1,0 +1,74 @@
+{
+  "id": "saa-1.2-w2m-013",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K3",
+    "1.2-S1"
+  ],
+  "services": [
+    "Amazon Virtual Private Cloud",
+    "Amazon Simple Storage Service",
+    "Amazon Athena"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "VPC フローログ",
+    "Athena",
+    "拒否された通信"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業で、本番 VPC の Amazon EC2 インスタンスへの接続が、一部の送信元からだけ失敗しています。VPC フローログは、すでに Amazon S3 に出力されています。過去数日分のデータから、拒否された通信の送信元 IP アドレスと宛先ポートを、件数とともに調べたいと考えています。インスタンスへのエージェントの導入は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS CloudTrail の証跡を S3 に出力して Athena で検索し、拒否された通信の送信元 IP アドレスと宛先ポートを集計する。",
+      "correct": false,
+      "rationale": "CloudTrail は AWS の API 呼び出しの記録で、VPC を流れる通信の許可や拒否の記録は含みません。"
+    },
+    {
+      "id": "b",
+      "text": "S3 のフローログに Athena のテーブルを作成し、REJECT のレコードを送信元 IP アドレスと宛先ポートで集計する。",
+      "correct": true,
+      "rationale": "フローログには、通信の許可と拒否の結果が記録されています。Athena で SQL を使って、サーバーレスに集計できます。インスタンスの変更は不要です。"
+    },
+    {
+      "id": "c",
+      "text": "EC2 の各インスタンスにパケットキャプチャのエージェントを導入して通信を記録し、拒否された通信の送信元とポートを集計する。",
+      "correct": false,
+      "rationale": "エージェントの導入を避ける要件に反します。有効にした後の通信しか記録できず、セキュリティグループなどで拒否された通信は、インスタンスに届かないため記録できません。"
+    },
+    {
+      "id": "d",
+      "text": "VPC のトラフィックミラーリングを有効にして、これから発生する通信のパケットを分析用のインスタンスに送って収集する。",
+      "correct": false,
+      "rationale": "有効にした後の通信だけが対象で、過去数日分は調べられません。パケットの収集と分析のための環境も必要になります。"
+    }
+  ],
+  "explanation": "VPC フローログは、VPC のネットワークインターフェイスを出入りする IP トラフィックの情報（送信元・宛先 IP アドレス、ポート、プロトコル、バイト数、許可（ACCEPT）か拒否（REJECT）か）を記録する機能です。出力先は CloudWatch Logs、S3、Data Firehose を選べます。インスタンスにエージェントを入れる必要はありません。\n\nS3 に出力したフローログは、Amazon Athena でテーブルを作成し（パーティションプロジェクションを使うと効率的）、SQL でクエリできます。たとえば action = 'REJECT' で絞り込み、srcaddr と dstport で GROUP BY すれば、拒否された通信の送信元と宛先ポートを件数つきで分析できます。\n\nREJECT は、セキュリティグループまたはネットワーク ACL による拒否を示しますが、どちらによるものかまでは区別されません。CloudTrail は API の記録、トラフィックミラーリングは有効化後のパケット収集です。",
+  "keyPoints": [
+    "VPC を流れる通信の許可／拒否の記録 → VPC フローログ（S3 に出力して Athena で分析）",
+    "フローログの REJECT は SG または NACL による拒否（どちらかは区別されない）",
+    "CloudTrail は API の記録で、通信の記録ではない"
+  ],
+  "references": [
+    {
+      "title": "VPC フローログを使用した IP トラフィックのログ記録 - Amazon VPC ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"
+    },
+    {
+      "title": "Athena を使った VPC フローログのクエリ",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

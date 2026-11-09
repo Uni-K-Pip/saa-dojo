@@ -1,0 +1,73 @@
+{
+  "id": "saa-4.4-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": [
+    "4.4-S3",
+    "4.4-S5",
+    "4.4-K1"
+  ],
+  "services": [
+    "Amazon Virtual Private Cloud",
+    "Amazon Elastic Compute Cloud",
+    "AWS Resource Access Manager"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AZ 間のデータ転送料金",
+    "AZ ID",
+    "アカウントごとの AZ 名の違い"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、アカウント A の VPC で動くアプリケーションが、アカウント B の VPC にあるデータストアと、大量のデータをやりとりしています。2 つの VPC は、同じリージョンでピアリングされています。AZ 間のデータ転送料金を減らすために、通信するリソースを、同じ物理的な AZ に配置したいと考えています。両方のアカウントで、サブネットを ap-northeast-1a に作成しましたが、料金の改善が見られません。最も適切な対応はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アカウント B のサブネットを、ap-northeast-1a から ap-northeast-1b に作り直す。",
+      "correct": false,
+      "rationale": "AZ 名のマッピングがアカウントごとに異なるため、名前を変えても、同じ物理的な AZ になるとは限りません。根拠がない試行錯誤になります。"
+    },
+    {
+      "id": "b",
+      "text": "両方のアカウントで、AZ ID（例: apne1-az1）を確認して、同じ AZ ID に対応するサブネットにリソースを配置する。",
+      "correct": true,
+      "rationale": "AZ 名と物理的な AZ の対応は、アカウントごとに異なります。AZ ID は、物理的な AZ を一意に示すため、AZ ID を揃えれば、同じ物理的な AZ に配置できます。"
+    },
+    {
+      "id": "c",
+      "text": "VPC ピアリングを解除して、Transit Gateway 経由の接続に変更する。",
+      "correct": false,
+      "rationale": "接続の方式を変えても、物理的な AZ が異なれば、AZ 間のデータ転送料金は発生します。Transit Gateway のデータ処理料金も追加されます。"
+    },
+    {
+      "id": "d",
+      "text": "リソースを別のリージョンに移して、リージョン内の AZ 間のデータ転送を避ける。",
+      "correct": false,
+      "rationale": "リージョンをまたぐと、リージョン間のデータ転送料金がかかり、AZ 間の料金より高くなります。要件に反します。"
+    }
+  ],
+  "explanation": "AWS では、同じリージョン内でも、異なる AZ 間のデータ転送には、料金がかかります（同じ AZ 内のプライベート IP アドレス間の通信は無料）。大量のデータをやりとりするリソースは、同じ AZ に配置すると、料金を減らせます。\n\nただし、AZ の名前（ap-northeast-1a など）と物理的な AZ の対応は、アカウントごとにランダムに割り当てられます。そのため、アカウント A の ap-northeast-1a と、アカウント B の ap-northeast-1a は、異なる物理的な AZ の場合があります。物理的な AZ を一意に識別するのは、AZ ID（apne1-az1 など）です。AZ ID は、コンソールの EC2 のダッシュボードや、DescribeAvailabilityZones で確認できます。\n\nアカウント間で同じ物理的な AZ に配置するには、両方のアカウントで AZ ID を確認して、同じ AZ ID の AZ にサブネットを作ります。AZ 名を変える試行錯誤や、接続の方式の変更、リージョンの移動は、解決になりません。",
+  "keyPoints": [
+    "アカウント間で同じ物理的な AZ に配置 → AZ 名ではなく AZ ID を揃える",
+    "AZ 名と物理的な AZ の対応は、アカウントごとに異なる",
+    "同じ AZ 内のプライベート IP アドレス間の通信は無料、AZ 間は課金"
+  ],
+  "references": [
+    {
+      "title": "リージョン、AZ、AZ ID - Amazon EC2 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html"
+    },
+    {
+      "title": "AWS のデータ転送料金の概要",
+      "url": "https://aws.amazon.com/blogs/architecture/overview-of-data-transfer-costs-for-common-architectures/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

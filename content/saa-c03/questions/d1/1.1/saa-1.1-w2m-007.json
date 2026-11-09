@@ -21,37 +21,38 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、オンプレミスの Active Directory でユーザーを管理しています。AWS では、Windows 認証を使う Amazon RDS for SQL Server と、Windows の Amazon EC2 インスタンスを運用します。ユーザーは既存のオンプレミスの資格情報で認証される必要があり、オンプレミスとの接続が一時的に切れても、AWS 側のワークロードでの認証は継続しなければなりません。ドメインコントローラーの運用は AWS に任せたいと考えています。最も適切な構成はどれですか。",
+  "stem": "ある企業は、オンプレミスの Active Directory でユーザーを管理しています。AWS では、Windows 認証を使う Amazon RDS for SQL Server と、Windows の Amazon EC2 インスタンスを運用します。ユーザーは既存のオンプレミスの資格情報で認証される必要があります。AWS とオンプレミスの間には、認証に必要なネットワーク接続が確保されています。ドメインコントローラーの運用は AWS に任せたいと考えています。最も適切な構成はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスに Windows Server を構築して、自前でドメインコントローラーを運用し、オンプレミスと信頼関係を設定する。",
+      "text": "Amazon EC2 インスタンスに Windows Server を構築し、ドメインコントローラーを複数のアベイラビリティーゾーンに冗長化して自前で運用する。パッチ適用とバックアップも自分たちで行い、オンプレミスと信頼関係を設定する。",
       "correct": false,
-      "rationale": "認証と信頼関係は実現できますが、ドメインコントローラーの運用を AWS に任せたい要件に反します。パッチ適用や冗長化も自前で行うことになります。"
+      "rationale": "信頼関係を設定すれば認証はできますが、ドメインコントローラーの運用を AWS に任せたい要件に反します。パッチ適用や冗長化も自前で行うことになります。"
     },
     {
       "id": "b",
-      "text": "Amazon Cognito のユーザープールにオンプレミスのユーザーを移行し、Windows 認証の代わりに使う。",
+      "text": "Amazon Cognito のユーザープールにオンプレミスのユーザーを移行し、RDS for SQL Server と Windows の EC2 インスタンスの認証には Cognito のトークンを使う。パスワードは各ユーザーに再設定してもらう。",
       "correct": false,
-      "rationale": "Cognito のユーザープールは、アプリケーションのサインイン用の仕組みで、Windows 認証や Active Directory のドメイン参加の代わりにはなりません。"
+      "rationale": "Cognito のユーザープールは、アプリケーションのサインイン用の仕組みで、Windows 認証や Active Directory のドメイン参加の代わりにはなりません。トークンを RDS for SQL Server や EC2 の Windows 認証に使うこともできません。"
     },
     {
       "id": "c",
-      "text": "AWS Managed Microsoft AD を作成して、オンプレミスの Active Directory との間に信頼関係を設定する。RDS for SQL Server と EC2 インスタンスを Managed Microsoft AD に参加させる。",
+      "text": "AWS Managed Microsoft AD を作成し、オンプレミスの Active Directory と信頼関係を設定する。RDS for SQL Server と EC2 を Managed Microsoft AD に参加させる。",
       "correct": true,
-      "rationale": "Managed Microsoft AD は AWS が運用する実際の Active Directory で、AWS 側にドメインコントローラーを持ちます。信頼関係でオンプレミスのユーザーを認証でき、接続が切れても AWS 側のリソースの認証を続けられます。"
+      "rationale": "AWS Managed Microsoft AD は AWS が運用する実際の Active Directory です。オンプレミスの Active Directory と信頼関係を設定し、適切なネットワーク接続があれば、オンプレミスのユーザーが既存の資格情報で AWS 側のリソースへアクセスできます。RDS for SQL Server の Windows 認証にも使えます。"
     },
     {
       "id": "d",
-      "text": "AD Connector を作成してオンプレミスの Active Directory に接続し、EC2 インスタンスを AD Connector 経由で認証させる。",
+      "text": "AD Connector を作成してオンプレミスの Active Directory に接続し、Windows の EC2 インスタンスと RDS for SQL Server を AD Connector 経由でオンプレミスの資格情報で認証させる。",
       "correct": false,
-      "rationale": "AD Connector は認証要求をオンプレミスの Active Directory へ転送するプロキシで、AWS 側にドメインコントローラーがありません。接続が切れると認証できなくなります。"
+      "rationale": "AD Connector は認証要求をオンプレミスの Active Directory へ転送するプロキシで、AWS 側にドメインコントローラーを持ちません。また、RDS for SQL Server の Windows 認証は、AD Connector をサポートしていません。"
     }
   ],
-  "explanation": "AWS Directory Service には、目的の異なる複数の選択肢があります。AWS Managed Microsoft AD は、AWS が運用する実際の Microsoft Active Directory で、AWS 側にドメインコントローラーを持ちます。オンプレミスの Active Directory との間に信頼関係を設定すれば、オンプレミスのユーザーが AWS 側のリソースにも既存の資格情報でアクセスできます。Amazon RDS for SQL Server の Windows 認証や Windows の EC2 インスタンスのドメイン参加にも使えます。\n\nAD Connector は、認証要求をオンプレミスの Active Directory へ転送するだけのディレクトリゲートウェイで、AWS 側にディレクトリのデータを持ちません。オンプレミスとの接続が切れると、認証できなくなります。\n\nEC2 に自前でドメインコントローラーを構築すれば要件の機能は満たせますが、運用を AWS に任せたいという条件に合いません。",
+  "explanation": "AWS Directory Service には、目的の異なる複数の選択肢があります。AWS Managed Microsoft AD は、AWS が運用する実際の Microsoft Active Directory で、AWS 側にドメインコントローラーを持ちます。オンプレミスの Active Directory との間に信頼関係を設定し、認証に必要なネットワーク接続を確保すれば、オンプレミスのユーザーが AWS 側のリソースにも既存の資格情報でアクセスできます。Amazon RDS for SQL Server の Windows 認証や、Windows の EC2 インスタンスのドメイン参加にも使えます。\n\nなお、信頼関係は、ドメイン間で認証を参照する仕組みです。オンプレミスのユーザーやパスワードを AWS 側へ複製するものではありません。\n\nAD Connector は、認証要求をオンプレミスの Active Directory へ転送するだけのディレクトリゲートウェイで、AWS 側にディレクトリのデータを持ちません。RDS for SQL Server の Windows 認証では、AWS Managed Microsoft AD だけがサポートされ、AD Connector は使えません。\n\nEC2 に自前でドメインコントローラーを構築する方法は、信頼関係の設定はできても、ドメインコントローラーの運用を AWS に任せたいという条件に合いません。",
   "keyPoints": [
     "AWS 側にドメインコントローラーが必要・オンプレミスと信頼関係 → AWS Managed Microsoft AD",
-    "AD Connector は転送するだけのプロキシで、オンプレミスとの接続が必須",
+    "AD Connector は転送するだけのプロキシで、RDS for SQL Server の Windows 認証には使えない",
+    "信頼関係はユーザーやパスワードを複製しない。認証にはネットワーク接続が必要",
     "運用を任せたい → マネージドの Directory Service を優先"
   ],
   "references": [
@@ -62,6 +63,10 @@
     {
       "title": "AWS Managed Microsoft AD - AWS Directory Service 管理ガイド",
       "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html"
+    },
+    {
+      "title": "Amazon RDS for SQL Server での AWS Managed Active Directory の利用 - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
     }
   ],
   "lessonRefs": [

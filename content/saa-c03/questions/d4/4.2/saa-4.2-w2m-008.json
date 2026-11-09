@@ -1,0 +1,74 @@
+{
+  "id": "saa-4.2-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": [
+    "4.2-S3",
+    "4.2-K8",
+    "4.2-K9"
+  ],
+  "services": [
+    "AWS Lambda",
+    "AWS Fargate",
+    "Amazon Elastic Container Service",
+    "Elastic Load Balancing"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Lambda と Fargate の費用比較",
+    "安定した高負荷",
+    "コンテナ"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、API Gateway と AWS Lambda で構築した API を運用しています。リクエストは、24 時間 365 日、毎秒平均数百件で安定しており、ほとんど増減しません。1 件の処理は約 200 ミリ秒で、メモリは 1 GB を使います。Lambda の月額が高くなったため、コストの見直しが必要です。アプリケーションのコンテナ化は可能です。運用の手間は大きく増やさずに、費用を下げる最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Lambda 関数のメモリを最大の 10,240 MB に増やして、実行時間を短くする。",
+      "correct": false,
+      "rationale": "メモリの料金は、メモリ量と実行時間の積で決まります。メモリを大きく増やすと、実行時間の短縮では取り戻せないほど料金が増える場合があります。"
+    },
+    {
+      "id": "b",
+      "text": "アプリケーションをコンテナ化して、AWS Fargate 上の Amazon ECS サービスで常時稼働させる。ALB の背後に置き、Auto Scaling を設定して、Compute Savings Plans の適用も検討する。",
+      "correct": true,
+      "rationale": "リクエストが安定して多い場合は、実行時間と呼び出し回数で課金される Lambda より、常時稼働するコンテナのほうが、1 件あたりの費用が低くなることがあります。サーバーの管理も不要です。"
+    },
+    {
+      "id": "c",
+      "text": "Lambda 関数のプロビジョニングされた同時実行を設定して、安定して応答できるようにする。",
+      "correct": false,
+      "rationale": "コールドスタートを減らす設定で、実行の料金は下がりません。むしろ、プロビジョニングされた同時実行の分の料金が追加されます。"
+    },
+    {
+      "id": "d",
+      "text": "API Gateway の前に CloudFront を置いて、すべての API のレスポンスをキャッシュする。",
+      "correct": false,
+      "rationale": "API のレスポンスの内容により、キャッシュできないことがあります。キャッシュできるかを前提にした、不確実な対策です。"
+    }
+  ],
+  "explanation": "AWS Lambda は、リクエストの数と実行時間（メモリ×時間）で課金されるため、負荷が小さい、または変動が大きい（アイドル時間が長い）ワークロードでは、費用を抑えられます。一方、負荷が高く、安定しているワークロードでは、常時稼働の Amazon EC2 や AWS Fargate のほうが、1 件あたりの費用が低くなることがあります。利用率が高いほど、常時稼働のリソースを、無駄なく使えるためです。\n\n運用の手間を大きく増やさずに、コンテナ化して Fargate で動かせば、サーバーの管理は不要です。ALB の背後で複数のタスクを動かし、負荷に応じた Auto Scaling を設定します。常時の使用量が安定しているため、Compute Savings Plans（Fargate と Lambda にも適用）を使って、さらに割引を受けられます。費用は、見積もりで比較して判断します。\n\nプロビジョニングされた同時実行は費用が増えます。メモリの大幅な増加も費用が増える場合があります。キャッシュは内容による不確実な対策です。",
+  "keyPoints": [
+    "低負荷・変動が大きい → Lambda が割安、高負荷で安定 → 常時稼働のコンテナ（Fargate）や EC2 が割安になることがある",
+    "Compute Savings Plans は、EC2、Fargate、Lambda に適用できる",
+    "プロビジョニングされた同時実行は、コールドスタート対策で、料金を下げない"
+  ],
+  "references": [
+    {
+      "title": "AWS Fargate の料金",
+      "url": "https://aws.amazon.com/fargate/pricing/"
+    },
+    {
+      "title": "AWS Lambda の料金",
+      "url": "https://aws.amazon.com/lambda/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
