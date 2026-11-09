@@ -1,1 +1,1370 @@
-{}
+{
+  "saa-1.1-ex-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.1-g1-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.1-g1-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.1-g1-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.1-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2c-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2c-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2c-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-008": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-010": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-012": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-014": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-015": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-016": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-017": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.1-w2m-018": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-g2-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-g2-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.2-g2-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.2-w2c-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-008": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-010": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-011": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-012": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-013": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-014": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.2-w2m-015": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-g3-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.3-g3-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-1.3-g3-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-g3-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-1.3-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-008": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-1.3-w2m-011": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-ex-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-2.1-g4-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-2.1-g4-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-2.1-g4-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-014": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-015": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-016": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-017": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-018": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-2.1-g4-019": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-020": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-2.1-g4-021": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-022": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-g4-023": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.1-w2c-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2c-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-008": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-010": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-011": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.1-w2m-012": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-ex-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-g5-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-2.2-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-014": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-015": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-016": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-017": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2c-018": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-006": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-008": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-2.2-w2m-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.1-g6-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.1-g6-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.1-g6-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.1-g6-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.1-g6-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.1-w2c-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.1-w2c-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2c-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.1-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.1-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.1-w2m-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-g6-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.2-g6-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.2-g6-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.2-g6-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.2-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.2-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-g7-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.3-g7-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-g7-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.3-g7-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.3-w2c-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2c-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.3-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.4-g8-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.4-g8-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.4-g8-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-3.4-g8-012": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-3.4-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.4-w2c-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-001": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-003": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-004": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-005": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-010": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-017": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2a-020": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2m-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-3.5-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-ex-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-4.1-g9-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-011": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-08"
+  },
+  "saa-4.1-g9-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-014": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-g9-015": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-4.1-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-007": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-011": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2c-014": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.1-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.2-w2m-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.2-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.2-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.2-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.3-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.3-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.3-w2m-003": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.3-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2a-005": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2a-010": {
+    "status": "pending",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2m-001": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2m-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2m-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-4.4-w2m-004": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-f-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-005": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-009": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-f-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-04"
+  },
+  "saa-basics-w2c-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-002": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-004": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-005": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-006": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-009": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-011": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-014": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-015": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-016": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-017": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-018": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-019": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-020": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-021": {
+    "status": "needs-fix",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-022": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-023": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-024": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-025": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-026": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-027": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-028": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-029": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-030": {
+    "status": "verified",
+    "checkedAt": "2026-11-09"
+  }
+}
