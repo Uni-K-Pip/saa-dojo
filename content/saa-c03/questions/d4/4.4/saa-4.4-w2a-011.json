@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-011",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K1"],
+  "services": ["AWS Organizations", "Amazon CloudFront", "Amazon Simple Storage Service"],
+  "qualifier": "cost",
+  "tags": ["一括請求", "ボリュームディスカウント", "AWS Organizations", "データ転送料金"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、事業部ごとに 20 個の AWS アカウントを持ち、それぞれが別々に請求を受けています。各アカウントのインターネットへのデータ転送量は、単独では少なく、段階的な料金の安い区分には達していません。アカウントを分けた運用や権限の分離は維持したまま、組織全体の転送量を合わせて、データ転送の単価を下げたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "20 個のアカウントを AWS Organizations の組織にまとめ、一括請求を使う。",
+      "correct": true,
+      "rationale": "一括請求では、組織内のすべてのアカウントの利用量を合算して、段階的な料金（ボリュームディスカウント）を計算します。アカウントを分けた運用や権限の分離は変わらず、請求だけをまとめて、データ転送の単価の安い区分を利用できます。"
+    },
+    {
+      "id": "b",
+      "text": "すべてのリソースを 1 つのアカウントに移す。",
+      "correct": false,
+      "rationale": "リソースの移行が必要で、アカウントによる権限や環境の分離も失われます。請求をまとめるだけで目的を達成できるので、過剰な変更です。"
+    },
+    {
+      "id": "c",
+      "text": "各アカウントが個別に AWS のサポートへ、データ転送の割引を申請する。",
+      "correct": false,
+      "rationale": "個別のアカウントの転送量は少なく、割引の区分に達していません。標準の仕組みである一括請求による合算のほうが確実です。"
+    },
+    {
+      "id": "d",
+      "text": "各アカウントで、コスト配分タグを有効化する。",
+      "correct": false,
+      "rationale": "コスト配分タグは、コストを集計・分析するための仕組みで、料金の区分や単価を変えるものではありません。"
+    }
+  ],
+  "explanation": "AWS Organizations の一括請求（Consolidated Billing）では、組織内のアカウントの請求が、管理アカウントに 1 つにまとめられます。主な利点は次のとおりです。\n\n・利用量の合算によるボリュームディスカウント: Amazon S3、データ転送などは、利用量が増えるほど単価が下がる段階的な料金のため、組織全体の利用量で計算される。\n・リザーブドインスタンスと Savings Plans の割引が、組織内で共有される。\n・請求の一元管理と、アカウント別のコストの把握。\n\n一括請求にまとめても、アカウントごとの権限や環境の分離は保たれます。なお、データ転送量そのものを減らしたい場合は、CloudFront によるキャッシュや、VPC エンドポイントによる経路の最適化を検討します。",
+  "keyPoints": [
+    "複数アカウントの利用量を合算して段階的な料金を安くする → AWS Organizations の一括請求",
+    "一括請求でもアカウントの権限や環境の分離は保たれる",
+    "コスト配分タグは集計のための仕組みで、単価を下げるものではない"
+  ],
+  "references": [
+    {
+      "title": "Consolidated billing for AWS Organizations - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+    },
+    {
+      "title": "Understanding Consolidated Bills - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/con-bill-blended-rates.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-nat-endpoints-and-data-transfer"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

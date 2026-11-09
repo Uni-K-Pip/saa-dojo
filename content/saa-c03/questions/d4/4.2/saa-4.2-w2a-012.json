@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-012",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-S6", "4.2-K7"],
+  "services": ["AWS Compute Optimizer", "Amazon EC2", "Amazon CloudWatch", "Savings Plans"],
+  "qualifier": "cost",
+  "tags": ["AWS Compute Optimizer", "ライトサイジング", "インスタンスサイズ", "過剰プロビジョニング"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、Amazon EC2 の汎用インスタンスで運用している多数のアプリケーションサーバーについて、コストが高いと感じています。過去の運用で余裕を見て大きめのサイズを選んでおり、実際の使用率は分かっていません。EC2 の購入オプションの割引（Savings Plans）を購入する前に、サイズが適切かを根拠に基づいて見直したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Compute Optimizer を有効にし、CloudWatch の利用状況に基づく推奨事項で過剰と判定されたインスタンスのサイズを下げてから、Savings Plans の購入量を決める。",
+      "correct": true,
+      "rationale": "Compute Optimizer は、CloudWatch のメトリクスを分析して、過剰（または不足）なインスタンスに、より適切なタイプやサイズを推奨します。メモリの使用率は CloudWatch エージェントで収集すると推奨に反映されます。先にサイズを適正化すれば、Savings Plans で過剰なサイズを約束してしまうことを避けられます。"
+    },
+    {
+      "id": "b",
+      "text": "現在の使用量に合わせて、先に Savings Plans を購入し、その後でサイズを見直す。",
+      "correct": false,
+      "rationale": "サイズが大きいままの使用量に合わせて 1 年や 3 年の約束をすると、過剰なサイズへの支払いを固定してしまいます。サイズの適正化を先に行うのが基本です。"
+    },
+    {
+      "id": "c",
+      "text": "使用率が分からないので、安全のため、すべてのインスタンスを 1 段階大きなサイズにする。",
+      "correct": false,
+      "rationale": "必要なリソースを確認せずにサイズを大きくすると、コストが増えます。過剰な状態をさらに悪化させる対応です。"
+    },
+    {
+      "id": "d",
+      "text": "使用率を調べずに、すべてのインスタンスを同じ小さなサイズに一律で変更する。",
+      "correct": false,
+      "rationale": "根拠なく一律に小さくすると、ピーク時の性能劣化やメモリ不足を招くおそれがあります。実際の使用率に基づく推奨で、インスタンスごとに判断します。"
+    }
+  ],
+  "explanation": "ライトサイジング（適正なサイズへの見直し）は、コンピューティングのコスト最適化の基本です。使われていないリソースにも料金がかかるため、実際の使用率に基づいて、インスタンスのファミリーとサイズを決めます。\n\nAWS Compute Optimizer は、EC2 インスタンス、Auto Scaling グループ、EBS ボリューム、Lambda 関数などについて、CloudWatch のメトリクスを機械学習で分析し、最適なリソースの構成を推奨します。EC2 では、CPU、ネットワーク、ディスクに加え、CloudWatch エージェントで収集したメモリのメトリクスも分析できます。\n\n購入オプションの割引（Savings Plans、リザーブドインスタンス）は、安定して使う量に対して約束するものなので、先にサイズを適正化してから購入量を決めると、無駄な約束を避けられます。",
+  "keyPoints": [
+    "インスタンスのサイズが適切か根拠に基づいて見直す → AWS Compute Optimizer の推奨事項",
+    "メモリの使用率を推奨に反映するには CloudWatch エージェントでメモリのメトリクスを収集する",
+    "Savings Plans の購入は、サイズの適正化の後に行う（過剰なサイズを約束しない）"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Compute Optimizer? - AWS Compute Optimizer",
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+    },
+    {
+      "title": "EC2 instance metrics - AWS Compute Optimizer",
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}
