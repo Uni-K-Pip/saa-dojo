@@ -25,25 +25,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスに Apache Kafka をインストールして、クラスターを自分で構築し、運用する。",
+      "text": "Amazon EC2 インスタンスに Apache Kafka をインストールして、複数のブローカーのクラスターを複数の AZ に自分で構築し、運用する。",
       "correct": false,
       "rationale": "互換性は高いですが、ブローカーのパッチ適用や障害時の置き換えを自分たちで運用します。運用の手間を減らす要件に反します。"
     },
     {
       "id": "b",
-      "text": "Amazon Kinesis Data Streams のストリームを作成して、アプリケーションを Kinesis の API を使うように書き換える。",
+      "text": "Amazon Kinesis Data Streams のストリームを作成して、数十のアプリケーションを Kinesis の API を使うように書き換え、シャード数も設計する。",
       "correct": false,
       "rationale": "Kinesis Data Streams は、Kafka とは API が異なります。数十のアプリケーションの書き換えが必要になり、大きなコード変更を避ける要件に反します。"
     },
     {
       "id": "c",
-      "text": "Amazon SQS の標準キューを作成して、アプリケーションをキューの送受信に書き換える。",
+      "text": "Amazon SQS の標準キューを作成して、アプリケーションをキューへの送信と受信を行う処理に書き換え、保持期間を延ばし、デッドレターキューも設定する。",
       "correct": false,
       "rationale": "SQS はメッセージキューで、Kafka のストリーミングやログの保持、Kafka Connect や Kafka Streams の機能の代わりにはなりません。書き換えも大きくなります。"
     },
     {
       "id": "d",
-      "text": "Amazon Managed Streaming for Apache Kafka（Amazon MSK）のクラスターを作成して、既存のクライアントの接続先を変更する。",
+      "text": "Amazon Managed Streaming for Apache Kafka（Amazon MSK）のクラスターを作成し、既存のクライアントの接続先を変更する。",
       "correct": true,
       "rationale": "MSK は、Apache Kafka のマネージドサービスで、Kafka の API、Kafka Connect、Kafka Streams がそのまま使えます。ブローカーのパッチ適用や障害時の置き換えは、サービスが行います。"
     }

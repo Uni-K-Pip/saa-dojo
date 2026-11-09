@@ -25,19 +25,19 @@
   "options": [
     {
       "id": "a",
-      "text": "IAM Identity Center にサーバー用のユーザーを作成し、サーバー上で aws sso login を実行して、アクセスを得る。",
+      "text": "IAM Identity Center にサーバー用のユーザーを作成し、サーバー上で aws sso login を実行して、アクセスポータル経由で一時的な認証情報を得る。",
       "correct": false,
       "rationale": "IAM Identity Center のサインインは、ブラウザーでの対話的な認証を前提とします。無人で動くサーバーのアプリケーションには向きません。"
     },
     {
       "id": "b",
-      "text": "Amazon Cognito ID プールで未認証のアイデンティティを有効にし、サーバーに Amazon S3 への書き込みロールを引き受けさせる。",
+      "text": "Amazon Cognito ID プールで未認証のアイデンティティを有効にし、未認証用の IAM ロールに Amazon S3 への書き込み権限を付けて、サーバーに一時的な認証情報を取得させる。",
       "correct": false,
       "rationale": "未認証のアイデンティティでは、サーバーが本物かを確認せずに誰にでも一時的な認証情報を渡すことになります。証明書による認証を使う要件に合わず、安全でもありません。"
     },
     {
       "id": "c",
-      "text": "アクセスキーを AWS Secrets Manager に保存して、サーバーが起動時に取得する。ローテーションを 90 日ごとに設定する。",
+      "text": "IAM ユーザーのアクセスキーを AWS Secrets Manager に保存し、サーバーが起動時に取得する。Secrets Manager のローテーションを 90 日ごとに設定する。",
       "correct": false,
       "rationale": "ローテーションしても、IAM ユーザーの長期の認証情報であることは変わりません。長期の認証情報を使わないという要件を満たしません。"
     },

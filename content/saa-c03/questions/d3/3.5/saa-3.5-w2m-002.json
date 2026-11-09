@@ -26,25 +26,25 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS Glue のジョブを毎晩実行して、S3 の過去のデータを Amazon Redshift の別のテーブルに変換して、コピーし、そのテーブルと直近のデータを SQL で結合する。",
+      "text": "AWS Glue のジョブを毎晩実行して、S3 の過去のデータを変換して Amazon Redshift の別のテーブルにコピーし、そのテーブルと直近のデータを SQL で結合する。",
       "correct": false,
       "rationale": "結局、過去のデータを Redshift にロードすることになり、ストレージの費用が増えます。ETL の運用も加わります。"
     },
     {
       "id": "b",
-      "text": "AWS Glue Data Catalog に S3 の Parquet データの外部テーブルを定義し、Amazon Redshift にそのカタログのデータベースを参照する外部スキーマを作成して、Redshift Spectrum で外部・内部テーブルを SQL で結合する。",
+      "text": "AWS Glue Data Catalog に S3 の Parquet データの外部テーブルを定義し、外部スキーマを作成して、Redshift Spectrum で外部・内部テーブルを SQL で結合する。",
       "correct": true,
       "rationale": "Redshift Spectrum は、Redshift のクラスターにロードせずに、S3 のデータを直接クエリできます。外部テーブルと Redshift のテーブルを 1 つのクエリで結合でき、過去データを複製するための Redshift 側の追加ストレージを回避できます。クエリ処理などの料金は別途発生します。"
     },
     {
       "id": "c",
-      "text": "過去 7 年分のデータを、COPY コマンドで Amazon Redshift のクラスターにロードして、直近のデータと同じ 1 つのテーブルにまとめ、SQL で分析する。",
+      "text": "過去 7 年分のデータを、COPY コマンドで Amazon Redshift のクラスターにロードし、必要に応じてノードを増設して、直近のデータと同じテーブルにまとめ、BI ツールからその SQL で分析する。",
       "correct": false,
       "rationale": "クエリは単純になりますが、数百 TB のデータをクラスターに保存するため、ノードやストレージの費用が大きく増えます。費用の増加を避ける要件に反します。"
     },
     {
       "id": "d",
-      "text": "S3 のデータを Amazon Athena でクエリし、Redshift のクエリ結果と、アナリストが手作業で突き合わせて、BI ツールのレポートを作成する。",
+      "text": "S3 のデータを Amazon Athena のクエリで集計し、その結果を、Redshift のクエリ結果とアナリストが手作業で突き合わせて、BI ツール用のレポートを作成する。",
       "correct": false,
       "rationale": "Athena と Redshift を手作業で突き合わせる構成のため、1 つのクエリで結合する要件を満たしません。BI ツールからの分析が分断され、アナリストの手作業も増えます。"
     }

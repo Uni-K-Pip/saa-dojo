@@ -24,31 +24,31 @@
   "options": [
     {
       "id": "a",
-      "text": "開発者に iam:* を許可し、CloudTrail の停止を拒否するポリシーを追加で付ける。",
+      "text": "開発者に iam:* を許可し、cloudtrail:StopLogging と cloudtrail:DeleteTrail を拒否するポリシーを追加で付けて監査ログの停止と削除を防ぎ、ロールの作成は開発者に任せる。",
       "correct": false,
-      "rationale": "iam:* を許可すると、管理者権限を持つロールを作って自分に引き受けさせる権限昇格ができます。CloudTrail の停止を拒否しても、他の監査設定の変更や昇格は防げません。"
+      "rationale": "iam:* を許可すると、管理者権限を持つロールを作って自分に引き受けさせる権限昇格ができます。CloudTrail の停止と削除を拒否しても、他の監査設定の変更や権限昇格は防げません。"
     },
     {
       "id": "b",
-      "text": "開発者が作成したロールを AWS Config ルールで毎日検査し、過大な権限を持つロールを見つけたら Lambda で削除する。",
+      "text": "開発者に iam:CreateRole を広く許可し、作成されたロールを AWS Config のカスタムルールで毎日検査する。過大な権限を持つロールが見つかったら、Lambda 関数を起動して削除する。",
       "correct": false,
       "rationale": "事後に検知して削除する方法で、検知までの間は過大な権限を持つロールが使えてしまいます。作成の時点で権限を制限する予防的な統制ではなく、ルールや自動修復の運用も増えます。"
     },
     {
       "id": "c",
-      "text": "開発者に PowerUserAccess マネージドポリシーを付与する。IAM ロールは開発者が必要なときに自分で作成する。",
+      "text": "開発者に PowerUserAccess マネージドポリシーを付与し、Lambda 用のロールには AWSLambdaBasicExecutionRole を付ける運用とする。IAM ロールは開発者が必要なときに自分で作成する。",
       "correct": false,
       "rationale": "PowerUserAccess は IAM の操作を原則として許可しないため、開発者は Lambda 用のロールを作成できません。要件を満たさない上に、権限の上限を決める仕組みにもなりません。"
     },
     {
       "id": "d",
-      "text": "開発者に付与するポリシーでは、境界ポリシーの変更や削除、ロールからの境界の削除（iam:DeletePolicyVersion、iam:DeleteRolePermissionsBoundary など）を許可しない。",
+      "text": "開発者のポリシーでは、境界ポリシーの変更・削除と、ロールからの境界の削除（iam:DeletePolicyVersion、iam:DeleteRolePermissionsBoundary など）を許可しない。",
       "correct": true,
       "rationale": "開発者自身が、境界ポリシーを変更したり、作成したロールから境界を外したりできると、上限を回避して権限を昇格できます。これらの操作を許可しないことで、境界が維持されます。"
     },
     {
       "id": "e",
-      "text": "開発者に iam:CreateRole などの権限を与え、その条件として、ロール作成時に所定のアクセス許可境界ポリシーを必ず付けるよう iam:PermissionsBoundary 条件キーで強制する。境界ポリシーでは Lambda の実行に必要な操作だけを許可する。",
+      "text": "開発者に iam:CreateRole などを許可し、iam:PermissionsBoundary 条件キーで、ロール作成時に所定のアクセス許可境界ポリシーの付与を必須にする。境界ポリシーでは Lambda の実行に必要な操作だけを許可する。",
       "correct": true,
       "rationale": "アクセス許可境界は、ロールに付けられる権限の上限を決めます。作成時に境界の付与を必須にすれば、開発者が作るロールは境界の範囲を超えられず、権限昇格や監査ログ設定の変更も防げます。作成自体は開発者に任せられるため、運用の負荷も増えません。"
     }
