@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import { db } from '../db/db';
 import { deriveSettings } from '../domain/settings';
 import { answer, makeContentFiles, makeQuestion } from '../test/fixtures';
@@ -40,15 +39,13 @@ describe('ホームと合格準備度', () => {
     expect(await screen.findByText(/学習記録はこの端末のブラウザにだけ保存されています/)).toBeInTheDocument();
   });
 
-  it('合格準備度の画面で保留模試を解放する', async () => {
-    const user = userEvent.setup();
+  it('検証済みの問題で組めない保留模試は、合格準備度の画面でも準備中で解放できない', async () => {
     renderApp('/readiness');
     expect(await screen.findByRole('heading', { name: '合格準備度' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '🔒 保留模試 Aを解放' }));
-    await user.click(screen.getByRole('button', { name: '解放する' }));
-    await waitFor(async () => expect(deriveSettings(await db.events.toArray()).unlockMockA).toBe(true));
-    expect(await screen.findByRole('link', { name: '解放済み・模擬試験へ' })).toBeInTheDocument();
-    expect(deriveSettings(await db.events.toArray()).unlockMockB).toBe(false);
+    expect(screen.getAllByText('準備中（問題の検証中）')).toHaveLength(2);
+    expect(screen.getAllByText(/不足: ドメイン 1: 0\/20 問/)).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: /を解放/ })).not.toBeInTheDocument();
+    expect(deriveSettings(await db.events.toArray()).unlockMockA).toBe(false);
   });
 });
 

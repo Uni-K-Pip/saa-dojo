@@ -26,25 +26,25 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS Security Hub で、GuardDuty の検出結果の重要度を確認して、優先度を付ける。",
+      "text": "AWS Security Hub で GuardDuty の検出結果を集約し、重要度で並べ替えて、対応の優先度をダッシュボードで確認して担当者に割り当てる。",
       "correct": false,
       "rationale": "Security Hub は検出結果の集約と優先度の確認には役立ちますが、リソースのアクティビティを時系列で調査する機能は主目的ではありません。"
     },
     {
       "id": "b",
-      "text": "Amazon Detective で、GuardDuty の検出結果から調査を開始し、IAM ロールや関連する IP アドレスのアクティビティを時系列で確認する。",
+      "text": "Amazon Detective で GuardDuty の検出結果から調査を始め、IAM ロールや関連する IP アドレスの動作を時系列で見る。",
       "correct": true,
       "rationale": "Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で収集・関連付けて、グラフで可視化するサービスです。検出結果の原因の調査に向いています。"
     },
     {
       "id": "c",
-      "text": "Amazon Inspector で、EC2 インスタンスと Lambda 関数をスキャンして、脆弱性の状況を調べる。",
+      "text": "Amazon Inspector で、EC2 インスタンスと Lambda 関数、ECR のイメージをスキャンして、脆弱性の状況を調べて一覧にする。",
       "correct": false,
       "rationale": "Inspector は、ソフトウェアの脆弱性とネットワークの到達性を評価するサービスで、認証情報の不正使用の原因調査には使いません。"
     },
     {
       "id": "d",
-      "text": "Amazon Macie で、S3 バケットを調査して、機密データへのアクセスの履歴を確認する。",
+      "text": "Amazon Macie で、S3 バケットのデータを調査して、機密データの有無と、バケットへのアクセスの履歴を確認して報告する。",
       "correct": false,
       "rationale": "Macie は、S3 内の機密データを検出・分類するサービスです。IAM ロールの認証情報の不正使用の調査には使いません。"
     }

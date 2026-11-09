@@ -26,7 +26,7 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon AppFlow で、Salesforce の取引先と商談の各オブジェクトについて、Amazon S3 を転送先とするフローを作成し、毎日実行するスケジュールを設定する。各フローに項目のマスキングと必須項目の検証を設定する。",
+      "text": "Amazon AppFlow で、Salesforce の取引先と商談の各オブジェクトから S3 へのフローを作成し、毎日のスケジュールと、項目のマスキング、必須項目の検証を設定する。",
       "correct": true,
       "rationale": "AppFlow は、SaaS と AWS のサービス間で、コードなしでデータを転送できるマネージドサービスです。オブジェクトごとにフローを作成し、スケジュールの実行、項目のマスキング、検証、フィルターなどを設定で行えます。"
     },
@@ -38,13 +38,13 @@
     },
     {
       "id": "c",
-      "text": "Amazon EC2 インスタンスに cron ジョブとスクリプトを置いて、Salesforce から取得した CSV を、毎日 S3 にアップロードする。",
+      "text": "Amazon EC2 インスタンスに cron ジョブとスクリプトを置いて、Salesforce から取得した CSV を、マスキングしてから毎日 S3 にアップロードする。",
       "correct": false,
-      "rationale": "サーバーの運用とスクリプトの保守が必要です。マスキングや検証も、コードで実装する必要があります。"
+      "rationale": "サーバーの運用とスクリプトの保守が必要です。マスキングや検証も、スクリプトとして自分たちで実装し、保守することになります。"
     },
     {
       "id": "d",
-      "text": "AWS Database Migration Service（AWS DMS）のレプリケーションタスクで、Salesforce から S3 に継続的にデータを複製する。",
+      "text": "AWS Database Migration Service（AWS DMS）のレプリケーションタスクで、Salesforce をソースにして、S3 に継続的にデータを複製する。",
       "correct": false,
       "rationale": "AWS DMS のレプリケーションタスクは、Salesforce をソースエンドポイントとしてサポートしていません。対応するソースは、DMS のドキュメントに一覧があります。"
     }

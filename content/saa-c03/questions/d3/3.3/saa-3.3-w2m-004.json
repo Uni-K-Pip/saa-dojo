@@ -24,25 +24,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスに Cassandra をインストールして、複数のノードのクラスターを構成する。",
+      "text": "Amazon EC2 インスタンスに Cassandra をインストールして、複数のノードのクラスターを構成し、パッチ適用やノード数の調整を自分たちで行いながら運用する。",
       "correct": false,
       "rationale": "互換性は高いですが、ノードの管理、パッチの適用、スケーリングを自分たちで行います。運用の手間をなくす要件に反します。"
     },
     {
       "id": "b",
-      "text": "Amazon Keyspaces (for Apache Cassandra) にキースペースとテーブルを作成し、オンデマンドキャパシティーモードを使用して、既存のドライバーと CQL で接続する。",
+      "text": "Amazon Keyspaces (for Apache Cassandra) にテーブルをオンデマンドキャパシティーモードで作成し、既存のドライバーと CQL で接続する。",
       "correct": true,
       "rationale": "Keyspaces は、Cassandra 互換のサーバーレスのマネージドなデータベースです。サポートされる CQL とドライバーを使え、ノードの管理が不要です。オンデマンドキャパシティーモードなら、過去のピークの 2 倍までの急増に即応でき、それを超える場合も容量を自動で割り当てます。ただし、短時間に 2 倍を超えて急増すると、容量不足のエラーが発生し得ます。"
     },
     {
       "id": "c",
-      "text": "Amazon DynamoDB のテーブルに移行し、アプリケーションを DynamoDB の API に書き換える。",
+      "text": "Amazon DynamoDB のテーブルに移行し、オンデマンドキャパシティーモードを使って、アプリケーションを DynamoDB の API に書き換える。",
       "correct": false,
       "rationale": "データモデルは似ていますが、API が異なり、CQL のコードの書き換えが必要です。コードの変更を最小限にする要件に反します。"
     },
     {
       "id": "d",
-      "text": "Amazon DocumentDB (with MongoDB compatibility) のクラスターを作成し、データをドキュメントとして保存する。",
+      "text": "Amazon DocumentDB (with MongoDB compatibility) のクラスターを作成し、データをドキュメントとして保存して、レプリカでスケールさせる。",
       "correct": false,
       "rationale": "DocumentDB は MongoDB 互換で、CQL も Cassandra のドライバーも使えません。アプリケーションの書き換えが必要になります。"
     }

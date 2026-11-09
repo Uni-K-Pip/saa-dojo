@@ -27,31 +27,31 @@
   "options": [
     {
       "id": "a",
-      "text": "各アカウントの担当者が、各サービスのコンソールで検出結果を確認し、スプレッドシートにまとめる。",
+      "text": "各アカウントの担当者が、各サービスのコンソールで検出結果を確認し、スプレッドシートに毎週まとめて、セキュリティ担当者に共有する。",
       "correct": false,
       "rationale": "40 のアカウントで手作業になり、集約と優先度の判断に時間がかかります。一元的な確認と継続的な把握に向きません。"
     },
     {
       "id": "b",
-      "text": "すべての検出結果を S3 にエクスポートし、Athena とダッシュボードを自作して、一覧にする。",
+      "text": "すべての検出結果を S3 にエクスポートし、Athena のクエリと QuickSight のダッシュボードを自作して、アカウント横断の一覧にする。",
       "correct": false,
       "rationale": "集約の仕組みを自作して運用することになります。セキュリティ基準へのコンプライアンスのチェックも、別に用意する必要があります。"
     },
     {
       "id": "c",
-      "text": "GuardDuty、Inspector、Macie の Security Hub との統合を有効にして、各サービスの検出結果が、Security Hub に標準の形式で送られるようにする。",
+      "text": "GuardDuty、Inspector、Macie の Security Hub との統合を有効にして、検出結果を ASFF 形式で Security Hub に送る。",
       "correct": true,
       "rationale": "統合により、各サービスの検出結果が AWS Security Finding Format（ASFF）で Security Hub に集約され、重要度で並べ替えたり、フィルターしたりできます。"
     },
     {
       "id": "d",
-      "text": "AWS Security Hub を有効にして、セキュリティアカウントを委任管理者に指定し、組織の新規および既存のアカウントで Security Hub を自動で有効にする。",
+      "text": "Security Hub を有効にして、セキュリティアカウントを委任管理者に指定し、組織の新規と既存のアカウントで自動的に有効にする。",
       "correct": true,
       "rationale": "Security Hub は、組織全体のセキュリティの状況を 1 つのアカウントで確認できるサービスです。委任管理者と自動有効化で、アカウントの追加に追従できます。"
     },
     {
       "id": "e",
-      "text": "AWS CloudTrail の組織の証跡を作成して、検出結果を集約する。",
+      "text": "AWS CloudTrail の組織の証跡を作成して、全アカウントの記録を 1 つの S3 バケットに集め、検出結果の代わりに確認する。",
       "correct": false,
       "rationale": "CloudTrail は API 呼び出しの記録で、GuardDuty、Inspector、Macie の検出結果を集約する機能ではありません。"
     }

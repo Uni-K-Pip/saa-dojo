@@ -25,25 +25,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスに Windows Server を構築して、自前でドメインコントローラーを複数のアベイラビリティーゾーンに冗長化して運用し、パッチ適用とバックアップも自分たちで行いながら、オンプレミスと信頼関係を設定する。",
+      "text": "Amazon EC2 インスタンスに Windows Server を構築し、ドメインコントローラーを複数のアベイラビリティーゾーンに冗長化して自前で運用する。パッチ適用とバックアップも自分たちで行い、オンプレミスと信頼関係を設定する。",
       "correct": false,
       "rationale": "信頼関係を設定すれば認証はできますが、ドメインコントローラーの運用を AWS に任せたい要件に反します。パッチ適用や冗長化も自前で行うことになります。"
     },
     {
       "id": "b",
-      "text": "Amazon Cognito のユーザープールにオンプレミスのユーザーを移行し、Windows 認証の代わりに使う。",
+      "text": "Amazon Cognito のユーザープールにオンプレミスのユーザーを移行し、RDS for SQL Server と Windows の EC2 インスタンスの認証には Cognito のトークンを使う。パスワードは各ユーザーに再設定してもらう。",
       "correct": false,
-      "rationale": "Cognito のユーザープールは、アプリケーションのサインイン用の仕組みで、Windows 認証や Active Directory のドメイン参加の代わりにはなりません。"
+      "rationale": "Cognito のユーザープールは、アプリケーションのサインイン用の仕組みで、Windows 認証や Active Directory のドメイン参加の代わりにはなりません。トークンを RDS for SQL Server や EC2 の Windows 認証に使うこともできません。"
     },
     {
       "id": "c",
-      "text": "AWS Managed Microsoft AD を作成して、オンプレミスの Active Directory との間に信頼関係を設定する。RDS for SQL Server と EC2 インスタンスを Managed Microsoft AD に参加させる。",
+      "text": "AWS Managed Microsoft AD を作成し、オンプレミスの Active Directory と信頼関係を設定する。RDS for SQL Server と EC2 を Managed Microsoft AD に参加させる。",
       "correct": true,
       "rationale": "AWS Managed Microsoft AD は AWS が運用する実際の Active Directory です。オンプレミスの Active Directory と信頼関係を設定し、適切なネットワーク接続があれば、オンプレミスのユーザーが既存の資格情報で AWS 側のリソースへアクセスできます。RDS for SQL Server の Windows 認証にも使えます。"
     },
     {
       "id": "d",
-      "text": "AD Connector を作成してオンプレミスの Active Directory に接続し、EC2 インスタンスを AD Connector 経由で認証させる。",
+      "text": "AD Connector を作成してオンプレミスの Active Directory に接続し、Windows の EC2 インスタンスと RDS for SQL Server を AD Connector 経由でオンプレミスの資格情報で認証させる。",
       "correct": false,
       "rationale": "AD Connector は認証要求をオンプレミスの Active Directory へ転送するプロキシで、AWS 側にドメインコントローラーを持ちません。また、RDS for SQL Server の Windows 認証は、AD Connector をサポートしていません。"
     }

@@ -24,13 +24,13 @@
   "options": [
     {
       "id": "a",
-      "text": "Enhanced Monitoring を有効にして、OS レベルの CPU とメモリのメトリクスを確認する。",
+      "text": "Enhanced Monitoring を有効にして、1 秒間隔の OS の CPU・メモリ・プロセスのメトリクスを確認し、負荷の高いプロセスを調べる。",
       "correct": false,
       "rationale": "Enhanced Monitoring は、DB インスタンスの OS のメトリクスを、細かい間隔で収集します。どの SQL が負荷の原因かは分かりません。"
     },
     {
       "id": "b",
-      "text": "AWS CloudTrail のログを調べて、データベースに対して実行された API を確認する。",
+      "text": "AWS CloudTrail のログを調べて、データベースに対して実行された API の呼び出しと、その実行時刻を確認する。",
       "correct": false,
       "rationale": "CloudTrail は、RDS の管理 API の呼び出しの記録で、データベース内で実行された SQL クエリの記録ではありません。"
     },
@@ -42,7 +42,7 @@
     },
     {
       "id": "d",
-      "text": "CloudWatch の標準メトリクス（CPUUtilization など）のグラフを確認する。",
+      "text": "CloudWatch の標準メトリクス（CPUUtilization など）のグラフを、時間帯ごとに確認する。",
       "correct": false,
       "rationale": "CPU 使用率が高い時間帯は分かりますが、原因の SQL や待機イベントは分かりません。"
     }

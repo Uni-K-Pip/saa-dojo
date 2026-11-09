@@ -26,25 +26,25 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS Site-to-Site VPN 接続を作成して、従業員の自宅のルーターごとにカスタマーゲートウェイを登録する。",
+      "text": "AWS Site-to-Site VPN 接続を作成して、従業員の自宅のルーターごとにカスタマーゲートウェイを登録する。VPC 側には仮想プライベートゲートウェイを関連付けて、接続を終端する。",
       "correct": false,
       "rationale": "Site-to-Site VPN は、拠点のネットワークと VPC を結ぶためのもので、従業員の端末を個別に接続する用途には向きません。AD の認証やグループごとの制御もできません。"
     },
     {
       "id": "b",
-      "text": "Amazon EC2 インスタンスに OpenVPN サーバーを構築し、AD と連携させて従業員を接続する。",
+      "text": "Amazon EC2 インスタンスに OpenVPN サーバーを構築し、AWS Managed Microsoft AD と連携させる。サーバーは 2 つの AZ に配置して、Auto Scaling グループで冗長化する。",
       "correct": false,
-      "rationale": "実現はできますが、VPN サーバーの構築、パッチの適用、冗長化を自分たちで行います。VPN サーバーの運用を避けたい要件に反します。"
+      "rationale": "実現はできますが、VPN サーバーの構築、パッチの適用、冗長化の管理を自分たちで行います。VPN サーバーの運用を避けたい要件に反します。"
     },
     {
       "id": "c",
-      "text": "アプリケーションを、パブリックサブネットの Application Load Balancer で公開して、従業員の自宅の IP アドレスだけを許可する。",
+      "text": "アプリケーションを、パブリックサブネットの Application Load Balancer で公開して、セキュリティグループで従業員の自宅の IP アドレスだけを許可する。認証は ALB の OIDC 認証で行う。",
       "correct": false,
       "rationale": "自宅の IP アドレスは固定ではなく、変更のたびにルールの更新が必要です。RDS には接続できず、アプリケーションをインターネットに公開することにもなります。"
     },
     {
       "id": "d",
-      "text": "AWS Client VPN エンドポイントを VPC に作成し、AWS Managed Microsoft AD による認証を設定する。承認ルールで、部署のグループごとに接続を許可するネットワークを制御する。",
+      "text": "AWS Client VPN エンドポイントを作成して、AWS Managed Microsoft AD による認証を設定する。承認ルールで、部署のグループごとに接続を許可するネットワークを制御する。",
       "correct": true,
       "rationale": "Client VPN は、従業員の端末から VPC への接続を提供するマネージドな VPN サービスです。Active Directory 認証と承認ルールで、グループごとにアクセスできるネットワークを制御でき、サーバーの運用も不要です。"
     }

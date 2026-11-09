@@ -5,6 +5,7 @@ import { loadBlueprint, loadQuestionIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
 import { domainName } from '../domain/blueprint';
 import { percent } from '../domain/progress';
+import { fixedMockShortage } from '../domain/mock';
 import { computeReadiness, type Condition } from '../domain/readiness';
 import { useStudy } from '../state/study';
 
@@ -19,7 +20,14 @@ export function ConditionList({ conditions }: { conditions: Condition[] }) {
             </span>
             <span className="small muted">{Math.round(c.progress * 100)}%</span>
           </div>
-          <div className={`progress${c.achieved ? ' ok' : ''}`} role="progressbar" aria-label={c.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(c.progress * 100)}>
+          <div
+            className={`progress${c.achieved ? ' ok' : ''}`}
+            role="progressbar"
+            aria-label={c.label}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(c.progress * 100)}
+          >
             <span style={{ width: `${c.progress * 100}%` }} />
           </div>
           <p className="small muted" style={{ margin: '4px 0 0' }}>
@@ -41,9 +49,7 @@ export default function ReadinessPage() {
   return (
     <div>
       <h1>合格準備度</h1>
-      <p className="muted">
-        換算スコアは根拠がないため表示しません。次の4つの条件がそろうことを、受験の目安にしてください。
-      </p>
+      <p className="muted">換算スコアは根拠がないため表示しません。次の4つの条件がそろうことを、受験の目安にしてください。</p>
       <section className="card" aria-labelledby="cond-h">
         <h2 id="cond-h">
           条件の達成: {r.achievedCount} / {r.conditions.length}
@@ -93,35 +99,46 @@ export default function ReadinessPage() {
           const unlocked = m.kind === 'mockA' ? settings.unlockMockA : settings.unlockMockB;
           const name = m.kind === 'mockA' ? '保留模試 A' : '保留模試 B';
           return (
-            <div key={m.kind} className="row-between" style={{ padding: '8px 0', borderTop: '1px solid var(--border)' }}>
-              <span>
-                <strong>{name}</strong>（{m.available} 問）{m.rate !== null && <span className="small muted"> 初回 {Math.round(m.rate * 100)}%</span>}
-              </span>
-              {unlocked ? (
-                <Link className="btn small primary" to="/mock">
-                  解放済み・模擬試験へ
-                </Link>
-              ) : confirming === m.kind ? (
-                <span className="btn-row" style={{ margin: 0 }}>
-                  <span className="small">解放しますか？</span>
-                  <button
-                    type="button"
-                    className="btn small primary"
-                    onClick={() => {
-                      setConfirming(null);
-                      void appendEvent({ type: 'setting', key: m.kind === 'mockA' ? 'unlockMockA' : 'unlockMockB', value: true });
-                    }}
-                  >
-                    解放する
-                  </button>
-                  <button type="button" className="btn small" onClick={() => setConfirming(null)}>
-                    やめる
-                  </button>
+            <div key={m.kind} style={{ padding: '8px 0', borderTop: '1px solid var(--border)' }}>
+              <div className="row-between">
+                <span>
+                  <strong>{name}</strong>
+                  {m.plan.ready ? `（${m.available} 問）` : ''}
+                  {m.rate !== null && <span className="small muted"> 初回 {Math.round(m.rate * 100)}%</span>}
                 </span>
-              ) : (
-                <button type="button" className="btn small" onClick={() => setConfirming(m.kind)} disabled={m.available === 0}>
-                  {m.available === 0 ? '準備中' : `🔒 ${name}を解放`}
-                </button>
+                {!m.plan.ready ? (
+                  <span className="badge pending">準備中（問題の検証中）</span>
+                ) : unlocked ? (
+                  <Link className="btn small primary" to="/mock">
+                    解放済み・模擬試験へ
+                  </Link>
+                ) : confirming === m.kind ? (
+                  <span className="btn-row" style={{ margin: 0 }}>
+                    <span className="small">解放しますか？</span>
+                    <button
+                      type="button"
+                      className="btn small primary"
+                      onClick={() => {
+                        setConfirming(null);
+                        void appendEvent({ type: 'setting', key: m.kind === 'mockA' ? 'unlockMockA' : 'unlockMockB', value: true });
+                      }}
+                    >
+                      解放する
+                    </button>
+                    <button type="button" className="btn small" onClick={() => setConfirming(null)}>
+                      やめる
+                    </button>
+                  </span>
+                ) : (
+                  <button type="button" className="btn small" onClick={() => setConfirming(m.kind)}>
+                    🔒 {name}を解放
+                  </button>
+                )}
+              </div>
+              {!m.plan.ready && (
+                <p className="small muted" style={{ margin: '4px 0 0' }}>
+                  {fixedMockShortage(m.plan)}
+                </p>
               )}
             </div>
           );

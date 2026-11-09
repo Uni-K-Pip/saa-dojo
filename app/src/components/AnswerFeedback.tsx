@@ -1,6 +1,7 @@
 // 採点後の表示: 正誤、選択肢ごとの理由、解説、要点、出典、関連レッスン、誤答理由、外部リンク
 import { Link } from 'react-router';
-import type { Question } from '../content/types';
+import type { LessonMeta, Question } from '../content/types';
+import { relatedLessons } from '../domain/progress';
 import type { MissReason } from '../domain/events';
 import { LETTERS, correctIds, lettersFor } from '../domain/grading';
 import { MISS_REASONS, MISS_REASON_LABELS } from '../domain/labels';
@@ -17,8 +18,8 @@ interface Props {
   onMissReason?: (r: MissReason) => void;
   flagged?: boolean;
   onToggleFlag?: () => void;
-  /** レッスン ID → タイトル（存在するレッスンだけリンクにする） */
-  lessonTitles?: Map<string, string>;
+  /** 現在のコンテンツのレッスン一覧（関連レッスンの表示に使う） */
+  lessons?: readonly LessonMeta[];
   showStem?: boolean;
   position?: string;
   unanswered?: boolean;
@@ -47,7 +48,7 @@ export function AnswerFeedback({
   onMissReason,
   flagged,
   onToggleFlag,
-  lessonTitles,
+  lessons: allLessons,
   showStem = true,
   position,
   unanswered,
@@ -55,7 +56,7 @@ export function AnswerFeedback({
   const byId = new Map(q.options.map((o) => [o.id, o]));
   const right = correctIds(q);
   const ask = askText(q, order, selected);
-  const lessons = q.lessonRefs.filter((id) => lessonTitles?.has(id));
+  const lessons = allLessons ? relatedLessons(q, allLessons) : [];
   return (
     <div className="feedback">
       <div className="question-head">
@@ -137,9 +138,9 @@ export function AnswerFeedback({
         <>
           <h3>関連レッスン</h3>
           <ul>
-            {lessons.map((id) => (
-              <li key={id}>
-                <Link to={`/lessons/${id}`}>{lessonTitles?.get(id)}</Link>
+            {lessons.map((l) => (
+              <li key={l.id}>
+                <Link to={`/lessons/${l.id}`}>{l.title}</Link>
               </li>
             ))}
           </ul>

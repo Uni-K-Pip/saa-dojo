@@ -3,7 +3,17 @@ import { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { loadQuestionIndex } from '../content/loader';
-import { MOCK_SIZES, buildFixedMock, buildRandomMock, firstAttempt, formatDuration, mockResults, timeLimitMsFor } from '../domain/mock';
+import {
+  MOCK_SIZES,
+  buildFixedMock,
+  buildRandomMock,
+  firstAttempt,
+  fixedMockShortage,
+  formatDuration,
+  mockResults,
+  planFixedMock,
+  timeLimitMsFor,
+} from '../domain/mock';
 import { randomRng } from '../domain/rng';
 import type { MockKind } from '../domain/events';
 import { activeSessions, createMockSession } from '../state/sessions';
@@ -17,6 +27,7 @@ export default function MockPage() {
   const navigate = useNavigate();
   const [size, setSize] = useState<number>(65);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState<'mockA' | 'mockB' | null>(null);
   const active = useLiveQuery(async () => (await activeSessions()).filter((s) => s.kind === 'mock'), []);
   const practiceCount = index.filter((q) => q.pool === 'practice').length;
   const results = mockResults(events);
@@ -31,8 +42,9 @@ export default function MockPage() {
   }
 
   async function startFixed(kind: 'mockA' | 'mockB') {
-    if (busy) return;
+    if (busy || !planFixedMock(index, kind).ready) return;
     setBusy(true);
+    setConfirming(null);
     const ids = buildFixedMock(index, kind, randomRng());
     const id = await createMockSession({ mockKind: kind, title: KIND_LABELS[kind], questionIds: ids, timeLimitMs: timeLimitMsFor(ids.length) });
     navigate(`/mock/session/${id}`);
@@ -61,7 +73,8 @@ export default function MockPage() {
       <section className="card" aria-labelledby="random-h">
         <h2 id="random-h">ランダム模試</h2>
         <p className="small muted">
-          演習問題から、まだ解いていない問題を優先して出題します。本番形式はドメイン 1〜4 を 20・17・15・13 問、130 分で解きます。採点は提出後にまとめて行います。
+          演習問題から、まだ解いていない問題を優先して出題します。本番形式はドメイン 1〜4 を 20・17・15・13 問、130
+          分で解きます。採点は提出後にまとめて行います。
         </p>
         <fieldset>
           <legend>問題数</legend>
@@ -75,7 +88,9 @@ export default function MockPage() {
           </div>
         </fieldset>
         {practiceCount < size && practiceCount > 0 && (
-          <p className="notice warn small">演習問題が {practiceCount} 問しかないため、{take} 問で実施します。</p>
+          <p className="notice warn small">
+            演習問題が {practiceCount} 問しかないため、{take} 問で実施します。
+          </p>
         )}
         <div className="btn-row">
           <button type="button" className="btn primary" disabled={take === 0 || busy} onClick={startRandom}>
@@ -90,30 +105,51 @@ export default function MockPage() {
           演習には出てこない本番レベルの問題です。初回の結果が合格準備度の判定に使われます。十分に準備してから、合格準備度の画面で解放してください。
         </p>
         {(['mockA', 'mockB'] as const).map((kind) => {
-          const count = index.filter((q) => q.pool === kind).length;
+          const plan = planFixedMock(index, kind);
           const unlocked = kind === 'mockA' ? settings.unlockMockA : settings.unlockMockB;
           const first = firstAttempt(events, kind);
           return (
-            <div key={kind} className="row-between" style={{ padding: '8px 0', borderTop: '1px solid var(--border)' }}>
-              <span>
-                <strong>{KIND_LABELS[kind]}</strong>（{count} 問）
-                {first && (
-                  <span className="small muted">
-                    {' '}
-                    初回 {Math.round((first.correct / Math.max(1, first.total)) * 100)}%
-                  </span>
+            <div key={kind} style={{ padding: '8px 0', borderTop: '1px solid var(--border)' }}>
+              <div className="row-between">
+                <span>
+                  <strong>{KIND_LABELS[kind]}</strong>
+                  {plan.ready ? `（${plan.ids.length} 問・${Math.round(timeLimitMsFor(plan.ids.length) / 60000)} 分）` : ''}
+                  {first && <span className="small muted"> 初回 {Math.round((first.correct / Math.max(1, first.total)) * 100)}%</span>}
+                </span>
+                {!plan.ready ? (
+                  <span className="badge pending">準備中（問題の検証中）</span>
+                ) : !unlocked ? (
+                  <Link className="btn small" to="/readiness">
+                    🔒 合格準備度の画面で解放
+                  </Link>
+                ) : confirming === kind ? null : (
+                  <button type="button" className="btn small primary" disabled={busy} onClick={() => setConfirming(kind)}>
+                    {first ? 'もう一度解く' : '解く'}
+                  </button>
                 )}
-              </span>
-              {!unlocked ? (
-                <Link className="btn small" to="/readiness">
-                  🔒 合格準備度の画面で解放
-                </Link>
-              ) : count === 0 ? (
-                <span className="small muted">準備中</span>
-              ) : (
-                <button type="button" className="btn small primary" disabled={busy} onClick={() => startFixed(kind)}>
-                  {first ? 'もう一度解く' : '解く'}
-                </button>
+              </div>
+              {!plan.ready && (
+                <p className="small muted" style={{ margin: '4px 0 0' }}>
+                  {fixedMockShortage(plan)}
+                </p>
+              )}
+              {plan.ready && unlocked && confirming === kind && (
+                <div className="notice warn" role="alertdialog" aria-label={`${KIND_LABELS[kind]}を始める前の確認`}>
+                  <p style={{ marginTop: 0 }}>
+                    {plan.ids.length} 問・{Math.round(timeLimitMsFor(plan.ids.length) / 60000)} 分のタイマーは、画面を閉じても止まりません。
+                    {first
+                      ? 'この回は初回ではないため、合格準備度の判定には使われません。'
+                      : 'この回が初回として記録され、合格準備度の判定に使われます（あとから取り消せません）。'}
+                  </p>
+                  <div className="btn-row" style={{ margin: 0 }}>
+                    <button type="button" className="btn primary" disabled={busy} onClick={() => void startFixed(kind)}>
+                      始める
+                    </button>
+                    <button type="button" className="btn" onClick={() => setConfirming(null)}>
+                      やめる
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           );

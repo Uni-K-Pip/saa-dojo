@@ -25,19 +25,19 @@
   "options": [
     {
       "id": "a",
-      "text": "ファイルを Amazon S3 Glacier Deep Archive に移行してアーカイブの単価で保存し、ユーザーには、必要なときに個別に復元を依頼してもらう。",
+      "text": "ファイルを Amazon S3 Glacier Deep Archive に移行してアーカイブの単価で保存し、ユーザーには、必要なときに個別に復元を依頼し、完了を待って使ってもらう。",
       "correct": false,
       "rationale": "日中の業務で使うファイルを、アーカイブにすると、復元に数時間かかり、業務に支障が出ます。SMB での共有もできなくなります。"
     },
     {
       "id": "b",
-      "text": "SSD ストレージのままで、ストレージ容量を現在の使用量にぴったり合わせるまで縮小して、課金される容量を減らす。",
+      "text": "SSD ストレージのままで、ストレージ容量を現在の使用量にぴったり合わせるまで縮小し、スループット容量も最小の値に引き下げて、課金される容量を減らす。",
       "correct": false,
-      "rationale": "FSx for Windows File Server のストレージ容量は、増やせますが、縮小はできません。縮小できたとしても、SSD の単価は変わらず、重複の削減もできません。"
+      "rationale": "FSx for Windows File Server のストレージ容量は、増やせますが、縮小はできません。縮小できたとしても、SSD の単価は変わらず、重複の削減もできません。スループット容量を下げても、ストレージの費用は減りません。"
     },
     {
       "id": "c",
-      "text": "HDD ストレージの Amazon FSx for Windows File Server を新規に作成し、NTFS ACL を保持する設定で AWS DataSync によりデータを移行する。必要な SMB 共有を構成し、データ重複排除を有効にする。",
+      "text": "HDD ストレージの FSx for Windows File Server を新規に作成し、DataSync で NTFS ACL ごと移行して、データ重複排除を有効にする。",
       "correct": true,
       "rationale": "HDD ストレージは SSD より容量あたりの料金が低く、IOPS の要求が低い部門共有に向いています。DataSync は NTFS ACL を移行でき、移行先で SMB 共有を構成して接続先を切り替えれば、利用者は同じ SMB とアクセス許可を使い続けられます。重複排除は、効果を検証して移行先の容量設計に活かせます。"
     },

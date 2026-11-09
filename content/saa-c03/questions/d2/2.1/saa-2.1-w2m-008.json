@@ -24,7 +24,7 @@
   "options": [
     {
       "id": "a",
-      "text": "Classic Load Balancer を作成して、TCP リスナーを設定する。",
+      "text": "Classic Load Balancer を 2 つの AZ のサブネットに配置し、TCP リスナーでデバイスからの接続を EC2 インスタンスへ分散する。",
       "correct": false,
       "rationale": "旧世代のロードバランサーで、新しい構成では推奨されません。Elastic IP アドレスを割り当てることもできません。"
     },
@@ -36,13 +36,13 @@
     },
     {
       "id": "c",
-      "text": "Application Load Balancer を作成して、2 つの AZ のサブネットに配置する。",
+      "text": "Application Load Balancer を 2 つの AZ のサブネットに配置し、リスナーの転送先に EC2 インスタンスのターゲットグループを指定して分散する。",
       "correct": false,
       "rationale": "ALB は HTTP と HTTPS のレイヤー 7 のロードバランサーで、TCP の独自プロトコルには向きません。固定の IP アドレスも割り当てられず、アドレスは変わりうるものです。"
     },
     {
       "id": "d",
-      "text": "Gateway Load Balancer を作成して、デバイスからの接続を EC2 インスタンスに分散する。",
+      "text": "Gateway Load Balancer を作成して 2 つの AZ のサブネットに配置し、デバイスからの接続を EC2 インスタンスに分散する。",
       "correct": false,
       "rationale": "Gateway Load Balancer は、ファイアウォールなどの仮想アプライアンスにトラフィックを通すためのものです。アプリケーションへの接続の分散には使いません。"
     }

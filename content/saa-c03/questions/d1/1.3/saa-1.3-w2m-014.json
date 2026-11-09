@@ -26,25 +26,25 @@
   "options": [
     {
       "id": "a",
-      "text": "東京リージョンの AWS Certificate Manager で証明書をリクエストして、CloudFront のディストリビューションに関連付ける。",
+      "text": "東京リージョンの ACM で DNS 検証の証明書をリクエストし、Route 53 に検証用レコードを作成して、CloudFront に関連付ける。",
       "correct": false,
       "rationale": "CloudFront で使える ACM の証明書は、us-east-1 リージョンのものだけです。東京リージョンの証明書は、CloudFront に関連付けられません。"
     },
     {
       "id": "b",
-      "text": "E メール検証で ACM の証明書をリクエストして、更新のたびに、ドメインの管理者が確認メールの承認を行う。",
+      "text": "us-east-1 の ACM で E メール検証の証明書をリクエストし、更新のたびに、ドメインの管理者が確認メールの承認を行って更新する。",
       "correct": false,
       "rationale": "更新のたびに、手作業の承認が必要になる場合があり、自動化の要件に反します。DNS 検証のほうが、自動更新に向いています。"
     },
     {
       "id": "c",
-      "text": "バージニア北部（us-east-1）リージョンの AWS Certificate Manager で証明書をリクエストし、DNS 検証を使って Route 53 に検証用レコードを作成する。その証明書を、CloudFront のディストリビューションに関連付ける。",
+      "text": "us-east-1 の ACM で証明書をリクエストし、DNS 検証用のレコードを Route 53 に作成して、CloudFront に関連付ける。",
       "correct": true,
       "rationale": "CloudFront で使う ACM の証明書は、us-east-1 リージョンで作成する必要があります。DNS 検証を使えば、更新も自動で行われます。"
     },
     {
       "id": "d",
-      "text": "外部の認証局で取得した証明書を ACM にインポートして、CloudFront に関連付ける。",
+      "text": "外部の認証局で取得した証明書を us-east-1 の ACM にインポートして、CloudFront のディストリビューションに関連付けて配信する。",
       "correct": false,
       "rationale": "インポートした証明書は、ACM では自動更新されません。有効期限が切れる前に、手作業で更新して再インポートする必要があります。"
     }
