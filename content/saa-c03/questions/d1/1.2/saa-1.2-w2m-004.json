@@ -70,10 +70,6 @@
     {
       "title": "AWS Secrets Manager シークレットのローテーション - AWS Secrets Manager ユーザーガイド",
       "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
-    },
-    {
-      "title": "インスタンスメタデータとユーザーデータ - Amazon EC2 ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html"
     }
   ],
   "lessonRefs": [

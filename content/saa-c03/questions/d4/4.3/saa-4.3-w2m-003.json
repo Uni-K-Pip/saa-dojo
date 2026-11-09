@@ -63,10 +63,6 @@
       "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
     },
     {
-      "title": "Amazon RDS のバックアップ - AWS Backup デベロッパーガイド",
-      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/rds-backup.html"
-    },
-    {
       "title": "AWS Backup の機能の対応状況 - AWS Backup デベロッパーガイド",
       "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-feature-availability.html"
     },

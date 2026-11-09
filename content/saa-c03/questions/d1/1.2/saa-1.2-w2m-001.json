@@ -59,10 +59,6 @@
   ],
   "references": [
     {
-      "title": "AWS Network Firewall とは - AWS Network Firewall デベロッパーガイド",
-      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
-    },
-    {
       "title": "ステートフルドメインリストルールグループ - AWS Network Firewall デベロッパーガイド",
       "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
     },
