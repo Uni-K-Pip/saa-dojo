@@ -21,38 +21,38 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある会社の Web アプリケーションは Amazon EC2 インスタンス上で動き、外部の決済 API の接続先 URL や機能フラグなどの設定値と、データベースのパスワードを使います。設定値は頻繁には変わらず、ローテーションは不要です。データベースのパスワードは 30 日ごとの自動ローテーションが求められています。設定値をアプリケーションに埋め込むことは避け、費用も抑えたいと考えています。最も適切な組み合わせはどれですか。",
+  "stem": "ある会社の Web アプリケーションは Amazon EC2 インスタンス上で動き、外部の決済 API の接続先 URL や機能フラグなどの設定値と、Amazon RDS for MySQL のデータベースのパスワードを使います。設定値は頻繁には変わらず、ローテーションは不要です。データベースのパスワードは 30 日ごとの自動ローテーションが求められています。設定値はアプリケーションに埋め込まず、独自のローテーション処理は開発・保守せずに AWS が提供するローテーション機能・テンプレートを使い、その条件で費用を抑えたいと考えています。最も適切な組み合わせはどれですか。",
   "options": [
     {
       "id": "a",
       "text": "すべて Parameter Store の SecureString に保存し、30 日ごとに Amazon EventBridge ルールから Lambda 関数を起動してパスワードを更新する。",
       "correct": false,
-      "rationale": "Parameter Store には自動ローテーションの機能がなく、ローテーション用の処理を自作して運用することになります。要件を満たすマネージドの機能を使うほうが、運用負荷が低くなります。"
+      "rationale": "実現はできますが、Lambda 関数などの独自のローテーション処理を開発・保守する必要があり、独自処理を開発・保守しないという条件を満たしません。AWS が提供するローテーション機能を使うほうが、運用負荷が低くなります。"
     },
     {
       "id": "b",
-      "text": "設定値もデータベースのパスワードも、すべて Secrets Manager に保存し、自動ローテーションを設定する。",
+      "text": "設定値もデータベースのパスワードも、すべて AWS Secrets Manager に保存し、すべてのシークレットに対して自動ローテーションを設定する。",
       "correct": false,
       "rationale": "動作はしますが、Secrets Manager はシークレットごとに月額料金がかかります。ローテーションが不要な設定値まで保存すると、費用が不必要に増えます。"
     },
     {
       "id": "c",
-      "text": "すべてを EC2 の起動テンプレートのユーザーデータに環境変数として記述し、変更時は Auto Scaling グループでインスタンスを入れ替える。",
+      "text": "すべてを EC2 の起動テンプレートのユーザーデータに環境変数として記述し、変更が必要なときは Auto Scaling グループでインスタンスを入れ替える。",
       "correct": false,
-      "rationale": "ユーザーデータはインスタンスから参照でき、パスワードが平文で残ります。ローテーションも手作業になり、アクセス制御や監査もできません。"
+      "rationale": "ユーザーデータにはパスワードが平文で残り、インスタンス内から参照できます。秘密情報がユーザーデータに残るうえ、この構成だけでは 30 日ごとのパスワード自動更新も実現しません。"
     },
     {
       "id": "d",
-      "text": "設定値は AWS Systems Manager Parameter Store の標準パラメータに保存し、データベースのパスワードは AWS Secrets Manager に保存して 30 日ごとの自動ローテーションを設定する。",
+      "text": "設定値は Systems Manager Parameter Store の標準パラメータに保存する。データベースのパスワードは AWS Secrets Manager に保存し、RDS for MySQL 用のローテーション設定で 30 日ごとに自動ローテーションする。",
       "correct": true,
-      "rationale": "標準パラメータは追加料金なしで使えるため、ローテーションが不要な設定値に向きます。自動ローテーションが必要なパスワードには、ローテーションを備えた Secrets Manager が適しています。"
+      "rationale": "標準パラメータの保存は追加料金なしで使えるため、ローテーションが不要な設定値に向きます。パスワードには、RDS for MySQL に対応した自動ローテーション機能を備えた Secrets Manager が適しています。"
     }
   ],
-  "explanation": "設定値や秘密情報をアプリケーションの外に保管するサービスとして、AWS Systems Manager Parameter Store と AWS Secrets Manager があります。\n\nParameter Store は、設定値やパスワードを階層的に保存でき、標準パラメータは追加料金なしで使えます。SecureString で AWS KMS による暗号化もできますが、自動ローテーションの機能は備えていません。Secrets Manager は、シークレットごとに月額料金がかかる一方、Amazon RDS などと連携した自動ローテーションを備えています。\n\nローテーションの要否とコストで使い分けます。ローテーションが不要な一般的な設定値は Parameter Store、ローテーションが必要なデータベースの認証情報は Secrets Manager とするのが、費用を抑えて要件を満たす組み合わせです。",
+  "explanation": "設定値や秘密情報をアプリケーションの外に保管するサービスとして、AWS Systems Manager Parameter Store と AWS Secrets Manager があります。\n\nParameter Store は、設定値やパスワードを階層的に保存できます。標準パラメータの保存と、標準スループットでの API 操作は追加料金なしで使えます（高スループットを有効にした API 操作は課金対象です）。SecureString で AWS KMS による暗号化もできますが、自動ローテーションの機能は備えていません。Secrets Manager は、シークレットごとに月額料金がかかる一方、Amazon RDS などと連携した自動ローテーションを備えています。対象のデータベースに対応するローテーション設定（AWS が提供するテンプレートによるローテーション処理）を有効にして、スケジュールを 30 日ごとに指定します。\n\nローテーションの要否とコストで使い分けます。ローテーションが不要な一般的な設定値は Parameter Store、ローテーションが必要なデータベースの認証情報は Secrets Manager とするのが、独自のローテーション処理を作らず、費用を抑えて要件を満たす組み合わせです。すべてを Secrets Manager に置く方法も動作しますが、ローテーション不要な設定値にもシークレットごとの月額料金がかかります。ユーザーデータは認証や暗号化で保護されておらず、インスタンスから参照できるため、パスワードなどの秘密情報を置くべきではありません。",
   "keyPoints": [
-    "自動ローテーションが必要な認証情報 → Secrets Manager",
-    "ローテーション不要の設定値や低コスト → Parameter Store（標準パラメータは無料）",
-    "ユーザーデータや環境変数への秘密情報の埋め込みは避ける"
+    "自動ローテーションが必要な認証情報 → Secrets Manager（対象 DB に対応するローテーション設定を有効化）",
+    "ローテーション不要の設定値や低コスト → Parameter Store（標準パラメータの保存と標準スループットの API 操作は追加料金なし）",
+    "ユーザーデータは認証なしで参照できるため、パスワードなどの秘密情報は置かない"
   ],
   "references": [
     {
@@ -60,8 +60,20 @@
       "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
     },
     {
+      "title": "AWS Systems Manager の料金",
+      "url": "https://aws.amazon.com/systems-manager/pricing/"
+    },
+    {
       "title": "AWS Secrets Manager とは - AWS Secrets Manager ユーザーガイド",
       "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html"
+    },
+    {
+      "title": "AWS Secrets Manager シークレットのローテーション - AWS Secrets Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
+    },
+    {
+      "title": "インスタンスメタデータとユーザーデータ - Amazon EC2 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html"
     }
   ],
   "lessonRefs": [

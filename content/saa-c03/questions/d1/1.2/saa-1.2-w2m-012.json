@@ -23,7 +23,7 @@
   "difficulty": 3,
   "type": "multiple",
   "selectCount": 2,
-  "stem": "ある企業は、Amazon CloudFront のディストリビューション（AWS WAF 付き）を前面に置き、パブリックサブネットの Application Load Balancer をオリジンにしています。ALB はパブリックサブネットに置いたままにします。利用者が ALB のドメイン名に直接アクセスして WAF を回避することを防ぎ、すべてのリクエストを CloudFront 経由にしたいと考えています。セキュリティグループの IP アドレス範囲の管理は、手作業を避けたいと考えています。この要件を満たす方法を 2 つ選んでください。",
+  "stem": "ある企業は、Amazon CloudFront のディストリビューション（AWS WAF 付き）を前面に置き、パブリックサブネットの Application Load Balancer をオリジンにしています。インターネット向けの ALB は維持したまま、ネットワーク層で CloudFront の送信元に限定したうえで、自社の WAF 付きディストリビューションを経由したリクエストだけを転送したいと考えています。セキュリティグループの IP アドレス範囲の管理は、手作業を避けたいと考えています。組み合わせて実施する対策を 2 つ選んでください。",
   "options": [
     {
       "id": "a",
@@ -39,37 +39,45 @@
     },
     {
       "id": "c",
-      "text": "ALB のセキュリティグループのインバウンドの送信元に、CloudFront の AWS マネージドプレフィックスリストを指定して許可する。",
+      "text": "ALB のセキュリティグループのインバウンドで、他の送信元から対象ポートへの許可ルールを削除し、送信元を CloudFront の AWS マネージドプレフィックスリストだけに限定して許可する。",
       "correct": true,
-      "rationale": "マネージドプレフィックスリストは、CloudFront のオリジンに接続する IP アドレスの範囲を、AWS が自動で更新します。手作業で IP アドレス範囲を管理する必要がありません。"
+      "rationale": "マネージドプレフィックスリストは、CloudFront のオリジンに接続する IP アドレスの範囲を、AWS が自動で更新します。手作業で IP アドレス範囲を管理する必要がありません。0.0.0.0/0 などの広い許可ルールが残っていると制限が効かないため、削除も必要です。"
     },
     {
       "id": "d",
-      "text": "ALB のネットワーク ACL で、ブラウザーの User-Agent が CloudFront のものでないリクエストを拒否する。",
+      "text": "ALB のセキュリティグループのインバウンドで、CloudFront のマネージドプレフィックスリストを送信元とする許可だけを設定し、これで自社のディストリビューションからのリクエストだけを識別して通す。",
       "correct": false,
-      "rationale": "ネットワーク ACL は、IP アドレスとポートで制御します。HTTP のヘッダーは検査できません。User-Agent は偽装も容易です。"
+      "rationale": "プレフィックスリストが示すのは CloudFront 全体のオリジン向け IP アドレス範囲です。他のアカウントのディストリビューションからのリクエストも通ってしまい、自社のディストリビューションを識別する効果はありません。"
     },
     {
       "id": "e",
-      "text": "CloudFront のオリジンにカスタムヘッダーを設定して秘密の値を付け、ALB のリスナールールで、その値が一致するリクエストだけを転送する。",
+      "text": "CloudFront のオリジンにカスタムヘッダーを設定して秘密の値を付け、ALB のリスナールールで、その値が一致するリクエストだけを転送する。一致しないリクエストは、既定ルールで固定レスポンス 403 を返す。",
       "correct": true,
-      "rationale": "CloudFront は、その値を付けてオリジンにリクエストを送ります。ALB が値を検証することで、CloudFront の IP アドレス範囲を使った別の AWS 利用者のディストリビューションなどからの直接のアクセスも拒否できます。"
+      "rationale": "CloudFront は、その値を付けてオリジンにリクエストを送ります。ALB が値を検証し、不一致を 403 で拒否することで、CloudFront の IP アドレス範囲を使った別の AWS 利用者のディストリビューションなどからの直接のアクセスも拒否できます。"
     }
   ],
-  "explanation": "CloudFront の背後のオリジンを、CloudFront 経由のアクセスだけに限定するには、2つの層で制御します。\n\n(1) ネットワーク層: ALB のセキュリティグループで、CloudFront のオリジンに接続する IP アドレス範囲を送信元に許可します。AWS のマネージドプレフィックスリスト（com.amazonaws.global.cloudfront.origin-facing）を指定すると、範囲の更新を AWS が行うため、手作業の管理が不要です。\n\n(2) アプリケーション層: CloudFront のオリジンのカスタムヘッダー（秘密の値）を設定し、ALB のリスナールールで、その値を持つリクエストだけを転送します。プレフィックスリストは CloudFront 全体の範囲を指すため、他のアカウントの CloudFront のディストリビューションからのアクセスも通ってしまいますが、秘密のヘッダーの検証で防げます。\n\nなお、CloudFront の VPC オリジンを使って ALB をプライベートにする方法もありますが、この問題では ALB をパブリックのまま使います。",
+  "explanation": "CloudFront の背後のオリジンを、自社のディストリビューション経由のアクセスだけに限定するには、2つの層で制御します。\n\n(1) ネットワーク層: ALB のセキュリティグループで、他の送信元から対象ポートへの許可ルールを削除し、CloudFront のオリジンに接続する IP アドレス範囲だけを送信元に許可します。AWS のマネージドプレフィックスリスト（com.amazonaws.global.cloudfront.origin-facing）を指定すると、範囲の更新を AWS が行うため、手作業の管理が不要です。\n\n(2) アプリケーション層: CloudFront のオリジンのカスタムヘッダー（秘密の値）を設定し、ALB のリスナールールで、その値を持つリクエストだけを転送します。一致しないリクエストは、既定ルールで固定レスポンス 403 を返します。プレフィックスリストは CloudFront 全体の範囲を指すため、他のアカウントの CloudFront のディストリビューションからのアクセスも通ってしまいますが、秘密のヘッダーの検証で防げます。逆に、ヘッダーの検証だけでは、ALB に直接届くリクエストがネットワーク層まで到達します。2 つを組み合わせて役割を分担させるのが要点です。\n\nヘッダーの名前と値は秘密の認証情報として扱い、定期的にローテーションします。値の漏えいを防ぐため、CloudFront と ALB の間の通信は HTTPS（オリジンプロトコルポリシーを HTTPS のみ）にします。\n\nなお、CloudFront の VPC オリジンを使って ALB をプライベートにする方法もありますが、この問題では ALB をパブリックのまま使います。",
   "keyPoints": [
-    "オリジンを CloudFront 経由のみに制限 → CloudFront のマネージドプレフィックスリスト（SG）＋カスタムヘッダーの検証（ALB）",
-    "プレフィックスリストは、AWS が IP アドレス範囲を自動更新する",
-    "WAF を回避する直接アクセスは、オリジン側で遮断する"
+    "オリジンを自社の CloudFront 経由のみに制限 → CloudFront のマネージドプレフィックスリスト（SG）＋カスタムヘッダーの検証（ALB）",
+    "プレフィックスリストは CloudFront 全体が対象で自社の識別はできない。AWS が IP アドレス範囲を自動更新し、広い許可ルールは削除する",
+    "秘密のヘッダー値は HTTPS で送り、定期的にローテーションする"
   ],
   "references": [
     {
-      "title": "AWS マネージドプレフィックスリストを使って CloudFront からのアクセスを制限する - Amazon CloudFront デベロッパーガイド",
+      "title": "CloudFront のエッジサーバーの IP アドレス範囲とマネージドプレフィックスリスト - Amazon CloudFront デベロッパーガイド",
       "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html"
     },
     {
       "title": "カスタムヘッダーをオリジンへ転送する",
       "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/add-origin-custom-headers.html"
+    },
+    {
+      "title": "Application Load Balancer へのアクセスを制限する - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"
+    },
+    {
+      "title": "セキュリティグループのルール - Amazon VPC ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
     }
   ],
   "lessonRefs": [
