@@ -49,9 +49,9 @@
       "rationale": "SQS は依頼をためておくのに便利ですが、処理する EC2 ワーカーの OS の更新や台数の管理は利用者に残ります。依頼がないときも動かし続けることになり、サーバーを管理したくないという要件に合いません。"
     }
   ],
-  "explanation": "サーバーレスは、利用者がサーバーを用意・管理しなくてよいという意味です。AWS Lambda は代表的なサーバーレスのコンピューティングですが、標準の実行環境の関数は 1 回の呼び出しが最大 15 分（900 秒）までなので、約 40 分かかる処理を分割せずに実行することはできません。なお、Lambda Managed Instances で動かす関数は、非同期呼び出しとイベントソースマッピングによる呼び出しに限り最大 90 分まで設定できます（2026 年 9 月に発表。同期呼び出しは 15 分のままです）。この問題の選択肢は Lambda Managed Instances を使わない前提です。\n\nすでにコンテナイメージになっているなら、サーバーを管理せずにコンテナを動かせる AWS Fargate が適しています。Amazon ECS のスタンドアロンタスクとして、依頼があったときだけ起動できます。Amazon EC2 のワーカーは、SQS で依頼をためても OS の更新や台数の調整を利用者が行う必要があり、常時起動の費用もかかります。",
+  "explanation": "サーバーレスは、利用者がサーバーを用意・管理しなくてよいという意味です。AWS Lambda は代表的なサーバーレスのコンピューティングですが、標準の実行環境の関数は 1 回の呼び出しが最大 15 分（900 秒）までなので、約 40 分かかる処理を分割せずに実行することはできません。なお、Lambda Managed Instances で動かす関数は、非同期呼び出しと、Amazon MQ および Amazon DocumentDB を除くイベントソースマッピングによる呼び出しで、最大 90 分まで設定できます（2026 年 9 月に発表）。同期呼び出しは最大 15 分のままです。この問題の選択肢は Lambda Managed Instances を使わない前提です。\n\nすでにコンテナイメージになっているなら、サーバーを管理せずにコンテナを動かせる AWS Fargate が適しています。Amazon ECS のスタンドアロンタスクとして、依頼があったときだけ起動できます。Amazon EC2 のワーカーは、SQS で依頼をためても OS の更新や台数の調整を利用者が行う必要があり、常時起動の費用もかかります。",
   "keyPoints": [
-    "標準の実行環境の Lambda 関数は 1 回の呼び出しが最大 15 分（Lambda Managed Instances の非同期呼び出しなどは最大 90 分）。長い処理は分割するか、Fargate などを使う",
+    "標準の実行環境の Lambda 関数は 1 回の呼び出しが最大 15 分（Lambda Managed Instances では、非同期呼び出しと、Amazon MQ・Amazon DocumentDB を除くイベントソースマッピングによる呼び出しに限り最大 90 分、同期呼び出しは 15 分）。長い処理は分割するか、Fargate などを使う",
     "コンテナをサーバー管理なしで動かす → AWS Fargate"
   ],
   "references": [
@@ -62,6 +62,10 @@
     {
       "title": "AWS Lambda now supports 90-minute function timeout on Lambda Managed Instances",
       "url": "https://aws.amazon.com/about-aws/whats-new/2026/09/aws-lambda-90-minute-function/"
+    },
+    {
+      "title": "Best practices for Lambda Managed Instances",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-best-practices.html"
     },
     {
       "title": "AWS Fargate for Amazon ECS",
