@@ -14,19 +14,19 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある会社は、オンプレミスの Oracle Database のライセンス費用を削減するため、Amazon Aurora PostgreSQL 互換エディションへの移行を計画しています。データベースには、テーブルのほか、ストアドプロシージャやビューなどのコードも多数あります。移行中も業務を続けるため、停止時間は最小限にする必要があります。最も適切な方法はどれですか。",
+  "stem": "ある会社は、オンプレミスの Oracle Database のライセンス費用を削減するため、Amazon Aurora PostgreSQL-Compatible Editionへの移行を計画しています。データベースには、テーブルのほか、ストアドプロシージャやビューなどのコードも多数あります。移行中も業務を続けるため、停止時間は最小限にする必要があります。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "AWS Schema Conversion Tool（AWS SCT）でスキーマとコードを PostgreSQL 向けに変換し、AWS DMS で全ロードと継続的なレプリケーション（CDC）を行って、切り替える。",
+      "text": "AWS Schema Conversion Tool（AWS SCT）でスキーマとコードを PostgreSQL 向けに変換し、自動で変換できない部分を修正・検証したうえで、AWS DMS で全ロードと継続的なレプリケーション（CDC）を行って、切り替える。",
       "correct": true,
       "rationale": "異なるデータベースエンジン間の移行では、まず SCT でスキーマとストアドプロシージャなどのコードを変換し、DMS でデータを移行します。DMS は全ロードに加えて変更データの継続的なレプリケーションができ、切り替え時の停止時間を最小限にできます。"
     },
     {
       "id": "b",
-      "text": "AWS DMS だけで、スキーマの変換を含めて自動で移行する。",
+      "text": "スキーマやコードの変換は行わず、AWS DMS のデータレプリケーションタスクによる全ロードと CDC だけで移行する。",
       "correct": false,
-      "rationale": "DMS はデータの移行が中心で、Oracle のストアドプロシージャなどのコードを PostgreSQL 向けに変換する機能は SCT が担います。コードを多数含む異種間の移行では、SCT によるスキーマとコードの変換が必要です。"
+      "rationale": "データレプリケーションタスクだけでは、ストアドプロシージャなどのコードを変換できません。AWS SCT または DMS Schema Conversion などで、別途スキーマとコードを変換する必要があります。"
     },
     {
       "id": "c",
@@ -38,14 +38,14 @@
       "id": "d",
       "text": "Amazon EC2 に Oracle をインストールして、データベースを EC2 に移す。",
       "correct": false,
-      "rationale": "Oracle のライセンス費用を削減する目的に反します。EC2 では OS やデータベースの管理も自分で行う必要があります。"
+      "rationale": "指定された Aurora PostgreSQL への移行を実現せず、Oracle の利用と管理が継続します。"
     }
   ],
-  "explanation": "データベースの移行は、移行元と移行先のエンジンが同じか違うかで進め方が変わります。\n\n・同種間の移行（例: MySQL → Aurora MySQL）: ネイティブのツール（ダンプ／リストア、スナップショット）や AWS DMS で移行できる。スキーマはそのまま使える。\n・異種間の移行（例: Oracle → Aurora PostgreSQL）: スキーマとコードを移行先のエンジンに合わせて変換する必要がある。AWS Schema Conversion Tool（AWS SCT）が、スキーマ、ビュー、ストアドプロシージャなどを変換し、変換できない部分を報告する。変換後に AWS Database Migration Service（AWS DMS）でデータを移行する。\n\nDMS は、全ロードに加えて、移行元の変更を継続的に移行先へ反映する CDC（変更データキャプチャ）を行えます。移行元を動かしたまま同期し、切り替えの瞬間だけ短く停止すればよいので、停止時間を最小限にできます。商用エンジンから Aurora などのオープンソース互換エンジンへ移行すると、ライセンス費用を削減できます。",
+  "explanation": "データベースの移行は、移行元と移行先のエンジンが同じか違うかで進め方が変わります。\n\n・同種間の移行（例: MySQL → Aurora MySQL）: ネイティブのツール（ダンプ／リストア、スナップショット）や AWS DMS で移行できる。通常は異種エンジン間のようなスキーマの変換は不要だが、バージョンや機能の互換性の確認は必要。\n・異種間の移行（例: Oracle → Aurora PostgreSQL）: スキーマとコードを移行先のエンジンに合わせて変換する必要がある。AWS Schema Conversion Tool（AWS SCT）または DMS Schema Conversion が、スキーマ、ビュー、ストアドプロシージャなどを変換し、自動で変換できない部分を報告する。その部分は手動で修正して検証する。変換後に AWS Database Migration Service（AWS DMS）のデータレプリケーションタスクでデータを移行する。\n\nDMS は、全ロードに加えて、移行元の変更を継続的に移行先へ反映する CDC（変更データキャプチャ）を行えます。移行元を動かしたまま同期し、切り替えの瞬間だけ短く停止すればよいので、停止時間を最小限にできます。商用エンジンから Aurora などのオープンソース互換エンジンへ移行すると、ライセンス費用を削減できます。",
   "keyPoints": [
-    "異なるエンジン間の移行 → SCT でスキーマ・コードを変換し、DMS でデータを移行",
+    "異なるエンジン間の移行 → SCT または DMS Schema Conversion でスキーマ・コードを変換し、DMS でデータを移行",
     "停止時間を最小限にする → DMS の全ロード＋CDC（継続的なレプリケーション）で同期してから切り替える",
-    "同種間の移行ではスキーマの変換は不要。商用エンジンから Aurora への移行でライセンス費用を削減できる"
+    "同種間の移行では通常スキーマの変換は不要（互換性の確認は必要）。商用エンジンから Aurora への移行でライセンス費用を削減できる"
   ],
   "references": [
     {
@@ -55,6 +55,10 @@
     {
       "title": "What is the AWS Schema Conversion Tool? - AWS SCT",
       "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    },
+    {
+      "title": "Converting database schemas using DMS Schema Conversion - AWS Database Migration Service",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html"
     }
   ],
   "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
