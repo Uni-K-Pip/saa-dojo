@@ -16,6 +16,7 @@
   "qualifier": "operational",
   "tags": [
     "AWS Cost and Usage Report",
+    "CUR 2.0",
     "Athena",
     "コスト分析",
     "リソース単位"
@@ -23,13 +24,13 @@
   "difficulty": 1,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある SaaS 企業は、AWS の利用料金を、個々の EBS ボリュームや S3 バケットなどのリソース ID 単位、時間単位で集計し、自社が持つ顧客別の利用データと突き合わせて分析したいと考えています。分析は SQL で行い、日次で更新されるデータを継続的に使います。この要件に最も適したコスト管理ツールの使い方はどれですか。",
+  "stem": "ある SaaS 企業は、AWS の利用料金を、個々の EBS ボリュームや S3 バケットなどのリソース ID 単位、時間単位で集計し、自社が持つ顧客別の利用データと突き合わせて分析したいと考えています。分析は SQL で行い、少なくとも日次で更新されるデータを継続的に使います。この要件に最も適したコスト管理ツールの使い方はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "AWS Cost Explorer の画面で、サービスとリソースでグループ化したグラフを毎日確認して、結果を手作業で自社のデータに転記する。",
+      "text": "AWS Cost Explorer からサービス別・日別のコストデータを定期取得して S3 に保存し、Athena で顧客別データと結合する。",
       "correct": false,
-      "rationale": "Cost Explorer は画面上でコストを可視化・予測するためのツールです。自社の顧客別データと SQL で突き合わせる分析には向かず、手作業の転記が必要になります。"
+      "rationale": "Cost Explorer のデータはサービス別・日別の集計が中心です。時間単位のデータにはリソース単位の情報が含まれず、リソース単位のデータは日単位（時間単位のリソースデータは EC2 インスタンスのみ）のため、必要なリソース別・時間別の粒度を満たしません。"
     },
     {
       "id": "b",
@@ -39,9 +40,9 @@
     },
     {
       "id": "c",
-      "text": "AWS Cost and Usage Report（CUR）をリソース ID を含めて時間単位で S3 バケットに配信し、Amazon Athena で SQL によって分析する。",
+      "text": "AWS Data Exports で CUR 2.0 のリソース ID を含める設定と時間単位の粒度を選択し、Amazon S3 に配信する。Amazon Athena で顧客別データと SQL で結合して分析する。",
       "correct": true,
-      "rationale": "CUR は最も詳細なコスト・使用量データを提供し、リソース単位・時間単位で、自分の S3 バケットに配信されます。Athena から SQL で直接クエリでき、顧客別の利用データとの突き合わせも可能です。更新も日次で自動的に行われます。"
+      "rationale": "AWS Data Exports の CUR 2.0 は最も詳細なコスト・使用量データを提供します。INCLUDE_RESOURCES を TRUE、TIME_GRANULARITY を HOURLY にすると、リソース単位・時間単位の明細が S3 に配信され、Athena から SQL でクエリして顧客別の利用データと突き合わせられます。更新は少なくとも日次で行われます。ただし、リソース ID は全明細にあるわけではなく、データ転送や API リクエスト、割引、クレジット、税などでは空欄のため、それらには別途配賦ルールが必要です。"
     },
     {
       "id": "d",
@@ -50,21 +51,29 @@
       "rationale": "AWS Pricing Calculator は、これから使う構成の料金を見積もるためのツールです。すでに発生した実際の利用料金を分析する用途には使えません。"
     }
   ],
-  "explanation": "コスト管理ツールは、使いどころで選び分けます。AWS Cost Explorer は、過去の費用を画面で可視化して傾向を調べ、将来を予測するのに向いています。AWS Budgets は、予算を決めて、超えそうなときや超えたときに通知するためのツールです。AWS Pricing Calculator は、これから使う構成の料金を見積もるツールです。\n\n一方、AWS Cost and Usage Report（CUR）は、最も詳細なコスト・使用量データを提供します。製品・使用タイプ・オペレーションの組み合わせごとの明細が、リソース ID やタグを含めて、時間・日・月の単位で、自分の S3 バケットに CSV などの形式で届きます。Amazon Athena や Amazon Redshift、Amazon Quick で SQL や BI から分析できるため、自社データとの突き合わせや独自の集計に向いています。",
+  "explanation": "コスト管理ツールは、使いどころで選び分けます。AWS Cost Explorer は、過去の費用を画面で可視化して傾向を調べ、将来を予測するのに向いています。AWS Budgets は、予算を決めて、超えそうなときや超えたときに通知するためのツールです。AWS Pricing Calculator は、これから使う構成の料金を見積もるツールです。\n\n一方、最も詳細なコスト・使用量データは、AWS Data Exports の CUR 2.0（Cost and Usage Report 2.0）で得られます。AWS は CUR 2.0 を、詳細なコスト・使用量データを受け取る新しい推奨の方法としています（従来の CUR も利用できますが、新規に構築するなら CUR 2.0 が適切です）。テーブル構成で INCLUDE_RESOURCES を TRUE にするとリソース ID の列が加わってリソース単位の明細になり、TIME_GRANULARITY を HOURLY にすると時間単位の明細になります。データは CSV または Parquet 形式で自分の S3 バケットに届き、少なくとも日次で更新されます。Amazon Athena や Amazon Redshift、Amazon QuickSight で SQL や BI から分析できるため、自社データとの突き合わせや独自の集計に向いています。\n\nなお、リソース ID はすべての明細に入るわけではありません。データ転送や API リクエストなどリソースに関連付けられない料金や、割引・クレジット・税の明細では空欄になります。そうした料金をリソース単位に直接割り当てることはできないので、顧客別に配賦するには、使用量比率などの別の配賦ルールが必要です。",
   "keyPoints": [
-    "リソース単位・時間単位の詳細な料金データを SQL で分析したい → AWS Cost and Usage Report を S3 に配信して Athena で分析",
-    "傾向の把握と将来予測を画面で → AWS Cost Explorer",
-    "予算超過の通知 → AWS Budgets",
-    "今後の構成の見積もり → AWS Pricing Calculator"
+    "リソース単位・時間単位の詳細な料金データを SQL で分析したい → AWS Data Exports の CUR 2.0 を S3 に配信して Athena で分析",
+    "CUR 2.0 では INCLUDE_RESOURCES でリソース ID、TIME_GRANULARITY で時間単位の粒度を選ぶ。更新は少なくとも日次",
+    "リソース ID は全明細にあるわけではない（データ転送・割引・税などは空欄）。別途配賦ルールが必要",
+    "傾向の把握と将来予測を画面で → Cost Explorer。予算超過の通知 → Budgets。今後の構成の見積もり → Pricing Calculator"
   ],
   "references": [
     {
-      "title": "What are AWS Cost and Usage Reports? - AWS Cost and Usage Reports",
-      "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+      "title": "What is AWS Data Exports? - AWS Data Exports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"
     },
     {
-      "title": "AWS Cost Management",
-      "url": "https://aws.amazon.com/aws-cost-management/"
+      "title": "Cost and Usage Report (CUR) 2.0 - AWS Data Exports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html"
+    },
+    {
+      "title": "Understanding export delivery - AWS Data Exports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+    },
+    {
+      "title": "Line item details - AWS Cost and Usage Reports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/Lineitem-columns.html"
     }
   ],
   "lessonRefs": [
