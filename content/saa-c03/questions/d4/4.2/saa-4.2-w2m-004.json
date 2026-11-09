@@ -1,0 +1,82 @@
+{
+  "id": "saa-4.2-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": [
+    "4.2-K8",
+    "4.2-S3",
+    "4.2-K4"
+  ],
+  "services": [
+    "AWS Fargate",
+    "Amazon Elastic Container Service",
+    "Amazon Simple Queue Service"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Fargate Spot",
+    "キャパシティプロバイダー",
+    "中断に耐える処理"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon ECS の AWS Fargate で、Linux コンテナの画像変換ワーカーを動かしています。現在の CPU・メモリ設定は、負荷試験で適正化済みです。ワーカーは Amazon SQS のキューからメッセージを取得して処理し、処理が成功した後にのみメッセージを削除します。1 件の処理は数分で終わり、処理が中断されても、未削除のメッセージは可視性タイムアウトの後に再び取得されるため、問題はありません。容量不足による処理開始の遅延も許容できます。利用量は日ごとに変動するので、長期のコミットメントは避けたく、サーバーの管理は増やしたくありません。Fargate の費用を下げる最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Fargate のタスク定義の CPU とメモリを最大の値に変更して、処理を早く終わらせる。",
+      "correct": false,
+      "rationale": "タスクの料金は、割り当てた CPU・メモリの量と実行時間などで決まります。最大値への変更だけでは総費用の削減を保証できず、割り当て量と実行時間の両方で評価する必要があります。"
+    },
+    {
+      "id": "b",
+      "text": "ECS サービスのキャパシティプロバイダー戦略で、FARGATE_SPOT を使うように設定する。",
+      "correct": true,
+      "rationale": "Fargate Spot は、Fargate の余剰の容量を割引価格で使えるオプションです。中断される可能性があるため、再処理できるワーカーに適しています。コミットメントやサーバー管理は不要です。容量不足の間は起動が遅れますが、本問はその遅延を許容できます。"
+    },
+    {
+      "id": "c",
+      "text": "EC2 起動タイプの ECS クラスターに移行し、スポットインスタンスのキャパシティプロバイダーを使う。",
+      "correct": false,
+      "rationale": "EC2 のインスタンスの管理（パッチ適用、容量の管理）が必要になり、サーバーの管理を増やしたくない要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Compute Savings Plans を 1 年のコミットメントで購入し、Fargate の使用量に割引を適用する。",
+      "correct": false,
+      "rationale": "割引は得られますが、1 年の契約で、利用量が変動する中では、使われない分の費用が出ます。長期のコミットメントを避ける要件に反します。"
+    }
+  ],
+  "explanation": "AWS Fargate には、通常のオンデマンドに加えて、Fargate Spot があります。Fargate Spot は、AWS の余剰のコンピューティング容量を、オンデマンドより割引された料金で使えるオプションで、容量が必要になると、2 分前の警告のあとにタスクが中断されます。したがって、中断に耐えられる処理（キューからのバッチ処理、再試行できるワーカー、開発・テスト環境など）に向いています。Fargate Spot は Linux コンテナ向けで、Windows コンテナでは使えません。本問は Linux コンテナが前提です。\n\nECS では、キャパシティプロバイダー戦略に FARGATE_SPOT を指定し、FARGATE（オンデマンド）との割合も組み合わせられます。たとえば、一部は FARGATE の最小数にして、残りを FARGATE_SPOT にします。Fargate Spot の容量が不足すると、タスクの起動が遅延します。その場合、オンデマンドの FARGATE へ自動的に切り替わるわけではありません。本問は、遅延を許容できるので、FARGATE_SPOT を使えます。\n\nメッセージは、処理が成功した後にのみ削除します。削除されなかったメッセージは、受信後もキュー内に残り、可視性タイムアウトの後に再び取得できるようになるため、中断されても再処理されます。\n\nCompute Savings Plans も Fargate に適用できますが、1 年または 3 年のコミットメントが必要です。EC2 に移行すると、インスタンスの管理が増えます。CPU とメモリを最大にしても、料金は割り当てた量と実行時間などで決まるため、総費用の削減は保証できません。",
+  "keyPoints": [
+    "中断に耐えるキュー処理の Fargate の費用削減 → Fargate Spot（キャパシティプロバイダー戦略に FARGATE_SPOT）",
+    "Fargate Spot は Linux コンテナ向けで Windows コンテナは非対応。容量不足時は起動が遅延し、FARGATE へは自動で切り替わらない",
+    "長期のコミットメントを避けるなら Savings Plans より Spot",
+    "メッセージは処理の成功後にのみ削除し、未削除のメッセージは可視性タイムアウトの後に再取得される"
+  ],
+  "references": [
+    {
+      "title": "AWS Fargate キャパシティプロバイダー - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html"
+    },
+    {
+      "title": "Fargate 上の Windows コンテナに関する考慮事項 - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-considerations.html"
+    },
+    {
+      "title": "Amazon SQS の可視性タイムアウト - Amazon SQS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
+    },
+    {
+      "title": "AWS Fargate の料金",
+      "url": "https://aws.amazon.com/fargate/pricing/"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,76 @@
+{
+  "id": "saa-4.4-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": [
+    "4.4-K7",
+    "4.4-K6",
+    "4.4-S5"
+  ],
+  "services": [
+    "Amazon Route 53",
+    "AWS Direct Connect",
+    "Amazon Virtual Private Cloud",
+    "AWS Resource Access Manager"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Route 53 Resolver",
+    "転送ルールの共有",
+    "ハイブリッド DNS"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Organizations の複数のアカウントに、合計 50 の VPC を持っています。オンプレミスとは Direct Connect で接続されています。すべての VPC のワークロードが、オンプレミスのドメイン corp.example.com の名前を解決する必要があります。VPC ごとにアウトバウンドエンドポイントを作ると、エンドポイントの ENI の時間料金が VPC の数だけかかるため、費用を抑えたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "オンプレミスのドメインのレコードを、各 VPC のプライベートホストゾーンに手作業でコピーして管理する。",
+      "correct": false,
+      "rationale": "レコードが変わるたびに 50 か所を更新する必要があります。オンプレミスの DNS との同期の運用が大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "各 VPC の EC2 インスタンスに、オンプレミスの DNS サーバーの IP アドレスを直接指定して、名前を解決させる。",
+      "correct": false,
+      "rationale": "インスタンスごとの設定が必要で、運用の手間が大きくなります。VPC の内部の名前の解決との併用も、難しくなります。"
+    },
+    {
+      "id": "c",
+      "text": "50 の VPC それぞれに、アウトバウンドエンドポイントと転送ルールを作成する。",
+      "correct": false,
+      "rationale": "VPC の数だけエンドポイントの ENI の時間料金がかかります。費用を抑える要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "共有サービス用の VPC に、Route 53 Resolver のアウトバウンドエンドポイントと転送ルールを 1 組作成する。ルールを AWS RAM で他のアカウントと共有して、各 VPC に関連付ける。",
+      "correct": true,
+      "rationale": "1 つのアウトバウンドエンドポイントを、転送ルールの共有で複数の VPC とアカウントが使えます。エンドポイントの数が減り、時間料金を抑えられます。"
+    }
+  ],
+  "explanation": "Route 53 Resolver のアウトバウンドエンドポイントは、VPC 内の ENI を使って、VPC からオンプレミスなどの DNS サーバーに、問い合わせを転送します。エンドポイントごと、ENI ごとの時間料金と、処理した問い合わせ数に応じた料金がかかります。転送ルールは、特定のドメイン名の問い合わせを、どの DNS サーバーに転送するかを定義し、VPC に関連付けて使います。\n\nVPC が多い環境では、エンドポイントとルールを、共有サービス用の VPC に集約します。転送ルールを AWS Resource Access Manager（RAM）で組織内の他のアカウントと共有し、各アカウントが自分の VPC にルールを関連付けます。VPC の中のリゾルバーからの問い合わせは、ルールに従って、共有のアウトバウンドエンドポイントに転送されます。これで、エンドポイントの数と運用の手間を減らせます。\n\nVPC ごとのエンドポイントは費用が積み上がります。インスタンスごとの設定やレコードの手動コピーは、運用の負荷が大きくなります。",
+  "keyPoints": [
+    "多数の VPC でハイブリッド DNS の費用削減 → Resolver のアウトバウンドエンドポイントと転送ルールを集約し、RAM で共有",
+    "転送ルールを各 VPC に関連付けて使う",
+    "エンドポイントは ENI の時間料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "Route 53 Resolver ルールの共有 - Amazon Route 53 デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-rules-managing.html#resolver-rules-managing-sharing"
+    },
+    {
+      "title": "Route 53 Resolver エンドポイントを使用したハイブリッド DNS",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-hybrid-and-multi-vpc"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

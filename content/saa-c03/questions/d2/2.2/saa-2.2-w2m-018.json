@@ -1,0 +1,73 @@
+{
+  "id": "saa-2.2-w2m-018",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-S3",
+    "2.2-S4",
+    "2.2-K8"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon EC2 Auto Scaling",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "N+1 の容量設計",
+    "AZ の障害",
+    "Auto Scaling"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Application Load Balancer の背後の Auto Scaling グループで、ステートレスな Web アプリケーションを運用しています。通常のピーク時には、同じ性能の EC2 インスタンスが合計 6 台分必要です。1 つの AZ が利用できなくなっても、ピーク時の負荷を処理し続ける必要があります。このとき、インスタンスの合計台数を最小にする、最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "2 つの AZ に、インスタンスを 6 台ずつ（合計 12 台）配置する。",
+      "correct": false,
+      "rationale": "1 つの AZ を失っても 6 台が残るため要件は満たせますが、合計 12 台になります。AZ を 3 つにするより、台数が多くなります。"
+    },
+    {
+      "id": "b",
+      "text": "3 つの AZ に、インスタンスを 3 台ずつ（合計 9 台）配置する。",
+      "correct": true,
+      "rationale": "1 つの AZ を失っても、残りの 2 つの AZ に合計 6 台が残り、ピーク時の負荷を処理できます。AZ の数を増やすほど、必要な余剰分の割合が小さくなります。"
+    },
+    {
+      "id": "c",
+      "text": "1 つの AZ に 6 台を配置し、AZ の障害時に、別の AZ で Auto Scaling が新しいインスタンスを起動するのを待つ。",
+      "correct": false,
+      "rationale": "1 つの AZ に配置すると、その AZ の障害時に、全台が同時に失われます。起動を待つ間は、サービスが停止します。"
+    },
+    {
+      "id": "d",
+      "text": "2 つの AZ に、インスタンスを 3 台ずつ（合計 6 台）配置する。",
+      "correct": false,
+      "rationale": "1 つの AZ を失うと、3 台しか残らず、ピーク時に必要な 6 台に足りません。容量が不足します。"
+    }
+  ],
+  "explanation": "高可用性の設計では、1 つの AZ が利用できなくなっても必要な容量を保つように、余剰の容量（N+1 など）を持たせます。AZ の数を増やすほど、1 つの AZ の割合が小さくなり、余剰の台数は少なくて済みます。\n\nこの問題では、必要な台数が 6 台です。AZ が 2 つの場合は、1 つを失うと残りの AZ で 6 台を担う必要があり、各 AZ に 6 台ずつ（合計 12 台、必要台数の 200%）が必要です。AZ が 3 つの場合は、1 つを失っても残り 2 つで 6 台を担えばよいため、各 AZ に 3 台ずつ（合計 9 台、必要台数の 150%）で足ります。コストを最小にしながら、高可用性を確保するには、3 つの AZ に分散するのが有効です。\n\nAuto Scaling グループを複数の AZ に分散させ、ALB も複数の AZ で有効にします。1 つの AZ では、AZ の障害に備えられません。",
+  "keyPoints": [
+    "AZ 障害に備えた容量設計 → N+1。AZ の数が多いほど、必要な余剰分は少なくなる",
+    "必要台数 N、AZ 数 k なら、1 つの AZ を失っても N 台を保つには、N×k/(k−1) 台が目安",
+    "単一 AZ の構成や、障害時の起動待ちは、可用性の要件を満たさない"
+  ],
+  "references": [
+    {
+      "title": "信頼性の柱 - AWS Well-Architected Framework",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+    },
+    {
+      "title": "Auto Scaling グループに複数のアベイラビリティーゾーンを追加する",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-add-availability-zone.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

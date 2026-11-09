@@ -1,0 +1,75 @@
+{
+  "id": "saa-1.2-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K4",
+    "1.2-K5",
+    "1.2-K1"
+  ],
+  "services": [
+    "Amazon Cognito",
+    "Amazon Simple Storage Service",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Cognito ID プール",
+    "一時的な認証情報",
+    "モバイルアプリ"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、モバイルアプリのユーザーが撮影した写真を Amazon S3 に直接アップロードできるようにします。ユーザーはアプリでメールアドレスとパスワードを使ってサインアップとサインインを行い、各ユーザーは S3 の自分用のプレフィックスにだけアップロードできる必要があります。アプリに AWS の長期の認証情報を埋め込むことや、認証基盤を自前で運用することは避けたいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "アプリに、S3 への書き込み権限だけを持つ IAM ユーザーのアクセスキーを埋め込み、アプリ側でユーザーごとのプレフィックスを付けてアップロードする。",
+      "correct": false,
+      "rationale": "長期の認証情報をアプリに埋め込むことになり、取り出されると誰でも S3 に書き込めます。ユーザーごとの制限もアプリ任せで、強制できません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Cognito のユーザープールだけを使い、サインインで得られたトークンを S3 へのリクエストに直接使う。",
+      "correct": false,
+      "rationale": "ユーザープールのトークンは、S3 が AWS の認証情報として直接受け付けるものではありません。AWS のサービスを呼び出す一時的な認証情報には、ID プールが必要です。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Cognito のユーザープールでサインインを管理し、ID プールで認証済みユーザー用の IAM ロールの一時的な認証情報を取得させる。IAM ポリシーでは、ユーザーの ID を表すポリシー変数を使って、プレフィックスを制限する。",
+      "correct": true,
+      "rationale": "ユーザープールがサインインを、ID プールが一時的な AWS の認証情報の発行を担います。ポリシー変数で、ユーザーごとに S3 のプレフィックスを制限できます。長期の認証情報も不要です。"
+    },
+    {
+      "id": "d",
+      "text": "ユーザーのサインアップのたびに IAM ユーザーを作成して、ユーザーごとにアクセスキーを払い出す。",
+      "correct": false,
+      "rationale": "IAM ユーザーとアクセスキーの管理が大量に発生し、長期の認証情報を配布することになります。モバイルアプリの一般ユーザーの管理には向きません。"
+    }
+  ],
+  "explanation": "Amazon Cognito には、2つの主要な機能があります。ユーザープールは、サインアップとサインインの機能を持つユーザーディレクトリで、認証が成功するとトークンを発行します。ID プールは、認証されたユーザーに対して、AWS STS を通じて IAM ロールの一時的な AWS の認証情報を発行し、AWS のサービスへ直接アクセスさせる機能です。\n\nモバイルアプリが S3 に直接アップロードする構成では、ユーザープールで認証したトークンを ID プールに渡して一時的な認証情報を得ます。認証済みユーザー用のロールの IAM ポリシーで、${cognito-identity.amazonaws.com:sub} のポリシー変数を S3 のキーのプレフィックスに使うと、ユーザーごとのプレフィックスだけに制限できます。\n\nアクセスキーの埋め込みや、ユーザーごとの IAM ユーザーは、長期の認証情報を扱うことになり不適切です。",
+  "keyPoints": [
+    "アプリのユーザーの認証 → Cognito ユーザープール、AWS リソースへの直接アクセス → ID プール（一時的な認証情報）",
+    "ユーザーごとの制限は IAM のポリシー変数（${cognito-identity.amazonaws.com:sub}）",
+    "アプリに長期の認証情報を埋め込まない"
+  ],
+  "references": [
+    {
+      "title": "Amazon Cognito とは - Amazon Cognito デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+    },
+    {
+      "title": "Amazon Cognito ID プール - Amazon Cognito デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

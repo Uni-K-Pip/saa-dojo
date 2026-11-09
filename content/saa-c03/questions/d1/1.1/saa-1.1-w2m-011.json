@@ -1,0 +1,79 @@
+{
+  "id": "saa-1.1-w2m-011",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S4",
+    "1.1-K1"
+  ],
+  "services": [
+    "AWS Organizations",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "SCP",
+    "権限の上限",
+    "管理アカウント"
+  ],
+  "difficulty": 3,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある企業は、AWS Organizations で開発 OU に SCP をアタッチして、開発用のメンバーアカウントの権限を制限しようとしています。セキュリティチームは、SCP と IAM ポリシーの関係や、SCP が適用されない対象を正しく把握したうえで、ガードレールを設計する必要があります。SCP の動作について、正しい説明を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "SCP で許可した操作は、OU 内のメンバーアカウントのすべての IAM ユーザーに自動的に付与される。",
+      "correct": false,
+      "rationale": "SCP は権限を付与しません。操作を許可しても、IAM ポリシーなどで権限を付与しない限り、ユーザーは実行できません。"
+    },
+    {
+      "id": "b",
+      "text": "SCP は権限を付与せず、許可できる操作の上限を定める。IAM ポリシーで許可されていても、SCP で許可されていない操作は実行できない。",
+      "correct": true,
+      "rationale": "SCP は IAM ポリシーを置き換えるものではなく、フィルターとして働きます。実際に許可されるのは、SCP と IAM ポリシーの両方で許可されている操作だけです。"
+    },
+    {
+      "id": "c",
+      "text": "SCP は、組織の管理アカウントのユーザーとロールには適用されない。",
+      "correct": true,
+      "rationale": "管理アカウントは SCP の制限を受けません。そのため、管理アカウントにはワークロードを置かず、使用を最小限にします。"
+    },
+    {
+      "id": "d",
+      "text": "親の OU にアタッチした SCP で拒否された操作を、子の OU にアタッチした SCP の許可で、再び許可できる。",
+      "correct": false,
+      "rationale": "SCP の評価では、階層の途中で許可されていない操作は、下位でも許可されません。上位の拒否は、下位の SCP で上書きできません。"
+    },
+    {
+      "id": "e",
+      "text": "SCP は、メンバーアカウントのサービスにリンクされたロールが行う操作も制限する。",
+      "correct": false,
+      "rationale": "SCP は、サービスにリンクされたロールには適用されません。サービスが自身の機能を実行するための操作は、SCP で止められません。"
+    }
+  ],
+  "explanation": "SCP は、AWS Organizations で組織、OU、アカウントにアタッチして、メンバーアカウントのプリンシパルが使える権限の上限（ガードレール）を定めるポリシーです。\n\n重要な点は次のとおりです。(1) SCP は権限を付与せず、上限を定めるだけ。実効の権限は、SCP とアイデンティティベースのポリシー（またはリソースベースのポリシー）の両方で許可された範囲。(2) 管理アカウントには適用されない。(3) サービスにリンクされたロールには適用されない。(4) 階層をまたいで評価され、ルート、OU、アカウントのすべてのレベルで許可されている操作だけが有効になる。上位で許可していない操作は、下位の SCP で許可しても実行できない。(5) 拒否（Deny）は許可より優先され、下位の SCP で上書きできない。\n\nそのため、SCP で許可しても権限が付与されるわけではなく、親での拒否は子で覆せません。",
+  "keyPoints": [
+    "SCP は権限を付与せず、上限を定める（IAM との積集合）",
+    "管理アカウントとサービスにリンクされたロールには SCP が適用されない",
+    "上位の OU で許可されていない操作は、下位で許可しても使えない"
+  ],
+  "references": [
+    {
+      "title": "SCP の評価 - AWS Organizations ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
+    },
+    {
+      "title": "サービスコントロールポリシー (SCP)",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

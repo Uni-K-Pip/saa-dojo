@@ -3,6 +3,8 @@ import { HashRouter, Route, Routes } from 'react-router';
 import { Layout } from './components/Layout';
 import { StudyProvider, useStudy } from './state/study';
 import { applyAppearance } from './appearance';
+import { UpdateToast } from './components/UpdateToast';
+import { startAutoSync } from './sync/sync';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const PracticeSetupPage = lazy(() => import('./pages/PracticeSetupPage'));
@@ -10,6 +12,18 @@ const PracticeSessionPage = lazy(() => import('./pages/PracticeSessionPage'));
 const MockPage = lazy(() => import('./pages/MockPage'));
 const MockSessionPage = lazy(() => import('./pages/MockSessionPage'));
 const MockResultPage = lazy(() => import('./pages/MockResultPage'));
+const BasicsPage = lazy(() => import('./pages/BasicsPage'));
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const LessonPage = lazy(() => import('./pages/LessonPage'));
+const ReviewPage = lazy(() => import('./pages/ReviewPage'));
+const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
+const ReadinessPage = lazy(() => import('./pages/ReadinessPage'));
+const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
+const DocsPage = lazy(() => import('./pages/DocsPage'));
+const DocPage = lazy(() => import('./pages/DocsPage').then((m) => ({ default: m.DocPage })));
+const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
+const DrillPage = lazy(() => import('./pages/DrillPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -19,6 +33,16 @@ function Appearance() {
   useEffect(() => {
     applyAppearance(settings.theme, settings.fontSize);
   }, [settings.theme, settings.fontSize]);
+  return null;
+}
+
+// 起動時の処理: ブラウザがデータを勝手に消さないよう永続化を求め（結果は設定画面で表示する）、同期を始める
+function BackgroundTasks() {
+  useEffect(() => {
+    void navigator.storage?.persist?.().catch(() => false);
+  }, []);
+  // 同期（トークンがあるときだけ動く）
+  useEffect(() => startAutoSync(), []);
   return null;
 }
 
@@ -32,6 +56,18 @@ export function AppRoutes() {
         <Route path="mock" element={<MockPage />} />
         <Route path="mock/session/:id" element={<MockSessionPage />} />
         <Route path="mock/result/:id" element={<MockResultPage />} />
+        <Route path="basics" element={<BasicsPage />} />
+        <Route path="roadmap" element={<RoadmapPage />} />
+        <Route path="lessons/:id" element={<LessonPage />} />
+        <Route path="review" element={<ReviewPage />} />
+        <Route path="flashcards" element={<FlashcardsPage />} />
+        <Route path="readiness" element={<ReadinessPage />} />
+        <Route path="glossary" element={<GlossaryPage />} />
+        <Route path="docs" element={<DocsPage />} />
+        <Route path="docs/:id" element={<DocPage />} />
+        <Route path="analysis" element={<AnalysisPage />} />
+        <Route path="drill" element={<DrillPage />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
         <Route path="*" element={<NotFoundPage />} />
@@ -44,9 +80,11 @@ export default function App() {
   return (
     <StudyProvider>
       <Appearance />
+      <BackgroundTasks />
       <HashRouter>
         <AppRoutes />
       </HashRouter>
+      <UpdateToast />
     </StudyProvider>
   );
 }

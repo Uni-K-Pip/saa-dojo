@@ -1,0 +1,67 @@
+{
+  "id": "saa-4.2-w2a-009",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K2"],
+  "services": [
+    "AWS Budgets",
+    "AWS Cost Explorer",
+    "AWS Cost and Usage Report",
+    "Amazon CloudWatch",
+    "Amazon Simple Notification Service"
+  ],
+  "qualifier": "operational",
+  "tags": ["AWS Budgets", "予測アラート", "コスト管理ツール", "通知"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、月ごとの AWS の利用料金に予算を設定しています。月の途中で、その月の料金の予測値が予算の 100% を超えそうになったら、実際に超える前に担当者へメールで通知したいと考えています。コストの分析や集計のための独自の仕組みは作りたくなく、AWS のコスト管理機能の標準の設定だけで済ませたいと考えています。設定の手間が最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Budgets で月次のコスト予算を作成し、予測値が予算の 100% を超えたときに通知するアラートを設定する。",
+      "correct": true,
+      "rationale": "AWS Budgets は、予算を設定し、実際の利用額または予測値がしきい値を超えたときにメールや Amazon SNS で通知できます。予測値によるアラートに対応しているので、実際に超える前に通知できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Cost Explorer の予測機能で毎日料金を確認する。",
+      "correct": false,
+      "rationale": "Cost Explorer は料金の推移の可視化と予測のためのツールで、しきい値を超えたときの通知の機能はありません。担当者が毎日確認する手間も発生します。"
+    },
+    {
+      "id": "c",
+      "text": "AWS コストと使用状況レポート（CUR）を Amazon S3 に出力して、毎日スクリプトで集計し、メールを送る。",
+      "correct": false,
+      "rationale": "CUR は詳細な利用データを S3 に出力する機能で、集計と通知は自分で作る必要があります。Budgets の標準機能で実現できるので、手間が大きくなります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon CloudWatch で請求の EstimatedCharges メトリクスにアラームを設定する。",
+      "correct": false,
+      "rationale": "EstimatedCharges は、現時点までの実際の請求額のメトリクスで、月末の予測値には対応しません。実際に超えてからの通知になるため、要件を満たしません。"
+    }
+  ],
+  "explanation": "コスト管理のツールは役割が異なります。\n\n・AWS Cost Explorer: 過去のコストと利用状況を可視化・分析し、将来のコストを予測する。グラフで傾向を調べる用途。\n・AWS Budgets: コストや利用量の予算を設定し、実際の値や予測値がしきい値を超えたときにアラートを出す。予算アクションで、IAM ポリシーや SCP の適用、EC2／RDS インスタンスの停止などを自動実行することもできる。\n・AWS コストと使用状況レポート（CUR）: 最も詳細なコストと利用状況のデータを S3 に出力する。Athena などで独自に分析する用途。\n\n「予測値が予算を超えそうなときに通知」という要件は、AWS Budgets の予測アラートで満たせます。",
+  "keyPoints": [
+    "予算の超過（予測を含む）を通知 → AWS Budgets のアラート",
+    "コストの傾向分析・予測の確認 → AWS Cost Explorer",
+    "最も詳細なコストデータを S3 に出力して自分で分析 → コストと使用状況レポート（CUR）"
+  ],
+  "references": [
+    {
+      "title": "Managing your costs with AWS Budgets - AWS Cost Management",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "title": "Analyzing your costs and usage with AWS Cost Explorer - AWS Cost Management",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

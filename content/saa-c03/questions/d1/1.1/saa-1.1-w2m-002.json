@@ -1,0 +1,85 @@
+{
+  "id": "saa-1.1-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S1",
+    "1.1-K1"
+  ],
+  "services": [
+    "AWS Organizations",
+    "AWS Identity and Access Management",
+    "Amazon Simple Storage Service",
+    "AWS Security Token Service (AWS STS)"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "ルートアクセスの一元管理",
+    "AssumeRoot",
+    "メンバーアカウント"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で約 300 のメンバーアカウントを管理しています。メンバーアカウントのルートユーザーには、個別に管理されたパスワードと MFA が残っています。また、あるアカウントで、すべてのプリンシパルを拒否する誤った Amazon S3 バケットポリシーを設定してしまい、バケットを操作できなくなりました。ルートユーザーの認証情報を各アカウントに保持せずに運用したいと考えています。運用負荷が最も少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "IAM のルートアクセスの一元管理で、ルート認証情報の管理とメンバーアカウントの特権ルートアクションを有効にする。既存のルート認証情報を削除し、管理アカウントまたは IAM の委任管理者の IAM プリンシパルが、S3UnlockBucketPolicy をタスクポリシーに指定して sts:AssumeRoot を呼び出し、取得した一時認証情報で s3:DeleteBucketPolicy を実行する。",
+      "correct": true,
+      "rationale": "ルートアクセスの一元管理を有効にすると、メンバーアカウントのルート認証情報を削除でき、必要な特権タスクだけを短期の認証情報で実行できます。S3UnlockBucketPolicy はセッションの権限をバケットポリシーの操作に絞るタスクポリシーで、解除そのものは DeleteBucketPolicy の実行で行います。"
+    },
+    {
+      "id": "b",
+      "text": "メンバーアカウントごとに AdministratorAccess を持つ IAM ユーザーを作成し、そのアクセスキーを AWS Secrets Manager に保管して定期的にローテーションする。ルートユーザーの認証情報は従来どおり各アカウントに残したまま、バケットポリシーの誤りは、管理者がそのユーザーのアクセスキーを Secrets Manager から取得して、AWS CLI で s3:DeleteBucketPolicy を実行して解除する。",
+      "correct": false,
+      "rationale": "長期の認証情報を増やすだけで、課題が解消しません。すべてのプリンシパルを拒否するバケットポリシーは、管理者権限の IAM ユーザーでは解除できません。"
+    },
+    {
+      "id": "c",
+      "text": "SCP で全メンバーアカウントのルートユーザーの操作をすべて拒否する。バケットポリシーの誤りは、IAM Identity Center の管理者権限を持つユーザーが s3:DeleteBucketPolicy を実行して解除する。",
+      "correct": false,
+      "rationale": "すべてのプリンシパルを拒否するバケットポリシーは、管理者権限を持つ IAM Identity Center のユーザーからも解除できません。SCP でルートユーザーの操作を拒否しても、解除の手段にはなりません。"
+    },
+    {
+      "id": "d",
+      "text": "各メンバーアカウントのルートユーザーのパスワードを長く複雑なものに変更し、ハードウェア MFA を割り当てて金庫に保管する。バケットポリシーの誤りは、そのアカウントのルートユーザーでサインインして修正する。",
+      "correct": false,
+      "rationale": "バケット所有アカウントのルートユーザーなら解除できますが、認証情報が各アカウントに残るため、300 アカウントを個別に管理し続ける運用負荷が減りません。ルート認証情報を保持しないという要件も満たしません。"
+    }
+  ],
+  "explanation": "AWS Organizations と IAM の「ルートアクセスの一元管理」を使うと、メンバーアカウントのルートユーザーの認証情報を、管理アカウントまたは IAM の委任管理者から集中的に扱えます。有効化の項目は 2 つあります。「ルート認証情報の管理」を有効にすると、メンバーアカウントのルートユーザーのパスワード、アクセスキー、署名証明書を削除し、MFA を無効化できます。「メンバーアカウントでの特権ルートアクション」を有効にすると、ルートでなければできない作業の一部を、短期の特権セッションで実行できます。新しく作成するアカウントは、ルート認証情報なしで作成されます。\n\n特権セッションは、管理アカウントまたは委任管理者で、sts:AssumeRoot の権限を明示的に付与された IAM ユーザーまたはロールが、リージョンの STS エンドポイントに対して取得します。このとき、タスクポリシー（S3UnlockBucketPolicy、SQSUnlockQueuePolicy など）でセッションの範囲を絞ります。S3UnlockBucketPolicy のセッションでは、バケットポリシーの参照、変更、削除ができるので、すべてのプリンシパルを拒否する誤ったポリシーを DeleteBucketPolicy で削除し、あとで正しいポリシーを設定し直せます。ルートユーザー自身は sts:AssumeRoot を呼び出せません。\n\nバケット所有アカウントのルートユーザーでも、すべてを拒否するバケットポリシーは解除できます。しかし、管理者権限の IAM ユーザーや IAM Identity Center のユーザーでは解除できません。ルート認証情報を各アカウントに保持せずに運用するには、一元管理の特権セッションを使う方法が、最も運用負荷が少なくなります。",
+  "keyPoints": [
+    "メンバーアカウントのルート認証情報を持たずに運用 → ルートアクセスの一元管理＋sts:AssumeRoot",
+    "全面拒否されたバケットポリシーは、バケット所有アカウントのルート権限で解除できる。一元管理の特権セッションなら長期のルート認証情報は不要",
+    "有効化の項目は「ルート認証情報の管理」と「特権ルートアクション」の 2 つ。タスクポリシーは権限を絞るもので、指定するだけではポリシーは削除されない",
+    "ルートユーザーの利用は最小限にし、日常の作業には使わない"
+  ],
+  "references": [
+    {
+      "title": "ルートユーザーの認証情報が必要なタスク - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"
+    },
+    {
+      "title": "AWS アカウントのルートユーザー - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+    },
+    {
+      "title": "メンバーアカウントのルートアクセスを一元管理する - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-enable-root-access.html"
+    },
+    {
+      "title": "メンバーアカウントで特権タスクを実行する - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user-privileged-task.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account",
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

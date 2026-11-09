@@ -1,0 +1,80 @@
+{
+  "id": "saa-1.2-w2m-008",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-K2",
+    "1.2-S2",
+    "1.2-K1"
+  ],
+  "services": [
+    "VPC endpoints",
+    "Amazon Simple Storage Service",
+    "Amazon Virtual Private Cloud",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "VPC エンドポイントポリシー",
+    "aws:SourceVpce",
+    "データ持ち出しの防止"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、VPC のプライベートサブネットの Amazon EC2 インスタンスから、S3 のゲートウェイエンドポイント経由で Amazon S3 を使っています。対象バケットはエンドポイントと同一リージョンにあり、インスタンスから S3 に到達できる経路はこのゲートウェイエンドポイントのみです。データの持ち出しを防ぐため、この VPC のインスタンスからは自社の特定のバケットにだけアクセスでき、他のアカウントのバケットにはアクセスできないようにします。さらに、そのバケットには、この VPC のエンドポイント経由以外ではアクセスできないようにする必要があります。適切な設定の組み合わせはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ゲートウェイエンドポイントのポリシーで、対象バケットの ARN と配下のオブジェクトの ARN（バケット ARN/*）に対する必要な操作だけを許可する。バケットポリシーでは、両方の ARN を対象に、aws:SourceVpce がそのエンドポイントの ID と一致しないリクエストを明示的に拒否する。",
+      "correct": true,
+      "rationale": "エンドポイントポリシーは、そのエンドポイント経由で到達できるバケットとオブジェクトを制限します。バケットポリシーの aws:SourceVpce 条件による拒否は、特定のエンドポイント以外からのアクセスを止めます。要件の両方を満たせます。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスのセキュリティグループのアウトバウンドルールで、S3 のプレフィックスリストへの通信だけを許可し、それ以外の宛先への通信は許可しないようにして、S3 への通信を制御する。",
+      "correct": false,
+      "rationale": "S3 のプレフィックスリストは、当該リージョンの S3 の IP アドレス範囲です。特定のバケットだけには絞れず、他のアカウントのバケットにもアクセスできてしまいます。"
+    },
+    {
+      "id": "c",
+      "text": "ゲートウェイエンドポイントのポリシーで対象バケットだけを許可する。バケットへのアクセス制限は IAM ロールの権限だけで行い、IAM ロールにはアクセス元の条件を設定せず、バケットポリシーも追加しない。",
+      "correct": false,
+      "rationale": "エンドポイントポリシーが制限するのは、そのエンドポイントを通るリクエストだけです。IAM ロールにアクセス元の条件がなければ、有効な認証情報があれば VPC の外からでも同じバケットにアクセスできます。"
+    },
+    {
+      "id": "d",
+      "text": "バケットポリシーの aws:SourceIp に、EC2 インスタンスのプライベート IP アドレスの範囲を指定して許可し、それ以外の送信元 IP アドレスからのアクセスは許可しないようにする。",
+      "correct": false,
+      "rationale": "ゲートウェイエンドポイント経由のリクエストでは、プライベート IP アドレスは aws:SourceIp の条件に使えません。他のアカウントのバケットへのアクセスを止める効果もありません。"
+    }
+  ],
+  "explanation": "VPC エンドポイントのポリシーは、エンドポイント経由のアクセスで許可するアクション、プリンシパル、リソースを制限する IAM リソースポリシーです。ゲートウェイエンドポイントのポリシーで、許可するバケットの ARN（arn:aws:s3:::bucket-name）と配下のオブジェクトの ARN（arn:aws:s3:::bucket-name/*）に対する必要な操作だけを許可すると、この VPC からエンドポイント経由で他のバケット（他のアカウントのバケットを含む）へのアクセスを止められます。GetObject や PutObject などのオブジェクト操作には、配下のオブジェクトの ARN が必要です。なお、エンドポイントポリシーが制限するのは、そのエンドポイントを通るリクエストだけです。この問題では、S3 への経路がこのエンドポイントのみという前提があるため、他の経路で別のバケットに到達することはありません。\n\n一方、バケット側からは、バケットポリシーで両方の ARN を対象に、条件キー aws:SourceVpce（エンドポイントの ID）が一致しないリクエストを StringNotEquals で明示的に拒否します。aws:SourceVpc を使えば、VPC 単位で制限することもできます。これで VPC のエンドポイント以外からのアクセスを防げます。\n\nこの 2 つを組み合わせることで、「VPC から許可したバケットだけ」と「バケットには指定の VPC のエンドポイントからだけ」の両方を実現します。なお、バケットポリシーで指定のエンドポイント以外を拒否すると、マネジメントコンソールなど他の経路からの操作も拒否されます。厳格な経路制限の要件では、管理操作も指定のエンドポイント経由で行う必要があります。",
+  "keyPoints": [
+    "VPC から到達できるバケットを制限 → エンドポイントポリシー（バケットとオブジェクトの両方の ARN を指定）",
+    "バケットへのアクセス元を VPC に制限 → バケットポリシーの aws:SourceVpce／aws:SourceVpc で明示的に拒否",
+    "プレフィックスリストは当該リージョンの S3 の IP アドレス範囲で、バケット単位には絞れない"
+  ],
+  "references": [
+    {
+      "title": "ゲートウェイエンドポイントを使用して Amazon S3 にアクセスする - AWS PrivateLink",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+    },
+    {
+      "title": "エンドポイントポリシーを使用して VPC エンドポイントへのアクセスを制御する",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+    },
+    {
+      "title": "VPC エンドポイントからのアクセスをバケットポリシーで制御する - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-private-connectivity"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

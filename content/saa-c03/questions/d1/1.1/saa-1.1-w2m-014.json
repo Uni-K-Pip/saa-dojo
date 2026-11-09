@@ -1,0 +1,76 @@
+{
+  "id": "saa-1.1-w2m-014",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S4",
+    "1.1-K1",
+    "1.1-K4"
+  ],
+  "services": [
+    "AWS Control Tower",
+    "AWS Organizations",
+    "AWS Config",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "Control Tower",
+    "予防的コントロール",
+    "検出的コントロール"
+  ],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Control Tower で管理する OU 内のメンバーアカウントで、Amazon S3 バケットのパブリックアクセスについて、次の2つを実現したいと考えています。(1) バケットを公開する設定変更を、そもそも実行できないようにする。(2) すでに公開状態になっているバケットがあれば検出して、一覧で確認できるようにする。コントロールの種類を、どのように使い分けるのが最も適切ですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "(1) と (2) の両方に、検出的コントロールを使う。",
+      "correct": false,
+      "rationale": "検出的コントロールは、設定の状態を検出して報告するだけで、設定変更そのものを拒否できません。(1) を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "(1) と (2) の両方に、予防的コントロールを使う。",
+      "correct": false,
+      "rationale": "予防的コントロールは、SCP、RCP、宣言型ポリシーなどで、違反につながる操作や設定を制限するものです。すでに公開状態になっているバケットを検出して一覧にする機能はありません。(2) を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "(1) は予防的コントロールで公開の設定変更を拒否し、(2) は検出的コントロールで公開状態のバケットを検出する。",
+      "correct": true,
+      "rationale": "予防的コントロールは、SCP、RCP、宣言型ポリシーなどで、違反につながる操作や設定を制限します。検出的コントロールは、AWS Config のルールで設定の状態を検出します。目的に合わせて、両方を使い分けます。"
+    },
+    {
+      "id": "d",
+      "text": "(1) は検出的コントロールで公開の設定変更を検出し、(2) は予防的コントロールで公開状態のバケットを検出する。",
+      "correct": false,
+      "rationale": "種類の使い分けが逆です。検出的コントロールは変更を防げず、予防的コントロールは検出に使えません。"
+    }
+  ],
+  "explanation": "AWS Control Tower のコントロール（旧称ガードレール）は、ガバナンスのルールで、動作の仕方で種類が分かれます。\n\n予防的コントロールは、AWS Organizations の SCP、RCP（リソースコントロールポリシー）、宣言型ポリシーなどを使って、ポリシー違反につながる操作や設定を制限します。違反を未然に防げます。検出的コントロールは、AWS Config のルールを使って、リソースの設定が違反の状態になっていないかを検出し、準拠していないリソースを一覧で報告します。違反は防げませんが、既存のリソースの状態も検出できます。このほか、CloudFormation のデプロイ前に違反を検査するプロアクティブコントロール（CloudFormation フック）もあります。\n\nこの問題では、公開する設定変更の禁止には予防的コントロール、すでに公開状態のバケットの検出には検出的コントロールが適しています。",
+  "keyPoints": [
+    "操作や設定そのものを制限 → 予防的コントロール（SCP、RCP、宣言型ポリシーなどで実装）",
+    "既存リソースの設定違反の検出・レポート → 検出的コントロール（AWS Config のルール）",
+    "予防と検出を組み合わせて使う"
+  ],
+  "references": [
+    {
+      "title": "Control Tower のコントロール - AWS Control Tower コントロールリファレンス",
+      "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/controls.html"
+    },
+    {
+      "title": "コントロールの動作とガイダンス - AWS Control Tower コントロールリファレンス",
+      "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/control-behavior.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

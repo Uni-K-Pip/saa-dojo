@@ -3,6 +3,9 @@ import { db } from './db';
 import { isEventLike, sortEvents, uuid, type AppEvent, type NewEvent } from '../domain/events';
 import type { SessionRecord } from '../domain/session';
 
+/** 最後に書き出し・同期した時刻（meta のキー） */
+export const LAST_BACKUP_KEY = 'lastBackupAt';
+
 let deviceIdPromise: Promise<string> | null = null;
 
 export function getDeviceId(): Promise<string> {
@@ -92,4 +95,14 @@ export async function pruneSessions(maxAgeMs = 7 * 24 * 3600 * 1000): Promise<vo
   const limit = Date.now() - maxAgeMs;
   const old = await db.sessions.filter((s) => s.updatedAt < limit && (s.finishedAt !== undefined || s.kind !== 'mock')).primaryKeys();
   if (old.length) await db.sessions.bulkDelete(old);
+}
+
+/** 学習記録・進行中のセッション・メタ情報を消す（同期のトークンは残す） */
+export async function resetAllData(): Promise<void> {
+  await db.transaction('rw', db.events, db.sessions, db.meta, async () => {
+    await db.events.clear();
+    await db.sessions.clear();
+    await db.meta.clear();
+  });
+  forgetDeviceId();
 }

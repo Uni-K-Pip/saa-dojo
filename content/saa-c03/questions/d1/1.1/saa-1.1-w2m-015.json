@@ -1,0 +1,75 @@
+{
+  "id": "saa-1.1-w2m-015",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S5",
+    "1.1-S3",
+    "1.1-K4"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "AWS CloudTrail",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "混乱した代理",
+    "aws:SourceArn",
+    "サービスプリンシパル"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業の Amazon S3 バケットに、AWS CloudTrail が証跡のログを配信しています。バケットポリシーは、サービスプリンシパル cloudtrail.amazonaws.com に、バケット内の全オブジェクトへの s3:PutObject を許可していて、送信元を限定する条件はありません。セキュリティ部門から、他の AWS アカウントの CloudTrail の証跡が、このバケットにログを書き込める「混乱した代理」の問題を指摘されました。自社の特定の証跡だけが書き込めるようにする、最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットの ACL で、自社のアカウントの正規ユーザー ID だけに書き込み許可を付与し、CloudTrail のサービスプリンシパルへの許可はバケットポリシーから削除して、ACL による許可だけに置き換える構成にする。",
+      "correct": false,
+      "rationale": "ACL でサービスプリンシパルの書き込みを制限することはできません。CloudTrail の配信を、ACL で特定の証跡に限定する方法でもありません。"
+    },
+    {
+      "id": "b",
+      "text": "バケットのデフォルトの暗号化を、SSE-KMS に変更して、カスタマーマネージドキーを指定する。",
+      "correct": false,
+      "rationale": "暗号化は保存データの保護の設定です。誰が書き込めるかを限定する設定ではなく、混乱した代理の問題を解決しません。"
+    },
+    {
+      "id": "c",
+      "text": "CloudTrail に s3:PutObject を許可するバケットポリシーのステートメントの Condition に、StringEquals で aws:SourceArn を自社の特定の証跡の ARN に一致させる条件を追加する。",
+      "correct": true,
+      "rationale": "aws:SourceArn は、書き込み元を証跡単位で制限できます。aws:SourceAccount だけではアカウント単位の制限にとどまり、同じアカウント内の別の証跡は区別できません。他のアカウントの証跡からの書き込みは、条件を満たさないため許可されません。"
+    },
+    {
+      "id": "d",
+      "text": "バケットのブロックパブリックアクセスを、すべて有効にする。",
+      "correct": false,
+      "rationale": "ブロックパブリックアクセスは、バケットが公開されることを防ぐ設定です。サービスプリンシパルを介した他のアカウントの証跡からの書き込みは、公開アクセスではないため、防げません。"
+    }
+  ],
+  "explanation": "混乱した代理（confused deputy）の問題は、権限を持つサービス（代理）が、権限のないエンティティに利用される問題です。この問題のように、cloudtrail.amazonaws.com というサービスプリンシパルに書き込みを許可し、Resource と送信元の条件を十分に制限していない場合は、他の AWS アカウントの証跡も、そのバケットに書き込める可能性があります。CloudTrail の標準のバケットポリシーでは、s3:PutObject の Resource を AWSLogs 配下のアカウント ID のパスに限定する書き方もありますが、送信元の限定には条件キーを使います。\n\n対策は、リソースベースポリシーの Condition で、グローバル条件キーを使うことです。aws:SourceArn は、リクエストを発行したリソース（ここでは自社の特定の証跡）の ARN を指定でき、証跡単位で制限できます。aws:SourceAccount は、リソースを所有するアカウントを指定するので、アカウント単位の制限になり、同じアカウント内の別の証跡は区別できません。CloudTrail のドキュメントでは、証跡を特定できる aws:SourceArn の追加が、セキュリティのベストプラクティスとして示されています。S3 のバケットポリシーに Config やログ配信などのサービスを許可するとき、また SNS や SQS のポリシーでも、同様に使います。\n\nブロックパブリックアクセスや暗号化、ACL では、この問題を解決できません。",
+  "keyPoints": [
+    "サービスプリンシパルに許可を与えるときの混乱した代理の対策 → aws:SourceArn／aws:SourceAccount の条件",
+    "特定の証跡に限定するなら aws:SourceArn（証跡単位）。aws:SourceAccount はアカウント単位の制限にとどまる",
+    "ブロックパブリックアクセスと暗号化は別の目的"
+  ],
+  "references": [
+    {
+      "title": "混乱した代理問題 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+    },
+    {
+      "title": "CloudTrail の S3 バケットポリシー",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-s3-bucket-policy-for-cloudtrail.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

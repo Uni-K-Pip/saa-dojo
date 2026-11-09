@@ -1,0 +1,74 @@
+{
+  "id": "saa-4.1-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-K3",
+    "4.1-S5",
+    "4.1-K7"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "AWS Organizations"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "S3 Storage Lens",
+    "不完全なマルチパートアップロード",
+    "非現行バージョン"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Organizations で管理する 40 のアカウントに、数百の Amazon S3 バケットを持っています。S3 の費用が増え続けています。どのバケットで、不完全なマルチパートアップロードのデータや、古い非現行バージョンが容量を占めているかを、アカウントをまたいで一覧で把握し、見つけた無駄は、バケットごとにライフサイクルルールで削除したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Cost Explorer で S3 の使用タイプ別の費用を確認して、費用の多いバケットを特定する。",
+      "correct": false,
+      "rationale": "コスト配分タグを有効にすれば、Cost Explorer でバケット別の費用は確認できます。ただし、求めている非現行バージョンや不完全なマルチパートアップロードの容量内訳は示せません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Trusted Advisor の S3 ライフサイクル関連チェックを組織全体で確認し、対象バケットを特定する。",
+      "correct": false,
+      "rationale": "Trusted Advisor のチェックは、ライフサイクルルールの設定不備などを検出するもので、非現行バージョンや不完全なマルチパートアップロードが実際に占める容量をバケット別に可視化するものではありません。設定不備の検出と、容量の可視化は別の目的です。"
+    },
+    {
+      "id": "c",
+      "text": "組織全体の S3 Storage Lens のダッシュボードを有効にして、不完全なマルチパートアップロードや非現行バージョンの指標でバケットを比較する。該当のバケットに、それらを削除するライフサイクルルールを設定する。",
+      "correct": true,
+      "rationale": "Storage Lens は、組織全体のバケットの使用状況とアクティビティを一覧できる分析機能です。コスト最適化の指標で無駄の多いバケットを特定し、ライフサイクルルールで削除できます。"
+    },
+    {
+      "id": "d",
+      "text": "すべてのバケットで S3 インベントリを有効にし、各アカウントで Amazon Athena を使って、データを個別に集計する。",
+      "correct": false,
+      "rationale": "S3 インベントリと Amazon Athena では非現行バージョンを分析できますが、不完全なマルチパートアップロードの容量は取得できず、この構成だけでは要件を満たしません。"
+    }
+  ],
+  "explanation": "Amazon S3 Storage Lens は、組織全体の S3 の使用状況とアクティビティを、バケットやプレフィックス単位で可視化するクラウドストレージの分析機能です。AWS Organizations と連携して、組織のすべてのアカウントを対象にしたダッシュボードを作れます。この問題で必要な、不完全なマルチパートアップロードのバイト数や、非現行バージョンのストレージのバイト数といったコスト最適化の指標は、無料の指標で利用できます。ライフサイクルルールの数など、一部の高度な指標は有料の高度な指標が必要です。\n\nこれらの指標で無駄の多いバケットを見つけたら、ライフサイクルルールで、不完全なマルチパートアップロードの中止（一定日数後に破棄）と、非現行バージョンの有効期限切れ（一定日数後に削除）を設定して、容量を削減します。\n\nコスト配分タグを有効にすれば、Cost Explorer でバケット別の費用を確認できますが、非現行バージョンや不完全なマルチパートアップロードの容量内訳は得られません。Trusted Advisor のチェックはライフサイクルの設定不備の検出であり、容量の可視化ではありません。S3 インベントリは保存済みオブジェクトとそのバージョンを対象とし、Amazon Athena と組み合わせて非現行バージョンは分析できますが、不完全なマルチパートアップロードのパーツ容量は集計できません。",
+  "keyPoints": [
+    "組織全体の S3 の使用状況・コスト最適化の指標をバケット単位で可視化 → S3 Storage Lens（Organizations 連携。この問題の指標は無料指標）",
+    "不完全なマルチパートアップロードと非現行バージョンはライフサイクルルールで削除",
+    "Cost Explorer はコスト配分タグでバケット別費用を示せるが、容量内訳までは示さない"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 Storage Lens を使用したストレージのアクティビティと使用状況の評価",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html"
+    },
+    {
+      "title": "Amazon S3 Storage Lens を使用したストレージコストの最適化 - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-lens-optimize-storage.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-014",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K6", "3.5-S2", "3.5-K7"],
+  "services": ["Amazon Kinesis"],
+  "qualifier": "operational",
+  "tags": ["Kinesis Data Streams", "オンデマンドモード", "プロビジョニング済みモード", "シャード"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある動画配信サービスは、視聴イベントを Amazon Kinesis Data Streams に送信しています。新作の公開時など、イベントの量が予測できないタイミングで急に増えます。現在のプロビジョニング済みモードでは、増加のたびに ProvisionedThroughputExceededException が発生し、運用担当者が手作業でシャードを追加しています。シャード数の計画と調整の運用をなくしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ストリームの容量モードをオンデマンドモードに変更する。",
+      "correct": true,
+      "rationale": "オンデマンドモードでは、書き込みの量に応じて、ストリームの容量が自動で増減します。シャードの数の計画や、手作業でのシャードの追加が不要になり、予測できない急な増加にも対応できます。"
+    },
+    {
+      "id": "b",
+      "text": "シャード数を、想定される最大のスループットに合わせて、常に多めに確保しておく。",
+      "correct": false,
+      "rationale": "運用の手間は減りますが、使っていない時間も多くのシャードの料金がかかり、コストが高くなります。想定を超える増加には、やはり対応できません。"
+    },
+    {
+      "id": "c",
+      "text": "データの保持期間を 7 日に延長する。",
+      "correct": false,
+      "rationale": "保持期間は、データを保存しておく期間の設定で、書き込みのスループットの上限には影響しません。例外は解消されません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Data Firehose の配信ストリームに置き換える。",
+      "correct": false,
+      "rationale": "Firehose は容量を自動でスケールしますが、コンシューマーが独自のコードでストリームを読む使い方はできません。サービスの用途が変わり、アプリケーションの変更も必要になります。"
+    }
+  ],
+  "explanation": "Kinesis Data Streams には、2 つの容量モードがあります。\n\n・プロビジョニング済みモード: シャードの数を指定する。1 シャードあたり、書き込みは毎秒 1 MB（または 1,000 レコード）まで、読み取りは毎秒 2 MB まで。シャードの数を計画し、増減（分割／マージ）を自分で行う。負荷が予測できて安定している場合に、コストを最適化しやすい。\n・オンデマンドモード: 容量が自動で増減する。シャードの管理が不要。負荷が予測できない、急に変動する場合や、運用を減らしたい場合に向く。スループットあたりの単価は高めで、書き込みの上限には既定のクォータがある。\n\n書き込みが上限を超えると ProvisionedThroughputExceededException が発生します。プロビジョニング済みモードでは、シャードの追加か、パーティションキーを分散して特定のシャードへの集中（ホットシャード）を避けることで対処します。運用の手間をなくしたいなら、オンデマンドモードが適切です。",
+  "keyPoints": [
+    "負荷が予測できず、シャードの計画をなくしたい → Kinesis Data Streams のオンデマンドモード",
+    "負荷が安定して予測できる → プロビジョニング済みモードでコストを最適化",
+    "ProvisionedThroughputExceededException → シャードの追加、パーティションキーの分散、またはオンデマンドモード"
+  ],
+  "references": [
+    {
+      "title": "Choose the data stream capacity mode - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+    },
+    {
+      "title": "Amazon Kinesis Data Streams quotas and limits - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

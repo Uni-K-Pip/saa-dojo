@@ -1,0 +1,72 @@
+{
+  "id": "saa-4.2-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": [
+    "4.2-K4",
+    "4.2-K7",
+    "4.2-K2"
+  ],
+  "services": [
+    "Amazon Elastic Compute Cloud",
+    "AWS License Manager"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "Dedicated Hosts",
+    "ライセンスの持ち込み",
+    "AWS License Manager"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、ソケット単位やコア単位でライセンスされた、自社のサーバー向けソフトウェアのライセンスを、AWS に持ち込んで、Amazon EC2 上で使いたいと考えています。ライセンス契約では、物理ソケットとコアの数を把握して、監査で報告できることが求められます。ライセンスの使用状況を、一元的に管理し、上限を超えて起動しないよう制御したいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "共有テナンシーのオンデマンドインスタンスを起動して、インスタンスにライセンスを適用する。",
+      "correct": false,
+      "rationale": "共有のハードウェア上では、物理ソケットとコアを特定できず、ソケット／コア単位のライセンスの持ち込みの要件を満たせません。"
+    },
+    {
+      "id": "b",
+      "text": "スポットインスタンスで起動して、ライセンスの費用を抑える。",
+      "correct": false,
+      "rationale": "スポットは、割引の購入オプションで、ライセンスの持ち込みの要件を満たす仕組みではありません。中断されることもあります。"
+    },
+    {
+      "id": "c",
+      "text": "EC2 の Dedicated Hosts を購入して、ホスト上でインスタンスを起動する。AWS License Manager でライセンスのルールを設定して、使用状況を管理する。",
+      "correct": true,
+      "rationale": "Dedicated Hosts は、物理サーバーを専有できる購入オプションで、ソケットとコアの数が可視化され、ライセンス持ち込みに使えます。License Manager で、使用状況の追跡と制限ができます。"
+    },
+    {
+      "id": "d",
+      "text": "Dedicated Instances を起動して、専有のハードウェアで実行する。",
+      "correct": false,
+      "rationale": "Dedicated Instances は、専有のハードウェアですが、物理ソケットとコアの可視性やインスタンスの配置の制御がありません。ライセンスの報告の要件を満たしません。"
+    }
+  ],
+  "explanation": "ソケット単位、コア単位、仮想 CPU 単位などのライセンスを持ち込む（BYOL）場合は、物理サーバーの構成を特定できる必要があります。EC2 の Dedicated Hosts は、自分の専用の物理サーバーを提供し、物理ソケット、コア、インスタンスの配置を可視化・制御できるため、ライセンスの持ち込みに使えます。ホストの上でインスタンスの種類やサイズを組み合わせて起動でき、ホストのリソースを監視できます。\n\nAWS License Manager は、ライセンスの使用を追跡し、ライセンスのルールを定義して、ライセンスの上限を超える起動を防げます。Dedicated Hosts 向けには、ホストリソースグループによる自動のホスト割り当ても可能です。\n\nDedicated Instances は専有ハードウェアですが、ソケットやコアの可視性がありません。共有テナンシーは、物理構成を特定できません。スポットは、ライセンスの持ち込みの手段ではありません。",
+  "keyPoints": [
+    "ソケット／コア単位のライセンスの持ち込み → EC2 Dedicated Hosts＋AWS License Manager",
+    "Dedicated Instances は専有だが、ソケット／コアの可視性がない",
+    "共有テナンシーでは物理構成を特定できない"
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 Dedicated Hosts - Amazon EC2 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html"
+    },
+    {
+      "title": "AWS License Manager とは",
+      "url": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-manager.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

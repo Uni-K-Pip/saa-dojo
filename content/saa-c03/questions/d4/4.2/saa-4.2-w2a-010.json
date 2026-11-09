@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-010",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K6", "4.2-K5"],
+  "services": ["AWS Outposts", "AWS Direct Connect", "AWS Snow Family", "Amazon EC2"],
+  "qualifier": "performance",
+  "tags": ["AWS Outposts", "ハイブリッド", "低レイテンシー", "データの所在"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある製造会社は、工場内の生産設備の制御データを処理するアプリケーションを、Amazon EC2 と Amazon EBS を使うマネージドな環境で動かしたいと考えています。規制により、データは工場の敷地外に出してはならず、生産設備とは数ミリ秒以内で通信する必要があります。また、既存の AWS の API、ツール、運用の方法をそのまま使いたいと考えています。どのサービスを選ぶべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Outposts のラックを工場に設置し、Outposts 上の EC2 と EBS を使う。",
+      "correct": true,
+      "rationale": "AWS Outposts は、AWS のインフラ、サービス、API、ツールをお客様のオンプレミスの施設に提供するサービスです。データと処理を工場内に置いたまま、生産設備と低レイテンシーで通信でき、リージョンと同じ API で運用できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Local Zones の EC2 を使う。",
+      "correct": false,
+      "rationale": "Local Zones は、AWS が運営する大都市近くの拠点にコンピューティングを置く仕組みで、お客様の工場の敷地内にはありません。データを工場の敷地外に出してはならない要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Direct Connect で工場とリージョンをつなぎ、リージョンの EC2 を使う。",
+      "correct": false,
+      "rationale": "データがリージョンに送られ、工場の敷地外に出てしまいます。リージョンまでの距離があるため、数ミリ秒以内の通信の保証も難しくなります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Snowball Edge デバイスを工場に設置して、EC2 を実行する。",
+      "correct": false,
+      "rationale": "Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっています。また、主に一時的なデータ転送やエッジでの処理に使うデバイスで、恒常的に AWS のインフラとして運用する用途には向きません。"
+    }
+  ],
+  "explanation": "ハイブリッドのコンピューティングでは、「処理をどこに置く必要があるか」で選びます。\n\n・AWS Outposts: AWS が設計したインフラ（ラックやサーバー）を、お客様のオンプレミスの施設に設置し、AWS が運用を管理する。EC2、EBS、ECS などをリージョンと同じ API で使える。データの所在の要件や、オンプレミスの機器との低レイテンシーの通信が必要なときに使う。\n・AWS Local Zones: 大都市の近くに AWS が運営する拠点で、利用者に近い場所でコンピューティングを実行する。\n・AWS Wavelength: 5G ネットワークの内側にコンピューティングを置く。\n・AWS Snow Family: 物理デバイスでのデータ転送やエッジでの処理を行う。AWS Snowball Edge は 2025 年 11 月から新規のお客様の受け付けが止まっている。\n\nこの問題は、データが工場の敷地を出られないこと、設備との低レイテンシー、AWS の API をそのまま使いたいことから、AWS Outposts が適しています。",
+  "keyPoints": [
+    "データをオンプレミスに置いたまま AWS の API やサービスを使う、設備と低レイテンシー → AWS Outposts",
+    "Local Zones は AWS の拠点（大都市近く）で、お客様の施設の中ではない",
+    "分散コンピューティングの戦略では、処理を利用者や設備の近く（エッジ）に置いてレイテンシーを下げる"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Outposts? - AWS Outposts",
+      "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+    },
+    {
+      "title": "AWS Local Zones - AWS Local Zones",
+      "url": "https://docs.aws.amazon.com/local-zones/latest/ug/what-is-aws-local-zones.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

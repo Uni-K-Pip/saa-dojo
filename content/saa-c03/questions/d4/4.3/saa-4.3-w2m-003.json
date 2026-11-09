@@ -1,0 +1,83 @@
+{
+  "id": "saa-4.3-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": [
+    "4.3-S1",
+    "4.3-K4",
+    "4.3-K2"
+  ],
+  "services": [
+    "Amazon Relational Database Service",
+    "Amazon Simple Storage Service",
+    "Amazon Athena",
+    "AWS Glue"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "RDS スナップショットのエクスポート",
+    "Parquet",
+    "長期保存"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon RDS for MySQL の本番 DB の月次の手動スナップショットを、法令に対応するために 7 年間保持しています。スナップショットが増えて、ストレージの料金が大きくなっています。法令上必要なのは、月次時点の業務データを 7 年間保存し、SQL で分析できることです。DB としての復元や、スナップショット形式での保持は不要です。エクスポート料金と 7 年間の保存・参照料金を含む試算で、Amazon S3 への移行により費用を削減できることを確認済みです。費用を下げながら、この要件を満たす最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "すべてのスナップショットを別のリージョンにもコピーして、リージョンの障害に備えながら、7 年間保持する。",
+      "correct": false,
+      "rationale": "スナップショットのストレージが増え、料金も増えます。費用を下げる要件に反します。"
+    },
+    {
+      "id": "b",
+      "text": "自動バックアップの保持期間を最大に設定して、スナップショットの代わりに、自動バックアップで 7 年間保持して費用を下げる。",
+      "correct": false,
+      "rationale": "自動バックアップの保持期間は、最大 35 日です。7 年間は保持できず、手動スナップショットの代わりにはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "スナップショットを Amazon S3 に Apache Parquet 形式でエクスポートし、S3 のライフサイクルで S3 Glacier Instant Retrieval に移す。エクスポートの完了とデータの検証後に元のスナップショットを削除し、必要なときに Amazon Athena でクエリする。",
+      "correct": true,
+      "rationale": "スナップショットのエクスポートは、データを Apache Parquet 形式で S3 に出力します。S3 Glacier Instant Retrieval はミリ秒で直接アクセスでき、Athena で SQL を使って分析できます。DB の復元が不要という前提なので、費用を下げつつ、分析の要件を満たせます。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Backup で取得した RDS のバックアップを、ライフサイクルルールでコールドストレージに移行して、保存料金を下げる。",
+      "correct": false,
+      "rationale": "AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行の対象外です。移行できない前提の計画なので、費用削減策として成立しません。"
+    }
+  ],
+  "explanation": "RDS のスナップショットは増分で保存されます。最初のスナップショットだけが DB 全体の内容を保持し、以降は前回からの変更分が保存されます。バックアップのストレージは、プロビジョニング済みのストレージ容量に相当する無料の割り当てを超えた分が課金対象です。そのため、毎月の全量エクスポートが必ず安くなるとは限らず、エクスポート料金や、S3 での保存・参照料金を含めて比較する必要があります。本問は、その試算で S3 への移行が有利であることを確認済みです。\n\nRDS のスナップショットを S3 にエクスポートすると、データが Apache Parquet 形式で S3 に書き出されます。Parquet は列指向で圧縮効率が高く、Amazon Athena から直接 SQL でクエリでき、AWS Glue のデータカタログと組み合わせると分析も簡単です。ただし、エクスポートしたデータは、新しい DB インスタンスにそのまま復元することはできません。本問は DB としての復元が不要なので、この方法が成立します。復元可能なバックアップを残す要件なら、スナップショットの保持が必要です。\n\nS3 では、ライフサイクルで低コストのクラスに移せます。S3 Glacier Instant Retrieval は直接アクセスできるため、Athena でそのままクエリできます。S3 Glacier Flexible Retrieval と S3 Glacier Deep Archive に移す場合は、事前にオブジェクトを復元し、Athena のテーブル側にも設定が必要です。エクスポートが完了し、必要なデータを検証したあとで、元のスナップショットを削除できます。\n\n自動バックアップの保持期間の上限は 35 日です。AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行に対応していません。コピーを増やす方法は、費用を増やします。",
+  "keyPoints": [
+    "復元は不要で分析だけしたい長期保存のスナップショット → S3 に Parquet でエクスポート＋Athena。エクスポートしたデータは DB に直接復元できない",
+    "自動バックアップの保持期間の上限は 35 日。RDS のスナップショットは増分で、無料割り当てを超える分が課金される",
+    "S3 Glacier Instant Retrieval は直接クエリでき、Flexible Retrieval と Deep Archive は事前の復元と Athena 側の設定が必要",
+    "AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行の対象外"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 への DB スナップショットデータのエクスポート - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
+    },
+    {
+      "title": "AWS Backup の機能の対応状況 - AWS Backup デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-feature-availability.html"
+    },
+    {
+      "title": "S3 Glacier ストレージクラスについて - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+    },
+    {
+      "title": "復元された Glacier オブジェクトのクエリ - Amazon Athena ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/querying-glacier.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

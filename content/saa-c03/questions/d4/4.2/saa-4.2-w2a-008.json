@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.2-w2a-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.2",
+  "knowledgeRefs": ["4.2-K1", "4.2-K2"],
+  "services": ["AWS Cost Explorer", "AWS Organizations", "AWS Cost and Usage Report"],
+  "qualifier": "operational",
+  "tags": ["コスト配分タグ", "一括請求", "AWS Cost Explorer", "管理アカウント"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で 20 個の AWS アカウントを一括請求で運用しています。経理部門は、プロジェクト別にコストを集計したいと考えています。各チームは、Amazon EC2 や Amazon S3 などのリソースに Project というタグ（キー）をすでに付けています。しかし、AWS Cost Explorer のタグの絞り込みに Project が表示されず、集計できません。この問題を解決する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "管理アカウントで、Project タグをコスト配分タグとして有効化する。",
+      "correct": true,
+      "rationale": "リソースにタグを付けただけでは、コストのデータにタグは含まれません。Billing and Cost Management のコスト配分タグで、そのタグのキーを有効化すると、Cost Explorer やコストと使用状況レポートでタグ別に集計できるようになります。組織では、管理アカウントが有効化します。"
+    },
+    {
+      "id": "b",
+      "text": "各メンバーアカウントで Cost Explorer を有効化する。",
+      "correct": false,
+      "rationale": "Cost Explorer の有効化は、タグがコストのデータに含まれない問題の原因ではありません。この問題の原因は、コスト配分タグが有効化されていないことです。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Config のルールで、すべてのリソースに Project タグが付いているかを評価する。",
+      "correct": false,
+      "rationale": "AWS Config のルールはリソースの設定の準拠状況を評価するもので、請求のデータにタグを含める機能ではありません。タグの付け忘れの検知には役立ちますが、この問題は解決しません。"
+    },
+    {
+      "id": "d",
+      "text": "リソースのタグを、タグエディターで付け直す。",
+      "correct": false,
+      "rationale": "タグはすでに付いています。付け直しても、コスト配分タグの有効化をしなければコストのデータには反映されません。"
+    }
+  ],
+  "explanation": "コスト配分タグは、コストをプロジェクト、チーム、環境などの単位で集計するための仕組みです。タグには、AWS が自動で付与する AWS 生成のタグと、ユーザーが付けるユーザー定義のタグがあります。\n\nポイントは、リソースにタグを付けただけでは、請求データにタグは含まれないことです。Billing and Cost Management のコンソールで、使いたいタグのキーを「コスト配分タグ」として有効化する必要があります。有効化すると、反映まで最大 24 時間ほどかかります。その後、AWS Cost Explorer のグループ化や絞り込み、AWS Budgets、コストと使用状況レポート（CUR）で、タグ別の集計ができるようになります。AWS Organizations の一括請求を使っている場合、コスト配分タグを有効化できるのは管理アカウントです。\n\nなお、タグの付け忘れを防ぐには、AWS Config のルールやタグポリシーが役立ちます。",
+  "keyPoints": [
+    "タグ別のコスト集計 → ユーザー定義のコスト配分タグを有効化する（付けただけでは集計できない）",
+    "組織の一括請求では管理アカウントがコスト配分タグを有効化する",
+    "タグの付け忘れ防止・準拠確認 → タグポリシー、AWS Config のルール"
+  ],
+  "references": [
+    {
+      "title": "Using user-defined cost allocation tags - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/custom-tags.html"
+    },
+    {
+      "title": "Consolidated billing for AWS Organizations - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.2-purchase-and-cost-tools"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

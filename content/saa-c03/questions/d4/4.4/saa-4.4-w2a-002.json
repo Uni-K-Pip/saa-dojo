@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K4", "4.4-S3", "4.4-S5"],
+  "services": ["NAT gateway", "VPC endpoints", "Amazon Simple Storage Service"],
+  "qualifier": "cost",
+  "tags": ["ゲートウェイ VPC エンドポイント", "NAT ゲートウェイ", "S3", "データ転送コスト"],
+  "difficulty": 1,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の VPC では、プライベートサブネットの Amazon EC2 インスタンスが、毎日数 TB のデータを同じリージョンの Amazon S3 バケットに読み書きしています。通信は NAT ゲートウェイ経由で、請求を見ると NAT ゲートウェイのデータ処理料金が大きな割合を占めています。S3 へのアクセス性能を保ったまま、この料金を最も下げる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 用のゲートウェイ VPC エンドポイントを作成し、プライベートサブネットのルートテーブルにルートを追加する。",
+      "correct": true,
+      "rationale": "S3 のゲートウェイ VPC エンドポイントを使うと、S3 への通信が NAT ゲートウェイを経由せず、AWS のネットワーク内で行われます。ゲートウェイエンドポイントには時間あたりの料金も処理量あたりの料金もかからないため、NAT ゲートウェイのデータ処理料金を削減できます。"
+    },
+    {
+      "id": "b",
+      "text": "NAT ゲートウェイを大きなサイズに変更する。",
+      "correct": false,
+      "rationale": "NAT ゲートウェイにサイズの選択はなく、自動でスケールします。データ処理料金は処理量に応じてかかるため、通信量が同じなら料金は変わりません。"
+    },
+    {
+      "id": "c",
+      "text": "パブリックサブネットにインスタンスを移し、パブリック IP アドレスを割り当てて、インターネットゲートウェイ経由で S3 にアクセスする。",
+      "correct": false,
+      "rationale": "インスタンスがインターネットに直接公開されるため、セキュリティの面で好ましくありません。パブリック IPv4 アドレスにも料金がかかり、AWS 内の通信なのにインターネットゲートウェイを経由することになります。"
+    },
+    {
+      "id": "d",
+      "text": "S3 用のインターフェイス VPC エンドポイントを作成して、すべての通信を向ける。",
+      "correct": false,
+      "rationale": "インターフェイスエンドポイントには、時間あたりの料金と処理量あたりの料金がかかります。同じリージョンの S3 に対しては、無料のゲートウェイエンドポイントのほうが低コストです。"
+    }
+  ],
+  "explanation": "プライベートサブネットのリソースが AWS のサービスにアクセスするとき、経路によってコストが変わります。\n\n・NAT ゲートウェイ経由: 時間あたりの料金に加えて、処理したデータ量に応じた料金がかかる。データ量が多いと、この料金が大きくなる。\n・ゲートウェイ VPC エンドポイント（S3 と DynamoDB が対象）: ルートテーブルにルートを追加するだけで使え、追加料金がかからない。トラフィックは AWS のネットワーク内で完結する。\n・インターフェイス VPC エンドポイント（AWS PrivateLink）: そのほかの多くのサービス向け。時間あたりの料金と処理量に応じた料金がかかる。オンプレミスや別のリージョンからも使える。\n\n同じリージョンの S3 や DynamoDB に大量のデータを送るなら、ゲートウェイエンドポイントを使うのが、コスト面でも最も有利です。S3 へのアクセスをバケットポリシーの条件（aws:SourceVpce）でエンドポイント経由に限定すれば、セキュリティも高められます。",
+  "keyPoints": [
+    "同じリージョンの S3／DynamoDB への大量通信のコスト削減 → ゲートウェイ VPC エンドポイント（追加料金なし）",
+    "NAT ゲートウェイ経由の通信には、処理したデータ量に応じた料金がかかる",
+    "S3 でもオンプレミスやリージョン外から使うなら、インターフェイスエンドポイントを検討"
+  ],
+  "references": [
+    {
+      "title": "Gateway endpoints for Amazon S3 - AWS PrivateLink",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+    },
+    {
+      "title": "Amazon VPC pricing",
+      "url": "https://aws.amazon.com/vpc/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-nat-endpoints-and-data-transfer"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

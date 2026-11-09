@@ -1,0 +1,69 @@
+{
+  "id": "saa-1.3-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-K1",
+    "1.3-S1"
+  ],
+  "services": [
+    "AWS CloudTrail",
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "CloudTrail",
+    "ログファイルの整合性検証",
+    "改ざん検知"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "金融機関の監査部門が、AWS アカウントの API 操作の記録が改ざんされていないことを証明できるようにしたいと考えています。AWS CloudTrail の証跡のログファイルは Amazon S3 バケットに保存しています。ログファイルが配信された後に、変更、削除、偽造されていないことを検証できる必要があります。最も適切な設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "証跡のログを Amazon CloudWatch Logs にも配信し、メトリクスフィルターでアラームを設定する。",
+      "correct": false,
+      "rationale": "別の保存先とアラームは用意できますが、ログファイルの変更や削除を検証する仕組みではありません。"
+    },
+    {
+      "id": "b",
+      "text": "ログを保存するバケットのバージョニングを有効にする。",
+      "correct": false,
+      "rationale": "バージョニングは変更前の版を残しますが、ログファイルが改ざんされていないことを検証する手段にはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "証跡で CloudTrail Insights イベントを有効にする。",
+      "correct": false,
+      "rationale": "Insights は API 呼び出しの異常なパターンを検出する機能で、ログファイルの改ざんを検知するものではありません。"
+    },
+    {
+      "id": "d",
+      "text": "証跡のログファイルの整合性検証を有効にして、1 時間ごとに作成されるダイジェストファイルを使い、AWS CLI の validate-logs コマンドで検証する。",
+      "correct": true,
+      "rationale": "整合性検証を有効にすると、ログファイルのハッシュ値を含むダイジェストファイルが署名付きで作られます。これを使って、ログファイルが配信後に変更・削除されていないことを検証できます。"
+    }
+  ],
+  "explanation": "CloudTrail のログファイルの整合性検証は、ログファイルが CloudTrail の配信後に変更、削除、偽造されていないかを確認する機能です。有効にすると、CloudTrail は 1 時間ごとに、直前の 1 時間に配信されたログファイルの SHA-256 ハッシュ値を含むダイジェストファイルを作成し、デジタル署名（SHA-256 with RSA）を付けて同じバケットに保存します。\n\nAWS CLI の aws cloudtrail validate-logs コマンドで、ダイジェストファイルとログファイルを照合して検証できます。監査での改ざんの証明には、この機能が必要です。これに加えて、ログのバケットへのアクセスを制限したり、S3 オブジェクトロックを組み合わせたりすると、改ざんそのものを防ぐこともできます。\n\nバージョニングや CloudWatch Logs への配信は、データの保全や監視には役立ちますが、改ざんを検証する手段ではありません。",
+  "keyPoints": [
+    "ログが改ざんされていないことの検証 → CloudTrail のログファイルの整合性検証（ダイジェストファイル）",
+    "改ざんの防止はバケットのアクセス制御や S3 オブジェクトロックで行う",
+    "Insights は異常な API 呼び出しの検出用"
+  ],
+  "references": [
+    {
+      "title": "CloudTrail のログファイルの整合性の検証 - AWS CloudTrail ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-data-governance"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

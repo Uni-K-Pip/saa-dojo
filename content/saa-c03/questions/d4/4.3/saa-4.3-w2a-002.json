@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-002",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-S3", "4.3-K9", "4.3-K5"],
+  "services": ["Amazon Aurora", "Amazon Aurora Serverless", "Amazon Relational Database Service"],
+  "qualifier": "cost",
+  "tags": ["Aurora Serverless v2", "ACU", "変動するワークロード", "プロビジョニングの無駄"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の社内向け Web アプリケーションは、MySQL 互換のデータベースを使っています。平日の日中は大量のクエリがあり、夜間と休日はほとんど使われません。日中のピークは、平常時の約 10 倍です。現在はピークに合わせた大きさのプロビジョニング済み DB インスタンスを常時稼働させていて、コストが高いと考えています。データベースの運用の手間を増やさずに、コストを下げる方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Aurora MySQL 互換エディションに移行し、Aurora Serverless v2 を使って容量を負荷に応じて自動で増減させる。",
+      "correct": true,
+      "rationale": "Aurora Serverless v2 は、負荷に応じてデータベースの容量（Aurora キャパシティーユニット、ACU）を細かい単位で素早く増減します。ピークに合わせた大きなインスタンスを常時稼働させる必要がなくなり、使った容量に応じた料金になります。MySQL 互換で、運用の手間も増えません。"
+    },
+    {
+      "id": "b",
+      "text": "さらに大きなインスタンスクラスのリザーブドインスタンスを購入する。",
+      "correct": false,
+      "rationale": "リザーブドインスタンスは、安定して使い続ける場合の割引です。夜間や休日にほとんど使わないのにピークに合わせた大きさを約束することになり、無駄が残ります。"
+    },
+    {
+      "id": "c",
+      "text": "リードレプリカを複数作成して、ピーク時の読み取りを分散する。",
+      "correct": false,
+      "rationale": "リードレプリカを増やすと、その分のインスタンス料金が追加で発生します。常時稼働の台数が増えるため、コストは下がらず、夜間や休日の無駄も解消しません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EC2 に MySQL を自分でインストールし、スケジュールでインスタンスのサイズを変更する。",
+      "correct": false,
+      "rationale": "OS やデータベースのパッチ適用、バックアップ、サイズ変更時の停止などの運用を自分で行う必要があり、運用の手間を増やさないという要件を満たしません。"
+    }
+  ],
+  "explanation": "Amazon Aurora には、プロビジョニング済みのインスタンスを使う構成と、負荷に応じて容量が自動で増減するサーバーレス（Aurora Serverless v2）の構成があります。Aurora Serverless v2 は、Aurora キャパシティーユニット（ACU）を単位に、最小値と最大値を設定すると、その範囲で数秒単位で細かく容量が増減します。MySQL 互換と PostgreSQL 互換の両方で使え、マルチ AZ 構成やリードレプリカも使えます。\n\nピークと平常時の差が大きい、利用が時間帯で大きく変わる、開発・テスト環境など、負荷が変動するワークロードに向いています。逆に、24 時間ほぼ一定の高い負荷が続くなら、プロビジョニング済みのインスタンスにリザーブドインスタンスを組み合わせるほうが安くなることがあります。\n\nなお、Aurora Serverless v1 は提供を終了しています。新しい設計では v2 を使います（v2 は、現在は単に Aurora Serverless とも呼ばれます）。",
+  "keyPoints": [
+    "利用の変動が大きい・ほとんど使われない時間がある → Aurora Serverless v2（ACU で自動増減）",
+    "24 時間ほぼ一定の高負荷 → プロビジョニング済みインスタンス＋リザーブドインスタンス",
+    "ピークに合わせて常時稼働させると、使わない時間の分まで料金がかかる"
+  ],
+  "references": [
+    {
+      "title": "Using Aurora Serverless v2 - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+    },
+    {
+      "title": "Aurora Serverless v2 capacity - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

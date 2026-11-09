@@ -1,0 +1,71 @@
+{
+  "id": "saa-1.1-w2m-006",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-K4",
+    "1.1-S2"
+  ],
+  "services": [
+    "AWS Identity and Access Management",
+    "AWS CloudTrail",
+    "Amazon Simple Storage Service",
+    "Amazon DynamoDB"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "IAM Access Analyzer",
+    "ポリシー生成",
+    "最小権限"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、3 年前に作成した IAM ロールが、当時の見積もりで付与した広い権限のまま、Amazon S3 と Amazon DynamoDB を使うバッチ処理に使われています。実際に使われている操作に絞り込んで最小権限にしたいのですが、権限の調査とポリシー作成の手作業をできるだけ減らしたいと考えています。生成結果の確認と、不足する権限の補完は行えます。AWS CloudTrail の証跡は有効で、過去のログが保存されています。最も運用負荷が少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ロールの権限をすべて外してバッチ処理を実行し、エラーになった操作を 1 つずつ確認して、許可として追加していく。",
+      "correct": false,
+      "rationale": "本番のバッチ処理を止めながら試行錯誤することになり、運用負荷もリスクも大きくなります。"
+    },
+    {
+      "id": "b",
+      "text": "IAM 認証情報レポートをダウンロードして、ロールごとの API の使用状況を確認し、許可する操作を手作業でポリシーに書き起こす。",
+      "correct": false,
+      "rationale": "認証情報レポートは、IAM ユーザーのパスワードやアクセスキーの利用状況を示すもので、ロールが呼び出した API は分かりません。"
+    },
+    {
+      "id": "c",
+      "text": "IAM Access Analyzer で最大 90 日間の代表的なアクセスアクティビティからポリシーテンプレートを生成し、データ操作などの不足権限、対象リソース、条件を確認・補完して、動作検証後に既存ポリシーを置き換える。",
+      "correct": true,
+      "rationale": "ポリシー生成は、最大 90 日間の CloudTrail のログからロールが使った操作を分析し、ポリシーのひな形を作ります。S3 や DynamoDB のデータ操作はアクション単位では抽出されないので、不足する権限は補完します。調査と作成の手間は大きく減ります。"
+    },
+    {
+      "id": "d",
+      "text": "AWS Trusted Advisor のセキュリティチェックを有効にして、過剰な権限が見つかったら自動的に削除させ、その結果を最小権限のポリシーとして採用し、既存のポリシーと置き換える。バッチ処理の動作確認は、置き換えの後で行う。",
+      "correct": false,
+      "rationale": "Trusted Advisor は IAM ポリシーを分析して自動で権限を絞り込む機能を持ちません。権限の削除は行わず、結果は参考情報にとどまります。"
+    }
+  ],
+  "explanation": "最小権限に絞り込むときは、実際に使われている操作を根拠にするのが確実です。IAM Access Analyzer のポリシー生成は、指定した期間（最大 90 日）の CloudTrail ログを分析し、IAM ユーザーまたはロールが実際に使った操作に基づいて、アイデンティティベースのポリシーのひな形を生成します。生成結果をそのまま使うのではなく、確認と補完をしてから既存の広い権限と置き換えます。\n\nただし、S3 のオブジェクト操作や DynamoDB のデータ操作などのデータイベントについては、CloudTrail にデータイベントを記録していても、IAM Access Analyzer はアクション単位の利用情報を生成ポリシーに反映しません。iam:PassRole も生成ポリシーに含まれません。そのため、データ操作などに必要なアクション、対象リソース、条件を手動で補完し、動作を検証してから置き換えます。分析できる期間が最大 90 日なので、月次や年次のバッチ処理が期間内に含まれているかも確認します。\n\nIAM 認証情報レポートは IAM ユーザーの認証情報の状態を示し、API の使用状況は示しません。権限を外して試行錯誤する方法は、業務を止めるリスクがあります。",
+  "keyPoints": [
+    "実際の利用に基づいて最小権限へ → IAM Access Analyzer のポリシー生成（CloudTrail ログが元、分析期間は最大 90 日）",
+    "S3・DynamoDB のデータ操作は、ログの設定にかかわらずアクション単位では生成結果に反映されない。不足分は手動で補完する",
+    "生成結果は確認・補完し、動作検証してから置き換える。権限の絞り込みで本番を止めない"
+  ],
+  "references": [
+    {
+      "title": "IAM Access Analyzer のポリシー生成 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,69 @@
+{
+  "id": "saa-3.4-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.4",
+  "knowledgeRefs": [
+    "3.4-K3",
+    "3.4-S4"
+  ],
+  "services": [
+    "Elastic Load Balancing",
+    "Amazon Elastic Container Service"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Application Load Balancer",
+    "gRPC",
+    "HTTP/2"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon ECS で動くマイクロサービス間の通信に、gRPC（HTTP/2）を使っています。クライアントからの gRPC のリクエストを、サービス名とメソッドのパスに基づいて、サービスごとのターゲットグループに振り分けたいと考えています。ヘルスチェックも、gRPC のステータスコードで判定します。ロードバランサーの運用は、マネージドサービスに任せたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon API Gateway の REST API を作成して、gRPC のリクエストを ECS のサービスに統合する。",
+      "correct": false,
+      "rationale": "API Gateway の REST API は、gRPC に対応していません。HTTP/2 のストリーミングを必要とする gRPC の通信には向きません。"
+    },
+    {
+      "id": "b",
+      "text": "Classic Load Balancer を作成して、HTTP リスナーでリクエストを受け付ける。",
+      "correct": false,
+      "rationale": "Classic Load Balancer は旧世代で、gRPC やパスベースのルーティングに対応していません。新しい構成には推奨されません。"
+    },
+    {
+      "id": "c",
+      "text": "Application Load Balancer を作成して、HTTPS リスナーとパスベースのルーティングを設定する。ターゲットグループのプロトコルバージョンを gRPC にして、gRPC のステータスコードでヘルスチェックする。",
+      "correct": true,
+      "rationale": "ALB は gRPC に対応しており、プロトコルバージョンを gRPC にしたターゲットグループで、パスベースのルーティングとヘルスチェックができます。"
+    },
+    {
+      "id": "d",
+      "text": "Network Load Balancer を作成して、TCP リスナーで受け付け、ターゲットグループに転送する。",
+      "correct": false,
+      "rationale": "NLB はレイヤー 4 で動作し、パスなどの内容に基づく振り分けができません。gRPC のステータスコードによるヘルスチェックもできません。"
+    }
+  ],
+  "explanation": "gRPC は、HTTP/2 上で動作する RPC のフレームワークです。ロードバランサーのうち、Application Load Balancer（ALB）は、HTTP/2 と gRPC に対応しています。ターゲットグループのプロトコルバージョンを gRPC に設定し、HTTPS のリスナーでリクエストを受け付けます。リスナールールでパス（/サービス名/メソッド名）に基づくルーティングができ、ヘルスチェックでは、gRPC のステータスコードを成功の条件に指定できます。\n\nNetwork Load Balancer はレイヤー 4 のロードバランサーで、TCP の通信を転送しますが、HTTP のパスやヘッダーなどの内容による振り分けはできません。Classic Load Balancer は旧世代のため、gRPC に非対応で、新しい設計には使いません。API Gateway の REST API は、gRPC をサポートしません。\n\nそのため、gRPC のパスベースのルーティングと gRPC ヘルスチェックには、ALB を選びます。",
+  "keyPoints": [
+    "gRPC（HTTP/2）のパスベースのルーティング → ALB（ターゲットグループのプロトコルバージョンを gRPC に）",
+    "NLB はレイヤー 4 で、内容によるルーティングはできない",
+    "Classic Load Balancer は旧世代で、新規の設計には使わない"
+  ],
+  "references": [
+    {
+      "title": "Application Load Balancer のターゲットグループ - プロトコルバージョン - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-3.4-edge-and-load-balancing"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

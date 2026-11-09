@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-010",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-S3", "4.4-S5", "4.4-K4"],
+  "services": ["VPC endpoints", "AWS PrivateLink", "NAT gateway", "Amazon Kinesis"],
+  "qualifier": "cost",
+  "tags": ["インターフェイス VPC エンドポイント", "NAT ゲートウェイのデータ処理料金", "PrivateLink", "コスト最適化"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の VPC では、プライベートサブネットの多数のアプリケーションサーバーが、毎月数十 TB のデータを Amazon Kinesis Data Streams に送信しています。通信は NAT ゲートウェイ経由で、NAT ゲートウェイのデータ処理料金が月額コストの大きな部分を占めています。Kinesis Data Streams への通信を、インターネットを経由させず、かつ全体のコストを下げる必要があります。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Kinesis Data Streams 用のインターフェイス VPC エンドポイントを、使用している AZ に作成し、サーバーからの通信をエンドポイント経由にする。",
+      "correct": true,
+      "rationale": "インターフェイスエンドポイントの処理量あたりの料金は、NAT ゲートウェイのデータ処理料金より低く設定されています。通信量が非常に多い場合は、エンドポイントの時間あたりの料金を払っても全体のコストを下げられます。通信は AWS のネットワーク内で完結します。"
+    },
+    {
+      "id": "b",
+      "text": "Kinesis Data Streams 用のゲートウェイ VPC エンドポイントを作成する。",
+      "correct": false,
+      "rationale": "ゲートウェイ VPC エンドポイントに対応しているサービスは、Amazon S3 と Amazon DynamoDB だけです。Kinesis Data Streams には作成できません。"
+    },
+    {
+      "id": "c",
+      "text": "NAT ゲートウェイを大きなサイズに変更して、処理能力を上げる。",
+      "correct": false,
+      "rationale": "NAT ゲートウェイにサイズの選択はなく、データ処理料金は処理量に応じてかかるため、通信量が同じなら料金は変わりません。"
+    },
+    {
+      "id": "d",
+      "text": "サーバーをパブリックサブネットに移し、パブリック IP アドレスを割り当てて、インターネットゲートウェイ経由で送信する。",
+      "correct": false,
+      "rationale": "インターネットを経由させない要件に反し、サーバーがインターネットに直接公開されてセキュリティも低下します。パブリック IPv4 アドレスの料金もかかります。"
+    }
+  ],
+  "explanation": "プライベートサブネットから AWS のサービスへ大量の通信をする場合は、経路の料金を比較します。\n\n・NAT ゲートウェイ: 時間あたりの料金と、処理したデータ量に応じた料金がかかる。\n・ゲートウェイ VPC エンドポイント: S3 と DynamoDB のみ対象。追加料金なし。\n・インターフェイス VPC エンドポイント（AWS PrivateLink）: 多くの AWS サービス向け。AZ ごとの時間あたりの料金と、処理量に応じた料金がかかる。ただし処理量あたりの単価が NAT ゲートウェイより低い。\n\n通信量が少ないと、エンドポイントの時間あたりの料金のほうが大きくなり、NAT ゲートウェイのほうが安くなることがあります。一方、この問題のように通信量が非常に大きいときは、インターフェイスエンドポイントのほうが、全体のコストが下がります。コストの判断では、通信量、AZ の数、利用するサービスの数を見積もって比較します。また、エンドポイント経由にするとインターネットを経由しないので、セキュリティの面でも利点があります。",
+  "keyPoints": [
+    "S3／DynamoDB への通信 → ゲートウェイ VPC エンドポイント（無料）。それ以外の AWS サービス → インターフェイス VPC エンドポイント",
+    "通信量が非常に多いと、インターフェイスエンドポイントのほうが NAT ゲートウェイより低コストになる",
+    "通信量が少ないときは、エンドポイントの時間あたりの料金のほうが大きくなることもある"
+  ],
+  "references": [
+    {
+      "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
+    },
+    {
+      "title": "AWS PrivateLink pricing",
+      "url": "https://aws.amazon.com/privatelink/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-nat-endpoints-and-data-transfer"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

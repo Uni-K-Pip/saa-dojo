@@ -1,0 +1,78 @@
+{
+  "id": "saa-2.1-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K1",
+    "2.1-K3"
+  ],
+  "services": [
+    "Amazon API Gateway",
+    "AWS Lambda",
+    "Amazon DynamoDB"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "使用量プラン",
+    "API キャッシュ",
+    "スロットリング"
+  ],
+  "difficulty": 2,
+  "type": "multiple",
+  "selectCount": 2,
+  "stem": "ある部品メーカーは、取引先向けに Amazon API Gateway の REST API を公開しています。バックエンドは AWS Lambda と Amazon DynamoDB です。取引先ごとにベストエフォートのリクエストレートと月間クォータを設定したいと考えています。短時間の超過は許容します。また、同一の参照リクエストについて、API Gateway から Lambda への呼び出し回数を減らし、応答も速くしたいと考えています。これらを満たす設定を 2 つ選んでください。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS WAF のレートベースのルールだけで、取引先ごとの 1 か月あたりのリクエスト上限を管理する。",
+      "correct": false,
+      "rationale": "レートベースのルールは、短い期間のリクエスト数の制限で、1 か月あたりのクォータの管理には向きません。キャッシュの効果もありません。"
+    },
+    {
+      "id": "b",
+      "text": "使用量プランと API キーを作成し、取引先ごとにスロットリングの上限とクォータを設定する。",
+      "correct": true,
+      "rationale": "使用量プランでは、API キーごとに、1 秒あたりのリクエスト数（レート）と、期間あたりのリクエスト数（クォータ）を設定できます。取引先ごとに変えられますが、ベストエフォートで適用され、上限を厳密に保証するものではありません。"
+    },
+    {
+      "id": "c",
+      "text": "DynamoDB の前に DynamoDB Accelerator（DAX）を置く。",
+      "correct": false,
+      "rationale": "DynamoDB の読み取りは減らせますが、API Gateway から Lambda への呼び出し回数は減りません。取引先ごとの上限の設定にもなりません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数のプロビジョニングされた同時実行数を増やす。",
+      "correct": false,
+      "rationale": "実行環境の起動を速める設定で、取引先ごとの上限の設定にも、バックエンドの呼び出しを減らすことにもなりません。"
+    },
+    {
+      "id": "e",
+      "text": "ステージの API キャッシュを有効にし、対象メソッドのキャッシュを有効にする。応答を区別するパラメータをキャッシュキーに設定し、TTL を設定する。",
+      "correct": true,
+      "rationale": "API Gateway のキャッシュは、バックエンドの応答を TTL の間保持します。同じリクエストでは Lambda や DynamoDB の呼び出しが減り、応答も速くなります。"
+    }
+  ],
+  "explanation": "API Gateway の REST API には、利用の制御に使う使用量プランと、応答の高速化に使うキャッシュの機能があります。\n\n使用量プランは、API キーごとに、スロットリング（1 秒あたりのリクエスト数のレートとバースト）とクォータ（日、週、月あたりのリクエスト数）を設定する機能です。取引先ごとに異なるプランと API キーを割り当てれば、利用の上限を変えられます。ただし、スロットリングとクォータはベストエフォートで適用されるため、上限を厳密に保証するものではなく、設定値を超える場合があります。コストの管理や、アクセスの遮断には依存しません。また、API キーは利用者の識別と計測に使うもので、認証や認可の仕組みの代わりにはなりません。認証には、IAM、Lambda オーソライザー、Amazon Cognito などを併用します。\n\nステージで API キャッシュを有効にし、対象のメソッドでキャッシュを有効にすると、エンドポイントの応答を TTL の間キャッシュします。応答を区別するパラメータをキャッシュキーに設定すると、パラメータの値ごとに応答が別々にキャッシュされます。同じ参照リクエストでは、Lambda 呼び出しなどのバックエンドの呼び出しを減らせます。\n\nDAX は DynamoDB の読み取りを減らせますが、Lambda の呼び出しは減らせません。Lambda のプロビジョニングされた同時実行はコールドスタートの影響を抑える機能であり、呼び出し回数は減らしません。WAF のレートベースのルールは、短い期間のリクエスト数の制限に向きます。",
+  "keyPoints": [
+    "クライアントごとのレート・クォータの制御 → 使用量プラン＋API キー（ベストエフォートで、厳密な上限の保証ではない）",
+    "API キーは識別・計測用で、認証の代わりにはならない",
+    "Lambda などバックエンド呼び出しの削減 → API Gateway のステージキャッシュ（キャッシュキーで応答を区別）"
+  ],
+  "references": [
+    {
+      "title": "使用量プランと API キー - Amazon API Gateway デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+    },
+    {
+      "title": "API Gateway でのキャッシュの有効化",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

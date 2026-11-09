@@ -1,0 +1,80 @@
+{
+  "id": "saa-1.3-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S5",
+    "1.3-K2"
+  ],
+  "services": [
+    "AWS Backup",
+    "Amazon Elastic Block Store",
+    "Amazon Relational Database Service",
+    "AWS Organizations"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "AWS Backup Vault Lock",
+    "ランサムウェア対策",
+    "不変バックアップ"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、ランサムウェア対策として、AWS Backup で今後取得する Amazon EBS と Amazon RDS のバックアップを、管理者のアカウントが侵害されても、削除や保持期間の短縮ができない状態で 35 日間保持したいと考えています。バックアップは、同じ AWS Organizations の組織に属する別の AWS アカウントにも複製します。クロスアカウントコピーに必要な暗号化キーとアクセス権限は設定済みです。運用は AWS Backup のポリシーで一元的に行います。最も適切な設計はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バックアップボールトに Vault Lock をガバナンスモードで設定し、最小保持期間を 35 日にする。バックアップルールとコピールールの保持期間をそれぞれ 35 日に設定し、別アカウントのボールトへ複製する。",
+      "correct": false,
+      "rationale": "ガバナンスモードでは、十分な権限を持つユーザーがロックの設定を変更または削除できます。管理者のアカウントが侵害された場合に、ロックを外されて、保持期間の短縮や削除を許してしまいます。"
+    },
+    {
+      "id": "b",
+      "text": "Lambda 関数でスナップショットを定期的に Amazon S3 にエクスポートし、S3 オブジェクトロックのコンプライアンスモードで 35 日間保持する。",
+      "correct": false,
+      "rationale": "AWS Backup のポリシーで一元的に運用する要件を満たしません。また、RDS のスナップショットの S3 エクスポートは分析用の Parquet 形式の出力で、そのまま RDS に復元できるスナップショットの代わりにはなりません。"
+    },
+    {
+      "id": "c",
+      "text": "コピー元とコピー先の両方のボールトに AWS Backup Vault Lock をコンプライアンスモードで設定し、最小保持期間を 35 日にして、猶予期間の終了を確認する。バックアップルールとコピールールの保持期間は、それぞれ 35 日に設定する。",
+      "correct": true,
+      "rationale": "コンプライアンスモードでは、猶予期間（3 日以上）が終わるとロックが確定し、管理者権限でもロックの変更や、保持期間内のバックアップの削除ができなくなります。最小保持期間は条件に合わないジョブを失敗させる設定のため、ルール側の保持期間も 35 日にします。"
+    },
+    {
+      "id": "d",
+      "text": "IAM ポリシーで、バックアップの削除（backup:DeleteRecoveryPoint）を管理者を含むすべてのユーザーに対して拒否し、バックアップルールの保持期間を 35 日に設定する。",
+      "correct": false,
+      "rationale": "IAM ポリシーは、権限のあるユーザーが変更または削除できます。管理者のアカウントが侵害されると、拒否のポリシーも外されてしまいます。"
+    }
+  ],
+  "explanation": "AWS Backup Vault Lock は、バックアップボールトに WORM（Write Once Read Many）の設定を追加し、バックアップの削除や保持期間の短縮を防ぐ機能です。2つのモードがあります。\n\nガバナンスモードでは、十分な IAM 権限を持つユーザーがロックの設定を変更または削除できます。コンプライアンスモードでは、指定した猶予期間（最短 3 日）が過ぎるとロックが確定し、ルートユーザーや AWS も含めて、ロックの変更や削除ができなくなります。確定の前は、ロックの削除や設定の変更が可能なため、猶予期間の終了を確認してから運用に入ります。\n\n最小保持期間は、ボールトに保存するバックアップやコピーの保持期間を検査する条件です。条件に合わない新規のバックアップジョブやコピージョブは失敗します。保持期間が自動で延長されることはなく、ロックの前から保存されている復旧ポイントに遡って適用されることもありません。そのため、バックアップルールとコピールールの保持期間を 35 日以上に設定します。\n\n別アカウントへのコピーには、2つのアカウントが同じ AWS Organizations の組織に属していること、コピー先ボールトのアクセスポリシー、暗号化キーの共有が必要です。コピー先にもロックを設定すれば、元のアカウントが侵害されても、複製先に不変のバックアップが残ります。IAM ポリシーの拒否は、権限のあるユーザーが外せるため、侵害に対する防御としては弱くなります。",
+  "keyPoints": [
+    "バックアップを管理者でも消せない状態に → AWS Backup Vault Lock のコンプライアンスモード（猶予期間の終了後に確定）",
+    "ガバナンスモードは権限のあるユーザーが解除できる",
+    "最小保持期間は保持期間を延ばす設定ではなく、条件に合わない新規ジョブを失敗させる。ルールの保持期間を合わせる",
+    "別アカウントへのコピーで、元アカウントの侵害に備える"
+  ],
+  "references": [
+    {
+      "title": "AWS Backup Vault Lock - AWS Backup デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+    },
+    {
+      "title": "AWS Backup のクロスアカウントバックアップ - AWS Backup デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-cross-account-backup.html"
+    },
+    {
+      "title": "Amazon RDS の DB スナップショットデータの Amazon S3 へのエクスポート - Amazon RDS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-backup-and-retention"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

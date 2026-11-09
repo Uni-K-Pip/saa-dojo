@@ -1,0 +1,75 @@
+{
+  "id": "saa-1.1-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.1",
+  "knowledgeRefs": [
+    "1.1-S5",
+    "1.1-K1"
+  ],
+  "services": [
+    "Amazon Simple Storage Service",
+    "AWS Organizations",
+    "AWS Identity and Access Management"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "aws:PrincipalOrgID",
+    "バケットポリシー",
+    "クロスアカウント"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で約 120 の AWS アカウントを運用しています。全アカウントのワークロードが、共有サービス用アカウントの Amazon S3 バケットにある設定ファイルを読み取ります。各アカウントのワークロードの IAM ロールには、必要な許可を付与済みです。対象バケットでは ACL を無効化しており、今回設定するバケットポリシー以外に、他アカウントからの読み取りを許可する設定はありません。新しいアカウントは頻繁に追加され、組織から外れたアカウントはアクセスできなくなる必要があります。バケットポリシーの更新作業は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットポリシーの Principal に、全アカウントのアカウント ID を列挙して s3:GetObject を許可する。アカウントが組織に参加したり、組織から外れたりするたびに、管理者がバケットポリシーを更新してアカウント ID を追加または削除する。",
+      "correct": false,
+      "rationale": "動作はしますが、アカウントの追加や削除のたびにポリシーを更新する必要があります。更新作業を避けたいという要件を満たしません。"
+    },
+    {
+      "id": "b",
+      "text": "バケットポリシーで全プリンシパルに s3:GetObject を許可し、Condition で aws:ResourceOrgID が自社の組織 ID と一致することを条件にする。",
+      "correct": false,
+      "rationale": "aws:ResourceOrgID は、アクセス対象のリソースが属する組織を確認する条件キーです。このバケットは自社の組織に属しているので、条件は常に満たされ、呼び出し元を組織内のアカウントに限定できません。"
+    },
+    {
+      "id": "c",
+      "text": "バケットポリシーで s3:GetObject を許可し、Principal を \"*\" にして、Condition は StringEquals で aws:PrincipalOrgID が指定した組織 ID と一致することとする。",
+      "correct": true,
+      "rationale": "aws:PrincipalOrgID の条件により、このステートメントによるアクセス許可の対象は、組織に属するアカウントのプリンシパルに限定されます。新しいアカウントは自動的に対象になり、組織から外れれば対象から外れるので、ポリシーの更新は不要です。"
+    },
+    {
+      "id": "d",
+      "text": "共有サービス用アカウントに、アカウントごとの IAM ユーザーを作成してアクセスキーを配布する。",
+      "correct": false,
+      "rationale": "長期の認証情報を 120 件作って管理することになり、運用負荷もリスクも大きくなります。アカウントの追加や削除にも手作業が必要です。"
+    }
+  ],
+  "explanation": "リソースベースポリシーの Condition にグローバル条件キー aws:PrincipalOrgID を使うと、そのステートメントによるアクセス許可の対象を、特定の組織に属するアカウントのプリンシパルに限定できます。Principal は \"*\" にしますが、条件で組織に限定されるため、公開にはなりません。\n\nアカウント ID を列挙する方法は、アカウントの増減のたびにポリシーを更新する必要があります。組織の ID を条件にすれば、新しいアカウントが組織に参加した時点で、このステートメントの許可の対象になり、組織を離れれば自動的に対象から外れます。一方、aws:ResourceOrgID は、アクセス対象のリソースが属する組織を比べる条件キーなので、呼び出し元の限定には使えません。\n\nなお、この Allow ステートメントの条件は、他の ACL やポリシーによる許可を拒否するものではありません。この問題では ACL を無効化し、他の許可の設定がないという前提なので、組織外のアカウントはアクセスできません。他の許可経路があっても組織外を確実に拒否したい場合は、aws:PrincipalOrgID を StringNotEquals で評価する明示的な Deny を追加します。\n\nまた、クロスアカウントのアクセスでは、リソースベースポリシーの許可に加えて、呼び出し側のプリンシパルに対するアイデンティティベースポリシーの許可も必要です。この問題では、それは付与済みです。OU 単位で絞りたい場合は aws:PrincipalOrgPaths が使えます。",
+  "keyPoints": [
+    "組織内のアカウントすべてに許可 → aws:PrincipalOrgID 条件キー（StringEquals で組織 ID を指定）",
+    "この条件は Allow の対象を絞るだけ。他の許可経路まで拒否するには明示的な Deny が必要",
+    "クロスアカウントのアクセスは、リソースベースとアイデンティティベース両方の許可が必要",
+    "公開（Principal \"*\" で条件なし）と組織限定（\"*\" ＋ 条件）は別物。aws:ResourceOrgID はリソース側の組織を見る条件キー"
+  ],
+  "references": [
+    {
+      "title": "AWS グローバル条件コンテキストキー - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+    },
+    {
+      "title": "Amazon S3 のバケットポリシーの例",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.1-multi-account"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

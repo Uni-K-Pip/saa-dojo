@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-012",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K7", "3.5-K2", "3.5-K6"],
+  "services": ["Amazon Managed Streaming for Apache Kafka", "Amazon Kinesis"],
+  "qualifier": "minimal-change",
+  "tags": ["Amazon MSK", "Apache Kafka", "移行", "ストリーミング"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融会社は、オンプレミスの Apache Kafka クラスターを使って、取引イベントのストリームを複数のアプリケーションで共有しています。プロデューサーとコンシューマーは Kafka のクライアントライブラリで実装されており、Kafka Connect のコネクターも多数使っています。Kafka クラスターの運用負荷を減らすために AWS へ移行します。アプリケーションとコネクターの変更は最小限にする必要があります。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Managed Streaming for Apache Kafka（Amazon MSK）",
+      "correct": true,
+      "rationale": "Amazon MSK は、Apache Kafka をフルマネージドで提供するサービスで、Kafka のクライアントや Kafka Connect などのエコシステムをそのまま使えます。ブローカーの管理、パッチ適用、ストレージの管理を AWS に任せつつ、アプリケーションの変更を最小限にできます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Kinesis Data Streams",
+      "correct": false,
+      "rationale": "Kinesis Data Streams は、Kafka とは別の API を持つサービスです。プロデューサーとコンシューマーを Kinesis の SDK やライブラリで書き換える必要があり、Kafka Connect のコネクターも使えません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Data Firehose",
+      "correct": false,
+      "rationale": "Firehose は、S3 などの宛先にデータを配信するサービスで、Kafka のクライアントから使えるわけではありません。複数のコンシューマーが独自のコードでストリームを読む用途にも向きません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SQS FIFO キュー",
+      "correct": false,
+      "rationale": "SQS は、メッセージキューで、Kafka のログベースのストリーム（複数のコンシューマーグループによる読み直し）とは仕組みが違います。Kafka のクライアントやコネクターは使えず、アプリケーションの書き換えが必要です。"
+    }
+  ],
+  "explanation": "ストリーミングデータの取り込み先は、既存の資産と要件で選びます。\n\n・Amazon MSK: Apache Kafka のマネージドサービス。Kafka のクライアントライブラリ、Kafka Connect、Kafka のツールをそのまま使える。既存の Kafka アプリケーションの移行や、Kafka のエコシステムが必要なときに選ぶ。\n・Amazon Kinesis Data Streams: AWS ネイティブのストリーミングサービス。Kafka の資産がなく、運用の軽さと AWS サービスとの統合を優先するときに向く。\n\nこの問題は、Kafka のクライアントとコネクターを変更せずに移行する要件なので、Amazon MSK が適切です。MSK にはプロビジョニング型と、容量を自動で管理するサーバーレス型があります。",
+  "keyPoints": [
+    "既存の Kafka アプリケーションをできるだけ変えずに移行 → Amazon MSK",
+    "Kafka の資産がなく運用の軽さを優先 → Kinesis Data Streams",
+    "Kinesis と Kafka は API が違うので、切り替えにはアプリケーションの書き換えが必要"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon MSK? - Amazon Managed Streaming for Apache Kafka",
+      "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+    },
+    {
+      "title": "MSK Connect - Amazon Managed Streaming for Apache Kafka",
+      "url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,81 @@
+{
+  "id": "saa-4.1-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S10",
+    "4.1-K4",
+    "4.1-S2"
+  ],
+  "services": [
+    "Amazon FSx",
+    "AWS DataSync"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "FSx for Windows File Server",
+    "HDD ストレージ",
+    "データ重複排除"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、SSD ストレージの Amazon FSx for Windows File Server で、約 20 TB の部門共有のファイルを運用しています。ファイルの多くは、似た内容の文書や、重複したコピーです。アクセスは日中の業務時間に集中しますが、要求される IOPS は高くありません。ストレージの費用を下げたい一方で、SMB の共有と NTFS のアクセス許可は、そのまま使いたいと考えています。新しいファイルシステムへの移行は可能です。最も効果的な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "ファイルを Amazon S3 Glacier Deep Archive に移行してアーカイブの単価で保存し、ユーザーには、必要なときに個別に復元を依頼してもらう。",
+      "correct": false,
+      "rationale": "日中の業務で使うファイルを、アーカイブにすると、復元に数時間かかり、業務に支障が出ます。SMB での共有もできなくなります。"
+    },
+    {
+      "id": "b",
+      "text": "SSD ストレージのままで、ストレージ容量を現在の使用量にぴったり合わせるまで縮小して、課金される容量を減らす。",
+      "correct": false,
+      "rationale": "FSx for Windows File Server のストレージ容量は、増やせますが、縮小はできません。縮小できたとしても、SSD の単価は変わらず、重複の削減もできません。"
+    },
+    {
+      "id": "c",
+      "text": "HDD ストレージの Amazon FSx for Windows File Server を新規に作成し、NTFS ACL を保持する設定で AWS DataSync によりデータを移行する。必要な SMB 共有を構成し、データ重複排除を有効にする。",
+      "correct": true,
+      "rationale": "HDD ストレージは SSD より容量あたりの料金が低く、IOPS の要求が低い部門共有に向いています。DataSync は NTFS ACL を移行でき、移行先で SMB 共有を構成して接続先を切り替えれば、利用者は同じ SMB とアクセス許可を使い続けられます。重複排除は、効果を検証して移行先の容量設計に活かせます。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon EFS のファイルシステムに移行して、EFS Infrequent Access のライフサイクルを有効にし、アクセス頻度の低いファイルの費用を下げる。",
+      "correct": false,
+      "rationale": "EFS は NFS のファイルシステムで、SMB の共有と NTFS のアクセス許可を、そのままは使えません。Windows のユーザーへの影響が大きくなります。"
+    }
+  ],
+  "explanation": "Amazon FSx for Windows File Server は、ストレージタイプとして SSD または HDD を選べます。SSD は低レイテンシーで高い IOPS が必要なワークロード向け、HDD は部門の共有、ホームディレクトリ、コンテンツ管理など、IOPS の要求が低く、費用を抑えたいワークロード向けで、容量あたりの料金が低くなっています。\n\nストレージタイプは、HDD から SSD へは既存のファイルシステムで変更できます。一方、SSD から HDD へは直接変更できません。HDD の新しいファイルシステムを作成し、バックアップからの復元や AWS DataSync などでデータを移行する必要があります。本問は SSD から HDD への変更なので、新しいファイルシステムへの移行が前提です。\n\nDataSync は NTFS のアクセス制御リスト（ACL）を含むメタデータをコピーできます。ただし、必要な権限と転送設定を整えることに加えて、移行先での SMB 共有の構成と、利用者の接続先の切り替えが必要です。大量のファイルを移行する場合は、HDD の IOPS の上限にも注意します。\n\nFSx for Windows File Server は、Windows のデータ重複排除に対応しています。重複したファイルや似た内容のブロックを 1 つにまとめて、使用する容量を減らせます。ただし、課金はプロビジョニングした容量に基づくため、重複排除で使用量を減らしても、すでにプロビジョニングした容量の料金が自動的に減るわけではありません。ストレージ容量は増やせますが縮小できないので、重複排除は、将来の容量増設の抑制や、効果を検証したうえでの移行先の容量の設計に活用します。\n\nGlacier は業務ですぐ使うファイルには向きません。EFS は NFS 向けで、SMB と NTFS の権限をそのままは使えません。",
+  "keyPoints": [
+    "IOPS 要求が低い Windows のファイル共有で費用を下げる → FSx for Windows の HDD ストレージ＋データ重複排除",
+    "ストレージタイプは HDD から SSD へは変更可能。SSD から HDD へは直接変更できず、HDD の新しいファイルシステムへの移行が必要",
+    "課金はプロビジョニング容量に基づく。容量は増やせるが縮小できないため、重複排除の効果を見て移行先の容量を設計する",
+    "DataSync は NTFS ACL を移行できるが、SMB 共有の構成と接続先の切り替えは別途必要"
+  ],
+  "references": [
+    {
+      "title": "ストレージの管理 - Amazon FSx for Windows File Server ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html"
+    },
+    {
+      "title": "ファイルシステムのストレージタイプの更新 - Amazon FSx for Windows File Server",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/updating-storage-type.html"
+    },
+    {
+      "title": "データ重複排除の管理 - Amazon FSx for Windows File Server",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-data-dedup.html"
+    },
+    {
+      "title": "AWS DataSync を使用した既存ファイルの移行 - Amazon FSx for Windows File Server",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/migrate-files-to-fsx-datasync.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

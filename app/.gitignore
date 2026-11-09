@@ -1,2 +1,6 @@
 # コンテンツのビルド結果（npm run content で生成）
 public/data/
+
+# Playwright の結果
+test-results/
+playwright-report/

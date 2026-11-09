@@ -1,0 +1,67 @@
+{
+  "id": "saa-2.2-w2m-017",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K2",
+    "2.2-S8"
+  ],
+  "services": [
+    "Amazon Lex",
+    "AWS Lambda"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Amazon Lex",
+    "チャットボット",
+    "マネージド AI サービス"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業のカスタマーサポートでは、「配送状況の確認」や「注文のキャンセル」などの定型の問い合わせに、電話と Web チャットで自動応答する対話ボットを導入したいと考えています。ユーザーの発話の意図を認識して、必要な情報（注文番号など）を聞き返し、AWS Lambda 関数で注文システムを呼び出します。機械学習のモデルの構築と運用は避けたいと考えています。最も適切なサービスはどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Comprehend で、問い合わせの文章の感情やキーフレーズを分析して、応答を決める。",
+      "correct": false,
+      "rationale": "Comprehend は、テキストの分析（感情、エンティティなど）のサービスで、対話の進行や聞き返しを管理する仕組みではありません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Polly で、あらかじめ用意した回答の文章を音声に変換して、電話で再生する。",
+      "correct": false,
+      "rationale": "Polly は、テキストを音声に変換するサービスです。ユーザーの発話の意図の認識や、対話の進行を行いません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon SageMaker AI で、問い合わせの意図を分類するモデルを自分でトレーニングして、エンドポイントにデプロイする。",
+      "correct": false,
+      "rationale": "実現はできますが、モデルの構築と運用が必要です。機械学習のモデルの構築と運用を避ける要件に反します。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon Lex でボットを作成して、意図とスロットを定義し、Lambda 関数を呼び出す。",
+      "correct": true,
+      "rationale": "Lex は、音声とテキストの対話型インターフェイスを構築するサービスです。意図の認識、情報の聞き返し（スロット）、Lambda による処理の呼び出しを、モデルの構築なしで実現できます。"
+    }
+  ],
+  "explanation": "AWS のマネージドな AI サービスは、目的ごとに使い分けます。Amazon Lex は、音声とテキストによる対話型インターフェイス（チャットボット、音声ボット）を構築するサービスで、自動音声認識と自然言語理解の機能を提供します。ボットには、意図（インテント）と、必要な情報を集めるスロットを定義し、Lambda 関数で処理を実行します。Amazon Connect などのコンタクトセンターとも連携できます。\n\nAmazon Comprehend は、テキストの感情、エンティティ、キーフレーズなどを分析する自然言語処理のサービスです。Amazon Polly は、テキストから音声を合成します。Amazon Transcribe は、音声をテキストに変換します。Amazon SageMaker AI は、機械学習モデルの構築、トレーニング、デプロイのためのサービスです。\n\n定型の問い合わせに対話型で自動応答する場合は、Lex が最も適しています。",
+  "keyPoints": [
+    "対話ボット（音声・テキスト）→ Amazon Lex（インテントとスロット、Lambda 連携）",
+    "テキスト分析 → Comprehend、音声合成 → Polly、音声認識 → Transcribe",
+    "モデルの構築を避けるなら、マネージドな AI サービスを使う"
+  ],
+  "references": [
+    {
+      "title": "Amazon Lex とは - Amazon Lex V2 デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

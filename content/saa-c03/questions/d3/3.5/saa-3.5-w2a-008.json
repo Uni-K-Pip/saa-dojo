@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.5-w2a-008",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-K1", "3.5-S1", "3.5-K5"],
+  "services": [
+    "AWS Lake Formation",
+    "AWS Glue",
+    "Amazon Athena",
+    "Amazon Simple Storage Service",
+    "Amazon EMR"
+  ],
+  "qualifier": "security",
+  "tags": ["AWS Lake Formation", "列レベルのアクセス制御", "データレイク", "Data Catalog"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある金融会社は、顧客データを Amazon S3 のデータレイクに集約し、AWS Glue Data Catalog にテーブルを定義しています。分析チーム A には口座番号の列を見せず、チーム B には自社の担当地域の行だけを見せる必要があります。Amazon Athena と Amazon EMR のどちらからクエリしても同じ権限で制御し、権限の管理を一元化したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 バケットポリシーと IAM ポリシーで、プレフィックスごとにチームのアクセスを許可する。",
+      "correct": false,
+      "rationale": "S3 のポリシーで制御できるのはバケットやプレフィックス、オブジェクトの単位で、ファイルの中の列や行は制御できません。クエリエンジンごとに権限を設定する管理も増えます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lake Formation でデータレイクを登録し、Data Catalog のテーブルに対して、列レベルと行レベルのデータフィルターを使って各チームに権限を付与する。",
+      "correct": true,
+      "rationale": "Lake Formation は、データレイクのテーブルに対して、列、行、セルの単位できめ細かい権限を一元管理できます。Athena や EMR などの連携サービスからのクエリにも、同じ権限が適用されます。"
+    },
+    {
+      "id": "c",
+      "text": "チームごとに必要な列と行だけを抜き出したコピーを別々の S3 バケットに作成し、バケットごとにアクセスを許可する。",
+      "correct": false,
+      "rationale": "データが重複して保存され、元データが更新されるたびにコピーを作り直す運用が必要です。権限の管理も分散するため、一元管理という要件を満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "S3 バケットで ACL を設定して、チームごとにオブジェクト単位でアクセスを許可する。",
+      "correct": false,
+      "rationale": "ACL はオブジェクト単位の制御で、列や行は制御できません。ACL は現在あまり使わない旧来の仕組みで、管理も煩雑です。"
+    }
+  ],
+  "explanation": "AWS Lake Formation は、データレイクの構築とセキュリティ管理を簡単にするサービスです。S3 上のデータを登録し、AWS Glue Data Catalog のデータベースやテーブルに対して、データベース、テーブル、列、行、セルの単位で権限を付与・取り消しできます。付与した権限は、Amazon Athena、Amazon Redshift Spectrum、Amazon EMR、AWS Glue、Amazon QuickSight などの連携サービスからのクエリで共通に適用されるので、権限の管理を 1 か所に集められます。\n\nS3 のバケットポリシーや IAM ポリシーは、オブジェクトやプレフィックスの単位でしか制御できません。列や行の単位の制御には、Lake Formation のデータフィルターを使います。",
+  "keyPoints": [
+    "データレイクの列・行・セルレベルのアクセス制御を一元管理 → AWS Lake Formation",
+    "S3 のポリシーや ACL ではファイルの中の列や行は制御できない",
+    "Lake Formation の権限は Athena、EMR、Redshift Spectrum などの連携サービスで共通に効く"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Lake Formation? - AWS Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    },
+    {
+      "title": "Data filtering and cell-level security in Lake Formation - AWS Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

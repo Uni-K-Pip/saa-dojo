@@ -1,0 +1,61 @@
+{
+  "id": "saa-3.5-w2a-017",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.5",
+  "knowledgeRefs": ["3.5-S2", "3.5-K7"],
+  "services": ["Amazon Kinesis", "Amazon Simple Notification Service"],
+  "qualifier": "operational",
+  "tags": ["Managed Service for Apache Flink", "リアルタイム集計", "ウィンドウ処理", "Kinesis Data Streams"],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある決済会社は、決済イベントを Amazon Kinesis Data Streams に送信しています。同じ加盟店の過去 5 分間の決済件数と金額をほぼリアルタイムに集計し、しきい値を超えたら通知する必要があります。集計は時間のウィンドウを使い、複数のシャードにまたがるイベントの集計も必要です。サーバーの管理は避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon Managed Service for Apache Flink のアプリケーションで、ストリームを読み取り、加盟店ごとのウィンドウ集計を行って、結果を通知する。",
+      "correct": true,
+      "rationale": "Managed Service for Apache Flink は、ストリームのデータをリアルタイムに処理するマネージドサービスです。時間のウィンドウ（タンブリング、スライディング）を使った集計や、状態を保持する処理を、サーバーを管理せずに実行できます。Kinesis Data Streams をソースにできます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Lambda 関数をイベントソースマッピングで起動し、1 回の呼び出しの中でレコードを集計する。",
+      "correct": false,
+      "rationale": "Lambda は、バッチごとに独立して呼び出され、複数のシャードや複数の呼び出しにまたがるウィンドウの状態の保持は、標準では困難です。厳密な 5 分間の集計を自前で実装する必要があります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon Data Firehose で S3 に保存し、Amazon Athena で 5 分ごとにクエリする。",
+      "correct": false,
+      "rationale": "Firehose のバッファリングと Athena のクエリでは、ほぼリアルタイムの集計と通知の要件を満たしにくく、スケジュール実行の仕組みも必要になります。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon SQS キューに決済イベントを送り、Amazon EC2 のワーカーで集計する。",
+      "correct": false,
+      "rationale": "ワーカーの管理が必要で、サーバーの管理を避けたいという要件に反します。ウィンドウの状態の管理も自分で実装することになります。"
+    }
+  ],
+  "explanation": "ストリーミングデータのアーキテクチャでは、「取り込み」「処理」「保存・配信」の 3 段階で考えます。\n\n・取り込み: Kinesis Data Streams（独自の読み出し、複数のコンシューマー）、Amazon MSK（Kafka）、Amazon Data Firehose（配信のみ）。\n・処理: リアルタイムの集計、ウィンドウ処理、変換は Amazon Managed Service for Apache Flink（旧称 Amazon Kinesis Data Analytics for Apache Flink）。単純なレコード単位の処理は Lambda。\n・保存・配信: S3、Redshift、OpenSearch Service、DynamoDB など。\n\n「過去 5 分間の集計」のような時間ウィンドウと状態を保持する処理は、Flink が得意とする領域です。なお、SQL でストリームを処理していた Amazon Kinesis Data Analytics for SQL Applications は提供を終了しています。",
+  "keyPoints": [
+    "ストリームのリアルタイム集計・ウィンドウ処理・状態保持 → Amazon Managed Service for Apache Flink",
+    "レコード単位の単純な処理 → Lambda、宛先へ配信するだけ → Firehose",
+    "Kinesis Data Analytics for SQL Applications は提供終了（Flink を使う）"
+  ],
+  "references": [
+    {
+      "title": "What is Managed Service for Apache Flink? - Managed Service for Apache Flink",
+      "url": "https://docs.aws.amazon.com/managed-flink/latest/java/what-is.html"
+    },
+    {
+      "title": "Windows - Managed Service for Apache Flink",
+      "url": "https://docs.aws.amazon.com/managed-flink/latest/java/how-windows.html"
+    }
+  ],
+  "lessonRefs": ["lesson-3.5-ingestion-and-streaming"],
+  "pool": "practice",
+  "needsSourceCheck": true,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

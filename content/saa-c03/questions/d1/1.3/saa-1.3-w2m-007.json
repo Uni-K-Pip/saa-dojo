@@ -1,0 +1,81 @@
+{
+  "id": "saa-1.3-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.3",
+  "knowledgeRefs": [
+    "1.3-S3",
+    "1.3-K4"
+  ],
+  "services": [
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "security",
+  "tags": [
+    "転送中の暗号化",
+    "aws:SecureTransport",
+    "s3:TlsVersion"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業では、取引データを扱う複数の社内アプリケーションが、機密データを保存する Amazon S3 バケットの通常のリージョナルエンドポイントに直接アクセスしています。HTTP（暗号化されない接続）によるアクセスと、TLS 1.3 より古いバージョンの接続を拒否したいと考えています。クライアントは TLS 1.3 に対応済みです。アプリケーション側の修正はせずに、バケット側の設定で強制します。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "バケットポリシーに二つの独立した Deny ステートメントを設定する。一方では Bool 条件で aws:SecureTransport が false のリクエストを、他方では NumericLessThan 条件で s3:TlsVersion が 1.3 未満のリクエストを拒否する。",
+      "correct": true,
+      "rationale": "一方のステートメントで HTTP を拒否し、別のステートメントで 1.3 未満の TLS を拒否します。独立させるので、どちらかに該当すれば拒否されます。バケット側の設定だけで、すべてのクライアントに強制できます。"
+    },
+    {
+      "id": "b",
+      "text": "CloudFront のディストリビューションで、ビューアープロトコルポリシーを HTTPS のみに設定し、最低 TLS バージョンを指定する。",
+      "correct": false,
+      "rationale": "CloudFront 経由のアクセスだけに効く設定です。S3 のエンドポイントに直接アクセスする HTTP や古い TLS の接続は、止められません。"
+    },
+    {
+      "id": "c",
+      "text": "バケットの既定の暗号化を SSE-KMS に変更し、KMS キーのキーポリシーでアクセスできるプリンシパルを制限する。",
+      "correct": false,
+      "rationale": "SSE-KMS オブジェクトの GET と PUT には TLS が必須ですが、既定の暗号化の設定では、バケットへのすべてのアクセスに HTTPS を強制することや、TLS 1.3 以上を指定することはできません。"
+    },
+    {
+      "id": "d",
+      "text": "バケットのブロックパブリックアクセスをすべて有効にし、バケットポリシーでパブリックなアクセスを拒否する。",
+      "correct": false,
+      "rationale": "ブロックパブリックアクセスは、公開を防ぐ設定で、通信の暗号化や TLS のバージョンとは関係ありません。"
+    }
+  ],
+  "explanation": "S3 への通信を暗号化することを強制するには、バケットポリシーで条件キーを使います。aws:SecureTransport は、リクエストが HTTPS で送られたときに true になるため、Bool 条件で値が false のリクエストを Deny すると、HTTP のアクセスを拒否できます。s3:TlsVersion は、リクエストに使われた TLS のバージョンを示す条件キーで、NumericLessThan 条件で 1.3 より小さい値を Deny すると、古い TLS の接続も拒否できます。\n\nこの二つの拒否は、別々の Deny ステートメントに分けて記述します。同じステートメントの Condition にまとめると、すべての条件を満たしたときだけ拒否する AND の評価になり、意図した拒否になりません。バケットポリシーはバケット側で強制されるため、クライアントのアプリケーションを変更する必要はありません。\n\nなお、2024 年 2 月 27 日以降、S3 を含む AWS サービスの API エンドポイントは、最低でも TLS 1.2 を要求します。TLS 1.2 未満の拒否のためにバケットポリシーを書く必要はなく、この問題では要件として TLS 1.3 を求めているため、s3:TlsVersion を使います。TLS 1.3 は S3 の AWS PrivateLink とマルチリージョンアクセスポイントでは使えないため、これらを経由するクライアントがないかを事前に確認します。AWS のサービスが代理でアクセスする構成では、aws:PrincipalIsAWSService が false の場合だけ拒否するように、条件を限定する場合があります。\n\nSSE-KMS は保存時の暗号化、ブロックパブリックアクセスは公開の防止、CloudFront の設定は経由する場合だけの制御です。SSE-KMS オブジェクトの GET と PUT には TLS が必須ですが、いずれも S3 への直接の通信を一律に制御する設定ではありません。",
+  "keyPoints": [
+    "S3 への HTTP を拒否 → バケットポリシーで aws:SecureTransport が false を Deny",
+    "TLS 1.3 未満を拒否 → s3:TlsVersion に NumericLessThan 条件。TLS 1.2 未満はサービス側で既に非対応",
+    "二つの条件は、独立した Deny ステートメントに分ける",
+    "保存時の暗号化（SSE）と転送中の暗号化（TLS）は別の設定"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 のセキュリティのベストプラクティス",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
+    },
+    {
+      "title": "Amazon S3 のポリシーキー",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html"
+    },
+    {
+      "title": "Amazon S3 での転送中のデータの暗号化 - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingEncryptionInTransit.html"
+    },
+    {
+      "title": "Enforcing encryption in transit with TLS1.2 or higher with Amazon S3 - AWS Storage Blog",
+      "url": "https://aws.amazon.com/blogs/storage/enforcing-encryption-in-transit-with-tls1-2-or-higher-with-amazon-s3/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.3-encryption-and-keys"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

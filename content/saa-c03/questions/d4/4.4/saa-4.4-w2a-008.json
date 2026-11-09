@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-008",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-S6"],
+  "services": ["Amazon API Gateway", "AWS Lambda"],
+  "qualifier": "cost",
+  "tags": ["API Gateway", "使用量プラン", "スロットリング", "API キー"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある SaaS 企業は、パートナー企業向けの REST API を Amazon API Gateway と AWS Lambda で公開しています。パートナーごとに契約があり、無料枠のパートナーは毎秒 10 リクエストまで、有料のパートナーは毎秒 100 リクエストまでと決まっています。一部のパートナーが契約を超えるリクエストを送り、Lambda 関数とバックエンドのコストが急増しました。パートナーごとにリクエスト数を制限したいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "API Gateway の使用量プランを契約の種類ごとに作成して、パートナーごとの API キーを関連付け、プランにスロットリングの制限（レートとバースト）とクォータを設定する。",
+      "correct": true,
+      "rationale": "使用量プランは、API キーごとに、リクエストのレートとバースト、期間あたりのクォータを設定できる仕組みです。パートナーごとに API キーを発行して契約に合うプランに関連付ければ、契約を超えたリクエストは API Gateway で 429 エラーとして拒否され、バックエンドのコストが増えません。"
+    },
+    {
+      "id": "b",
+      "text": "Lambda 関数の予約済み同時実行数を小さな値に設定する。",
+      "correct": false,
+      "rationale": "予約済み同時実行数は関数全体の上限で、パートナーごとの制限ではありません。契約を守っているパートナーまで、スロットリングされるおそれがあります。"
+    },
+    {
+      "id": "c",
+      "text": "AWS WAF のレートベースのルールで、IP アドレスごとに 5 分間のリクエスト数を制限する。",
+      "correct": false,
+      "rationale": "レートベースのルールは IP アドレスを単位とし、悪用や攻撃の対策に向いています。契約の種類ごとに異なる制限を、パートナー（API キー）単位で適用することはできません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数の中で、リクエスト数を DynamoDB に記録して、制限を超えたら拒否するコードを実装する。",
+      "correct": false,
+      "rationale": "制限のためのコードと記録用のデータストアの運用が必要になり、拒否の時点で Lambda の実行料金や DynamoDB の料金がすでに発生しています。API Gateway の標準機能で済ませるほうが低コストです。"
+    }
+  ],
+  "explanation": "スロットリング（リクエストの流量制限）は、バックエンドの保護とコストの抑制に役立ちます。Amazon API Gateway には、次の仕組みがあります。\n\n・アカウント・リージョン単位の既定のスロットリング制限\n・ステージやメソッド単位のスロットリング設定\n・使用量プランと API キー: 利用者（API キー）ごとに、レート、バースト、期間あたりのクォータを設定する。契約の種類ごとの制限に適している。\n\n制限を超えたリクエストは API Gateway で拒否（HTTP 429）されるため、バックエンドの Lambda などは実行されず、コストが増えません。なお、API キーは利用量の管理や識別のためのもので、認可の仕組み（Lambda オーソライザー、Cognito、IAM など）の代わりにはなりません。AWS WAF のレートベースのルールは、IP アドレスなどを単位とした攻撃の緩和に向いています。",
+  "keyPoints": [
+    "利用者（契約）ごとにリクエスト数を制限 → API Gateway の使用量プラン＋API キー（レート、バースト、クォータ）",
+    "制限を超えたリクエストは API Gateway で拒否され、バックエンドの料金が発生しない",
+    "API キーは認可の仕組みではない。WAF のレートベースのルールは IP 単位の攻撃対策"
+  ],
+  "references": [
+    {
+      "title": "Throttle requests to your REST APIs for better throughput in API Gateway - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html"
+    },
+    {
+      "title": "Usage plans and API keys for REST APIs in API Gateway - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-006",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-S4", "4.3-K9"],
+  "services": ["Amazon Redshift", "Amazon Relational Database Service"],
+  "qualifier": "performance",
+  "tags": ["Amazon Redshift", "列指向", "データウェアハウス", "集計クエリ"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある小売会社は、過去 5 年分、数十億行の販売履歴を Amazon RDS for PostgreSQL に保存し、BI ツールから集計クエリ（期間別・商品別・店舗別の売上合計など）を実行しています。データが増えるにつれてクエリが遅くなり、インスタンスを大きくし続けるコストも問題になっています。更新は夜間のバッチだけです。集計クエリの性能を高めつつ、コストの面でも効率のよいデータベースを選ぶ必要があります。どれを選ぶべきですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon DynamoDB に移行して、売上の合計をテーブルのクエリで集計する。",
+      "correct": false,
+      "rationale": "DynamoDB はキーによる単純な読み書きを大規模に行うデータベースで、多数の行をまたぐ任意の集計や結合には向きません。この用途では集計のために大量のスキャンが必要になります。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon Redshift に移行する。",
+      "correct": true,
+      "rationale": "Redshift は、列指向のストレージと大規模並列処理（MPP）を使うデータウェアハウスで、数十億行を対象にした集計クエリを高速に処理できます。列ごとにデータを圧縮するのでストレージ効率も高く、分析中心で更新が少ないワークロードに向いています。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon ElastiCache に全データをロードして、メモリ上で集計する。",
+      "correct": false,
+      "rationale": "ElastiCache は、頻繁に読まれる小さなデータを高速に返すキャッシュで、数十億行の履歴データ全体をメモリに載せるのはコスト面でも不適切です。SQL による集計もできません。"
+    },
+    {
+      "id": "d",
+      "text": "RDS のインスタンスをさらに大きくし、Provisioned IOPS のストレージを使う。",
+      "correct": false,
+      "rationale": "性能は改善するかもしれませんが、行指向のデータベースで大量の行を集計する構造は変わらず、インスタンスと IOPS の料金が増え続けます。コスト効率の要件に反します。"
+    }
+  ],
+  "explanation": "データベースは、ワークロードの種類に合わせて選びます。\n\n・OLTP（トランザクション処理）: 少数の行を頻繁に読み書きする。Amazon RDS、Amazon Aurora。行指向のストレージ。\n・OLAP（分析）: 大量の行を対象に、特定の列を集計する。Amazon Redshift。列指向のストレージで、必要な列だけを読み、同じ種類の値を圧縮して保存するため、集計が速く、ストレージ効率もよい。\n・キーバリュー／ドキュメント: Amazon DynamoDB。キーによる単純な読み書きを大規模に。\n\n分析用のデータは、RDS から Redshift へ移して集計するのが定番です。S3 に置いたままクエリするなら Amazon Athena、Redshift から S3 のデータも参照するなら Redshift Spectrum が使えます。",
+  "keyPoints": [
+    "数十億行の集計・分析クエリ → 列指向の Amazon Redshift（データウェアハウス）",
+    "トランザクション中心 → RDS／Aurora、キーによる単純な読み書き → DynamoDB",
+    "行指向の DB を大きくし続けるより、分析用には列指向のデータベースに分ける"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Redshift? - Amazon Redshift",
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    },
+    {
+      "title": "Data warehouse system architecture - Amazon Redshift",
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_high_level_system_architecture.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

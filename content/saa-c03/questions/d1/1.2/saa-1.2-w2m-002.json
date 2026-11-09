@@ -1,0 +1,84 @@
+{
+  "id": "saa-1.2-w2m-002",
+  "exam": "SAA-C03",
+  "domain": 1,
+  "taskStatement": "1.2",
+  "knowledgeRefs": [
+    "1.2-S3",
+    "1.2-K6"
+  ],
+  "services": [
+    "AWS Firewall Manager",
+    "AWS WAF",
+    "AWS Organizations",
+    "Elastic Load Balancing",
+    "AWS Config"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "Firewall Manager",
+    "WAF ポリシー",
+    "組織全体の保護"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は AWS Organizations で 50 のアカウントを運用し、各アカウントのインターネット向け Application Load Balancer に AWS WAF の Web ACL を付けたいと考えています。各アカウントの Web ACL には、SQL インジェクションを防ぐ共通の AWS マネージドルールグループを適用します。対象の ALB は同一リージョンにあり、AWS Organizations のすべての機能と、必要な AWS Config の記録は有効化済みです。新しいアカウントや新しい ALB にも自動で適用され、Web ACL が外されたときは自動で付け直される必要があります。最も運用負荷が少ない方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "各アカウントの管理者に、Web ACL の作成手順書を配布して、自分のアカウントの ALB に Web ACL を作成して設定してもらう。",
+      "correct": false,
+      "rationale": "手作業と各管理者の対応に依存し、設定漏れやルールのばらつきが起きます。新しいアカウントにも自動では適用されません。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Firewall Manager の管理者アカウントを指定し、対象リージョンで組織全体を対象にした AWS WAF ポリシーを作成する。マネージドルールグループを含め、Application Load Balancer を対象に、非準拠のリソースの自動修復を有効にする。",
+      "correct": true,
+      "rationale": "Firewall Manager は、組織内のアカウントとリソースに WAF のルールを一括で適用できます。新しいアカウントやリソースにも自動で適用され、自動修復を有効にすれば、外された Web ACL も付け直されます。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Config の適合パックで、Web ACL が付いていない ALB を検出し、担当者に通知して手作業で Web ACL を付けてもらう。",
+      "correct": false,
+      "rationale": "提示された構成は、検出と通知のあとを手作業で修復するものです。通知から対応までの間は保護されず、50 アカウント分の運用負荷も大きくなります。適合パックには自動修復アクションを含められますが、この構成では設定されていません。"
+    },
+    {
+      "id": "d",
+      "text": "AWS CloudFormation StackSets で、Web ACL を作成するテンプレートを全アカウントに展開し、各アカウントに共通の Web ACL を作る。",
+      "correct": false,
+      "rationale": "Web ACL は展開できますが、新しく作られる ALB への関連付けや、外された ACL の付け直しを継続して行う仕組みにはなりません。"
+    }
+  ],
+  "explanation": "AWS Firewall Manager は、AWS Organizations と連携して、AWS WAF、AWS Shield Advanced、セキュリティグループ、AWS Network Firewall などのセキュリティルールを、複数のアカウントとリソースに一元的に適用・管理するサービスです。\n\nAWS WAF ポリシーを作成して、対象のアカウント（組織全体や特定の OU）、リソースの種類（ALB、Amazon CloudFront、Amazon API Gateway など）、Web ACL に含めるルールグループを指定します。Firewall Manager は共通のポリシーに基づいて、各アカウントに Web ACL を作成して管理します。新しいアカウントや新しいリソースが作られると、自動でポリシーが適用されます。自動修復を有効にすると、非準拠のリソース（Web ACL が付いていない、外された）に Web ACL が付け直されます。ALB のようなリージョナルリソースは、リージョンごとにポリシーを作成します。\n\nFirewall Manager の利用には、AWS Organizations のすべての機能と AWS Config の有効化が前提です。\n\n手順書を配布して各管理者に任せる方法や、通知を受けて手作業で修復する方法では、手作業が残ります。AWS Config でも適合パックに自動修復を構成できますが、この構成では通知と手作業の修復になっています。AWS CloudFormation StackSets で Web ACL の作成テンプレートを展開するだけでは、新規 ALB への継続的な関連付けや、関連付けが外れた後の修復は実現しません。",
+  "keyPoints": [
+    "複数アカウントの WAF・Shield・セキュリティグループの一元管理 → AWS Firewall Manager",
+    "新しいアカウントとリソースへの自動適用と自動修復が強み",
+    "Firewall Manager は Organizations のすべての機能と AWS Config が前提。ALB などのリージョナルリソースはリージョンごとにポリシーを作成する"
+  ],
+  "references": [
+    {
+      "title": "AWS Firewall Manager - AWS WAF デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html"
+    },
+    {
+      "title": "AWS Firewall Manager ポリシーの使用 - AWS WAF デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/working-with-policies.html"
+    },
+    {
+      "title": "AWS WAF ポリシーの Web ACL 管理 - AWS WAF デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-fms-manages-web-acls.html"
+    },
+    {
+      "title": "AWS Firewall Manager の前提条件 - AWS WAF デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/fms-prereq.html"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-1.2-app-protection"
+  ],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

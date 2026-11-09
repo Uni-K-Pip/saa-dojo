@@ -1,0 +1,78 @@
+{
+  "id": "saa-2.2-w2m-001",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K4",
+    "2.2-S6",
+    "2.2-S2"
+  ],
+  "services": [
+    "Amazon Aurora",
+    "Amazon EC2 Auto Scaling",
+    "Amazon Route 53",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "ウォームスタンバイ",
+    "Amazon Aurora Global Database",
+    "RPO/RTO"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "あるオンライン予約サービスは、東京リージョンで Amazon Aurora MySQL-Compatible Edition と、Amazon EC2 の Auto Scaling グループを使っています。リージョン障害に備えた災害対策を設計します。RPO は数秒、RTO は数分以内を目標とします。DB とトラフィックの切り替え後は、追加インスタンスの起動やアプリケーションのデプロイを待たず、縮小した処理能力でサービスを再開したい状況です。費用は、本番と同規模の環境を二重に常時稼働するより抑えたいと考えています。最も適切な戦略はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "大阪リージョンには、Aurora のクロスリージョンスナップショットのコピーだけを置く。障害時にスナップショットから DB を復元し、EC2 インスタンスを起動してアプリケーションをデプロイする。",
+      "correct": false,
+      "rationale": "バックアップと復元の戦略です。障害時に DB の復元と、インスタンスの起動やデプロイが必要で、数分の RTO と、縮小した処理能力ですぐ再開する要件を満たしません。スナップショットでは RPO も数秒になりません。"
+    },
+    {
+      "id": "b",
+      "text": "東京と大阪の両方に、本番と同じ規模の構成を常時稼働させ、Route 53 の加重ルーティングで両方にトラフィックを流す。",
+      "correct": false,
+      "rationale": "アクティブ／アクティブの構成で、RTO は最も短くできます。ただし、大阪にも本番と同規模の環境を常時稼働させるため、同規模の環境を二重に稼働するより費用を抑える要件を満たしません。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Backup で、東京のバックアップを毎日大阪リージョンにコピーする。障害時にバックアップから環境を復元する。",
+      "correct": false,
+      "rationale": "日次コピーでは数秒の RPO を満たせず、復元にも時間を要します。バックアップと復元の戦略のため、数分の RTO も満たしません。"
+    },
+    {
+      "id": "d",
+      "text": "大阪リージョンに Amazon Aurora Global Database のセカンダリクラスターと縮小した Auto Scaling グループを置く。障害時はフェイルオーバーと Route 53 の切り替えを行い、既存容量で処理を再開しつつスケールアウトする。",
+      "correct": true,
+      "rationale": "ウォームスタンバイです。データは継続的に複製され、アプリケーション層も縮小して常時稼働しているため、DB とトラフィックを切り替えれば、縮小した容量で処理を再開できます。その後スケールアウトで本番の容量に近づけます。費用は構成によりますが、同規模の二重稼働よりは抑えられます。"
+    }
+  ],
+  "explanation": "災害対策の戦略は、RPO（どれだけ前の時点のデータに戻せるか）と RTO（復旧までの時間）、そして費用で選びます。費用が低く、復旧が遅い順に、バックアップと復元、パイロットライト、ウォームスタンバイ、マルチサイトのアクティブ／アクティブとなります。\n\nウォームスタンバイは、DR リージョンにも縮小した構成を常時稼働させる戦略です。Amazon Aurora Global Database は、リージョン間でストレージレベルの複製を行い、通常は 1 秒未満の遅延で、RPO を数秒に収められます。障害時には、セカンダリクラスターへフェイルオーバーして書き込み可能にし、接続先と Route 53 などのトラフィックを切り替えます。アプリケーション層は縮小した状態で動いているため、起動やデプロイを待たずに縮小した処理能力で再開でき、Auto Scaling グループのスケールアウトで容量を増やします。ただし、書き込みの再開には DB のフェイルオーバーと接続先の切り替えが必要で、障害直後から無停止で処理できるわけではありません。\n\nRPO が数秒、RTO が数分というのは典型的な値であり、保証値ではありません。構成と復旧訓練で、目標を達成できるかを検証します。\n\nアクティブ／アクティブは常時の費用が本番並みになります。スナップショットやバックアップの複製だけでは、復元に時間がかかり、RTO と RPO を満たせません。",
+  "keyPoints": [
+    "RPO が数秒・RTO が数分、費用は抑える → ウォームスタンバイ（Amazon Aurora Global Database）",
+    "費用と復旧速度のトレードオフ: バックアップ復元 < パイロットライト < ウォームスタンバイ < アクティブ／アクティブ",
+    "Amazon Aurora Global Database はストレージレベルの複製で遅延が小さい。RPO／RTO は典型値で、訓練で検証する"
+  ],
+  "references": [
+    {
+      "title": "Amazon Aurora Global Database - Amazon Aurora ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+    },
+    {
+      "title": "Aurora Global Database のスイッチオーバーとフェイルオーバー - Amazon Aurora ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+    },
+    {
+      "title": "AWS 上のワークロードの災害対策オプション",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

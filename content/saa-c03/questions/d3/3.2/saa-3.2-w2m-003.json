@@ -1,0 +1,73 @@
+{
+  "id": "saa-3.2-w2m-003",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.2",
+  "knowledgeRefs": [
+    "3.2-K6",
+    "3.2-S1",
+    "3.2-K4"
+  ],
+  "services": [
+    "Amazon Elastic Container Service",
+    "Amazon EC2 Auto Scaling",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "ECS キャパシティプロバイダー",
+    "マネージドスケーリング",
+    "EC2 コンテナインスタンス"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、EC2 インスタンス上の Amazon ECS クラスターでコンテナを実行しています。GPU を使うタスクがあるため、AWS Fargate は使えません。ECS サービスはタスク数を自動で増減しますが、タスクが増えるときに、クラスターの EC2 インスタンスに空きがなく、タスクが配置できず待機したままになります。EC2 インスタンスの数は、Auto Scaling グループで手動で調整しています。既存の Auto Scaling グループを活用し、追加の開発・運用負荷を最小限にしながら、タスクの増減に合わせて、インスタンスの数も自動で調整したいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Auto Scaling グループに、EC2 インスタンスの CPU 使用率を対象としたターゲット追跡スケーリングポリシーを設定する。",
+      "correct": false,
+      "rationale": "インスタンスの CPU 使用率だけでは、GPU やメモリなどの不足で配置できないタスクを適切に検知できません。タスクの配置に必要な容量とは、別の指標です。"
+    },
+    {
+      "id": "b",
+      "text": "ECS のタスクの待機状態を検知する AWS Lambda 関数を作成し、関数が Auto Scaling グループの希望容量を更新する。",
+      "correct": false,
+      "rationale": "実現できますが、スケーリングの仕組みを自作して運用することになります。マネージドスケーリングの標準機能で足りるため、運用の負荷が増えます。"
+    },
+    {
+      "id": "c",
+      "text": "Auto Scaling グループを ECS のキャパシティプロバイダーとして登録し、マネージドスケーリングを有効にする。ECS サービスにキャパシティプロバイダー戦略を設定する。",
+      "correct": true,
+      "rationale": "マネージドスケーリングは、対象のキャパシティプロバイダー戦略を使うタスクの必要容量に応じて、Auto Scaling グループの上限と対応インスタンスの範囲内で台数を自動で調整します。"
+    },
+    {
+      "id": "d",
+      "text": "タスク定義の CPU とメモリの割り当てを小さくして、既存のインスタンスにタスクが収まるようにする。",
+      "correct": false,
+      "rationale": "リソースが不足して性能が落ちる可能性があります。根本的な容量の不足は解消しません。GPU を使うタスクの要件も満たせない可能性があります。"
+    }
+  ],
+  "explanation": "ECS のキャパシティプロバイダーは、タスクを実行するインフラを ECS に結び付ける仕組みです。この問題で使うのは、EC2 の Auto Scaling グループを対象にしたキャパシティプロバイダーです。マネージドスケーリングを有効にすると、ECS が CapacityProviderReservation というメトリクスを発行し、タスクの配置に必要なインスタンス数に基づいて、Auto Scaling グループを自動でスケールアウト・スケールインします。\n\nスケールアウトされるのは、対象のキャパシティプロバイダーを含むキャパシティプロバイダー戦略を設定したサービスやタスクが、配置できずに待機している場合です。ただし、Auto Scaling グループのインスタンス構成がタスクの要件（vCPU、メモリ、GPU など）を満たし、最大容量などの制約の範囲内であることが前提です。サービス側のタスク数の自動スケーリングと組み合わせると、タスクの増減に合わせて、インスタンス数も自動で追従します。\n\nCPU 使用率に基づくスケーリングは、タスクの配置に必要な容量（予約された CPU、メモリ、GPU など）を直接反映しないため、配置できずに待機しているタスクを適切に検知できません。Lambda による自作でも調整自体は実現できますが、仕組みの開発と運用の手間が増えます。",
+  "keyPoints": [
+    "ECS で Auto Scaling グループのインスタンス数をタスクに合わせて自動調整 → キャパシティプロバイダー＋マネージドスケーリング（サービスにキャパシティプロバイダー戦略を設定）",
+    "Fargate は GPU タスクに対応しない。この構成では GPU 対応 EC2 インスタンスを使う",
+    "インスタンスの CPU 使用率は、タスクの配置に必要な容量を直接表さない"
+  ],
+  "references": [
+    {
+      "title": "Amazon ECS のマネージドスケーリングの動作 - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-scaling-behavior.html"
+    },
+    {
+      "title": "Auto Scaling グループのキャパシティプロバイダー",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockA",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

@@ -187,7 +187,7 @@ function SessionSummary({ session, questions }: { session: PracticeSession; ques
   const answered = session.questionIds.filter((id) => session.results[id]);
   const correct = answered.filter((id) => session.results[id]?.correct);
   const wrong = answered.filter((id) => !session.results[id]?.correct);
-  const backTo = session.mode === 'review' ? '/review' : session.mode === 'basics' ? '/basics' : '/practice';
+  const backTo = session.mode === 'review' ? '/review' : session.mode === 'basics' ? '/basics' : session.mode === 'lesson' ? '/roadmap' : '/practice';
   async function retryWrong() {
     const newId = await createPracticeSession({ mode: session.mode, title: `${session.title}（解き直し）`, questionIds: wrong });
     navigate(`/session/${newId}`);
