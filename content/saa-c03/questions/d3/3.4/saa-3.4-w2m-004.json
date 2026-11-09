@@ -24,25 +24,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon API Gateway の REST API を作成して、gRPC のリクエストを ECS のサービスに統合する。",
+      "text": "Amazon API Gateway の REST API を作成し、リソースとメソッドを定義して、gRPC のリクエストを、HTTP 統合で ECS のサービスに転送する。",
       "correct": false,
       "rationale": "API Gateway の REST API は、gRPC に対応していません。HTTP/2 のストリーミングを必要とする gRPC の通信には向きません。"
     },
     {
       "id": "b",
-      "text": "Classic Load Balancer を作成して、HTTP リスナーでリクエストを受け付ける。",
+      "text": "Classic Load Balancer を作成して、HTTP リスナーでリクエストを受け付け、リスナーのルールでパスに基づいてターゲットに振り分ける。",
       "correct": false,
       "rationale": "Classic Load Balancer は旧世代で、gRPC やパスベースのルーティングに対応していません。新しい構成には推奨されません。"
     },
     {
       "id": "c",
-      "text": "Application Load Balancer を作成して、HTTPS リスナーとパスベースのルーティングを設定する。ターゲットグループのプロトコルバージョンを gRPC にして、gRPC のステータスコードでヘルスチェックする。",
+      "text": "Application Load Balancer のターゲットグループを gRPC にして、パスベースのルールで振り分け、gRPC のステータスコードでヘルスチェックする。",
       "correct": true,
       "rationale": "ALB は gRPC に対応しており、プロトコルバージョンを gRPC にしたターゲットグループで、パスベースのルーティングとヘルスチェックができます。"
     },
     {
       "id": "d",
-      "text": "Network Load Balancer を作成して、TCP リスナーで受け付け、ターゲットグループに転送する。",
+      "text": "Network Load Balancer を作成して、TCP リスナーで受け付け、サービスごとのターゲットグループに、ポート番号で振り分ける。",
       "correct": false,
       "rationale": "NLB はレイヤー 4 で動作し、パスなどの内容に基づく振り分けができません。gRPC のステータスコードによるヘルスチェックもできません。"
     }

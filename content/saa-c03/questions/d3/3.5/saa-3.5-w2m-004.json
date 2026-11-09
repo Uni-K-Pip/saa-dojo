@@ -27,27 +27,27 @@
   "options": [
     {
       "id": "a",
-      "text": "S3 に JSON のまま保存し、毎晩 AWS Glue のジョブで Parquet に変換する。",
+      "text": "S3 に JSON のまま保存して、毎晩 AWS Glue の ETL ジョブを実行し、Parquet に変換してから別のプレフィックスに書き出す。",
       "correct": false,
       "rationale": "変換が夜間のバッチになり、ほぼリアルタイムで Parquet が使える要件を満たしません。ジョブの運用も必要になります。"
     },
     {
       "id": "b",
-      "text": "Amazon Data Firehose の配信ストリームで、レコード形式の変換を有効にし、Glue Data Catalog のテーブルのスキーマを指定して、JSON から Parquet に変換して S3 に配信する。",
+      "text": "Amazon Data Firehose で、レコード形式の変換を有効にし、Glue のスキーマで JSON から Parquet に変換して S3 に配信する。",
       "correct": true,
       "rationale": "Data Firehose は、Glue のスキーマを使って、JSON を Parquet や ORC に変換してから S3 に配信できます。コードやサーバーは不要で、ほぼリアルタイムに処理されます。"
     },
     {
       "id": "c",
-      "text": "Firehose の変換用に、Lambda 関数で JSON を Parquet に変換するコードを実装する。",
+      "text": "Firehose の変換用に、Lambda 関数で JSON を Parquet に変換するコードを実装して、配信の前に変換する構成にする。",
       "correct": false,
       "rationale": "Firehose の標準の形式変換機能があるのに、変換のコードを自作して運用することになります。コードを避ける要件に反します。"
     },
     {
       "id": "d",
-      "text": "Firehose で JSON のまま S3 に配信し、Athena で JSON に対して直接クエリを実行する。",
+      "text": "Firehose で JSON のまま S3 に配信して、Athena で JSON に対して直接クエリを実行し、SELECT で必要な列だけを指定して読み取る。",
       "correct": false,
-      "rationale": "JSON は行指向で、Athena が読み取るデータ量が多くなり、費用と時間が増えます。Parquet に保存したい要件も満たしません。"
+      "rationale": "JSON は行指向で、SELECT で列を指定しても、Athena は各行の全体を読み取ります。読み取るデータ量が多くなり、費用と時間が増えます。Parquet に保存したい要件も満たしません。"
     }
   ],
   "explanation": "Amazon Data Firehose は、ストリーミングデータを S3、Redshift、OpenSearch などに配信するサービスで、配信の前にデータを変換する機能を持っています。レコード形式の変換を有効にすると、入力の JSON を、Apache Parquet または Apache ORC に変換して、S3 に配信できます。変換のスキーマは、AWS Glue Data Catalog のテーブルから取得します。\n\nParquet と ORC は、列指向の圧縮形式で、Athena などのクエリエンジンが必要な列だけを読み取れるため、スキャンするデータ量が減り、クエリの費用と時間を抑えられます。Firehose は、バッファリング後に、ほぼリアルタイムに配信し、サーバーの管理も不要です。動的パーティショニングを組み合わせれば、日付などのキーで S3 のプレフィックスを分けて、さらに効率的にできます。\n\nJSON のままのクエリは非効率です。Lambda による変換は自作が必要で、夜間の Glue ジョブはリアルタイム性に欠けます。",

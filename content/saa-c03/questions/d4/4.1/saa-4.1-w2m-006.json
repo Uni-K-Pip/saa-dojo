@@ -24,25 +24,25 @@
   "options": [
     {
       "id": "a",
-      "text": "EFS の標準のまま、プロビジョニングされたスループットを最小にする。",
+      "text": "EFS の標準のまま、スループットモードをプロビジョニングに変更して、スループットを必要最小限の値に設定する。",
       "correct": false,
       "rationale": "スループットの設定は、ストレージの料金ではなく、スループットの料金に関わります。標準のストレージの料金は変わりません。"
     },
     {
       "id": "b",
-      "text": "ファイルシステムを Amazon S3 に移行して、EC2 インスタンスから S3 API で共有する。",
+      "text": "ファイルシステムを Amazon S3 のバケットに移行して、EC2 インスタンスから S3 API を使って、データを共有する。",
       "correct": false,
       "rationale": "アプリケーションが NFS のファイルシステムを前提にしていると、書き換えが必要です。ファイルシステムとしてのマウントができなくなります。"
     },
     {
       "id": "c",
-      "text": "EBS の gp3 ボリュームを 1 つ作成して、複数のインスタンスにマルチアタッチして共有する。",
+      "text": "EBS の io2 ボリュームを 1 つ作成して、同じ AZ の複数のインスタンスにマルチアタッチして、データを共有する。",
       "correct": false,
       "rationale": "マルチアタッチには条件があり、ファイルシステムとしての共有には、クラスター対応のファイルシステムが必要です。NFS の代わりにはならず、運用が複雑になります。"
     },
     {
       "id": "d",
-      "text": "EFS の One Zone ストレージクラスのファイルシステムを作成し、データを移行して、EC2 インスタンスと同じ AZ に置く。",
+      "text": "EFS の One Zone ストレージクラスのファイルシステムを作成し、データを移行して、同じ AZ のインスタンスから使う。",
       "correct": true,
       "rationale": "One Zone は、データを 1 つの AZ にだけ保存する EFS のストレージクラスで、標準（リージョン）より料金が低くなります。AZ の障害を許容できる開発環境に向いています。"
     }
@@ -55,8 +55,8 @@
   ],
   "references": [
     {
-      "title": "EFS のストレージクラス - Amazon EFS ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/efs/latest/ug/storage-classes.html"
+      "title": "EFS ファイルシステムの作成 - Amazon EFS ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/creating-using-create-fs.html"
     }
   ],
   "lessonRefs": [],

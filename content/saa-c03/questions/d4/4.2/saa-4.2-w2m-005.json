@@ -25,25 +25,25 @@
   "options": [
     {
       "id": "a",
-      "text": "共有テナンシーのオンデマンドインスタンスを起動して、インスタンスにライセンスを適用する。",
+      "text": "共有テナンシーのオンデマンドインスタンスを起動して、インスタンスにライセンスを適用し、License Manager で台数を管理する。",
       "correct": false,
       "rationale": "共有のハードウェア上では、物理ソケットとコアを特定できず、ソケット／コア単位のライセンスの持ち込みの要件を満たせません。"
     },
     {
       "id": "b",
-      "text": "スポットインスタンスで起動して、ライセンスの費用を抑える。",
+      "text": "共有テナンシーのスポットインスタンスで起動して、ライセンスの費用を抑え、License Manager で使用数を追跡する。",
       "correct": false,
       "rationale": "スポットは、割引の購入オプションで、ライセンスの持ち込みの要件を満たす仕組みではありません。中断されることもあります。"
     },
     {
       "id": "c",
-      "text": "EC2 の Dedicated Hosts を購入して、ホスト上でインスタンスを起動する。AWS License Manager でライセンスのルールを設定して、使用状況を管理する。",
+      "text": "EC2 の Dedicated Hosts を購入して、インスタンスを起動し、AWS License Manager で使用状況を管理する。",
       "correct": true,
       "rationale": "Dedicated Hosts は、物理サーバーを専有できる購入オプションで、ソケットとコアの数が可視化され、ライセンス持ち込みに使えます。License Manager で、使用状況の追跡と制限ができます。"
     },
     {
       "id": "d",
-      "text": "Dedicated Instances を起動して、専有のハードウェアで実行する。",
+      "text": "Dedicated Instances を起動して、専有のハードウェアで実行し、License Manager でライセンスの使用状況を追跡する。",
       "correct": false,
       "rationale": "Dedicated Instances は、専有のハードウェアですが、物理ソケットとコアの可視性やインスタンスの配置の制御がありません。ライセンスの報告の要件を満たしません。"
     }

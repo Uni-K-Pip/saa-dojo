@@ -24,25 +24,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon Aurora MySQL に JSON 列でドキュメントを保存し、アプリケーションのデータアクセスを SQL ベースに変更する。",
+      "text": "Amazon Aurora MySQL に JSON 列でドキュメントを保存し、アプリケーションのデータアクセスを SQL ベースに書き換え、読み取り用にリードレプリカを追加して負荷を分散する。",
       "correct": false,
       "rationale": "ドキュメントのクエリを SQL に書き換える必要があり、コードの変更が大きくなります。MongoDB のドライバーも使えません。"
     },
     {
       "id": "b",
-      "text": "Amazon DocumentDB (with MongoDB compatibility) のインスタンスベースのクラスターを作成し、接続先・TLS・認証などの接続設定を調整して、既存のドライバーと対応クエリを利用する。",
+      "text": "Amazon DocumentDB (with MongoDB compatibility) のクラスターを作成し、接続設定を調整して、既存のドライバーと対応クエリを利用する。",
       "correct": true,
       "rationale": "Amazon DocumentDB (with MongoDB compatibility) は、MongoDB の API と互換性のあるマネージドなドキュメントデータベースです。サポートされる API の範囲で、レプリカの追加、自動バックアップ、ストレージの自動拡張に対応し、コードの変更を抑えて移行できます。"
     },
     {
       "id": "c",
-      "text": "Amazon DynamoDB のテーブルにデータを移行し、アプリケーションのデータアクセスを DynamoDB の API に対応させる。",
+      "text": "Amazon DynamoDB のテーブルにデータを移行し、アプリケーションのデータアクセスを DynamoDB の API に対応させて、オンデマンドモードで運用する。",
       "correct": false,
       "rationale": "DynamoDB は、MongoDB と API もデータモデルも異なります。アプリケーションの書き換えが大きくなり、コードの変更を最小限にする要件に反します。"
     },
     {
       "id": "d",
-      "text": "Amazon EC2 インスタンスに MongoDB を自分でインストールし、レプリカセットを構成して運用する。",
+      "text": "Amazon EC2 インスタンスに MongoDB を自分でインストールし、レプリカセットを構成して、バックアップとパッチ適用、ストレージの拡張も自分たちで運用する。",
       "correct": false,
       "rationale": "互換性は高いですが、パッチの適用、バックアップ、レプリカ、ストレージの拡張を自分たちで運用します。運用の手間を減らす要件に反します。"
     }

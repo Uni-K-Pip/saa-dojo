@@ -25,25 +25,25 @@
   "options": [
     {
       "id": "a",
-      "text": "VPC に AWS Network Firewall を配置して、Direct Connect 経由の通信を検査し、暗号化する。",
+      "text": "VPC に AWS Network Firewall を配置し、Direct Connect 経由のオンプレミスとの通信にステートフルルールと TLS 検査を適用して、通信を暗号化する。",
       "correct": false,
       "rationale": "AWS Network Firewall の TLS 検査は復号・再暗号化を行いますが、配置するだけでオンプレミスと AWS 間の通信を暗号化するものではありません。通信の検査・フィルタリングのためのサービスです。"
     },
     {
       "id": "b",
-      "text": "既存の Direct Connect 接続にパブリック仮想インターフェイスを作成し、その上に AWS Site-to-Site VPN 接続を構成して、IPsec で通信を暗号化する。",
+      "text": "既存の Direct Connect 接続にパブリック仮想インターフェイスを作成し、その上に Site-to-Site VPN を構成して IPsec で通信を暗号化する。",
       "correct": true,
       "rationale": "Direct Connect の接続そのものは通信を暗号化しません。パブリック仮想インターフェイス上で Site-to-Site VPN を使えば、専用線の安定した経路の上で IPsec による暗号化ができます。"
     },
     {
       "id": "c",
-      "text": "Direct Connect の接続で MACsec を有効にして、データセンターから VPC までの全区間の通信を暗号化する。",
+      "text": "既存の 1 Gbps の Direct Connect 接続で MACsec を有効にし、CKN と CAK を設定して、データセンターから VPC までの全区間の通信を暗号化する。",
       "correct": false,
       "rationale": "MACsec は、対応拠点の 10、100、400 Gbps の専用接続で使える Layer 2 の暗号化で、1 Gbps の接続では使えません。また、暗号化されるのは接続区間に限られ、全区間の暗号化にはなりません。"
     },
     {
       "id": "d",
-      "text": "Direct Connect の専用接続は物理的に分離された専用線なので、通信は自動的に暗号化されており、追加の設定は不要である。",
+      "text": "Direct Connect の専用接続は物理的に分離された専用線で、プライベート仮想インターフェイスの通信も AWS により自動的に暗号化されるため、追加の設定は不要である。",
       "correct": false,
       "rationale": "Direct Connect は専用線ですが、通信は標準では暗号化されません。暗号化が必要な場合は、VPN などの追加の仕組みを使います。"
     }

@@ -24,25 +24,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon OpenSearch Service のドメインに商品データをインデックスして、検索を OpenSearch で実行する。",
+      "text": "Amazon OpenSearch Service のドメインに商品データをインデックスして、検索を実行する。",
       "correct": true,
       "rationale": "OpenSearch Service は、全文検索、あいまい検索、形態素解析、ファセット（絞り込みと集計）に対応した検索エンジンのマネージドサービスです。"
     },
     {
       "id": "b",
-      "text": "Amazon DynamoDB にデータを移行して、Scan で全文検索を実行する。",
+      "text": "Amazon DynamoDB に商品データを移行して、Scan とフィルター式を使い、アプリケーションで全文検索を実行する。",
       "correct": false,
       "rationale": "DynamoDB は、キーによる高速なアクセスに向いています。全文検索の機能がなく、Scan は大量のデータでは遅く、費用も大きくなります。"
     },
     {
       "id": "c",
-      "text": "RDS にリードレプリカを追加して、LIKE 検索を、複数のレプリカに分散させる。",
+      "text": "RDS にリードレプリカを複数追加して、LIKE による部分一致検索を、複数のレプリカに分散させる。",
       "correct": false,
       "rationale": "読み取りの負荷は分散できますが、LIKE 検索の遅さや、あいまい検索、形態素解析などの機能不足は解決しません。"
     },
     {
       "id": "d",
-      "text": "Amazon ElastiCache に商品データをすべてキャッシュして、検索を高速化する。",
+      "text": "Amazon ElastiCache に商品データをすべてキャッシュして、キーによる取得で検索を高速化する。",
       "correct": false,
       "rationale": "キーによる取得を高速化できますが、全文検索やあいまい検索の機能はありません。条件に合う商品を検索する用途には使えません。"
     }

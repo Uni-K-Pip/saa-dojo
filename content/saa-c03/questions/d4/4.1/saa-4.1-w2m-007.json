@@ -24,7 +24,7 @@
   "options": [
     {
       "id": "a",
-      "text": "FSx for Lustre のファイルシステムに移行して、スクラッチのファイルシステムとして使う。",
+      "text": "FSx for Lustre のファイルシステムに移行して、スクラッチのファイルシステムとして使い、S3 とデータをやり取りする。",
       "correct": false,
       "rationale": "FSx for Lustre は、HPC 向けの一時的な高性能の用途です。NFS と SMB の共有や、ONTAP の機能の要件を満たしません。"
     },
@@ -36,13 +36,13 @@
     },
     {
       "id": "c",
-      "text": "アクセスされていないデータを、担当者が手動で Amazon S3 にコピーして、元のデータを削除する。",
+      "text": "アクセスされていないデータを、担当者が手動で Amazon S3 にコピーして、ファイルシステムから元のデータを削除する。",
       "correct": false,
       "rationale": "手作業の運用が必要で、アプリケーションからは、共有のパスで見えなくなります。同じ共有のまま使う要件に反します。"
     },
     {
       "id": "d",
-      "text": "ファイルシステムの SSD の容量を、アクティブなデータに合わせて縮小し、残りのデータを削除する。",
+      "text": "ファイルシステムの SSD の容量を、アクティブなデータに合わせて縮小し、アクセスがまれなデータはすべて削除する。",
       "correct": false,
       "rationale": "アクセスがまれなデータも、保持する必要があるため、削除できません。SSD の容量を単純に縮小することも、できません。"
     }
@@ -55,8 +55,12 @@
   ],
   "references": [
     {
-      "title": "ストレージ階層 - FSx for ONTAP ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/storage-tiers.html"
+      "title": "ボリュームのストレージ容量（ボリュームのデータ階層化）- FSx for ONTAP ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/volume-storage-capacity.html"
+    },
+    {
+      "title": "階層化ポリシーの更新 - FSx for ONTAP ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/modify-volume-tiering-policy.html"
     }
   ],
   "lessonRefs": [],
