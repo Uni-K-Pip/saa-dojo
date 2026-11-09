@@ -13,7 +13,7 @@ import { AnswerFeedback } from '../components/AnswerFeedback';
 import { QuestionView, selectionHint } from '../components/QuestionView';
 import { useStudy } from '../state/study';
 import { createPracticeSession, updateSession } from '../state/sessions';
-import { useLessonTitles } from '../state/useContent';
+import { loadLessons } from '../content/loader';
 
 export default function PracticeSessionPage() {
   const { id = '' } = useParams();
@@ -86,7 +86,7 @@ function NextButton({ session, label }: { session: PracticeSession; label?: stri
 
 function QuestionStep({ session, q, position }: { session: PracticeSession; q: Question; position: string }) {
   const { history } = useStudy();
-  const lessonTitles = useLessonTitles();
+  const lessons = use(loadLessons());
   const order = useMemo(() => optionOrder(session.id, q), [session.id, q]);
   const result = session.results[q.id];
   const [selected, setSelected] = useState<string[]>([]);
@@ -144,7 +144,7 @@ function QuestionStep({ session, q, position }: { session: PracticeSession; q: Q
             onMissReason={(reason) => appendEvent({ type: 'miss-reason', questionId: q.id, answerEventId: result.answerEventId, reason })}
             flagged={flagged}
             onToggleFlag={() => appendEvent({ type: 'flag', questionId: q.id, flagged: !flagged })}
-            lessonTitles={lessonTitles}
+            lessons={lessons}
             position={position}
           />
           <div className="sticky-actions">

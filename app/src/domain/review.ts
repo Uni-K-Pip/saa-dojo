@@ -19,21 +19,61 @@ export function conceptGrade(e: Pick<AnswerEvent, 'correct' | 'confidence'>): Gr
   return Rating.Good;
 }
 
+/** 復習で出題できる概念（演習・基礎講座の問題が扱う項目）。保留模試だけが扱う概念は出題できない */
+export function reviewableConcepts(index: readonly QuestionMeta[]): Set<string> {
+  const s = new Set<string>();
+  for (const q of index) if (q.pool === 'practice' || q.pool === 'basics') for (const c of q.knowledgeRefs) s.add(c);
+  return s;
+}
+
+/**
+ * 概念ごとの復習スケジュール。出題できない概念のカードは作らない。
+ * 模擬試験のように同じセッション・同じ時刻にまとめて記録された回答は、概念ごとに最も悪い評価を1回だけ反映する
+ * （記録の順序で結果が変わらないように）。
+ */
 export function buildConceptSchedule(events: readonly AppEvent[], index: readonly QuestionMeta[]): Map<string, ConceptState> {
   const meta = new Map(index.map((m) => [m.id, m]));
+  const usable = reviewableConcepts(index);
   const map = new Map<string, ConceptState>();
   const answers = events.filter((e): e is AnswerEvent => e.type === 'answer').sort(compareEvents);
+  // 同じ時刻・同じセッションの回答をまとめる（時刻順なので、同じ時刻の回答は並んでいる）
+  const groups: AnswerEvent[][] = [];
+  const open = new Map<string, AnswerEvent[]>();
+  let openAt: number | null = null;
   for (const e of answers) {
-    const q = meta.get(e.questionId);
-    if (!q) continue;
-    const grade = conceptGrade(e);
-    for (const conceptId of new Set(q.knowledgeRefs)) {
+    if (e.at !== openAt) {
+      open.clear();
+      openAt = e.at;
+    }
+    let g = open.get(e.sessionId);
+    if (!g) {
+      g = [];
+      open.set(e.sessionId, g);
+      groups.push(g);
+    }
+    g.push(e);
+  }
+  for (const g of groups) {
+    const worst = new Map<string, { grade: Grade; questionId: string }>();
+    for (const e of g) {
+      const q = meta.get(e.questionId);
+      if (!q) continue;
+      const grade = conceptGrade(e);
+      for (const conceptId of new Set(q.knowledgeRefs)) {
+        if (!usable.has(conceptId)) continue;
+        const w = worst.get(conceptId);
+        if (!w || grade < w.grade) worst.set(conceptId, { grade, questionId: e.questionId });
+      }
+    }
+    const at = g[0]!.at;
+    for (const [conceptId, { grade, questionId }] of worst) {
       let st = map.get(conceptId);
       if (!st) {
-        if (e.correct && e.confidence !== 'guess') continue;
-        st = { ...newState(e.at), conceptId, lastQuestionId: e.questionId };
+        // 誤答（Again）か「勘」（Hard）のときだけカードを作る
+        if (grade > Rating.Hard) continue;
+        st = { ...newState(at), conceptId, lastQuestionId: questionId };
       }
-      map.set(conceptId, { ...review(st, e.at, grade), conceptId, lastQuestionId: e.questionId });
+      map.set(conceptId, { ...review(st, at, grade), conceptId, lastQuestionId: questionId });
     }
   }
   return map;

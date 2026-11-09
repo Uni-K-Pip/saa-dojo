@@ -47,6 +47,17 @@ export function neighbors(lessons: readonly LessonMeta[], id: string): { prev: L
   return { prev: track[i - 1] ?? null, next: track[i + 1] ?? null };
 }
 
+/**
+ * 問題の関連レッスン。lessonRefs のうち現在あるレッスンを返し、1つもなければ同じタスクのレッスンを返す
+ * （レッスンが後から増えても、問題ファイルを変えずに表示されるように）。
+ */
+export function relatedLessons(q: Pick<QuestionMeta, 'lessonRefs' | 'taskStatement'>, lessons: readonly LessonMeta[]): LessonMeta[] {
+  const byId = new Map(lessons.map((l) => [l.id, l]));
+  const direct = q.lessonRefs.map((id) => byId.get(id)).filter((l): l is LessonMeta => !!l);
+  if (direct.length > 0) return direct;
+  return lessons.filter((l) => l.taskStatement === q.taskStatement);
+}
+
 /** 回答したことのある問題が扱う blueprint の項目 ID（保留模試の回答も含む） */
 export function answeredItems(index: readonly QuestionMeta[], history: History): Set<string> {
   const s = new Set<string>();

@@ -7,7 +7,7 @@ import type { BlueprintSummary, QuestionMeta } from '../content/types';
 import { domainItemIds } from './blueprint';
 import type { AppEvent } from './events';
 import type { History } from './history';
-import { firstAttempt } from './mock';
+import { firstAttempt, planFixedMock, type FixedMockPlan } from './mock';
 import { answeredItems } from './progress';
 
 export const MOCK_PASS = 0.8;
@@ -43,7 +43,7 @@ export interface Readiness {
   conditions: Condition[];
   achievedCount: number;
   domains: DomainStat[];
-  mocks: { kind: 'mockA' | 'mockB'; rate: number | null; available: number }[];
+  mocks: { kind: 'mockA' | 'mockB'; rate: number | null; available: number; plan: FixedMockPlan }[];
   overconfidence: { sure: number; wrong: number };
 }
 
@@ -54,7 +54,8 @@ export function computeReadiness(events: readonly AppEvent[], index: readonly Qu
   // 1. 保留模試
   const mocks = (['mockA', 'mockB'] as const).map((kind) => {
     const r = firstAttempt(events, kind);
-    return { kind, rate: r ? r.correct / Math.max(1, r.total) : null, available: index.filter((q) => q.pool === kind).length };
+    const plan = planFixedMock(index, kind);
+    return { kind, rate: r ? r.correct / Math.max(1, r.total) : null, available: plan.ready ? plan.ids.length : 0, plan };
   });
   const mockProgress = mocks.reduce((s, m) => s + (m.rate === null ? 0 : clamp(m.rate / MOCK_PASS)), 0) / mocks.length;
   const mocksOk = mocks.every((m) => m.rate !== null && m.rate >= MOCK_PASS);

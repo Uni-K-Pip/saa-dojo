@@ -8,7 +8,7 @@ import { optionOrder } from '../domain/grading';
 import { firstAttempt, formatDuration, mockReport, type MockReport } from '../domain/mock';
 import { AnswerFeedback } from '../components/AnswerFeedback';
 import { useStudy } from '../state/study';
-import { useLessonTitles } from '../state/useContent';
+import { loadLessons } from '../content/loader';
 
 const KIND_LABELS = { random: 'ランダム模試', mockA: '保留模試 A', mockB: '保留模試 B' } as const;
 
@@ -37,7 +37,7 @@ function MockResultView({ report, index }: { report: MockReport; index: Question
   const { events, history } = useStudy();
   const blueprint = use(loadBlueprint());
   const questions = use(loadQuestionMap(fileKeysFor(result.questionIds, index)));
-  const lessonTitles = useLessonTitles();
+  const lessons = use(loadLessons());
   const [filter, setFilter] = useState<Filter>('all');
   const pct = Math.round((result.correct / Math.max(1, result.total)) * 100);
   const domainName = (d: number) => blueprint?.domains.find((x) => x.id === d)?.nameJa ?? (d === 0 ? '基礎' : `ドメイン ${d}`);
@@ -178,7 +178,7 @@ function MockResultView({ report, index }: { report: MockReport; index: Question
                   : {})}
                 flagged={flagged}
                 onToggleFlag={q.pool === 'practice' ? () => void appendEvent({ type: 'flag', questionId: q.id, flagged: !flagged }) : undefined}
-                lessonTitles={lessonTitles}
+                lessons={lessons}
               />
             </details>
           );

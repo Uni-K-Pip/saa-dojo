@@ -17,10 +17,13 @@ describe('書き出し・読み込みの形式', () => {
     const r = parseBackup(JSON.stringify(b));
     expect(r).toEqual({ ok: true, events: b.events, skipped: 0 });
   });
+  const evs0 = events[0]!;
   it('イベントの配列と改行区切り JSON も受け付け、形の合わない記録は数えて捨てる', () => {
     expect(parseBackup(JSON.stringify([...events, { foo: 1 }]))).toMatchObject({ ok: true, skipped: 1 });
     const nd = events.map((e) => JSON.stringify(e)).join('\n');
     expect(parseBackup(nd)).toMatchObject({ ok: true, skipped: 0 });
+    // 1行だけの改行区切り JSON も読める
+    expect(parseBackup(`${JSON.stringify(evs0)}\n`)).toEqual({ ok: true, events: [evs0], skipped: 0 });
   });
   it('ほかのファイルや新しい版は拒む', () => {
     expect(parseBackup('')).toMatchObject({ ok: false });

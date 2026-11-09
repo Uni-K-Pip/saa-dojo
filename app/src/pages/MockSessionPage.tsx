@@ -37,6 +37,19 @@ export default function MockSessionPage() {
       </div>
     );
   }
+  if (session.discarded) {
+    return (
+      <div className="card">
+        <h1>{session.title}</h1>
+        <p className="notice warn" role="status">
+          制限時間が過ぎていて、1問も回答していなかったため、この回は採点せずに終了しました（結果は記録していません）。
+        </p>
+        <Link className="btn" to="/mock">
+          模擬試験へ
+        </Link>
+      </div>
+    );
+  }
   return <MockRunner session={session} />;
 }
 
@@ -86,6 +99,14 @@ function MockRunner({ session }: { session: MockSession }) {
     if (!s || s.finishedAt !== undefined) return;
     const final = withElapsed(s, null);
     const t = Date.now();
+    const answered = s.questionIds.some((qid) => (s.answers[qid]?.length ?? 0) > 0);
+    if (!answered && t >= s.startedAt + s.timeLimitMs) {
+      // 時間切れで未回答なら採点しない（保留模試の初回が 0% で確定するのを防ぐ）
+      const done: MockSession = { ...final, finishedAt: t, updatedAt: t, discarded: true };
+      await db.sessions.put(done);
+      submitting.current = false;
+      return;
+    }
     await appendEvents(gradeMock(final, questions, t));
     await db.sessions.put({ ...final, finishedAt: t, updatedAt: t });
     navigate(`/mock/result/${session.id}`, { replace: true });
