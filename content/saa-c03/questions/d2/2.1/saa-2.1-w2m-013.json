@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-013",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K1",
+    "2.1-S5",
+    "2.1-K12"
+  ],
+  "services": [
+    "Amazon API Gateway",
+    "AWS Lambda",
+    "Amazon Cognito"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "API Gateway HTTP API",
+    "REST API との違い",
+    "JWT オーソライザー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、モバイルアプリ向けのシンプルな API を、AWS Lambda のプロキシ統合で構築します。認証は Amazon Cognito のユーザープールの JWT を検証し、CORS に対応する必要があります。使用量プラン、API キー、リクエストの検証、AWS WAF の統合は不要です。費用とレイテンシーをできるだけ小さくしたいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Lambda 関数の URL を有効にして、認証タイプを NONE にし、関数のコードで JWT を検証する。",
+      "correct": false,
+      "rationale": "認証のコードを自分で実装することになり、運用の手間とセキュリティのリスクが増えます。マネージドの JWT オーソライザーを使えます。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon API Gateway の REST API を作成して、Lambda プロキシ統合と、Cognito ユーザープールのオーソライザーを設定する。",
+      "correct": false,
+      "rationale": "機能は満たしますが、使用量プランやリクエストの検証など、使わない機能の分、HTTP API より料金が高く、レイテンシーも大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon API Gateway の HTTP API を作成して、Lambda プロキシ統合と、Cognito の JWT オーソライザーを設定する。",
+      "correct": true,
+      "rationale": "HTTP API は、REST API より低コストで低レイテンシーです。Lambda のプロキシ統合、JWT オーソライザー、CORS に対応しており、この要件に十分です。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon API Gateway の WebSocket API を作成して、Lambda 関数を呼び出す。",
+      "correct": false,
+      "rationale": "WebSocket API は、双方向のリアルタイム通信の用途のものです。シンプルなリクエストとレスポンスの API には、向いていません。"
+    }
+  ],
+  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低コストで低レイテンシーの API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Cognito や OIDC のプロバイダー）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nそのため、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が最も費用と性能の面で適しています。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用です。",
+  "keyPoints": [
+    "シンプルな API で低コスト・低レイテンシー → API Gateway の HTTP API（JWT オーソライザー対応）",
+    "使用量プラン・API キー・WAF・キャッシュ・リクエストの検証が必要 → REST API",
+    "WebSocket API は双方向のリアルタイム通信用"
+  ],
+  "references": [
+    {
+      "title": "HTTP API と REST API のどちらを選択するか - Amazon API Gateway デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

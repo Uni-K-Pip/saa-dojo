@@ -1,0 +1,69 @@
+{
+  "id": "saa-2.1-w2m-016",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.1",
+  "knowledgeRefs": [
+    "2.1-K13",
+    "2.1-S4",
+    "2.1-K14"
+  ],
+  "services": [
+    "AWS Fargate",
+    "Amazon Elastic Container Service",
+    "Amazon Elastic File System"
+  ],
+  "qualifier": "operational",
+  "tags": [
+    "ECS と EFS",
+    "Fargate の永続ストレージ",
+    "共有ファイル"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、AWS Fargate で動く複数のコンテナタスクを、複数の AZ にまたがって実行しています。すべてのタスクが、共通のファイル（利用者が設定したテンプレートの資材）を同時に読み書きします。ファイルは、タスクの再起動や置き換えの後も保持されなければなりません。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EBS のボリュームを 1 つ作成して、すべての Fargate タスクにアタッチする。",
+      "correct": false,
+      "rationale": "EBS ボリュームは、1 つのタスクにアタッチして使い、複数のタスクで同時に共有できません。複数の AZ にまたがる共有にもなりません。"
+    },
+    {
+      "id": "b",
+      "text": "Fargate タスクの一時ストレージ（エフェメラルストレージ）に、ファイルを保存する。",
+      "correct": false,
+      "rationale": "一時ストレージは、タスクごとに独立で、他のタスクと共有できません。タスクが終了すると、データも削除されます。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon EFS のファイルシステムを作成して、ECS のタスク定義で、EFS のボリュームとして各タスクにマウントする。",
+      "correct": true,
+      "rationale": "EFS は、複数の AZ にまたがる共有のファイルシステムで、同時に多数のタスクからマウントできます。データは、タスクの終了後も保持されます。"
+    },
+    {
+      "id": "d",
+      "text": "ファイルをコンテナイメージに含めて、変更があるたびにイメージを再ビルドしてデプロイする。",
+      "correct": false,
+      "rationale": "タスクが実行時に書き込む内容は、イメージに含められません。変更のたびに再ビルドとデプロイが必要になり、運用の手間も大きくなります。"
+    }
+  ],
+  "explanation": "コンテナのストレージを選ぶときは、永続性、共有、アクセスの方法を考えます。Fargate タスクには、タスクごとの一時ストレージ（エフェメラルストレージ）があり、タスクが終了すると削除されます。タスク間で共有もできません。\n\n複数のタスクで、ファイルを同時に共有して読み書きし、タスクが置き換えられても保持したい場合は、Amazon EFS を使います。EFS は、NFS で複数の AZ から同時にマウントできる、伸縮性のあるファイルシステムで、ECS のタスク定義でボリュームとして指定すると、Fargate のタスクにもマウントされます。アクセスポイントとセキュリティグループで、アクセスを制御します。\n\nEBS のボリュームは、Fargate でも利用できますが、1 つのタスクが専用で使うブロックストレージで、複数のタスクで共有できません。イメージに含める方法は、実行時に書き込まれるデータには使えません。",
+  "keyPoints": [
+    "複数のコンテナタスクで共有・永続のファイルストレージ → Amazon EFS（タスク定義でボリュームとしてマウント）",
+    "Fargate の一時ストレージは永続でも共有でもない",
+    "EBS は 1 つのタスク専用のブロックストレージ"
+  ],
+  "references": [
+    {
+      "title": "Amazon ECS での Amazon EFS ボリュームの使用 - Amazon ECS デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
