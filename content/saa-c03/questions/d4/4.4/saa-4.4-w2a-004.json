@@ -49,8 +49,8 @@
       "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/resiliency_toolkit.html"
     },
     {
-      "title": "AWS Direct Connect and AWS Site-to-Site VPN - Network-to-Amazon VPC connectivity options",
-      "url": "https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-managed-vpn.html"
+      "title": "Tunnel options for your AWS Site-to-Site VPN connection - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPNTunnels.html"
     }
   ],
   "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],

@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { buildHistory } from './history';
-import { buildConceptSchedule, conceptGrade, dueConcepts, pickReviewQuestions } from './review';
+import { buildConceptSchedule, conceptGrade, dueConcepts, pickReviewQuestions, reviewableConcepts } from './review';
 import { mulberry32 } from './rng';
 import { Rating, dueAt } from './srs';
 import { answer, makeQuestion, metaOf } from '../test/fixtures';
 
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 10, 1, 3, 0, 0);
+const T1 = T0 + 1000;
 
 const q1 = makeQuestion({ id: 'saa-1.1-t-001', knowledgeRefs: ['1.1-K1', '1.1-K2'] });
 const q2 = makeQuestion({ id: 'saa-1.1-t-002', knowledgeRefs: ['1.1-K1'] });
@@ -53,12 +54,25 @@ describe('概念単位の復習スケジュール', () => {
   });
 
   it('保留模試での誤答も概念の予定には反映するが、出題は演習と基礎講座の問題だけ', () => {
-    const s = buildConceptSchedule([answer(mockQ.id, false, { at: T0, mode: 'mockA' }), answer(onlyMock.id, false, { at: T0, mode: 'mockB' })], index);
-    expect([...s.keys()].sort()).toEqual(['1.1-K1', '1.2-K1']);
+    const s = buildConceptSchedule([answer(mockQ.id, false, { at: T0, mode: 'mockA' }), answer(onlyMock.id, false, { at: T1, mode: 'mockB' })], index);
+    // 演習・基礎講座の問題がない概念（1.2-K1）はカードを作らない（今日の復習の件数に残り続けないように）
+    expect([...s.keys()].sort()).toEqual(['1.1-K1']);
+    expect(reviewableConcepts(index)).toEqual(new Set(['1.1-K1', '1.1-K2']));
     const { picks, noQuestion } = pickReviewQuestions(dueConcepts(s, T0 + 5 * DAY), index, buildHistory([]), 10, mulberry32(1));
     expect(picks.map((p) => p.questionId).some((id) => id.endsWith('-101'))).toBe(false);
     expect(picks.map((p) => p.conceptId)).toEqual(['1.1-K1']);
-    expect(noQuestion).toEqual(['1.2-K1']);
+    expect(noQuestion).toEqual([]);
+  });
+
+  it('同じ提出でまとめて記録された回答は、概念ごとに最も悪い評価を1回だけ反映する（記録の順序に依らない）', () => {
+    const wrong = { ...answer(q1.id, false, { at: T0, mode: 'mock', sessionId: 'm1' }), eventId: 'ev-b' };
+    const right = { ...answer(q2.id, true, { at: T0, mode: 'mock', sessionId: 'm1', confidence: 'sure' }), eventId: 'ev-a' };
+    const s1 = buildConceptSchedule([wrong, right], index);
+    const s2 = buildConceptSchedule([{ ...wrong, eventId: 'ev-a' }, { ...right, eventId: 'ev-b' }], index);
+    expect(dueAt(s1.get('1.1-K1')!)).toBe(dueAt(s2.get('1.1-K1')!));
+    expect(s1.get('1.1-K1')).toMatchObject({ reviews: 1, lastQuestionId: q1.id });
+    // 1 問でも間違えた概念は誤答（Again）として扱う
+    expect(dueAt(s1.get('1.1-K1')!)).toBe(dueAt(buildConceptSchedule([answer(q1.id, false, { at: T0 })], index).get('1.1-K1')!));
   });
 
   it('前回その概念で解いた問題とは別の問題を優先し、同じセッションで同じ問題は出さない', () => {

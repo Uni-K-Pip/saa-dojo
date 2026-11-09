@@ -58,8 +58,8 @@
       "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-purchasing-options.html"
     },
     {
-      "title": "Migrate from EMRFS to S3A - Amazon EMR",
-      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-s3a-migration.html"
+      "title": "Instance storage options and behavior in Amazon EMR - Amazon EMR",
+      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-storage.html"
     }
   ],
   "lessonRefs": ["lesson-3.5-transfer-and-transform"],

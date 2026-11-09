@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-013",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K6", "4.3-S3"],
+  "services": ["Amazon RDS Proxy", "Amazon RDS", "AWS Lambda"],
+  "qualifier": "cost",
+  "tags": ["RDS Proxy", "接続プール", "インスタンスサイズの適正化", "Lambda"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の API は AWS Lambda から Amazon RDS for MySQL に接続しています。ピーク時に多数の Lambda 関数が同時に接続するため、データベースの最大接続数に達しないよう、CPU とメモリには余裕があるのに、接続数のために大きなインスタンスクラスを選んでいます。実際のクエリ処理だけなら、2 段階小さなインスタンスクラスで足ります。データベースのコストを下げるために、最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon RDS Proxy を導入して接続をプールし、Lambda 関数の接続先をプロキシに変更したうえで、インスタンスクラスを小さくする。",
+      "correct": true,
+      "rationale": "RDS Proxy は接続プールを持ち、多数の Lambda 関数からの接続を少数のデータベース接続にまとめます。接続数のためだけに大きくしていたインスタンスクラスを、実際の処理に必要なサイズまで小さくできるので、プロキシの料金を払っても全体のコストを下げられる場合があります。"
+    },
+    {
+      "id": "b",
+      "text": "インスタンスクラスをさらに大きくして、最大接続数を増やす。",
+      "correct": false,
+      "rationale": "接続数のためにインスタンスを大きくし続けると、料金が増えます。コストを下げる要件に反します。"
+    },
+    {
+      "id": "c",
+      "text": "Lambda 関数の同時実行数の上限を外し、関数が必要なだけ接続できるようにする。",
+      "correct": false,
+      "rationale": "同時に接続する数が増え、データベースの最大接続数にさらに達しやすくなります。コストが下がる方法ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "Lambda 関数の中で、リクエストごとにデータベースへの接続を開き、処理の終了時に閉じる。",
+      "correct": false,
+      "rationale": "接続の開閉のたびに負荷がかかり、同時接続数のピークを抑える効果もありません。接続を再利用するプールのほうが効果的です。"
+    }
+  ],
+  "explanation": "データベースの接続数は、インスタンスクラスのメモリに応じた上限があります。Lambda のようにクライアントが急増する構成では、接続数のためにインスタンスを大きくしてしまうことがあります。\n\nAmazon RDS Proxy は、アプリケーションとデータベースの間に置くフルマネージドのプロキシで、接続プールを使って多数のクライアントの接続を少数のデータベース接続に集約します。これにより、次の効果があります。\n\n・接続数の上限に達しにくくなり、接続数のために過剰なインスタンスクラスを選ぶ必要がなくなる。\n・フェイルオーバー時にアイドル状態の接続を維持して、中断を短縮する。\n・認証情報を Secrets Manager、または IAM 認証で管理する。\n\nRDS Proxy には、データベースのインスタンスの vCPU 数に応じた料金がかかります。インスタンスの縮小による削減額と、プロキシの料金を比較して判断します。",
+  "keyPoints": [
+    "接続数の上限のために DB を過大にしている → RDS Proxy で接続をまとめ、インスタンスを適正なサイズにする",
+    "RDS Proxy には料金がかかるので、インスタンス縮小の削減額と比べて判断する",
+    "Lambda からの接続の急増には、接続プール（RDS Proxy）が基本の対策"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS Proxy - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+    },
+    {
+      "title": "Amazon RDS Proxy pricing",
+      "url": "https://aws.amazon.com/rds/proxy/pricing/"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

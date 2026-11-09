@@ -41,6 +41,8 @@ export interface MockSession {
   createdAt: number;
   updatedAt: number;
   finishedAt?: number;
+  /** 時間切れで1問も答えていなかったため、採点せずに終えた */
+  discarded?: boolean;
 }
 
 export type SessionRecord = PracticeSession | MockSession;

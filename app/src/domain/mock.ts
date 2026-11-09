@@ -78,25 +78,88 @@ export function buildRandomMock(
   return shuffle(chosen, rng);
 }
 
-/** 保留模試（mockA・mockB）の問題を選ぶ。65 問を超えるときは構成どおりに ID 順で取る */
+/** 最大剰余法: total を重みに比例して配分する（重みの合計より多くは配らない） */
+export function largestRemainder<K extends string | number>(total: number, weights: readonly (readonly [K, number])[]): Map<K, number> {
+  const out = new Map<K, number>(weights.map(([k]) => [k, 0]));
+  const sum = weights.reduce((n, [, w]) => n + Math.max(0, w), 0);
+  const want = Math.min(Math.max(0, total), sum);
+  if (want === 0) return out;
+  const raw = weights.map(([k, w], i) => ({ k, i, exact: (want * Math.max(0, w)) / sum }));
+  let assigned = 0;
+  for (const r of raw) {
+    const f = Math.floor(r.exact);
+    out.set(r.k, f);
+    assigned += f;
+  }
+  const order = [...raw].sort((a, b) => b.exact - Math.floor(b.exact) - (a.exact - Math.floor(a.exact)) || a.i - b.i);
+  for (let i = 0; assigned < want; i = (i + 1) % order.length) {
+    const r = order[i]!;
+    out.set(r.k, out.get(r.k)! + 1);
+    assigned++;
+  }
+  return out;
+}
+
+export interface FixedMockPlan {
+  /** 出題する問題（タスク内は ID 順。毎回同じ組み合わせ） */
+  ids: string[];
+  /** 本番形式（65 問、ドメイン別 20/17/15/13）で組めるか */
+  ready: boolean;
+  /** 検証済みの問題数 / プール全体の問題数 */
+  verified: number;
+  total: number;
+  /** ドメイン別: 出題する数 / 必要な数 */
+  byDomain: { domain: number; count: number; need: number }[];
+}
+
+/**
+ * 保留模試（mockA・mockB）の構成。検証済み（verified）の問題だけを使う。
+ * 各ドメインの枠を、タスクごとの問題数に比例して配分し（最大剰余法）、タスクの中は ID 順に取る。
+ */
+export function planFixedMock(
+  index: readonly QuestionMeta[],
+  kind: 'mockA' | 'mockB',
+  composition: Record<number, number> = DEFAULT_COMPOSITION,
+): FixedMockPlan {
+  const all = index.filter((q) => q.pool === kind);
+  const pool = all.filter((q) => q.status === 'verified').sort((a, b) => (a.id < b.id ? -1 : 1));
+  const ids: string[] = [];
+  const byDomain: FixedMockPlan['byDomain'] = [];
+  for (const d of Object.keys(composition).map(Number).sort((a, b) => a - b)) {
+    const need = composition[d] ?? 0;
+    const inDomain = pool.filter((q) => q.domain === d);
+    const tasks = [...new Set(inDomain.map((q) => q.taskStatement))].sort();
+    const quota = largestRemainder(
+      need,
+      tasks.map((t) => [t, inDomain.filter((q) => q.taskStatement === t).length] as const),
+    );
+    let count = 0;
+    for (const t of tasks) {
+      const take = inDomain.filter((q) => q.taskStatement === t).slice(0, quota.get(t) ?? 0);
+      ids.push(...take.map((q) => q.id));
+      count += take.length;
+    }
+    byDomain.push({ domain: d, count, need });
+  }
+  const size = Object.values(composition).reduce((n, x) => n + x, 0);
+  const ready = ids.length === size && byDomain.every((b) => b.count === b.need);
+  return { ids, ready, verified: pool.length, total: all.length, byDomain };
+}
+
+/** 準備中の理由（検証済みの問題が足りないドメイン） */
+export function fixedMockShortage(plan: FixedMockPlan): string {
+  const short = plan.byDomain.filter((b) => b.count < b.need).map((b) => `ドメイン ${b.domain}: ${b.count}/${b.need} 問`);
+  return `検証済みの問題（${plan.verified}/${plan.total} 問）で本番形式の 65 問を組めるようになると解放できます。不足: ${short.join('、')}`;
+}
+
+/** 保留模試の問題（並びはランダム、組み合わせは毎回同じ） */
 export function buildFixedMock(
   index: readonly QuestionMeta[],
   kind: 'mockA' | 'mockB',
   rng: Rng,
   composition: Record<number, number> = DEFAULT_COMPOSITION,
 ): string[] {
-  const pool = index.filter((q) => q.pool === kind).sort((a, b) => (a.id < b.id ? -1 : 1));
-  if (pool.length <= FULL_MOCK_SIZE) return shuffle(pool.map((q) => q.id), rng);
-  const targets = allocateByDomain(FULL_MOCK_SIZE, composition);
-  const chosen: string[] = [];
-  for (const d of Object.keys(targets).map(Number)) {
-    chosen.push(...pool.filter((q) => q.domain === d).slice(0, targets[d]).map((q) => q.id));
-  }
-  if (chosen.length < FULL_MOCK_SIZE) {
-    const set = new Set(chosen);
-    chosen.push(...pool.filter((q) => !set.has(q.id)).slice(0, FULL_MOCK_SIZE - chosen.length).map((q) => q.id));
-  }
-  return shuffle(chosen, rng);
+  return shuffle(planFixedMock(index, kind, composition).ids, rng);
 }
 
 export function modeForKind(kind: MockKind): AnswerEvent['mode'] {
@@ -105,6 +168,8 @@ export function modeForKind(kind: MockKind): AnswerEvent['mode'] {
 
 /** 提出: 回答した問題の回答イベントと、模試の結果イベントを作る */
 export function gradeMock(session: MockSession, questions: Map<string, Question>, now: number): NewEvent[] {
+  // 締切を過ぎてから開いたときも、締切の時刻で採点する
+  const at = Math.min(now, session.startedAt + session.timeLimitMs);
   const events: NewEvent[] = [];
   let answered = 0;
   let correct = 0;
@@ -126,7 +191,7 @@ export function gradeMock(session: MockSession, questions: Map<string, Question>
       sessionId: session.id,
       durationMs: Math.round(session.timeSpent[qid] ?? 0),
       flagged: !!session.flags[qid],
-      at: now,
+      at,
     });
   }
   events.push({
@@ -138,9 +203,9 @@ export function gradeMock(session: MockSession, questions: Map<string, Question>
     correct,
     total: session.questionIds.length,
     startedAt: session.startedAt,
-    elapsedMs: Math.min(now - session.startedAt, session.timeLimitMs),
+    elapsedMs: Math.max(0, at - session.startedAt),
     timeLimitMs: session.timeLimitMs,
-    at: now,
+    at,
   });
   return events;
 }
@@ -192,9 +257,9 @@ export function mockResults(events: readonly AppEvent[], kind?: MockKind): MockR
     .sort((a, b) => b.at - a.at);
 }
 
-/** 保留模試の初回の結果 */
+/** 保留模試の初回の結果（本番形式の 65 問に満たない回と、1問も答えていない回は数えない） */
 export function firstAttempt(events: readonly AppEvent[], kind: 'mockA' | 'mockB'): MockResultEvent | null {
-  const list = events.filter((e): e is MockResultEvent => e.type === 'mock-result' && e.kind === kind).sort((a, b) => a.at - b.at || (a.eventId < b.eventId ? -1 : 1));
+  const list = events.filter((e): e is MockResultEvent => e.type === 'mock-result' && e.kind === kind && e.total >= FULL_MOCK_SIZE && e.answered > 0).sort((a, b) => a.at - b.at || (a.eventId < b.eventId ? -1 : 1));
   return list[0] ?? null;
 }
 

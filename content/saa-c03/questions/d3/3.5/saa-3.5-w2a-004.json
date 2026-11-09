@@ -46,11 +46,11 @@
   "references": [
     {
       "title": "Amazon Quick User Guide",
-      "url": "https://docs.aws.amazon.com/quicksuite/latest/userguide/welcome.html"
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/"
     },
     {
       "title": "Supported data sources - Amazon Quick",
-      "url": "https://docs.aws.amazon.com/quicksuite/latest/userguide/supported-data-sources.html"
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/supported-data-sources.html"
     }
   ],
   "lessonRefs": ["lesson-3.5-data-lake-and-analytics"],

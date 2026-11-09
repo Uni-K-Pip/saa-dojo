@@ -50,7 +50,7 @@
     },
     {
       "title": "AWS Direct Connect pricing",
-      "url": "https://aws.amazon.com/directconnect/pricing/"
+      "url": "https://aws.amazon.com/directconnect/pricing/pay-as-you-go/"
     }
   ],
   "lessonRefs": ["lesson-4.4-connectivity-and-edge-cost"],

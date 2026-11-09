@@ -54,8 +54,8 @@
       "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
     },
     {
-      "title": "How Storage Gateway works - AWS Storage Gateway",
-      "url": "https://docs.aws.amazon.com/storagegateway/latest/userguide/StorageGatewayConcepts.html"
+      "title": "How Amazon S3 File Gateway works - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html"
     }
   ],
   "lessonRefs": ["lesson-3.5-transfer-and-transform"],

@@ -49,8 +49,8 @@
       "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html"
     },
     {
-      "title": "Time to Live: How it works - Amazon DynamoDB",
-      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/howitworks-ttl.html"
+      "title": "Enable time to live (TTL) in DynamoDB - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/time-to-live-ttl-how-to.html"
     }
   ],
   "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],

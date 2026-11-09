@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.4-w2a-012",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.4",
+  "knowledgeRefs": ["4.4-K2", "4.4-S5"],
+  "services": ["AWS Cost Explorer", "NAT gateway", "AWS Budgets"],
+  "qualifier": "operational",
+  "tags": ["AWS Cost Explorer", "データ転送コストの分析", "使用タイプ", "コスト管理ツール"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、先月の AWS の請求で、データ転送に関する料金が急に増えていることに気づきました。どのサービスの、どの種類の転送（NAT ゲートウェイ経由、AZ 間、リージョン間、インターネットへの送信など）が増えたのかが分かっていません。まず、原因の種類を最も早く特定するために使うツールと方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS Cost Explorer で、サービスと使用タイプでグループ化して、日ごとのコストの推移を調べる。",
+      "correct": true,
+      "rationale": "Cost Explorer では、コストをサービスや使用タイプ（NAT ゲートウェイのデータ処理、リージョン間の転送、AZ 間の転送などの種類）でグループ化して、日ごとの推移を確認できます。どの種類の転送がいつから増えたかを、すぐに特定できます。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Budgets に予算を作成して、アラートを待つ。",
+      "correct": false,
+      "rationale": "Budgets は、しきい値を超えたときの通知のための機能です。すでに発生した増加の原因を調べる分析のツールではありません。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon CloudWatch で、EC2 インスタンスの NetworkOut のメトリクスに、アラームを設定する。",
+      "correct": false,
+      "rationale": "NetworkOut は EC2 の通信量のメトリクスで、課金の種類（NAT ゲートウェイ、AZ 間、リージョン間など）別のコストは分かりません。コストの原因の特定には、コストのデータを使います。"
+    },
+    {
+      "id": "d",
+      "text": "すべてのリソースの VPC フローログを有効にしてから、ログを集計して原因を探す。",
+      "correct": false,
+      "rationale": "フローログは通信の詳細な分析に役立ちますが、有効にする前の期間の分析はできず、ログの保存と分析のコストもかかります。まずコストのデータで種類を特定し、必要に応じてフローログで詳しく調べるのが順序です。"
+    }
+  ],
+  "explanation": "ネットワークのコストの調査は、まず「どの種類の料金が増えたか」を特定し、次に「どの通信が原因か」を調べる、という順序で進めます。\n\n1. AWS Cost Explorer: サービス、使用タイプ、アカウント、タグなどでグループ化して、コストの推移を見る。NAT ゲートウェイのデータ処理料金、リージョン間・AZ 間のデータ転送、インターネットへの送信などの種類を特定できる。\n2. コストと使用状況レポート（CUR）: リソース単位のさらに詳細なデータで原因のリソースを特定する。\n3. VPC フローログ: 通信の送信元、宛先、量を調べて、原因の通信を特定する。\n\n原因が分かったら、ゲートウェイ VPC エンドポイントでの S3 へのアクセス、AZ ごとの NAT ゲートウェイ、CloudFront によるキャッシュ、リージョン内での完結など、経路を見直します。",
+  "keyPoints": [
+    "コストの増加の種類を特定する → Cost Explorer（使用タイプでグループ化）",
+    "詳細なリソース単位は CUR、通信の中身は VPC フローログで調べる",
+    "Budgets は通知、Cost Explorer は分析、と役割が違う"
+  ],
+  "references": [
+    {
+      "title": "Analyzing your costs and usage with AWS Cost Explorer - AWS Cost Management",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+    },
+    {
+      "title": "Logging IP traffic using VPC Flow Logs - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.4-nat-endpoints-and-data-transfer"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

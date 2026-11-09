@@ -49,8 +49,8 @@
       "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
     },
     {
-      "title": "Listener rules for your Application Load Balancer - Elastic Load Balancing",
-      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html"
+      "title": "Listeners for your Application Load Balancers - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
     }
   ],
   "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],

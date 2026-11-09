@@ -1,0 +1,66 @@
+{
+  "id": "saa-4.3-w2a-012",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K2"],
+  "services": [
+    "AWS Cost and Usage Report",
+    "Amazon Athena",
+    "AWS Cost Explorer",
+    "Amazon Relational Database Service"
+  ],
+  "qualifier": "operational",
+  "tags": ["コストと使用状況レポート", "Athena", "リソース単位のコスト", "コスト管理ツール"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社の財務部門は、Amazon RDS と Amazon Aurora のデータベースについて、DB インスタンスやクラスターなどのリソース単位で、1 時間ごとのコストと使用状況を、過去数か月分にわたって SQL で自由に集計したいと考えています。コストの集計用の独自のシステムは構築したくありません。AWS のコスト管理ツールを使った最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "AWS コストと使用状況レポート（CUR）で、時間単位とリソース ID を含む設定にして Amazon S3 に出力し、Amazon Athena でクエリする。",
+      "correct": true,
+      "rationale": "CUR は、最も詳細なコストと使用状況のデータを、S3 に継続的に出力します。時間単位の粒度とリソース ID を含める設定にすれば、リソース単位の集計ができます。Athena と統合でき、S3 のデータに SQL で直接クエリできるので、独自のシステムは不要です。"
+    },
+    {
+      "id": "b",
+      "text": "AWS Cost Explorer の画面でグラフを確認し、画面の表示を手作業で表計算ソフトに転記する。",
+      "correct": false,
+      "rationale": "Cost Explorer は傾向の可視化と分析のためのツールで、任意の SQL での集計には向きません。手作業の転記は運用の手間も大きくなります。"
+    },
+    {
+      "id": "c",
+      "text": "AWS Budgets で DB ごとに予算を作成し、実績をレポートとして受け取る。",
+      "correct": false,
+      "rationale": "Budgets は、予算としきい値によるアラートのための機能です。リソース単位の詳細なデータを SQL で自由に集計する用途ではありません。"
+    },
+    {
+      "id": "d",
+      "text": "Amazon CloudWatch の RDS のメトリクスを集計して、コストを推定する。",
+      "correct": false,
+      "rationale": "CloudWatch のメトリクスは性能や使用状況の監視用で、実際の請求額のデータは含まれません。コストを正確に集計するにはコストのデータを使います。"
+    }
+  ],
+  "explanation": "コスト管理のツールは、粒度と用途で使い分けます。\n\n・AWS Cost Explorer: 過去のコストと使用状況を可視化し、将来を予測する。グループ化と絞り込みで、サービス、アカウント、タグ、使用タイプなどの傾向を分析する。\n・AWS Budgets: 予算を設定し、実績や予測がしきい値を超えたら通知する。\n・AWS コストと使用状況レポート（CUR）: AWS で最も詳細なコストと使用状況のデータ。時間単位やリソース ID を含められ、S3 に出力される。Athena、Redshift、QuickSight で分析する。\n\nリソース単位・時間単位で、SQL を使って自由に集計する要件には、CUR と Athena の組み合わせが向いています。CUR のデータには、コスト配分タグの情報も含まれるため、タグ別の集計もできます。",
+  "keyPoints": [
+    "リソース単位・時間単位の詳細なコストを SQL で分析 → CUR を S3 に出力して Athena でクエリ",
+    "Cost Explorer は傾向の可視化と予測、Budgets はしきい値のアラート",
+    "CUR にはコスト配分タグの情報も含められる"
+  ],
+  "references": [
+    {
+      "title": "What are AWS Cost and Usage Reports? - AWS Cost and Usage Reports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+    },
+    {
+      "title": "Querying Cost and Usage Reports using Amazon Athena - AWS Cost and Usage Reports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-query-athena.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

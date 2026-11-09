@@ -37,6 +37,8 @@ export function parseBackup(text: string): ParseResult {
     if (Array.isArray(data)) list = data;
     else if (data && typeof data === 'object') {
       const o = data as Record<string, unknown>;
+      // 1行だけの改行区切り JSON（記録が1件の同期ファイル）は、イベント1件として読む
+      if (o.format === undefined && isEventLike(o)) return { ok: true, events: [o], skipped: 0 };
       if (o.format !== BACKUP_FORMAT) return { ok: false, error: 'SAA Dojo の書き出しファイルではありません' };
       if (typeof o.version !== 'number' || o.version > BACKUP_VERSION) return { ok: false, error: 'このアプリより新しい形式のファイルです。アプリを更新してから読み込んでください' };
       if (!Array.isArray(o.events)) return { ok: false, error: 'ファイルに学習記録がありません' };

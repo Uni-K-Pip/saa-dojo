@@ -1,0 +1,61 @@
+{
+  "id": "saa-4.3-w2a-011",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": ["4.3-K1", "4.3-S3"],
+  "services": ["AWS Organizations", "Amazon Relational Database Service"],
+  "qualifier": "cost",
+  "tags": ["一括請求", "リザーブドインスタンス", "AWS Organizations", "割引の共有"],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある会社は、事業部ごとに 3 つの AWS アカウントを持ち、それぞれのアカウントで Amazon RDS for PostgreSQL の本番データベースを稼働させています。経理部門は、小売事業部 のアカウントでリザーブドインスタンスを購入しましたが、小売事業部 のデータベースは想定より小さく、予約した分に余りが出ています。物流事業部と金融事業部 には、同じインスタンスファミリーのデータベースが稼働しており、予約の割引を無駄にしないようにしたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "3 つのアカウントを AWS Organizations の一括請求にまとめ、リザーブドインスタンスの割引の共有が有効な状態で運用する。",
+      "correct": true,
+      "rationale": "一括請求を使う AWS Organizations では、組織内のアカウントが購入したリザーブドインスタンス（と Savings Plans）の割引が、組織内の対象となるほかのアカウントの利用にも適用されます。余った予約分を、物流事業部と金融事業部 のデータベースが使えるので、無駄になりません。"
+    },
+    {
+      "id": "b",
+      "text": "物流事業部と金融事業部 のアカウントでも、それぞれ新しくリザーブドインスタンスを購入する。",
+      "correct": false,
+      "rationale": "小売事業部 の余りが無駄になったまま、さらに約束を増やすことになり、コストが増えます。"
+    },
+    {
+      "id": "c",
+      "text": "3 つのデータベースをすべて小売事業部 のアカウントに移す。",
+      "correct": false,
+      "rationale": "データベースの移行と、アカウントを分けていた運用上の分離（権限や環境の分離）を崩すことになります。一括請求で割引を共有するほうが、変更が小さく済みます。"
+    },
+    {
+      "id": "d",
+      "text": "小売事業部 のリザーブドインスタンスを、AWS のサポートに依頼して、ほかのアカウントに名義変更してもらう。",
+      "correct": false,
+      "rationale": "リザーブドインスタンスの名義を別のアカウントに変更する仕組みはありません。割引の共有は、一括請求の組織内で自動的に行われます。"
+    }
+  ],
+  "explanation": "AWS Organizations の一括請求（Consolidated Billing）には、次の利点があります。\n\n・複数のアカウントの請求を 1 つにまとめ、管理アカウントが支払う。\n・組織内の利用量を合算して、ボリュームディスカウント（S3 やデータ転送の段階的な料金など）を受けられる。\n・リザーブドインスタンスと Savings Plans の割引が、組織内の対象となるアカウントの利用に共有される。（共有は、管理アカウントの設定で、アカウントごとに無効にもできる。）\n\nこの問題では、小売事業部 の余ったリザーブドインスタンスの割引が、同じ組織の物流事業部と金融事業部 の対象のデータベースの利用に適用されます。なお、RDS のリザーブドインスタンスは、インスタンスクラスのサイズの柔軟性（同じファミリー内で別のサイズに適用）が、一部のエンジンで利用できます。",
+  "keyPoints": [
+    "複数アカウントの割引の共有・利用量の合算 → AWS Organizations の一括請求",
+    "リザーブドインスタンスと Savings Plans の割引は、組織内の対象のアカウントに共有される",
+    "請求をまとめても、アカウントの権限や環境の分離は保たれる"
+  ],
+  "references": [
+    {
+      "title": "Consolidated billing for AWS Organizations - AWS Billing",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+    },
+    {
+      "title": "Reserved DB instances for Amazon RDS - Amazon RDS",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+    }
+  ],
+  "lessonRefs": ["lesson-4.3-database-selection-and-cost"],
+  "pool": "practice",
+  "needsSourceCheck": false,
+  "createdBy": "w2a",
+  "createdAt": "2026-11-08"
+}

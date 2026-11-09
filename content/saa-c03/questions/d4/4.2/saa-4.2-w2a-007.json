@@ -54,8 +54,8 @@
       "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
     },
     {
-      "title": "Run an Amazon ECS task on a schedule - Amazon EventBridge",
-      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduled_tasks.html"
+      "title": "Using Amazon EventBridge Scheduler to schedule Amazon ECS tasks - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html"
     }
   ],
   "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
