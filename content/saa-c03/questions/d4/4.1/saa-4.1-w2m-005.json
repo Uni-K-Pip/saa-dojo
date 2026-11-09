@@ -1,0 +1,73 @@
+{
+  "id": "saa-4.1-w2m-005",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.1",
+  "knowledgeRefs": [
+    "4.1-S8",
+    "4.1-S10",
+    "4.1-K10"
+  ],
+  "services": [
+    "Amazon Simple Storage Service"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "S3 One Zone-IA",
+    "再作成できるデータ",
+    "ストレージクラス"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、利用者がアップロードした画像から生成したサムネイルを、S3 Standard に保存しています。サムネイルは、元の画像からいつでも再生成できます。アクセスは月に数回程度で、必要なときには、ミリ秒単位で取得できる必要があります。1 つの AZ の障害でサムネイルを失っても、再生成すればよいため、許容できます。ストレージの費用を最も下げられる設定はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "S3 Standard-IA ストレージクラスに保存する。",
+      "correct": false,
+      "rationale": "低頻度アクセス向けで、3 つ以上の AZ にデータを保存するため、One Zone-IA より料金が高くなります。AZ の障害を許容できる要件に対して過剰です。"
+    },
+    {
+      "id": "b",
+      "text": "S3 Standard ストレージクラスのまま、ライフサイクルでサムネイルを 1 年後に削除する。",
+      "correct": false,
+      "rationale": "月に数回アクセスされるデータに、頻繁なアクセス向けの Standard の料金を払い続けることになります。低頻度向けのクラスより割高です。"
+    },
+    {
+      "id": "c",
+      "text": "S3 One Zone-IA ストレージクラスに保存する。",
+      "correct": true,
+      "rationale": "One Zone-IA は、1 つの AZ にだけデータを保存し、低頻度のアクセスのデータを、S3 Standard-IA より安く保存できます。取得はミリ秒単位です。再作成できるデータに向いています。"
+    },
+    {
+      "id": "d",
+      "text": "S3 Glacier Flexible Retrieval ストレージクラスに保存する。",
+      "correct": false,
+      "rationale": "取り出しに数分〜数時間かかり、ミリ秒単位の取得の要件を満たしません。"
+    }
+  ],
+  "explanation": "S3 のストレージクラスは、アクセスの頻度、取得の速度、可用性・耐久性の要件で選びます。S3 Standard は頻繁なアクセス向け、S3 Standard-IA は低頻度アクセス向けで、どちらも 3 つ以上の AZ にデータを保存します。S3 One Zone-IA は、低頻度アクセス向けで、データを 1 つの AZ にだけ保存するため、Standard-IA より約 20% 低い料金です。AZ の障害や破壊が起きた場合にデータを失う可能性があるため、再作成できるデータや、別の場所にコピーがあるデータに向いています。取得は Standard と同様にミリ秒単位です。\n\nなお、Standard-IA と One Zone-IA には、最小の保存期間（30 日）と最小の課金サイズ（128 KB）があります。\n\nGlacier Flexible Retrieval は取得に時間がかかります。Standard のままでは割高になります。",
+  "keyPoints": [
+    "再作成できるデータ・低頻度アクセス・ミリ秒の取得 → S3 One Zone-IA（単一 AZ で Standard-IA より安い）",
+    "Standard-IA と One Zone-IA は最小保存期間 30 日・最小課金サイズ 128 KB",
+    "単一 AZ のため、AZ の障害でデータを失う可能性がある"
+  ],
+  "references": [
+    {
+      "title": "Amazon S3 のストレージクラスの比較",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html#sc-compare"
+    },
+    {
+      "title": "Amazon S3 の料金",
+      "url": "https://aws.amazon.com/s3/pricing/"
+    }
+  ],
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
