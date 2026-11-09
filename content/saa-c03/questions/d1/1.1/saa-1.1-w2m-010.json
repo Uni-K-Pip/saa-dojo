@@ -23,7 +23,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、AWS Organizations のすべてのメンバーアカウントで、セキュリティチームが管理する IAM ロール以外は、AWS CloudTrail の証跡の停止や削除、AWS Config のレコーダーの停止を行えないようにしたいと考えています。メンバーアカウントの管理者は AdministratorAccess を持っています。セキュリティチームのロール名は、各アカウントで共通の SecurityAuditAdmin です。最も適切な方法はどれですか。",
+  "stem": "ある企業は、AWS Organizations のすべてのメンバーアカウントで、セキュリティチームが管理する IAM ロール以外は、AWS CloudTrail の証跡の停止や削除、AWS Config のレコーダーの停止を行えないようにしたいと考えています。メンバーアカウントの管理者は AdministratorAccess を持っています。セキュリティチームのロール名は、各アカウントで共通の SecurityAuditAdmin で、パスなしで作成され、セキュリティチームだけが引き受けられます。各アカウントの管理者による同ロールの変更・削除・再作成は、既存の統制で禁止されています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -33,15 +33,15 @@
     },
     {
       "id": "b",
-      "text": "管理アカウントで組織の証跡を作成し、メンバーアカウントでは証跡を変更できないようにする。",
+      "text": "管理アカウントで組織の証跡を作成し、メンバーアカウントでは証跡を変更できないようにする。あわせて、Config のレコーダーについては、各アカウントの管理者に運用手順書で、停止しないよう定期的に周知する。",
       "correct": false,
       "rationale": "組織の証跡は CloudTrail の停止を防げますが、Config のレコーダーの停止は防げません。メンバーアカウントで独自に作った証跡の操作も制限できません。"
     },
     {
       "id": "c",
-      "text": "ルートに SCP をアタッチする。CloudTrail の停止と削除、Config のレコーダーの停止の操作を拒否し、プリンシパルの ARN が SecurityAuditAdmin ロールのときは除外する条件を付ける。",
+      "text": "組織のルートに SCP をアタッチする。CloudTrail の停止と削除、Config のレコーダーの停止の操作を拒否し、プリンシパルの ARN が SecurityAuditAdmin ロールのときは、この拒否の対象から除外する条件を付ける。",
       "correct": true,
-      "rationale": "SCP は、管理者権限のあるユーザーも含めて、メンバーアカウントの権限の上限を決めます。条件キーで例外のロールだけを除外すれば、他のプリンシパルは、アカウントの管理者であっても操作できません。"
+      "rationale": "SCP は、管理者権限のあるユーザーも含めて、メンバーアカウントの権限の上限を決めます。条件キーで SecurityAuditAdmin だけを Deny の対象から除外すれば、他のプリンシパルは、アカウントの管理者であっても操作できません。除外されたロールが操作するには、必要な権限を別に付与します。"
     },
     {
       "id": "d",
@@ -50,9 +50,10 @@
       "rationale": "アカウントの管理者は、自分に付いた IAM ポリシーを変更または削除できます。アカウントの管理者を制限するには、アカウントの外側から制限する仕組みが必要です。"
     }
   ],
-  "explanation": "メンバーアカウントの管理者であっても実行できない操作を定めるには、AWS Organizations のサービスコントロールポリシー（SCP）を使います。SCP は、アカウントの IAM ポリシーとは別の階層で、許可の上限を決めるため、アカウントの管理者が変更できません。\n\nこの問題では、ルート（または対象の OU）にアタッチする SCP で、cloudtrail:StopLogging、cloudtrail:DeleteTrail、config:StopConfigurationRecorder などを Deny します。例外のロールだけを許可するには、Condition で aws:PrincipalArn が SecurityAuditAdmin ロールの ARN に一致する場合を除外します（ArnNotLike）。SCP の Deny は、条件に一致するプリンシパルだけに適用されます。\n\nIAM ポリシーによる拒否は、アカウントの管理者が外せます。組織の証跡は CloudTrail の保護にはなりますが、Config は対象外です。Config ルールによる自動修復は事後の対応です。",
+  "explanation": "メンバーアカウントの管理者であっても実行できない操作を定めるには、AWS Organizations のサービスコントロールポリシー（SCP）を使います。SCP は、アカウントの IAM ポリシーとは別の階層で、許可の上限を決めるため、アカウントの管理者が変更できません。\n\nこの問題では、組織のルート（または対象の OU）にアタッチする SCP で、cloudtrail:StopLogging、cloudtrail:DeleteTrail、config:StopConfigurationRecorder を Deny します。たとえば、Effect を Deny、Action を上の 3 つ、Resource を \"*\" とし、Condition には ArnNotLike で aws:PrincipalArn に arn:aws:iam::*:role/SecurityAuditAdmin を指定します。ArnNotLike の条件が行うのは、SecurityAuditAdmin をこの Deny の対象から除外することです。ロールに操作の権限を与えるものではないので、必要な権限は IAM ポリシーなどで別に付与し、他に適用される SCP にも拒否されないようにします。\n\nこの構成は、SecurityAuditAdmin を変更・削除・再作成できないことが前提です。アカウントの管理者がロールの信頼ポリシーを書き換えて引き受けられるなら、除外を迂回できてしまいます。また、SCP はメンバーアカウントにだけ効き、管理アカウントには効きません。\n\nIAM ポリシーによる拒否は、アカウントの管理者が外せます。組織の証跡は CloudTrail の保護にはなりますが、Config は対象外です。Config ルールによる自動修復は事後の対応です。",
   "keyPoints": [
-    "アカウントの管理者にも守らせるガードレール → SCP の Deny（例外は aws:PrincipalArn の条件）",
+    "アカウントの管理者にも守らせるガードレール → SCP の Deny（例外ロールは aws:PrincipalArn の ArnNotLike で Deny の対象から除外）",
+    "条件での除外は許可ではない。例外ロールの操作権限は別に付与し、そのロールの変更・削除を防ぐ統制も前提になる",
     "アカウント内の IAM ポリシーによる拒否は、管理者が変更できる",
     "予防的な統制（SCP）と検出的な統制（Config）を区別する"
   ],

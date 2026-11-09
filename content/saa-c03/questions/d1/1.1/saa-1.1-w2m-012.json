@@ -23,7 +23,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、Amazon EKS のクラスターで動く複数のアプリケーションの Pod が、Amazon S3 や Amazon DynamoDB にアクセスします。現在は、ノードの EC2 インスタンスプロファイルに権限を付けているため、同じノードのすべての Pod が同じ権限を持ってしまいます。Pod のサービスアカウントごとに、必要最小限の権限だけを付与したいと考えています。長期のアクセスキーは使いません。最も適切な方法はどれですか。",
+  "stem": "ある企業は、Amazon EKS のクラスターで動く複数のアプリケーションの Pod が、Amazon S3 や Amazon DynamoDB にアクセスします。現在は、ノードの EC2 インスタンスプロファイルに権限を付けているため、同じノードの Pod がその権限を使えてしまう状態です。Pod のサービスアカウントごとに、必要最小限の権限だけを付与したいと考えています。長期のアクセスキーは使いません。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -33,7 +33,7 @@
     },
     {
       "id": "b",
-      "text": "アプリケーションごとに専用のノードグループを作成し、アプリケーションに必要な権限を持つインスタンスプロファイルを、それぞれのノードグループに付ける。",
+      "text": "アプリケーションごとに専用のノードグループを作成し、アプリケーションに必要な権限を持つインスタンスプロファイルを、それぞれのノードグループに付ける。Pod は nodeSelector で、対応するノードグループにだけ配置されるようにして、他のノードグループには配置しない。",
       "correct": false,
       "rationale": "ノードグループの数が増えて運用が複雑になり、同じノードグループの Pod は、権限を共有します。Pod 単位の最小権限にはなりません。"
     },
@@ -45,15 +45,16 @@
     },
     {
       "id": "d",
-      "text": "EKS Pod Identity（または IAM roles for service accounts）を使い、サービスアカウントごとに IAM ロールを関連付ける。ノードのロールからは、アプリケーション用の権限を外す。",
+      "text": "EKS Pod Identity（または IAM roles for service accounts）でサービスアカウントごとに IAM ロールを関連付ける。ノードのロールからはアプリケーション用の権限を外し、Pod からノードの IMDS へのアクセスも制限する。",
       "correct": true,
-      "rationale": "Pod Identity や IRSA は、Kubernetes のサービスアカウントに IAM ロールを関連付けて、Pod に一時的な認証情報を渡します。Pod ごとに最小権限を実現でき、ノードのロールに依存しません。"
+      "rationale": "Pod Identity や IRSA は、サービスアカウント単位で IAM ロールを関連付け、Pod に一時的な認証情報を渡します。ノードのロールからアプリケーション用の権限を外し、Pod からノードの IMDS へのアクセスも制限すれば、ノードの認証情報を介した権限の共有を避けられます。"
     }
   ],
-  "explanation": "EKS のノードの IAM ロールを Pod が共有すると、同じノードのすべての Pod が同じ権限を持ち、最小権限の原則に反します。Pod ごとに権限を分けるには、サービスアカウントに IAM ロールを関連付けます。\n\nEKS Pod Identity は、EKS が提供する仕組みで、サービスアカウントと IAM ロールの関連付けを EKS の API で管理します。Pod にエージェント経由で一時的な認証情報が渡されます。従来から使われている IAM roles for service accounts（IRSA）は、クラスターの OIDC ID プロバイダーを IAM に登録して、ロールの信頼ポリシーでサービスアカウントを指定する方式で、AssumeRoleWithWebIdentity を使います。どちらも、長期のアクセスキーが不要です。\n\nノードグループを分ける方法は、Pod 単位の分離にならず、運用も増えます。アクセスキーの利用は長期の認証情報です。",
+  "explanation": "EKS のノードの IAM ロールに権限を付けると、同じノードの Pod がその権限を使えてしまい、最小権限の原則に反します。Pod ごとに権限を分けるには、サービスアカウントに IAM ロールを関連付けます。\n\nEKS Pod Identity は、EKS が提供する仕組みで、サービスアカウントと IAM ロールの関連付けを EKS の API で管理します。Pod にエージェント経由で一時的な認証情報が渡されます。従来から使われている IAM roles for service accounts（IRSA）は、クラスターの OIDC ID プロバイダーを IAM に登録して、ロールの信頼ポリシーでサービスアカウントを指定する方式で、AssumeRoleWithWebIdentity を使います。どちらも、長期のアクセスキーが不要です。\n\nただし、アプリケーション用の権限をノードのロールから外して、Pod Identity や IRSA を設定するだけでは、Pod がノードの認証情報を使えなくなるとは限りません。IMDS にアクセスできる Pod は、ノードのロールの認証情報も取得できます。そのため、ノードのロールから不要な権限を外し、Pod から IMDS へのアクセスを制限します。公式のベストプラクティスでは、IMDSv2 を必須にしてホップ数を 1 にする方法や、ノードの iptables で遮断する方法が示されています。ノードのコンポーネントが IMDS を使うことがあるので、IMDS 自体を無効にはしません。なお、権限の割り当て単位はサービスアカウントなので、同じサービスアカウントを使う Pod は権限を共有します。\n\nノードグループを分ける方法は、Pod 単位の分離にならず、運用も増えます。アクセスキーの利用は長期の認証情報です。",
   "keyPoints": [
     "Pod ごとの最小権限・長期キーなし → EKS Pod Identity または IRSA（サービスアカウントに IAM ロールを関連付け）",
-    "ノードのロールは、ノード上のすべての Pod が共有してしまう",
+    "IMDS にアクセスできる Pod は、ノードロールの認証情報も取得できる。ノードのロールの権限を絞り、IMDS へのアクセスも制限する",
+    "権限の割り当て単位はサービスアカウント。同じサービスアカウントを使う Pod は権限を共有する",
     "ワークロードには一時的な認証情報を使う"
   ],
   "references": [
@@ -64,6 +65,10 @@
     {
       "title": "サービスアカウントの IAM ロール - Amazon EKS ユーザーガイド",
       "url": "https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html"
+    },
+    {
+      "title": "EKS ベストプラクティスガイド - Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/eks/latest/best-practices/identity-and-access-management.html"
     }
   ],
   "lessonRefs": [
