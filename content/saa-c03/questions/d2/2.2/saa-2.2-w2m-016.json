@@ -1,0 +1,68 @@
+{
+  "id": "saa-2.2-w2m-016",
+  "exam": "SAA-C03",
+  "domain": 2,
+  "taskStatement": "2.2",
+  "knowledgeRefs": [
+    "2.2-K11",
+    "2.2-S4",
+    "2.2-S2"
+  ],
+  "services": [
+    "Amazon FSx",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "availability",
+  "tags": [
+    "FSx for Windows File Server",
+    "Multi-AZ",
+    "自動フェイルオーバー"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、複数の Windows の EC2 インスタンスが SMB で共有するファイルサーバーを、AWS 上に用意します。単一の AZ に障害が起きても、共有が自動でもう一方の AZ に切り替わり、同じ DNS 名のまま利用を続けられるようにしたいと考えています。ファイルサーバーの OS の管理やクラスターの構築といった運用は避けたいと考えています。最も適切な構成はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EFS のファイルシステムを作成して、Windows の EC2 インスタンスにマウントする。",
+      "correct": false,
+      "rationale": "EFS は NFS のファイルシステムで、Windows の SMB 共有の用途には向きません。Windows での標準的なマウントができません。"
+    },
+    {
+      "id": "b",
+      "text": "Amazon FSx for Windows File Server を Multi-AZ のデプロイで作成し、EC2 インスタンスから共有にアクセスする。",
+      "correct": true,
+      "rationale": "Multi-AZ のデプロイでは、2 つの AZ にファイルサーバーが置かれ、データは同期的に複製されます。障害時に自動で、スタンバイに切り替わります。"
+    },
+    {
+      "id": "c",
+      "text": "Amazon FSx for Windows File Server を Single-AZ のデプロイで作成し、日次でバックアップを取得する。",
+      "correct": false,
+      "rationale": "Single-AZ は、AZ の障害時に利用できなくなります。バックアップからの復元が必要で、自動の切り替えになりません。"
+    },
+    {
+      "id": "d",
+      "text": "2 つの AZ に Windows Server の EC2 インスタンスを起動し、DFS レプリケーションと、フェイルオーバークラスターを自分で構成する。",
+      "correct": false,
+      "rationale": "実現はできますが、OS の管理、クラスターの構築と運用を自分たちで行うことになります。運用を避ける要件に反します。"
+    }
+  ],
+  "explanation": "Amazon FSx for Windows File Server は、Windows Server のネイティブのファイルサーバーを、完全マネージドで提供するサービスです。SMB、NTFS、Active Directory と統合したアクセス制御に対応します。\n\nデプロイのタイプには、Single-AZ と Multi-AZ があります。Single-AZ は、1 つの AZ にファイルサーバーを置き、AZ 内でハードウェア障害時に自動で置き換えられます。Multi-AZ は、2 つの AZ にアクティブとスタンバイのファイルサーバーを置き、データを同期的に複製します。アクティブ側に障害が起きると、自動でスタンバイに切り替わり（フェイルオーバー）、DNS 名は変わらないため、クライアントは同じ名前で利用を続けられます。\n\nAZ の障害に備えて自動で切り替えるには、Multi-AZ を選びます。EFS は NFS 向けで、SMB は使えません。EC2 で自分で構成する方法は運用の手間が大きくなります。",
+  "keyPoints": [
+    "Windows の SMB 共有で AZ 障害に自動対応 → FSx for Windows File Server の Multi-AZ デプロイ",
+    "Single-AZ は AZ 障害時に自動の切り替えがない",
+    "EFS は NFS 向け"
+  ],
+  "references": [
+    {
+      "title": "FSx for Windows File Server の可用性と耐久性 - Amazon FSx ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}

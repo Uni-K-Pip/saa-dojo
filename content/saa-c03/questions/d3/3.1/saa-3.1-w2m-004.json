@@ -1,0 +1,67 @@
+{
+  "id": "saa-3.1-w2m-004",
+  "exam": "SAA-C03",
+  "domain": 3,
+  "taskStatement": "3.1",
+  "knowledgeRefs": [
+    "3.1-S1",
+    "3.1-K3"
+  ],
+  "services": [
+    "Amazon Elastic Block Store",
+    "Amazon Elastic Compute Cloud"
+  ],
+  "qualifier": "performance",
+  "tags": [
+    "EBS 最適化",
+    "インスタンスの EBS 帯域",
+    "ボトルネックの特定"
+  ],
+  "difficulty": 3,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、Amazon EC2 の小さなインスタンスタイプで、データベースを動かしています。データ用の io2 ボリュームには 64,000 IOPS をプロビジョニングしていますが、ワークロードの実測の IOPS は 20,000 前後で頭打ちになります。ボリュームのメトリクスでは、キューの長さは小さく、スロットリングの兆候はありません。IOPS の頭打ちを解消する最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "同じインスタンスに、io2 ボリュームを追加でアタッチし、アプリケーションで複数のボリュームに分散して書き込む。",
+      "correct": false,
+      "rationale": "ボリュームを増やしても、インスタンスが EBS 全体に使える IOPS とスループットの上限は変わりません。合計の上限を超えられません。"
+    },
+    {
+      "id": "b",
+      "text": "ボリュームタイプを、汎用 SSD（gp3）に変更して、IOPS とスループットを指定する。",
+      "correct": false,
+      "rationale": "gp3 の IOPS の上限は io2 より小さく、性能は下がります。インスタンスの上限という原因にも対処しません。"
+    },
+    {
+      "id": "c",
+      "text": "EBS の帯域と IOPS の上限が大きい、より大きなインスタンスタイプに変更する。",
+      "correct": true,
+      "rationale": "EC2 インスタンスには、インスタンスタイプごとに、EBS との間の IOPS とスループットの上限があります。ボリュームを大きくしても、インスタンスの上限を超えられません。"
+    },
+    {
+      "id": "d",
+      "text": "io2 ボリュームにプロビジョニングする IOPS を、さらに増やす。",
+      "correct": false,
+      "rationale": "ボリュームには十分な IOPS がプロビジョニングされています。ボトルネックはインスタンスの上限で、ボリュームの IOPS を増やしても改善しません。"
+    }
+  ],
+  "explanation": "EBS の性能は、ボリューム側の上限と、インスタンス側の上限の両方で決まります。ボリュームタイプごとに、最大の IOPS とスループットが決まっています。一方、EC2 インスタンスにも、インスタンスタイプごとに、EBS に対する最大の IOPS、スループット、帯域の上限があります。小さなインスタンスタイプでは、この上限が低いため、ボリュームに十分な IOPS をプロビジョニングしていても、インスタンスの上限で頭打ちになります。\n\nボトルネックの切り分けは、CloudWatch のメトリクスで行います。ボリューム側の指標（VolumeQueueLength、スロットリング）に問題がなく、インスタンス側の EBS の指標（EBSIOBalance%、EBSByteBalance% など）に問題があれば、インスタンスの上限が原因と判断できます。その場合は、EBS の帯域と IOPS の上限が大きい、より大きなインスタンスタイプを選びます。\n\nボリュームの IOPS の追加や、ボリュームの追加は、インスタンスの上限を変えません。",
+  "keyPoints": [
+    "ボリュームの IOPS は十分なのに頭打ち → インスタンスタイプごとの EBS の IOPS／帯域の上限が原因",
+    "インスタンスタイプを大きくして、EBS の上限を引き上げる",
+    "ボリュームを増やしても、インスタンスの合計の上限は変わらない"
+  ],
+  "references": [
+    {
+      "title": "Amazon EBS 最適化インスタンス - Amazon EC2 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
