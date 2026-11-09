@@ -9,7 +9,7 @@
     "4.4-S5"
   ],
   "services": [
-    "VPC endpoints",
+    "AWS PrivateLink",
     "AWS Transit Gateway",
     "Amazon Route 53",
     "Amazon Virtual Private Cloud"
@@ -23,7 +23,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、AWS Transit Gateway で接続した 20 個の VPC を、同じリージョンで運用しています。各 VPC のワークロードは、AWS Systems Manager や Amazon ECR にプライベートに接続するため、各 VPC にインターフェイス VPC エンドポイントを作成しています。エンドポイントの時間あたりの料金が、VPC の数だけ積み上がっています。プライベートな接続を保ちながら、エンドポイントの数を減らして、費用を下げたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、AWS Transit Gateway で接続した 20 個の VPC を、同じリージョンで運用しています。各 VPC のワークロードは、AWS Systems Manager や Amazon ECR にプライベートに接続するため、各 VPC にインターフェイス VPC エンドポイントを作成しています。エンドポイントの時間あたりの料金が、VPC の数だけ積み上がっています。通信量は少なく、追加の Transit Gateway 料金を含めても、集約によって総費用が下がると試算済みです。プライベートな接続を保ちながら、エンドポイントの数を減らして、費用を下げたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -45,25 +45,30 @@
     },
     {
       "id": "d",
-      "text": "各 VPC のインターフェイスエンドポイントを維持して、使っていない AZ のエンドポイントのネットワークインターフェイスだけを削除する。",
+      "text": "各 VPC のインターフェイスエンドポイントを維持して、使っていない AZ の分は、エンドポイント設定を変更せず、Amazon EC2 コンソールからエンドポイントのネットワークインターフェイスだけを直接削除する。",
       "correct": false,
-      "rationale": "削減できるのは一部だけで、20 個の VPC のエンドポイントは残ります。集約の効果に比べて削減額が小さく、AZ を減らすと可用性も下がります。"
+      "rationale": "エンドポイントのネットワークインターフェイスは依頼者管理のため、直接削除できません。AZ を減らすには、エンドポイントのサブネット関連付けを解除します。その方法でも 20 個の VPC のエンドポイントは残り、集約ほどの削減にはならず、AZ を減らすと可用性も下がります。"
     }
   ],
-  "explanation": "インターフェイス VPC エンドポイントは、エンドポイントごと・AZ ごとの時間料金と、処理したデータ量に応じた料金がかかります。VPC が多いと、同じサービスのエンドポイントを VPC ごとに作る費用が大きくなります。\n\n複数の VPC が Transit Gateway などで接続されている場合は、共有サービス用の VPC に、インターフェイスエンドポイントを集約できます。エンドポイントのプライベート DNS を無効にして、Route 53 のプライベートホストゾーンで、サービスの DNS 名（ssm.region.amazonaws.com など）をエンドポイントの DNS 名への別名として解決させ、各 VPC にそのホストゾーンを関連付けます。各 VPC のワークロードは、Transit Gateway 経由で共有のエンドポイントに接続します。Transit Gateway のデータ処理料金が加わるため、費用の比較が必要ですが、VPC の数が多い場合は有効です。\n\nゲートウェイエンドポイントは S3 と DynamoDB 専用です。NAT ゲートウェイを使うと、プライベートな接続を維持できません。",
+  "explanation": "インターフェイス VPC エンドポイントは、エンドポイントごと・AZ ごとの時間料金と、処理したデータ量に応じた料金がかかります。VPC が多いと、同じサービスのエンドポイントを VPC ごとに作る費用が大きくなります。\n\n複数の VPC が Transit Gateway などで接続されている場合は、共有サービス用の VPC に、インターフェイスエンドポイントを集約できます。エンドポイントのプライベート DNS を無効にして、Route 53 のプライベートホストゾーンで、サービスの DNS 名（ssm.region.amazonaws.com など）をエンドポイントの DNS 名への Alias レコードとして解決させ、各 VPC にそのホストゾーンを関連付けます。Amazon ECR の dkr エンドポイントには、ワイルドカードの Alias レコードが必要です。各 VPC のワークロードは、Transit Gateway 経由で共有のエンドポイントに接続するため、共有エンドポイントへのルートと、エンドポイントのセキュリティグループでの許可も設定します。\n\nTransit Gateway のデータ処理料金が加わるため、費用の比較が必要です。本問は、通信量が少なく、追加料金を含めても総費用が下がると試算済みなので、集約が有効です。\n\nゲートウェイエンドポイントは S3 と DynamoDB 専用です。NAT ゲートウェイを使うと、プライベートな接続を維持できません。エンドポイントのネットワークインターフェイスは依頼者管理で、直接削除できません。AZ を減らすには、エンドポイントのサブネット関連付けを解除します。",
   "keyPoints": [
     "多数の VPC のインターフェイスエンドポイントの費用削減 → 共有 VPC に集約＋プライベートホストゾーン＋Transit Gateway",
     "ゲートウェイエンドポイントは S3 と DynamoDB だけが対象",
-    "集約時は Transit Gateway のデータ処理料金も比較する"
+    "集約時は Transit Gateway のデータ処理料金も比較する。ECR の dkr にはワイルドカードの Alias レコードが必要",
+    "エンドポイントのネットワークインターフェイスは直接削除できず、AZ を減らすにはサブネットの関連付けを解除する"
   ],
   "references": [
     {
-      "title": "AWS PrivateLink と VPC エンドポイントの設計 - ホワイトペーパー",
+      "title": "VPC エンドポイントへの一元的なアクセス - AWS ホワイトペーパー",
       "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-access-to-vpc-private-endpoints.html"
     },
     {
-      "title": "インターフェイス VPC エンドポイント - AWS PrivateLink",
+      "title": "インターフェイス VPC エンドポイントの作成 - AWS PrivateLink",
       "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
+    },
+    {
+      "title": "インターフェイスエンドポイントの設定 - AWS PrivateLink",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/interface-endpoints.html"
     }
   ],
   "lessonRefs": [

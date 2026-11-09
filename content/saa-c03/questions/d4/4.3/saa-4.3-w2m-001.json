@@ -20,7 +20,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、Amazon Aurora PostgreSQL-Compatible Edition のクラスターで、読み書きの I/O が非常に多いオンライン取引のシステムを運用しています。クラスターは Aurora Standard の構成で、先月のデータベースの費用の内訳では、I/O リクエストの料金が、データベース全体の費用の約 40% を占めていました。I/O の量は、今後も安定して多い見込みです。アプリケーションを変更せずに、データベースの総費用を下げられる最も適切な方法はどれですか。",
+  "stem": "ある企業は、Amazon Aurora PostgreSQL-Compatible Edition のクラスターで、読み書きの I/O が非常に多いオンライン取引のシステムを運用しています。クラスターは Aurora Standard の構成で、先月のデータベースの費用の内訳では、I/O リクエストの料金が、データベース全体の費用の約 40% を占めていました。I/O の量は、今後も安定して多い見込みです。現在のインスタンス容量は適正化済みで、CPU・メモリ需要も終日安定しています。アプリケーションを変更せずに、データベースの総費用を下げられる最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -38,25 +38,25 @@
       "id": "c",
       "text": "リーダーインスタンスを追加して、読み取りのリクエストをリーダーに分散する。",
       "correct": false,
-      "rationale": "読み取りの負荷は分散できますが、I/O の総量は減らず、インスタンスの料金も増えます。総費用は下がりません。"
+      "rationale": "リーダーの追加はインスタンスの費用を増やします。ストレージへの読み取り I/O はキャッシュなどの影響も受けるため、ストレージ I/O の費用を確実に削減する方法ではありません。"
     },
     {
       "id": "d",
       "text": "Aurora Standard のまま、Aurora Serverless v2 に移行して、容量の割り当てを自動で調整する。",
       "correct": false,
-      "rationale": "Serverless v2 は、容量の自動調整で費用を最適化しますが、Standard 構成での I/O リクエストの料金そのものは変わりません。I/O が多い状態は解消されません。"
+      "rationale": "本問ではインスタンス容量が適正化済みで、需要も安定しているため、自動スケーリングによる削減効果は期待しにくく、Standard の I/O 課金も残ります。"
     }
   ],
-  "explanation": "Amazon Aurora には、2つのクラスターのストレージ構成があります。Aurora Standard は、インスタンスとストレージの料金に加えて、ストレージへの読み書きの I/O リクエストごとに課金されます。I/O が少ないワークロードに向いています。Aurora I/O-Optimized は、読み書きの I/O に課金されない代わりに、インスタンスとストレージの料金が Standard より高くなる構成で、I/O の多いワークロードで、費用を予測しやすくします。\n\n目安として、I/O の料金が Aurora のデータベース全体の費用の約 25% 以上を占める場合は、I/O-Optimized に切り替えると総費用が下がることが多いとされています。この問題は I/O の料金が約 40% を占めているため、I/O-Optimized が適しています。設定は、クラスターの変更で切り替えられ、アプリケーションの変更は不要です（切り替えは 30 日に 1 回までなどの制約があります）。\n\nキャッシュの導入には、アプリケーションの変更が必要です。Serverless v2 やリーダーの追加は、I/O の料金の構造を変えません。",
+  "explanation": "Amazon Aurora には、2つのクラスターのストレージ構成があります。Aurora Standard は、インスタンスとストレージの料金に加えて、ストレージへの読み書きの I/O リクエストごとに課金されます。I/O が少ないワークロードに向いています。Aurora I/O-Optimized は、読み書きの I/O に課金されない代わりに、インスタンスとストレージの料金が Standard より高くなる構成で、I/O の多いワークロードで、費用を予測しやすくします。\n\n目安として、I/O の料金が Aurora のデータベース全体の費用の 25% 以上を占める場合は、I/O-Optimized が適しているとされています。この問題は I/O の料金が約 40% を占めているため、I/O-Optimized が適しています。設定は、クラスターの変更で切り替えられ、アプリケーションの変更は不要です。切り替えの制約として、Standard から I/O-Optimized への変更は 30 日に 1 回までです。Standard へ戻す変更は随時できます。\n\nキャッシュの導入には、アプリケーションの変更が必要です。リーダーの追加は、インスタンスの費用を増やし、ストレージ I/O の費用を確実に削減する方法ではありません。本問では、インスタンス容量が適正化済みで需要も安定しているため、Serverless v2 による自動スケーリングの削減効果は期待しにくく、Standard の I/O 課金も残ります。",
   "keyPoints": [
     "I/O 料金が Aurora の総費用の約 25% 以上 → Aurora I/O-Optimized を検討",
     "I/O が少ない・費用を抑えたい通常のワークロードは Aurora Standard",
-    "I/O-Optimized への切り替えはアプリケーションの変更が不要"
+    "I/O-Optimized への切り替えはアプリケーションの変更が不要。Standard からの変更は 30 日に 1 回、Standard へ戻す変更は随時可能"
   ],
   "references": [
     {
-      "title": "Amazon Aurora のストレージ構成 - Amazon Aurora ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.storage-type.html"
+      "title": "Amazon Aurora のストレージ - Amazon Aurora ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html"
     },
     {
       "title": "Amazon Aurora の料金",

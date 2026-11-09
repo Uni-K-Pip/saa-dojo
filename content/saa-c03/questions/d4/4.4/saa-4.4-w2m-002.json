@@ -21,7 +21,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、東京のデータセンターから、東京の Direct Connect ロケーションへの 10 Gbps の専用接続を 1 本持っています。東京リージョンの VPC に加えて、新たにシンガポールとシドニーのリージョンの VPC にも、プライベート IP アドレスで接続する必要があります。リージョンごとに専用接続を追加で契約する費用は避けたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、東京のデータセンターから、東京の Direct Connect ロケーションへの 10 Gbps の専用接続を 1 本持っています。東京リージョンの VPC に加えて、新たにシンガポールとシドニーのリージョンの VPC にも、プライベート IP アドレスで接続する必要があります。各 VPC の CIDR は重複していません。リージョンごとに専用接続を追加で契約する費用は避けたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -31,7 +31,7 @@
     },
     {
       "id": "b",
-      "text": "Direct Connect ゲートウェイを作成して、既存の接続のプライベート仮想インターフェイスをそれに関連付ける。各リージョンの VPC の仮想プライベートゲートウェイを、Direct Connect ゲートウェイに関連付ける。",
+      "text": "Direct Connect ゲートウェイを作成し、既存の専用接続上に、そのゲートウェイを接続先とするプライベート仮想インターフェイスを作成する。各リージョンの VPC にアタッチした仮想プライベートゲートウェイを、Direct Connect ゲートウェイに関連付ける。",
       "correct": true,
       "rationale": "Direct Connect ゲートウェイを使うと、1 本の専用接続から、複数のリージョンの VPC にプライベートに接続できます。リージョンごとの専用接続の追加契約は不要です。"
     },
@@ -48,16 +48,28 @@
       "rationale": "VPC ピアリングは推移的ではなく、ピアリング先の VPC を経由して、オンプレミスからの通信を中継することはできません。"
     }
   ],
-  "explanation": "Direct Connect ゲートウェイは、Direct Connect の接続から、複数のリージョン（中国を除く）の VPC に接続できるようにする、グローバルに利用できるリソースです。プライベート仮想インターフェイスまたはトランジット仮想インターフェイスを Direct Connect ゲートウェイに関連付け、仮想プライベートゲートウェイ（またはトランジットゲートウェイ）を関連付けることで、1 本の専用接続から、複数のリージョンの VPC に接続できます。\n\nリージョンごとに専用接続を契約する必要がなくなり、接続の費用を抑えられます。ただし、Direct Connect ゲートウェイは、関連付けた VPC 間のルーティング（VPC 間の通信の中継）はしません。\n\nVPC ピアリングは、推移的なルーティング（エッジからエッジへのルーティング）に対応しません。パブリック仮想インターフェイスは、VPC のプライベート IP アドレスへの接続には使えません。",
+  "explanation": "Direct Connect ゲートウェイは、Direct Connect の接続から、複数のリージョン（中国を除く）の VPC に接続できるようにする、グローバルに利用できるリソースです。\n\n本問では、プライベート仮想インターフェイスと仮想プライベートゲートウェイを使います。Direct Connect ゲートウェイを接続先とするプライベート仮想インターフェイスを既存の専用接続上に作成し、各リージョンの VPC の仮想プライベートゲートウェイを Direct Connect ゲートウェイに関連付けます。これで、1 本の専用接続から複数のリージョンの VPC に接続でき、リージョンごとに専用接続を契約する必要がなくなり、接続の費用を抑えられます。接続する VPC の CIDR が重複しないことも条件です。\n\nTransit Gateway を使用する別の構成では、トランジット仮想インターフェイスが必要です。Transit Gateway が関連付け済みの Direct Connect ゲートウェイには、仮想プライベートゲートウェイを関連付けられないため、1 つの Direct Connect ゲートウェイで両方の構成を混在させません。\n\nDirect Connect ゲートウェイは、関連付けた VPC 間の通信の中継はしません。VPC ピアリングは、推移的なルーティング（エッジからエッジへのルーティング）に対応しません。パブリック仮想インターフェイスは、VPC のプライベート IP アドレスへの接続には使えません。",
   "keyPoints": [
-    "1 本の Direct Connect で複数リージョンの VPC にプライベート接続 → Direct Connect ゲートウェイ",
-    "Direct Connect ゲートウェイは VPC 間の通信は中継しない",
-    "VPC ピアリングは推移的ではない"
+    "1 本の Direct Connect で複数リージョンの VPC にプライベート接続 → Direct Connect ゲートウェイ＋プライベート仮想インターフェイス＋仮想プライベートゲートウェイ",
+    "Transit Gateway を使う構成ではトランジット仮想インターフェイスが必要。同じ Direct Connect ゲートウェイに両方の構成は混在させない",
+    "Direct Connect ゲートウェイは VPC 間の通信は中継しない。VPC ピアリングは推移的ではない"
   ],
   "references": [
     {
       "title": "AWS Direct Connect ゲートウェイ - AWS Direct Connect ユーザーガイド",
       "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways.html"
+    },
+    {
+      "title": "Direct Connect ゲートウェイの概要 - AWS Direct Connect ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways-intro.html"
+    },
+    {
+      "title": "仮想プライベートゲートウェイの関連付け - AWS Direct Connect ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/virtualgateways.html"
+    },
+    {
+      "title": "VPC ピアリングの基本 - Amazon VPC ピアリング",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
     }
   ],
   "lessonRefs": [
