@@ -1,0 +1,68 @@
+{
+  "id": "saa-4.3-w2m-007",
+  "exam": "SAA-C03",
+  "domain": 4,
+  "taskStatement": "4.3",
+  "knowledgeRefs": [
+    "4.3-S5",
+    "4.3-K7",
+    "4.3-K5"
+  ],
+  "services": [
+    "AWS Database Migration Service",
+    "Amazon Aurora"
+  ],
+  "qualifier": "cost",
+  "tags": [
+    "AWS DMS Serverless",
+    "レプリケーションの容量",
+    "移行の費用"
+  ],
+  "difficulty": 2,
+  "type": "single",
+  "selectCount": 1,
+  "stem": "ある企業は、オンプレミスのデータベースの継続的なデータを、AWS DMS を使って、Amazon Aurora に数か月かけて移行します。移行中のデータ量と更新の頻度は、時間帯や曜日で大きく変動します。レプリケーションインスタンスのサイズの見積もりと変更、使われていないときの無駄な費用を避けたいと考えています。最も適切な方法はどれですか。",
+  "options": [
+    {
+      "id": "a",
+      "text": "Amazon EC2 インスタンスにレプリケーションのソフトウェアをインストールして、自前で運用する。",
+      "correct": false,
+      "rationale": "ソフトウェアの構築、保守、スケーリングを自分たちで行うことになります。運用の手間が増え、容量の見積もりも必要です。"
+    },
+    {
+      "id": "b",
+      "text": "小さなレプリケーションインスタンスを作成して、ピーク時に遅延が発生しても、そのまま移行を続ける。",
+      "correct": false,
+      "rationale": "遅延が発生して、移行や切り替えのスケジュールに影響が出ます。サイズの見積もりを避けられるわけではなく、性能の問題が残ります。"
+    },
+    {
+      "id": "c",
+      "text": "AWS DMS Serverless のレプリケーションを使い、必要な容量の範囲（最小と最大）を指定して、自動でスケールさせる。",
+      "correct": true,
+      "rationale": "DMS Serverless は、レプリケーションに必要な容量を自動でプロビジョニングし、ワークロードに合わせてスケールします。インスタンスのサイズの見積もりや管理が不要で、使った分だけの課金です。"
+    },
+    {
+      "id": "d",
+      "text": "ピーク時に必要なサイズの大きなレプリケーションインスタンスを作成して、移行が終わるまで常時稼働させる。",
+      "correct": false,
+      "rationale": "ピーク以外の時間帯にも、大きなインスタンスの料金がかかります。無駄な費用を避ける要件に反します。"
+    }
+  ],
+  "explanation": "AWS Database Migration Service（AWS DMS）には、レプリケーションインスタンスを使う方式と、サーバーレスの方式があります。レプリケーションインスタンスでは、移行のワークロードに合わせて、インスタンスクラスとストレージを選び、管理します。サイズが小さいと遅延が発生し、大きいと費用が無駄になります。\n\nDMS Serverless は、レプリケーションに必要な容量を自動でプロビジョニングし、スケールする方式です。容量は DMS Capacity Units（DCU）で表され、最小と最大の DCU を指定すると、ワークロードに応じて自動で増減し、使っていない時間は最小まで下がります。インスタンスのサイズの見積もりや、手動のスケーリング、監視が不要になり、変動するワークロードの費用を抑えられます。\n\n大きなインスタンスの常時稼働は無駄が出ます。小さなインスタンスでは性能の問題が残ります。EC2 上の自前の運用は、手間が増えます。",
+  "keyPoints": [
+    "変動する移行のワークロードで DMS の容量管理を避ける → AWS DMS Serverless（DCU の最小と最大を指定）",
+    "レプリケーションインスタンスは、サイズの見積もりと管理が必要",
+    "継続的なレプリケーション（CDC）も DMS で行える"
+  ],
+  "references": [
+    {
+      "title": "AWS DMS Serverless - AWS Database Migration Service ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.html"
+    }
+  ],
+  "lessonRefs": [],
+  "pool": "mockB",
+  "needsSourceCheck": false,
+  "createdBy": "w2m",
+  "createdAt": "2026-11-08"
+}
