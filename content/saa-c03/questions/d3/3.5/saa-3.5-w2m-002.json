@@ -19,45 +19,45 @@
     "S3 のデータレイク",
     "外部テーブル"
   ],
-  "difficulty": 3,
+  "difficulty": 2,
   "type": "single",
   "selectCount": 1,
   "stem": "ある企業は、直近 3 か月の販売データを Amazon Redshift のクラスターに保存し、過去 7 年分、数百 TB のデータを Amazon S3 に Parquet 形式で保存しています。アナリストは、既存の BI ツールの SQL から、直近のデータと過去のデータを 1 つのクエリで結合して分析したいと考えています。過去のデータを Redshift のクラスターにロードすると、ストレージの費用が大きく増えるため、避けたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "AWS Glue のジョブを毎晩実行して、S3 の過去のデータを Redshift の別のテーブルに変換して、コピーする。",
+      "text": "AWS Glue のジョブを毎晩実行して、S3 の過去のデータを Amazon Redshift の別のテーブルに変換して、コピーし、そのテーブルと直近のデータを SQL で結合する。",
       "correct": false,
       "rationale": "結局、過去のデータを Redshift にロードすることになり、ストレージの費用が増えます。ETL の運用も加わります。"
     },
     {
       "id": "b",
-      "text": "AWS Glue Data Catalog に S3 のデータのテーブルを定義し、Redshift Spectrum の外部スキーマと外部テーブルを作成して、Redshift の SQL から S3 のデータを直接クエリする。",
+      "text": "AWS Glue Data Catalog に S3 の Parquet データの外部テーブルを定義し、Amazon Redshift にそのカタログのデータベースを参照する外部スキーマを作成して、Redshift Spectrum で外部・内部テーブルを SQL で結合する。",
       "correct": true,
-      "rationale": "Redshift Spectrum は、Redshift のクラスターにロードせずに、S3 のデータを直接クエリできます。外部テーブルと Redshift のテーブルを 1 つのクエリで結合でき、ストレージの費用も増えません。"
+      "rationale": "Redshift Spectrum は、Redshift のクラスターにロードせずに、S3 のデータを直接クエリできます。外部テーブルと Redshift のテーブルを 1 つのクエリで結合でき、過去データを複製するための Redshift 側の追加ストレージを回避できます。クエリ処理などの料金は別途発生します。"
     },
     {
       "id": "c",
-      "text": "過去 7 年分のデータを、COPY コマンドでクラスターにロードして、1 つのテーブルにまとめる。",
+      "text": "過去 7 年分のデータを、COPY コマンドで Amazon Redshift のクラスターにロードして、直近のデータと同じ 1 つのテーブルにまとめ、SQL で分析する。",
       "correct": false,
       "rationale": "クエリは単純になりますが、数百 TB のデータをクラスターに保存するため、ノードやストレージの費用が大きく増えます。費用の増加を避ける要件に反します。"
     },
     {
       "id": "d",
-      "text": "S3 のデータを Amazon Athena でクエリして、Redshift の結果とアナリストが手作業で突き合わせる。",
+      "text": "S3 のデータを Amazon Athena でクエリし、Redshift のクエリ結果と、アナリストが手作業で突き合わせて、BI ツールのレポートを作成する。",
       "correct": false,
-      "rationale": "1 つのクエリで結合する要件を満たしません。BI ツールからの分析が分断され、アナリストの手作業も増えます。"
+      "rationale": "Athena と Redshift を手作業で突き合わせる構成のため、1 つのクエリで結合する要件を満たしません。BI ツールからの分析が分断され、アナリストの手作業も増えます。"
     }
   ],
-  "explanation": "Amazon Redshift Spectrum は、Redshift のクラスターにデータをロードせずに、Amazon S3 のデータに対して直接 SQL クエリを実行できる機能です。S3 のデータは、AWS Glue Data Catalog（または Athena のカタログ、Hive メタストア）に定義し、Redshift で外部スキーマと外部テーブルを作成します。Parquet などの列指向の形式を使うと、読み取るデータ量が減り、費用と性能の両方に有利です。\n\nクラスターにロードしたテーブルと S3 の外部テーブルを、1 つのクエリで結合できるため、頻繁にアクセスする新しいデータは Redshift に、アクセスが少ない大量の過去のデータは S3 に置く構成で、費用を抑えつつ分析できます。BI ツールからは、通常の Redshift のテーブルのように SQL で利用できます。\n\nすべてをロードする方法や ETL でコピーする方法は、ストレージの費用が増えます。Athena との手作業での突き合わせは、1 つのクエリにできません。",
+  "explanation": "Amazon Redshift Spectrum は、Redshift のクラスターにデータをロードせずに、Amazon S3 のデータに対して直接 SQL クエリを実行できる機能です。まず、S3 のデータの外部テーブルを AWS Glue Data Catalog（または Athena のカタログ、Hive メタストア）に定義します。次に、Redshift でそのカタログのデータベースを参照する外部スキーマを作成します。Glue Data Catalog にすでにテーブルを定義してある場合は、外部スキーマを作るだけで利用でき、Redshift で同じ外部テーブルを作り直す必要はありません。Parquet などの列指向の形式を使うと、読み取るデータ量が減り、費用と性能の両方に有利です。\n\nクラスターにロードしたテーブルと S3 の外部テーブルを、1 つのクエリで結合できるため、頻繁にアクセスする新しいデータは Redshift に、アクセスが少ない大量の過去のデータは S3 に置く構成で、費用を抑えつつ分析できます。回避できるのは、過去データを複製するための Redshift 側の追加ストレージです。Spectrum のクエリ処理などの料金は別途発生します。BI ツールからは、通常の Redshift のテーブルのように SQL で利用できます。\n\nすべてをロードする方法や ETL でコピーする方法は、Redshift 側のストレージの費用が増えます。Athena との手作業での突き合わせは、手作業で結果を照合する構成のため、1 つのクエリにできず、要件を満たしません。",
   "keyPoints": [
-    "Redshift のデータと S3 のデータを 1 つの SQL で → Redshift Spectrum（外部テーブル）",
-    "新しいデータは Redshift、古い大量のデータは S3 に置いて費用を抑える",
+    "Redshift のデータと S3 のデータを 1 つの SQL で → Redshift Spectrum（Glue Data Catalog を参照する外部スキーマ）",
+    "新しいデータは Redshift、古い大量のデータは S3 に置いて、Redshift 側のストレージの費用を抑える",
     "Parquet など列指向形式でスキャン量を減らす"
   ],
   "references": [
     {
-      "title": "Amazon Redshift Spectrum を使用した外部データのクエリ - Amazon Redshift 管理ガイド",
+      "title": "Amazon Redshift Spectrum - Amazon Redshift Database Developer Guide",
       "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html"
     }
   ],

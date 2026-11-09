@@ -22,7 +22,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、東京とシンガポールの2つのリージョンの Application Load Balancer の背後で、同じ Web アプリケーションを稼働させています。Amazon Route 53 のフェイルオーバールーティングを使っていますが、DNS の TTL やクライアント側のキャッシュのために、障害時の切り替えに時間がかかり、一部のクライアントは古い IP アドレスに接続し続けます。クライアントの DNS キャッシュに依存せず、障害を検知したら正常なリージョンへ素早く切り替え、固定のエニーキャスト IP アドレスで受け付けたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、東京とシンガポールの2つのリージョンの Application Load Balancer の背後で、同じ Web アプリケーションを稼働させています。このアプリケーションは GET に加えて POST や PUT も扱います。Amazon Route 53 のフェイルオーバールーティングを使っていますが、DNS の TTL やキャッシュのために、障害時の切り替えに時間がかかり、一部のクライアントは古い IP アドレスに接続し続けます。DNS キャッシュに依存せず、障害検知後の新規接続を HTTP メソッドに依存せず正常なリージョンへ送り、固定のエニーキャスト IP アドレスで受け付けたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -32,15 +32,15 @@
     },
     {
       "id": "b",
-      "text": "AWS Global Accelerator を作成し、2つのリージョンの ALB をエンドポイントグループに登録する。ヘルスチェックで異常なエンドポイントを自動的にトラフィックから外す。",
+      "text": "標準アクセラレーターを作成し、リージョンごとにエンドポイントグループを作成して、それぞれの ALB を登録する。",
       "correct": true,
-      "rationale": "Global Accelerator は、固定のエニーキャスト IP アドレスを提供します。ヘルスチェックで異常を検知すると、DNS を使わずに、トラフィックを正常なリージョンのエンドポイントへ切り替えるため、クライアントのキャッシュに左右されません。"
+      "rationale": "Global Accelerator の標準アクセラレーターは、固定のエニーキャスト IP アドレスを提供し、エンドポイントのヘルスチェックで異常を検知すると、新規接続を正常なエンドポイントへ向けます。DNS にも HTTP メソッドにも依存しないため、クライアントのキャッシュに左右されません。"
     },
     {
       "id": "c",
       "text": "Amazon CloudFront のディストリビューションを作成して、2 つの ALB をオリジンとするオリジングループを設定し、障害時にもう一方のオリジンに切り替えさせる。",
       "correct": false,
-      "rationale": "CloudFront のオリジンフェイルオーバーは、HTTP のリクエストの失敗に応じて動作します。エニーキャスト IP アドレスの固定は提供されず、DNS ベースのクライアントの接続先も変わりません。"
+      "rationale": "CloudFront は Anycast Static IPs に対応しますが、オリジンフェイルオーバーは GET、HEAD、OPTIONS に限定され、POST や PUT を含む要件を満たしません。"
     },
     {
       "id": "d",
@@ -49,16 +49,28 @@
       "rationale": "TTL を短くしても、TTL を無視してキャッシュするクライアントやリゾルバーが残ります。固定のエニーキャスト IP アドレスも提供されません。"
     }
   ],
-  "explanation": "DNS ベースのフェイルオーバー（Route 53）は、TTL とクライアントや中間のリゾルバーのキャッシュの影響を受けます。TTL を短くしても、キャッシュの扱いはクライアント任せのため、一部のクライアントの切り替えは遅れます。\n\nAWS Global Accelerator は、2 つの固定のエニーキャスト IP アドレス（または 4 つの IP アドレス）を提供し、AWS のグローバルネットワークの最も近いエッジロケーションでトラフィックを受け付けます。エンドポイントグループ（リージョンごと）に ALB、NLB、EC2、Elastic IP を登録し、ヘルスチェックで異常を検知すると、トラフィックを正常なエンドポイントへ数十秒以内に切り替えます。クライアントが接続する IP アドレスは変わらないため、DNS のキャッシュの影響を受けません。\n\nCloudFront は主にコンテンツの配信とキャッシュのサービスで、エニーキャスト IP の固定やリージョンの切り替えには向きません。",
+  "explanation": "DNS ベースのフェイルオーバー（Route 53）は、TTL とクライアントや中間のリゾルバーのキャッシュの影響を受けます。TTL を短くしても、キャッシュの扱いはクライアント任せのため、一部のクライアントの切り替えは遅れます。\n\nAWS Global Accelerator は、固定のエニーキャスト IP アドレスを提供します。IPv4 は 2 個、デュアルスタックは IPv4 を 2 個と IPv6 を 2 個です。AWS のグローバルネットワークの最も近いエッジロケーションでトラフィックを受け付けます。リージョンごとのエンドポイントグループに ALB、NLB、EC2、Elastic IP を登録し、ヘルスチェックで異常を検知すると、新規接続を正常なエンドポイントへ向けます。クライアントが接続する IP アドレスは変わらないため、DNS のキャッシュの影響を受けません。切り替えの所要時間は一律には保証されません。また、経路が変わっても、確立済みの接続や処理中のリクエストがそのまま別リージョンへ移るわけではなく、確立済みの接続はアイドルタイムアウトまで同じエンドポイントに向けられます。\n\nCloudFront も Anycast Static IPs に対応しているため、固定 IP の有無だけでは決まりません。ただし、CloudFront のオリジンフェイルオーバーは、ビューアーのリクエストが GET、HEAD、OPTIONS の場合に限られ、POST や PUT には切り替わりません。この問題の要件には、メソッドに依存しない Global Accelerator が適しています。",
   "keyPoints": [
-    "DNS キャッシュに依存しない高速なフェイルオーバー・固定のエニーキャスト IP → AWS Global Accelerator",
+    "DNS キャッシュに依存しない新規接続の切り替え・固定のエニーキャスト IP → AWS Global Accelerator（IPv4 は 2 個、デュアルスタックは IPv4 2 個と IPv6 2 個）",
     "Route 53 は DNS ベースで、TTL とクライアントのキャッシュの影響を受ける",
-    "CloudFront はコンテンツ配信とキャッシュ、Global Accelerator は TCP/UDP のネットワーク最適化"
+    "CloudFront のオリジンフェイルオーバーは GET／HEAD／OPTIONS のみ。Global Accelerator は TCP／UDP のネットワーク最適化で、メソッドに依存しない"
   ],
   "references": [
     {
       "title": "AWS Global Accelerator とは - AWS Global Accelerator デベロッパーガイド",
       "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"
+    },
+    {
+      "title": "AWS Global Accelerator の仕組み - AWS Global Accelerator デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+    },
+    {
+      "title": "CloudFront のオリジンフェイルオーバー - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+    },
+    {
+      "title": "Anycast 静的 IP のリクエスト - Amazon CloudFront デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html"
     }
   ],
   "lessonRefs": [],
