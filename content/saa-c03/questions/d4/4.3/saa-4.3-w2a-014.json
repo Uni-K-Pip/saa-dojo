@@ -18,25 +18,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon Aurora PostgreSQL 互換エディションに移行し、Babelfish for Aurora PostgreSQL を有効にして、アプリケーションを T-SQL と SQL Server のクライアントドライバーのまま接続する。",
+      "text": "Aurora PostgreSQL 互換エディションに移行し、Babelfish を有効にして、アプリケーションを T-SQL と SQL Server のクライアントドライバーのまま接続する。",
       "correct": true,
       "rationale": "Babelfish for Aurora PostgreSQL を有効にすると、Aurora PostgreSQL が SQL Server のワイヤープロトコル（TDS）と T-SQL に対応し、SQL Server 用のアプリケーションを少ない変更で接続できます。商用のライセンス費用がかからない Aurora に移行できるので、ライセンス費用を削減できます。"
     },
     {
       "id": "b",
-      "text": "Amazon RDS for SQL Server のインスタンスクラスを小さくする。",
+      "text": "Amazon RDS for SQL Server のまま、インスタンスクラスを小さくして、使用量に合わせてインスタンスのサイズを見直し、ライセンスを含む料金を下げる。",
       "correct": false,
       "rationale": "インスタンスが小さくなれば、ライセンス費用も一部下がる場合がありますが、ライセンス費用そのものはなくなりません。商用のライセンスを使い続ける点は変わらず、削減の効果は限定的です。"
     },
     {
       "id": "c",
-      "text": "Amazon Aurora MySQL 互換エディションに移行し、T-SQL のクエリとストアドプロシージャを MySQL 向けに書き換える。",
+      "text": "Amazon Aurora MySQL 互換エディションに移行し、T-SQL のクエリとストアドプロシージャを MySQL 向けに書き換えて、アプリケーションのドライバーも MySQL 用に置き換える。",
       "correct": false,
-      "rationale": "T-SQL から MySQL への書き換えが大規模になり、アプリケーションのコードの書き換えを最小限にしたいという要件に反します。"
+      "rationale": "T-SQL から MySQL への書き換えとドライバーの置き換えが大規模になり、アプリケーションのコードの書き換えを最小限にしたいという要件に反します。"
     },
     {
       "id": "d",
-      "text": "Amazon DynamoDB に移行し、データモデルを NoSQL に設計し直す。",
+      "text": "Amazon DynamoDB に移行し、データモデルを NoSQL に設計し直して、アプリケーションのデータアクセス処理を DynamoDB の API に合わせて書き換える。",
       "correct": false,
       "rationale": "リレーショナルデータベースから NoSQL への移行は、データモデルとアプリケーションの大幅な書き換えが必要で、要件に反します。"
     }

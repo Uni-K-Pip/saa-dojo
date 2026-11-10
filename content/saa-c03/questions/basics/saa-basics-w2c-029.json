@@ -25,27 +25,27 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EFS",
+      "text": "Amazon EFS のファイルシステムを作成し、Windows の EC2 インスタンスにマウントして、SMB の共有フォルダーとして使い、複数のサーバーから同時に読み書きする。",
       "correct": false,
       "rationale": "EFS は Linux 向けのファイルストレージ（NFS）で、Windows のインスタンスでは使えません。"
     },
     {
       "id": "b",
-      "text": "Amazon FSx for Windows File Server",
+      "text": "Amazon FSx for Windows File Server のファイルシステムを作成し、SMB の共有フォルダーとして EC2 インスタンスから使う。",
       "correct": true,
       "rationale": "FSx for Windows File Server は、Windows の共有フォルダー（SMB）として使えるフルマネージドのファイルストレージです。Windows のファイルサーバーの移行に向きます。"
     },
     {
       "id": "c",
-      "text": "Amazon S3",
+      "text": "Amazon S3 のバケットを作成し、Windows の EC2 インスタンスから、SMB の共有フォルダーとして読み書きして使う。",
       "correct": false,
       "rationale": "S3 はオブジェクトストレージで、HTTP(S) の API で読み書きします。SMB の共有フォルダーとしては使えません。"
     },
     {
       "id": "d",
-      "text": "Amazon EBS",
+      "text": "Amazon EBS のボリュームを作成し、Windows の EC2 インスタンスに接続して、その上に共有フォルダーを作って使う。",
       "correct": false,
-      "rationale": "EBS は 1 台の EC2 インスタンスに接続するブロックストレージです。複数のサーバーが共有する共有フォルダーの役割は果たせません。"
+      "rationale": "EBS は EC2 インスタンスに接続するブロックストレージで、ファイル共有（SMB）の機能をもちません。共有フォルダーを使うには、ファイルサーバーを自分で構築して運用する必要があり、フルマネージドの要件を満たしません。"
     }
   ],
   "explanation": "ファイルストレージは、フォルダーとファイルの階層でデータを管理し、複数のサーバーがネットワーク経由で同時に使います。通信には、Linux では主に NFS、Windows では SMB を使います。\n\nWindows の共有フォルダー（SMB）が必要なら、Amazon FSx for Windows File Server を選びます。Amazon EFS は Linux 向けで、Windows のインスタンスでは使えません。S3 はオブジェクトストレージ、EBS は 1 台のインスタンスに接続するブロックストレージで、どちらも共有フォルダーの代わりにはなりません。",

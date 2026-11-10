@@ -14,25 +14,25 @@
   "options": [
     {
       "id": "a",
-      "text": "各サービスのログに処理時間を出力し、CloudWatch Logs Insights のクエリで集計するダッシュボードとアラームを作成する。",
+      "text": "各サービスのログに処理時間を出力するようコードを変更し、CloudWatch Logs Insights のクエリで集計するダッシュボードを自作し、しきい値を超えたらアラームで通知する。",
       "correct": false,
       "rationale": "ログ出力の追加でコードの変更が必要になり、クエリやダッシュボードも自作することになります。サービスの依存関係の自動把握や、目標に対する状態の管理、トレースへの掘り下げも自前で組む必要があります。"
     },
     {
       "id": "b",
-      "text": "Amazon CloudWatch Container Insights を有効にして、タスクの CPU・メモリのメトリクスにアラームを設定する。",
+      "text": "Amazon CloudWatch Container Insights を有効にして、ECS タスクの CPU・メモリのメトリクスを収集し、使用率が高いときにアラームで通知するよう設定する。",
       "correct": false,
       "rationale": "Container Insights が提供するのはコンテナのリソース使用状況です。サービス間の依存関係やサービスごとのレイテンシー・エラー率、レイテンシーの目標に対する状態は得られず、トレースにも掘り下げられません。"
     },
     {
       "id": "c",
-      "text": "AWS CloudTrail の証跡を Amazon Athena で分析し、遅いリクエストを定期的に調べる。",
+      "text": "AWS CloudTrail の証跡を Amazon S3 に保存して Amazon Athena で分析し、遅いリクエストを運用チームが定期的に調べる。",
       "correct": false,
       "rationale": "CloudTrail は AWS API 呼び出しの操作履歴であり、アプリケーションのリクエストのレイテンシーは含まれません。目標に対するアラームも、サービスの依存関係の把握もできません。"
     },
     {
       "id": "d",
-      "text": "Amazon CloudWatch Application Signals を有効にして Java アプリケーションを自動計装し、レイテンシーの SLO（サービスレベル目標）を作成してアラームを設定する。",
+      "text": "CloudWatch Application Signals を有効にして Java アプリケーションを自動計装し、レイテンシーの SLO（サービスレベル目標）を作成してアラームを設定する。",
       "correct": true,
       "rationale": "Application Signals は、コードを書かずにメトリクスとトレースを収集して、サービスと依存関係のマップ、呼び出し数・レイテンシー・エラー率を自動で表示します。SLO とアラームを設定でき、グラフから関連するトレースにそのまま掘り下げられます。"
     }
