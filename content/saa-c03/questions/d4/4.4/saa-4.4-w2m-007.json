@@ -23,7 +23,7 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、Transit Gateway で接続された 40 の開発用 VPC を運用しています。各 VPC の 2 つの AZ に、NAT ゲートウェイを 1 つずつ配置して、インターネットへのアウトバウンド通信を行っていますが、NAT ゲートウェイの時間料金が、大きな割合を占めています。通信量は、各 VPC で少なく、合計でも多くありません。ワークロードへのパブリック IPv4 アドレスの割り当ては禁止されています。アウトバウンド通信は時間帯を問わず必要で、計画的な通信停止は許容しません。開発用で、可用性の要件はそれほど高くありません。NAT ゲートウェイの数を減らして、費用を下げる最も適切な構成はどれですか。",
+  "stem": "ある企業は、Transit Gateway で接続された 40 の開発用 VPC を運用しています。各 VPC の 2 つの AZ に、ゾーナル型のパブリック NAT ゲートウェイを 1 つずつ配置して、インターネットへのアウトバウンド通信を行っていますが、NAT ゲートウェイの時間料金が、大きな割合を占めています。通信量は、各 VPC で少なく、合計でも多くありません。ワークロードへのパブリック IPv4 アドレスの割り当ては禁止されています。アウトバウンド通信は時間帯を問わず必要で、計画的な通信停止は許容しません。開発用で、可用性の要件はそれほど高くありません。NAT ゲートウェイの数を減らして、費用を下げる最も適切な構成はどれですか。",
   "options": [
     {
       "id": "a",
@@ -50,7 +50,7 @@
       "rationale": "ワークロードへのパブリック IPv4 アドレスの割り当てを禁止する条件に反します。割り当てた場合も、パブリック IPv4 アドレスの料金がインスタンスの数だけかかります。"
     }
   ],
-  "explanation": "NAT ゲートウェイは、時間あたりの料金と、処理したデータ量に応じた料金がかかります。VPC ごと、AZ ごとに NAT ゲートウェイを置くと、VPC が多い環境では、時間料金が大きくなります。\n\n集中型のエグレス（centralized egress）は、インターネットへのアウトバウンドの通信を、共有のエグレス用 VPC の NAT ゲートウェイに集約する構成です。各スポーク VPC のルートテーブルのデフォルトルート（0.0.0.0/0）を Transit Gateway に向け、Transit Gateway のルートテーブルで、エグレス用 VPC のアタッチメントに転送し、エグレス用 VPC の NAT ゲートウェイからインターネットへ出ます。NAT ゲートウェイの数を大幅に減らせる一方、Transit Gateway のデータ処理料金が追加されるため、通信量が多いと割高になることがあります。通信量が少ない開発環境には向いています。集約した後も、NAT ゲートウェイの時間料金とデータ処理料金、Transit Gateway のデータ処理料金、エグレス用 VPC の新しいアタッチメントの時間料金、構成に応じた AZ 間のデータ転送料金を評価します。可用性を高めるには、エグレス用 VPC の NAT ゲートウェイを、AZ ごとに置きます。\n\nVPC ピアリングは、エッジからエッジへのルーティングができません。",
+  "explanation": "NAT ゲートウェイは、時間あたりの料金と、処理したデータ量に応じた料金がかかります。VPC ごと、AZ ごとに NAT ゲートウェイを置くと、VPC が多い環境では、時間料金が大きくなります。\n\n集中型のエグレス（centralized egress）は、インターネットへのアウトバウンドの通信を、共有のエグレス用 VPC の NAT ゲートウェイに集約する構成です。各スポーク VPC のルートテーブルのデフォルトルート（0.0.0.0/0）を Transit Gateway に向け、Transit Gateway のルートテーブルで、エグレス用 VPC のアタッチメントに転送し、エグレス用 VPC の NAT ゲートウェイからインターネットへ出ます。NAT ゲートウェイの数を大幅に減らせる一方、Transit Gateway のデータ処理料金が追加されるため、通信量が多いと割高になることがあります。通信量が少ない開発環境には向いています。集約した後も、NAT ゲートウェイの時間料金とデータ処理料金、Transit Gateway のデータ処理料金、エグレス用 VPC の新しいアタッチメントの時間料金、構成に応じた AZ 間のデータ転送料金を評価します。ゾーナル型で可用性を高めるには、エグレス用 VPC の各 AZ に NAT ゲートウェイを配置します。リージョナル型では単一の NAT ゲートウェイが複数 AZ に展開するため、リソース数だけで費用削減を判断せず、利用 AZ と処理量に応じた料金を比較します。\n\nVPC ピアリングは、エッジからエッジへのルーティングができません。",
   "keyPoints": [
     "多数の VPC の NAT ゲートウェイの費用削減（通信量が少ない場合）→ 集中型のエグレス（Transit Gateway ＋共有の NAT ゲートウェイ）",
     "通信量が多いと、Transit Gateway のデータ処理料金が増えて割高になる場合がある",
@@ -58,8 +58,16 @@
   ],
   "references": [
     {
-      "title": "集中型のエグレス - 複数の VPC を持つスケーラブルで安全なネットワーク設計",
-      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-egress-to-internet.html"
+      "title": "NAT ゲートウェイによる集中型 IPv4 エグレス - 複数の VPC を持つスケーラブルで安全なネットワーク設計",
+      "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/using-nat-gateway-for-centralized-egress.html"
+    },
+    {
+      "title": "リージョナル NAT ゲートウェイ - Amazon VPC ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+    },
+    {
+      "title": "Amazon VPC の料金",
+      "url": "https://aws.amazon.com/vpc/pricing/"
     }
   ],
   "lessonRefs": [

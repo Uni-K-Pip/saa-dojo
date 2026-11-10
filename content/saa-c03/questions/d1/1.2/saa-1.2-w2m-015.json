@@ -11,7 +11,8 @@
     "Amazon Detective",
     "Amazon GuardDuty",
     "Amazon Macie",
-    "Amazon Inspector"
+    "Amazon Inspector",
+    "AWS CloudTrail"
   ],
   "qualifier": "operational",
   "tags": [
@@ -22,19 +23,19 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "Amazon GuardDuty が、本番アカウントの IAM ロールの認証情報が、外部から不正に使われた疑いを検出しました。セキュリティ担当者は、侵害された認証情報で、最初にどの API が呼び出され、どのリソースが影響を受け、時系列で何が起きたのかを調べたいと考えています。AWS CloudTrail のログや VPC フローログを個別に集計する作業は避けて、グラフや時系列で視覚的に調査したいと考えています。最も適切なサービスはどれですか。",
+  "stem": "Amazon GuardDuty が、本番アカウントの IAM ロールの認証情報が、外部から不正に使われた疑いを検出しました。対象アカウントでは、調査対象期間より前から Amazon Detective を有効にし、必要なデータを収集しています。セキュリティ担当者は、関連する API 呼び出し、ロールセッション、IP アドレスの活動と時間的な変化を調べ、影響範囲を絞り込みたいと考えています。AWS CloudTrail のログや VPC フローログを個別に集計する作業は避けて、グラフや時系列で視覚的に調査したいと考えています。最も適切なサービスはどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "AWS Security Hub で GuardDuty の検出結果を集約し、重要度で並べ替えて、対応の優先度をダッシュボードで確認して担当者に割り当てる。",
+      "text": "AWS Security Hub CSPM で GuardDuty の検出結果を集約し、重要度で並べ替えて、対応の優先度をダッシュボードで確認して担当者に割り当てる。",
       "correct": false,
-      "rationale": "Security Hub は検出結果の集約と優先度の確認には役立ちますが、リソースのアクティビティを時系列で調査する機能は主目的ではありません。"
+      "rationale": "AWS Security Hub CSPM は検出結果の集約と優先度の確認には役立ちますが、ロールや IP アドレスのアクティビティを時系列で調査する機能は主目的ではありません。"
     },
     {
       "id": "b",
       "text": "Amazon Detective で GuardDuty の検出結果から調査を始め、IAM ロールや関連する IP アドレスの動作を時系列で見る。",
       "correct": true,
-      "rationale": "Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で収集・関連付けて、グラフで可視化するサービスです。検出結果の原因の調査に向いています。"
+      "rationale": "Detective は、有効化したあとに収集した CloudTrail、VPC フローログ、GuardDuty の検出結果などを関連付けて、グラフで可視化するサービスです。IAM ロールやロールセッション、IP アドレスの活動を時系列で調べられるため、検出結果の原因の調査と影響範囲の絞り込みに向いています。"
     },
     {
       "id": "c",
@@ -44,21 +45,33 @@
     },
     {
       "id": "d",
-      "text": "Amazon Macie で、S3 バケットのデータを調査して、機密データの有無と、バケットへのアクセスの履歴を確認して報告する。",
+      "text": "AWS CloudTrail Lake のイベントデータストアに SQL クエリを実行して、対象ロールの API 呼び出しを抽出し、時間順に並べて独自に分析する。",
       "correct": false,
-      "rationale": "Macie は、S3 内の機密データを検出・分類するサービスです。IAM ロールの認証情報の不正使用の調査には使いません。"
+      "rationale": "CloudTrail Lake でも API 呼び出しを SQL で分析できますが、問題文が避けたい個別の集計作業を伴います。ロールセッションや IP アドレスの関係をグラフと時系列で可視化する仕組みも、自前で用意することになります。"
     }
   ],
-  "explanation": "AWS のセキュリティサービスは、役割が異なります。Amazon GuardDuty は、脅威を検出するサービスです。Amazon Inspector は、脆弱性を評価します。Amazon Macie は、S3 の機密データを検出します。AWS Security Hub は、検出結果を集約して態勢を管理します。\n\nAmazon Detective は、検出された問題の根本原因を調査するためのサービスです。AWS CloudTrail のログ、VPC フローログ、EKS の監査ログ、GuardDuty の検出結果などのデータを自動で収集し、機械学習、統計分析、グラフ理論を使って、リソース（IAM ロール、IP アドレス、EC2 インスタンスなど）の動作を時系列で関連付けて可視化します。GuardDuty や Security Hub の検出結果から、Detective の調査に直接移動できます。\n\nそのため、「検出された後の原因調査」には Detective が適しています。",
+  "explanation": "AWS のセキュリティサービスは、役割が異なります。Amazon GuardDuty は、脅威を検出するサービスです。Amazon Inspector は、脆弱性を評価します。Amazon Macie は、S3 の機密データを検出します。AWS Security Hub CSPM は、検出結果を集約して態勢を管理します。\n\nAmazon Detective は、検出された問題の根本原因を調査するためのサービスです。基本のデータソースとして、AWS CloudTrail のログ、VPC フローログ、GuardDuty の検出結果を自動で収集します。Detective は有効にしたあとに収集したデータが対象で、有効にする前の期間は遡って調べられません。EKS 監査ログなどは、有効にした場合に取り込まれるオプションのデータソースです。これらのデータから、機械学習、統計分析、グラフ理論を使って、リソース（IAM ロール、ロールセッション、IP アドレス、EC2 インスタンスなど）の動作を時系列で関連付けて可視化します。GuardDuty や AWS Security Hub CSPM の検出結果から、Detective の調査に直接移動できます。\n\n本問では、調査対象期間より前から Detective が有効で、必要なデータを収集しているため、検出後の原因調査と影響範囲の絞り込みには Detective が適しています。CloudTrail Lake での独自の分析は、問題文が避けたい個別の集計作業を伴います。",
   "keyPoints": [
-    "検出結果の根本原因を可視化して調査 → Amazon Detective",
-    "脅威の検出は GuardDuty、脆弱性は Inspector、機密データは Macie、集約は Security Hub",
-    "Detective は CloudTrail・フローログなどを自動で収集して関連付ける"
+    "検出結果の根本原因を可視化して調査 → Amazon Detective（有効化したあとに収集したデータが対象）",
+    "脅威の検出は GuardDuty、脆弱性は Inspector、機密データは Macie、集約は AWS Security Hub CSPM",
+    "Detective は CloudTrail・VPC フローログ・GuardDuty の検出結果を自動で収集して関連付ける。EKS 監査ログはオプションのデータソース"
   ],
   "references": [
     {
+      "title": "Detective の動作行列グラフで使用されるソースデータ - Amazon Detective ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+    },
+    {
+      "title": "動作グラフのデータ構造の概要 - Amazon Detective ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/detective/latest/userguide/graph-data-structure-overview.html"
+    },
+    {
       "title": "Amazon Detective とは - Amazon Detective 管理ガイド",
       "url": "https://docs.aws.amazon.com/detective/latest/adminguide/what-is-detective.html"
+    },
+    {
+      "title": "AWS Security Hub CSPM とは - AWS Security Hub ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
     }
   ],
   "lessonRefs": [

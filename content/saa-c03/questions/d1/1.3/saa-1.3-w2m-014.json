@@ -22,13 +22,13 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、東京リージョンで運用している Web アプリケーションの前に、Amazon CloudFront を配置し、独自ドメイン www.example.com で HTTPS 配信します。ドメインは Amazon Route 53 で管理しています。証明書の取得と更新を、手作業なしで自動化したいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、東京リージョンで運用している Web アプリケーションの前に、Amazon CloudFront を配置し、独自ドメイン www.example.com で HTTPS 配信します。ドメインは Amazon Route 53 で管理しています。初期設定後は、証明書の更新と CloudFront への反映を手作業なしで行い、独自の更新処理の運用も避けたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
       "text": "東京リージョンの ACM で DNS 検証の証明書をリクエストし、Route 53 に検証用レコードを作成して、CloudFront に関連付ける。",
       "correct": false,
-      "rationale": "CloudFront で使える ACM の証明書は、us-east-1 リージョンのものだけです。東京リージョンの証明書は、CloudFront に関連付けられません。"
+      "rationale": "CloudFront でビューアーとの通信に使う ACM の証明書は、us-east-1 リージョンのものだけです。東京リージョンの証明書は、CloudFront に関連付けられません。"
     },
     {
       "id": "b",
@@ -40,20 +40,20 @@
       "id": "c",
       "text": "us-east-1 の ACM で証明書をリクエストし、DNS 検証用のレコードを Route 53 に作成して、CloudFront に関連付ける。",
       "correct": true,
-      "rationale": "CloudFront で使う ACM の証明書は、us-east-1 リージョンで作成する必要があります。DNS 検証を使えば、更新も自動で行われます。"
+      "rationale": "CloudFront でビューアーとの通信に使う ACM の証明書は、us-east-1 リージョンで作成する必要があります。DNS 検証のレコードを残し、証明書を CloudFront で使っていれば、更新も自動で行われます。"
     },
     {
       "id": "d",
       "text": "外部の認証局で取得した証明書を us-east-1 の ACM にインポートして、CloudFront のディストリビューションに関連付けて配信する。",
       "correct": false,
-      "rationale": "インポートした証明書は、ACM では自動更新されません。有効期限が切れる前に、手作業で更新して再インポートする必要があります。"
+      "rationale": "インポートした証明書は、ACM のマネージド更新の対象外です。有効期限が切れる前に、利用者が更新と再インポートの手順、またはその自動化を別途管理する必要があります。"
     }
   ],
-  "explanation": "AWS Certificate Manager（ACM）は、パブリックな SSL/TLS 証明書を無料でプロビジョニングし、管理するサービスです。ACM の証明書は、リージョンのリソースですが、Amazon CloudFront で使う証明書は、バージニア北部（us-east-1）リージョンで作成する必要があります。ALB や API Gateway のリージョナルエンドポイントでは、そのリソースと同じリージョンの証明書を使います。\n\n証明書の所有の検証には、DNS 検証と E メール検証があります。DNS 検証では、ACM が指定する CNAME レコードをドメインの DNS に追加します。Route 53 で管理しているドメインなら、ACM のコンソールからワンクリックでレコードを作成できます。レコードが存在する限り、ACM は証明書を自動で更新します。E メール検証は、更新のときに承認が必要になることがあります。外部からインポートした証明書は、ACM が自動更新しません。",
+  "explanation": "AWS Certificate Manager（ACM）は、SSL/TLS 証明書をプロビジョニングし、管理するサービスです。CloudFront などの統合サービスで使う、エクスポート不可の ACM パブリック証明書には、追加料金がかかりません。ACM の証明書は、リージョンのリソースですが、ビューアーと Amazon CloudFront の間で使う証明書は、バージニア北部（us-east-1）リージョンで作成する必要があります。ALB や API Gateway のリージョナルエンドポイント、およびオリジン側の ALB では、そのリソースと同じリージョンの証明書を使います。\n\n証明書の所有の検証には、DNS 検証と E メール検証があります。DNS 検証では、ACM が指定する CNAME レコードをドメインの DNS に追加します。Route 53 で管理しているドメインなら、ACM のコンソールからワンクリックでレコードを作成できます。ACM は、更新の時期に、証明書が CloudFront などの AWS のサービスで使用中であること、および必要な検証用の CNAME レコードがパブリック DNS から参照できることを確認し、条件を満たしていれば自動で更新します。更新後も ARN は変わらないため、CloudFront への関連付けはそのまま使えます。E メール検証は、更新のときに承認が必要になることがあります。外部からインポートした証明書は、ACM のマネージド更新の対象外で、更新と再インポートを利用者側で管理する必要があります。",
   "keyPoints": [
-    "CloudFront の ACM 証明書は us-east-1 で作成",
-    "自動更新するなら DNS 検証（検証用レコードを残す）",
-    "ACM にインポートした証明書は自動更新されない"
+    "CloudFront でビューアーとの通信に使う ACM 証明書は us-east-1 で作成",
+    "自動更新するなら DNS 検証。証明書を CloudFront などで使用中にし、検証用 CNAME をパブリック DNS から参照できる状態に保つ",
+    "ACM にインポートした証明書はマネージド更新の対象外"
   ],
   "references": [
     {
@@ -63,6 +63,14 @@
     {
       "title": "CloudFront で HTTPS を使用するための要件",
       "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html"
+    },
+    {
+      "title": "DNS 検証されたドメインの更新 - AWS Certificate Manager ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/dns-renewal-validation.html"
+    },
+    {
+      "title": "AWS Certificate Manager の料金",
+      "url": "https://aws.amazon.com/certificate-manager/pricing/"
     }
   ],
   "lessonRefs": [

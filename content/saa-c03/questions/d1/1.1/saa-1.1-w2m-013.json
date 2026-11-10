@@ -20,7 +20,7 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、GitHub Actions のワークフローから AWS にアプリケーションをデプロイしています。現在は、IAM ユーザーのアクセスキーを GitHub のシークレットに保存しています。長期の認証情報をなくして、特定のリポジトリの特定のブランチのワークフローだけが、デプロイ用の IAM ロールを使えるようにしたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、GitHub Actions のワークフローから AWS にアプリケーションをデプロイしています。現在は、IAM ユーザーのアクセスキーを GitHub のシークレットに保存しています。長期の認証情報をなくして、特定のリポジトリの特定のブランチのワークフローだけが、デプロイ用の IAM ロールを使えるようにしたいと考えています。対象のジョブでは GitHub Environments を使用せず、既定の sub 形式を使用します。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
@@ -32,7 +32,7 @@
       "id": "b",
       "text": "IAM に GitHub の OIDC ID プロバイダーを登録し、デプロイ用ロールの信頼ポリシーの条件で、リポジトリとブランチを指定する。",
       "correct": true,
-      "rationale": "OIDC フェデレーションで、GitHub が発行するトークンを使って、IAM ロールを引き受けられます。信頼ポリシーの条件で、リポジトリとブランチを限定でき、長期のアクセスキーが不要です。"
+      "rationale": "OIDC フェデレーションで、GitHub が発行するトークンを使って IAM ロールを引き受けられます。信頼ポリシーで aud を sts.amazonaws.com、sub を repo:ORG/REPO:ref:refs/heads/BRANCH に StringEquals で限定でき、長期のアクセスキーが不要です。"
     },
     {
       "id": "c",
@@ -44,16 +44,20 @@
       "id": "d",
       "text": "IAM ユーザーに MFA を設定して、ワークフローの実行時に、担当者が MFA コードを入力し、sts:GetSessionToken で認証情報を取得する。",
       "correct": false,
-      "rationale": "自動化されたワークフローで、MFA コードの人手による入力を前提にすると、デプロイの自動化が成り立ちません。長期のアクセスキーも残ります。"
+      "rationale": "sts:GetSessionToken の呼び出しには、IAM ユーザーの長期アクセスキーが必要で、長期の認証情報が残ります。取得した一時的な認証情報でも、リポジトリとブランチの制限は実現できません。"
     }
   ],
-  "explanation": "GitHub Actions のようなサードパーティの CI/CD のサービスが AWS にアクセスするときは、OIDC フェデレーションを使うと、長期のアクセスキーを保存せずに済みます。\n\n手順は次のとおりです。(1) IAM に OIDC ID プロバイダー（GitHub の場合は token.actions.githubusercontent.com）を登録する。(2) デプロイ用の IAM ロールを作成し、信頼ポリシーで、そのプロバイダーを Principal にして、sts:AssumeRoleWithWebIdentity を許可する。(3) 信頼ポリシーの Condition で、トークンの sub（リポジトリ、ブランチ、環境など）と aud を指定して、使えるワークフローを限定する。(4) ワークフローが、トークンを使ってロールを引き受け、一時的な認証情報を取得する。\n\nキーのローテーションは長期の認証情報の管理を楽にするだけです。MFA は人の操作を前提にします。未認証のアクセスは、誰でも使えるためセキュリティ上、不適切です。",
+  "explanation": "GitHub Actions のようなサードパーティの CI/CD のサービスが AWS にアクセスするときは、OIDC フェデレーションを使うと、長期のアクセスキーを保存せずに済みます。\n\n手順は次のとおりです。(1) IAM に OIDC ID プロバイダー（GitHub の場合は token.actions.githubusercontent.com）を登録する。(2) デプロイ用の IAM ロールを作成し、信頼ポリシーで、そのプロバイダーを Principal にして、sts:AssumeRoleWithWebIdentity を許可する。(3) 信頼ポリシーの Condition で、token.actions.githubusercontent.com:aud を sts.amazonaws.com に、token.actions.githubusercontent.com:sub を repo:ORG/REPO:ref:refs/heads/BRANCH に、StringEquals で限定する。なお、GitHub Environments を使うと sub は環境を識別する形式になるため、ブランチ形式の条件をそのまま使うことはできません。(4) ワークフローが、トークンを使ってロールを引き受け、一時的な認証情報を取得する。\n\nキーのローテーションは長期の認証情報の管理を楽にするだけです。sts:GetSessionToken は長期アクセスキーで呼び出す必要があり、長期の認証情報が残る上に、リポジトリやブランチの制限もできません。未認証のアクセスは、誰でも使えるためセキュリティ上、不適切です。",
   "keyPoints": [
     "CI/CD から AWS へ長期キーなしでアクセス → IAM の OIDC ID プロバイダー＋ロールの信頼ポリシーの条件（sub）",
     "限定は信頼ポリシーの Condition（リポジトリ／ブランチ）で行う",
-    "自動化には人の操作を前提とする認証は使えない"
+    "GetSessionToken で一時認証情報を取得しても、呼び出し元の長期アクセスキーは不要にならない"
   ],
   "references": [
+    {
+      "title": "OIDC フェデレーション用のロールの作成 - AWS IAM ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html"
+    },
     {
       "title": "OpenID Connect (OIDC) ID プロバイダーの作成 - AWS IAM ユーザーガイド",
       "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"

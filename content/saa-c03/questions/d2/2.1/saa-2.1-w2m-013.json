@@ -26,30 +26,30 @@
   "options": [
     {
       "id": "a",
-      "text": "Lambda 関数の URL を有効にして、認証タイプを NONE にし、CORS は関数 URL の設定で有効にする。Cognito ユーザープールの JWT は、関数のコードで検証して認可する。",
+      "text": "Lambda 関数の URL を有効にして、認証タイプを NONE にし、CORS は関数 URL の設定で有効にする。Cognito ユーザープールの JWT は、関数のコードで検証して認可する。API Gateway は使わない。",
       "correct": false,
       "rationale": "関数内で JWT を検証するコードが必要になり、独自の認証コードを実装しない要件を満たしません。"
     },
     {
       "id": "b",
-      "text": "Amazon API Gateway の REST API を作成して、Lambda プロキシ統合と、Cognito ユーザープールのオーソライザーを設定し、CORS も有効にする。",
+      "text": "Amazon API Gateway の REST API を作成して、Lambda プロキシ統合と、Cognito ユーザープールのオーソライザーを設定し、CORS で必要なオリジン、メソッド、Authorization ヘッダーを許可して、ステージにデプロイする。",
       "correct": false,
       "rationale": "要件は満たせますが、使用量プランや API キーなどの機能を使わないのであれば、必要な機能を備えた HTTP API のほうが、API 呼び出しの料金を抑えられます。"
     },
     {
       "id": "c",
-      "text": "Amazon API Gateway の HTTP API に Lambda プロキシ統合を設定し、Amazon Cognito ユーザープールを発行者とする JWT オーソライザーを設定する。",
+      "text": "Amazon API Gateway の HTTP API に Lambda プロキシ統合を設定し、Cognito ユーザープールを発行者とする JWT オーソライザーを設定する。CORS 設定で、必要なオリジン、メソッド、ヘッダーを許可する。",
       "correct": true,
       "rationale": "HTTP API は、REST API より低価格で提供される、機能を絞った API です。Lambda のプロキシ統合、JWT オーソライザー、CORS に対応しており、Amazon Cognito ユーザープールを発行者として設定すれば、組み込みの認証機能で要件を満たせます。"
     },
     {
       "id": "d",
-      "text": "Amazon API Gateway の WebSocket API を作成して、ルートごとに Lambda 関数を呼び出し、クライアントとの双方向の接続を維持する。",
+      "text": "Amazon API Gateway の WebSocket API を作成して、ルートごとに Lambda 関数を呼び出し、$connect ルートで接続を受け付けて、クライアントとの双方向の持続的な接続を維持し、メッセージの種類ごとにルートを分ける。",
       "correct": false,
-      "rationale": "WebSocket API は、双方向のリアルタイム通信の用途のものです。シンプルなリクエストとレスポンスの API には、向いていません。"
+      "rationale": "WebSocket API には HTTP API のような組み込みの JWT オーソライザーがなく、この構成では Cognito ユーザープールの JWT 検証の要件を満たしません。また、双方向の持続的な接続も要求されていません。"
     }
   ],
-  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低価格の API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Amazon Cognito ユーザープールなど、OIDC に対応したプロバイダーを発行者として設定）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nこの問題は、JWT の検証に組み込みの認証機能を使い、独自の認証コードは実装しないという条件です。その条件で、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が費用と性能の面で最も適しています。Lambda の関数 URL はエンドポイント自体に追加料金がなく CORS にも対応しますが、認証は IAM か認証なしの選択で、Cognito の JWT の検証は関数のコードで実装することになります。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用です。",
+  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低価格の API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Amazon Cognito ユーザープールなど、OIDC に対応したプロバイダーを発行者として設定）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nこの問題は、JWT の検証に組み込みの認証機能を使い、独自の認証コードは実装しないという条件です。その条件で、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が費用と性能の面で最も適しています。Lambda の関数 URL はエンドポイント自体に追加料金がなく CORS にも対応しますが、認証は IAM か認証なしの選択で、Cognito の JWT の検証は関数のコードで実装することになります。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用で、HTTP API のような組み込みの JWT オーソライザーはありません。",
   "keyPoints": [
     "シンプルな API で、組み込みの JWT 認証を使い低価格に抑えたい → API Gateway の HTTP API（JWT オーソライザー対応）",
     "使用量プラン・API キー・WAF・キャッシュ・リクエストの検証が必要 → REST API",

@@ -25,33 +25,33 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスに Apache Kafka をインストールして、複数のブローカーのクラスターを複数の AZ に自分で構築し、運用する。",
+      "text": "Amazon EC2 インスタンスに Apache Kafka をインストールして、複数のブローカーのクラスターを複数の AZ に自分で構築し、パッチ適用や障害時の置き換えも含めて、すべて自分たちで運用する。",
       "correct": false,
       "rationale": "互換性は高いですが、ブローカーのパッチ適用や障害時の置き換えを自分たちで運用します。運用の手間を減らす要件に反します。"
     },
     {
       "id": "b",
-      "text": "Amazon Kinesis Data Streams のストリームを作成して、数十のアプリケーションを Kinesis の API を使うように書き換え、シャード数も設計する。",
+      "text": "Amazon Kinesis Data Streams のストリームを作成して、数十のアプリケーションを Kinesis の API を使うように書き換え、必要なシャード数も設計して、キャパシティの調整も運用する。",
       "correct": false,
       "rationale": "Kinesis Data Streams は、Kafka とは API が異なります。数十のアプリケーションの書き換えが必要になり、大きなコード変更を避ける要件に反します。"
     },
     {
       "id": "c",
-      "text": "Amazon SQS の標準キューを作成して、アプリケーションをキューへの送信と受信を行う処理に書き換え、保持期間を延ばし、デッドレターキューも設定する。",
+      "text": "Amazon SQS の標準キューを作成して、アプリケーションをキューへの送信と受信を行う処理に書き換え、保持期間を延ばし、デッドレターキューも設定して、失敗した処理の再実行にも備える。",
       "correct": false,
       "rationale": "SQS はメッセージキューで、Kafka のストリーミングやログの保持、Kafka Connect や Kafka Streams の機能の代わりにはなりません。書き換えも大きくなります。"
     },
     {
       "id": "d",
-      "text": "Amazon Managed Streaming for Apache Kafka（Amazon MSK）のクラスターを作成し、既存のクライアントの接続先を変更する。",
+      "text": "Amazon Managed Streaming for Apache Kafka（Amazon MSK）を利用し、必要なネットワーク・認証設定とデータ移行を行ったうえで、既存クライアントの接続設定を変更する。",
       "correct": true,
-      "rationale": "MSK は、Apache Kafka のマネージドサービスで、Kafka の API、Kafka Connect、Kafka Streams がそのまま使えます。ブローカーのパッチ適用や障害時の置き換えは、サービスが行います。"
+      "rationale": "MSK は、Apache Kafka のマネージドサービスで、Kafka の API と互換性があります。互換性のある既存クライアントや Kafka Connect、Kafka Streams を活用できます。ブローカーのパッチ適用や障害時の置き換えは、サービスが行います。"
     }
   ],
-  "explanation": "Amazon MSK は、Apache Kafka を使ったストリーミングデータのアプリケーションを構築・実行できる、完全マネージドのサービスです。Apache Kafka のオープンソースのバージョンを実行しているため、既存のクライアント、Kafka Connect、Kafka Streams、各種ツールを、ほぼ変更せずに使えます。ブローカーとコントロールプレーンの運用（プロビジョニング、パッチ適用、障害時の置き換え、複数の AZ への配置）は、サービスが行います。\n\nKinesis Data Streams も、AWS のマネージドなストリーミングサービスですが、独自の API を持つため、Kafka のアプリケーションは書き換えが必要です。Kafka を使う既存資産がある場合や、Kafka のエコシステムが必要な場合は MSK を、AWS ネイティブで運用が少ない構成を新規に作る場合は Kinesis を選ぶのが一般的です。SQS は、ストリーミングのサービスではありません。",
+  "explanation": "Amazon MSK は、Apache Kafka を使ったストリーミングデータのアプリケーションを構築・実行できる、完全マネージドのサービスです。Apache Kafka のオープンソースのバージョンを実行しているため、互換性のある既存のクライアント、Kafka Connect、Kafka Streams、各種ツールを、大きなコード変更なしに活用できます。ブローカーとコントロールプレーンの運用（プロビジョニング、パッチ適用、障害時の置き換え、複数の AZ への配置）は、サービスが行います。ただし、実際の移行では、接続先の変更に加え、ネットワークや認証の設定、既存データや状態の移行も別途必要です。\n\nKinesis Data Streams も、AWS のマネージドなストリーミングサービスですが、独自の API を持つため、Kafka のアプリケーションは書き換えが必要です。Kafka 互換性が不要で、Amazon Kinesis Data Streams の API や運用モデルが要件に合う場合は、同サービスも候補となります。SQS は、ストリーミングのサービスではありません。",
   "keyPoints": [
     "Kafka の API・エコシステムを使うアプリの移行 → Amazon MSK",
-    "AWS ネイティブのストリーミングを新規に構築 → Kinesis Data Streams",
+    "Kafka 互換性が不要で、Kinesis Data Streams の API や運用モデルが要件に合う場合は同サービスも候補となる",
     "SQS はメッセージキュー。ストリームのログ保持や再読み取りには向かない"
   ],
   "references": [

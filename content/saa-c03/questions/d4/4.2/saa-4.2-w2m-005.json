@@ -25,39 +25,43 @@
   "options": [
     {
       "id": "a",
-      "text": "共有テナンシーのオンデマンドインスタンスを起動して、インスタンスにライセンスを適用し、License Manager で台数を管理する。",
+      "text": "共有テナンシーのオンデマンドインスタンスを起動し、License Manager でソケットまたはコア単位のライセンスを作成して、ハードリミットを設定し、インスタンスに関連付ける。",
       "correct": false,
       "rationale": "共有のハードウェア上では、物理ソケットとコアを特定できず、ソケット／コア単位のライセンスの持ち込みの要件を満たせません。"
     },
     {
       "id": "b",
-      "text": "共有テナンシーのスポットインスタンスで起動して、ライセンスの費用を抑え、License Manager で使用数を追跡する。",
+      "text": "共有テナンシーのスポットインスタンスで起動して費用を抑え、License Manager でライセンスを作成し、ハードリミットを設定して、インスタンスの使用数を追跡する。",
       "correct": false,
       "rationale": "スポットは、割引の購入オプションで、ライセンスの持ち込みの要件を満たす仕組みではありません。中断されることもあります。"
     },
     {
       "id": "c",
-      "text": "EC2 の Dedicated Hosts を購入して、インスタンスを起動し、AWS License Manager で使用状況を管理する。",
+      "text": "EC2 の Dedicated Hosts を割り当てて起動し、License Manager でソケットまたはコア単位のライセンスを作成して、保有数とハードリミットを設定し、関連付ける。",
       "correct": true,
-      "rationale": "Dedicated Hosts は、物理サーバーを専有できる購入オプションで、ソケットとコアの数が可視化され、ライセンス持ち込みに使えます。License Manager で、使用状況の追跡と制限ができます。"
+      "rationale": "Dedicated Hosts は物理サーバーを専有でき、ソケットとコアの数を確認できるため、物理ソケット・コア単位のライセンス管理と報告に使えます。License Manager でハードリミットを設定すると、追跡だけでなく、上限を超える起動も防げます。"
     },
     {
       "id": "d",
-      "text": "Dedicated Instances を起動して、専有のハードウェアで実行し、License Manager でライセンスの使用状況を追跡する。",
+      "text": "Dedicated Instances を起動して専有のハードウェアで実行し、License Manager でライセンスを作成して、ハードリミットを設定し、使用数を追跡して上限超過を防ぐ。",
       "correct": false,
       "rationale": "Dedicated Instances は、専有のハードウェアですが、物理ソケットとコアの可視性やインスタンスの配置の制御がありません。ライセンスの報告の要件を満たしません。"
     }
   ],
-  "explanation": "ソケット単位、コア単位、仮想 CPU 単位などのライセンスを持ち込む（BYOL）場合は、物理サーバーの構成を特定できる必要があります。EC2 の Dedicated Hosts は、自分の専用の物理サーバーを提供し、物理ソケット、コア、インスタンスの配置を可視化・制御できるため、ライセンスの持ち込みに使えます。ホストの上でインスタンスの種類やサイズを組み合わせて起動でき、ホストのリソースを監視できます。\n\nAWS License Manager は、ライセンスの使用を追跡し、ライセンスのルールを定義して、ライセンスの上限を超える起動を防げます。Dedicated Hosts 向けには、ホストリソースグループによる自動のホスト割り当ても可能です。\n\nDedicated Instances は専有ハードウェアですが、ソケットやコアの可視性がありません。共有テナンシーは、物理構成を特定できません。スポットは、ライセンスの持ち込みの手段ではありません。",
+  "explanation": "本問のように、物理ソケット数・物理コア数に基づくライセンス管理と報告が必要な場合は、Amazon EC2 Dedicated Hosts を使用します。vCPU 単位の BYOL で常に Dedicated Hosts が必要になるわけではなく、利用できるテナンシーはライセンス条件にも依存します。Dedicated Hosts は自分専用の物理サーバーで、物理ソケット、コア、インスタンスの配置を可視化・制御できます。ホストの上でインスタンスの種類やサイズを組み合わせて起動でき、ホストのリソースを監視できます。\n\nAWS License Manager では、ソケットまたはコア単位のセルフマネージドライセンスを作成し、対象のリソースに関連付けて、保有しているライセンス数を設定します。このとき Enforce license limit（ハードリミット）を有効にすると、上限を超えるデプロイが阻止されます。ハードリミットを設定しない場合は、上限を超えても通知されるだけのソフトリミットとなり、使用状況の追跡にとどまります。Dedicated Hosts 向けには、ホストリソースグループによる自動のホスト割り当ても可能です。\n\nDedicated Instances は専有ハードウェアですが、ソケットやコアの可視性がなく、BYOL は一部のライセンスに限られます。共有テナンシーは、物理構成を特定できません。スポットは、ライセンスの持ち込みの手段ではありません。",
   "keyPoints": [
-    "ソケット／コア単位のライセンスの持ち込み → EC2 Dedicated Hosts＋AWS License Manager",
-    "Dedicated Instances は専有だが、ソケット／コアの可視性がない",
-    "共有テナンシーでは物理構成を特定できない"
+    "物理ソケット／コア単位のライセンスの持ち込み → EC2 Dedicated Hosts＋AWS License Manager",
+    "License Manager のハードリミット（Enforce license limit）で上限超過の起動を防ぐ。ソフトリミットは通知のみ",
+    "Dedicated Instances は専有だが、ソケット／コアの可視性がない。共有テナンシーでは物理構成を特定できない"
   ],
   "references": [
     {
       "title": "Amazon EC2 Dedicated Hosts - Amazon EC2 ユーザーガイド",
       "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html"
+    },
+    {
+      "title": "AWS License Manager でのセルフマネージドライセンスの作成",
+      "url": "https://docs.aws.amazon.com/license-manager/latest/userguide/create-license-configuration.html"
     },
     {
       "title": "AWS License Manager とは",

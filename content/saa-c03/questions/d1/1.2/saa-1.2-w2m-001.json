@@ -23,38 +23,38 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、VPC のプライベートサブネットで動く Amazon EC2 インスタンスから、TCP 443 の HTTPS で api.partner.example.com と updates.example.net（およびそのサブドメイン）だけに通信する要件があります。クライアントは接続先の正しい SNI を送信します。この 2 つ以外のインターネット向け通信は、SNI を持たない IP アドレス直接指定の通信も含めて拒否したいと考えています。宛先の IP アドレスは頻繁に変わります。ドメイン名で許可リストを管理できる、運用負荷の低い構成はどれですか。",
+  "stem": "ある企業は、VPC のプライベートサブネットで動く Amazon EC2 インスタンスから、TCP 443 の HTTPS で api.partner.example.com と updates.example.net（およびそのサブドメイン）だけに通信する要件があります。クライアントは接続先の正しい SNI を送信します。この 2 つ以外のインターネット向け通信は、SNI を持たない IP アドレス直接指定の通信も含めて拒否したいと考えています。宛先の IP アドレスは頻繁に変わり、インスタンスは VPC の Route 53 Resolver で名前解決します。ドメイン名で許可リストを管理できる、運用負荷の低い構成はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "インスタンスのセキュリティグループのアウトバウンドルールで、TCP 443 の宛先に api.partner.example.com と updates.example.net のドメイン名を指定し、それ以外の宛先へのアウトバウンドは許可しない構成にして、ドメイン単位で制御する。",
+      "text": "インスタンスのセキュリティグループのアウトバウンドルールで、TCP 443 の宛先に api.partner.example.com と updates.example.net のドメイン名を指定して許可し、それ以外の宛先へのアウトバウンドは許可しない構成にして、ドメイン名の単位で制御する。",
       "correct": false,
       "rationale": "セキュリティグループのルールで指定できるのは、IP アドレスの範囲、プレフィックスリスト、セキュリティグループなどで、ドメイン名は指定できません。"
     },
     {
       "id": "b",
-      "text": "プライベートサブネットのネットワーク ACL のアウトバウンドルールで、TCP 443 の宛先に api.partner.example.com と updates.example.net のドメイン名を指定して許可し、それ以外の宛先への通信は拒否するルールを追加して、ドメイン単位で制御する（インバウンドのルールは変更しない）。",
+      "text": "プライベートサブネットのネットワーク ACL のアウトバウンドルールで、TCP 443 の宛先に api.partner.example.com と updates.example.net のドメイン名を指定して許可し、それ以外の宛先への通信は拒否するルールを追加して、ドメイン単位で制御する（インバウンドのルールは変更しない）。ルールは番号の小さい順に評価される。",
       "correct": false,
       "rationale": "ネットワーク ACL も IP アドレスの範囲とポートで制御するもので、ドメイン名は指定できません。宛先の IP アドレスが頻繁に変わる要件にも対応できません。"
     },
     {
       "id": "c",
-      "text": "Amazon Route 53 Resolver DNS Firewall で、許可リスト以外のドメインの名前解決をブロックするルールグループを VPC に関連付ける。VPC の Route 53 Resolver を経由しない通信にも同じ制限が及ぶものとして、外向き通信を制御する。",
+      "text": "Amazon Route 53 Resolver DNS Firewall の許可リストと、それ以外の DNS クエリをブロックするルールを VPC に適用する。セキュリティグループのアウトバウンドは TCP 443 だけを許可して、外向き通信を制御する構成にする。",
       "correct": false,
-      "rationale": "DNS の名前解決は制御できますが、IP アドレスを直接指定した通信や、DNS を経由しない通信は止められません。外向きの通信をすべて遮断する要件を満たしません。"
+      "rationale": "DNS Firewall が制御できるのは、VPC の Route 53 Resolver に届く名前解決のクエリです。IP アドレスを直接指定した通信や、DNS を経由しない通信は止められません。TCP 443 に限定しても、許可していないドメインへの HTTPS 通信は防げません。"
     },
     {
       "id": "d",
-      "text": "Network Firewall のエンドポイントを経由するようルートを設定し、往復とも同じエンドポイントを通す。TLS SNI のドメインリストで api.partner.example.com と .updates.example.net だけを許可し、それ以外（SNI のない通信を含む）は破棄する。",
+      "text": "セキュリティグループのアウトバウンドを TCP 443 に限定する。Network Firewall のエンドポイントを往復とも経由させ、TLS_SNI と AWS_ROUTE_53_RESOLVED_DOMAIN のドメインリストで 2 つのドメインだけを許可し、ストリクト順序と確立済み接続の既定破棄で、それ以外（SNI のない通信を含む）を破棄する。",
       "correct": true,
-      "rationale": "Network Firewall のドメインリストは TLS の SNI を見て許可リストを管理できます。宛先の IP アドレスが変わってもルールの変更は不要です。許可リスト以外の通信を破棄するルールを加え、往復とも同じエンドポイントを通せば、SNI のない通信も含めて拒否できます。"
+      "rationale": "セキュリティグループで宛先ポートを TCP 443 に限定し、Network Firewall のドメインリストで TLS の SNI を見て許可リストを管理します。宛先の IP アドレスが変わってもルールの変更は不要です。AWS_ROUTE_53_RESOLVED_DOMAIN を組み合わせると、許可ドメインで名前解決された宛先 IP アドレスかどうかも確認できます。ストリクト順序と確立済み接続の既定破棄で、TLS ハンドシェイクを成立させて SNI を評価しつつ、それ以外の通信を破棄します。"
     }
   ],
-  "explanation": "外向きの HTTPS 通信をドメイン名で制御するには、AWS Network Firewall のステートフルルールグループ（ドメインリスト）を使います。ドメインリストでは、HTTPS の場合は TLS ハンドシェイクの SNI を検査して、許可リストにあるドメインだけを通せます。設定値は、api.partner.example.com のように完全一致で指定する名前と、先頭にドットを付けた .updates.example.net のようなワイルドカード指定です。先頭のドットを付けると、updates.example.net 自体とそのサブドメインの両方に一致します。\n\n許可リストに一致しない TLS 通信は、既定のルール順序では自動で破棄されます。ストリクトルール順序を使う場合や、TLS 以外の通信、SNI を持たない通信も拒否したい場合は、それらを破棄するルールを別に用意します。\n\n構成としては、ファイアウォール専用のサブネットにエンドポイントを置き、プライベートサブネットの既定ルートをファイアウォールエンドポイントへ向けます。ファイアウォール専用サブネットの既定ルートは NAT ゲートウェイへ向けます。さらに、NAT ゲートウェイのあるサブネットのルートテーブルに、プライベートサブネット宛てをファイアウォールエンドポイントへ向けるルートを追加し、往復とも同じエンドポイントを通します。ステートフルな検査では、往路と復路が同じエンドポイントを通る必要があります。\n\nなお、ドメインリストが確認するのは、クライアントが申告する SNI や Host ヘッダーであり、宛先 IP アドレスではありません。許可ドメインを偽装して無関係な IP アドレスへ接続する通信まで防ぐには、Route 53 Resolver と連携する Resolved IP validation などで宛先 IP アドレスの検証を追加します。セキュリティグループとネットワーク ACL は IP アドレスとポートでの制御で、ドメイン名は扱えません。Route 53 Resolver DNS Firewall は名前解決の段階で制御するため、IP アドレスを直接使う通信は防げません。",
+  "explanation": "外向きの HTTPS 通信をドメイン名で制御するには、AWS Network Firewall のステートフルルールグループ（ドメインリスト）を使います。ドメインリストでは、HTTPS の場合は TLS ハンドシェイクの SNI を検査して、許可リストにあるドメインだけを通せます。設定値は、api.partner.example.com のように完全一致で指定する名前と、先頭にドットを付けた .updates.example.net のようなワイルドカード指定です。先頭のドットを付けると、updates.example.net 自体とそのサブドメインの両方に一致します。\n\nドメインリストはポートで絞り込めません（生成されるルールの宛先ポートは any です）。そのため、宛先を TCP 443 に限定するには、セキュリティグループのアウトバウンドルールで TCP 443 だけを許可します。\n\n許可リストに一致しない TLS 通信は、既定のルール順序では自動で破棄されます。TLS 以外の通信や SNI を持たない通信も破棄するには、ファイアウォールポリシーでストリクトルール順序を使い、既定のアクションに「確立済み接続の破棄（Drop established）」を選びます。この設定は、TLS ハンドシェイクを成立させたうえで SNI を評価し、許可リストに一致しない通信を破棄するために使います。\n\n構成としては、ファイアウォール専用のサブネットにエンドポイントを置き、プライベートサブネットの既定ルートをファイアウォールエンドポイントへ向けます。ファイアウォール専用サブネットの既定ルートは NAT ゲートウェイへ向けます。さらに、NAT ゲートウェイのあるサブネットのルートテーブルに、プライベートサブネット宛てをファイアウォールエンドポイントへ向けるルートを追加し、往復とも同じエンドポイントを通します。ステートフルな検査では、往路と復路が同じエンドポイントを通る必要があります。\n\nなお、ドメインリストが確認するのは、クライアントが申告する SNI や Host ヘッダーであり、宛先 IP アドレスではありません。許可ドメインを偽装して無関係な IP アドレスへ接続する通信まで防ぐには、Resolved IP validation を有効にし、ドメインリストの TLS_SNI と AWS_ROUTE_53_RESOLVED_DOMAIN を組み合わせます。ポリシーレベルの検証は、宛先 IP アドレスが何らかのドメインについて名前解決されたかを確認するだけです。許可ドメインと名前解決された宛先 IP アドレスの両方を照合するのは、ルールレベルでこの 2 つのターゲットを組み合わせた場合です。セキュリティグループとネットワーク ACL は IP アドレスとポートでの制御で、ドメイン名は扱えません。Route 53 Resolver DNS Firewall は名前解決の段階で制御するため、IP アドレスを直接使う通信は防げません。",
   "keyPoints": [
     "ドメイン名で外向き通信を許可 → Network Firewall のドメインリスト（TLS SNI 検査）。完全一致は example.com、サブドメインを含める場合は先頭にドットを付ける",
-    "ドメインリストだけで全通信の遮断は完結しない。許可リスト以外や SNI のない通信を破棄するルールと、往復が同じエンドポイントを通る経路が必要",
-    "SNI や Host の申告は偽装され得るため、宛先 IP の検証には Resolved IP validation を追加する",
+    "ドメインリストはポートを指定できない。TCP 443 への限定はセキュリティグループで行い、許可リスト以外や SNI のない通信はストリクト順序と Drop established で破棄し、往復が同じエンドポイントを通る経路にする",
+    "SNI や Host の申告は偽装され得るため、TLS_SNI と AWS_ROUTE_53_RESOLVED_DOMAIN を組み合わせ、許可ドメインと名前解決された宛先 IP の両方を照合する",
     "SG と NACL はドメイン名を扱えず、DNS Firewall は IP 直接指定の通信を止められない"
   ],
   "references": [
@@ -63,12 +63,12 @@
       "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
     },
     {
-      "title": "ステートフルルールの例 - AWS Network Firewall デベロッパーガイド",
-      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-examples.html"
+      "title": "ステートフルルールの評価順序の管理 - AWS Network Firewall デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html"
     },
     {
-      "title": "Resolved IP validation - AWS Network Firewall デベロッパーガイド",
-      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/route53-resolved-ip-validation.html"
+      "title": "Resolved IP validation の仕組み - AWS Network Firewall デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/route53-resolved-ip-validation-how-it-works.html"
     },
     {
       "title": "非対称ルーティングの回避 - AWS Network Firewall デベロッパーガイド",

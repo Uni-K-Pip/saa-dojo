@@ -12,63 +12,74 @@
     "Amazon GuardDuty",
     "Amazon Inspector",
     "Amazon Macie",
-    "AWS Organizations"
+    "AWS Organizations",
+    "AWS Config"
   ],
   "qualifier": "operational",
   "tags": [
-    "AWS Security Hub",
+    "AWS Security Hub CSPM",
     "委任管理者",
     "検出結果の集約"
   ],
   "difficulty": 2,
   "type": "multiple",
   "selectCount": 2,
-  "stem": "ある企業は、AWS Organizations で 40 のアカウントを運用しています。Amazon GuardDuty、Amazon Inspector、Amazon Macie の検出結果と、セキュリティ基準へのコンプライアンスのチェック結果を、1 つのアカウントで一元的に確認し、優先度を付けて対応したいと考えています。この要件を満たす適切な設定を 2 つ選んでください。",
+  "stem": "ある企業は、AWS Organizations で 40 のアカウントを運用しています。Amazon GuardDuty、Amazon Inspector、Amazon Macie の検出結果と、セキュリティ基準へのコンプライアンスのチェック結果を、1 つのアカウントで一元的に確認し、優先度を付けて対応したいと考えています。対象アカウントでは各検出サービスと、基準チェックに必要な AWS Config の記録を設定済みです。独自の集約基盤を構築せず、運用負荷を最小限にします。この要件を満たす適切な設定を 2 つ選んでください。",
   "options": [
     {
       "id": "a",
-      "text": "各アカウントの担当者が、各サービスのコンソールで検出結果を確認し、スプレッドシートに毎週まとめて、セキュリティ担当者に共有する。",
+      "text": "各アカウントの担当者が、各サービスのコンソールで検出結果を確認し、スプレッドシートに毎週まとめて、セキュリティ担当者にメールで共有する。セキュリティ担当者は、共有された内容から対応の順序を相談して決める。",
       "correct": false,
       "rationale": "40 のアカウントで手作業になり、集約と優先度の判断に時間がかかります。一元的な確認と継続的な把握に向きません。"
     },
     {
       "id": "b",
-      "text": "すべての検出結果を S3 にエクスポートし、Athena のクエリと QuickSight のダッシュボードを自作して、アカウント横断の一覧にする。",
+      "text": "すべての検出結果を S3 にエクスポートし、Athena のクエリと QuickSight のダッシュボードを自作して、アカウント横断の一覧にする。ダッシュボードの重要度の高いものから確認して、対応の順序を決める。",
       "correct": false,
-      "rationale": "集約の仕組みを自作して運用することになります。セキュリティ基準へのコンプライアンスのチェックも、別に用意する必要があります。"
+      "rationale": "検出結果の集約と可視化の仕組みを自作して運用することになり、運用負荷を最小限にする要件に合いません。AWS Security Hub CSPM が標準で提供する集約と優先度付けを使うほうが、少ない作業で済みます。"
     },
     {
       "id": "c",
-      "text": "GuardDuty、Inspector、Macie の Security Hub との統合を有効にして、検出結果を ASFF 形式で Security Hub に送る。",
+      "text": "Amazon GuardDuty、Amazon Inspector、Amazon Macie と AWS Security Hub CSPM の統合が有効であることを確認し、ASFF 形式の検出結果を集約する。",
       "correct": true,
-      "rationale": "統合により、各サービスの検出結果が AWS Security Finding Format（ASFF）で Security Hub に集約され、重要度で並べ替えたり、フィルターしたりできます。"
+      "rationale": "サービスの統合により、各サービスの検出結果が AWS Security Finding Format（ASFF）で AWS Security Hub CSPM に集約され、重要度で並べ替えたり、フィルターしたりできます。統合は通常、両方のサービスを有効にすると自動で有効になるため、有効であることを確認します。"
     },
     {
       "id": "d",
-      "text": "Security Hub を有効にして、セキュリティアカウントを委任管理者に指定し、組織の新規と既存のアカウントで自動的に有効にする。",
+      "text": "管理アカウントからセキュリティアカウントを AWS Security Hub CSPM の委任管理者に指定し、中央設定でサービスと対象基準を有効にするポリシーを組織ルートに関連付け、新規・既存の対象メンバーアカウントに適用する。",
       "correct": true,
-      "rationale": "Security Hub は、組織全体のセキュリティの状況を 1 つのアカウントで確認できるサービスです。委任管理者と自動有効化で、アカウントの追加に追従できます。"
+      "rationale": "委任管理者が中央設定のポリシーを組織ルートに関連付けると、新規と既存のメンバーアカウントで、AWS Security Hub CSPM と対象の基準を一貫して有効にできます。ローカル設定の自動有効化は、現在のリージョンの新規アカウントにだけ適用され、既存アカウントには適用されません。"
     },
     {
       "id": "e",
-      "text": "AWS CloudTrail の組織の証跡を作成して、全アカウントの記録を 1 つの S3 バケットに集め、検出結果の代わりに確認する。",
+      "text": "AWS CloudTrail の組織の証跡を作成して、全アカウントの記録を 1 つの S3 バケットに集め、検出結果の代わりに確認する。ログは Athena で検索し、不審な操作がないかを担当者が調べる運用にする。",
       "correct": false,
       "rationale": "CloudTrail は API 呼び出しの記録で、GuardDuty、Inspector、Macie の検出結果を集約する機能ではありません。"
     }
   ],
-  "explanation": "AWS Security Hub は、AWS のセキュリティサービスやパートナー製品の検出結果を集約し、セキュリティ基準（AWS の基礎的なセキュリティのベストプラクティス、CIS など）に対するコンプライアンスを自動でチェックする、クラウドセキュリティ態勢管理のサービスです。\n\nAWS Organizations と統合して、管理アカウントから委任管理者アカウントを指定すれば、そのアカウントで、組織のすべてのメンバーアカウントの Security Hub を有効化・管理し、検出結果を一元的に確認できます。新しいアカウントの自動有効化も設定できます。また、GuardDuty、Inspector、Macie などとの統合を有効にすると、各サービスの検出結果が ASFF 形式で Security Hub に送られます。複数のリージョンの検出結果も、集約リージョンにまとめられます。\n\n手作業やスプレッドシート、自作のダッシュボードは、運用負荷が大きく、CloudTrail は検出結果の集約には使えません。",
+  "explanation": "AWS Security Hub CSPM（クラウドセキュリティ態勢管理）は、AWS のセキュリティサービスやパートナー製品の検出結果を ASFF 形式で集約し、セキュリティ基準（AWS の基礎的なセキュリティのベストプラクティス、CIS など）に対するコンプライアンスを自動でチェックするサービスです。基準のチェックの大半は AWS Config のサービスリンクルールで実行されるため、AWS Config の有効化とリソースの記録が前提です。本問では、設定済みとしています。\n\nAWS Organizations と統合して、管理アカウントから委任管理者アカウントを指定すれば、そのアカウントで組織のメンバーアカウントを管理し、検出結果を一元的に確認できます。中央設定を使うと、委任管理者が設定ポリシーを組織ルートや OU に関連付けて、AWS Security Hub CSPM と有効にする基準・コントロールを、新規と既存のメンバーアカウント、複数のリージョンへ一括で適用できます。一方、ローカル設定の自動有効化は、現在のリージョンの新規アカウントにだけ適用され、既存アカウントには適用されません。\n\nGuardDuty、Inspector、Macie などの AWS サービスの検出結果を AWS Security Hub CSPM に送る統合は、通常、AWS Security Hub CSPM と各サービスを有効にすると自動で有効になります。そのため、統合が有効であることを確認すれば、各サービスの検出結果が ASFF 形式で集約されます。複数のリージョンの検出結果は、集約リージョンにまとめられます。\n\n手作業やスプレッドシート、自作のダッシュボードは、運用負荷が大きく、CloudTrail は検出結果の集約には使えません。",
   "keyPoints": [
-    "複数のセキュリティサービスの検出結果とコンプライアンスチェックの一元化 → AWS Security Hub（委任管理者＋自動有効化＋サービス統合）",
-    "検出結果は ASFF 形式で集約される",
+    "複数のセキュリティサービスの検出結果とコンプライアンスチェックの一元化 → AWS Security Hub CSPM（委任管理者＋中央設定＋サービス統合）",
+    "新規・既存アカウントへの一括適用は中央設定のポリシー。ローカル設定の自動有効化は現在のリージョンの新規アカウントのみ",
+    "検出結果は ASFF 形式で集約される。サービス統合は通常自動で有効になるので、有効であることを確認する",
+    "基準のチェックには AWS Config の有効化とリソースの記録が前提",
     "自作の集約より、マネージドの集約サービスを選ぶ"
   ],
   "references": [
     {
-      "title": "AWS Security Hub とは - AWS Security Hub ユーザーガイド",
+      "title": "AWS Security Hub CSPM とは - AWS Security Hub ユーザーガイド",
       "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
     },
     {
-      "title": "Security Hub と AWS Organizations の統合",
+      "title": "Security Hub CSPM の中央設定について - AWS Security Hub ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/central-configuration-intro.html"
+    },
+    {
+      "title": "AWS サービスとの統合 - AWS Security Hub ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-internal-providers.html"
+    },
+    {
+      "title": "Security Hub CSPM と AWS Organizations の統合",
       "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/designate-orgs-admin-account.html"
     }
   ],

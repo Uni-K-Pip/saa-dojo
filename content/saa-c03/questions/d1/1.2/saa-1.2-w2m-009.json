@@ -40,7 +40,7 @@
       "id": "c",
       "text": "アプリケーションを、パブリックサブネットの Application Load Balancer で公開して、セキュリティグループで従業員の自宅の IP アドレスだけを許可する。認証は ALB の OIDC 認証で行う。",
       "correct": false,
-      "rationale": "自宅の IP アドレスは固定ではなく、変更のたびにルールの更新が必要です。RDS には接続できず、アプリケーションをインターネットに公開することにもなります。"
+      "rationale": "Application Load Balancer は Web アプリケーションへのアクセスを提供できますが、RDS へのデータベース接続や、部署ごとのサブネットへのアクセスを提供しません。自宅の IP アドレスが変動する場合は、許可ルールの更新も必要です。"
     },
     {
       "id": "d",
@@ -49,7 +49,7 @@
       "rationale": "Client VPN は、従業員の端末から VPC への接続を提供するマネージドな VPN サービスです。Active Directory 認証と承認ルールで、グループごとにアクセスできるネットワークを制御でき、サーバーの運用も不要です。"
     }
   ],
-  "explanation": "AWS Client VPN は、OpenVPN ベースのクライアントを使って、リモートの従業員が AWS やオンプレミスのリソースに安全に接続できるマネージドな VPN サービスです。クライアントの VPN エンドポイントを VPC のサブネットに関連付けて、ネットワークインターフェイスを経由して VPC に接続させます。サーバーの構築や拡張は不要です。\n\n認証には、Active Directory（AWS Managed Microsoft AD や AD Connector）、相互認証（証明書）、SAML ベースのフェデレーション認証を使えます。承認ルールにより、AD のグループごとに、アクセスできる宛先のネットワーク（CIDR）を制御できます。\n\nSite-to-Site VPN は、拠点のルーターなどと VPC を結ぶ用途です。EC2 に VPN サーバーを自前で構築すると運用の負荷が増え、インターネット向けに公開する方法は、プライベートリソースへのアクセスに適しません。",
+  "explanation": "AWS Client VPN は、OpenVPN ベースのクライアントを使って、リモートの従業員が AWS やオンプレミスのリソースに安全に接続できるマネージドな VPN サービスです。クライアントの VPN エンドポイントを VPC のサブネットに関連付けて、ネットワークインターフェイスを経由して VPC に接続させます。サーバーの構築や拡張は不要です。\n\n認証には、Active Directory（AWS Managed Microsoft AD や AD Connector）、相互認証（証明書）、SAML ベースのフェデレーション認証を使えます。承認ルールにより、AD のグループごとに、アクセスできる宛先のネットワーク（CIDR）を制御できます。\n\nSite-to-Site VPN は、拠点のルーターなどと VPC を結ぶ用途です。EC2 に VPN サーバーを自前で構築すると運用の負荷が増えます。Application Load Balancer による Web 公開だけでは、RDS を含むプライベートリソースへのネットワーク接続要件を満たせません。",
   "keyPoints": [
     "リモートワーカーが VPC に接続 → AWS Client VPN（AD・証明書・SAML 認証、承認ルール）",
     "拠点と VPC を結ぶのは Site-to-Site VPN",
@@ -59,6 +59,14 @@
     {
       "title": "AWS Client VPN とは - AWS Client VPN 管理者ガイド",
       "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html"
+    },
+    {
+      "title": "Active Directory 認証 - AWS Client VPN 管理者ガイド",
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ad.html"
+    },
+    {
+      "title": "ネットワークベースの承認 - AWS Client VPN 管理者ガイド",
+      "url": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authorization.html"
     }
   ],
   "lessonRefs": [

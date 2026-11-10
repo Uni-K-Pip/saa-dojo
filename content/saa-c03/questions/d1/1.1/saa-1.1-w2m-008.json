@@ -23,7 +23,7 @@
   "options": [
     {
       "id": "a",
-      "text": "IAM のアカウントのパスワードポリシーで、サインイン時に MFA を必須にする設定を有効にして、コンソールとアクセスキーを使うすべてのユーザーに適用する。MFA を登録していないユーザーは、サインインできなくなる。",
+      "text": "IAM のアカウントのパスワードポリシーで、サインイン時に MFA を必須にする設定を有効にして、コンソールとアクセスキーを使うすべてのユーザーに適用する。MFA を登録していないユーザーは、サインインできなくなる。設定はアカウント全体に一度行うだけで済み、グループごとの管理は不要になる。",
       "correct": false,
       "rationale": "パスワードポリシーで設定できるのは、文字数や文字種、有効期限などで、MFA を必須にする設定はありません。"
     },
@@ -31,27 +31,27 @@
       "id": "b",
       "text": "グループにアタッチする IAM ポリシーで、本人に限定できる操作は適切なリソース ARN に限定し、一覧取得などは別の Allow で許可する。BoolIfExists で aws:MultiFactorAuthPresent が false または存在しない場合は、NotAction の MFA 登録などの操作以外を Deny する。",
       "correct": true,
-      "rationale": "MFA で認証されていないリクエストを、自己管理用の操作を除いて拒否します。例外にした操作は、別の Allow ステートメントで許可して初めて実行できます。コンソールのユーザーは MFA を登録して再度サインインするまで、CLI のユーザーは MFA 付きの一時的な認証情報を取得するまで、他の操作ができません。新規ユーザーも、このグループへ追加すれば同じ制限が適用されます。"
+      "rationale": "MFA で認証されていないリクエストを、自己管理用の操作を除いて拒否します。例外にした IAM の自己管理操作は、別の Allow ステートメントで許可して初めて実行できます。コンソールのユーザーは MFA を登録して再度サインインするまで、CLI のユーザーは MFA 付きの一時的な認証情報を取得するまで、他の操作ができません。新規ユーザーも、このグループへ追加すれば同じ制限が適用されます。"
     },
     {
       "id": "c",
-      "text": "AWS Config のマネージドルールで MFA 未設定の IAM ユーザーを 1 日 1 回検出し、自動修復の処理で、そのユーザーを削除する。MFA を設定した後に、管理者がユーザーを再作成する。",
+      "text": "AWS Config のマネージドルール iam-user-mfa-enabled で MFA 未設定の IAM ユーザーを 1 日 1 回検出し、Amazon SNS で管理者とユーザーに通知して、MFA の登録を促す運用にする。未対応のユーザーは週次で管理者が確認する。",
       "correct": false,
-      "rationale": "事後の検出で、ユーザーを削除する運用は業務への影響が大きすぎます。MFA を登録する機会を与える要件も満たしません。"
+      "rationale": "定期的な検出と通知は実務で役立ちますが、事後の対応です。通知から MFA を登録するまでの間は、MFA なしで AWS の操作ができてしまい、MFA を使わないリクエストを防ぐ要件を満たしません。"
     },
     {
       "id": "d",
-      "text": "グループにアタッチする IAM ポリシーで、本人に限定できる操作は適切なリソース ARN に限定し、一覧取得などは別の Allow で許可する。Bool 演算子で aws:MultiFactorAuthPresent が false の場合は、NotAction の MFA 登録などの操作以外を Deny する。アクセスキーの操作は対象外。",
+      "text": "グループにアタッチする IAM ポリシーで、本人に限定できる操作は適切なリソース ARN に限定し、一覧取得などは別の Allow で許可する。Bool 演算子で aws:MultiFactorAuthPresent が false の場合は、NotAction の MFA 登録などの操作以外を Deny する。グループの全メンバーに適用する。",
       "correct": false,
       "rationale": "Bool 演算子では、条件キーがリクエストに含まれない場合に条件が一致しません。アクセスキーなどの長期認証情報によるリクエストには aws:MultiFactorAuthPresent が含まれないため、拒否が適用されず、MFA なしで操作できてしまいます。BoolIfExists が必要です。"
     }
   ],
-  "explanation": "IAM ユーザーに MFA を強制するには、MFA で認証されていないリクエストを拒否する IAM ポリシーを使います。条件キー aws:MultiFactorAuthPresent は、MFA で認証された一時的な認証情報によるリクエストで true になります。アクセスキーなどの長期認証情報によるリクエストでは、このキーがリクエストに含まれないため、BoolIfExists で false または存在しない場合の両方を拒否します。Bool 演算子だけでは、キーが存在しないリクエストに拒否が適用されません。\n\nこの Deny では、NotAction で、自分の MFA の登録とパスワードの変更に必要な操作を除外します。公式の自己管理ポリシーの例では、iam:CreateVirtualMFADevice、iam:EnableMFADevice、iam:GetUser、iam:GetMFADevice、iam:ListMFADevices、iam:ListVirtualMFADevices、iam:ResyncMFADevice、sts:GetSessionToken が除外されています。この問題ではパスワードの変更も MFA の登録前に許可する要件なので、iam:ChangePassword と iam:GetAccountPasswordPolicy を加えます（MFA なしのパスワード変更は、公式の例では標準では含めず、リスクに注意が必要な追加項目として扱われています）。ただし、NotAction の例外は拒否の対象から外すだけで、操作を許可するものではありません。これらの操作は、別の Allow ステートメントで許可して初めて実行できます。\n\nAllow ステートメントのリソースは、操作ごとに変えます。iam:ChangePassword、iam:EnableMFADevice、iam:ListMFADevices、iam:ResyncMFADevice、iam:GetUser など本人に限定できる操作は、arn:aws:iam::*:user/${aws:username} を指定し、他のユーザーの MFA やパスワードを操作できないようにします。iam:CreateVirtualMFADevice は MFA デバイスの ARN（arn:aws:iam::*:mfa/* など。命名規則を決めている場合は、それに合わせて絞ります）を、iam:ListVirtualMFADevices と iam:GetAccountPasswordPolicy は Resource に \"*\" を指定します。iam:DeactivateMFADevice のように、MFA なしで実行させたくない管理操作は、例外に含めません。\n\nコンソールのユーザーは、MFA を登録してからサインインし直すことで、本来の権限を使えるようになります。AWS CLI では、長期のアクセスキーのリクエストに MFA の情報は付かないため、MFA を登録した後に、sts:GetSessionToken へ MFA デバイスのシリアル番号とトークンコードを渡して取得した一時的な認証情報を使います。新しいユーザーにも、対象のグループへ追加すれば同じ制限が適用されます。\n\nパスワードポリシーでは MFA は必須にできません。Config による事後の対応は、MFA なしの操作を許してしまうため、予防的な統制になりません。",
+  "explanation": "IAM ユーザーに MFA を強制するには、MFA で認証されていないリクエストを拒否する IAM ポリシーを使います。条件キー aws:MultiFactorAuthPresent は、MFA で認証された一時的な認証情報によるリクエストで true になります。アクセスキーなどの長期認証情報によるリクエストでは、このキーがリクエストに含まれないため、BoolIfExists で false または存在しない場合の両方を拒否します。Bool 演算子だけでは、キーが存在しないリクエストに拒否が適用されません。\n\nこの Deny では、NotAction で、自分の MFA の登録とパスワードの変更に必要な操作を除外します。公式の自己管理ポリシーの例では、iam:CreateVirtualMFADevice、iam:EnableMFADevice、iam:GetUser、iam:GetMFADevice、iam:ListMFADevices、iam:ListVirtualMFADevices、iam:ResyncMFADevice、sts:GetSessionToken が除外されています。この問題ではパスワードの変更も MFA の登録前に許可する要件なので、iam:ChangePassword と iam:GetAccountPasswordPolicy を加えます（MFA なしのパスワード変更は、公式の例では標準では含めず、リスクに注意が必要な追加項目として扱われています）。ただし、NotAction の例外は拒否の対象から外すだけで、操作を許可するものではありません。例外にした IAM の自己管理操作には、別途 Allow が必要です。一方、sts:GetSessionToken は認証操作のため、呼び出しを許可する Allow は不要です。公式サンプルでは NotAction にも列挙されています。\n\nAllow ステートメントのリソースは、操作ごとに変えます。iam:ChangePassword、iam:EnableMFADevice、iam:ListMFADevices、iam:ResyncMFADevice、iam:GetUser など本人に限定できる操作は、arn:aws:iam::*:user/${aws:username} を指定し、他のユーザーの MFA やパスワードを操作できないようにします。iam:CreateVirtualMFADevice は MFA デバイスの ARN（arn:aws:iam::*:mfa/* など。命名規則を決めている場合は、それに合わせて絞ります）を、iam:ListVirtualMFADevices と iam:GetAccountPasswordPolicy は Resource に \"*\" を指定します。iam:DeactivateMFADevice のように、MFA なしで実行させたくない管理操作は、例外に含めません。\n\nコンソールのユーザーは、MFA を登録してからサインインし直すことで、本来の権限を使えるようになります。AWS CLI では、長期のアクセスキーのリクエストに MFA の情報は付かないため、MFA を登録した後に、sts:GetSessionToken へ MFA デバイスのシリアル番号とトークンコードを渡して取得した一時的な認証情報を使います。新しいユーザーにも、対象のグループへ追加すれば同じ制限が適用されます。\n\nパスワードポリシーでは MFA は必須にできません。Config による事後の検出と通知は、登録までの間は MFA なしの操作を許してしまうため、予防的な統制になりません。",
   "keyPoints": [
     "MFA の強制 → aws:MultiFactorAuthPresent を条件にした Deny（キーが存在しない場合も拒否する BoolIfExists）",
-    "NotAction の例外は許可ではない。MFA の登録とパスワードの変更に必要な操作は、別の Allow で許可する",
+    "NotAction の例外は許可ではない。MFA の登録とパスワードの変更に必要な IAM の自己管理操作は、別の Allow で許可する",
     "Allow のリソースは操作で変える。本人の操作は user ARN、CreateVirtualMFADevice は mfa ARN、ListVirtualMFADevices などは \"*\"。iam:DeactivateMFADevice は例外に含めない",
-    "CLI は MFA 登録後に sts:GetSessionToken で取得した一時的な認証情報を使う。NotAction の例外には sts:GetSessionToken も含める",
+    "CLI は MFA 登録後に sts:GetSessionToken で取得した一時的な認証情報を使う。GetSessionToken の呼び出しに Allow は不要で、公式サンプルでは NotAction にも列挙される",
     "事後の検知よりも、予防的な拒否ポリシーを選ぶ。新規ユーザーは対象グループへの追加で適用される"
   ],
   "references": [
