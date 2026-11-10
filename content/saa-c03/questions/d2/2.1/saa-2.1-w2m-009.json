@@ -26,21 +26,21 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon EC2 インスタンスを手動で起動して、Auto Scaling グループと ALB を AWS CloudFormation で構築する。",
+      "text": "Amazon EC2 インスタンスを手動で起動して、Auto Scaling グループと Application Load Balancer を AWS CloudFormation のテンプレートで構築する。",
       "correct": false,
       "rationale": "ネットワークやスケーリング、デプロイの構成を個別に設計し、管理する必要があり、構成の管理を避けたい要件に反します。"
     },
     {
       "id": "b",
-      "text": "アプリケーションをコンテナイメージにして Amazon ECR に登録し、Amazon ECS と AWS Fargate で実行する。",
+      "text": "アプリケーションをコンテナイメージにして Amazon ECR に登録し、Amazon ECS のサービスとして AWS Fargate の起動タイプで実行する。",
       "correct": false,
       "rationale": "コンテナ化とタスク定義などの構成が必要で、コンテナ化を避けたい要件に反します。"
     },
     {
       "id": "c",
-      "text": "既存の Java Web アプリケーションに AWS Serverless Java Container を組み込み、Amazon API Gateway と AWS Lambda にデプロイする。",
+      "text": "既存の Java Web アプリケーションに AWS Serverless Java Container を組み込み、Amazon API Gateway と、デフォルトのコンピューティングタイプの AWS Lambda にデプロイする。",
       "correct": false,
-      "rationale": "既存の Java アプリケーションを少ない変更で Lambda に移せますが、Lambda では実行基盤のインスタンスの設定を利用者が調整できません。インスタンスの設定を自分で調整したい要件を満たしません。"
+      "rationale": "既存の Java アプリケーションを少ない変更で Lambda に移せますが、デフォルトのコンピューティングタイプの Lambda では、基盤の EC2 インスタンスタイプなどを利用者が指定できません。インスタンスの設定を自分で調整したい要件を満たしません。"
     },
     {
       "id": "d",
@@ -49,10 +49,10 @@
       "rationale": "Elastic Beanstalk の Standard モードは、コードをアップロードするだけで、負荷分散・スケーリング対応の環境として EC2、ロードバランサー、Auto Scaling などを自動で作ってデプロイします。リソースは自分のアカウントに作られ、必要に応じて設定を調整できます。"
     }
   ],
-  "explanation": "AWS Elastic Beanstalk は、アプリケーションのコードをアップロードするだけで、環境を自動でプロビジョニングしてデプロイするサービスです。Standard モードでは EC2 上でアプリケーションを実行し、Java、.NET、PHP、Node.js、Python、Ruby、Go、Docker などに対応します。環境タイプに負荷分散・スケーリング対応の環境を選ぶと、EC2 インスタンス、Auto Scaling、ロードバランサー、ヘルスモニタリングなどが作られます。単一インスタンスの環境にはロードバランサーがなく、台数も 1 台に固定されるため、この問題では負荷分散・スケーリング対応の環境を選びます。リソースは自分のアカウントに作成されるため、インスタンスタイプや設定の調整もできます。\n\n既存のアプリケーションを素早く AWS で動かし、基盤の設定も調整したい場合に適しています。Lambda は、AWS Serverless Java Container を使えば既存の Java アプリケーションを少ない変更で移行できますが、実行基盤のインスタンスの設定は利用者が調整できません。ECS と Fargate はコンテナ化が前提です。EC2 と CloudFormation で個別に構築すると、自由度は高い反面、構成の設計と管理の負荷が大きくなります。",
+  "explanation": "AWS Elastic Beanstalk は、アプリケーションのコードをアップロードするだけで、環境を自動でプロビジョニングしてデプロイするサービスです。Standard モードでは EC2 上でアプリケーションを実行し、Java、.NET、PHP、Node.js、Python、Ruby、Go、Docker などに対応します。環境タイプに負荷分散・スケーリング対応の環境を選ぶと、EC2 インスタンス、Auto Scaling、ロードバランサー、ヘルスモニタリングなどが作られます。単一インスタンスの環境にはロードバランサーがなく、台数も 1 台に固定されるため、この問題では負荷分散・スケーリング対応の環境を選びます。リソースは自分のアカウントに作成されるため、インスタンスタイプや設定の調整もできます。\n\n既存のアプリケーションを素早く AWS で動かし、基盤の設定も調整したい場合に適しています。Lambda は、AWS Serverless Java Container を使えば既存の Java アプリケーションを少ない変更で移行できますが、デフォルトのコンピューティングタイプでは、基盤の EC2 インスタンスタイプなどを利用者が指定できません。なお、Lambda Managed Instances ではキャパシティプロバイダーでインスタンスタイプなどを指定できますが、この問題の構成では使用しません。ECS と Fargate はコンテナ化が前提です。EC2 と CloudFormation で個別に構築すると、自由度は高い反面、構成の設計と管理の負荷が大きくなります。",
   "keyPoints": [
     "コードのアップロードだけでデプロイ・既存アプリのまま → AWS Elastic Beanstalk（Standard モードの負荷分散・スケーリング対応環境）",
-    "Lambda は実行基盤のインスタンスの設定を調整できない。ECS/Fargate はコンテナ化が必要",
+    "デフォルトのコンピューティングタイプの Lambda は、基盤のインスタンスタイプなどを指定できない。ECS/Fargate はコンテナ化が必要",
     "Beanstalk のリソースは自分のアカウントにあり、設定を調整できる"
   ],
   "references": [
@@ -67,6 +67,10 @@
     {
       "title": "Re-platforming Java applications using the updated AWS Serverless Java Container - AWS Compute Blog",
       "url": "https://aws.amazon.com/blogs/compute/re-platforming-java-applications-using-the-updated-aws-serverless-java-container/"
+    },
+    {
+      "title": "Getting started with Lambda Managed Instances - AWS Lambda デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-getting-started.html"
     }
   ],
   "lessonRefs": [],

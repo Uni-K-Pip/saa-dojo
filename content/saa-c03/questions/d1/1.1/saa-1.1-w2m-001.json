@@ -20,50 +20,54 @@
   "difficulty": 3,
   "type": "multiple",
   "selectCount": 2,
-  "stem": "ある企業は、アプリケーション開発チームの開発者に、AWS Lambda 関数用の IAM ロールを自分たちで作成する権限を与えたいと考えています。ただし、開発者が自分より強い権限を持つロールを作って権限を昇格させたり、監査ログの設定を変更したりすることは防がなければなりません。セキュリティ部門がロールを個別に作成する運用は避けたく、最小権限の原則も維持する必要があります。これらの要件を満たす設定を 2 つ選んでください。",
+  "stem": "ある企業は、アプリケーション開発チームの開発者に、AWS Lambda 関数用の IAM ロールを自分たちで作成する権限を与えたいと考えています。ただし、セキュリティ部門が承認した権限の上限を超える権限を持つロールを開発者が作って権限を昇格させたり、監査ログの設定を変更したりすることは防がなければなりません。セキュリティ部門がロールを個別に作成する運用は避けたく、最小権限の原則も維持する必要があります。これらの要件を満たす設定を 2 つ選んでください。",
   "options": [
     {
       "id": "a",
-      "text": "開発者に iam:* を許可し、cloudtrail:StopLogging と cloudtrail:DeleteTrail を拒否するポリシーを追加で付けて監査ログの停止と削除を防ぎ、ロールの作成は開発者に任せる。",
+      "text": "開発者に iam:* を許可し、cloudtrail:StopLogging と cloudtrail:DeleteTrail を明示的に拒否するポリシーを追加で付けて、監査ログの停止と削除を防ぐ。ロールの作成と権限の付与は開発者に任せ、権限の上限は設けない。",
       "correct": false,
       "rationale": "iam:* を許可すると、管理者権限を持つロールを作って自分に引き受けさせる権限昇格ができます。CloudTrail の停止と削除を拒否しても、他の監査設定の変更や権限昇格は防げません。"
     },
     {
       "id": "b",
-      "text": "開発者に iam:CreateRole を広く許可し、作成されたロールを AWS Config のカスタムルールで毎日検査する。過大な権限を持つロールが見つかったら、Lambda 関数を起動して削除する。",
+      "text": "開発者に iam:CreateRole と iam:AttachRolePolicy を広く許可する。作成されたロールを AWS Config のカスタムルールで毎日検査し、承認済みの範囲を超える権限が見つかったら、Lambda 関数を起動してそのロールを削除する。",
       "correct": false,
       "rationale": "事後に検知して削除する方法で、検知までの間は過大な権限を持つロールが使えてしまいます。作成の時点で権限を制限する予防的な統制ではなく、ルールや自動修復の運用も増えます。"
     },
     {
       "id": "c",
-      "text": "開発者に PowerUserAccess マネージドポリシーを付与し、Lambda 用のロールには AWSLambdaBasicExecutionRole を付ける運用とする。IAM ロールは開発者が必要なときに自分で作成する。",
+      "text": "開発者に PowerUserAccess マネージドポリシーを付与し、IAM ロールは開発者が必要なときに自分で作成する運用とする。Lambda 用のロールには、AWS 管理ポリシーの AWSLambdaBasicExecutionRole を付ける。",
       "correct": false,
       "rationale": "PowerUserAccess は IAM の操作を原則として許可しないため、開発者は Lambda 用のロールを作成できません。要件を満たさない上に、権限の上限を決める仕組みにもなりません。"
     },
     {
       "id": "d",
-      "text": "開発者のポリシーでは、境界ポリシーの変更・削除と、ロールからの境界の削除（iam:DeletePolicyVersion、iam:DeleteRolePermissionsBoundary など）を許可しない。",
+      "text": "開発者のポリシーでは、境界ポリシーの変更・削除（iam:CreatePolicyVersion、iam:SetDefaultPolicyVersion、iam:DeletePolicy）と、境界の削除・差し替え（iam:DeleteRolePermissionsBoundary、iam:PutRolePermissionsBoundary）を許可しない。",
       "correct": true,
-      "rationale": "開発者自身が、境界ポリシーを変更したり、作成したロールから境界を外したりできると、上限を回避して権限を昇格できます。これらの操作を許可しないことで、境界が維持されます。"
+      "rationale": "開発者自身が、境界ポリシーを変更したり、作成したロールから境界を外したり別の境界に差し替えたりできると、上限を回避して権限を昇格できます。これらの操作を許可しないことで、境界が維持されます。"
     },
     {
       "id": "e",
-      "text": "開発者に iam:CreateRole などを許可し、iam:PermissionsBoundary 条件キーで、ロール作成時に所定のアクセス許可境界ポリシーの付与を必須にする。境界ポリシーでは Lambda の実行に必要な操作だけを許可する。",
+      "text": "開発者に iam:CreateRole などを許可し、iam:PermissionsBoundary 条件キーで、ロール作成時に所定のアクセス許可境界ポリシーの付与を必須にする。境界ポリシーは、承認済みの操作とリソースだけを許可し、監査設定の変更を明示的に拒否する。",
       "correct": true,
-      "rationale": "アクセス許可境界は、ロールに付けられる権限の上限を決めます。作成時に境界の付与を必須にすれば、開発者が作るロールは境界の範囲を超えられず、権限昇格や監査ログ設定の変更も防げます。作成自体は開発者に任せられるため、運用の負荷も増えません。"
+      "rationale": "アクセス許可境界は、ロールにアイデンティティベースのポリシーで付けられる権限の上限を決めます。作成時に境界の付与を必須にし、境界で承認済みの操作だけを許可して監査設定の変更を拒否すれば、開発者が作るロールは上限を超えられません。作成自体は開発者に任せられるため、運用の負荷も増えません。"
     }
   ],
-  "explanation": "IAM のアクセス許可境界（permissions boundary）は、IAM ユーザーまたはロールに付与できる権限の上限を決める高度な機能です。実際に許可されるのは、アイデンティティベースのポリシーと境界の両方で許可されている操作だけです。\n\n開発者に iam:CreateRole や iam:AttachRolePolicy を許可しつつ、「iam:PermissionsBoundary が指定の境界ポリシーの ARN と一致する場合に限る」という条件を付けると、開発者は境界が付いたロールしか作れません。さらに境界ポリシーの変更や削除（iam:DeleteRolePermissionsBoundary など）を許可しなければ、作ったロールから境界を外すこともできません。こうして、権限の委任と最小権限を両立できます。\n\nPowerUserAccess は IAM を実質的に操作できないため目的に合わず、iam:* を許可するだけでは昇格を防げません。事後検知は予防的な統制にならず、運用も増えます。\n\nなお、境界ポリシーそのものの変更や、ロールからの境界の削除を許可しないことも、権限昇格を防ぐために必要です。",
+  "explanation": "IAM のアクセス許可境界（permissions boundary）は、IAM ユーザーまたはロールに、アイデンティティベースのポリシーで付与できる権限の上限を決める高度な機能です。境界そのものは権限を付与しません。アイデンティティベースのポリシーによる許可のうち、境界でも許可されている操作だけが有効になります（両者の積集合）。なお、同一アカウント内でロールセッションの ARN に直接付与されたリソースベースのポリシーの許可は、境界の暗黙的な拒否では制限されません。\n\n開発者に iam:CreateRole や iam:AttachRolePolicy を許可しつつ、「iam:PermissionsBoundary が指定の境界ポリシーの ARN と一致する場合に限る」という条件を付けると、開発者は境界が付いたロールしか作れません。境界ポリシーは、承認済みの操作とリソースだけを許可し、監査設定（CloudTrail の停止など）の変更を明示的に拒否する内容にします。これにより、承認された上限を超える権限を持つロールや、監査設定を変更できるロールを作れなくなります。\n\nさらに、境界を回避する操作を許可しないことも必要です。境界ポリシーの変更・削除（iam:CreatePolicyVersion、iam:SetDefaultPolicyVersion、iam:DeletePolicy）、ロールからの境界の削除（iam:DeleteRolePermissionsBoundary）、別の境界への差し替え（iam:PutRolePermissionsBoundary）が可能だと、開発者は上限を外せてしまいます。こうして、権限の委任と最小権限を両立できます。\n\nPowerUserAccess は IAM を実質的に操作できないため目的に合わず、iam:* を許可するだけでは昇格を防げません。事後検知は予防的な統制にならず、運用も増えます。",
   "keyPoints": [
     "IAM の権限を開発者に委任しつつ上限を決める → アクセス許可境界＋iam:PermissionsBoundary 条件キー",
     "権限昇格の防止は作成時の予防的な統制で行う（事後検知は補助）",
-    "実効権限はアイデンティティポリシーと境界の積集合",
-    "アクセス許可境界の委任では、境界の付与の強制と、境界を変更・削除する権限の不許可をセットで行う"
+    "境界が制限するのはアイデンティティベースのポリシーの許可（積集合）。境界は権限を付与せず、ロールセッションへの直接のリソースベース許可は制限しない",
+    "アクセス許可境界の委任では、境界の付与の強制と、境界ポリシーの変更・境界の削除・別の境界への差し替えの不許可をセットで行う"
   ],
   "references": [
     {
       "title": "IAM エンティティのアクセス許可の境界 - AWS IAM ユーザーガイド",
       "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+    },
+    {
+      "title": "PutRolePermissionsBoundary - AWS IAM API リファレンス",
+      "url": "https://docs.aws.amazon.com/IAM/latest/APIReference/API_PutRolePermissionsBoundary.html"
     }
   ],
   "lessonRefs": [

@@ -22,43 +22,48 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、モバイルアプリ向けのシンプルな API を、AWS Lambda のプロキシ統合で構築します。認証は Amazon Cognito のユーザープールの JWT を検証し、CORS に対応する必要があります。使用量プラン、API キー、リクエストの検証、AWS WAF の統合は不要です。費用とレイテンシーをできるだけ小さくしたいと考えています。最も適切な構成はどれですか。",
+  "stem": "ある企業は、モバイルアプリ向けのシンプルな API を、AWS Lambda のプロキシ統合で構築します。認証は Amazon Cognito のユーザープールの JWT を検証し、CORS に対応する必要があります。JWT の検証には AWS の組み込みの認証機能を使用し、独自の認証コードは実装しません。使用量プラン、API キー、リクエストの検証、AWS WAF の統合は不要です。費用とレイテンシーをできるだけ小さくしたいと考えています。最も適切な構成はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "Lambda 関数の URL を有効にして、認証タイプを NONE にし、関数のコードで JWT を検証する。",
+      "text": "Lambda 関数の URL を有効にして、認証タイプを NONE にし、CORS は関数 URL の設定で有効にする。Cognito ユーザープールの JWT は、関数のコードで検証して認可する。",
       "correct": false,
-      "rationale": "認証のコードを自分で実装することになり、運用の手間とセキュリティのリスクが増えます。マネージドの JWT オーソライザーを使えます。"
+      "rationale": "関数内で JWT を検証するコードが必要になり、独自の認証コードを実装しない要件を満たしません。"
     },
     {
       "id": "b",
-      "text": "Amazon API Gateway の REST API を作成して、Lambda プロキシ統合と、Cognito ユーザープールのオーソライザーを設定する。",
+      "text": "Amazon API Gateway の REST API を作成して、Lambda プロキシ統合と、Cognito ユーザープールのオーソライザーを設定し、CORS も有効にする。",
       "correct": false,
-      "rationale": "機能は満たしますが、使用量プランやリクエストの検証など、使わない機能の分、HTTP API より料金が高く、レイテンシーも大きくなります。"
+      "rationale": "要件は満たせますが、使用量プランや API キーなどの機能を使わないのであれば、必要な機能を備えた HTTP API のほうが、API 呼び出しの料金を抑えられます。"
     },
     {
       "id": "c",
-      "text": "Amazon API Gateway の HTTP API を作成して、Lambda プロキシ統合と、Cognito の JWT オーソライザーを設定する。",
+      "text": "Amazon API Gateway の HTTP API に Lambda プロキシ統合を設定し、Amazon Cognito ユーザープールを発行者とする JWT オーソライザーを設定する。",
       "correct": true,
-      "rationale": "HTTP API は、REST API より低コストで低レイテンシーです。Lambda のプロキシ統合、JWT オーソライザー、CORS に対応しており、この要件に十分です。"
+      "rationale": "HTTP API は、REST API より低価格で提供される、機能を絞った API です。Lambda のプロキシ統合、JWT オーソライザー、CORS に対応しており、Amazon Cognito ユーザープールを発行者として設定すれば、組み込みの認証機能で要件を満たせます。"
     },
     {
       "id": "d",
-      "text": "Amazon API Gateway の WebSocket API を作成して、Lambda 関数を呼び出す。",
+      "text": "Amazon API Gateway の WebSocket API を作成して、ルートごとに Lambda 関数を呼び出し、クライアントとの双方向の接続を維持する。",
       "correct": false,
       "rationale": "WebSocket API は、双方向のリアルタイム通信の用途のものです。シンプルなリクエストとレスポンスの API には、向いていません。"
     }
   ],
-  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低コストで低レイテンシーの API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Cognito や OIDC のプロバイダー）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nそのため、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が最も費用と性能の面で適しています。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用です。",
+  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低価格の API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Amazon Cognito ユーザープールなど、OIDC に対応したプロバイダーを発行者として設定）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nこの問題は、JWT の検証に組み込みの認証機能を使い、独自の認証コードは実装しないという条件です。その条件で、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が費用と性能の面で最も適しています。Lambda の関数 URL はエンドポイント自体に追加料金がなく CORS にも対応しますが、認証は IAM か認証なしの選択で、Cognito の JWT の検証は関数のコードで実装することになります。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用です。",
   "keyPoints": [
-    "シンプルな API で低コスト・低レイテンシー → API Gateway の HTTP API（JWT オーソライザー対応）",
+    "シンプルな API で、組み込みの JWT 認証を使い低価格に抑えたい → API Gateway の HTTP API（JWT オーソライザー対応）",
     "使用量プラン・API キー・WAF・キャッシュ・リクエストの検証が必要 → REST API",
+    "Lambda の関数 URL は追加料金なしだが、認証は IAM か認証なし。JWT の検証を組み込みの機能で行うなら HTTP API",
     "WebSocket API は双方向のリアルタイム通信用"
   ],
   "references": [
     {
       "title": "HTTP API と REST API のどちらを選択するか - Amazon API Gateway デベロッパーガイド",
       "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html"
+    },
+    {
+      "title": "Lambda 関数の HTTP リクエストによる呼び出し方法の選択 - AWS Lambda デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/furls-http-invoke-decision.html"
     }
   ],
   "lessonRefs": [],

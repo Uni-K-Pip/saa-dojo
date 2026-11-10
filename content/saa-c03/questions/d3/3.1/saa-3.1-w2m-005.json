@@ -21,7 +21,7 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業は、オンプレミスで ZFS を使った NAS を運用し、Linux のサーバーが NFS でマウントしています。ZFS のスナップショット、クローン、圧縮の機能と、ZFS のコマンドを使う運用手順を、AWS に移行後もそのまま使いたいと考えています。アプリケーションからは、サブミリ秒程度の低レイテンシーで NFS にアクセスします。ファイルサーバーの運用はマネージドにしたいと考えています。最も適切なサービスはどれですか。",
+  "stem": "ある企業は、オンプレミスで ZFS を使った NAS を運用し、Linux のサーバーが NFS でマウントしています。AWS への移行後もスナップショット、クローン、圧縮の機能を利用したいと考えています。管理操作を AWS Management Console、AWS CLI または API に変更することは許容します。アプリケーションからは、サブミリ秒程度の低レイテンシーで NFS にアクセスします。ファイルサーバーの運用はマネージドにしたいと考えています。最も適切なサービスはどれですか。",
   "options": [
     {
       "id": "a",
@@ -33,13 +33,13 @@
       "id": "b",
       "text": "Amazon EFS のファイルシステムを作成して、NFS でマウントする。",
       "correct": false,
-      "rationale": "EFS は NFS のマネージドなファイルシステムですが、ZFS の機能（クローンなど）や運用手順は使えません。"
+      "rationale": "EFS は NFS のマネージドなファイルシステムですが、ZFS のスナップショットやクローンなどの機能は使えません。"
     },
     {
       "id": "c",
       "text": "Amazon FSx for OpenZFS のファイルシステムを作成して、NFS でマウントする。",
       "correct": true,
-      "rationale": "FSx for OpenZFS は、OpenZFS をマネージドで提供するサービスです。スナップショット、クローン、圧縮などの ZFS の機能と、低レイテンシーの NFS アクセスを、そのまま使えます。"
+      "rationale": "FSx for OpenZFS は、OpenZFS をマネージドで提供するサービスです。スナップショット、クローン、圧縮の機能と、低レイテンシーの NFS アクセスを維持でき、管理操作は AWS の管理インターフェイスで行います。"
     },
     {
       "id": "d",
@@ -48,10 +48,10 @@
       "rationale": "FSx for Lustre は、HPC 向けの並列ファイルシステムで、ZFS の機能はありません。NFS ではなく Lustre クライアントが必要です。"
     }
   ],
-  "explanation": "Amazon FSx は、複数のファイルシステムをマネージドで提供します。FSx for OpenZFS は、OpenZFS をベースとしたファイルシステムで、NFS でアクセスします。スナップショット、効率的なクローン、データ圧縮、アクセス制御などの ZFS の機能を使え、数十万の IOPS、サブミリ秒の低レイテンシーに対応します。オンプレミスの ZFS の NAS や Linux のワークロードの移行に向いています。\n\nFSx for NetApp ONTAP は NetApp の機能が必要な場合、FSx for Windows File Server は SMB と Windows のワークロード、FSx for Lustre は HPC や機械学習の高スループットが必要な場合に使います。EFS は、Linux 向けのスケーラブルな NFS のファイルシステムです。\n\nZFS の機能と運用手順を継続したい場合は、FSx for OpenZFS が最も適しています。",
+  "explanation": "Amazon FSx は、複数のファイルシステムをマネージドで提供します。FSx for OpenZFS は、OpenZFS をベースとしたファイルシステムで、NFS でアクセスします。スナップショット、効率的なクローン、データ圧縮などの ZFS の機能を使え、サブミリ秒の低レイテンシーに対応します（レイテンシーは構成やキャッシュの状況によります）。ファイルシステムやボリューム、バックアップの管理は、AWS Management Console、AWS CLI、Amazon FSx API で行います。オンプレミスの ZFS の NAS や Linux のワークロードの移行に向いています。\n\nFSx for NetApp ONTAP は NetApp の機能が必要な場合、Amazon FSx for Windows File Server は SMB と Windows のワークロード、FSx for Lustre は HPC や機械学習の高スループットが必要な場合に使います。EFS は、Linux 向けのスケーラブルな NFS のファイルシステムです。\n\nNFS アクセスと必要なストレージ機能を維持し、管理操作は AWS の管理インターフェイスへ移行する場合は、FSx for OpenZFS が最も適しています。",
   "keyPoints": [
-    "ZFS の機能と運用手順を継続・低レイテンシーの NFS → FSx for OpenZFS",
-    "NetApp なら FSx for NetApp ONTAP、Windows なら FSx for Windows、HPC なら FSx for Lustre",
+    "ZFS 由来のスナップショット・クローン・圧縮と低レイテンシーの NFS → FSx for OpenZFS（管理操作は AWS の管理インターフェイスへ移行）",
+    "NetApp なら FSx for NetApp ONTAP、Windows なら Amazon FSx for Windows File Server、HPC なら FSx for Lustre",
     "EFS は汎用の NFS だが、ZFS の機能はない"
   ],
   "references": [

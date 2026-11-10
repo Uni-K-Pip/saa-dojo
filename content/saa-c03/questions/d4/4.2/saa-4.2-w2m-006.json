@@ -20,36 +20,36 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "事業環境の変化に伴い、インフラの費用の見直しを進めている企業があります。ある企業は、3 年の全額前払いの Standard リザーブドインスタンスを購入して、使っています。事業の縮小で、一部のインスタンスが不要になりましたが、予約期間はあと 1 年以上残っています。不要になった予約の費用の損失を、できるだけ減らしたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある企業は、Amazon EC2 の 3 年間・全額前払いの Standard Reserved Instances（RI）を利用しています。事業の縮小で、一部のインスタンスが不要になりましたが、予約期間はあと 1 年以上残っています。この企業は販売者登録を完了しており、対象の予約は Reserved Instance Marketplace の出品条件をすべて満たしています。不要になった予約の費用の損失を、できるだけ減らしたいと考えています。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "不要になった RI を、Savings Plans に変換して、割引を維持する。",
+      "text": "不要になった Reserved Instances を、Savings Plans に変換して、割引を維持する。",
       "correct": false,
       "rationale": "RI を Savings Plans に変換する仕組みはありません。購入済みの RI は、そのまま残ります。"
     },
     {
       "id": "b",
-      "text": "購入した予約を AWS に申請して、キャンセルして、前払い金の払い戻しを受ける。",
+      "text": "購入した予約を AWS に申請してキャンセルし、未使用の期間に相当する前払い金の払い戻しを受ける。",
       "correct": false,
-      "rationale": "購入した RI は、基本的にキャンセルして払い戻しを受けることはできません。契約の期間中は、費用が発生します。"
+      "rationale": "購入した RI は、基本的にキャンセルして払い戻しを受けることはできません。未使用でも前払い金は原則返金されません。"
     },
     {
       "id": "c",
-      "text": "Standard リザーブドインスタンスを、別のファミリーの Convertible リザーブドインスタンスに交換する。",
+      "text": "Standard Reserved Instances を、別のファミリーの Convertible Reserved Instances に交換する。",
       "correct": false,
       "rationale": "交換できるのは Convertible RI で、Standard RI は交換の対象ではありません。不要な分の費用を減らす手段にもなりません。"
     },
     {
       "id": "d",
-      "text": "不要になった Standard リザーブドインスタンスを、リザーブドインスタンスマーケットプレイスに出品して、他の AWS 利用者に販売する。",
+      "text": "Standard Reserved Instances を、Reserved Instance Marketplace に出品して販売する。",
       "correct": true,
-      "rationale": "Standard RI は、条件を満たせば、RI マーケットプレイスで販売できます。残りの期間分の価値を回収でき、損失を減らせます。"
+      "rationale": "Standard RI は、出品条件を満たせば、Reserved Instance Marketplace で販売できます。売却が成立すれば、販売手数料を差し引いた売却代金を受け取り、損失の一部を回収できます。"
     }
   ],
-  "explanation": "リザーブドインスタンス（RI）には、Standard と Convertible があります。Standard RI は、割引率が高く、インスタンスファミリーなどの属性は変更できません（AZ、スコープ、ネットワークタイプ、インスタンスサイズは、条件により変更可能）。Convertible RI は、割引率が低めですが、別のファミリーなどの Convertible RI に交換できます。\n\nRI は、購入後にキャンセルして払い戻しを受けることはできません。不要になった Standard RI は、条件を満たせば、リザーブドインスタンスマーケットプレイスに出品して、他の AWS 利用者に販売できます（Convertible RI は出品できません）。支払い済みの前払い金に対して、残りの期間に応じた価値を回収できます。出品には、米国の銀行口座などの条件があります。\n\nRI は、Savings Plans に変換できません。そのため、必要量の見直しには、購入量を慎重に決める、Convertible を選ぶ、Savings Plans を併用するなどの検討が必要です。",
+  "explanation": "リザーブドインスタンス（RI）には、Standard と Convertible があります。Standard RI は、割引率が高く、インスタンスファミリーなどの属性は変更できません（AZ、スコープ、ネットワークタイプ、インスタンスサイズは、条件により変更可能）。Convertible RI は、割引率が低めですが、別のファミリーなどの Convertible RI に交換できます。\n\nRI は、購入後にキャンセルして払い戻しを受けることはできません。不要になった Standard RI は、出品条件を満たせば、Reserved Instance Marketplace に出品して、他の AWS 利用者に販売できます（Convertible RI は出品できません）。出品には、販売者登録（米国の銀行口座などの条件があります）、残りの期間が 1 か月以上あること、ボリュームディスカウントで購入していないことなどの条件があります。ただし、売却が成立するかどうかは保証されず、回収できる金額も売却価格で決まります。売却価格（前払い価格）に対して 12% の手数料が差し引かれます。\n\nRI は、Savings Plans に変換できません。そのため、必要量の見直しには、購入量を慎重に決める、Convertible を選ぶ、Savings Plans を併用するなどの検討が必要です。",
   "keyPoints": [
-    "不要になった Standard RI → RI マーケットプレイスで販売（Convertible RI は販売不可）",
+    "不要になった Standard RI → Reserved Instance Marketplace で販売（売却の成立と回収額は保証されず、12% の手数料がかかる。Convertible RI は販売不可）",
     "RI は購入後のキャンセル・払い戻しはできない",
     "柔軟性が必要なら Convertible RI や Savings Plans を検討"
   ],
