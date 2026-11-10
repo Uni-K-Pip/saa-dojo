@@ -14,31 +14,31 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS Glue Data Catalog のテーブルでスキーマを定義し、Firehose のレコード形式の変換で JSON を Apache Parquet に変換する。",
+      "text": "Glue Data Catalog のテーブルでスキーマを定義し、レコード形式の変換で JSON を Apache Parquet に変換する。",
       "correct": true,
       "rationale": "Firehose は、AWS Glue Data Catalog のテーブルのスキーマを使って、JSON を Parquet や ORC などの列指向の形式に変換して配信できます。列指向の形式はスキャン量が減り、Athena のクエリが速く安くなります。コードは不要です。"
     },
     {
       "id": "b",
-      "text": "新しい Firehose ストリームの作成時に動的パーティショニングを有効にし、インライン解析でレコード内の顧客 ID を取り出して S3 のプレフィックスを分ける。",
+      "text": "新しいストリームで動的パーティショニングを有効にし、インライン解析で取り出した顧客 ID で S3 のプレフィックスを分ける。",
       "correct": true,
       "rationale": "動的パーティショニングは、ストリームの作成時に有効にします（有効にしていない既存のストリームには、後から有効にできません）。レコードの内容（顧客 ID など）に基づいて S3 のプレフィックスを分けて保存します。Athena 側で顧客 ID をパーティションキーとして定義し、パーティションの登録またはパーティション射影を設定して、検索条件に顧客 ID を指定すると、必要なプレフィックスだけをスキャンするようになり、スキャン量が減ります。"
     },
     {
       "id": "c",
-      "text": "顧客 ID では分割せず、Firehose のバッファ間隔を最小にして、小さな JSON ファイルを多数配信する。",
+      "text": "顧客 ID では分割せず、Firehose のバッファ間隔を最小にして、小さな JSON ファイルを多数配信し、データの到着の速さを優先する。",
       "correct": false,
       "rationale": "小さなファイルが増えると、一般にクエリの効率が悪化します。また、列指向の形式への変換やパーティション分割の効果も得られず、Athena のスキャン量とクエリの時間を減らす目的に合いません。"
     },
     {
       "id": "d",
-      "text": "AWS Lambda 関数をデータ変換に設定し、関数のコードで Parquet に書き換える。",
+      "text": "Firehose のデータ変換に AWS Lambda 関数を設定し、関数のコードでレコードを Apache Parquet に書き換えてから S3 に配信する。",
       "correct": false,
       "rationale": "Firehose の標準機能であるレコード形式の変換で Parquet への変換ができるため、関数のコードを書いて運用する必要はありません。コードを運用したくないという要件に反します。"
     },
     {
       "id": "e",
-      "text": "S3 に保存した JSON を、毎日、Amazon EMR のクラスターで Parquet に変換し直す。",
+      "text": "S3 に保存した JSON を、毎日、Amazon EMR のクラスターで Apache Parquet に変換し直し、顧客 ID のプレフィックスに書き出す。",
       "correct": false,
       "rationale": "クラスターを運用する必要があり、変換用のクラスターを運用したくないという要件に反します。取り込みの時点で Firehose が変換できます。"
     }

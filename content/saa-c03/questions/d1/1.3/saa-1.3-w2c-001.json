@@ -14,25 +14,25 @@
   "options": [
     {
       "id": "a",
-      "text": "バケットのデフォルト暗号化を、AWS KMS キーを使う SSE-KMS に変更する。",
+      "text": "バケットのデフォルト暗号化を、AWS KMS キーを使う SSE-KMS に変更し、バケットキーを有効にして KMS へのリクエスト数を減らし、KMS キーポリシーで利用者を限定する。",
       "correct": false,
       "rationale": "SSE-KMS は保存時の暗号化の設定です。クライアントとの通信が HTTP か HTTPS かには関係せず、HTTP によるリクエストは拒否されません。"
     },
     {
       "id": "b",
-      "text": "S3 のブロックパブリックアクセスの設定を、すべて有効にする。",
+      "text": "S3 のブロックパブリックアクセスの設定を、アカウントとバケットの両方ですべて有効にし、パブリックなポリシーも ACL も拒否する。",
       "correct": false,
       "rationale": "ブロックパブリックアクセスは、意図しない公開を防ぐ設定です。認証されたリクエストが HTTP と HTTPS のどちらを使うかは制御しないため、HTTP を拒否できません。"
     },
     {
       "id": "c",
-      "text": "バケットポリシーで、条件 aws:SecureTransport が false のリクエストをすべての Principal に対して Deny する。",
+      "text": "バケットポリシーで、aws:SecureTransport が false のリクエストをすべての Principal に対して Deny する。",
       "correct": true,
       "rationale": "aws:SecureTransport は、リクエストが HTTPS で送られたかを示す条件キーです。false のリクエストを Deny するバケットポリシーで、HTTP のアクセスを確実に拒否できます。明示的な Deny は他の Allow より優先されます。"
     },
     {
       "id": "d",
-      "text": "S3 Object Lock を有効にして、オブジェクトを書き換えできないようにする。",
+      "text": "S3 Object Lock をガバナンスモードで有効にして、保持期間の間はオブジェクトの削除や上書きをできないようにする。",
       "correct": false,
       "rationale": "Object Lock はオブジェクトの削除や上書きを防ぐ機能で、通信の暗号化とは関係がありません。HTTP によるリクエストの拒否にはなりません。"
     }

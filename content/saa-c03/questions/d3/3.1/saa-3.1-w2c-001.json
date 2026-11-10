@@ -14,25 +14,25 @@
   "options": [
     {
       "id": "a",
-      "text": "オンプレミスに S3 File Gateway をデプロイして NFS 共有をバックアップ先に指定し、S3 ライフサイクルで S3 Glacier Deep Archive へ移行する。",
+      "text": "オンプレミスに S3 File Gateway をデプロイし、バックアップサーバーから NFS 共有をバックアップ先に指定して、S3 ライフサイクルルールで一定期間が過ぎたものを S3 Glacier Deep Archive へ移行する。",
       "correct": false,
       "rationale": "S3 File Gateway はファイル共有（NFS/SMB）を提供します。バックアップソフトウェアはテープライブラリにしか書き出せないため、ファイル共有を書き出し先にするにはテープベースのバックアップ方式そのものを変える必要があり、方式を変更できないという制約を満たしません。"
     },
     {
       "id": "b",
-      "text": "オンプレミスに Volume Gateway をキャッシュ型ボリュームで構成し、iSCSI ディスクとしてバックアップサーバーに接続する。",
+      "text": "オンプレミスに Volume Gateway をキャッシュ型ボリュームで構成し、iSCSI ディスクとしてバックアップサーバーに接続して、ボリュームのスナップショットを定期的に取得し、古いスナップショットは削除する。",
       "correct": false,
       "rationale": "Volume Gateway はブロックストレージ（ディスク）として見えます。バックアップソフトウェアが書き出せるのはテープデバイスだけなので使えません。また、ボリュームのデータは S3 Glacier Deep Archive のような低コストの長期保管層には置かれません。"
     },
     {
       "id": "c",
-      "text": "オンプレミスに Tape Gateway をデプロイし、仮想テープライブラリとして認識させ、Deep Archive Pool を指定して仮想テープを作成し、アーカイブしたテープを S3 Glacier Deep Archive に保管する。",
+      "text": "オンプレミスに Tape Gateway をデプロイして仮想テープライブラリとして認識させ、Deep Archive Pool を指定して作成した仮想テープをアーカイブし、S3 Glacier Deep Archive に保管する。",
       "correct": true,
       "rationale": "Tape Gateway は、iSCSI 接続の仮想テープライブラリとして物理テープの代わりになります。バックアップソフトウェアや既存のテープベースのバックアップ方式を維持でき、Deep Archive Pool を指定して作成した仮想テープは、アーカイブすると S3 Glacier Deep Archive に保管されるため、ほとんど読み出さないデータを最も低コストで長期保管できます。"
     },
     {
       "id": "d",
-      "text": "AWS DataSync で、バックアップ済みのデータを週に 1 回 S3 Glacier Deep Archive へコピーする。",
+      "text": "オンプレミスに DataSync エージェントを配置し、タスクでバックアップ済みのデータを週に 1 回、S3 Glacier Deep Archive のストレージクラスを指定したバケットへコピーする。",
       "correct": false,
       "rationale": "DataSync はファイルやオブジェクトを転送するサービスで、テープライブラリの代わりにはなりません。バックアップソフトウェアのテープ管理やカタログを通らないため、既存のテープベースのバックアップ方式を維持できません。"
     }

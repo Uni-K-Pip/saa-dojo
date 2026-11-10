@@ -19,25 +19,25 @@
   "options": [
     {
       "id": "a",
-      "text": "AWS コストと使用状況レポート（CUR）で、時間単位とリソース ID を含む設定にして Amazon S3 に出力し、Amazon Athena でクエリする。",
+      "text": "AWS コストと使用状況レポート（CUR）を、時間単位とリソース ID を含む設定で Amazon S3 に出力し、Amazon Athena でクエリする。",
       "correct": true,
       "rationale": "CUR は、最も詳細なコストと使用状況のデータを、S3 に継続的に出力します。時間単位の粒度とリソース ID を含める設定にすれば、リソース単位の集計ができます。Athena と統合でき、S3 のデータに SQL で直接クエリできるので、独自のシステムは不要です。"
     },
     {
       "id": "b",
-      "text": "AWS Cost Explorer の画面でグラフを確認し、画面の表示を手作業で表計算ソフトに転記する。",
+      "text": "AWS Cost Explorer の画面でサービス別にグラフを確認し、表示された値を手作業で表計算ソフトに転記して、リソースごとに集計する。",
       "correct": false,
       "rationale": "Cost Explorer は傾向の可視化と分析のためのツールで、任意の SQL での集計には向きません。手作業の転記は運用の手間も大きくなります。"
     },
     {
       "id": "c",
-      "text": "AWS Budgets で DB ごとに予算を作成し、実績をレポートとして受け取る。",
+      "text": "AWS Budgets で DB インスタンスごとに予算を作成し、しきい値を超えたときの通知と、定期的な予算レポートで実績を確認する。",
       "correct": false,
       "rationale": "Budgets は、予算としきい値によるアラートのための機能です。リソース単位の詳細なデータを SQL で自由に集計する用途ではありません。"
     },
     {
       "id": "d",
-      "text": "Amazon CloudWatch の RDS のメトリクスを集計して、コストを推定する。",
+      "text": "Amazon CloudWatch の RDS と Aurora のメトリクスを時間単位で集計し、使用量に公開されている単価を掛けて、リソースごとのコストを推定する。",
       "correct": false,
       "rationale": "CloudWatch のメトリクスは性能や使用状況の監視用で、実際の請求額のデータは含まれません。コストを正確に集計するにはコストのデータを使います。"
     }

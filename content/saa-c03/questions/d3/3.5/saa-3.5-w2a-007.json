@@ -14,25 +14,25 @@
   "options": [
     {
       "id": "a",
-      "text": "S3 にファイルが届くたびに AWS Lambda 関数を起動し、1 ファイルずつ Parquet に変換して書き出す。",
+      "text": "S3 のイベント通知で AWS Lambda 関数を起動し、届いた CSV を 1 ファイルずつ読み込んで Parquet に変換し、日付のプレフィックスで S3 に書き出す。",
       "correct": false,
       "rationale": "Lambda には実行時間（最大 15 分）とメモリの上限があり、数百 GB の結合処理を含む変換には向きません。複数のデータとの結合も、関数のコードで自前で実装することになります。"
     },
     {
       "id": "b",
-      "text": "常時稼働の Amazon EMR クラスターを作成し、Spark のジョブを cron で毎晩実行する。",
+      "text": "常時稼働の Amazon EMR クラスターを作成し、Spark のジョブを cron で毎晩実行して、結合した結果を Parquet で日付ごとに S3 に書き出す。ノードの管理は自分で行う。",
       "correct": false,
       "rationale": "常時稼働のクラスターは使わない時間も料金がかかり、ノードの管理やバージョンの更新も必要です。クラスターの管理を避けたいという要件を満たしません。"
     },
     {
       "id": "c",
-      "text": "AWS Glue のクローラーでスキーマを Data Catalog に登録し、Spark ベースの Glue ETL ジョブで変換した結果を Parquet でパーティション分割して S3 に書き出す。ジョブはトリガーで毎晩起動する。",
+      "text": "Glue クローラーで Data Catalog にスキーマを登録し、Spark の Glue ETL ジョブで結合、Parquet 変換、日付パーティション分割を行う。ジョブは毎晩トリガーで起動する。",
       "correct": true,
       "rationale": "AWS Glue はサーバーレスの ETL サービスで、クラスターを管理せずに Spark のジョブを実行できます。クローラーがスキーマを Data Catalog に登録し、ETL ジョブが結合と Parquet への変換、パーティション分割を行い、スケジュールのトリガーで毎晩自動実行できます。"
     },
     {
       "id": "d",
-      "text": "Amazon EC2 インスタンスで Python スクリプトを cron で実行し、pandas で変換して S3 に書き出す。",
+      "text": "Amazon EC2 インスタンスで Python スクリプトを cron で毎晩実行し、pandas で CSV を複数のマスターデータと結合・変換して、Parquet で日付ごとに S3 に書き出す。",
       "correct": false,
       "rationale": "1 台のインスタンスのメモリでは 500 GB の結合処理を扱いにくく、スケールの設計、障害時の再実行、パッチ適用などをすべて自分で運用する必要があります。"
     }

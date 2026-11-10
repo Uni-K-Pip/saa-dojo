@@ -14,25 +14,25 @@
   "options": [
     {
       "id": "a",
-      "text": "Amazon Managed Service for Apache Flink のアプリケーションで、ストリームを読み取り、加盟店 ID でキー分割して、直近 5 分間のスライディングウィンドウで集計し、しきい値を超えたら通知する。",
+      "text": "Managed Service for Apache Flink のアプリケーションで、ストリームを加盟店 ID でキー分割し、5 分間のスライディングウィンドウで集計して、しきい値超過を通知する。",
       "correct": true,
       "rationale": "Managed Service for Apache Flink は、ストリームのデータをリアルタイムに処理するマネージドサービスです。時間のウィンドウ（タンブリング、スライディング）を使った集計や、状態を保持する処理を、サーバーを管理せずに実行できます。Kinesis Data Streams をソースにできます。"
     },
     {
       "id": "b",
-      "text": "AWS Lambda 関数をイベントソースマッピングで起動し、1 回の呼び出しの中でレコードを集計する。",
+      "text": "AWS Lambda 関数をイベントソースマッピングでストリームに接続し、1 回の呼び出しで受け取ったレコードを加盟店ごとに集計して、しきい値を超えたら Amazon SNS で通知する。",
       "correct": false,
       "rationale": "1 回の呼び出し内の集計では要件を満たしません。Lambda のタンブリングウィンドウはシャード単位の状態保持に対応しますが、複数のシャードの状態を自動では統合しないため、シャードをまたぐ加盟店ごとの 5 分間の集計には向きません。"
     },
     {
       "id": "c",
-      "text": "Amazon Data Firehose で S3 に保存し、Amazon Athena で 5 分ごとにクエリする。",
+      "text": "Amazon Data Firehose でストリームのデータを S3 に配信し、Amazon Athena のクエリを 5 分ごとに実行して、結果がしきい値を超えたら Amazon SNS で通知する。",
       "correct": false,
       "rationale": "Firehose のバッファリングと Athena のクエリでは、ほぼリアルタイムの集計と通知の要件を満たしにくく、スケジュール実行の仕組みも必要になります。"
     },
     {
       "id": "d",
-      "text": "Amazon SQS キューに決済イベントを送り、Amazon EC2 のワーカーで集計する。",
+      "text": "Amazon SQS キューに決済イベントを送り、Amazon EC2 の Auto Scaling グループのワーカーが加盟店ごとに集計して、しきい値を超えたら Amazon SNS で通知する。",
       "correct": false,
       "rationale": "ワーカーの管理が必要で、サーバーの管理を避けたいという要件に反します。ウィンドウの状態の管理も自分で実装することになります。"
     }
