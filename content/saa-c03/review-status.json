@@ -72,8 +72,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.1-w2m-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.1-w2m-002": {
     "status": "verified",
@@ -96,12 +96,12 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.1-w2m-007": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.1-w2m-008": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.1-w2m-009": {
     "status": "verified",
@@ -120,12 +120,12 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.1-w2m-013": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.1-w2m-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.1-w2m-015": {
     "status": "verified",
@@ -204,8 +204,8 @@
     "checkedAt": "2026-11-09"
   },
   "saa-1.2-w2m-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-002": {
     "status": "verified",
@@ -216,8 +216,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.2-w2m-004": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-005": {
     "status": "verified",
@@ -236,12 +236,12 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.2-w2m-009": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-010": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-011": {
     "status": "verified",
@@ -252,28 +252,28 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.2-w2m-013": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-015": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-016": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-1.2-w2m-017": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.2-w2m-018": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.3-g3-001": {
     "status": "verified",
@@ -340,8 +340,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-1.3-w2m-004": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.3-w2m-005": {
     "status": "verified",
@@ -368,20 +368,20 @@
     "checkedAt": "2026-11-09"
   },
   "saa-1.3-w2m-011": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.3-w2m-012": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.3-w2m-013": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-1.3-w2m-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-ex-001": {
     "status": "verified",
@@ -476,8 +476,8 @@
     "checkedAt": "2026-11-04"
   },
   "saa-2.1-g4-023": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2c-001": {
     "status": "verified",
@@ -516,8 +516,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-2.1-w2m-003": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-004": {
     "status": "verified",
@@ -544,64 +544,64 @@
     "checkedAt": "2026-11-10"
   },
   "saa-2.1-w2m-010": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-011": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-012": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-2.1-w2m-013": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-015": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-016": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-2.1-w2m-017": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-018": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-019": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-020": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-021": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-022": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-2.1-w2m-023": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.1-w2m-024": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-ex-001": {
     "status": "verified",
@@ -680,8 +680,8 @@
     "checkedAt": "2026-11-09"
   },
   "saa-2.2-w2c-009": {
-    "status": "pending",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2c-010": {
     "status": "verified",
@@ -720,16 +720,16 @@
     "checkedAt": "2026-11-09"
   },
   "saa-2.2-w2m-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-002": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-2.2-w2m-003": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-004": {
     "status": "verified",
@@ -760,24 +760,24 @@
     "checkedAt": "2026-11-10"
   },
   "saa-2.2-w2m-011": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-012": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-013": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-015": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-2.2-w2m-016": {
     "status": "verified",
@@ -812,8 +812,8 @@
     "checkedAt": "2026-11-04"
   },
   "saa-3.1-w2c-001": {
-    "status": "pending",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.1-w2c-002": {
     "status": "verified",
@@ -856,8 +856,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-3.1-w2m-002": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.1-w2m-003": {
     "status": "verified",
@@ -944,28 +944,28 @@
     "checkedAt": "2026-11-10"
   },
   "saa-3.2-w2m-002": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-003": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-004": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-007": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.2-w2m-008": {
     "status": "verified",
@@ -1056,24 +1056,24 @@
     "checkedAt": "2026-11-10"
   },
   "saa-3.3-w2m-004": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.3-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.3-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.3-w2m-007": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.3-w2m-008": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.4-g8-001": {
     "status": "verified",
@@ -1132,16 +1132,16 @@
     "checkedAt": "2026-11-09"
   },
   "saa-3.4-w2m-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.4-w2m-002": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.4-w2m-003": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.4-w2m-004": {
     "status": "verified",
@@ -1172,8 +1172,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-3.5-w2a-007": {
-    "status": "pending",
-    "checkedAt": "2026-11-10"
+    "status": "needs-fix",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.5-w2a-008": {
     "status": "verified",
@@ -1228,8 +1228,8 @@
     "checkedAt": "2026-11-09"
   },
   "saa-3.5-w2m-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.5-w2m-002": {
     "status": "verified",
@@ -1240,16 +1240,16 @@
     "checkedAt": "2026-11-10"
   },
   "saa-3.5-w2m-004": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.5-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-3.5-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.1-ex-001": {
     "status": "verified",
@@ -1332,8 +1332,8 @@
     "checkedAt": "2026-11-09"
   },
   "saa-4.1-w2c-006": {
-    "status": "pending",
-    "checkedAt": "2026-11-10"
+    "status": "needs-fix",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.1-w2c-007": {
     "status": "verified",
@@ -1384,20 +1384,20 @@
     "checkedAt": "2026-11-10"
   },
   "saa-4.1-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.1-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.1-w2m-007": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.1-w2m-008": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.2-w2a-001": {
     "status": "verified",
@@ -1412,8 +1412,8 @@
     "checkedAt": "2026-11-09"
   },
   "saa-4.2-w2a-004": {
-    "status": "pending",
-    "checkedAt": "2026-11-10"
+    "status": "needs-fix",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.2-w2a-005": {
     "status": "verified",
@@ -1443,6 +1443,10 @@
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
+  "saa-4.2-w2a-012": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
   "saa-4.2-w2m-001": {
     "status": "verified",
     "checkedAt": "2026-11-10"
@@ -1460,8 +1464,8 @@
     "checkedAt": "2026-11-10"
   },
   "saa-4.2-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.2-w2m-006": {
     "status": "verified",
@@ -1472,8 +1476,20 @@
     "checkedAt": "2026-11-10"
   },
   "saa-4.2-w2m-008": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
+  "saa-4.3-w2a-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
+  "saa-4.3-w2a-002": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
+  "saa-4.3-w2a-003": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2a-004": {
     "status": "verified",
@@ -1491,21 +1507,33 @@
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
+  "saa-4.3-w2a-008": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
   "saa-4.3-w2a-009": {
     "status": "verified",
     "checkedAt": "2026-11-09"
+  },
+  "saa-4.3-w2a-010": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2a-011": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
-  "saa-4.3-w2a-013": {
+  "saa-4.3-w2a-012": {
     "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "checkedAt": "2026-11-11"
+  },
+  "saa-4.3-w2a-013": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2a-014": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2m-001": {
     "status": "verified",
@@ -1524,28 +1552,32 @@
     "checkedAt": "2026-11-10"
   },
   "saa-4.3-w2m-005": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.3-w2m-007": {
     "status": "verified",
     "checkedAt": "2026-11-10"
   },
   "saa-4.3-w2m-008": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
+  "saa-4.4-w2a-001": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.4-w2a-002": {
     "status": "verified",
     "checkedAt": "2026-11-09"
   },
   "saa-4.4-w2a-003": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.4-w2a-004": {
     "status": "verified",
@@ -1604,12 +1636,12 @@
     "checkedAt": "2026-11-10"
   },
   "saa-4.4-w2m-006": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.4-w2m-007": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-10"
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-4.4-w2m-008": {
     "status": "verified",
@@ -1679,6 +1711,10 @@
     "status": "verified",
     "checkedAt": "2026-11-09"
   },
+  "saa-basics-w2c-007": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
   "saa-basics-w2c-008": {
     "status": "verified",
     "checkedAt": "2026-11-09"
@@ -1703,6 +1739,14 @@
     "status": "verified",
     "checkedAt": "2026-11-09"
   },
+  "saa-basics-w2c-014": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
+  "saa-basics-w2c-015": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
   "saa-basics-w2c-016": {
     "status": "verified",
     "checkedAt": "2026-11-09"
@@ -1723,6 +1767,10 @@
     "status": "verified",
     "checkedAt": "2026-11-09"
   },
+  "saa-basics-w2c-021": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
+  },
   "saa-basics-w2c-022": {
     "status": "verified",
     "checkedAt": "2026-11-09"
@@ -1730,6 +1778,10 @@
   "saa-basics-w2c-023": {
     "status": "verified",
     "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-024": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-basics-w2c-025": {
     "status": "verified",
@@ -1746,6 +1798,10 @@
   "saa-basics-w2c-028": {
     "status": "verified",
     "checkedAt": "2026-11-09"
+  },
+  "saa-basics-w2c-029": {
+    "status": "verified",
+    "checkedAt": "2026-11-11"
   },
   "saa-basics-w2c-030": {
     "status": "verified",
