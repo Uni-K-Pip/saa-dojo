@@ -14,19 +14,19 @@
   "difficulty": 3,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある会社は、Microsoft SQL Server Enterprise Edition を使う業務アプリケーションを、Amazon RDS for SQL Server で運用しています。アプリケーションは T-SQL のクエリとストアドプロシージャを多数使っており、SQL Server のクライアントドライバーで接続しています。データベースのライセンス費用が大きな負担になっています。ライセンス費用を削減しつつ、アプリケーションのコードの書き換えを最小限にしたいと考えています。最も適切な方法はどれですか。",
+  "stem": "ある会社は、Microsoft SQL Server Enterprise Edition を使う業務アプリケーションを、Amazon RDS for SQL Server で運用しています。アプリケーションは T-SQL のクエリとストアドプロシージャを多数使っており、SQL Server のクライアントドライバーで接続しています。データベースのライセンス費用が大きな負担になっており、ライセンス費用そのものをなくしたいと考えています。現行のインスタンスは性能要件を満たす最小のサイズです。事前評価で、使用する SQL 機能とドライバーは Babelfish でサポートされ、軽微な変更で移行できると確認済みです。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "Aurora PostgreSQL 互換エディションに移行し、Babelfish を有効にして、アプリケーションを T-SQL と SQL Server のクライアントドライバーのまま接続する。",
+      "text": "Amazon Aurora PostgreSQL-Compatible Edition に Babelfish を有効にした新規クラスターを作成し、必要な軽微な修正と接続先の変更を行って移行する。",
       "correct": true,
-      "rationale": "Babelfish for Aurora PostgreSQL を有効にすると、Aurora PostgreSQL が SQL Server のワイヤープロトコル（TDS）と T-SQL に対応し、SQL Server 用のアプリケーションを少ない変更で接続できます。商用のライセンス費用がかからない Aurora に移行できるので、ライセンス費用を削減できます。"
+      "rationale": "Babelfish for Aurora PostgreSQL を有効にすると、Aurora PostgreSQL が SQL Server のワイヤープロトコル（TDS）と T-SQL に対応し、事前評価で互換性が確認できたアプリケーションを軽微な変更で接続できます。商用のライセンス費用がかからない Aurora に移行できるので、ライセンス費用そのものをなくせます。"
     },
     {
       "id": "b",
       "text": "Amazon RDS for SQL Server のまま、インスタンスクラスを小さくして、使用量に合わせてインスタンスのサイズを見直し、ライセンスを含む料金を下げる。",
       "correct": false,
-      "rationale": "インスタンスが小さくなれば、ライセンス費用も一部下がる場合がありますが、ライセンス費用そのものはなくなりません。商用のライセンスを使い続ける点は変わらず、削減の効果は限定的です。"
+      "rationale": "これ以上のサイズ縮小は性能要件を満たさず、SQL Server の商用ライセンス費用もなくなりません。"
     },
     {
       "id": "c",
@@ -41,7 +41,7 @@
       "rationale": "リレーショナルデータベースから NoSQL への移行は、データモデルとアプリケーションの大幅な書き換えが必要で、要件に反します。"
     }
   ],
-  "explanation": "データベースエンジンの選択では、アプリケーションとの互換性、機能、ライセンス費用を比較します。\n\n・商用エンジン（Oracle、SQL Server）: ライセンス費用がかかる。\n・オープンソース互換エンジン（Aurora MySQL／PostgreSQL、RDS の MySQL／PostgreSQL）: ライセンス費用がかからない。\n\nSQL Server から移行するとき、アプリケーションの書き換えが課題になります。Babelfish for Aurora PostgreSQL は、Aurora PostgreSQL に SQL Server の通信プロトコル（TDS）と T-SQL のサポートを追加する機能で、SQL Server 向けのアプリケーションを少ない変更で動かせます。移行前に、Babelfish Compass というツールで、アプリケーションの SQL の互換性を評価できます。互換性のない機能がある場合は、その部分を書き換えます。\n\n異種間の移行は、AWS SCT でスキーマを評価・変換し、AWS DMS でデータを移行するのが基本の流れです。",
+  "explanation": "データベースエンジンの選択では、アプリケーションとの互換性、機能、ライセンス費用を比較します。\n\n・商用エンジン（Oracle、SQL Server）: ライセンス費用がかかる。\n・オープンソース互換エンジン（Aurora MySQL／PostgreSQL、RDS の MySQL／PostgreSQL）: ライセンス費用がかからない。\n\nSQL Server から移行するとき、アプリケーションの書き換えが課題になります。Babelfish for Aurora PostgreSQL は、Aurora PostgreSQL に SQL Server の通信プロトコル（TDS）と T-SQL のサポートを追加する機能で、SQL Server 向けのアプリケーションを少ない変更で動かせます。移行前に、Babelfish Compass というツールで、アプリケーションの SQL の互換性を評価できます。互換性のない機能がある場合は、その部分を書き換えます。\n\nBabelfish への移行の流れは次のとおりです。(1) SQL Server から DDL を抽出する。(2) Babelfish Compass で互換性を評価し、必要な修正を行う。(3) Babelfish の T-SQL エンドポイントに DDL を適用する。(4) AWS DMS でデータを移行する。(5) アプリケーションの接続先を切り替えて、動作を検証する。Babelfish は SQL Server と完全な互換ではないため、事前の評価と検証が前提です。",
   "keyPoints": [
     "SQL Server のライセンス費用を削減しつつ、T-SQL のアプリを少ない変更で → Aurora PostgreSQL＋Babelfish",
     "商用エンジンからオープンソース互換エンジンへの移行でライセンス費用を削減できる",
@@ -55,6 +55,10 @@
     {
       "title": "What is AWS Database Migration Service? - AWS DMS",
       "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "Migrating a SQL Server database to Babelfish for Aurora PostgreSQL - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/babelfish-migration.html"
     }
   ],
   "lessonRefs": ["lesson-4.3-caching-backup-and-migration"],
