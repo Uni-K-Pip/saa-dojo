@@ -10,9 +10,9 @@
   ],
   "services": [
     "AWS Network Firewall",
-    "Amazon Virtual Private Cloud",
+    "Amazon VPC",
     "NAT gateway",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "security",
   "tags": [

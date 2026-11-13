@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K1", "3.5-K6"],
-  "services": ["Amazon Athena", "Amazon Simple Storage Service", "AWS Glue"],
+  "services": ["Amazon Athena", "Amazon S3", "AWS Glue"],
   "qualifier": "operational",
   "tags": ["Amazon Athena", "サーバーレス", "アドホッククエリ", "Data Catalog"],
   "difficulty": 1,

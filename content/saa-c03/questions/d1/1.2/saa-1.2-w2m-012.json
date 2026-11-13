@@ -11,7 +11,7 @@
   "services": [
     "Amazon CloudFront",
     "Elastic Load Balancing",
-    "Amazon Virtual Private Cloud",
+    "Amazon VPC",
     "AWS WAF"
   ],
   "qualifier": "security",

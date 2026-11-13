@@ -9,8 +9,8 @@
     "3.5-K6"
   ],
   "services": [
-    "Amazon Managed Streaming for Apache Kafka",
-    "Amazon Elastic Compute Cloud"
+    "Amazon MSK",
+    "Amazon EC2"
   ],
   "qualifier": "minimal-change",
   "tags": [

@@ -9,7 +9,7 @@
   ],
   "services": [
     "AWS Organizations",
-    "AWS Identity and Access Management"
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",
   "tags": [

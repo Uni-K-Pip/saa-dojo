@@ -9,8 +9,8 @@
   ],
   "services": [
     "AWS Backup",
-    "Amazon Elastic Block Store",
-    "Amazon Relational Database Service",
+    "Amazon EBS",
+    "Amazon RDS",
     "AWS Organizations"
   ],
   "qualifier": "security",

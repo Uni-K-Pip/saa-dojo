@@ -10,7 +10,7 @@
   "services": [
     "Elastic Load Balancing",
     "Amazon Route 53",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "availability",
   "tags": [

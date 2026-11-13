@@ -10,7 +10,7 @@
   ],
   "services": [
     "AWS Transit Gateway",
-    "Amazon Virtual Private Cloud"
+    "Amazon VPC"
   ],
   "qualifier": "operational",
   "tags": [

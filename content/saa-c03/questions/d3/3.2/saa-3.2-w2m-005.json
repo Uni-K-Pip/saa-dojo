@@ -8,7 +8,7 @@
     "3.2-K1"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "performance",
   "tags": [

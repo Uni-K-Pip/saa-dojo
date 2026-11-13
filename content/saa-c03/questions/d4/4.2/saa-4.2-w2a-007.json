@@ -6,7 +6,7 @@
   "knowledgeRefs": ["4.2-S3", "4.2-K8"],
   "services": [
     "AWS Fargate",
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "Amazon EventBridge",
     "AWS Lambda"
   ],

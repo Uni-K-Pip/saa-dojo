@@ -12,8 +12,8 @@ knowledgeRefs:
 services:
   - Amazon EC2 Auto Scaling
   - Elastic Load Balancing
-  - Amazon Simple Queue Service
-  - Amazon Simple Notification Service
+  - Amazon SQS
+  - Amazon SNS
   - Amazon CloudWatch
 estimatedMinutes: 15
 createdBy: w2a

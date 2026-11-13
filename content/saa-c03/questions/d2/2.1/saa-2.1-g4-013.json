@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K13", "2.1-S6"],
-  "services": ["Amazon Elastic File System", "Amazon Elastic Block Store", "Amazon Simple Storage Service", "Amazon EC2 Auto Scaling"],
+  "services": ["Amazon EFS", "Amazon EBS", "Amazon S3", "Amazon EC2 Auto Scaling"],
   "qualifier": "other",
   "tags": ["ファイルストレージ", "ブロックストレージ", "オブジェクトストレージ", "EFS", "マルチアタッチ"],
   "difficulty": 1,

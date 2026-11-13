@@ -10,7 +10,7 @@
   ],
   "services": [
     "AWS Compute Optimizer",
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "Amazon CloudWatch"
   ],
   "qualifier": "cost",

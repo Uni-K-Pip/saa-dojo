@@ -11,7 +11,7 @@
   "services": [
     "Amazon API Gateway",
     "AWS PrivateLink",
-    "Amazon Virtual Private Cloud"
+    "Amazon VPC"
   ],
   "qualifier": "security",
   "tags": [

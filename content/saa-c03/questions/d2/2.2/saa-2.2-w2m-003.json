@@ -11,7 +11,7 @@
   "services": [
     "Amazon EC2 Auto Scaling",
     "Elastic Load Balancing",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "availability",
   "tags": [

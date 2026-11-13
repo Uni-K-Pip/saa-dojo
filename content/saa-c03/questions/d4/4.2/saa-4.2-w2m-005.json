@@ -9,7 +9,7 @@
     "4.2-K2"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "AWS License Manager"
   ],
   "qualifier": "cost",

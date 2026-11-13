@@ -9,7 +9,7 @@
     "4.1-K11"
   ],
   "services": [
-    "Amazon Elastic File System"
+    "Amazon EFS"
   ],
   "qualifier": "cost",
   "tags": [

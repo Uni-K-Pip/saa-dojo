@@ -751,7 +751,7 @@
       ],
       "services": [
         "Amazon EC2 Auto Scaling",
-        "Amazon Simple Queue Service",
+        "Amazon SQS",
         "Amazon CloudWatch"
       ],
       "tags": [

@@ -8,10 +8,10 @@
     "1.2-S3"
   ],
   "services": [
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "AWS Fargate",
     "AWS Secrets Manager",
-    "AWS Identity and Access Management"
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "minimal-change",
   "tags": [

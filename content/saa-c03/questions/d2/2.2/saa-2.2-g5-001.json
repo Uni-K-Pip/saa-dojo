@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K1", "2.2-S2"],
-  "services": ["Amazon Elastic Compute Cloud", "Elastic Load Balancing", "Amazon RDS", "Amazon Route 53"],
+  "services": ["Amazon EC2", "Elastic Load Balancing", "Amazon RDS", "Amazon Route 53"],
   "qualifier": "availability",
   "tags": ["マルチ AZ", "リージョン", "アベイラビリティーゾーン", "データの保存場所"],
   "difficulty": 1,

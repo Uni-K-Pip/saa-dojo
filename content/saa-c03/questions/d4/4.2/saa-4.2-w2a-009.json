@@ -9,7 +9,7 @@
     "AWS Cost Explorer",
     "AWS Cost and Usage Report",
     "Amazon CloudWatch",
-    "Amazon Simple Notification Service"
+    "Amazon SNS"
   ],
   "qualifier": "operational",
   "tags": ["AWS Budgets", "予測アラート", "コスト管理ツール", "通知"],

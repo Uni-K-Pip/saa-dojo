@@ -8,7 +8,7 @@
       "front": "第三者が提供するデータセットを購読して、自社の S3 に取り込みたい。使うサービスは？",
       "back": "AWS Data Exchange。AWS Marketplace 上のプロバイダーのデータ製品を購読し、権利を得たデータを自分の Amazon S3 などにエクスポートして分析に使う。データ形式はファイル、API、Amazon Redshift のデータ共有など。自社データを製品として提供する側にもなれる。",
       "taskStatements": ["3.5"],
-      "services": ["AWS Data Exchange", "Amazon Simple Storage Service"],
+      "services": ["AWS Data Exchange", "Amazon S3"],
       "tags": ["データ取り込み", "サードパーティデータ"]
     },
     {
@@ -40,7 +40,7 @@
       "front": "Salesforce などの SaaS と S3 や Redshift の間で、コードを書かずにデータを転送したい。",
       "back": "Amazon AppFlow。SaaS アプリと AWS サービスの間のデータ転送をフルマネージドで設定する。実行はオンデマンド、スケジュール、イベント起動から選べ、転送中に項目のマッピングやフィルタリングもできる。自前の Lambda 転送コードの運用が不要になる点が決め手。",
       "taskStatements": ["3.5", "2.1"],
-      "services": ["Amazon AppFlow", "Amazon Simple Storage Service", "Amazon Redshift"],
+      "services": ["Amazon AppFlow", "Amazon S3", "Amazon Redshift"],
       "tags": ["SaaS連携", "データ転送"]
     },
     {
@@ -64,7 +64,7 @@
       "front": "オンプレミスのサーバーを Amazon ECS のクラスターに登録して、同じ API で運用できるか。",
       "back": "できる。Amazon ECS Anywhere は外部インスタンス（オンプレミスの物理・仮想マシン）をクラスターに登録し、EXTERNAL 起動タイプでタスクを動かす。AWS 側のコントロールプレーンで管理する。制約として、サービスのロードバランサー連携（ELB）は使えない。外向き通信やデータ処理向き。",
       "taskStatements": ["2.1", "3.2"],
-      "services": ["Amazon ECS Anywhere", "Amazon Elastic Container Service"],
+      "services": ["Amazon ECS Anywhere", "Amazon ECS"],
       "tags": ["コンテナ", "ハイブリッド"]
     },
     {
@@ -72,7 +72,7 @@
       "front": "Amazon EKS Anywhere は何をするサービスか。コントロールプレーンは誰が運用するか。",
       "back": "オンプレミスやエッジの自社インフラ上で、EKS と同じ Kubernetes ディストリビューション（EKS Distro）を使ったクラスターを構築・運用する仕組み。クラスターのライフサイクル運用は利用者の責任で、AWS がコントロールプレーンを管理する Amazon EKS とは運用責任が異なる。",
       "taskStatements": ["2.1", "3.2"],
-      "services": ["Amazon EKS Anywhere", "Amazon EKS Distro", "Amazon Elastic Kubernetes Service"],
+      "services": ["Amazon EKS Anywhere", "Amazon EKS Distro", "Amazon EKS"],
       "tags": ["コンテナ", "ハイブリッド", "Kubernetes"]
     },
     {
@@ -160,7 +160,7 @@
       "front": "AWS CLI から AWS を操作するとき、長期のアクセスキーを避けて認証する方法は？",
       "back": "IAM Identity Center でサインインする（aws configure sso）か、IAM ロールを引き受けて一時認証情報を使う。名前付きプロファイルで切り替える。EC2 上ならインスタンスプロファイルのロールを使う。アクセスキーを端末やコードに置くより漏えいリスクが小さい。",
       "taskStatements": ["1.1", "1.2"],
-      "services": ["AWS Command Line Interface", "AWS IAM Identity Center", "AWS Identity and Access Management"],
+      "services": ["AWS Command Line Interface", "AWS IAM Identity Center", "AWS Identity and Access Management (IAM)"],
       "tags": ["認証", "一時認証情報", "CLI"]
     },
     {
@@ -200,7 +200,7 @@
       "front": "AWS マネジメントコンソールへのサインインで、日常運用とルートユーザーをどう使い分けるか。",
       "back": "日常の操作は IAM Identity Center やフェデレーション、IAM ロールで行い、ルートユーザーは使わない。ルートユーザーが必要な作業（アカウント設定の変更や解約など、ルート限定の作業）だけに限定し、必ず MFA を有効にする。コンソールは Web UI で、同じ操作は CLI・SDK からも行える。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Management Console", "AWS Identity and Access Management", "AWS IAM Identity Center"],
+      "services": ["AWS Management Console", "AWS Identity and Access Management (IAM)", "AWS IAM Identity Center"],
       "tags": ["ルートユーザー", "MFA", "ベストプラクティス"]
     },
     {
@@ -240,7 +240,7 @@
       "front": "オンプレミスのサーバーを、アプリを改修せず（リフト＆シフト）最小のダウンタイムで EC2 へ移行したい。",
       "back": "AWS Application Migration Service。ソースサーバーのディスクを継続的にブロックレベルで AWS へレプリケーションし、テスト起動で動作を確認してから、切り替え（カットオーバー）で本番の EC2 インスタンスを起動する。再構築が不要でダウンタイムは切り替え時のみ。",
       "taskStatements": ["3.2", "2.2"],
-      "services": ["AWS Application Migration Service", "Amazon Elastic Compute Cloud"],
+      "services": ["AWS Application Migration Service", "Amazon EC2"],
       "tags": ["移行", "リフト＆シフト", "変更最小"]
     },
     {
@@ -264,7 +264,7 @@
       "front": "暗号鍵を自社専用の（他の顧客と共有しない）ハードウェアで管理したい、という要件で選ぶサービスは？",
       "back": "AWS CloudHSM。専有（シングルテナント）の HSM を VPC 内に置き、鍵は利用者だけが管理する。AWS は鍵にアクセスできない。FIPS 140 に準拠した鍵管理が必要な場合や、独自の暗号 API を使う場合に選ぶ。要件がなければマネージドな AWS KMS が運用負荷の小さい標準的な選択。",
       "taskStatements": ["1.3"],
-      "services": ["AWS CloudHSM", "AWS Key Management Service"],
+      "services": ["AWS CloudHSM", "AWS Key Management Service (AWS KMS)"],
       "tags": ["暗号化", "鍵管理", "HSM"]
     },
     {
@@ -272,7 +272,7 @@
       "front": "AWS Identity and Access Management（IAM）の特徴と、人・アプリへの権限付与の基本方針は？",
       "back": "IAM はユーザー、グループ、ロール、ポリシーで認証・認可を管理する、リージョンに依存しないグローバルなサービスで、追加料金はない。人にはフェデレーション、アプリや AWS サービスにはロールの一時認証情報を使い、長期キーは避ける。権限は最小権限で、ルートユーザーには MFA を設定する。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Identity and Access Management"],
+      "services": ["AWS Identity and Access Management (IAM)"],
       "tags": ["最小権限", "ロール", "基本"]
     },
     {
@@ -280,7 +280,7 @@
       "front": "オンプレミスや他リージョンのサーバーを、低コストで短い RPO・RTO の災害対策にしたい。",
       "back": "AWS Elastic Disaster Recovery。ソースサーバーを継続的にブロックレベルでレプリケーションし、AWS 側のステージング領域には小さなリソースだけを置いて費用を抑える。災害時に復旧用の EC2 を起動する。RPO は秒単位、RTO は分単位が目安で、パイロットライト型に近い。",
       "taskStatements": ["2.2"],
-      "services": ["AWS Elastic Disaster Recovery", "Amazon Elastic Compute Cloud"],
+      "services": ["AWS Elastic Disaster Recovery", "Amazon EC2"],
       "tags": ["災害対策", "レプリケーション", "RPO・RTO"]
     },
     {
@@ -296,7 +296,7 @@
       "front": "EC2 スポットインスタンスの割引率の目安と、向く・向かないワークロードは？",
       "back": "オンデマンドより最大90%安いが、EC2 の需要により中断される。中断の2分前に通知される。向くのは、バッチ処理、データ分析、CI/CD、ステートレスなウェブ層など中断や再実行が許容できるもの。常時稼働が必要でデータ損失が許されない DB などには向かない。",
       "taskStatements": ["4.2"],
-      "services": ["Amazon EC2 Spot Instances", "Amazon Elastic Compute Cloud"],
+      "services": ["Amazon EC2 Spot Instances", "Amazon EC2"],
       "tags": ["コスト最適化", "購入オプション"]
     },
     {
@@ -352,7 +352,7 @@
       "front": "AWS KMS と AWS CloudHSM はどう使い分けるか。",
       "back": "AWS KMS はマネージドで、IAM やキーポリシーによるアクセス制御と AWS サービス連携が容易で、運用負荷が小さい。AWS CloudHSM は専有の HSM を利用者が管理し、鍵の完全な管理権限と独自の暗号要件に応える。厳格な要件がなければ KMS。専有ハードウェアの明示要件があれば CloudHSM。",
       "taskStatements": ["1.3"],
-      "services": ["AWS Key Management Service", "AWS CloudHSM"],
+      "services": ["AWS Key Management Service (AWS KMS)", "AWS CloudHSM"],
       "tags": ["暗号化", "鍵管理", "使い分け"]
     },
     {

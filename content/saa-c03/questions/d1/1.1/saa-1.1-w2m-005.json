@@ -8,8 +8,8 @@
     "1.1-K4"
   ],
   "services": [
-    "AWS Identity and Access Management",
-    "Amazon Elastic Compute Cloud"
+    "AWS Identity and Access Management (IAM)",
+    "Amazon EC2"
   ],
   "qualifier": "operational",
   "tags": [

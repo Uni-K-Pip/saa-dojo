@@ -10,7 +10,7 @@
   ],
   "services": [
     "AWS Transfer Family",
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "cost",
   "tags": [

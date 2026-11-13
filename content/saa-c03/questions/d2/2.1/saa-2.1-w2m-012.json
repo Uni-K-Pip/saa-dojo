@@ -9,8 +9,8 @@
     "2.1-K5"
   ],
   "services": [
-    "Amazon Simple Notification Service",
-    "Amazon Simple Queue Service"
+    "Amazon SNS",
+    "Amazon SQS"
   ],
   "qualifier": "operational",
   "tags": [

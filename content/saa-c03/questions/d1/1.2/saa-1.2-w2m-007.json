@@ -10,7 +10,7 @@
   "services": [
     "AWS Direct Connect",
     "AWS Site-to-Site VPN",
-    "Amazon Virtual Private Cloud"
+    "Amazon VPC"
   ],
   "qualifier": "security",
   "tags": [

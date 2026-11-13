@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.2",
   "knowledgeRefs": ["4.2-K3"],
-  "services": ["Amazon EC2", "Amazon Simple Storage Service"],
+  "services": ["Amazon EC2", "Amazon S3"],
   "qualifier": "cost",
   "tags": ["リージョンの選択", "グローバルインフラ", "料金の地域差", "データ所在地"],
   "difficulty": 2,

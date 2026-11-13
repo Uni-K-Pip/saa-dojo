@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K7"],
-  "services": ["Amazon Simple Storage Service", "Amazon CloudFront", "AWS Global Accelerator", "AWS Direct Connect"],
+  "services": ["Amazon S3", "Amazon CloudFront", "AWS Global Accelerator", "AWS Direct Connect"],
   "qualifier": "performance",
   "tags": ["S3 Transfer Acceleration", "アップロード高速化", "エッジロケーション", "グローバル"],
   "difficulty": 1,

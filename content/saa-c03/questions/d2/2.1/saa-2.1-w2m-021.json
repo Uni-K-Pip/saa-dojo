@@ -9,7 +9,7 @@
     "2.1-K12"
   ],
   "services": [
-    "Amazon Simple Queue Service",
+    "Amazon SQS",
     "AWS Lambda"
   ],
   "qualifier": "operational",

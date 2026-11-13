@@ -14,8 +14,8 @@ knowledgeRefs:
 services:
   - Amazon Kinesis
   - Amazon Data Firehose
-  - Amazon Managed Streaming for Apache Kafka
-  - Amazon Simple Storage Service
+  - Amazon MSK
+  - Amazon S3
   - AWS PrivateLink
 estimatedMinutes: 15
 createdBy: w2a

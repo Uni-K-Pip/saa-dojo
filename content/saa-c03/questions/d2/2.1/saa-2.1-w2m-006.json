@@ -10,8 +10,8 @@
   ],
   "services": [
     "AWS Lambda",
-    "Amazon Simple Storage Service",
-    "Amazon Simple Queue Service"
+    "Amazon S3",
+    "Amazon SQS"
   ],
   "qualifier": "operational",
   "tags": [

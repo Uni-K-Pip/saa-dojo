@@ -9,7 +9,7 @@
   ],
   "services": [
     "Amazon CloudFront",
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "security",
   "tags": [

@@ -8,8 +8,8 @@
     "1.3-K4"
   ],
   "services": [
-    "Amazon Relational Database Service",
-    "AWS Key Management Service"
+    "Amazon RDS",
+    "AWS Key Management Service (AWS KMS)"
   ],
   "qualifier": "security",
   "tags": [

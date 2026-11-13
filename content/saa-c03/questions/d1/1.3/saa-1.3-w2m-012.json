@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon Aurora",
-    "AWS Key Management Service",
+    "AWS Key Management Service (AWS KMS)",
     "AWS Backup"
   ],
   "qualifier": "availability",

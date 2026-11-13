@@ -8,7 +8,7 @@
     "AWS DataSync",
     "AWS Storage Gateway",
     "AWS Snow Family",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Direct Connect"
   ],
   "qualifier": "operational",

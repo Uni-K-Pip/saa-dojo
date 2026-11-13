@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-K1", "4.3-S3"],
-  "services": ["AWS Organizations", "Amazon Relational Database Service"],
+  "services": ["AWS Organizations", "Amazon RDS"],
   "qualifier": "cost",
   "tags": ["一括請求", "リザーブドインスタンス", "AWS Organizations", "割引の共有"],
   "difficulty": 2,

@@ -10,7 +10,7 @@
   "services": [
     "Amazon Inspector",
     "Amazon Elastic Container Registry",
-    "Amazon Elastic Container Service"
+    "Amazon ECS"
   ],
   "qualifier": "operational",
   "tags": [

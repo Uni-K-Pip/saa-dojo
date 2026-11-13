@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K14", "2.1-K8"],
-  "services": ["Amazon Elastic Container Service", "AWS Fargate", "Amazon Elastic Kubernetes Service", "Amazon EC2 Auto Scaling", "AWS Lambda"],
+  "services": ["Amazon ECS", "AWS Fargate", "Amazon EKS", "Amazon EC2 Auto Scaling", "AWS Lambda"],
   "qualifier": "operational",
   "tags": ["コンテナオーケストレーション", "Amazon ECS", "ECSサービス", "自動復旧"],
   "difficulty": 1,

@@ -9,8 +9,8 @@
     "4.4-K1"
   ],
   "services": [
-    "Amazon Virtual Private Cloud",
-    "Amazon Elastic Compute Cloud",
+    "Amazon VPC",
+    "Amazon EC2",
     "NAT gateway"
   ],
   "qualifier": "cost",

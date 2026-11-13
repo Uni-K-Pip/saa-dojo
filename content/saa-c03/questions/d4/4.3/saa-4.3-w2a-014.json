@@ -6,7 +6,7 @@
   "knowledgeRefs": ["4.3-S2", "4.3-K7"],
   "services": [
     "Amazon Aurora",
-    "Amazon Relational Database Service",
+    "Amazon RDS",
     "AWS Database Migration Service (AWS DMS)"
   ],
   "qualifier": "minimal-change",

@@ -6,7 +6,7 @@
   "knowledgeRefs": ["1.1-S2", "1.1-K4"],
   "services": [
     "AWS Identity and Access Management (IAM)",
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "AWS CloudTrail"
   ],
   "qualifier": "operational",

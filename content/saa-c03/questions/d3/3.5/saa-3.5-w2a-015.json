@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K1", "3.5-S7", "3.5-K6"],
-  "services": ["Amazon Athena", "AWS Glue", "Amazon Simple Storage Service"],
+  "services": ["Amazon Athena", "AWS Glue", "Amazon S3"],
   "qualifier": "cost",
   "tags": ["Amazon Athena", "クエリコストの削減", "Parquet", "パーティション"],
   "difficulty": 2,

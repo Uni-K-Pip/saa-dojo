@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-K8", "4.3-S3"],
-  "services": ["Amazon Relational Database Service"],
+  "services": ["Amazon RDS"],
   "qualifier": "performance",
   "tags": ["リードレプリカ", "マルチ AZ", "レポートクエリ", "レプリケーション"],
   "difficulty": 2,

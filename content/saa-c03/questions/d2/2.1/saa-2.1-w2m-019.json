@@ -11,7 +11,7 @@
   "services": [
     "Amazon CloudFront",
     "Elastic Load Balancing",
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "performance",
   "tags": [

@@ -8,7 +8,7 @@
       "front": "SCP と IAM ポリシーの違いは？ SCP を付ければ権限が付与されるか。",
       "back": "付与されない。SCP は AWS Organizations のメンバーアカウントに対する権限の上限（ガードレール）で、許可は IAM ポリシー側で与える。実効権限は両方が許可した範囲の共通部分。メンバーアカウントのルートユーザーも制限されるが、管理アカウントとサービスリンクロールには効かない。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Organizations", "AWS Identity and Access Management"],
+      "services": ["AWS Organizations", "AWS Identity and Access Management (IAM)"],
       "tags": ["SCP", "マルチアカウント", "ガードレール"]
     },
     {
@@ -16,7 +16,7 @@
       "front": "KMS のキーポリシーと IAM ポリシーは、アクセス許可でどう関係するか。",
       "back": "キーポリシーは KMS キーに必須のリソースポリシーで、他のサービスと違いアカウントを自動では信頼しない。キーポリシーにアカウントを許可する文（IAM ポリシーを有効にする文）があって初めて、IAM ポリシーで許可できる。別アカウントから使うには、キーポリシーと呼び出し側の IAM ポリシーの両方で許可が必要。",
       "taskStatements": ["1.3", "1.1"],
-      "services": ["AWS Key Management Service", "AWS Identity and Access Management"],
+      "services": ["AWS Key Management Service (AWS KMS)", "AWS Identity and Access Management (IAM)"],
       "tags": ["KMS", "キーポリシー", "クロスアカウント"]
     },
     {
@@ -24,7 +24,7 @@
       "front": "許可と拒否が混在するとき、IAM の評価はどう決まるか。クロスアカウントではどうか。",
       "back": "既定は暗黙の拒否で、明示的な Deny は常に Allow に勝つ。同一アカウントでは、IAM ポリシーかリソースポリシーのどちらかが許可していれば足りる。別アカウントのアクセスは、リソース側と呼び出し側の双方が許可する必要がある。SCP や権限境界があれば、それらも許可している必要がある。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Identity and Access Management"],
+      "services": ["AWS Identity and Access Management (IAM)"],
       "tags": ["ポリシー評価", "明示的な拒否"]
     },
     {
@@ -32,7 +32,7 @@
       "front": "開発者に IAM ロールの作成を任せつつ、与えられる権限の上限を決めたい。何を使うか。",
       "back": "権限境界（Permissions Boundary）。IAM ユーザーやロールに付けられる権限の最大範囲を定めるもので、自身では許可を与えない。実効権限は ID ベースのポリシーと境界の共通部分になる。委任された管理者が作るロールにも同じ境界を必須にすれば、権限の昇格を防げる。アカウント単位の上限は SCP。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Identity and Access Management", "AWS Organizations"],
+      "services": ["AWS Identity and Access Management (IAM)", "AWS Organizations"],
       "tags": ["権限境界", "委任", "最小権限"]
     },
     {
@@ -40,7 +40,7 @@
       "front": "別アカウントのリソースへアクセスさせる方法は、IAM ロールの引き受けとリソースベースポリシーでどう違うか。",
       "back": "ロールの引き受けは、相手アカウントのロール（信頼ポリシーで呼び出し元を許可）に AWS STS で切り替え、一時認証情報でそのアカウントの権限で動く。リソースベースポリシー（S3 バケットポリシーなど）は、自分の ID のままリソースへ直接アクセスさせる。複数アカウントのリソースを横断して扱う運用ではロールが一般的。",
       "taskStatements": ["1.1"],
-      "services": ["AWS Security Token Service (AWS STS)", "AWS Identity and Access Management", "Amazon Simple Storage Service"],
+      "services": ["AWS Security Token Service (AWS STS)", "AWS Identity and Access Management (IAM)", "Amazon S3"],
       "tags": ["クロスアカウント", "STS", "リソースベースポリシー"]
     },
     {
@@ -48,7 +48,7 @@
       "front": "社員が複数の AWS アカウントやアプリにシングルサインオンするには、IAM ユーザーと IAM Identity Center のどちらか。",
       "back": "AWS IAM Identity Center。社員の ID を一元管理し（外部 IdP や Active Directory とも連携）、権限セットで複数アカウントへのアクセスを割り当て、一時認証情報で使う。人ごとに IAM ユーザーを各アカウントに作る方法は、長期認証情報が増え運用負荷も高いため避ける。",
       "taskStatements": ["1.1"],
-      "services": ["AWS IAM Identity Center", "AWS Identity and Access Management"],
+      "services": ["AWS IAM Identity Center", "AWS Identity and Access Management (IAM)"],
       "tags": ["SSO", "フェデレーション", "運用負荷"]
     },
     {
@@ -72,7 +72,7 @@
       "front": "セキュリティグループとネットワーク ACL の違いは？ 特定 IP を拒否するにはどちらか。",
       "back": "セキュリティグループはインスタンス（ENI）単位でステートフル、許可ルールのみ。ネットワーク ACL はサブネット単位でステートレス、許可と拒否の両方があり、番号の小さい順に評価される。特定 IP の明示的な拒否はネットワーク ACL。戻りの通信は NACL では明示的に許可が必要。",
       "taskStatements": ["1.2"],
-      "services": ["Amazon Virtual Private Cloud"],
+      "services": ["Amazon VPC"],
       "tags": ["セキュリティグループ", "NACL", "ステートフル"]
     },
     {
@@ -104,7 +104,7 @@
       "front": "VPC のプライベートサブネットから S3 へインターネットを経由せずアクセスするとき、ゲートウェイ型とインターフェイス型のエンドポイントはどう選ぶか。",
       "back": "ゲートウェイ型は S3 と DynamoDB 専用で、ルートテーブルにルートを追加して使い、追加料金はない。インターフェイス型（AWS PrivateLink）は ENI にプライベート IP を持ち、多くのサービスに使え、Direct Connect や VPN 経由のオンプレミスからも到達できるが、時間料金とデータ処理料金がかかる。",
       "taskStatements": ["1.2", "2.1"],
-      "services": ["Amazon Virtual Private Cloud", "AWS PrivateLink", "Amazon Simple Storage Service"],
+      "services": ["Amazon VPC", "AWS PrivateLink", "Amazon S3"],
       "tags": ["VPCエンドポイント", "PrivateLink", "コスト"]
     },
     {
@@ -112,7 +112,7 @@
       "front": "S3 のサーバー側暗号化で、鍵の使用履歴の監査やアクセス制御が必要なとき、どの方式を選ぶか。",
       "back": "SSE-KMS。KMS キーのキーポリシーと IAM でアクセスを制御でき、CloudTrail で鍵の使用を監査できる。SSE-S3 は S3 が鍵を管理し運用が最も簡単。SSE-C は リクエストごとに自分で鍵を渡す。KMS は呼び出し回数に応じた料金とクォータがあるため、大量リクエストでは注意する。",
       "taskStatements": ["1.3"],
-      "services": ["Amazon Simple Storage Service", "AWS Key Management Service"],
+      "services": ["Amazon S3", "AWS Key Management Service (AWS KMS)"],
       "tags": ["暗号化", "SSE-KMS", "監査"]
     },
     {
@@ -120,7 +120,7 @@
       "front": "KMS キーのローテーションは、AWS 管理キー、カスタマー管理キー、インポートしたキーマテリアルでどう違うか。",
       "back": "AWS 管理キーは毎年自動でローテーションされ、設定は変えられない。カスタマー管理キーは自動ローテーションを有効にでき、既定は365日ごとで、期間も指定できる。外部からインポートしたキーマテリアルは自動ローテーションに非対応で、オンデマンドか手動で行う。キー ID と ARN は変わらない。",
       "taskStatements": ["1.3"],
-      "services": ["AWS Key Management Service"],
+      "services": ["AWS Key Management Service (AWS KMS)"],
       "tags": ["キーローテーション", "KMS"]
     },
     {
@@ -128,7 +128,7 @@
       "front": "ALB で HTTPS を終端し、証明書の更新運用をなくしたい。何を使うか。",
       "back": "AWS Certificate Manager（ACM）。ACM で発行した公開証明書を ALB、CloudFront、API Gateway に関連付けて TLS を終端する。ACM が管理する証明書は更新も自動で行われる（DNS 検証にしておくと確実）。転送中の暗号化の運用負荷を最小にする標準的な方法。",
       "taskStatements": ["1.3", "2.1"],
-      "services": ["AWS Certificate Manager", "Elastic Load Balancing", "Amazon CloudFront"],
+      "services": ["AWS Certificate Manager (ACM)", "Elastic Load Balancing", "Amazon CloudFront"],
       "tags": ["TLS", "証明書", "転送中の暗号化"]
     },
     {
@@ -136,7 +136,7 @@
       "front": "S3 Object Lock のガバナンスモードとコンプライアンスモードは何が違うか。",
       "back": "どちらも WORM（書き込み後の変更・削除を防ぐ）で、バージョニングが必要。ガバナンスモードは特別な権限（s3:BypassGovernanceRetention）を持つユーザーなら保持期間中でも解除できる。コンプライアンスモードは、ルートユーザーを含め誰も保持期間を短縮できず削除できない。規制で厳格な保持が必要ならコンプライアンスモード。",
       "taskStatements": ["1.3"],
-      "services": ["Amazon Simple Storage Service"],
+      "services": ["Amazon S3"],
       "tags": ["WORM", "データ保持", "コンプライアンス"]
     },
     {
@@ -160,7 +160,7 @@
       "front": "EC2 上に自分で入れた DB と Amazon RDS で、責任共有モデルの違いは？",
       "back": "EC2 上の DB は OS とデータベースソフトのパッチ適用、バックアップ、高可用性の構成が利用者の責任。RDS は OS やエンジンのパッチ適用の基盤、バックアップ機能などを AWS が管理する。どちらも、データ、アクセス制御（セキュリティグループ、DB ユーザー）、暗号化の設定は利用者の責任。",
       "taskStatements": ["1.1", "2.2"],
-      "services": ["Amazon Elastic Compute Cloud", "Amazon Relational Database Service"],
+      "services": ["Amazon EC2", "Amazon RDS"],
       "tags": ["責任共有モデル", "マネージドサービス"]
     },
     {
@@ -176,7 +176,7 @@
       "front": "Amazon SQS の標準キューと FIFO キューは、順序と重複でどう違うか。",
       "back": "標準キューは少なくとも1回の配信で、順序は保証されず（ベストエフォート）、まれに重複する。ほぼ無制限のスループット。FIFO キューは順序（メッセージグループ内）と、重複排除（5分間）による exactly-once の処理を保証し、キュー名は .fifo で終わる。順序や重複が許されないなら FIFO。",
       "taskStatements": ["2.1"],
-      "services": ["Amazon Simple Queue Service"],
+      "services": ["Amazon SQS"],
       "tags": ["SQS", "FIFO", "疎結合"]
     },
     {
@@ -184,7 +184,7 @@
       "front": "SQS で、処理に失敗し続けるメッセージがキューを塞がないようにするには？ 可視性タイムアウトの役割は？",
       "back": "デッドレターキュー（DLQ）を設定し、受信回数が上限（maxReceiveCount）を超えたメッセージを退避させる。可視性タイムアウト（既定30秒）は、コンシューマーが受信したメッセージを他のコンシューマーから隠す時間で、処理時間より長くして二重処理を防ぐ。FIFO の DLQ は FIFO にする。",
       "taskStatements": ["2.1", "2.2"],
-      "services": ["Amazon Simple Queue Service"],
+      "services": ["Amazon SQS"],
       "tags": ["SQS", "DLQ", "可視性タイムアウト"]
     },
     {
@@ -192,7 +192,7 @@
       "front": "Amazon SNS と Amazon EventBridge は、どう使い分けるか。",
       "back": "SNS はトピックに発行したメッセージを多数のサブスクライバー（SQS、Lambda、HTTP、メールなど）へ一斉に配信する pub/sub。EventBridge はイベントの内容に基づくルールで、AWS サービス、SaaS、自作アプリのイベントを選別して複数のターゲットへルーティングし、スケジュール実行やアーカイブ・再生もできる。",
       "taskStatements": ["2.1"],
-      "services": ["Amazon Simple Notification Service", "Amazon EventBridge"],
+      "services": ["Amazon SNS", "Amazon EventBridge"],
       "tags": ["イベント駆動", "pub/sub", "使い分け"]
     },
     {
@@ -200,7 +200,7 @@
       "front": "1つのイベントを複数の処理系統に、確実に並行して配りたい。SNS と SQS をどう組み合わせるか。",
       "back": "ファンアウトパターン。SNS トピックに発行し、系統ごとの SQS キューをサブスクライブさせる。各キューが独立してメッセージを保持するため、一方の処理が遅くても失敗しても他に影響せず、再処理も個別にできる。SNS 直接の配信より耐久性と負荷調整に優れる。",
       "taskStatements": ["2.1"],
-      "services": ["Amazon Simple Notification Service", "Amazon Simple Queue Service"],
+      "services": ["Amazon SNS", "Amazon SQS"],
       "tags": ["ファンアウト", "疎結合"]
     },
     {
@@ -208,7 +208,7 @@
       "front": "SQS と Kinesis Data Streams の違いは？ 同じデータを複数のアプリが読み、再読み取りもしたいときはどちらか。",
       "back": "SQS は処理後に削除する作業キューで、各メッセージは1つのコンシューマーが処理し、再読み取りはできない。Kinesis Data Streams はレコードを保持期間の間残し、複数のコンシューマーが同じデータを読め、再読み取りもできる（順序はシャード内）。複数アプリ・再生が要るなら Kinesis。",
       "taskStatements": ["2.1"],
-      "services": ["Amazon Simple Queue Service", "Amazon Kinesis Data Streams"],
+      "services": ["Amazon SQS", "Amazon Kinesis Data Streams"],
       "tags": ["メッセージング", "ストリーミング", "使い分け"]
     },
     {
@@ -240,7 +240,7 @@
       "front": "RDS のマルチ AZ とリードレプリカは、目的と同期方式がどう違うか。",
       "back": "マルチ AZ は可用性のためで、別 AZ のスタンバイへ同期レプリケーションし、障害時に自動フェイルオーバーする（スタンバイは読み取り不可、同一リージョン）。リードレプリカは読み取りのスケールのためで、非同期レプリケーション、別リージョンにも作れ、昇格して独立した DB にもできる。",
       "taskStatements": ["2.2", "2.1"],
-      "services": ["Amazon Relational Database Service"],
+      "services": ["Amazon RDS"],
       "tags": ["マルチAZ", "リードレプリカ", "使い分け"]
     },
     {
@@ -248,7 +248,7 @@
       "front": "RDS のマルチ AZ DB インスタンス配置とマルチ AZ DB クラスター配置は何が違うか。",
       "back": "DB インスタンス配置はスタンバイが1台で、フェイルオーバー専用であり読み取りには使えない。DB クラスター配置は3つの AZ にライターと2台のリーダー（スタンバイ）を置き、リーダーは読み取りにも使え、フェイルオーバーも速い。読み取り分散も兼ねたいときに選ぶ。",
       "taskStatements": ["2.2"],
-      "services": ["Amazon Relational Database Service"],
+      "services": ["Amazon RDS"],
       "tags": ["マルチAZ", "DBクラスター"]
     },
     {
@@ -272,7 +272,7 @@
       "front": "Lambda から RDS へ接続が急増して DB の接続数が尽きる。フェイルオーバーも速くしたい。",
       "back": "Amazon RDS Proxy。接続をプールして多重化し、DB の接続数と負荷を抑える。フェイルオーバー時はアプリの接続を保ったまま新しいライターにつなぎ替えるため、復旧が速い。IAM 認証や Secrets Manager との連携で認証情報の管理も楽になる。アプリの大幅な修正は不要。",
       "taskStatements": ["2.2", "2.1"],
-      "services": ["Amazon Relational Database Service", "AWS Lambda", "Amazon Aurora"],
+      "services": ["Amazon RDS", "AWS Lambda", "Amazon Aurora"],
       "tags": ["RDS Proxy", "接続プール", "プロキシ"]
     },
     {
@@ -320,7 +320,7 @@
       "front": "S3 の耐久性は高いが、AZ 障害には強いか。S3 Standard と S3 One Zone-IA で何が違うか。",
       "back": "S3 は99.999999999%（イレブンナイン）の耐久性を設計目標とし、Standard は複数 AZ にデータを保存するため AZ 障害に強い。S3 One Zone-IA は1つの AZ にしか保存せず、AZ が失われるとデータも失われるため、再作成できるデータ向き。耐久性（消えない）と可用性（使える）は別の指標。",
       "taskStatements": ["2.2"],
-      "services": ["Amazon Simple Storage Service"],
+      "services": ["Amazon S3"],
       "tags": ["S3", "耐久性", "ストレージクラス"]
     },
     {
@@ -328,7 +328,7 @@
       "front": "S3 のレプリケーション（CRR・SRR）の前提と、設定前から存在するオブジェクトの扱いは？",
       "back": "送信元と送信先の両方でバージョニングを有効にし、IAM ロールで許可する。設定後の新規・更新オブジェクトだけがライブ複製の対象で、既存のオブジェクトは S3 バッチレプリケーションで複製する。CRR は別リージョン（災害対策、低遅延）、SRR は同一リージョン（ログ集約など）。15分以内のSLAが必要なら S3 RTC。",
       "taskStatements": ["2.2", "1.3"],
-      "services": ["Amazon Simple Storage Service"],
+      "services": ["Amazon S3"],
       "tags": ["S3", "レプリケーション", "CRR"]
     },
     {
@@ -336,7 +336,7 @@
       "front": "EBS、インスタンスストア、EFS を、耐久性と AZ 障害の観点で比べると？",
       "back": "EBS は同じ AZ 内で冗長化され、AZ 障害に備えるにはスナップショット（S3 に保存）を別 AZ・リージョンで復元する。インスタンスストアは一時的で、インスタンスの停止や障害で消える。EFS は リージョン内の複数 AZ にデータを保存し、複数の AZ のインスタンスから同時に使える。",
       "taskStatements": ["2.2", "2.1"],
-      "services": ["Amazon Elastic Block Store", "Amazon Elastic File System", "Amazon Elastic Compute Cloud"],
+      "services": ["Amazon EBS", "Amazon EFS", "Amazon EC2"],
       "tags": ["ストレージ", "耐久性", "AZ"]
     },
     {
@@ -352,7 +352,7 @@
       "front": "急なアクセス増加で、下流の DB を過負荷から守りながらリクエストを取りこぼさない構成は？",
       "back": "リクエストを SQS キューで受けてバッファし、Lambda の予約済み同時実行数（reserved concurrency）で処理の並列度に上限を設けて DB への負荷を平準化する。キューによる疎結合で、突発的な負荷を吸収して後から処理できる。API 側は API Gateway のスロットリングで入口も制限できる。",
       "taskStatements": ["2.1", "2.2"],
-      "services": ["Amazon Simple Queue Service", "AWS Lambda", "Amazon API Gateway"],
+      "services": ["Amazon SQS", "AWS Lambda", "Amazon API Gateway"],
       "tags": ["バッファリング", "スロットリング", "疎結合"]
     },
     {

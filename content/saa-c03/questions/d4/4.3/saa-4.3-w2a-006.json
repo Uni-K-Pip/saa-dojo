@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-S4", "4.3-K9"],
-  "services": ["Amazon Redshift", "Amazon Relational Database Service"],
+  "services": ["Amazon Redshift", "Amazon RDS"],
   "qualifier": "performance",
   "tags": ["Amazon Redshift", "列指向", "データウェアハウス", "集計クエリ"],
   "difficulty": 2,

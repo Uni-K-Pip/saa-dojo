@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K2", "3.5-S6", "3.5-K3"],
-  "services": ["Amazon AppFlow", "Amazon Simple Storage Service", "AWS Lambda"],
+  "services": ["Amazon AppFlow", "Amazon S3", "AWS Lambda"],
   "qualifier": "operational",
   "tags": ["Amazon AppFlow", "SaaS 連携", "データ取り込み", "ノーコード"],
   "difficulty": 1,

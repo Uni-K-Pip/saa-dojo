@@ -12,7 +12,7 @@
   "services": [
     "NAT gateway",
     "AWS Transit Gateway",
-    "Amazon Virtual Private Cloud"
+    "Amazon VPC"
   ],
   "qualifier": "cost",
   "tags": [

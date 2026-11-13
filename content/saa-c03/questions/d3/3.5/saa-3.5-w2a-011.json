@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-S7", "3.5-S6", "3.5-K7"],
-  "services": ["Amazon Data Firehose", "AWS Glue", "Amazon Simple Storage Service", "Amazon Athena"],
+  "services": ["Amazon Data Firehose", "AWS Glue", "Amazon S3", "Amazon Athena"],
   "qualifier": "operational",
   "tags": ["Amazon Data Firehose", "レコード形式の変換", "動的パーティショニング", "Parquet"],
   "difficulty": 2,

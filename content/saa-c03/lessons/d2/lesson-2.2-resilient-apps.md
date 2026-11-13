@@ -15,9 +15,9 @@ knowledgeRefs:
   - 2.2-S4
   - 2.2-S8
 services:
-  - Amazon Simple Queue Service
+  - Amazon SQS
   - AWS Lambda
-  - Amazon Relational Database Service
+  - Amazon RDS
   - Amazon RDS Proxy
   - Amazon Aurora
   - Amazon DynamoDB

@@ -8,9 +8,9 @@
     "1.1-K1"
   ],
   "services": [
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Organizations",
-    "AWS Identity and Access Management"
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "operational",
   "tags": [

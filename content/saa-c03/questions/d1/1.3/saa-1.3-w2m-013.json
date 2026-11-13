@@ -9,8 +9,8 @@
     "1.3-K4"
   ],
   "services": [
-    "Amazon Simple Storage Service",
-    "AWS Key Management Service"
+    "Amazon S3",
+    "AWS Key Management Service (AWS KMS)"
   ],
   "qualifier": "security",
   "tags": [

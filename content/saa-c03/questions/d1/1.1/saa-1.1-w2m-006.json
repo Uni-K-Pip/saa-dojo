@@ -8,9 +8,9 @@
     "1.1-S2"
   ],
   "services": [
-    "AWS Identity and Access Management",
+    "AWS Identity and Access Management (IAM)",
     "AWS CloudTrail",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "Amazon DynamoDB"
   ],
   "qualifier": "operational",

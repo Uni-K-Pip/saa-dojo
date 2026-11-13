@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon S3 Glacier",
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "cost",
   "tags": [

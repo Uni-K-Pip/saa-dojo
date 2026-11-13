@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-S4", "2.1-K12"],
-  "services": ["Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon Elastic Compute Cloud", "AWS Elastic Beanstalk"],
+  "services": ["Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon EC2", "AWS Elastic Beanstalk"],
   "qualifier": "operational",
   "tags": ["コンテナを使う場面", "Lambdaの制限", "Fargate", "依存ライブラリ"],
   "difficulty": 2,

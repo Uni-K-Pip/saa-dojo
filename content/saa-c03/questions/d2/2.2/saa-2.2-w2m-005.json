@@ -9,7 +9,7 @@
     "2.2-K6"
   ],
   "services": [
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "Amazon Route 53"
   ],
   "qualifier": "availability",

@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-S6", "3.5-K6", "3.5-K2"],
-  "services": ["Amazon Redshift", "Amazon Simple Storage Service"],
+  "services": ["Amazon Redshift", "Amazon S3"],
   "qualifier": "performance",
   "tags": ["Amazon Redshift", "COPY コマンド", "並列ロード", "バッチ取り込み"],
   "difficulty": 2,

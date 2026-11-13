@@ -9,8 +9,8 @@
     "2.1-K7"
   ],
   "services": [
-    "Amazon Simple Storage Service",
-    "Amazon Elastic Compute Cloud",
+    "Amazon S3",
+    "Amazon EC2",
     "Amazon Cognito"
   ],
   "qualifier": "performance",

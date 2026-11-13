@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K3", "3.5-S3", "3.5-K5"],
-  "services": ["AWS Transfer Family", "Amazon Simple Storage Service", "AWS DataSync"],
+  "services": ["AWS Transfer Family", "Amazon S3", "AWS DataSync"],
   "qualifier": "operational",
   "tags": ["AWS Transfer Family", "SFTP", "パートナー連携", "S3"],
   "difficulty": 1,

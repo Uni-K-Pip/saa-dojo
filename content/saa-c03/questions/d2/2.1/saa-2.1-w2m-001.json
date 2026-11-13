@@ -8,8 +8,8 @@
     "2.1-S3"
   ],
   "services": [
-    "Amazon Simple Queue Service",
-    "Amazon Elastic Compute Cloud"
+    "Amazon SQS",
+    "Amazon EC2"
   ],
   "qualifier": "cost",
   "tags": [

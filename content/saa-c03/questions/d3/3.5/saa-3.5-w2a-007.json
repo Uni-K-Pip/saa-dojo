@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K4", "3.5-S7", "3.5-S6"],
-  "services": ["AWS Glue", "Amazon Simple Storage Service", "Amazon Athena", "AWS Lambda"],
+  "services": ["AWS Glue", "Amazon S3", "Amazon Athena", "AWS Lambda"],
   "qualifier": "operational",
   "tags": ["AWS Glue", "ETL", "Parquet", "クローラー", "Data Catalog"],
   "difficulty": 2,

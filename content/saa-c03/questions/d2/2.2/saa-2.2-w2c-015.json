@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K8", "2.2-S4"],
-  "services": ["Elastic Load Balancing", "Amazon Elastic Compute Cloud"],
+  "services": ["Elastic Load Balancing", "Amazon EC2"],
   "qualifier": "performance",
   "tags": ["Network Load Balancer", "クロスゾーン負荷分散", "負荷の偏り", "マルチAZ"],
   "difficulty": 2,

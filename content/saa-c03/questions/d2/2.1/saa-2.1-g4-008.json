@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K8", "2.1-S4"],
-  "services": ["Amazon Elastic Container Registry", "Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon Elastic Compute Cloud"],
+  "services": ["Amazon Elastic Container Registry", "Amazon ECS", "AWS Fargate", "AWS Lambda", "Amazon EC2"],
   "qualifier": "operational",
   "tags": ["コンテナ移行", "ECR", "Fargate", "ECS サービス"],
   "difficulty": 2,

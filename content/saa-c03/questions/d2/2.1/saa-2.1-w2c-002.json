@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K8", "2.1-K14"],
-  "services": ["Amazon Elastic Container Registry", "Amazon Elastic Container Service", "AWS Fargate", "Amazon Simple Storage Service"],
+  "services": ["Amazon Elastic Container Registry", "Amazon ECS", "AWS Fargate", "Amazon S3"],
   "qualifier": "operational",
   "tags": ["コンテナ移行", "Amazon ECR", "ライフサイクルポリシー", "クロスリージョンレプリケーション"],
   "difficulty": 2,

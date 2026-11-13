@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K3", "2.2-S4"],
-  "services": ["Amazon Virtual Private Cloud", "Amazon Simple Storage Service", "Amazon Elastic Compute Cloud"],
+  "services": ["Amazon VPC", "Amazon S3", "Amazon EC2"],
   "qualifier": "cost",
   "tags": ["ルートテーブル", "ゲートウェイエンドポイント", "サブネット設計", "マルチAZ"],
   "difficulty": 2,

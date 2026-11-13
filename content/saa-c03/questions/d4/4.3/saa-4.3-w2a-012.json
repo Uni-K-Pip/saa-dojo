@@ -8,7 +8,7 @@
     "AWS Cost and Usage Report",
     "Amazon Athena",
     "AWS Cost Explorer",
-    "Amazon Relational Database Service"
+    "Amazon RDS"
   ],
   "qualifier": "operational",
   "tags": ["コストと使用状況レポート", "Athena", "リソース単位のコスト", "コスト管理ツール"],

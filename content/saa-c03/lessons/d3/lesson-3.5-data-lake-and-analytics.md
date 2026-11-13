@@ -10,7 +10,7 @@ knowledgeRefs:
   - 3.5-S1
   - 3.5-S4
 services:
-  - Amazon Simple Storage Service
+  - Amazon S3
   - Amazon Athena
   - AWS Glue
   - AWS Lake Formation

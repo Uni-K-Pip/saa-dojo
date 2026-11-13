@@ -8,8 +8,8 @@
     "Amazon Kinesis",
     "VPC endpoints",
     "AWS PrivateLink",
-    "Amazon Virtual Private Cloud",
-    "AWS Identity and Access Management"
+    "Amazon VPC",
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",
   "tags": ["インターフェイス VPC エンドポイント", "Kinesis Data Streams", "PrivateLink", "最小権限"],

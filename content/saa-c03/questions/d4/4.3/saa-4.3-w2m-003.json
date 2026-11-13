@@ -9,8 +9,8 @@
     "4.3-K2"
   ],
   "services": [
-    "Amazon Relational Database Service",
-    "Amazon Simple Storage Service",
+    "Amazon RDS",
+    "Amazon S3",
     "Amazon Athena",
     "AWS Glue"
   ],

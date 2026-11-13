@@ -9,9 +9,9 @@
     "1.1-K4"
   ],
   "services": [
-    "Amazon Elastic Kubernetes Service",
-    "AWS Identity and Access Management",
-    "Amazon Simple Storage Service",
+    "Amazon EKS",
+    "AWS Identity and Access Management (IAM)",
+    "Amazon S3",
     "Amazon DynamoDB"
   ],
   "qualifier": "security",

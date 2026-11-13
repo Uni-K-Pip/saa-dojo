@@ -8,11 +8,11 @@
     "1.1-K1"
   ],
   "services": [
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Lambda",
     "AWS Identity and Access Management (IAM)",
     "AWS Organizations",
-    "AWS Key Management Service"
+    "AWS Key Management Service (AWS KMS)"
   ],
   "qualifier": "security",
   "tags": [

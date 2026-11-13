@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-S1", "4.3-K4"],
-  "services": ["AWS Backup", "Amazon Relational Database Service"],
+  "services": ["AWS Backup", "Amazon RDS"],
   "qualifier": "operational",
   "tags": ["AWS Backup", "保持ポリシー", "バックアップ", "長期保存"],
   "difficulty": 2,

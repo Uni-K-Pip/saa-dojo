@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-S5"],
-  "services": ["AWS Backup", "AWS Organizations", "Amazon Elastic Block Store", "Amazon Relational Database Service"],
+  "services": ["AWS Backup", "AWS Organizations", "Amazon EBS", "Amazon RDS"],
   "qualifier": "security",
   "tags": ["AWS Backup", "Vault Lock", "クロスアカウントコピー", "ランサムウェア対策", "不変バックアップ"],
   "difficulty": 3,

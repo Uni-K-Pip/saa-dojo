@@ -9,7 +9,7 @@
   ],
   "services": [
     "Elastic Load Balancing",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "performance",
   "tags": [

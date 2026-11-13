@@ -9,7 +9,7 @@
     "4.2-K9"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "Savings Plans"
   ],
   "qualifier": "cost",

@@ -8,8 +8,8 @@
     "3.1-K3"
   ],
   "services": [
-    "Amazon Elastic Block Store",
-    "Amazon Elastic Compute Cloud",
+    "Amazon EBS",
+    "Amazon EC2",
     "Amazon EC2 Auto Scaling"
   ],
   "qualifier": "performance",

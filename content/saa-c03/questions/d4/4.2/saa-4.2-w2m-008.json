@@ -11,7 +11,7 @@
   "services": [
     "AWS Lambda",
     "AWS Fargate",
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "Elastic Load Balancing"
   ],
   "qualifier": "cost",

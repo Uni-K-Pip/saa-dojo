@@ -9,7 +9,7 @@
     "NAT gateway",
     "Elastic Load Balancing",
     "Amazon EC2",
-    "Amazon Relational Database Service"
+    "Amazon RDS"
   ],
   "qualifier": "security",
   "tags": ["パブリックサブネット", "プライベートサブネット", "ルートテーブル", "NAT ゲートウェイ", "3層構成"],

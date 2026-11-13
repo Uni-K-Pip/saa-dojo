@@ -9,8 +9,8 @@
     "1.3-S4"
   ],
   "services": [
-    "Amazon Simple Storage Service",
-    "AWS Identity and Access Management"
+    "Amazon S3",
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "operational",
   "tags": [

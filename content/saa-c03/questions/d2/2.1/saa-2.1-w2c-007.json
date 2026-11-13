@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K16", "2.1-K12"],
-  "services": ["AWS Step Functions", "AWS Lambda", "Amazon Simple Storage Service"],
+  "services": ["AWS Step Functions", "AWS Lambda", "Amazon S3"],
   "qualifier": "performance",
   "tags": ["Step Functions", "Distributed Map", "大規模並列処理", "許容失敗率"],
   "difficulty": 3,

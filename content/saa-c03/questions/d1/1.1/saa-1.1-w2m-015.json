@@ -9,9 +9,9 @@
     "1.1-K4"
   ],
   "services": [
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS CloudTrail",
-    "AWS Identity and Access Management"
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",
   "tags": [

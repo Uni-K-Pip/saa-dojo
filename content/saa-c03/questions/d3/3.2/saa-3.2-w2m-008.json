@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon EMR",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "cost",
   "tags": [

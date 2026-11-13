@@ -8,8 +8,8 @@
     "1.2-S1"
   ],
   "services": [
-    "Amazon Virtual Private Cloud",
-    "Amazon Elastic Compute Cloud"
+    "Amazon VPC",
+    "Amazon EC2"
   ],
   "qualifier": "other",
   "tags": [

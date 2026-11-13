@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K5"],
-  "services": ["Amazon Elastic Container Service", "Elastic Load Balancing"],
+  "services": ["Amazon ECS", "Elastic Load Balancing"],
   "qualifier": "availability",
   "tags": ["分散システム", "サーキットブレーカー", "タイムアウト", "疎結合", "縮退運転"],
   "difficulty": 2,

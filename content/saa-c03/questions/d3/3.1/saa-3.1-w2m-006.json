@@ -8,8 +8,8 @@
     "3.1-K2"
   ],
   "services": [
-    "Amazon Simple Storage Service",
-    "Amazon Elastic Compute Cloud"
+    "Amazon S3",
+    "Amazon EC2"
   ],
   "qualifier": "performance",
   "tags": [

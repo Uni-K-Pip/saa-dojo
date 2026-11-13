@@ -6,8 +6,8 @@
   "knowledgeRefs": ["1.1-S1", "1.1-K4"],
   "services": [
     "AWS Identity and Access Management (IAM)",
-    "Amazon Elastic Compute Cloud",
-    "Amazon Simple Storage Service",
+    "Amazon EC2",
+    "Amazon S3",
     "AWS Secrets Manager"
   ],
   "qualifier": "security",
