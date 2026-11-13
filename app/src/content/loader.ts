@@ -10,6 +10,7 @@ import type {
   Pool,
   Question,
   QuestionMeta,
+  ServiceEntry,
 } from './types';
 
 export type Fetcher = (path: string) => Promise<unknown>;
@@ -66,6 +67,7 @@ export const loadLessonBody = (id: string) => loadKey<LessonBody | null>(`lesson
 export const loadFlashcards = () => loadKey<FlashcardDeck[]>('flashcards', []);
 export const loadGlossary = () => loadKey<GlossaryEntry[]>('glossary', []);
 export const loadDocs = () => loadKey<DocEntry[]>('docs', []);
+export const loadServices = () => loadKey<ServiceEntry[]>('services', []);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {

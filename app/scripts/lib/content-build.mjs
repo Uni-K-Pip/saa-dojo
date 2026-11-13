@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
+import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
 
 export const FORMAT = 'saa-dojo-content';
 export const FORMAT_VERSION = 1;
@@ -42,6 +43,7 @@ export function classify(rel) {
   const ext = path.posix.extname(file);
   const domainDir = /^d([1-4])$/.exec(p[1] ?? '');
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
+  if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
@@ -79,6 +81,7 @@ export function parseContent(files, schema) {
   const warn = (rel, msg) => warnings.push(`${rel}: ${msg}`);
   const parsed = {
     blueprint: null,
+    registry: null, // サービス台帳（services.json）。なければ services 欄の表記をそのまま出力する
     questions: [],
     lessons: [],
     docs: [],
@@ -124,6 +127,11 @@ export function parseContent(files, schema) {
       case 'blueprint': {
         const j = json(rel, text);
         if (j) parsed.blueprint = validate(schema.BlueprintSchema, j.value, rel);
+        break;
+      }
+      case 'registry': {
+        const j = json(rel, text);
+        if (j && schema.ServiceRegistrySchema) parsed.registry = validate(schema.ServiceRegistrySchema, j.value, rel);
         break;
       }
       case 'review-status': {
@@ -191,6 +199,8 @@ function crossCheck(parsed, err, warn) {
 
   const bp = parsed.blueprint;
   if (!bp) return;
+  // 台帳の不整合は validate がエラーにする。ビルドは警告にとどめ、解決できる表記だけを正規名に直す
+  if (parsed.registry) for (const msg of buildServiceIndex(bp, parsed.registry).problems) warn('services.json', msg);
   const taskIds = new Set(['basics']);
   const itemIds = new Set(bp.basics.items.map((i) => i.id));
   for (const d of bp.domains) {
@@ -263,6 +273,10 @@ const questionMeta = (q) => ({
 });
 
 export function buildOutputs(parsed, schema) {
+  // services 欄を台帳の正規名に直す（重複は除き、順序は保つ）。台帳がなければ書かれた表記のまま出力する。
+  // 試験範囲のサービスに解決できない表記は、そのまま残す（検出は validate の役目）。
+  const serviceIndex = parsed.registry && parsed.blueprint ? buildServiceIndex(parsed.blueprint, parsed.registry) : null;
+  const canon = (names) => (serviceIndex ? [...new Set(names.map((n) => serviceIndex.canonicalize(n)))] : names);
   const statusOf = (id) => parsed.reviewStatus[id]?.status ?? 'pending';
   const excluded = { 'needs-fix': 0, rejected: 0 };
   const questions = [];
@@ -272,7 +286,7 @@ export function buildOutputs(parsed, schema) {
       excluded[status]++;
       continue;
     }
-    questions.push({ ...data, status });
+    questions.push({ ...data, services: canon(data.services), status });
   }
   questions.sort((a, b) => cmp(a.id, b.id));
   const byPool = (pool) => questions.filter((q) => q.pool === pool);
@@ -315,22 +329,27 @@ export function buildOutputs(parsed, schema) {
       taskStatement: data.taskStatement,
       order: data.order,
       knowledgeRefs: data.knowledgeRefs,
-      services: data.services,
+      services: canon(data.services),
       estimatedMinutes: data.estimatedMinutes,
       questionIds: lessonQuestions(data.id, body),
     })),
   );
   for (const { data, body } of lessons) add(`lesson:${data.id}`, `lessons/${data.id}`, { id: data.id, body });
-  const decks = [...parsed.decks].map((d) => d.data).sort((a, b) => cmp(a.deck, b.deck));
+  const decks = [...parsed.decks]
+    .map((d) => ({ ...d.data, cards: d.data.cards.map((c) => ({ ...c, services: canon(c.services) })) }))
+    .sort((a, b) => cmp(a.deck, b.deck));
   add('flashcards', 'flashcards', decks);
   const glossary = parsed.glossaries
     .flatMap((g) => g.data.entries)
+    .map((e) => ({ ...e, services: canon(e.services) }))
     .sort((a, b) => a.term.localeCompare(b.term, 'ja') || cmp(a.en, b.en));
   add('glossary', 'glossary', glossary);
   const docs = [...parsed.docs]
-    .map(({ data, body, docKind }) => ({ ...data, kind: docKind, body }))
+    .map(({ data, body, docKind }) => ({ ...data, services: canon(data.services), kind: docKind, body }))
     .sort((a, b) => cmp(a.kind, b.kind) || a.order - b.order || cmp(a.id, b.id));
   add('docs', 'docs', docs);
+  const services = serviceIndex ? registrySummary(serviceIndex) : null;
+  if (services) add('services', 'services', services);
 
   const out = [];
   const manifestFiles = {};
@@ -365,6 +384,7 @@ export function buildOutputs(parsed, schema) {
       glossary: glossary.length,
       cheatsheets: docs.filter((d) => d.kind === 'cheatsheet').length,
       guides: docs.filter((d) => d.kind === 'guide').length,
+      services: services ? services.length : 0,
     },
     files: manifestFiles,
   };

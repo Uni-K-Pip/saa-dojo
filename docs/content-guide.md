@@ -6,7 +6,7 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 
 - 出題範囲は `content/saa-c03/blueprint.json` です。4ドメイン・14タスクの「知識（K）」「スキル（S）」の項目に ID（例 `1.1-K3`、`3.4-S2`）があり、問題の `knowledgeRefs` にはそのタスクの項目 ID を1〜4個入れます。
 - 基礎講座（AWS 未経験者向け）の項目は `basics-K1`〜`basics-K14` です。
-- `services` は blueprint の対象サービス一覧の正式名で書きます。対象外サービスは誤答の選択肢には使えますが、正解にはしません。
+- `services` はサービス台帳（`content/saa-c03/services.json`）の正規名（`name`）で書きます（例 `Amazon S3`、`AWS Key Management Service (AWS KMS)`）。台帳の別名（例 `Amazon Simple Storage Service`）で書くと、validate が表記ごとにまとめて警告します（ビルドは正規名にそろえて出力します）。対象外サービスは誤答の選択肢には使えますが、正解にはしません。
 
 ## 2. ファイルと ID
 

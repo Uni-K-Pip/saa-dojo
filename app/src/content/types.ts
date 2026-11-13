@@ -177,6 +177,23 @@ export interface Manifest {
     glossary: number;
     cheatsheets: number;
     guides: number;
+    /** サービス台帳の件数（古いデータにはない） */
+    services?: number;
   };
   files: Record<string, ManifestFile>;
+}
+
+/** サービス台帳の 1 件（ビルドが services.json から作る。別名は導出できる表記まで展開済み） */
+export interface ServiceEntry {
+  id: string;
+  /** 正規名。問題などの services 欄はビルドでこの表記にそろえてある */
+  name: string;
+  /** 同じサービスとみなす表記（正規名を除く） */
+  aliases: string[];
+  category: string;
+  /** 出所: 試験ガイドの対象サービス一覧 / タスクの keyServices だけ / 台帳だけ */
+  source: 'inScope' | 'keyServices' | 'registry';
+  short?: string;
+  /** 独立した図鑑のエントリを作らず、このサービスのエントリの中で扱う */
+  hostedBy?: string;
 }

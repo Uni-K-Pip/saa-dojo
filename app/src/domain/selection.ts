@@ -1,5 +1,5 @@
 // 演習の出題選択。対象は演習プール（pool = practice）だけで、基礎講座と保留模試の問題は含めない。
-import type { Difficulty, Qualifier, QuestionMeta } from '../content/types';
+import type { Difficulty, Qualifier, QuestionMeta, ServiceEntry } from '../content/types';
 import type { History } from './history';
 import { shuffle, type Rng } from './rng';
 
@@ -90,4 +90,16 @@ export function filterFromQuery(params: URLSearchParams): PracticeFilter {
     difficulties: nums('difficulties').filter((n): n is Difficulty => n === 1 || n === 2 || n === 3),
     statuses: list('statuses').filter((s): s is StatusFilter => s === 'unanswered' || s === 'wrong' || s === 'flagged'),
   };
+}
+
+/**
+ * 条件のサービス名を台帳の正規名に直す。問題の services 欄はビルドで正規名にそろえてあるので、
+ * 古い表記（例: Amazon Simple Storage Service）の URL から開いても同じ問題が選ばれるようにする。台帳にない名前はそのまま残す。
+ */
+export function canonicalServiceFilter(f: PracticeFilter, entries: readonly ServiceEntry[]): PracticeFilter {
+  if (entries.length === 0 || f.services.length === 0) return f;
+  const toName = new Map<string, string>();
+  for (const e of entries) toName.set(e.name, e.name);
+  for (const e of entries) for (const a of e.aliases) if (!toName.has(a)) toName.set(a, e.name);
+  return { ...f, services: [...new Set(f.services.map((s) => toName.get(s) ?? s))] };
 }

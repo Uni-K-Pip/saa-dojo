@@ -17,6 +17,8 @@ export const LESSON_ID = /^lesson-(basics|[1-4]\.[1-5])-[a-z0-9-]{2,40}$/;
 export const DOC_ID = /^(cheatsheet|guide)-[a-z0-9-]{2,40}$/;
 export const FLASHCARD_ID = /^fc-([a-z][a-z0-9]{0,5})-(\d{3})$/;
 export const DATE = /^\d{4}-\d{2}-\d{2}$/;
+// サービス台帳（services.json）の id
+export const SERVICE_ID = /^[a-z][a-z0-9-]{1,39}$/;
 
 // 判断軸: 問題文の制約語が何を最優先しているか
 export const QUALIFIERS = ['cost', 'operational', 'availability', 'performance', 'security', 'minimal-change', 'other'];
@@ -252,3 +254,25 @@ export const ReviewStatusSchema = z.record(
     })
     .strict(),
 );
+
+// サービス台帳（services.json）。1 つのサービスに 1 つの id と 1 つの正規名を決め、別の表記を aliases に持つ。
+export const ServiceRegistrySchema = z
+  .object({
+    checkedAt: z.string().regex(DATE),
+    services: z
+      .array(
+        z
+          .object({
+            id: z.string().regex(SERVICE_ID),
+            name: serviceName,
+            short: z.string().min(1).max(30).optional(),
+            aliases: z.array(serviceName),
+            category: z.string().min(1).max(40),
+            hostedBy: z.string().regex(SERVICE_ID).optional(),
+            note: z.string().min(1).max(400).optional(),
+          })
+          .strict(),
+      )
+      .min(1),
+  })
+  .strict();

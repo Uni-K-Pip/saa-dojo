@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
-import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, serviceNameForms, statusOf, textMatcher } from './validate.mjs';
+import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, statusOf, textMatcher } from './validate.mjs';
 
 // ---------- 目標値 ----------
 const TARGET_DIFFICULTY = { 1: 20, 2: 50, 3: 30 }; // 難易度 1・2・3 の比率（%）
@@ -20,6 +20,7 @@ const TOLERANCE = 10; // 目標からのずれの許容幅（ポイント）
 const MIN_SAMPLE = 10; // これ未満の母数では判定しない
 const MIN_PER_ITEM = 2; // 出題範囲の項目あたりの最低問題数
 
+const SOURCE_LABEL = { inScope: '対象サービス一覧', keyServices: 'keyServices のみ', registry: '台帳のみ' };
 const pct = (n, d) => (d ? Math.round((100 * n) / d) : 0);
 const sign = (n) => (n > 0 ? `+${n}` : String(n));
 const cell = (n, total) => (total ? `${n} (${pct(n, total)}%)` : '-');
@@ -145,19 +146,30 @@ export function computeCoverage(content) {
     return { domain: Number(d), target, mockA: dom?.pools.mockA ?? 0, mockB: dom?.pools.mockB ?? 0 };
   });
 
-  // サービスの登場回数
-  const mentions = new Map(serviceIndex.inScope.map((name) => [name, { name, category: serviceIndex.category.get(name), questions: 0, flashcards: 0, text: 0 }]));
-  const matchers = serviceIndex.inScope.map((name) => ({ name, re: textMatcher(serviceNameForms(name).strong) }));
+  // サービスの登場回数（台帳の ID ごと。hostedBy のあるサービスは親にまとめて数える）
+  const parentName = new Map(
+    serviceIndex.entries.map((e) => [e.name, e.hostedBy !== undefined && serviceIndex.byId.get(e.hostedBy) ? serviceIndex.byId.get(e.hostedBy).name : e.name]),
+  );
+  const rowNames = serviceIndex.inScope.filter((name) => parentName.get(name) === name);
+  const mentions = new Map(
+    rowNames.map((name) => [
+      name,
+      { name, category: serviceIndex.category.get(name), source: serviceIndex.source.get(name), questions: 0, flashcards: 0, text: 0 },
+    ]),
+  );
+  // 本文の照合は、正規名と台帳の別名のすべての表記で行う
+  const matchers = serviceIndex.inScope.map((name) => ({ row: parentName.get(name), re: textMatcher(serviceIndex.formsOf(name)) }));
   const countServices = (services, field) => {
-    const canon = new Set();
+    const rows = new Set();
     for (const s of services) {
       const r = serviceIndex.resolve(s);
-      if (r.kind === 'in') canon.add(r.canonical);
+      if (r.kind === 'in') rows.add(parentName.get(r.canonical));
     }
-    for (const n of canon) mentions.get(n)[field]++;
+    for (const n of rows) mentions.get(n)[field]++;
   };
   const countText = (text) => {
-    for (const m of matchers) if (m.re.test(text)) mentions.get(m.name).text++;
+    const rows = new Set(matchers.filter((m) => m.re.test(text)).map((m) => m.row));
+    for (const n of rows) mentions.get(n).text++;
   };
   for (const { q } of live) {
     countServices(q.services, 'questions');
@@ -171,6 +183,7 @@ export function computeCoverage(content) {
   }
   const serviceRows = [...mentions.values()];
   const unmentioned = serviceRows.filter((r) => r.questions + r.flashcards + r.text === 0).map((r) => ({ name: r.name, category: r.category }));
+  const keyServicesOnly = serviceRows.filter((r) => r.source === 'keyServices').map((r) => r.name);
 
   const invalidFiles =
     content.counts.questionFiles - content.questions.length +
@@ -202,7 +215,9 @@ export function computeCoverage(content) {
     overall,
     mock,
     services: {
+      registry: serviceIndex.hasRegistry,
       inScopeTotal: serviceRows.length,
+      keyServicesOnly,
       unmentioned,
       rows: serviceRows,
     },
@@ -375,6 +390,15 @@ export function renderMarkdown(cov, { full = false } = {}) {
   // サービス
   push('## サービス', '');
   const s = cov.services;
+  push(
+    s.registry
+      ? `サービス台帳（services.json）の ${s.inScopeTotal} 件で数えます。正式名と略称などの別の表記は、同じサービスとして数えます。`
+      : 'サービス台帳（services.json）がないため、blueprint の表記ごとに数えます。',
+    '',
+  );
+  if (s.keyServicesOnly.length) {
+    push(`試験ガイドの対象サービス一覧になく、タスクの keyServices にだけ挙がっているもの（${s.keyServicesOnly.length} 件）: ${list(s.keyServicesOnly)}`, '');
+  }
   push(`試験範囲のサービス ${s.inScopeTotal} 件のうち、問題・フラッシュカードの services にも本文にも出てこないものは ${s.unmentioned.length} 件です。`, '');
   const byCategory = new Map();
   for (const u of s.unmentioned) {
@@ -387,9 +411,9 @@ export function renderMarkdown(cov, { full = false } = {}) {
     push('### サービス別の登場回数', '');
     push(
       table(
-        ['サービス', '分類', 'services（問題）', 'services（カード）', '本文'],
-        s.rows.map((r) => [r.name, r.category, r.questions, r.flashcards, r.text]),
-        'llrrr',
+        ['サービス', '分類', '出所', 'services（問題）', 'services（カード）', '本文'],
+        s.rows.map((r) => [r.name, r.category, SOURCE_LABEL[r.source] ?? r.source, r.questions, r.flashcards, r.text]),
+        'lllrrr',
       ),
       '',
     );

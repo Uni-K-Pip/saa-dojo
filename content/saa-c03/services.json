@@ -1,0 +1,839 @@
+{
+  "checkedAt": "2026-11-13",
+  "services": [
+    {
+      "id": "athena",
+      "name": "Amazon Athena",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "data-exchange",
+      "name": "AWS Data Exchange",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "data-pipeline",
+      "name": "AWS Data Pipeline",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "emr",
+      "name": "Amazon EMR",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "glue",
+      "name": "AWS Glue",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "kinesis",
+      "name": "Amazon Kinesis",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "lake-formation",
+      "name": "AWS Lake Formation",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "msk",
+      "name": "Amazon MSK",
+      "aliases": [
+        "Amazon Managed Streaming for Apache Kafka",
+        "Amazon Managed Streaming for Apache Kafka (Amazon MSK)"
+      ],
+      "category": "分析"
+    },
+    {
+      "id": "opensearch",
+      "name": "Amazon OpenSearch Service",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "quick",
+      "name": "Amazon Quick",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "redshift",
+      "name": "Amazon Redshift",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "appflow",
+      "name": "Amazon AppFlow",
+      "aliases": [],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "eventbridge",
+      "name": "Amazon EventBridge",
+      "aliases": [],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "mq",
+      "name": "Amazon MQ",
+      "aliases": [],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "sns",
+      "name": "Amazon SNS",
+      "aliases": [
+        "Amazon Simple Notification Service"
+      ],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "sqs",
+      "name": "Amazon SQS",
+      "aliases": [
+        "Amazon Simple Queue Service"
+      ],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "step-functions",
+      "name": "AWS Step Functions",
+      "aliases": [],
+      "category": "アプリケーション統合"
+    },
+    {
+      "id": "budgets",
+      "name": "AWS Budgets",
+      "aliases": [],
+      "category": "AWSコスト管理"
+    },
+    {
+      "id": "cost-and-usage-report",
+      "name": "AWS Cost and Usage Report",
+      "aliases": [],
+      "category": "AWSコスト管理"
+    },
+    {
+      "id": "cost-explorer",
+      "name": "AWS Cost Explorer",
+      "aliases": [],
+      "category": "AWSコスト管理"
+    },
+    {
+      "id": "savings-plans",
+      "name": "Savings Plans",
+      "aliases": [],
+      "category": "AWSコスト管理"
+    },
+    {
+      "id": "batch",
+      "name": "AWS Batch",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "ec2",
+      "name": "Amazon EC2",
+      "aliases": [
+        "Amazon Elastic Compute Cloud"
+      ],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "ec2-auto-scaling",
+      "name": "Amazon EC2 Auto Scaling",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "elastic-beanstalk",
+      "name": "AWS Elastic Beanstalk",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "outposts",
+      "name": "AWS Outposts",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "serverless-application-repository",
+      "name": "AWS Serverless Application Repository",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "vmware-cloud-on-aws",
+      "name": "VMware Cloud on AWS",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "wavelength",
+      "name": "AWS Wavelength",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "ecr",
+      "name": "Amazon Elastic Container Registry",
+      "aliases": [
+        "Amazon ECR"
+      ],
+      "category": "コンテナ"
+    },
+    {
+      "id": "ecs",
+      "name": "Amazon ECS",
+      "aliases": [
+        "Amazon Elastic Container Service"
+      ],
+      "category": "コンテナ"
+    },
+    {
+      "id": "ecs-anywhere",
+      "name": "Amazon ECS Anywhere",
+      "aliases": [],
+      "category": "コンテナ"
+    },
+    {
+      "id": "eks",
+      "name": "Amazon EKS",
+      "aliases": [
+        "Amazon Elastic Kubernetes Service"
+      ],
+      "category": "コンテナ"
+    },
+    {
+      "id": "eks-anywhere",
+      "name": "Amazon EKS Anywhere",
+      "aliases": [],
+      "category": "コンテナ"
+    },
+    {
+      "id": "eks-distro",
+      "name": "Amazon EKS Distro",
+      "aliases": [],
+      "category": "コンテナ"
+    },
+    {
+      "id": "aurora",
+      "name": "Amazon Aurora",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "aurora-serverless",
+      "name": "Amazon Aurora Serverless",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "documentdb",
+      "name": "Amazon DocumentDB (with MongoDB compatibility)",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "dynamodb",
+      "name": "Amazon DynamoDB",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "elasticache",
+      "name": "Amazon ElastiCache",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "keyspaces",
+      "name": "Amazon Keyspaces (for Apache Cassandra)",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "neptune",
+      "name": "Amazon Neptune",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "rds",
+      "name": "Amazon RDS",
+      "aliases": [
+        "Amazon Relational Database Service"
+      ],
+      "category": "データベース"
+    },
+    {
+      "id": "xray",
+      "name": "AWS X-Ray",
+      "aliases": [],
+      "category": "開発者用ツール"
+    },
+    {
+      "id": "amplify",
+      "name": "AWS Amplify",
+      "aliases": [],
+      "category": "フロントエンドWebとモバイル"
+    },
+    {
+      "id": "api-gateway",
+      "name": "Amazon API Gateway",
+      "aliases": [],
+      "category": "フロントエンドWebとモバイル"
+    },
+    {
+      "id": "device-farm",
+      "name": "AWS Device Farm",
+      "aliases": [],
+      "category": "フロントエンドWebとモバイル"
+    },
+    {
+      "id": "comprehend",
+      "name": "Amazon Comprehend",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "lex",
+      "name": "Amazon Lex",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "polly",
+      "name": "Amazon Polly",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "rekognition",
+      "name": "Amazon Rekognition",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "sagemaker",
+      "name": "Amazon SageMaker AI",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "textract",
+      "name": "Amazon Textract",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "transcribe",
+      "name": "Amazon Transcribe",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "translate",
+      "name": "Amazon Translate",
+      "aliases": [],
+      "category": "機械学習"
+    },
+    {
+      "id": "auto-scaling",
+      "name": "AWS Auto Scaling",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "cli",
+      "name": "AWS Command Line Interface",
+      "aliases": [
+        "AWS CLI"
+      ],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "cloudformation",
+      "name": "AWS CloudFormation",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "cloudtrail",
+      "name": "AWS CloudTrail",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "cloudwatch",
+      "name": "Amazon CloudWatch",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "compute-optimizer",
+      "name": "AWS Compute Optimizer",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "config",
+      "name": "AWS Config",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "control-tower",
+      "name": "AWS Control Tower",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "health-dashboard",
+      "name": "AWS Health Dashboard",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "license-manager",
+      "name": "AWS License Manager",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "managed-grafana",
+      "name": "Amazon Managed Grafana",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "managed-service-for-prometheus",
+      "name": "Amazon Managed Service for Prometheus",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "management-console",
+      "name": "AWS Management Console",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "organizations",
+      "name": "AWS Organizations",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "proton",
+      "name": "AWS Proton",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "service-catalog",
+      "name": "AWS Service Catalog",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "systems-manager",
+      "name": "AWS Systems Manager",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "well-architected-tool",
+      "name": "AWS Well-Architected Tool",
+      "aliases": [],
+      "category": "管理とガバナンス"
+    },
+    {
+      "id": "kinesis-video-streams",
+      "name": "Amazon Kinesis Video Streams",
+      "aliases": [],
+      "category": "メディアサービス"
+    },
+    {
+      "id": "application-discovery-service",
+      "name": "AWS Application Discovery Service",
+      "aliases": [],
+      "category": "移行と転送"
+    },
+    {
+      "id": "application-migration-service",
+      "name": "AWS Application Migration Service",
+      "aliases": [],
+      "category": "移行と転送"
+    },
+    {
+      "id": "datasync",
+      "name": "AWS DataSync",
+      "aliases": [],
+      "category": "移行と転送"
+    },
+    {
+      "id": "dms",
+      "name": "AWS Database Migration Service (AWS DMS)",
+      "aliases": [
+        "AWS Database Migration Service"
+      ],
+      "category": "移行と転送"
+    },
+    {
+      "id": "snow-family",
+      "name": "AWS Snow Family",
+      "aliases": [],
+      "category": "移行と転送"
+    },
+    {
+      "id": "transfer-family",
+      "name": "AWS Transfer Family",
+      "aliases": [],
+      "category": "移行と転送"
+    },
+    {
+      "id": "client-vpn",
+      "name": "AWS Client VPN",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "cloudfront",
+      "name": "Amazon CloudFront",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "direct-connect",
+      "name": "AWS Direct Connect",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "elb",
+      "name": "Elastic Load Balancing",
+      "aliases": [
+        "Elastic Load Balancing (ELB)"
+      ],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "global-accelerator",
+      "name": "AWS Global Accelerator",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "privatelink",
+      "name": "AWS PrivateLink",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "route53",
+      "name": "Amazon Route 53",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "site-to-site-vpn",
+      "name": "AWS Site-to-Site VPN",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "transit-gateway",
+      "name": "AWS Transit Gateway",
+      "aliases": [],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "vpc",
+      "name": "Amazon VPC",
+      "aliases": [
+        "Amazon Virtual Private Cloud"
+      ],
+      "category": "ネットワーキングとコンテンツ配信"
+    },
+    {
+      "id": "artifact",
+      "name": "AWS Artifact",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "acm",
+      "name": "AWS Certificate Manager (ACM)",
+      "aliases": [
+        "AWS Certificate Manager"
+      ],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "cloudhsm",
+      "name": "AWS CloudHSM",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "cognito",
+      "name": "Amazon Cognito",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "detective",
+      "name": "Amazon Detective",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "directory-service",
+      "name": "AWS Directory Service",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "firewall-manager",
+      "name": "AWS Firewall Manager",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "guardduty",
+      "name": "Amazon GuardDuty",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "iam-identity-center",
+      "name": "AWS IAM Identity Center",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "inspector",
+      "name": "Amazon Inspector",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "kms",
+      "name": "AWS Key Management Service (AWS KMS)",
+      "aliases": [
+        "AWS Key Management Service"
+      ],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "macie",
+      "name": "Amazon Macie",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "network-firewall",
+      "name": "AWS Network Firewall",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "ram",
+      "name": "AWS Resource Access Manager",
+      "aliases": [
+        "AWS Resource Access Manager (AWS RAM)"
+      ],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "secrets-manager",
+      "name": "AWS Secrets Manager",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "security-hub",
+      "name": "AWS Security Hub",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "shield",
+      "name": "AWS Shield",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "waf",
+      "name": "AWS WAF",
+      "aliases": [],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "iam",
+      "name": "AWS Identity and Access Management (IAM)",
+      "aliases": [
+        "AWS Identity and Access Management"
+      ],
+      "category": "セキュリティ、アイデンティティ、コンプライアンス"
+    },
+    {
+      "id": "fargate",
+      "name": "AWS Fargate",
+      "aliases": [],
+      "category": "サーバーレス"
+    },
+    {
+      "id": "lambda",
+      "name": "AWS Lambda",
+      "aliases": [],
+      "category": "サーバーレス"
+    },
+    {
+      "id": "backup",
+      "name": "AWS Backup",
+      "aliases": [],
+      "category": "ストレージ"
+    },
+    {
+      "id": "ebs",
+      "name": "Amazon EBS",
+      "aliases": [
+        "Amazon Elastic Block Store"
+      ],
+      "category": "ストレージ"
+    },
+    {
+      "id": "efs",
+      "name": "Amazon EFS",
+      "aliases": [
+        "Amazon Elastic File System"
+      ],
+      "category": "ストレージ"
+    },
+    {
+      "id": "fsx",
+      "name": "Amazon FSx",
+      "aliases": [
+        "Amazon FSx (for all types)"
+      ],
+      "category": "ストレージ"
+    },
+    {
+      "id": "s3",
+      "name": "Amazon S3",
+      "aliases": [
+        "Amazon Simple Storage Service"
+      ],
+      "category": "ストレージ"
+    },
+    {
+      "id": "s3-glacier",
+      "name": "Amazon S3 Glacier",
+      "aliases": [],
+      "category": "ストレージ"
+    },
+    {
+      "id": "storage-gateway",
+      "name": "AWS Storage Gateway",
+      "aliases": [],
+      "category": "ストレージ"
+    },
+    {
+      "id": "nat-gateway",
+      "name": "NAT gateway",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "vpc-endpoints",
+      "name": "VPC endpoints",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "sts",
+      "name": "AWS Security Token Service (AWS STS)",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "service-quotas",
+      "name": "Service Quotas",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "sct",
+      "name": "AWS Schema Conversion Tool (AWS SCT)",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "firehose",
+      "name": "Amazon Data Firehose",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "trusted-advisor",
+      "name": "AWS Trusted Advisor",
+      "aliases": [],
+      "category": "関連機能（試験ガイドの例示に登場）"
+    },
+    {
+      "id": "rds-proxy",
+      "name": "Amazon RDS Proxy",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "elastic-disaster-recovery",
+      "name": "AWS Elastic Disaster Recovery",
+      "aliases": [],
+      "category": "ストレージ"
+    },
+    {
+      "id": "dax",
+      "name": "Amazon DynamoDB Accelerator (DAX)",
+      "aliases": [],
+      "category": "データベース"
+    },
+    {
+      "id": "kinesis-data-streams",
+      "name": "Amazon Kinesis Data Streams",
+      "aliases": [],
+      "category": "分析"
+    },
+    {
+      "id": "quicksight",
+      "name": "Amazon QuickSight",
+      "aliases": [],
+      "category": "分析",
+      "note": "AWS の製品ページでは、Quick Sight は Amazon Quick の中で提供される BI の機能と説明されている（2026-11-13 確認）。改名とは書かれていないため、Amazon Quick とは別の ID にしている。"
+    },
+    {
+      "id": "ec2-spot",
+      "name": "Amazon EC2 Spot Instances",
+      "aliases": [],
+      "category": "コンピューティング"
+    },
+    {
+      "id": "timestream",
+      "name": "Amazon Timestream",
+      "aliases": [],
+      "category": "データベース"
+    }
+  ]
+}
