@@ -9,7 +9,7 @@
     "3.4-K2"
   ],
   "services": [
-    "Amazon Virtual Private Cloud",
+    "Amazon VPC",
     "AWS Resource Access Manager",
     "AWS Transit Gateway",
     "AWS Organizations"

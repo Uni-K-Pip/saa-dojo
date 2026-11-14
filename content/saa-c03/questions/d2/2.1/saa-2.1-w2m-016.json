@@ -10,8 +10,8 @@
   ],
   "services": [
     "AWS Fargate",
-    "Amazon Elastic Container Service",
-    "Amazon Elastic File System"
+    "Amazon ECS",
+    "Amazon EFS"
   ],
   "qualifier": "operational",
   "tags": [

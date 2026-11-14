@@ -9,7 +9,7 @@
     "4.3-K4"
   ],
   "services": [
-    "Amazon Relational Database Service",
+    "Amazon RDS",
     "Amazon EventBridge",
     "AWS Lambda"
   ],

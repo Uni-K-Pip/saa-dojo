@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon AppFlow",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Glue"
   ],
   "qualifier": "operational",

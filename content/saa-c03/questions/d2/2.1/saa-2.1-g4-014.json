@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K14", "2.1-K12", "2.1-S4"],
-  "services": ["Amazon Elastic Kubernetes Service", "AWS Fargate", "Amazon Elastic Container Service", "Amazon Elastic Compute Cloud"],
+  "services": ["Amazon EKS", "AWS Fargate", "Amazon ECS", "Amazon EC2"],
   "qualifier": "operational",
   "tags": ["コンテナオーケストレーション", "EKS", "Fargate", "Kubernetes", "移行"],
   "difficulty": 2,

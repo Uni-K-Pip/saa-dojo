@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K9", "2.2-K6"],
-  "services": ["Amazon RDS Proxy", "Amazon Relational Database Service", "Amazon Elastic Compute Cloud", "AWS Secrets Manager"],
+  "services": ["Amazon RDS Proxy", "Amazon RDS", "Amazon EC2", "AWS Secrets Manager"],
   "qualifier": "minimal-change",
   "tags": ["RDS Proxy", "フェイルオーバー", "コネクションプール", "マルチAZ"],
   "difficulty": 2,

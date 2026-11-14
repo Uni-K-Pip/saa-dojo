@@ -9,8 +9,8 @@
   ],
   "services": [
     "AWS Directory Service",
-    "Amazon Elastic Compute Cloud",
-    "Amazon Relational Database Service"
+    "Amazon EC2",
+    "Amazon RDS"
   ],
   "qualifier": "operational",
   "tags": [

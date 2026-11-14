@@ -9,7 +9,7 @@
     "2.2-K11"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "availability",
   "tags": [

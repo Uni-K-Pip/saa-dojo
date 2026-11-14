@@ -10,7 +10,7 @@
   ],
   "services": [
     "AWS Direct Connect",
-    "Amazon Virtual Private Cloud"
+    "Amazon VPC"
   ],
   "qualifier": "cost",
   "tags": [

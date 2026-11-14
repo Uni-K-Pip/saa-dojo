@@ -13,7 +13,7 @@ services:
   - NAT gateway
   - VPC endpoints
   - AWS PrivateLink
-  - Amazon Virtual Private Cloud
+  - Amazon VPC
 estimatedMinutes: 15
 createdBy: w2a
 ---

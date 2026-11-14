@@ -9,7 +9,7 @@
     "4.3-K1"
   ],
   "services": [
-    "Amazon Relational Database Service"
+    "Amazon RDS"
   ],
   "qualifier": "cost",
   "tags": [

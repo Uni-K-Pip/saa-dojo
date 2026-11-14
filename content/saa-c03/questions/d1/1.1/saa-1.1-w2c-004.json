@@ -4,7 +4,7 @@
   "domain": 1,
   "taskStatement": "1.1",
   "knowledgeRefs": ["1.1-S5", "1.1-S3"],
-  "services": ["Amazon Simple Queue Service", "AWS Identity and Access Management (IAM)", "Amazon ECS"],
+  "services": ["Amazon SQS", "AWS Identity and Access Management (IAM)", "Amazon ECS"],
   "qualifier": "minimal-change",
   "tags": ["リソースベースポリシー", "キューポリシー", "クロスアカウント", "Amazon SQS", "アイデンティティベースポリシー"],
   "difficulty": 2,

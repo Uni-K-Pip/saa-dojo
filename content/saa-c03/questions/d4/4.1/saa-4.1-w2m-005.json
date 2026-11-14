@@ -9,7 +9,7 @@
     "4.1-K10"
   ],
   "services": [
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "cost",
   "tags": [

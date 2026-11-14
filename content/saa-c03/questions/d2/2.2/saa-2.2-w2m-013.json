@@ -9,7 +9,7 @@
     "2.2-S2"
   ],
   "services": [
-    "Amazon Elastic File System"
+    "Amazon EFS"
   ],
   "qualifier": "operational",
   "tags": [

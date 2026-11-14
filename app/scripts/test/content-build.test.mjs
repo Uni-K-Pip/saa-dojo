@@ -61,6 +61,38 @@ describe('コンテンツのビルド', () => {
     expect(byKey('blueprint').mockComposition).toEqual({ 1: 20, 2: 17, 3: 15, 4: 13 });
   });
 
+  it('サービス台帳があれば services 欄を正規名にそろえ、台帳の要約も出力する', () => {
+    const qs = [
+      question('saa-1.1-a-001', { services: ['Amazon Simple Storage Service', 'Amazon S3', 'AWS Local Zones'] }),
+      question('saa-1.1-a-002', { services: ['AWS Key Management Service'] }),
+    ];
+    const parsed = parseContent(files(qs, [{ rel: 'services.json', text: read('services.json') }]), schema);
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.warnings.filter((w) => w.startsWith('services.json'))).toEqual([]);
+    const { files: out, manifest } = buildOutputs(parsed, schema);
+    const byKey = (key) => JSON.parse(out.find((f) => f.rel === manifest.files[key].path).text);
+
+    const index = byKey('index');
+    // 重複は除き、試験範囲に解決できない表記はそのまま残す
+    expect(index[0].services).toEqual(['Amazon S3', 'AWS Local Zones']);
+    expect(index[1].services).toEqual(['AWS Key Management Service (AWS KMS)']);
+    expect(byKey('practice-d1')[0].services).toEqual(['Amazon S3', 'AWS Local Zones']);
+    const services = byKey('services');
+    expect(manifest.counts.services).toBe(services.length);
+    expect(services.find((e) => e.id === 's3')).toMatchObject({ name: 'Amazon S3', source: 'inScope' });
+  });
+
+  it('サービス台帳がなければ services 欄を書かれたまま出力する', () => {
+    const qs = [question('saa-1.1-a-001', { services: ['Amazon Simple Storage Service'] })];
+    const parsed = parseContent(files(qs), schema);
+    expect(parsed.errors).toEqual([]);
+    const { files: out, manifest } = buildOutputs(parsed, schema);
+    expect(manifest.files.services).toBeUndefined();
+    expect(manifest.counts.services).toBe(0);
+    const index = JSON.parse(out.find((f) => f.rel === manifest.files.index.path).text);
+    expect(index[0].services).toEqual(['Amazon Simple Storage Service']);
+  });
+
   it('レッスンの確認問題に保留模試の問題を含めない', () => {
     const qs = [
       question('saa-1.1-a-001', { lessonRefs: ['lesson-4.1-s3-storage-classes'] }),

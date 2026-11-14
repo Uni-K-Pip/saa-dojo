@@ -5,8 +5,8 @@
   "taskStatement": "1.1",
   "knowledgeRefs": ["1.1-K5"],
   "services": [
-    "Amazon Elastic Compute Cloud",
-    "Amazon Simple Storage Service",
+    "Amazon EC2",
+    "Amazon S3",
     "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",

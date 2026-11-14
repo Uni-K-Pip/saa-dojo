@@ -9,7 +9,7 @@
   ],
   "services": [
     "AWS CloudHSM",
-    "AWS Key Management Service"
+    "AWS Key Management Service (AWS KMS)"
   ],
   "qualifier": "security",
   "tags": [

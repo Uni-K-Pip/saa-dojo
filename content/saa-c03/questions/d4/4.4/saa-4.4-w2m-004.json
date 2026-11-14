@@ -9,8 +9,8 @@
     "4.4-K1"
   ],
   "services": [
-    "Amazon Simple Storage Service",
-    "Amazon Elastic Compute Cloud"
+    "Amazon S3",
+    "Amazon EC2"
   ],
   "qualifier": "cost",
   "tags": [

@@ -10,8 +10,8 @@
   "services": [
     "AWS Client VPN",
     "AWS Directory Service",
-    "Amazon Virtual Private Cloud",
-    "Amazon Relational Database Service"
+    "Amazon VPC",
+    "Amazon RDS"
   ],
   "qualifier": "operational",
   "tags": [

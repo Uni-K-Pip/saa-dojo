@@ -8,8 +8,8 @@
     "1.1-K2"
   ],
   "services": [
-    "AWS Identity and Access Management",
-    "Amazon Simple Storage Service",
+    "AWS Identity and Access Management (IAM)",
+    "Amazon S3",
     "AWS Security Token Service (AWS STS)"
   ],
   "qualifier": "security",

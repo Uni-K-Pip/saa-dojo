@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-S6", "2.1-K3"],
-  "services": ["Amazon DynamoDB", "Amazon ElastiCache", "Amazon Relational Database Service", "Amazon Redshift", "Amazon Neptune"],
+  "services": ["Amazon DynamoDB", "Amazon ElastiCache", "Amazon RDS", "Amazon Redshift", "Amazon Neptune"],
   "qualifier": "performance",
   "tags": ["データベースの選択", "DynamoDB", "ElastiCache", "ソート済みセット", "ランキング"],
   "difficulty": 2,

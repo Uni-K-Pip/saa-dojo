@@ -13,7 +13,7 @@
       ],
       "services": [
         "Amazon Aurora",
-        "Amazon Relational Database Service"
+        "Amazon RDS"
       ],
       "tags": [
         "Aurora",
@@ -64,7 +64,7 @@
         "2.1"
       ],
       "services": [
-        "Amazon Relational Database Service"
+        "Amazon RDS"
       ],
       "tags": [
         "RDS",
@@ -83,7 +83,7 @@
       "services": [
         "Amazon RDS Proxy",
         "AWS Lambda",
-        "Amazon Relational Database Service"
+        "Amazon RDS"
       ],
       "tags": [
         "RDS Proxy",
@@ -98,7 +98,7 @@
         "4.3"
       ],
       "services": [
-        "Amazon Relational Database Service",
+        "Amazon RDS",
         "Amazon Aurora",
         "Savings Plans"
       ],
@@ -390,7 +390,7 @@
       ],
       "services": [
         "AWS Transit Gateway",
-        "Amazon Virtual Private Cloud"
+        "Amazon VPC"
       ],
       "tags": [
         "Transit Gateway",
@@ -444,7 +444,7 @@
       ],
       "services": [
         "AWS PrivateLink",
-        "Amazon Virtual Private Cloud"
+        "Amazon VPC"
       ],
       "tags": [
         "PrivateLink",
@@ -499,7 +499,7 @@
       ],
       "services": [
         "NAT gateway",
-        "Amazon Virtual Private Cloud"
+        "Amazon VPC"
       ],
       "tags": [
         "NAT",
@@ -516,7 +516,7 @@
         "1.2"
       ],
       "services": [
-        "Amazon Virtual Private Cloud",
+        "Amazon VPC",
         "NAT gateway"
       ],
       "tags": [
@@ -533,7 +533,7 @@
         "4.4"
       ],
       "services": [
-        "Amazon Virtual Private Cloud",
+        "Amazon VPC",
         "Amazon EC2"
       ],
       "tags": [
@@ -745,7 +745,7 @@
       ],
       "services": [
         "AWS Budgets",
-        "Amazon Simple Notification Service"
+        "Amazon SNS"
       ],
       "tags": [
         "Budgets",

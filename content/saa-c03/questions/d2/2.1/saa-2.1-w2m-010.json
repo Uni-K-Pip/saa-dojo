@@ -10,8 +10,8 @@
   ],
   "services": [
     "AWS Lambda",
-    "Amazon Simple Queue Service",
-    "Amazon Relational Database Service"
+    "Amazon SQS",
+    "Amazon RDS"
   ],
   "qualifier": "availability",
   "tags": [

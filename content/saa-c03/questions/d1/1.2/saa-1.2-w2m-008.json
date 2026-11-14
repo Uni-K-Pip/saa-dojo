@@ -10,9 +10,9 @@
   ],
   "services": [
     "VPC endpoints",
-    "Amazon Simple Storage Service",
-    "Amazon Virtual Private Cloud",
-    "Amazon Elastic Compute Cloud"
+    "Amazon S3",
+    "Amazon VPC",
+    "Amazon EC2"
   ],
   "qualifier": "security",
   "tags": [

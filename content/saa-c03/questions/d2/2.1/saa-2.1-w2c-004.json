@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K13", "2.1-S6"],
-  "services": ["Amazon Simple Storage Service", "Amazon Elastic Block Store", "Amazon Elastic File System", "Amazon Elastic Compute Cloud"],
+  "services": ["Amazon S3", "Amazon EBS", "Amazon EFS", "Amazon EC2"],
   "qualifier": "other",
   "tags": ["ストレージの種類", "オブジェクト", "ブロック", "インスタンスストア"],
   "difficulty": 2,

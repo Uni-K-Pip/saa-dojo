@@ -3,8 +3,10 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// テストでリポジトリ直下の scripts/lib/schema.mjs を読むとき、zod を app/node_modules から解決する
+// テストでリポジトリ直下の scripts/（schema.mjs・validate.mjs）を読むとき、zod と yaml を app/node_modules から解決する
+// （CI の app ジョブはルートの依存をインストールしない）
 const zodDir = fileURLToPath(new URL('./node_modules/zod', import.meta.url));
+const yamlDir = fileURLToPath(new URL('./node_modules/yaml', import.meta.url));
 // テストでは Service Worker の登録を空の実装に差し替える
 const pwaStub = fileURLToPath(new URL('./src/test/pwa-register-stub.ts', import.meta.url));
 
@@ -50,7 +52,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.mjs'],
-    alias: { zod: zodDir, 'virtual:pwa-register/react': pwaStub },
+    alias: { zod: zodDir, yaml: yamlDir, 'virtual:pwa-register/react': pwaStub },
     restoreMocks: true,
   },
 });

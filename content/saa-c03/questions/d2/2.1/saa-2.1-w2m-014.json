@@ -11,7 +11,7 @@
   "services": [
     "Amazon EventBridge",
     "AWS Lambda",
-    "Amazon Simple Queue Service"
+    "Amazon SQS"
   ],
   "qualifier": "operational",
   "tags": [

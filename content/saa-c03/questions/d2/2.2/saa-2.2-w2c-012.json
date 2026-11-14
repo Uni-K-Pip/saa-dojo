@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K4", "2.2-S6"],
-  "services": ["AWS Elastic Disaster Recovery", "AWS Backup", "AWS DataSync", "Amazon Elastic Compute Cloud"],
+  "services": ["AWS Elastic Disaster Recovery", "AWS Backup", "AWS DataSync", "Amazon EC2"],
   "qualifier": "cost",
   "tags": ["災害対策", "AWS Elastic Disaster Recovery", "パイロットライト", "RPO", "RTO"],
   "difficulty": 3,

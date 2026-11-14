@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K6", "2.1-S2"],
-  "services": ["Amazon Elastic Compute Cloud", "Amazon EC2 Auto Scaling", "Elastic Load Balancing", "Amazon CloudWatch"],
+  "services": ["Amazon EC2", "Amazon EC2 Auto Scaling", "Elastic Load Balancing", "Amazon CloudWatch"],
   "qualifier": "availability",
   "tags": ["水平スケーリング", "垂直スケーリング", "Auto Scaling", "単一障害点"],
   "difficulty": 1,

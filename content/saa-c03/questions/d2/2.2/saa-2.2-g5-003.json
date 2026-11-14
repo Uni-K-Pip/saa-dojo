@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K3", "2.2-K6", "2.2-S4"],
-  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN", "Amazon Virtual Private Cloud", "AWS Client VPN"],
+  "services": ["AWS Direct Connect", "AWS Site-to-Site VPN", "Amazon VPC", "AWS Client VPN"],
   "qualifier": "cost",
   "tags": ["ルートテーブル", "最長一致", "ハイブリッド接続", "フェイルオーバー"],
   "difficulty": 2,

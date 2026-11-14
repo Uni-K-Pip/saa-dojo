@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K2", "2.2-S8"],
-  "services": ["Amazon Transcribe", "Amazon Comprehend", "Amazon Polly", "Amazon Translate", "Amazon Rekognition", "Amazon Simple Storage Service"],
+  "services": ["Amazon Transcribe", "Amazon Comprehend", "Amazon Polly", "Amazon Translate", "Amazon Rekognition", "Amazon S3"],
   "qualifier": "operational",
   "tags": ["専用マネージドサービス", "Transcribe", "Comprehend", "感情分析", "コールセンター"],
   "difficulty": 2,

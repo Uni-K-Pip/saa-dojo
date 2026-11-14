@@ -9,7 +9,7 @@
     "1.2-S3"
   ],
   "services": [
-    "Amazon Virtual Private Cloud",
+    "Amazon VPC",
     "AWS Resource Access Manager",
     "AWS Organizations"
   ],

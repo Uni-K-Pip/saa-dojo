@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K5"],
-  "services": ["Amazon Elastic Container Service", "Amazon Simple Queue Service"],
+  "services": ["Amazon ECS", "Amazon SQS"],
   "qualifier": "availability",
   "tags": ["再試行", "エクスポネンシャルバックオフ", "ジッター", "冪等性"],
   "difficulty": 2,

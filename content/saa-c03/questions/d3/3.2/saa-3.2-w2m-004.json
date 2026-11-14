@@ -8,8 +8,8 @@
     "3.2-S3"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud",
-    "Amazon Elastic Block Store",
+    "Amazon EC2",
+    "Amazon EBS",
     "Elastic Load Balancing",
     "AWS Local Zones"
   ],

@@ -9,7 +9,7 @@
     "4.3-K5"
   ],
   "services": [
-    "AWS Database Migration Service",
+    "AWS Database Migration Service (AWS DMS)",
     "Amazon Aurora"
   ],
   "qualifier": "cost",

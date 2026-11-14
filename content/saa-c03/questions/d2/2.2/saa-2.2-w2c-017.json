@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-S1"],
-  "services": ["AWS CloudFormation", "AWS CloudTrail", "Amazon Elastic Compute Cloud"],
+  "services": ["AWS CloudFormation", "AWS CloudTrail", "Amazon EC2"],
   "qualifier": "operational",
   "tags": ["CloudFormation", "ドリフト検出", "変更セット", "スタックポリシー", "構成の整合性"],
   "difficulty": 1,

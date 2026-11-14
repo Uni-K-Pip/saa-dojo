@@ -12,7 +12,7 @@
     "AWS Backup",
     "AWS CloudFormation",
     "Amazon RDS",
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "Amazon Route 53"
   ],
   "qualifier": "cost",

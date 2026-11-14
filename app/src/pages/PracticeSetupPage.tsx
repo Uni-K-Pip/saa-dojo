@@ -1,13 +1,14 @@
 // 演習: 条件と問題数を選んで始める
 import { use, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { loadBlueprint, loadQuestionIndex } from '../content/loader';
+import { loadBlueprint, loadQuestionIndex, loadServices } from '../content/loader';
 import type { Difficulty, Qualifier, QuestionMeta } from '../content/types';
 import { DIFFICULTY_LABELS, QUALIFIER_LABELS } from '../domain/labels';
 import { randomRng } from '../domain/rng';
 import {
   EMPTY_FILTER,
   QUESTION_COUNTS,
+  canonicalServiceFilter,
   filterFromQuery,
   filterPractice,
   pickQuestions,
@@ -65,10 +66,11 @@ function countBy(pool: QuestionMeta[], key: (q: QuestionMeta) => string[]): [str
 export default function PracticeSetupPage() {
   const index = use(loadQuestionIndex());
   const blueprint = use(loadBlueprint());
+  const serviceEntries = use(loadServices());
   const { history } = useStudy();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<PracticeFilter>(() => filterFromQuery(params));
+  const [filter, setFilter] = useState<PracticeFilter>(() => canonicalServiceFilter(filterFromQuery(params), serviceEntries));
   const [count, setCount] = useState<number>(10);
   const [serviceQuery, setServiceQuery] = useState('');
   const [busy, setBusy] = useState(false);

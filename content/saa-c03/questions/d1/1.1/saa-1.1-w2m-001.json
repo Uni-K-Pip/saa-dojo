@@ -8,7 +8,7 @@
     "1.1-K4"
   ],
   "services": [
-    "AWS Identity and Access Management",
+    "AWS Identity and Access Management (IAM)",
     "AWS Lambda"
   ],
   "qualifier": "security",

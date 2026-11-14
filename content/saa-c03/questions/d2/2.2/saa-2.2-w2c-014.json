@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.2",
   "knowledgeRefs": ["2.2-K7", "2.2-S1"],
-  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon Elastic Compute Cloud", "Amazon Route 53"],
+  "services": ["Elastic Load Balancing", "Amazon EC2 Auto Scaling", "Amazon EC2", "Amazon Route 53"],
   "qualifier": "availability",
   "tags": ["イミュータブルインフラ", "ブルー/グリーンデプロイ", "加重ターゲットグループ", "ロールバック"],
   "difficulty": 3,

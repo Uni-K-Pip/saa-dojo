@@ -12,7 +12,7 @@ knowledgeRefs:
 services:
   - AWS Identity and Access Management (IAM)
   - AWS Security Token Service (AWS STS)
-  - Amazon Elastic Compute Cloud
+  - Amazon EC2
   - AWS CloudTrail
 estimatedMinutes: 15
 createdBy: g1

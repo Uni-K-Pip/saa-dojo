@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.2",
   "knowledgeRefs": ["4.2-S1", "4.2-K8"],
-  "services": ["Elastic Load Balancing", "Amazon Elastic Container Service"],
+  "services": ["Elastic Load Balancing", "Amazon ECS"],
   "qualifier": "cost",
   "tags": ["Application Load Balancer", "パスベースルーティング", "マイクロサービス", "ロードバランサーの統合"],
   "difficulty": 2,

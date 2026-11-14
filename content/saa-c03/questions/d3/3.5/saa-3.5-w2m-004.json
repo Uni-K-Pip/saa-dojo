@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon Data Firehose",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Glue",
     "Amazon Athena"
   ],

@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.2",
   "knowledgeRefs": ["4.2-K9", "4.2-S2", "4.2-S4"],
-  "services": ["Amazon EC2", "Amazon Elastic Block Store"],
+  "services": ["Amazon EC2", "Amazon EBS"],
   "qualifier": "cost",
   "tags": ["EC2 休止状態", "Hibernate", "開発環境", "コスト削減"],
   "difficulty": 2,

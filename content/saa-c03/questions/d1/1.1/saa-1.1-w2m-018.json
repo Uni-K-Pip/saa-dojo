@@ -9,7 +9,7 @@
     "1.1-S3"
   ],
   "services": [
-    "AWS Identity and Access Management",
+    "AWS Identity and Access Management (IAM)",
     "AWS Security Token Service (AWS STS)"
   ],
   "qualifier": "operational",

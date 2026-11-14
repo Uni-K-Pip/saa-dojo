@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K3", "3.5-S3"],
-  "services": ["AWS Storage Gateway", "Amazon S3 Glacier", "Amazon Simple Storage Service"],
+  "services": ["AWS Storage Gateway", "Amazon S3 Glacier", "Amazon S3"],
   "qualifier": "minimal-change",
   "tags": ["テープゲートウェイ", "Storage Gateway", "バックアップ", "仮想テープ"],
   "difficulty": 2,

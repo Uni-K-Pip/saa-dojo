@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K11", "2.1-S3"],
-  "services": ["Amazon Simple Notification Service", "Amazon Simple Queue Service"],
+  "services": ["Amazon SNS", "Amazon SQS"],
   "qualifier": "availability",
   "tags": ["パブリッシュ/サブスクライブ", "ファンアウト", "SNS", "SQS", "疎結合"],
   "difficulty": 2,

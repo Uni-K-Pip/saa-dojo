@@ -10,7 +10,7 @@
   ],
   "services": [
     "AWS Secrets Manager",
-    "Amazon Relational Database Service"
+    "Amazon RDS"
   ],
   "qualifier": "availability",
   "tags": [

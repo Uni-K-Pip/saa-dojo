@@ -9,7 +9,7 @@
     "1.3-K4"
   ],
   "services": [
-    "AWS Certificate Manager",
+    "AWS Certificate Manager (ACM)",
     "Amazon CloudFront",
     "Amazon Route 53"
   ],

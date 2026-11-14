@@ -10,7 +10,7 @@
   "services": [
     "AWS Lambda",
     "Amazon Elastic Container Registry",
-    "Amazon Simple Storage Service"
+    "Amazon S3"
   ],
   "qualifier": "minimal-change",
   "tags": [

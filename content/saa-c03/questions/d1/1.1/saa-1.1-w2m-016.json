@@ -8,9 +8,9 @@
     "1.1-K1"
   ],
   "services": [
-    "Amazon Simple Notification Service",
-    "Amazon Simple Queue Service",
-    "AWS Identity and Access Management"
+    "Amazon SNS",
+    "Amazon SQS",
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",
   "tags": [

@@ -7,9 +7,9 @@
     "basics-K5"
   ],
   "services": [
-    "AWS Certificate Manager",
+    "AWS Certificate Manager (ACM)",
     "Elastic Load Balancing",
-    "AWS Key Management Service"
+    "AWS Key Management Service (AWS KMS)"
   ],
   "qualifier": "operational",
   "tags": [

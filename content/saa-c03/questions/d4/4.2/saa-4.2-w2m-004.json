@@ -10,8 +10,8 @@
   ],
   "services": [
     "AWS Fargate",
-    "Amazon Elastic Container Service",
-    "Amazon Simple Queue Service"
+    "Amazon ECS",
+    "Amazon SQS"
   ],
   "qualifier": "cost",
   "tags": [

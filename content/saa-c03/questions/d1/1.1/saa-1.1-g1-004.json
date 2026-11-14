@@ -7,7 +7,7 @@
   "services": [
     "AWS Identity and Access Management (IAM)",
     "AWS CloudTrail",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "operational",
   "tags": ["最小権限", "IAM Access Analyzer", "ポリシー生成", "CloudTrail", "最終アクセス情報"],

@@ -11,8 +11,8 @@
     "Amazon GuardDuty",
     "Amazon EventBridge",
     "AWS Lambda",
-    "Amazon Simple Notification Service",
-    "Amazon Elastic Compute Cloud"
+    "Amazon SNS",
+    "Amazon EC2"
   ],
   "qualifier": "operational",
   "tags": [

@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.4",
   "knowledgeRefs": ["4.4-K4", "4.4-S1"],
-  "services": ["NAT gateway", "Amazon Virtual Private Cloud"],
+  "services": ["NAT gateway", "Amazon VPC"],
   "qualifier": "availability",
   "tags": ["NAT ゲートウェイ", "アベイラビリティーゾーン", "AZ 間のデータ転送", "高可用性"],
   "difficulty": 2,

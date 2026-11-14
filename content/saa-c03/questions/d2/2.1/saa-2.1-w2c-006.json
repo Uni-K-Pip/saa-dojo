@@ -11,9 +11,9 @@
     "AWS Step Functions",
     "AWS Glue",
     "AWS Lambda",
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "Amazon EventBridge",
-    "Amazon Simple Notification Service"
+    "Amazon SNS"
   ],
   "qualifier": "operational",
   "tags": [

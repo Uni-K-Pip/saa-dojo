@@ -9,7 +9,7 @@
   ],
   "services": [
     "AWS Elastic Beanstalk",
-    "Amazon Elastic Compute Cloud",
+    "Amazon EC2",
     "Elastic Load Balancing",
     "Amazon EC2 Auto Scaling"
   ],

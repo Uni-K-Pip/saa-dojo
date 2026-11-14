@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.4",
   "knowledgeRefs": ["3.4-S2", "3.4-K2"],
-  "services": ["Amazon VPC", "Amazon Elastic Kubernetes Service", "AWS Transit Gateway"],
+  "services": ["Amazon VPC", "Amazon EKS", "AWS Transit Gateway"],
   "qualifier": "minimal-change",
   "tags": ["CIDRブロック", "セカンダリCIDR", "IPアドレスの枯渇", "サブネット", "拡張性"],
   "difficulty": 2,

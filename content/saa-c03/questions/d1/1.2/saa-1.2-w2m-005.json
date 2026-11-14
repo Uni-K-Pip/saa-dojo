@@ -10,8 +10,8 @@
   ],
   "services": [
     "Amazon Cognito",
-    "Amazon Simple Storage Service",
-    "AWS Identity and Access Management"
+    "Amazon S3",
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "operational",
   "tags": [

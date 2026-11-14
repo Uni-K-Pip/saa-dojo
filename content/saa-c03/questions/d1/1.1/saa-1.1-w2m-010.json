@@ -12,7 +12,7 @@
     "AWS Organizations",
     "AWS CloudTrail",
     "AWS Config",
-    "AWS Identity and Access Management"
+    "AWS Identity and Access Management (IAM)"
   ],
   "qualifier": "security",
   "tags": [

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildHistory } from './history';
 import { mulberry32 } from './rng';
-import { EMPTY_FILTER, filterFromQuery, filterPractice, filterToQuery, pickQuestions } from './selection';
+import { EMPTY_FILTER, canonicalServiceFilter, filterFromQuery, filterPractice, filterToQuery, pickQuestions } from './selection';
 import { answer, event, makeQuestion, metaOf } from '../test/fixtures';
 
 const qs = [
@@ -77,5 +77,22 @@ describe('演習の出題選択', () => {
       ...EMPTY_FILTER,
       difficulties: [2],
     });
+  });
+});
+
+describe('サービス名の正規化', () => {
+  const entries = [
+    { id: 's3', name: 'Amazon S3', aliases: ['S3', 'Amazon Simple Storage Service'], category: 'ストレージ', source: 'inScope' as const },
+    { id: 'sqs', name: 'Amazon SQS', aliases: ['SQS', 'Amazon Simple Queue Service'], category: 'アプリケーション統合', source: 'inScope' as const },
+  ];
+
+  it('古い表記の条件を正規名に直し、重複を除く。台帳にない名前はそのまま残す', () => {
+    const f = { ...EMPTY_FILTER, services: ['Amazon Simple Storage Service', 'Amazon S3', 'Amazon Simple Queue Service', 'Unknown'] };
+    expect(canonicalServiceFilter(f, entries).services).toEqual(['Amazon S3', 'Amazon SQS', 'Unknown']);
+  });
+
+  it('台帳が空なら条件を変えない', () => {
+    const f = { ...EMPTY_FILTER, services: ['Amazon Simple Storage Service'] };
+    expect(canonicalServiceFilter(f, [])).toBe(f);
   });
 });

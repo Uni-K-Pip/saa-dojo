@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K5", "2.1-S3"],
-  "services": ["Amazon Simple Storage Service", "Amazon EventBridge", "AWS Lambda"],
+  "services": ["Amazon S3", "Amazon EventBridge", "AWS Lambda"],
   "qualifier": "operational",
   "tags": ["イベント駆動", "ファンアウト", "S3イベント通知", "EventBridge"],
   "difficulty": 2,

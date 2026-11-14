@@ -8,9 +8,9 @@
     "3.1-S1"
   ],
   "services": [
-    "Amazon Elastic Compute Cloud",
-    "Amazon Elastic Block Store",
-    "Amazon Simple Storage Service"
+    "Amazon EC2",
+    "Amazon EBS",
+    "Amazon S3"
   ],
   "qualifier": "performance",
   "tags": [

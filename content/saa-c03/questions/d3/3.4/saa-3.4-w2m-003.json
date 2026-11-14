@@ -10,7 +10,7 @@
   ],
   "services": [
     "Elastic Load Balancing",
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "AWS Fargate"
   ],
   "qualifier": "performance",

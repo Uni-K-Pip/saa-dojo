@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-S3", "2.1-K11"],
-  "services": ["Amazon Simple Queue Service", "Amazon Simple Notification Service", "Elastic Load Balancing"],
+  "services": ["Amazon SQS", "Amazon SNS", "Elastic Load Balancing"],
   "qualifier": "availability",
   "tags": ["疎結合", "SQS FIFO", "メッセージグループID", "重複排除", "順序保証"],
   "difficulty": 2,

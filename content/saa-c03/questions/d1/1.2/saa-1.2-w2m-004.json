@@ -10,7 +10,7 @@
   "services": [
     "AWS Systems Manager",
     "AWS Secrets Manager",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "cost",
   "tags": [

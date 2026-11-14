@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-K7", "3.5-K2", "3.5-K6"],
-  "services": ["Amazon Managed Streaming for Apache Kafka", "Amazon Kinesis"],
+  "services": ["Amazon MSK", "Amazon Kinesis"],
   "qualifier": "minimal-change",
   "tags": ["Amazon MSK", "Apache Kafka", "移行", "ストリーミング"],
   "difficulty": 2,

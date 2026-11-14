@@ -15,7 +15,7 @@ services:
   - AWS IAM Identity Center
   - AWS Directory Service
   - Amazon Cognito
-  - Amazon Simple Storage Service
+  - Amazon S3
 estimatedMinutes: 20
 createdBy: g1
 ---

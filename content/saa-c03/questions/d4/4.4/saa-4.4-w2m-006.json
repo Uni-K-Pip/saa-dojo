@@ -11,7 +11,7 @@
   "services": [
     "Amazon Route 53",
     "AWS Direct Connect",
-    "Amazon Virtual Private Cloud",
+    "Amazon VPC",
     "AWS Resource Access Manager"
   ],
   "qualifier": "cost",

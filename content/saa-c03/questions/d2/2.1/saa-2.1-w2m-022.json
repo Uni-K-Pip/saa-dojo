@@ -10,8 +10,8 @@
   ],
   "services": [
     "AWS Transfer Family",
-    "Amazon Simple Storage Service",
-    "Amazon Virtual Private Cloud"
+    "Amazon S3",
+    "Amazon VPC"
   ],
   "qualifier": "security",
   "tags": [

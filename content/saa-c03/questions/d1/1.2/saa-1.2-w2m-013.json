@@ -8,8 +8,8 @@
     "1.2-S1"
   ],
   "services": [
-    "Amazon Virtual Private Cloud",
-    "Amazon Simple Storage Service",
+    "Amazon VPC",
+    "Amazon S3",
     "Amazon Athena"
   ],
   "qualifier": "operational",

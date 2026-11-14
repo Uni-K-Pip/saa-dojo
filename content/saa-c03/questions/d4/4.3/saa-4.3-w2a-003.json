@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-K3", "4.3-S3"],
-  "services": ["Amazon ElastiCache", "Amazon Relational Database Service"],
+  "services": ["Amazon ElastiCache", "Amazon RDS"],
   "qualifier": "cost",
   "tags": ["ElastiCache", "キャッシュ戦略", "キャッシュアサイド", "読み取りの負荷"],
   "difficulty": 1,

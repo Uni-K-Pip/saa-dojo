@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.4",
   "knowledgeRefs": ["4.4-K6", "4.4-S3"],
-  "services": ["Amazon Virtual Private Cloud", "AWS Transit Gateway"],
+  "services": ["Amazon VPC", "AWS Transit Gateway"],
   "qualifier": "cost",
   "tags": ["VPC ピアリング", "Transit Gateway", "データ処理料金", "2 つの VPC"],
   "difficulty": 2,

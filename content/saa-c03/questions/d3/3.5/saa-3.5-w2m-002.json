@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon Redshift",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "AWS Glue"
   ],
   "qualifier": "cost",

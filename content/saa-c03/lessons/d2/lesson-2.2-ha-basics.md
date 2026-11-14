@@ -12,11 +12,11 @@ knowledgeRefs:
   - 2.2-S3
   - 2.2-S4
 services:
-  - Amazon Elastic Compute Cloud
-  - Amazon Virtual Private Cloud
+  - Amazon EC2
+  - Amazon VPC
   - Elastic Load Balancing
   - Amazon EC2 Auto Scaling
-  - Amazon Relational Database Service
+  - Amazon RDS
   - Amazon Aurora
   - Amazon Route 53
   - AWS Direct Connect

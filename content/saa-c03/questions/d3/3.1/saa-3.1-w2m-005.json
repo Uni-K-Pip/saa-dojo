@@ -10,7 +10,7 @@
   ],
   "services": [
     "Amazon FSx",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "minimal-change",
   "tags": [

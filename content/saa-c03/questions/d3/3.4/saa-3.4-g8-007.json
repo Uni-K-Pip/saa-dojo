@@ -8,7 +8,7 @@
     "AWS Outposts",
     "AWS Wavelength",
     "Amazon EC2",
-    "Amazon Elastic Block Store",
+    "Amazon EBS",
     "AWS Direct Connect"
   ],
   "qualifier": "performance",

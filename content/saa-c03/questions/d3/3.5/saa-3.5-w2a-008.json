@@ -8,7 +8,7 @@
     "AWS Lake Formation",
     "AWS Glue",
     "Amazon Athena",
-    "Amazon Simple Storage Service",
+    "Amazon S3",
     "Amazon EMR"
   ],
   "qualifier": "security",

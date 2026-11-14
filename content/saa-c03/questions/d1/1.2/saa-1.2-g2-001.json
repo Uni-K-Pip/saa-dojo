@@ -9,7 +9,7 @@
     "Amazon RDS",
     "Amazon EC2",
     "AWS Systems Manager",
-    "AWS Key Management Service",
+    "AWS Key Management Service (AWS KMS)",
     "Amazon S3"
   ],
   "qualifier": "operational",

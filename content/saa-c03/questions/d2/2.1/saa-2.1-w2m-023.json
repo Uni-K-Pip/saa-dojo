@@ -10,8 +10,8 @@
   ],
   "services": [
     "Amazon Kinesis Data Streams",
-    "Amazon Simple Queue Service",
-    "Amazon Elastic Compute Cloud"
+    "Amazon SQS",
+    "Amazon EC2"
   ],
   "qualifier": "operational",
   "tags": [

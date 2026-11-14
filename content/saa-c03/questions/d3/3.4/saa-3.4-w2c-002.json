@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.4",
   "knowledgeRefs": ["3.4-K1", "3.4-S1"],
-  "services": ["Amazon CloudFront", "Elastic Load Balancing", "Amazon Virtual Private Cloud", "Amazon Elastic Compute Cloud"],
+  "services": ["Amazon CloudFront", "Elastic Load Balancing", "Amazon VPC", "Amazon EC2"],
   "qualifier": "security",
   "tags": ["CloudFront", "VPCオリジン", "内部ALB", "プライベートサブネット"],
   "difficulty": 3,

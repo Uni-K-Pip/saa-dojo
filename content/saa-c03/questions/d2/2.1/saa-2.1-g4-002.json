@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K2"],
-  "services": ["AWS Transfer Family", "Amazon Simple Storage Service", "Amazon Elastic Compute Cloud", "AWS Storage Gateway"],
+  "services": ["AWS Transfer Family", "Amazon S3", "Amazon EC2", "AWS Storage Gateway"],
   "qualifier": "operational",
   "tags": ["Transfer Family", "SFTP", "マネージドサービス", "ファイル転送"],
   "difficulty": 1,

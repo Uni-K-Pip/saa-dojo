@@ -4,7 +4,7 @@
   "domain": 1,
   "taskStatement": "1.2",
   "knowledgeRefs": ["1.2-K2", "1.2-S2"],
-  "services": ["VPC endpoints", "AWS PrivateLink", "Amazon Simple Queue Service", "Amazon EC2", "NAT gateway"],
+  "services": ["VPC endpoints", "AWS PrivateLink", "Amazon SQS", "Amazon EC2", "NAT gateway"],
   "qualifier": "security",
   "tags": ["インターフェイスエンドポイント", "ゲートウェイエンドポイント", "プライベート DNS", "サービスエンドポイント"],
   "difficulty": 2,

@@ -22,7 +22,7 @@ services:
   - Amazon RDS
   - Amazon DynamoDB
   - Amazon S3
-  - Amazon Elastic File System
+  - Amazon EFS
   - Service Quotas
   - AWS CloudFormation
 estimatedMinutes: 20

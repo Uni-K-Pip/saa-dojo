@@ -18,17 +18,17 @@ knowledgeRefs:
 services:
   - Amazon EC2 Auto Scaling
   - Elastic Load Balancing
-  - Amazon Elastic Container Service
-  - Amazon Elastic Kubernetes Service
+  - Amazon ECS
+  - Amazon EKS
   - AWS Fargate
   - AWS Lambda
-  - Amazon Relational Database Service
+  - Amazon RDS
   - Amazon Aurora
   - Amazon DynamoDB
   - Amazon ElastiCache
   - Amazon CloudFront
   - AWS Global Accelerator
-  - Amazon Simple Storage Service
+  - Amazon S3
 estimatedMinutes: 20
 createdBy: w2c
 ---

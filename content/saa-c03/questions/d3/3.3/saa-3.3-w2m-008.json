@@ -9,7 +9,7 @@
   ],
   "services": [
     "Amazon OpenSearch Service",
-    "Amazon Relational Database Service"
+    "Amazon RDS"
   ],
   "qualifier": "performance",
   "tags": [

@@ -9,7 +9,7 @@
   ],
   "services": [
     "Elastic Load Balancing",
-    "Amazon Elastic Container Service"
+    "Amazon ECS"
   ],
   "qualifier": "operational",
   "tags": [

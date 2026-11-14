@@ -21,7 +21,9 @@ import {
   FlashcardDeckSchema,
   GlossaryFileSchema,
   ReviewStatusSchema,
+  ServiceRegistrySchema,
 } from './lib/schema.mjs';
+import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -47,7 +49,6 @@ const clip = (s, n = 60) => {
   const a = Array.from(String(s));
   return a.length > n ? `${a.slice(0, n - 1).join('')}…` : a.join('');
 };
-const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const pct = (n, d) => (d ? Math.round((100 * n) / d) : 0);
 
 // ---------- 指摘の蓄積 ----------
@@ -88,6 +89,7 @@ function classify(rel) {
   const domainDir = /^d([1-4])$/.exec(p[1] ?? '');
 
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
+  if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question', dirTask: 'basics', stem };
@@ -108,7 +110,7 @@ function classify(rel) {
 
 export const LAYOUT_HELP = [
   '許可する配置（content/saa-c03 からの相対パス）:',
-  '  blueprint.json / review-status.json',
+  '  blueprint.json / services.json / review-status.json',
   '  questions/d<1-4>/<タスク>/<id>.json   questions/basics/<id>.json',
   '  lessons/d<1-4>/<id>.md   lessons/basics/<id>.md',
   '  flashcards/<デッキ>.json   glossary/<名前>.json',
@@ -241,92 +243,8 @@ export function buildBlueprintIndex(blueprint) {
 }
 
 // ---------- サービス名の照合 ----------
-const VENDOR_PREFIX = /^(?:Amazon|AWS)\s+/;
-const normName = (s) => s.normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
-// 略称らしい形（EC2, S3, KMS）か、大文字を 2 つ以上含む 1 語（DynamoDB, CloudFront）。
-// 一般の語と紛らわしい略称は本文検索の対象から外す。
-const AMBIGUOUS_FORMS = new Set(['RAM']);
-const isDistinctive = (s) =>
-  !AMBIGUOUS_FORMS.has(s) && (/^[A-Z0-9]{2,6}$/.test(s) || /^(?=(?:[^A-Z]*[A-Z]){2})[A-Za-z0-9]+$/.test(s));
-
-// aliases: services に書かれても同じサービスとみなす表記 / strong: 本文中の言及を探すときに使う表記
-export function serviceNameForms(name) {
-  const m = /^(.*\S)\s*\(([^()]+)\)\s*$/.exec(name);
-  const parts = m ? [name, m[1], m[2]] : [name];
-  const aliases = new Set(parts);
-  for (const p of parts) {
-    const stripped = p.replace(VENDOR_PREFIX, '');
-    if (stripped !== p && stripped.length >= 2) aliases.add(stripped);
-  }
-  if (m && !VENDOR_PREFIX.test(m[2])) aliases.add(`AWS ${m[2]}`);
-  const strong = new Set([name, m ? m[1] : name]);
-  for (const a of aliases) if (VENDOR_PREFIX.test(a) || isDistinctive(a)) strong.add(a);
-  return { aliases: [...aliases], strong: [...strong] };
-}
-
-export function textMatcher(names) {
-  return new RegExp(`(?<![A-Za-z0-9])(?:${names.map(escapeRe).join('|')})(?![A-Za-z0-9])`);
-}
-
-// services.inScope にないが、タスクの keyServices に挙がっているサービスの分類名
-export const KEY_SERVICE_CATEGORY = 'タスクのキーサービス（services.inScope に未掲載）';
-
-export function buildServiceIndex(blueprint) {
-  const inScope = [];
-  const category = new Map();
-  const add = (name, cat) => {
-    if (category.has(name)) return;
-    category.set(name, cat);
-    inScope.push(name);
-  };
-  for (const c of blueprint.services.inScope) for (const s of c.services) add(s, c.category);
-  // keyServices は blueprint 自身が挙げる対象サービスなので、試験範囲として扱う
-  for (const d of blueprint.domains) for (const t of d.taskStatements) for (const s of t.keyServices) add(s, KEY_SERVICE_CATEGORY);
-  const outOfScope = uniq(blueprint.services.outOfScope);
-  const exactIn = new Set(inScope);
-  const exactOut = new Set(outOfScope);
-  const aliasIn = new Map();
-  const aliasOut = new Map();
-  const register = (map, names) => {
-    for (const n of names) {
-      for (const a of serviceNameForms(n).aliases) {
-        const k = normName(a);
-        if (!map.has(k)) map.set(k, n);
-      }
-    }
-  };
-  register(aliasIn, inScope);
-  register(aliasOut, outOfScope);
-
-  const suggest = (name) => {
-    const k = normName(name);
-    return inScope
-      .filter((n) => {
-        const nk = normName(n);
-        return nk.includes(k) || k.includes(nk);
-      })
-      .sort((a, b) => b.length - a.length)
-      .slice(0, 3);
-  };
-
-  // kind: in（試験範囲）/ out（範囲外）/ unknown。exact=false は表記ゆれ。
-  function resolve(name) {
-    if (exactIn.has(name)) return { kind: 'in', canonical: name, exact: true };
-    if (exactOut.has(name)) return { kind: 'out', canonical: name, exact: true };
-    const k = normName(name);
-    if (aliasIn.has(k)) return { kind: 'in', canonical: aliasIn.get(k), exact: false };
-    if (aliasOut.has(k)) return { kind: 'out', canonical: aliasOut.get(k), exact: false };
-    return { kind: 'unknown', suggestions: suggest(name) };
-  }
-
-  return {
-    inScope,
-    outOfScope,
-    category,
-    resolve,
-    outOfScopeMatchers: outOfScope.map((name) => ({ name, re: textMatcher([name]) })),
-  };
-}
+// 照合の本体は scripts/lib/service-registry.mjs にある。coverage.mjs などが validate.mjs から読み込むため、ここからも export する。
+export { KEY_SERVICE_CATEGORY, buildServiceIndex, serviceNameForms, textMatcher } from './lib/service-registry.mjs';
 
 // ---------- 読み込み ----------
 export function statusOf(content, id) {
@@ -344,6 +262,8 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     blueprint: null,
     bpIndex: null,
     serviceIndex: null,
+    registry: { present: false, data: null }, // サービス台帳（services.json）
+    serviceAliasUses: new Map(), // 別名の表記 → { canonical, files: Set }（services 欄の表記ゆれを集約して報告する）
     questions: [], // { rel, data }（スキーマに通ったものだけ）
     lessons: [], // { rel, data, body }
     docs: [], // { rel, data, body, docKind }
@@ -425,14 +345,19 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
 
   const files = walk(contentDir);
 
-  // blueprint を最初に読む（他の検査が参照する）
+  // blueprint とサービス台帳を最初に読む（他の検査が参照する）
+  if (files.includes('services.json')) {
+    content.registry.present = true;
+    const j = readJson('services.json');
+    content.registry.data = j && validateWith(ServiceRegistrySchema, j.value, 'services.json');
+  }
   if (files.includes('blueprint.json')) {
     const j = readJson('blueprint.json');
     const bp = j && validateWith(BlueprintSchema, j.value, 'blueprint.json');
     if (bp) {
       content.blueprint = bp;
       content.bpIndex = buildBlueprintIndex(bp);
-      content.serviceIndex = buildServiceIndex(bp);
+      content.serviceIndex = buildServiceIndex(bp, content.registry.data);
     }
   } else {
     report.error('blueprint-missing', 'blueprint.json', 'blueprint.json がありません');
@@ -576,7 +501,15 @@ function checkServiceNames(content, rel, names, where) {
   for (const name of uniq(names)) {
     const r = serviceIndex.resolve(name);
     if (r.kind === 'in') {
-      if (!r.exact) alias.push(`${name} → ${r.canonical}`);
+      if (r.exact) continue;
+      if (serviceIndex.hasRegistry) {
+        // 台帳があるときは、ファイルごとではなく「表記 → 正規名」ごとに集約して最後に報告する
+        const uses = content.serviceAliasUses;
+        if (!uses.has(name)) uses.set(name, { canonical: r.canonical, declared: Boolean(r.declared), files: new Set() });
+        uses.get(name).files.add(rel);
+      } else {
+        alias.push(`${name} → ${r.canonical}`);
+      }
     } else if (r.kind === 'out') {
       out.push(name);
     } else {
@@ -594,6 +527,32 @@ function checkServiceNames(content, rel, names, where) {
   }
   if (alias.length) {
     report.warn('service-alias', rel, `${where} の表記を blueprint に合わせてください: ${alias.join(', ')}`);
+  }
+}
+
+// services 欄の別名の表記を「表記 → 正規名（ファイル数）」の 1 行ずつにまとめて報告する
+function reportServiceAliases(content) {
+  const { report } = content;
+  const rows = [...content.serviceAliasUses].sort((a, b) => b[1].files.size - a[1].files.size || cmp(a[0], b[0]));
+  for (const [name, u] of rows) {
+    const where = u.declared ? '台帳の別名' : '別表記';
+    report.warn('service-alias', '', `services の「${name}」（${where}）は正規名「${u.canonical}」で書いてください（${u.files.size} ファイル）`, {
+      files: [...u.files].sort().map(label),
+    });
+  }
+}
+
+function checkRegistry(content) {
+  const { report, registry, serviceIndex } = content;
+  if (!registry.present) {
+    report.warn('registry-missing', 'services.json', 'サービス台帳がないため、blueprint の表記をそれぞれ別のサービスとして扱います');
+    return;
+  }
+  if (!serviceIndex?.hasRegistry) return; // 台帳を読めなかった（スキーマ違反などは読み込み時に報告済み）
+  for (const msg of serviceIndex.problems) report.error('registry', 'services.json', msg);
+  const extra = serviceIndex.inScope.filter((n) => serviceIndex.source.get(n) === 'registry');
+  if (extra.length) {
+    report.warn('registry', 'services.json', `blueprint にないサービスが台帳にあります: ${extra.join(', ')}`, { strong: true });
   }
 }
 
@@ -872,11 +831,13 @@ function checkLongestCorrect(content) {
 
 export function checkContent(content) {
   if (content.blueprint) checkBlueprint(content);
+  if (content.blueprint) checkRegistry(content);
   for (const q of content.questions) checkQuestion(content, q);
   for (const l of content.lessons) checkLesson(content, l);
   for (const d of content.docs) checkDoc(content, d);
   for (const d of content.decks) checkDeck(content, d);
   for (const g of content.glossaries) checkGlossary(content, g);
+  reportServiceAliases(content);
   checkGlossaryRelated(content);
   checkDuplicateIds(content);
   checkLessonRefs(content);
@@ -938,6 +899,8 @@ const CODE_LABELS = {
   'unknown-task': 'blueprint にないタスク',
   'unknown-item': 'blueprint にない項目',
   blueprint: 'blueprint の不整合',
+  registry: 'サービス台帳の不整合',
+  'registry-missing': 'サービス台帳がない',
   'empty-body': '本文が空',
   'review-status-key': 'review-status の不明な id',
   'service-out-of-scope': '試験範囲外のサービス（services）',

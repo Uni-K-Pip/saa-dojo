@@ -9,9 +9,9 @@
     "3.2-K4"
   ],
   "services": [
-    "Amazon Elastic Container Service",
+    "Amazon ECS",
     "Amazon EC2 Auto Scaling",
-    "Amazon Elastic Compute Cloud"
+    "Amazon EC2"
   ],
   "qualifier": "operational",
   "tags": [

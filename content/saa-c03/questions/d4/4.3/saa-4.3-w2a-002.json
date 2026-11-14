@@ -4,7 +4,7 @@
   "domain": 4,
   "taskStatement": "4.3",
   "knowledgeRefs": ["4.3-S3", "4.3-K9", "4.3-K5"],
-  "services": ["Amazon Aurora", "Amazon Aurora Serverless", "Amazon Relational Database Service"],
+  "services": ["Amazon Aurora", "Amazon Aurora Serverless", "Amazon RDS"],
   "qualifier": "cost",
   "tags": ["Aurora Serverless v2", "ACU", "変動するワークロード", "プロビジョニングの無駄"],
   "difficulty": 2,

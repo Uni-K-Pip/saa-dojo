@@ -4,7 +4,7 @@
   "domain": 3,
   "taskStatement": "3.5",
   "knowledgeRefs": ["3.5-S2", "3.5-K7"],
-  "services": ["Amazon Kinesis Data Streams", "Amazon Managed Service for Apache Flink", "Amazon Simple Notification Service"],
+  "services": ["Amazon Kinesis Data Streams", "Amazon Managed Service for Apache Flink", "Amazon SNS"],
   "qualifier": "operational",
   "tags": ["Managed Service for Apache Flink", "リアルタイム集計", "ウィンドウ処理", "Kinesis Data Streams"],
   "difficulty": 3,

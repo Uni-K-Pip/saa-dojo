@@ -4,7 +4,7 @@
   "domain": 2,
   "taskStatement": "2.1",
   "knowledgeRefs": ["2.1-K12", "2.1-S5"],
-  "services": ["AWS Fargate", "Amazon ECS", "Amazon EventBridge", "AWS Lambda", "Amazon Elastic Kubernetes Service"],
+  "services": ["AWS Fargate", "Amazon ECS", "Amazon EventBridge", "AWS Lambda", "Amazon EKS"],
   "qualifier": "cost",
   "tags": ["サーバーレス", "Fargate", "EventBridge Scheduler", "バッチ処理", "Lambdaの制限"],
   "difficulty": 2,
