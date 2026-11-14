@@ -19,6 +19,12 @@ export const FLASHCARD_ID = /^fc-([a-z][a-z0-9]{0,5})-(\d{3})$/;
 export const DATE = /^\d{4}-\d{2}-\d{2}$/;
 // サービス台帳（services.json）の id
 export const SERVICE_ID = /^[a-z][a-z0-9-]{1,39}$/;
+// 図鑑の事実（<サービスid>.<スラッグ>）と比較（cmp-…）
+export const FACT_ID = /^([a-z][a-z0-9-]{1,39})\.([a-z0-9][a-z0-9-]{1,39})$/;
+export const COMPARISON_ID = /^cmp-[a-z0-9][a-z0-9-]{1,60}$/;
+export const FACT_KINDS = ['feature', 'constraint', 'quota', 'pricing', 'integration'];
+export const FACT_DEPTHS = ['core', 'detail'];
+export const REVIEW_STATUSES = ['verified', 'pending', 'needs-fix', 'rejected'];
 
 // 判断軸: 問題文の制約語が何を最優先しているか
 export const QUALIFIERS = ['cost', 'operational', 'availability', 'performance', 'security', 'minimal-change', 'other'];
@@ -80,6 +86,8 @@ export const QuestionSchema = z
     keyPoints: z.array(z.string().min(6).max(200)).min(1).max(5),
     references: z.array(ReferenceSchema).min(1).max(4),
     lessonRefs: z.array(z.string().regex(LESSON_ID)).max(4),
+    // 図鑑の事実への参照（任意）。既存の問題には、その問題を直す機会に書き足す
+    factRefs: z.array(z.string().regex(FACT_ID)).max(6).optional(),
     pool: z.enum(POOLS),
     needsSourceCheck: z.boolean(),
     createdBy: sessionId,
@@ -249,7 +257,7 @@ export const ReviewStatusSchema = z.record(
   z.string().regex(QUESTION_ID),
   z
     .object({
-      status: z.enum(['verified', 'pending', 'needs-fix', 'rejected']),
+      status: z.enum(REVIEW_STATUSES),
       checkedAt: z.string().regex(DATE),
     })
     .strict(),
@@ -276,3 +284,143 @@ export const ServiceRegistrySchema = z
       .min(1),
   })
   .strict();
+
+// ---------------------------------------------------------------- サービス図鑑（docs/service-catalog-design.md の 3・4 章）
+
+const serviceId = z.string().regex(SERVICE_ID);
+const factId = z.string().regex(FACT_ID);
+const shortLine = (max) => z.string().min(4).max(max);
+const unique = (list) => new Set(list).size === list.length;
+
+// 図鑑の事実。1件に1つの事実だけを書き、出典で確かめた日を checkedAt に入れる
+export const CatalogFactSchema = z
+  .object({
+    id: factId,
+    title: z.string().min(2).max(60),
+    kind: z.enum(FACT_KINDS),
+    text: z.string().min(40).max(400),
+    examPoint: shortLine(150).optional(),
+    trap: shortLine(150).optional(),
+    depth: z.enum(FACT_DEPTHS),
+    services: z.array(serviceName).max(4).optional(),
+    tags: z.array(z.string().min(1).max(20)).max(6).optional(),
+    sources: z.array(ReferenceSchema).min(1).max(3),
+    checkedAt: z.string().regex(DATE),
+  })
+  .strict();
+
+// 選ばれる決め手・選ばれない条件の1項目
+const CatalogPointSchema = z
+  .object({
+    text: z.string().min(10).max(120),
+    factRefs: z.array(factId).max(6).optional(),
+    alternatives: z.array(serviceId).max(6).optional(),
+  })
+  .strict();
+
+// 図鑑のエントリ（1サービス1ファイル。content/saa-c03/catalog/services/<id>.json）
+export const CatalogEntrySchema = z
+  .object({
+    id: serviceId,
+    tier: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+    summary: z.string().min(40).max(200),
+    chooseWhen: z.array(CatalogPointSchema).min(1).max(6).optional(),
+    avoidWhen: z.array(CatalogPointSchema).min(1).max(6).optional(),
+    facts: z.array(CatalogFactSchema).max(40),
+    seeAlso: z.array(factId).max(12).optional(),
+    lessonRefs: z.array(z.string().regex(LESSON_ID)).max(6).optional(),
+    docRefs: z.array(z.string().regex(DOC_ID)).max(6).optional(),
+    references: z.array(ReferenceSchema).min(1).max(3),
+    createdBy: sessionId,
+    createdAt: z.string().regex(DATE),
+    updatedAt: z.string().regex(DATE).optional(),
+  })
+  .strict()
+  .superRefine((e, ctx) => {
+    const issue = (message) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+    const ids = e.facts.map((f) => f.id);
+    for (const id of ids) if (!id.startsWith(`${e.id}.`)) issue(`事実 ${id} の接頭辞がエントリの id ${e.id} と違う`);
+    if (!unique(ids)) issue('事実の id が重複している');
+    for (const id of e.seeAlso ?? []) if (id.startsWith(`${e.id}.`)) issue(`seeAlso ${id} は自分のエントリの事実（他のエントリの事実だけを書く）`);
+  });
+
+// 比較（content/saa-c03/catalog/comparisons/<id>.json）。rows か docRef のどちらか一方を持つ
+export const CatalogComparisonSchema = z
+  .object({
+    id: z.string().regex(COMPARISON_ID),
+    title: z.string().min(2).max(80),
+    services: z.array(serviceId).min(2).max(3),
+    decide: z.array(z.string().min(4).max(150)).min(1).max(5),
+    rows: z
+      .array(
+        z
+          .object({
+            axis: z.string().min(1).max(40),
+            values: z.record(serviceId, z.string().min(1).max(150)),
+            factRefs: z.array(factId).max(6).optional(),
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(12)
+      .optional(),
+    docRef: z.string().regex(DOC_ID).optional(),
+    sources: z.array(ReferenceSchema).min(1).max(3),
+    checkedAt: z.string().regex(DATE),
+    createdBy: sessionId,
+  })
+  .strict()
+  .superRefine((c, ctx) => {
+    const issue = (message) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+    if (!unique(c.services)) issue('services が重複している');
+    if (Boolean(c.rows) === Boolean(c.docRef)) issue('rows と docRef のどちらか一方だけを書く');
+    const want = [...c.services].sort().join(',');
+    for (const r of c.rows ?? []) {
+      const got = Object.keys(r.values).sort().join(',');
+      if (got !== want) issue(`rows「${r.axis}」の values は services の全員分（${want}）をそろえる（実際: ${got}）`);
+    }
+  });
+
+// 図鑑の検証状態（content/saa-c03/catalog-status.json）。キーはエントリ id・事実 id・比較 id。
+// hash は検証した時点の内容のハッシュ（scripts/lib/catalog.mjs の catalogHash）
+export const CatalogStatusSchema = z.record(
+  z.string().refine((k) => SERVICE_ID.test(k) || FACT_ID.test(k) || COMPARISON_ID.test(k), { message: 'エントリ・事実・比較の id ではない' }),
+  z
+    .object({
+      status: z.enum(REVIEW_STATUSES),
+      checkedAt: z.string().regex(DATE),
+      hash: z.string().regex(/^[0-9a-f]{12}$/),
+    })
+    .strict(),
+);
+
+// 監査の不足と、図鑑での対応（content/saa-c03/catalog-needs.json。アプリには出さない）
+export const CATALOG_NEED_DECISIONS = ['fact', 'lesson', 'question', 'skip'];
+export const CatalogNeedsSchema = z
+  .object({
+    source: z.string().min(2).max(200),
+    items: z.array(
+      z
+        .object({
+          key: z.string().regex(/^saa-(basics|[1-4]\.[1-5])-[a-z][a-z0-9]{0,5}-\d{3}\/[a-f]$/),
+          task: taskId,
+          side: z.enum(['correct', 'incorrect']),
+          gap: z.enum(['none', 'partial']),
+          knowledge: z.string().min(4).max(600),
+          decision: z.enum(CATALOG_NEED_DECISIONS).optional(),
+          factRefs: z.array(factId).max(6).optional(),
+          note: z.string().min(2).max(400).optional(),
+        })
+        .strict()
+        .superRefine((it, ctx) => {
+          const issue = (message) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+          if (it.decision === 'fact' && !it.factRefs?.length) issue(`${it.key}: decision=fact には factRefs が要る`);
+          if (it.decision === 'skip' && !it.note) issue(`${it.key}: decision=skip には note（理由）が要る`);
+        }),
+    ),
+  })
+  .strict()
+  .superRefine((n, ctx) => {
+    const keys = n.items.map((i) => i.key);
+    if (!unique(keys)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'key が重複している' });
+  });
