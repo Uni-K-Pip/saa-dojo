@@ -1,12 +1,19 @@
 // 採点後の表示: 正誤、選択肢ごとの理由、解説、要点、出典、関連レッスン、誤答理由、外部リンク
 import { Link } from 'react-router';
-import type { LessonMeta, Question } from '../content/types';
+import type { CatalogIndex, LessonMeta, Question, ServiceEntry } from '../content/types';
+import { catalogPath, makeServiceLinker, questionCatalogLinks, resolveFactLinks } from '../domain/catalog';
 import { relatedLessons } from '../domain/progress';
 import type { MissReason } from '../domain/events';
 import { LETTERS, correctIds, lettersFor } from '../domain/grading';
 import { MISS_REASONS, MISS_REASON_LABELS } from '../domain/labels';
 import { askText, chatGptUrl, claudeUrl, reportUrl } from '../domain/links';
 import { QuestionBadges } from './QuestionView';
+
+/** サービス図鑑へのリンクを作るための、台帳と図鑑の一覧 */
+export interface CatalogContext {
+  registry: readonly ServiceEntry[];
+  index: CatalogIndex;
+}
 
 interface Props {
   q: Question;
@@ -20,6 +27,8 @@ interface Props {
   onToggleFlag?: () => void;
   /** 現在のコンテンツのレッスン一覧（関連レッスンの表示に使う） */
   lessons?: readonly LessonMeta[];
+  /** サービス図鑑へのリンクの元（未指定、または台帳が空なら欄を出さない） */
+  catalog?: CatalogContext;
   showStem?: boolean;
   position?: string;
   unanswered?: boolean;
@@ -49,6 +58,7 @@ export function AnswerFeedback({
   flagged,
   onToggleFlag,
   lessons: allLessons,
+  catalog,
   showStem = true,
   position,
   unanswered,
@@ -57,6 +67,8 @@ export function AnswerFeedback({
   const right = correctIds(q);
   const ask = askText(q, order, selected);
   const lessons = allLessons ? relatedLessons(q, allLessons) : [];
+  const catalogLinks = catalog ? questionCatalogLinks(q.services, catalog.registry, makeServiceLinker(catalog.registry)) : [];
+  const factLinks = catalog ? resolveFactLinks(q.factRefs, catalog.index) : [];
   return (
     <div className="feedback">
       <div className="question-head">
@@ -141,6 +153,24 @@ export function AnswerFeedback({
             {lessons.map((l) => (
               <li key={l.id}>
                 <Link to={`/lessons/${l.id}`}>{l.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {(catalogLinks.length > 0 || factLinks.length > 0) && (
+        <>
+          <h3>サービス図鑑</h3>
+          <ul>
+            {catalogLinks.map((l) => (
+              <li key={l.id}>
+                <Link to={catalogPath(l.id)}>{l.name}</Link>
+              </li>
+            ))}
+            {factLinks.map((l) => (
+              <li key={l.id}>
+                <Link to={catalogPath(l.entryId, l.slug)}>{l.title}</Link>
               </li>
             ))}
           </ul>

@@ -10,6 +10,8 @@ import { randomRng } from '../domain/rng';
 import { pickQuestions } from '../domain/selection';
 import { Markdown } from '../components/Markdown';
 import { createPracticeSession } from '../state/sessions';
+import { ServiceLinkList } from '../components/ServiceLinks';
+import { useServiceLinker } from '../state/useContent';
 import { useStudy } from '../state/study';
 
 export default function LessonPage() {
@@ -38,6 +40,7 @@ function LessonView({ lesson, lessons }: { lesson: LessonMeta; lessons: LessonMe
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const readAt = lessonReadMap(events).get(lesson.id);
+  const { link } = useServiceLinker();
   const isBasics = lesson.domain === 0;
   const quizIds = useMemo(() => {
     const known = new Set(index.map((q) => q.id));
@@ -90,7 +93,9 @@ function LessonView({ lesson, lessons }: { lesson: LessonMeta; lessons: LessonMe
         )}
         {readAt && <span className="badge ok">読了 {new Date(readAt).toLocaleDateString('ja-JP')}</span>}
       </p>
-      {lesson.services.length > 0 && <p className="small muted">扱うサービス: {lesson.services.join('、')}</p>}
+      {lesson.services.length > 0 && <p className="small muted">
+          扱うサービス: <ServiceLinkList names={lesson.services} link={link} />
+        </p>}
 
       <div className="card">
         {body ? (

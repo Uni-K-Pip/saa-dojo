@@ -18,6 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/review', label: '復習', icon: '↻', group: '解く' },
   { to: '/drill', label: '判断軸ドリル', icon: '⚡', group: '解く' },
   { to: '/flashcards', label: 'フラッシュカード', icon: '🃏', group: '覚える' },
+  { to: '/services', label: 'サービス図鑑', icon: '☁', group: '調べる' },
   { to: '/glossary', label: '用語集', icon: '📖', group: '調べる' },
   { to: '/docs', label: '早見表・ガイド', icon: '📑', group: '調べる' },
   { to: '/readiness', label: '合格準備度', icon: '🎯', group: '確かめる' },
