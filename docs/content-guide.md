@@ -1,6 +1,6 @@
 # 問題・レッスンの作成基準
 
-SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード、用語集、早見表、ガイド）を作るときの基準です。形式は `scripts/lib/schema.mjs` が正で、`npm run validate` で検査します。例題は `content/saa-c03/questions/*/*/saa-*-ex-*.json` と `content/saa-c03/lessons/d4/lesson-4.1-s3-storage-classes.md` を参照してください。
+SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード、用語集、早見表、ガイド）を作るときの基準です。形式は `scripts/lib/schema.mjs` が正で、`npm run validate` で検査します。サービス図鑑は 12 章を参照してください。例題は `content/saa-c03/questions/*/*/saa-*-ex-*.json` と `content/saa-c03/lessons/d4/lesson-4.1-s3-storage-classes.md` を参照してください。
 
 ## 1. 出題範囲と項目 ID
 
@@ -17,6 +17,8 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 | フラッシュカード | `content/saa-c03/flashcards/<deck>.json` | カードは `fc-<作成者ID>-<3桁>` |
 | 用語集 | `content/saa-c03/glossary/<名前>.json` | — |
 | 早見表・ガイド | `content/saa-c03/cheatsheets/<id>.md`・`content/saa-c03/guides/<id>.md` | `cheatsheet-…`・`guide-…` |
+| 図鑑のエントリ | `content/saa-c03/catalog/services/<id>.json` | 台帳のサービス `id`（例 `s3`）。事実は `<サービスid>.<スラッグ>`（例 `s3.access-points`） |
+| 図鑑の比較 | `content/saa-c03/catalog/comparisons/<id>.json` | `cmp-<英小文字とハイフン>`（例 `cmp-config-cloudtrail`） |
 
 - 1問1ファイル。`createdBy` は ID の作成者IDと同じにし、連番は作成者ごとに 001 から振ります。
 - 他の作成者のファイルは編集しません。
@@ -36,6 +38,7 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 | `keyPoints` | 他の問題にも使える判断のコツ（1〜5個） |
 | `references` | AWS 公式の実在 URL（1〜3個） |
 | `lessonRefs` | 関連レッスンの ID |
+| `factRefs` | 任意。決め手になる図鑑の事実の ID（最大6個）。既存の問題には、その問題を直す機会に書き足す |
 | `pool` | `basics` 基礎講座、`practice` 演習、`mockA`・`mockB` 保留模試（演習には出ない） |
 | `needsSourceCheck` | 公式ドキュメントで確認しきれなかった事実を含むとき `true` |
 
@@ -102,11 +105,28 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 - 用語集: `{ "createdBy", "entries": [{ "term", "en", "definition", "services", "related" }] }`。
 - 早見表・ガイド: Markdown。front matter は `id`、`title`、`order`、`taskStatements`、`services`、`createdBy`。
 
-## 12. 検証状態
+## 12. サービス図鑑
 
-`content/saa-c03/review-status.json` に問題ごとの状態（`verified`、`pending`、`needs-fix`、`rejected`）と確認日を記録します。アプリは `needs-fix` と `rejected` の問題を出さず、記録のない問題は `pending`（未検証）として扱います。
+サービスを引いて、機能・制約・数値・似たサービスとの違いを確かめる辞書です。機能単位の知識（事実）の正本になります。設計の詳細は `docs/service-catalog-design.md` です。
 
-## 13. コマンド
+- **エントリ**は台帳の1サービスにつき1ファイルです。台帳で `hostedBy` を持つサービス（例 EC2 スポットインスタンス）はエントリを作らず、親のエントリ（EC2）の事実として書きます。
+- **区分**: 1 主要（core の事実 12〜30 件、比較 1 件以上）、2 標準（同 4〜12 件）、3 概要（`summary` と決め手だけ。事実 0〜2 件）。区分 1・2 は `chooseWhen` と `avoidWhen` を書きます。目安から外れると validate が警告します。
+- **事実**は1件に1つだけ書き、それだけで意味が通るようにします（40〜400字）。`kind` は `feature`（機能）・`constraint`（制約・できないこと）・`quota`（数値）・`pricing`（料金の仕組み）・`integration`（連携）です。
+  - 出典（`sources`）には実際に開いた AWS 公式のページを入れ、`checkedAt` を確かめた日にします。出典で確かめられないことは書きません。
+  - `depth` は、試験の水準なら `core`、試験より細かい可能性があれば `detail`（アプリでは「発展」として折りたたむ）です。
+  - 「できないこと」は、試験で誤答の決め手になるものだけを `constraint` にします。数値は試験で問われるものに絞り、Service Quotas で引き上げられるかも書きます。
+  - 料金の金額は書きません（仕組みだけ）。既定値に依存する内容は「〜の時点の既定値」と書き、決め手にしません。提供終了のサービス・機能は「新規には選ばない」とだけ書きます（6.1）。
+  - 一度公開した事実の ID は変えず、消した ID も再利用しません。
+- **他のエントリの事実**は書き写さず、`seeAlso` で ID を指します。比較は組ごとに1ファイルにし、既存の早見表と重なる組は `docRef` で早見表を指すだけにします。
+- **本文からのリンク**: レッスン・早見表・ガイドの本文に `[S3 アクセスポイント](#/services/s3?f=access-points)` と書けます。存在しない ID は validate のエラーです。
+- **保留模試の答えを写さない**: 監査で見つかった不足（`catalog-needs.json`）は、どの粒度の知識が要るかの見本として使い、事実は機能の一般的な説明として書きます。問題の状況や選択肢の言い回しを写しません。
+- **検証状態**は `content/saa-c03/catalog-status.json` に、エントリ・事実・比較ごとに `status`・`checkedAt`・`hash` で記録します。記録したあとに内容が変わると、検証し直すまで未検証として扱います。
+
+## 13. 検証状態
+
+`content/saa-c03/review-status.json` に問題ごとの状態（`verified`、`pending`、`needs-fix`、`rejected`）と確認日を記録します。アプリは `needs-fix` と `rejected` の問題を出さず、記録のない問題は `pending`（未検証）として扱います。図鑑の検証状態は 12 章のとおり別のファイルに記録します。
+
+## 14. コマンド
 
 ```bash
 npm ci
