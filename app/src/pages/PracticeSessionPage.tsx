@@ -12,6 +12,7 @@ import type { PracticeSession } from '../domain/session';
 import { AnswerFeedback } from '../components/AnswerFeedback';
 import { QuestionView, selectionHint } from '../components/QuestionView';
 import { useStudy } from '../state/study';
+import { useCatalogContext } from '../state/useContent';
 import { createPracticeSession, updateSession } from '../state/sessions';
 import { loadLessons } from '../content/loader';
 
@@ -87,6 +88,7 @@ function NextButton({ session, label }: { session: PracticeSession; label?: stri
 function QuestionStep({ session, q, position }: { session: PracticeSession; q: Question; position: string }) {
   const { history } = useStudy();
   const lessons = use(loadLessons());
+  const catalog = useCatalogContext();
   const order = useMemo(() => optionOrder(session.id, q), [session.id, q]);
   const result = session.results[q.id];
   const [selected, setSelected] = useState<string[]>([]);
@@ -145,6 +147,7 @@ function QuestionStep({ session, q, position }: { session: PracticeSession; q: Q
             flagged={flagged}
             onToggleFlag={() => appendEvent({ type: 'flag', questionId: q.id, flagged: !flagged })}
             lessons={lessons}
+            catalog={catalog}
             position={position}
           />
           <div className="sticky-actions">

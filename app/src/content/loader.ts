@@ -1,6 +1,9 @@
 // public/data/ の分割 JSON を遅延読み込みする。同じファイルは同じ Promise を返す（React の use() 向け）。
 import type {
   BlueprintSummary,
+  CatalogComparison,
+  CatalogEntry,
+  CatalogIndex,
   DocEntry,
   FlashcardDeck,
   GlossaryEntry,
@@ -68,6 +71,10 @@ export const loadFlashcards = () => loadKey<FlashcardDeck[]>('flashcards', []);
 export const loadGlossary = () => loadKey<GlossaryEntry[]>('glossary', []);
 export const loadDocs = () => loadKey<DocEntry[]>('docs', []);
 export const loadServices = () => loadKey<ServiceEntry[]>('services', []);
+export const loadCatalogIndex = () => loadKey<CatalogIndex>('catalog-index', { services: [], comparisons: [] });
+/** 図鑑のエントリ 1 件。エントリがない（準備中・除外）ときは null */
+export const loadCatalogEntry = (id: string) => loadKey<CatalogEntry | null>(`catalog:${id}`, null);
+export const loadComparisons = () => loadKey<CatalogComparison[]>('catalog-compare', []);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {

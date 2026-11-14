@@ -204,7 +204,8 @@
       "id": "ecs-anywhere",
       "name": "Amazon ECS Anywhere",
       "aliases": [],
-      "category": "コンテナ"
+      "category": "コンテナ",
+      "hostedBy": "ecs"
     },
     {
       "id": "eks",
@@ -218,13 +219,15 @@
       "id": "eks-anywhere",
       "name": "Amazon EKS Anywhere",
       "aliases": [],
-      "category": "コンテナ"
+      "category": "コンテナ",
+      "hostedBy": "eks"
     },
     {
       "id": "eks-distro",
       "name": "Amazon EKS Distro",
       "aliases": [],
-      "category": "コンテナ"
+      "category": "コンテナ",
+      "hostedBy": "eks"
     },
     {
       "id": "aurora",
@@ -236,7 +239,8 @@
       "id": "aurora-serverless",
       "name": "Amazon Aurora Serverless",
       "aliases": [],
-      "category": "データベース"
+      "category": "データベース",
+      "hostedBy": "aurora"
     },
     {
       "id": "documentdb",
@@ -827,7 +831,8 @@
       "id": "ec2-spot",
       "name": "Amazon EC2 Spot Instances",
       "aliases": [],
-      "category": "コンピューティング"
+      "category": "コンピューティング",
+      "hostedBy": "ec2"
     },
     {
       "id": "timestream",

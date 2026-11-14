@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
 import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
+import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 
 export const FORMAT = 'saa-dojo-content';
 export const FORMAT_VERSION = 1;
@@ -45,6 +46,12 @@ export function classify(rel) {
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
   if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
+  if (rel === 'catalog-status.json') return { kind: 'catalog-status' };
+  if (rel === 'catalog-needs.json') return { kind: 'catalog-needs' };
+  if (p[0] === 'catalog' && n === 3 && ext === '.json') {
+    if (p[1] === 'services') return { kind: 'catalog-entry' };
+    if (p[1] === 'comparisons') return { kind: 'catalog-comparison' };
+  }
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2])) return { kind: 'question' };
@@ -89,6 +96,12 @@ export function parseContent(files, schema) {
     glossaries: [],
     reviewStatus: {},
     reviewStatusPresent: false,
+    // サービス図鑑のエントリ・比較・検証状態。catalog-needs.json は検査だけで出力しない
+    catalogEntries: [],
+    catalogComparisons: [],
+    catalogStatus: {},
+    catalogStatusPresent: false,
+    catalogNeeds: null,
   };
 
   const validate = (s, value, rel) => {
@@ -139,6 +152,31 @@ export function parseContent(files, schema) {
         const j = json(rel, text);
         const data = j && validate(schema.ReviewStatusSchema, j.value, rel);
         if (data) parsed.reviewStatus = data;
+        break;
+      }
+      case 'catalog-status': {
+        parsed.catalogStatusPresent = true;
+        const j = json(rel, text);
+        const data = j && schema.CatalogStatusSchema && validate(schema.CatalogStatusSchema, j.value, rel);
+        if (data) parsed.catalogStatus = data;
+        break;
+      }
+      case 'catalog-needs': {
+        const j = json(rel, text);
+        const data = j && schema.CatalogNeedsSchema && validate(schema.CatalogNeedsSchema, j.value, rel);
+        if (data) parsed.catalogNeeds = { rel, data };
+        break;
+      }
+      case 'catalog-entry': {
+        const j = json(rel, text);
+        const data = j && schema.CatalogEntrySchema && validate(schema.CatalogEntrySchema, j.value, rel);
+        if (data) parsed.catalogEntries.push({ rel, data });
+        break;
+      }
+      case 'catalog-comparison': {
+        const j = json(rel, text);
+        const data = j && schema.CatalogComparisonSchema && validate(schema.CatalogComparisonSchema, j.value, rel);
+        if (data) parsed.catalogComparisons.push({ rel, data });
         break;
       }
       case 'question': {
@@ -201,6 +239,14 @@ function crossCheck(parsed, err, warn) {
   if (!bp) return;
   // 台帳の不整合は validate がエラーにする。ビルドは警告にとどめ、解決できる表記だけを正規名に直す
   if (parsed.registry) for (const msg of buildServiceIndex(bp, parsed.registry).problems) warn('services.json', msg);
+  // サービス図鑑: 参照切れ・ファイル名と id の不一致はエラー、それ以外は警告
+  const catalog = checkCatalogForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
+  const splitMsg = (m) => {
+    const i = m.indexOf(': ');
+    return [m.slice(0, i), m.slice(i + 2)];
+  };
+  for (const m of catalog.errors) err(...splitMsg(m));
+  for (const m of catalog.warnings) warn(...splitMsg(m));
   const taskIds = new Set(['basics']);
   const itemIds = new Set(bp.basics.items.map((i) => i.id));
   for (const d of bp.domains) {
@@ -350,6 +396,21 @@ export function buildOutputs(parsed, schema) {
   add('docs', 'docs', docs);
   const services = serviceIndex ? registrySummary(serviceIndex) : null;
   if (services) add('services', 'services', services);
+  // サービス図鑑（台帳があるときだけ。検証状態は effectiveStatus で決め、needs-fix・rejected は出さない）
+  const catalog = buildCatalogOutputs(parsed, serviceIndex, {
+    canon,
+    practice,
+    lessons: lessons.map(({ data }) => ({ id: data.id, services: canon(data.services) })),
+    docs: docs.map((d) => ({ id: d.id, services: d.services })),
+    decks,
+    glossary,
+    blueprint: parsed.blueprint,
+  });
+  if (catalog) {
+    add('catalog-index', 'catalog-index', catalog.index);
+    for (const e of catalog.entries) add(`catalog:${e.id}`, `catalog/${e.id}`, e.data);
+    add('catalog-compare', 'catalog-compare', catalog.comparisons);
+  }
 
   const out = [];
   const manifestFiles = {};
@@ -385,6 +446,10 @@ export function buildOutputs(parsed, schema) {
       cheatsheets: docs.filter((d) => d.kind === 'cheatsheet').length,
       guides: docs.filter((d) => d.kind === 'guide').length,
       services: services ? services.length : 0,
+      catalogEntries: catalog?.counts.catalogEntries ?? 0,
+      catalogFacts: catalog?.counts.catalogFacts ?? 0,
+      comparisons: catalog?.counts.comparisons ?? 0,
+      catalogFactStatus: catalog?.counts.catalogFactStatus ?? { verified: 0, pending: 0 },
     },
     files: manifestFiles,
   };

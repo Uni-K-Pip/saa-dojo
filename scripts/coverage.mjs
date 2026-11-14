@@ -11,7 +11,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
-import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, statusOf, textMatcher } from './validate.mjs';
+import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
+import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus } from './lib/catalog.mjs';
 
 // ---------- 目標値 ----------
 const TARGET_DIFFICULTY = { 1: 20, 2: 50, 3: 30 }; // 難易度 1・2・3 の比率（%）
@@ -19,6 +20,10 @@ const TARGET_TYPE = { single: 80, multiple: 20 }; // 択一・複数選択の比
 const TOLERANCE = 10; // 目標からのずれの許容幅（ポイント）
 const MIN_SAMPLE = 10; // これ未満の母数では判定しない
 const MIN_PER_ITEM = 2; // 出題範囲の項目あたりの最低問題数
+const APPEAR_MIN = 10; // 図鑑: 問題での登場回数がこれ以上なのに
+const FEW_FACTS = 4; // 図鑑: 事実がこの件数より少ないサービスを挙げる
+const REVIEW_STATES = ['verified', 'pending', 'needs-fix', 'rejected'];
+const MAX_LISTED = 15; // Markdown で一覧を省略するときの件数
 
 const SOURCE_LABEL = { inScope: '対象サービス一覧', keyServices: 'keyServices のみ', registry: '台帳のみ' };
 const pct = (n, d) => (d ? Math.round((100 * n) / d) : 0);
@@ -65,7 +70,145 @@ function questionText(q) {
   return [q.stem, ...q.options.flatMap((o) => [o.text, o.rationale]), q.explanation, ...q.keyPoints].join('\n');
 }
 
-export function computeCoverage(content) {
+const byText = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+// ---------- サービス図鑑（docs/service-catalog-design.md 4.2） ----------
+// serviceRows: サービス別の登場回数（computeCoverage の services.rows）。today: 'YYYY-MM-DD'
+export function computeCatalogCoverage(content, { serviceRows = [], today = localToday() } = {}) {
+  const { serviceIndex, catalog } = content;
+  const entries = catalog.entries.map((x) => ({ file: x.rel, data: x.data }));
+  const comparisons = catalog.comparisons.map((x) => ({ file: x.rel, data: x.data }));
+  const model = buildCatalogModel({ entries, comparisons, serviceIndex });
+  const statusMap = catalog.status.data ?? {};
+  const countStates = () => Object.fromEntries(REVIEW_STATES.map((k) => [k, 0]));
+  const factState = (id) => {
+    const rec = model.factById.get(id);
+    return rec ? effectiveStatus(statusMap, id, 'fact', rec.fact).status : null;
+  };
+
+  // 1. エントリの網羅（hostedBy のあるサービスは親の行に含める）
+  const hostedOf = new Map();
+  for (const e of serviceIndex.entries) {
+    if (e.hostedBy !== undefined && serviceIndex.byId.has(e.hostedBy)) {
+      if (!hostedOf.has(e.hostedBy)) hostedOf.set(e.hostedBy, []);
+      hostedOf.get(e.hostedBy).push(e.name);
+    }
+  }
+  const services = serviceIndex.entries
+    .filter((e) => e.hostedBy === undefined || !serviceIndex.byId.has(e.hostedBy))
+    .map((e) => {
+      const entry = model.entryById.get(e.id)?.data ?? null;
+      const states = countStates();
+      for (const fct of entry?.facts ?? []) states[effectiveStatus(statusMap, fct.id, 'fact', fct).status]++;
+      return {
+        id: e.id,
+        name: e.name,
+        category: e.category,
+        hosted: hostedOf.get(e.id) ?? [],
+        hasEntry: Boolean(entry),
+        tier: entry?.tier ?? null,
+        core: entry ? entry.facts.filter((fct) => fct.depth === 'core').length : 0,
+        detail: entry ? entry.facts.filter((fct) => fct.depth === 'detail').length : 0,
+        comparisons: model.comparisonsByService.get(e.id)?.length ?? 0,
+        entryStatus: entry ? effectiveStatus(statusMap, e.id, 'entry', entry).status : null,
+        factStatus: states,
+      };
+    });
+  const withEntry = services.filter((r) => r.hasEntry);
+  const byTier = Object.fromEntries(
+    [1, 2, 3].map((t) => {
+      const rows = withEntry.filter((r) => r.tier === t);
+      return [t, { entries: rows.length, core: rows.reduce((n, r) => n + r.core, 0), detail: rows.reduce((n, r) => n + r.detail, 0) }];
+    }),
+  );
+  const noEntryByCategory = new Map();
+  for (const r of services.filter((x) => !x.hasEntry)) {
+    if (!noEntryByCategory.has(r.category)) noEntryByCategory.set(r.category, []);
+    noEntryByCategory.get(r.category).push(r.name);
+  }
+  const factStates = countStates();
+  for (const { fact } of model.factById.values()) factStates[effectiveStatus(statusMap, fact.id, 'fact', fact).status]++;
+
+  // 2. 不足の対応（事実の対応は factRefs で数え、decision とは別に数える）
+  let needs = null;
+  if (catalog.needs.data) {
+    const byTask = new Map();
+    const questionItems = [];
+    for (const it of catalog.needs.data.items) {
+      if (!byTask.has(it.task)) {
+        byTask.set(it.task, { task: it.task, total: 0, allVerified: 0, withFacts: 0, none: 0, lesson: 0, question: 0, skip: 0, undecided: 0 });
+      }
+      const t = byTask.get(it.task);
+      t.total++;
+      const refs = it.factRefs ?? [];
+      const states = refs.map(factState).filter((x) => x !== null);
+      if (states.length > 0) t.withFacts++;
+      else t.none++;
+      if (states.length > 0 && states.length === refs.length && states.every((x) => x === 'verified')) t.allVerified++;
+      if (it.decision === 'lesson' || it.decision === 'question' || it.decision === 'skip') t[it.decision]++;
+      else if (!it.decision) t.undecided++;
+      if (it.decision === 'question') questionItems.push({ key: it.key, task: it.task, knowledge: it.knowledge });
+    }
+    const tasks = [...byTask.values()].sort((a, b) => byText(a.task, b.task));
+    const sum = (k) => tasks.reduce((n, t) => n + t[k], 0);
+    needs = {
+      total: sum('total'),
+      tasks,
+      totals: Object.fromEntries(['allVerified', 'withFacts', 'none', 'lesson', 'question', 'skip', 'undecided'].map((k) => [k, sum(k)])),
+      questionItems,
+    };
+  }
+
+  // 3. 再確認リスト（catalog-old-check と同じ基準）
+  const recheck = [];
+  for (const { fact, entryId } of model.factById.values()) {
+    const limit = RECHECK_DAYS[fact.kind] ?? RECHECK_DAYS.default;
+    const days = daysBetween(fact.checkedAt, today);
+    if (days >= limit) recheck.push({ id: fact.id, type: 'fact', kind: fact.kind, entryId, checkedAt: fact.checkedAt, days, limit });
+  }
+  for (const { data: c } of model.comparisonById.values()) {
+    const days = daysBetween(c.checkedAt, today);
+    if (days >= RECHECK_DAYS.default) recheck.push({ id: c.id, type: 'comparison', kind: 'comparison', entryId: null, checkedAt: c.checkedAt, days, limit: RECHECK_DAYS.default });
+  }
+  recheck.sort((a, b) => b.days - a.days || byText(a.id, b.id));
+
+  // 4. 問題との対応
+  const idByName = new Map(serviceIndex.entries.map((e) => [e.name, e.id]));
+  const rowById = new Map(services.map((r) => [r.id, r]));
+  const appearances = serviceRows
+    .map((r) => {
+      const row = rowById.get(idByName.get(r.name));
+      return { id: idByName.get(r.name), name: r.name, questions: r.questions, facts: row ? row.core + row.detail : 0, tier: row?.tier ?? null };
+    })
+    .sort((a, b) => b.questions - a.questions || byText(a.name, b.name));
+  const fewFacts = appearances.filter((r) => r.questions >= APPEAR_MIN && r.facts < FEW_FACTS);
+
+  return {
+    today,
+    thresholds: { appearMin: APPEAR_MIN, fewFacts: FEW_FACTS },
+    present: entries.length > 0 || comparisons.length > 0,
+    totals: {
+      services: services.length,
+      hostedServices: services.reduce((n, r) => n + r.hosted.length, 0),
+      entries: withEntry.length,
+      withoutEntry: services.length - withEntry.length,
+      facts: model.factById.size,
+      core: withEntry.reduce((n, r) => n + r.core, 0),
+      detail: withEntry.reduce((n, r) => n + r.detail, 0),
+      comparisons: model.comparisonById.size,
+      factStatus: factStates,
+    },
+    byTier,
+    services,
+    noEntry: [...noEntryByCategory].map(([category, names]) => ({ category, names })),
+    tier1WithoutComparison: withEntry.filter((r) => r.tier === 1 && r.comparisons === 0).map((r) => r.id),
+    needs,
+    recheck,
+    appearances: { rows: appearances, fewFacts },
+  };
+}
+
+export function computeCoverage(content, { today } = {}) {
   const { blueprint, bpIndex, serviceIndex } = content;
 
   // 出題対象の問題
@@ -221,6 +364,7 @@ export function computeCoverage(content) {
       unmentioned,
       rows: serviceRows,
     },
+    catalog: computeCatalogCoverage(content, { serviceRows, today }),
   };
 }
 
@@ -419,7 +563,89 @@ export function renderMarkdown(cov, { full = false } = {}) {
     );
   }
 
+  renderCatalogMarkdown(cov.catalog, { full, push });
+
   return L.join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
+function renderCatalogMarkdown(c, { full, push }) {
+  const t = c.totals;
+  const st = (o) => REVIEW_STATES.map((k) => o[k]).join(' / ');
+  push('## サービス図鑑', '');
+  if (!c.present) {
+    push('図鑑のエントリはまだありません。', '');
+  } else {
+    push(
+      `台帳 ${t.services} サービス（hostedBy の ${t.hostedServices} 件は親に含む）のうち、エントリがあるのは ${t.entries} 件、ないのは ${t.withoutEntry} 件です。事実は ${t.facts} 件（core ${t.core} / detail ${t.detail}）、比較は ${t.comparisons} 件です。`,
+      '',
+    );
+    push(`事実の検証状態（verified / pending / needs-fix / rejected）: ${st(t.factStatus)}。ハッシュが合わないものは pending として数えます。`, '');
+    push(
+      table(
+        ['区分', 'エントリ', 'core', 'detail'],
+        [1, 2, 3].map((k) => [`区分 ${k}`, c.byTier[k].entries, c.byTier[k].core, c.byTier[k].detail]),
+        'lrrr',
+      ),
+      '',
+    );
+    push('### エントリの一覧', '');
+    push(
+      table(
+        ['サービス', '区分', 'core', 'detail', '比較', '本体', '事実の検証（v / p / nf / r）'],
+        c.services
+          .filter((r) => r.hasEntry)
+          .map((r) => [r.name + (r.hosted.length ? `（含む: ${list(r.hosted)}）` : ''), r.tier, r.core, r.detail, r.comparisons, r.entryStatus, st(r.factStatus)]),
+        'lrrrrll',
+      ),
+      '',
+    );
+  }
+  push(`### エントリのないサービス（${t.withoutEntry} 件）`, '');
+  for (const { category, names } of c.noEntry) push(`- ${category}（${names.length} 件）: ${list(names)}`);
+  if (c.noEntry.length) push('');
+  if (c.present) {
+    push(c.tier1WithoutComparison.length ? `比較のない区分 1 のエントリ: ${list(c.tier1WithoutComparison)}` : '比較のない区分 1 のエントリはありません。', '');
+  }
+
+  push('### 不足の対応', '');
+  if (!c.needs) {
+    push('catalog-needs.json がありません。', '');
+  } else {
+    const n = c.needs;
+    push('事実の対応は factRefs で数え、decision とは別に数えます。「事実あり」は存在する事実を 1 件でも指す項目で、未検証を含みます。', '');
+    push(
+      table(
+        ['タスク', '不足', 'すべて verified', '事実あり（未検証を含む）', '対応なし', 'lesson', 'question', 'skip', '未決'],
+        [
+          ...n.tasks.map((x) => [x.task, x.total, x.allVerified, x.withFacts, x.none, x.lesson, x.question, x.skip, x.undecided]),
+          ['**計**', n.total, n.totals.allVerified, n.totals.withFacts, n.totals.none, n.totals.lesson, n.totals.question, n.totals.skip, n.totals.undecided],
+        ],
+        'lrrrrrrrr',
+      ),
+      '',
+    );
+    if (n.questionItems.length) {
+      push(`decision が question の項目（${n.questionItems.length} 件）:`, '');
+      for (const q of n.questionItems) push(`- ${q.key}（${q.task}）: ${q.knowledge.replace(/\s+/g, ' ')}`);
+      push('');
+    }
+  }
+
+  push('### 再確認リスト', '');
+  push(`checkedAt が古い事実・比較（${c.today} 時点。数値・料金は ${RECHECK_DAYS.quota} 日、その他は ${RECHECK_DAYS.default} 日以上）: ${c.recheck.length} 件`, '');
+  const shown = full ? c.recheck : c.recheck.slice(0, MAX_LISTED);
+  for (const r of shown) push(`- ${r.id}（${r.kind}、${r.checkedAt}、${r.days} 日前）`);
+  if (shown.length < c.recheck.length) push(`- …ほか ${c.recheck.length - shown.length} 件（--full で全件表示）`);
+  if (c.recheck.length) push('');
+
+  push('### 問題との対応', '');
+  const few = c.appearances.fewFacts;
+  push(`問題の services での登場が ${c.thresholds.appearMin} 回以上で、事実が ${c.thresholds.fewFacts} 件未満のサービス: ${few.length} 件`, '');
+  const listed = full ? few : few.slice(0, MAX_LISTED);
+  if (listed.length) {
+    push(table(['サービス', '登場（問題）', '事実', '区分'], listed.map((r) => [r.name, r.questions, r.facts, r.tier ?? '-']), 'lrrr'), '');
+  }
+  if (listed.length < few.length) push(`…ほか ${few.length - listed.length} 件（--full で全件表示）`, '');
 }
 
 // ---------- CLI ----------
