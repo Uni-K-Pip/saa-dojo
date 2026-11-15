@@ -1,0 +1,340 @@
+{
+  "id": "eks",
+  "tier": 2,
+  "summary": "AWS がコントロールプレーンを管理する、フルマネージドの Kubernetes サービス。ノードは EC2、Fargate、EKS Auto Mode から選べ、Kubernetes のマニフェストや Helm チャートをそのまま使える。",
+  "chooseWhen": [
+    {
+      "text": "既存の Kubernetes のマニフェスト、Helm チャート、エコシステムをそのまま使いたい",
+      "factRefs": [
+        "eks.managed-kubernetes"
+      ],
+      "alternatives": [
+        "ecs"
+      ]
+    },
+    {
+      "text": "Pod 単位（サービスアカウント単位）で IAM の権限を最小にしたい",
+      "factRefs": [
+        "eks.pod-identity",
+        "eks.irsa"
+      ]
+    },
+    {
+      "text": "ノードの運用（スケーリング、OS の更新）を AWS に任せたい（EKS Auto Mode）",
+      "factRefs": [
+        "eks.auto-mode"
+      ]
+    },
+    {
+      "text": "自社のデータセンターにも同じ Kubernetes の運用を広げたい",
+      "factRefs": [
+        "eks.hybrid-and-anywhere"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Kubernetes の知識や資産がなく、AWS ネイティブでシンプルにコンテナを動かしたい",
+      "alternatives": [
+        "ecs"
+      ]
+    },
+    {
+      "text": "短時間のイベント駆動の処理で、コンテナの管理も不要にしたい",
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "Fargate 上で DaemonSet、特権コンテナ、GPU、EBS ボリュームが必要",
+      "factRefs": [
+        "eks.fargate-limits"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "eks.managed-kubernetes",
+      "title": "フルマネージドの Kubernetes サービス",
+      "kind": "feature",
+      "text": "Amazon EKS は、Kubernetes クラスターの運用の複雑さを取り除くフルマネージドの Kubernetes サービスである。Kubernetes 準拠の認定を受けており、Kubernetes 対応のアプリケーションを作り直さずにデプロイでき、コミュニティのツールやプラグインも使える。",
+      "examPoint": "既存の Kubernetes のマニフェストや Helm チャート、エコシステムをそのまま使いたいときの選択肢。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EKS?",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.control-plane-managed",
+      "title": "コントロールプレーンは AWS が管理する",
+      "kind": "feature",
+      "text": "EKS の標準構成では、AWS が Kubernetes のコントロールプレーンを管理する。ノードの管理、ワークロードのスケジュール、AWS との連携、コントロールプレーンの情報の保存とスケールを行うコンポーネントを、AWS が自動で扱う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EKS?",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.cluster-pricing",
+      "title": "料金はクラスター単位とワーカーノードの資源",
+      "kind": "pricing",
+      "text": "EKS にはクラスター単位の料金があり、EKS Auto Mode や EKS Hybrid Nodes にはそれぞれ別の料金体系がある。ワーカーノードとして使う EC2 インスタンスや EBS ボリューム、パブリック IPv4 アドレスなどの AWS リソースの料金は別にかかる。",
+      "trap": "マネージドノードグループを使っても、クラスターの料金とノードの資源の料金は別に発生する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EKS?",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.mng-automation",
+      "title": "マネージドノードグループはノードの作成と更新を自動化する",
+      "kind": "feature",
+      "text": "マネージドノードグループは、EKS クラスターのノード（EC2 インスタンス）のプロビジョニングとライフサイクル管理を自動化する。ノードは EKS が管理する Auto Scaling グループの一部として自分のアカウントに作られ、更新や終了のときはノードが自動でドレインされる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simplify node lifecycle with managed node groups",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.mng-responsibility",
+      "title": "マネージドノードグループでの OS・AMI の責任",
+      "kind": "constraint",
+      "text": "マネージドノードグループで EKS 最適化 AMI を使う場合、パッチ済み AMI のビルドは EKS が行うが、それをノードグループに展開するのは利用者の責任である。カスタム AMI を使う場合は、パッチ済み AMI のビルドと展開の両方が利用者の責任になる。",
+      "trap": "マネージドノードグループでも、AMI の更新を適用する作業は利用者に残る。完全に任せたいときは EKS Auto Mode。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simplify node lifecycle with managed node groups",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.mng-no-extra-charge",
+      "title": "マネージドノードグループ自体に追加料金はない",
+      "kind": "pricing",
+      "text": "マネージドノードグループの利用に追加料金はなく、プロビジョニングした EC2 インスタンス、EBS ボリューム、EKS のクラスター時間などの AWS リソースに対してだけ支払う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Simplify node lifecycle with managed node groups",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.mng-spot",
+      "title": "マネージドノードグループは Spot も選べる",
+      "kind": "feature",
+      "text": "マネージドノードグループのキャパシティタイプは、既定のオンデマンドか Spot を選べる。Spot は中断に耐えられるステートレスなワークロード向けで、フォールトトレラントでないアプリケーションにはオンデマンドを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Simplify node lifecycle with managed node groups",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.auto-mode",
+      "title": "EKS Auto Mode はデータプレーンまで管理する",
+      "kind": "feature",
+      "text": "EKS Auto Mode は、AWS の管理をクラスターのノード（データプレーン）にまで広げる機能である。インスタンスの選択とプロビジョニング、スケーリング、コストの最適化、OS のパッチ適用を自動化し、ロードバランシングやブロックストレージ、Pod のネットワークなども管理する。",
+      "examPoint": "ノードの運用負荷を最も減らしたい EKS の構成。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automate cluster infrastructure with EKS Auto Mode",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+        },
+        {
+          "title": "What is Amazon EKS?",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.auto-mode-node-lifetime",
+      "title": "Auto Mode のノードは最大 21 日で置き換わる",
+      "kind": "quota",
+      "text": "EKS Auto Mode が起動したノードの最大寿命は 21 日で、短くすることもできる。期限が来ると新しいノードに自動で置き換わり、SSH や SSM でノードに直接アクセスすることはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automate cluster infrastructure with EKS Auto Mode",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.pod-identity",
+      "title": "Pod Identity でサービスアカウントに IAM ロールを関連付ける",
+      "kind": "feature",
+      "text": "EKS Pod Identity は、IAM ロールを Kubernetes のサービスアカウントに関連付け、そのサービスアカウントを使う Pod だけにそのロールの権限を渡す。ロールの信頼ポリシーには、プリンシパル pods.eks.amazonaws.com を指定する。",
+      "examPoint": "Pod 単位（サービスアカウント単位）で最小権限にしたいときの方法。",
+      "trap": "ノードグループやインスタンスプロファイルの単位では、Pod ごとの権限分離にならない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Learn how EKS Pod Identity grants pods access to AWS services",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.pod-identity-vs-irsa",
+      "title": "Pod Identity は IRSA より設定が簡単",
+      "kind": "feature",
+      "text": "IRSA（サービスアカウント用の IAM ロール）は、クラスターごとの OIDC ID プロバイダーを使う。Pod Identity は OIDC プロバイダーを使わず、EKS 側で関連付けを設定して IAM 側は権限だけを設定でき、同じ信頼ポリシーを複数のクラスターで再利用できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Learn how EKS Pod Identity grants pods access to AWS services",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html"
+        },
+        {
+          "title": "IAM roles for service accounts",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.irsa",
+      "title": "IRSA もサービスアカウント単位で IAM ロールを渡す",
+      "kind": "feature",
+      "text": "IRSA（IAM roles for service accounts）は、IAM ロールを Kubernetes のサービスアカウントに関連付け、クラスターの OIDC ID プロバイダーと AssumeRoleWithWebIdentity で一時的な認証情報を Pod に渡す。サービスアカウントを使う Pod だけが、そのロールの権限を持つ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IAM roles for service accounts",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.pod-identity-limits",
+      "title": "Pod Identity を使えない環境",
+      "kind": "constraint",
+      "text": "EKS Pod Identity は Linux の EC2 のワーカーノードで使える。Fargate 上の Pod、Windows の EC2 上の Pod、AWS Outposts、EKS Anywhere では使えない。EKS Auto Mode のクラスターでは、Pod Identity エージェントの導入は不要である。",
+      "trap": "Fargate の Pod に IAM の権限を渡すときは、IRSA を使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Learn how EKS Pod Identity grants pods access to AWS services",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html"
+        },
+        {
+          "title": "Automate cluster infrastructure with EKS Auto Mode",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.node-role-sharing",
+      "title": "ノードの IAM ロールは Pod から共有されうる",
+      "kind": "constraint",
+      "text": "EC2 のメタデータサービス（IMDS）へのアクセスを制限していない場合、Pod のコンテナはワーカーノードの IAM ロールの権限を使え、同じノード上の他の Pod のロールの認証情報にも触れうる。コンテナはセキュリティ境界ではないため、ノードのロールに権限を足す設計では Pod 単位の最小権限にならない。",
+      "trap": "ノードグループを分けても、同じノードグループの Pod はインスタンスプロファイルの権限を共有する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Learn how EKS Pod Identity grants pods access to AWS services",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html"
+        },
+        {
+          "title": "IAM roles for service accounts",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.fargate-pod-isolation",
+      "title": "Fargate の Pod は専用の分離境界で動く",
+      "kind": "feature",
+      "text": "EKS で Fargate を使うと、Pod ごとに専用の計算境界が与えられ、基盤のカーネル、CPU、メモリ、ENI を他の Pod と共有しない。Pod は Fargate プロファイルに一致したときに Fargate へスケジュールされ、ノード（EC2 インスタンス）の管理は要らない。",
+      "examPoint": "ノードを管理せずに Pod を動かしたいときの EKS の構成。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simplify compute management with AWS Fargate",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.fargate-limits",
+      "title": "EKS の Fargate で使えない機能",
+      "kind": "constraint",
+      "text": "EKS の Fargate では、DaemonSet、特権コンテナ、HostPort と HostNetwork、GPU、EBS ボリュームが使えず、Fargate Spot もサポートされない。Pod はプライベートサブネットでのみ動き、ALB と NLB はターゲットタイプ IP でのみ使える。",
+      "trap": "GPU や DaemonSet が要る要件では、EC2 ノード（マネージドノードグループや Auto Mode）を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simplify compute management with AWS Fargate",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eks.hybrid-and-anywhere",
+      "title": "自社のデータセンターでも Kubernetes を動かせる",
+      "kind": "feature",
+      "text": "EKS は、AWS のクラウドだけでなく、自社のデータセンターの Kubernetes クラスターにも使える。その方法として EKS Anywhere と EKS Hybrid Nodes が用意されている。",
+      "examPoint": "EKS Anywhere は自社環境で Kubernetes を自分で運用する。AWS が管理する AWS インフラ一式を置くなら Outposts。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon EKS?",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "fargate.serverless-containers",
+    "ecs.orchestration-overview",
+    "iam.role-trust-and-permissions",
+    "ec2.imds-v2"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EKS?",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+    },
+    {
+      "title": "Automate cluster infrastructure with EKS Auto Mode",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+    }
+  ],
+  "createdBy": "sc12",
+  "createdAt": "2026-11-14"
+}

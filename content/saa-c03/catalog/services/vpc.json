@@ -1,0 +1,741 @@
+{
+  "id": "vpc",
+  "tier": 1,
+  "summary": "Amazon VPC は、AWS 内に論理的に分離した仮想ネットワークを作るサービス。CIDR・サブネット・ルートテーブル・ゲートウェイ・VPC エンドポイント・ピアリング・セキュリティグループ・ネットワーク ACL・フローログで、通信の経路と制御を設計する。",
+  "chooseWhen": [
+    {
+      "text": "AWS 上に、IP アドレス範囲やルーティングを自分で決められる論理的に分離したネットワークを作りたい",
+      "factRefs": [
+        "vpc.cidr-size",
+        "vpc.subnet-types",
+        "vpc.route-table-association"
+      ]
+    },
+    {
+      "text": "プライベートサブネットから S3・DynamoDB へ、追加料金なしでインターネットを通らず接続したい",
+      "factRefs": [
+        "vpc.gateway-endpoint-services"
+      ],
+      "alternatives": [
+        "vpc-endpoints"
+      ]
+    },
+    {
+      "text": "VPC 内のリソースから AWS サービスへ、プライベート IP アドレスで接続したい（インターフェイスエンドポイント）",
+      "factRefs": [
+        "vpc.interface-endpoint"
+      ],
+      "alternatives": [
+        "privatelink"
+      ]
+    },
+    {
+      "text": "インスタンス単位のステートフルな制御と、サブネット単位の許可・拒否の制御を組み合わせて通信を絞りたい",
+      "factRefs": [
+        "vpc.sg-stateful-allow-only",
+        "vpc.nacl-stateless"
+      ]
+    },
+    {
+      "text": "2 つの VPC どうしを、プライベート IP アドレスで 1 対 1 でつなぎたい（VPC ピアリング）",
+      "factRefs": [
+        "vpc.peering-basics"
+      ]
+    },
+    {
+      "text": "複数のアカウントのリソースを、組織で一元管理する共通の VPC に置きたい（VPC 共有）",
+      "factRefs": [
+        "vpc.sharing-basics",
+        "vpc.sharing-responsibilities"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "多数の VPC やオンプレミスを推移的につなぐ場合、ピアリングは向かず Transit Gateway を使う",
+      "factRefs": [
+        "vpc.peering-no-transitive",
+        "vpc.peering-no-edge-routing"
+      ],
+      "alternatives": [
+        "transit-gateway"
+      ]
+    },
+    {
+      "text": "プライベートサブネットから IPv4 でインターネットへ出るには、NAT ゲートウェイが必要になる",
+      "factRefs": [
+        "vpc.subnet-types",
+        "vpc.egress-only-igw"
+      ],
+      "alternatives": [
+        "nat-gateway"
+      ]
+    },
+    {
+      "text": "S3 に VPC の外（オンプレミスなど）から届けるにはゲートウェイエンドポイントでは足りず、インターフェイスエンドポイントを使う",
+      "factRefs": [
+        "vpc.gateway-endpoint-scope"
+      ],
+      "alternatives": [
+        "privatelink"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "vpc.regional-subnet-az",
+      "title": "サブネットは 1 つの AZ に収まる",
+      "kind": "feature",
+      "text": "サブネットは 1 つのアベイラビリティーゾーン（AZ）の中に完全に収まり、AZ をまたげない。複数の AZ にまたがって障害に備えるには、AZ ごとにサブネットを作ってリソースを分けて配置する。",
+      "trap": "同じ AZ にサブネットをいくつ作っても、AZ の障害には備えられない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Subnets for your VPC - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"
+        },
+        {
+          "title": "What is Amazon VPC? - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.cidr-size",
+      "title": "VPC とサブネットの IPv4 CIDR の大きさ",
+      "kind": "constraint",
+      "text": "VPC に指定する IPv4 CIDR ブロックの大きさは /16（65,536 個）から /28（16 個）の範囲で、サブネットの IPv4 CIDR も同じ範囲で指定する。同じ VPC のサブネットどうしの CIDR は重ねられない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "VPC CIDR blocks - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"
+        },
+        {
+          "title": "Subnet CIDR blocks - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.cidr-secondary",
+      "title": "セカンダリ CIDR ブロックの追加",
+      "kind": "feature",
+      "text": "VPC には作成後にセカンダリの IPv4 CIDR ブロックを追加できる。既存の CIDR ブロックの大きさは変えられず、最初に指定したプライマリの CIDR は関連付けを解除できない。追加すると VPC 内のルートテーブルに local ルートが自動で入る。",
+      "examPoint": "アドレスが足りなくなった VPC には、セカンダリ CIDR を追加して新しいサブネットを作る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "VPC CIDR blocks - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.subnet-reserved-ips",
+      "title": "サブネットで予約される 5 つの IP アドレス",
+      "kind": "constraint",
+      "text": "IPv4 のサブネットでは、先頭の 4 つと最後の 1 つの合計 5 つのアドレスを AWS が予約し、リソースに割り当てられない。先頭から順にネットワークアドレス、VPC ルーター、DNS サーバー、将来用で、最後はブロードキャスト用である。",
+      "examPoint": "/24 のサブネットで使えるのは 256 から 5 を引いた 251 個。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Subnet CIDR blocks - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.subnet-types",
+      "title": "パブリック・プライベート・分離サブネット",
+      "kind": "feature",
+      "text": "サブネットの種類はルーティングで決まる。インターネットゲートウェイへの直接のルートがあればパブリック、なければプライベート、VPC の外へのルートが一切なければ分離サブネットである。プライベートサブネットのインターネット接続には NAT デバイスが必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Subnets for your VPC - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"
+        },
+        {
+          "title": "Enable internet access for a VPC using an internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.route-table-association",
+      "title": "ルートテーブルとサブネットの関連付け",
+      "kind": "feature",
+      "text": "サブネットは必ず 1 つのルートテーブルに関連付けられ、指定しなければ VPC のメインルートテーブルが使われる。1 つのルートテーブルを複数のサブネットに関連付けることはできるが、1 つのサブネットが関連付けられるルートテーブルは 1 つだけである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Subnets for your VPC - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"
+        },
+        {
+          "title": "Amazon VPC quotas - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.route-priority",
+      "title": "ルートの優先順位",
+      "kind": "feature",
+      "text": "ルートテーブルに複数のルートが当てはまるときは、最も具体的な（プレフィックスが最も長い）ルートが使われる。宛先が同じなら、インターネットゲートウェイやピアリングなどの静的ルートが、VPN などの伝播ルートより優先される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How route priority works - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/route-tables-priority.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.igw-basics",
+      "title": "インターネットゲートウェイの性質",
+      "kind": "feature",
+      "text": "インターネットゲートウェイは、水平にスケールし冗長化された高可用性の VPC コンポーネントで、可用性の危険や帯域の制約を生まない。IPv4 では 1 対 1 の NAT も行う。ゲートウェイ自体に料金はかからず、EC2 インスタンスのデータ転送に料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable internet access for a VPC using an internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.igw-requirements",
+      "title": "インターネット接続に必要な設定",
+      "kind": "constraint",
+      "text": "IPv4 でインターネットと通信するには、インターネットゲートウェイを VPC にアタッチし、サブネットのルートテーブルにそのゲートウェイへのルートを入れ、インスタンスにパブリック IPv4 アドレスか Elastic IP アドレスを持たせる必要がある。",
+      "trap": "ルートがないサブネットでは、パブリック IP アドレスを持つインスタンスでもインターネットと通信できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable internet access for a VPC using an internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.egress-only-igw",
+      "title": "Egress-Only インターネットゲートウェイ",
+      "kind": "feature",
+      "text": "Egress-Only インターネットゲートウェイは IPv6 専用で、VPC のインスタンスからインターネットへの外向きの通信だけを許可し、インターネット側からの接続開始を防ぐ。ステートフルで、IPv4 で外向きだけの通信にしたいときは NAT ゲートウェイを使う。",
+      "trap": "IPv4 の外向き専用には使えない。セキュリティグループも関連付けられない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable outbound IPv6 traffic using an egress-only internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sg-rule-sources",
+      "title": "セキュリティグループのルールで指定できる送信元・宛先",
+      "kind": "feature",
+      "text": "セキュリティグループのルールの送信元や宛先に指定できるのは、単一の IP アドレス、IPv4 または IPv6 の CIDR ブロック、プレフィックスリストの ID、セキュリティグループの ID のいずれかである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Security group rules - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sg-stateful-allow-only",
+      "title": "セキュリティグループはステートフルで許可のみ",
+      "kind": "feature",
+      "text": "セキュリティグループは許可ルールだけを書け、拒否ルールは書けない。ステートフルなので、許可した通信への応答は逆方向のルールに関係なく通る。作成直後は、インバウンドの許可がなく、アウトバウンドはすべて許可である。",
+      "examPoint": "特定の IP アドレスを明示的に拒否する用途には向かず、ネットワーク ACL を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control traffic to your AWS resources using security groups - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"
+        },
+        {
+          "title": "Security group rules - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sg-referencing",
+      "title": "セキュリティグループを送信元に指定する",
+      "kind": "feature",
+      "text": "ルールの送信元や宛先に別のセキュリティグループを指定すると、そのグループに関連付けられたリソースのプライベート IP アドレスからの通信を許可できる。インバウンドでは同じ VPC、ピアリングした VPC、トランジットゲートウェイでつないだ VPC のグループを指定できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Security group rules - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.nacl-stateless",
+      "title": "ネットワーク ACL はサブネット単位でステートレス",
+      "kind": "feature",
+      "text": "ネットワーク ACL はサブネット単位で通信を許可または拒否し、ステートレスなので応答の通信は自動では許可されない。ルールは番号の小さい順に評価され、一致した時点で適用される。1 つのサブネットが関連付けられるネットワーク ACL は 1 つだけである。",
+      "examPoint": "特定の IP アドレスの拒否や、サブネット全体への追加の防御層に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control subnet traffic with network access control lists - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.nacl-custom-default-deny",
+      "title": "カスタムネットワーク ACL の既定と応答の通信",
+      "kind": "feature",
+      "text": "カスタムネットワーク ACL には、どのルールにも一致しない通信を拒否する、番号が * の削除できないルールがある。追加した各ルールに対して、応答の通信を許可するルールも必要で、クライアントが選ぶエフェメラルポートの範囲を考慮して設定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Custom network ACLs for your VPC - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/custom-network-acl.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.nacl-no-prefix-list",
+      "title": "ネットワーク ACL ではプレフィックスリストを参照できない",
+      "kind": "constraint",
+      "text": "ネットワーク ACL のルールではプレフィックスリストを参照できない。AWS サービスの宛先を許可したいときは、プレフィックスリストから IP アドレスの範囲を調べ、CIDR を個別に指定する。セキュリティグループのルールでは参照できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Gateway endpoints - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        },
+        {
+          "title": "Gateway endpoints for Amazon S3 - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.peering-basics",
+      "title": "VPC ピアリングの仕組み",
+      "kind": "feature",
+      "text": "VPC ピアリング接続は 2 つの VPC を 1 対 1 でつなぎ、プライベート IP アドレスで通信できるようにする。別のアカウントや別のリージョンの VPC ともつなげる。通信させるには、双方の VPC のルートテーブルに相手の CIDR へのルートを追加する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+        },
+        {
+          "title": "What is VPC peering? - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.peering-no-transitive",
+      "title": "VPC ピアリングは推移的な通信ができない",
+      "kind": "constraint",
+      "text": "VPC ピアリングは推移的なピアリング関係をサポートしない。VPC A と B、A と C をそれぞれピアリングしても、A を経由して B と C の間で通信はできず、通信させるには B と C の間に別のピアリング接続が必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.peering-overlap",
+      "title": "CIDR が重なる VPC はピアリングできない",
+      "kind": "constraint",
+      "text": "IPv4 または IPv6 の CIDR ブロックが一致または重複する VPC どうしでは、ピアリング接続を作れない。複数の CIDR を持つ VPC では、使わない CIDR だけが重なっていても作れない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.peering-no-edge-routing",
+      "title": "ピアリング先のゲートウェイや接続は使えない",
+      "kind": "constraint",
+      "text": "ピアリングした相手の VPC にあるインターネットゲートウェイ、NAT デバイス、VPN 接続、Direct Connect 接続、ゲートウェイエンドポイントは、自分の VPC のリソースからは使えない。相手の VPC を経由して外部へ出る通信はできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.peering-sg-reference",
+      "title": "ピアリング先のセキュリティグループの参照",
+      "kind": "feature",
+      "text": "ピアリングした VPC のセキュリティグループは、同じリージョンであれば別のアカウントのものも含めてルールの送信元や宛先に指定できる。リージョンをまたぐピアリングでは参照できず、相手の VPC の CIDR ブロックを指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Update your security groups to reference peer security groups - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-security-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.gateway-endpoint-services",
+      "title": "ゲートウェイエンドポイントは S3 と DynamoDB 用",
+      "kind": "feature",
+      "text": "ゲートウェイエンドポイントは Amazon S3 と Amazon DynamoDB 専用の VPC エンドポイントで、インターネットゲートウェイや NAT デバイスなしで接続できる。ルートテーブルにサービスのプレフィックスリストへのルートが追加され、追加料金はかからない。",
+      "examPoint": "プライベートサブネットから S3 や DynamoDB への通信コストを下げる第一候補。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Gateway endpoints - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.gateway-endpoint-scope",
+      "title": "ゲートウェイエンドポイントを使える範囲",
+      "kind": "constraint",
+      "text": "ゲートウェイエンドポイントは作成したリージョンでだけ使える。VPN、VPC ピアリング、トランジットゲートウェイ、Direct Connect の向こう側のリソースは使えず、オンプレミスなどから S3 に届けるには、インターフェイスエンドポイントを使う。",
+      "trap": "ピアリングや VPN でつないだ先のリソースからは、ゲートウェイエンドポイントを使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Gateway endpoints for Amazon S3 - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.interface-endpoint",
+      "title": "インターフェイスエンドポイントの仕組み",
+      "kind": "feature",
+      "text": "インターフェイスエンドポイントは AWS PrivateLink を使い、指定したサブネットにプライベート IP アドレスを持つエンドポイントのネットワークインターフェイスを作る。セキュリティグループで制御でき、エンドポイントが存在する時間と処理したデータ量に応じて料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
+        },
+        {
+          "title": "Access AWS services through AWS PrivateLink - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.interface-endpoint-enis",
+      "title": "インターフェイスエンドポイントのネットワークインターフェイス",
+      "kind": "constraint",
+      "text": "エンドポイントのネットワークインターフェイスは依頼者管理で、利用者は直接管理できない。AZ ごとにサブネットを 1 つ選んで作られ、サブネットを追加すると作られ、外すと削除される。AZ を減らすにはサブネットの関連付けを変更する。",
+      "trap": "ネットワークインターフェイスを直接削除して AZ を減らすことはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink concepts - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+        },
+        {
+          "title": "Configure an interface endpoint - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/interface-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.interface-endpoint-private-dns",
+      "title": "インターフェイスエンドポイントのプライベート DNS",
+      "kind": "feature",
+      "text": "プライベート DNS を有効にすると、AWS が管理する非表示のプライベートホストゾーンが作られ、サービスの既定の DNS 名がエンドポイントのプライベート IP アドレスに解決される。使うには VPC の DNS ホスト名と DNS 解決の両方を有効にする必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Access AWS services through AWS PrivateLink - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
+        },
+        {
+          "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.interface-endpoint-central",
+      "title": "インターフェイスエンドポイントの集約",
+      "kind": "integration",
+      "text": "インターフェイスエンドポイントを共有サービス用の VPC に集約し、各 VPC からトランジットゲートウェイ経由で使える。自動作成のプライベート DNS はその VPC でしか効かないため無効にし、Route 53 のプライベートホストゾーンを手動で作って各 VPC に関連付ける。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Centralized access to VPC private endpoints - Building a Scalable and Secure Multi-VPC AWS Network Infrastructure",
+          "url": "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-access-to-vpc-private-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.dns-resolver-address",
+      "title": "Amazon DNS サーバーのアドレス",
+      "kind": "feature",
+      "text": "VPC には Amazon の DNS サーバー（Route 53 Resolver）があり、VPC のプライマリ IPv4 CIDR のベースに 2 を足したアドレスと 169.254.169.253 で到達できる。ネットワーク ACL やセキュリティグループでこの通信を止めることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding Amazon DNS - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.dns-not-reachable-outside",
+      "title": "VPC の DNS サーバーは VPC の外から使えない",
+      "kind": "constraint",
+      "text": "VPC の CIDR に 2 を足した Amazon DNS サーバーへ、オンプレミスや他の VPC の DNS サーバーから転送することはサポートされない。オンプレミスから VPC の名前を引くには、Route 53 Resolver のインバウンドエンドポイントを使う。ピアリング先の VPC の DNS サーバーにも問い合わせられない。",
+      "trap": "VPN や Direct Connect でつないでも、オンプレミスから VPC+2 のアドレスは直接使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Resolving DNS queries between VPCs and your network - Amazon Route 53",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-overview-DSN-queries-to-vpc.html"
+        },
+        {
+          "title": "Understanding Amazon DNS - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html"
+        },
+        {
+          "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.dns-attributes",
+      "title": "DNS 解決と DNS ホスト名の属性",
+      "kind": "feature",
+      "text": "VPC の enableDnsSupport は Amazon の DNS サーバーによる名前解決を、enableDnsHostnames はパブリック IP を持つインスタンスへのパブリック DNS ホスト名の付与を決める。プライベートホストゾーンやインターフェイスエンドポイントのプライベート DNS には、両方を true にする必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding Amazon DNS - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.flow-logs-basics",
+      "title": "VPC フローログの対象と出力先",
+      "kind": "feature",
+      "text": "VPC フローログは、VPC・サブネット・ネットワークインターフェイスのいずれかを対象に、IP 通信の情報を記録する。受け入れた通信・拒否した通信・すべてを選べ、CloudWatch Logs、S3、Data Firehose に出力できる。通信の経路の外で収集されるため、性能に影響しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Logging IP traffic using VPC Flow Logs - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"
+        },
+        {
+          "title": "Flow logs basics - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.flow-logs-limits",
+      "title": "フローログの制限と記録されない通信",
+      "kind": "constraint",
+      "text": "フローログはリアルタイムではなく、作成後に設定やレコード形式を変更できない。Amazon DNS サーバーへの通信、インスタンスメタデータ、DHCP、Amazon Time Sync Service、デフォルトルーターの予約アドレスへの通信は記録されない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Flow log limitations - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-limitations.html"
+        },
+        {
+          "title": "Flow logs basics - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.traffic-mirroring",
+      "title": "トラフィックミラーリング",
+      "kind": "feature",
+      "text": "トラフィックミラーリングは、EC2 インスタンスのネットワークインターフェイスの通信をコピーして、アウトオブバンドのセキュリティ・監視用のアプライアンスへ送る機能である。",
+      "examPoint": "パケットの内容を調べる検査（コンテンツ検査）には、通信をコピーして送るトラフィックミラーリングを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sharing-basics",
+      "title": "VPC 共有の仕組み",
+      "kind": "feature",
+      "text": "VPC 共有では、VPC の所有アカウントが AWS RAM でサブネットを同じ AWS Organizations の組織内の他のアカウントと共有する。参加アカウントは共有されたサブネットに EC2 や RDS などのリソースを作成でき、他の参加アカウントのリソースは見られない。",
+      "examPoint": "VPC の数を減らして管理を一元化しつつ、アカウントで請求とアクセスを分ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Share your VPC subnets with other accounts - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html"
+        },
+        {
+          "title": "Shared subnet prerequisites - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-share-prerequisites.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sharing-responsibilities",
+      "title": "VPC 共有での所有者と参加者の役割",
+      "kind": "constraint",
+      "text": "VPC 共有では、サブネット、ルートテーブル、ネットワーク ACL、ピアリング、各種ゲートウェイ、エンドポイント、トランジットゲートウェイのアタッチは所有者だけが管理する。参加者はネットワークインターフェイスやセキュリティグループなど限られたものだけを作れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Responsibilities and permissions for owners and participants - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-share-limitations.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.sharing-security-groups",
+      "title": "セキュリティグループの共有",
+      "kind": "feature",
+      "text": "セキュリティグループを所有する VPC の所有者は、AWS RAM で同じ AWS リージョンにある同じ組織内のアカウントにそのグループを共有でき、共有サブネットを使う参加アカウントが使える。デフォルトのセキュリティグループと、デフォルト VPC にあるグループは共有できない。",
+      "trap": "共有できるのは VPC とセキュリティグループの両方を所有するアカウントで、参加アカウントが共有 VPC に作ったセキュリティグループは共有できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Share security groups with AWS Organizations - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/security-group-sharing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.az-id",
+      "title": "AZ 名はアカウントごとに異なり AZ ID は共通",
+      "kind": "feature",
+      "text": "AWS は物理的な AZ を AZ 名にアカウントごとにランダムに対応づけるため、同じ AZ 名でもアカウントによって別の物理 AZ を指す場合がある。AZ ID はすべてのアカウントで同じ物理的な場所を指し、サブネットの AZ ID は VPC コンソールで確認できる。",
+      "examPoint": "アカウント間で同じ物理 AZ にそろえたいときは AZ ID で確認する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Availability Zone IDs for your AWS resources - AWS Resource Access Manager",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/working-with-az-ids.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.public-ipv4-pricing",
+      "title": "パブリック IPv4 アドレスの料金",
+      "kind": "pricing",
+      "text": "AWS は、実行中のインスタンスに付くものや Elastic IP アドレスを含め、すべてのパブリック IPv4 アドレスに料金がかかる。VPC 内で使うプライベート IPv4 アドレスには料金がかからない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IP addressing for your VPCs and subnets - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html"
+        },
+        {
+          "title": "What is Amazon VPC? - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.quota-vpcs-per-region",
+      "title": "リージョンあたりの VPC 数の既定値",
+      "kind": "quota",
+      "text": "リージョンあたりの VPC の既定値は 5 で、Service Quotas で引き上げられる。VPC の上限を上げると、リージョンあたりのインターネットゲートウェイの上限も同じ数だけ上がる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon VPC quotas - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.quota-sg-per-eni",
+      "title": "ネットワークインターフェイスあたりのセキュリティグループ数",
+      "kind": "quota",
+      "text": "1 つのネットワークインターフェイスに関連付けられるセキュリティグループ数の既定値は 5 で、Service Quotas で最大 16 まで引き上げられる。この値とセキュリティグループあたりのルール数の上限の積は 1,000 を超えられない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon VPC quotas - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "s3.vpce-source-ip",
+    "s3.managed-prefix-list"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon VPC? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html"
+    },
+    {
+      "title": "Amazon VPC quotas - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
+    }
+  ],
+  "createdBy": "sc5",
+  "createdAt": "2026-11-14"
+}

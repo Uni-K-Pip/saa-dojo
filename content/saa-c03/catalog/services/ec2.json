@@ -1,0 +1,679 @@
+{
+  "id": "ec2",
+  "tier": 1,
+  "summary": "Amazon EC2 は、サイズを変えられるコンピューティング容量を仮想サーバー（インスタンス）として提供するサービス。インスタンスタイプ、AMI、購入オプション、配置グループ、ストレージを組み合わせて、必要な構成のサーバーを起動できる。",
+  "chooseWhen": [
+    {
+      "text": "インスタンスタイプや AMI を選び、サーバーの構成を細かく決めて動かしたい",
+      "factRefs": [
+        "ec2.instance-types-families",
+        "ec2.ami-regional"
+      ]
+    },
+    {
+      "text": "ノード間の低レイテンシーで高いネットワーク性能が要る密結合の処理を動かしたい",
+      "factRefs": [
+        "ec2.placement-cluster"
+      ]
+    },
+    {
+      "text": "中断されてもよい処理を、空き容量を使って安く動かしたい",
+      "factRefs": [
+        "ec2.spot-overview",
+        "ec2.spot-interruption-notice"
+      ]
+    },
+    {
+      "text": "長期間使い続ける構成に割引を得たい、または特定の AZ で容量を確保したい",
+      "factRefs": [
+        "ec2.ri-billing-discount",
+        "ec2.capacity-reservation"
+      ],
+      "alternatives": [
+        "savings-plans"
+      ]
+    },
+    {
+      "text": "物理コアやソケット単位のライセンスを持ち込み、専有の物理ホストで動かしたい",
+      "factRefs": [
+        "ec2.dedicated-hosts"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "止められない処理や、状態を失えない処理をスポットインスタンスで動かす",
+      "factRefs": [
+        "ec2.spot-interruption-behavior"
+      ]
+    },
+    {
+      "text": "失ってはいけないデータをインスタンスストアだけに置く",
+      "factRefs": [
+        "ec2.instance-store-ephemeral"
+      ],
+      "alternatives": [
+        "ebs"
+      ]
+    },
+    {
+      "text": "すでにあるインスタンスに、あとから休止状態を有効にしたい",
+      "factRefs": [
+        "ec2.hibernate-enable-at-launch"
+      ]
+    },
+    {
+      "text": "ルートボリュームがインスタンスストアのインスタンスを、停止して再び開始したい",
+      "factRefs": [
+        "ec2.stop-ebs-only"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ec2.instance-types-families",
+      "title": "インスタンスタイプとファミリー",
+      "kind": "feature",
+      "text": "インスタンスタイプは、インスタンスに使われるホストのハードウェア（CPU、メモリ、ストレージ、ネットワークの容量の組み合わせ）を決める。同じ特性のタイプはファミリーにまとめられ、汎用、コンピューティング最適化、メモリ最適化、ストレージ最適化、高速コンピューティングなどがある。",
+      "examPoint": "アプリケーションの要件（CPU、メモリ、ストレージ、ネットワークの必要量）に合ったインスタンスタイプを選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 instance types",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.instance-type-change-stop",
+      "title": "インスタンスタイプの変更には停止が必要",
+      "kind": "constraint",
+      "text": "EBS をルートボリュームとするインスタンスのインスタンスタイプを変更するには、先にインスタンスを停止する必要がある。停止している間は利用できないので、停止時間を見込んで計画する。停止して開始すると、インスタンスは新しいハードウェアに移される。",
+      "trap": "稼働したままタイプだけを変えられるわけではない。垂直スケーリングには停止が伴う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Change the instance type for your Amazon EC2 instance",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-type-of-ebs-backed-instance.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.stop-ebs-only",
+      "title": "停止と開始ができるのは EBS ルートのインスタンス",
+      "kind": "constraint",
+      "text": "インスタンスを停止して再び開始できるのは、EBS ボリュームをルートボリュームとするインスタンスだけである。ルートボリュームがインスタンスストアのインスタンスは停止できない。停止するとインスタンスストアボリュームのデータは消去される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Stop and start Amazon EC2 instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.public-ip-released-on-stop",
+      "title": "停止するとパブリック IPv4 アドレスは解放される",
+      "kind": "feature",
+      "text": "インスタンスに自動で割り当てられるパブリック IPv4 アドレスは、インスタンスを停止、休止、終了すると解放され、停止や休止からの開始時には新しいアドレスが割り当てられる。プライベート IPv4 アドレスは、停止と開始や休止と開始をしてもネットワークインターフェイスに残る。",
+      "trap": "停止と開始でアドレスが変わるので、固定の送信元や宛先が要るなら Elastic IP アドレスを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 instance IP addressing",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.elastic-ip-persistent",
+      "title": "Elastic IP アドレスで固定のパブリック IP を保つ",
+      "kind": "feature",
+      "text": "インスタンスの付け外しにかかわらず変わらないパブリック IPv4 アドレスが必要なときは、Elastic IP アドレスを使う。通常のパブリック IP アドレスは AWS のプールから割り当てられ、アカウントには紐づかない。Elastic IP アドレスを関連付けると、それまでのパブリック IP アドレスは解放される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 instance IP addressing",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.public-ipv4-charged",
+      "title": "パブリック IPv4 アドレスは料金の対象",
+      "kind": "pricing",
+      "text": "AWS は、実行中のインスタンスに付いたパブリック IPv4 アドレスと Elastic IP アドレスを含め、すべてのパブリック IPv4 アドレスに料金がかかる。ロードバランサーの背後に置いてインスタンスの自動割り当てを無効にしたり、NAT ゲートウェイや PrivateLink を使ったりすると、使うアドレスの数を減らせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 instance IP addressing",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.hibernate-overview",
+      "title": "休止状態（ハイバネーション）",
+      "kind": "feature",
+      "text": "休止状態にすると、インスタンスのメモリ（RAM）の内容が EBS のルートボリュームに保存され、インスタンスは stopped 状態になる。開始すると RAM の内容が読み込み直されて以前のプロセスが再開し、インスタンス ID も保たれる。停止中のインスタンス使用料はかからず、RAM の内容を含む EBS の保存料金はかかる。",
+      "examPoint": "起動後の初期化に時間がかかるアプリを、メモリの状態ごと素早く再開したいときに使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Hibernate your Amazon EC2 instance",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.hibernate-enable-at-launch",
+      "title": "休止状態は起動時に有効にする",
+      "kind": "constraint",
+      "text": "休止状態に対応させるには、オンデマンドインスタンスまたはスポットインスタンスを起動するときに有効にする。すでにあるインスタンスは、稼働中でも停止中でも、あとから休止状態を有効にできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Prerequisites for EC2 instance hibernation",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.hibernate-encrypted-root",
+      "title": "休止状態にはルートボリュームの暗号化が必要",
+      "kind": "constraint",
+      "text": "休止状態のルートボリュームは、メモリ上の機密情報を守るため、暗号化された EBS ボリュームでなければならない。EBS の暗号化の既定の有効化、暗号化された AMI、暗号化されていない AMI からの起動時の暗号化のいずれかで満たせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Prerequisites for EC2 instance hibernation",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.hibernate-ram-limit",
+      "title": "休止状態の RAM サイズの上限",
+      "kind": "quota",
+      "text": "休止状態にできるインスタンスの RAM は、Linux では 150 GiB 未満、Windows では 16 GiB 以下でなければならない。ルートボリュームは、RAM の内容と OS やアプリケーションの利用に足りる大きさが要る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Prerequisites for EC2 instance hibernation",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernating-prerequisites.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.instance-store-ephemeral",
+      "title": "インスタンスストアは一時的なストレージ",
+      "kind": "feature",
+      "text": "インスタンスストアは、ホストコンピューターに物理的に接続されたディスクによる一時的なブロックストレージで、バッファ、キャッシュ、作業用データに向く。データは再起動では残るが、インスタンスの停止、休止、終了では消去され、基になるディスクが故障しても失われる。",
+      "examPoint": "失ってよい一時データを高速に扱う用途。残したいデータは EBS、S3、EFS に置く。",
+      "trap": "インスタンスを停止して開始し直すと、インスタンスストア上のデータは残らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data persistence for Amazon EC2 instance store volumes",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html"
+        },
+        {
+          "title": "Instance store temporary block storage for EC2 instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.instance-store-launch-only",
+      "title": "インスタンスストアは起動時にだけ接続できる",
+      "kind": "constraint",
+      "text": "インスタンスストアボリュームは、インスタンスの起動時にだけ接続できる。起動後に追加したり、あるインスタンスから外して別のインスタンスに接続したりはできず、接続先のインスタンスの存続期間を超えて残すこともできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Data persistence for Amazon EC2 instance store volumes",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.placement-cluster",
+      "title": "クラスター配置グループ",
+      "kind": "feature",
+      "text": "クラスター配置グループは、1 つのアベイラビリティーゾーン内でインスタンスを近接配置し、ノード間の低レイテンシーで高いネットワーク性能を得る。HPC のような密結合の処理に向く。複数の AZ にまたがれず、インスタンスは 1 つのラックに隔離されない。",
+      "examPoint": "低レイテンシーと高いスループットが要る密結合の処理。同じタイプのインスタンスを 1 回の起動要求でそろえる。",
+      "trap": "障害の分離が目的なら、近接配置のクラスターではなくスプレッドかパーティションを選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Placement strategies for your placement groups",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.placement-partition",
+      "title": "パーティション配置グループ",
+      "kind": "feature",
+      "text": "パーティション配置グループは、グループを論理的なパーティションに分け、各パーティションが独自のラックの集合を持つようにする。どのパーティションも別のパーティションとラックを共有しないので、ハードウェア障害の影響をパーティション内に閉じ込められる。HDFS、HBase、Cassandra などの大規模な分散システムに向く。",
+      "examPoint": "大規模な分散・複製ワークロードで、どのインスタンスがどのパーティションかを把握して複製先を決める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Placement strategies for your placement groups",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.placement-spread",
+      "title": "スプレッド配置グループ",
+      "kind": "feature",
+      "text": "スプレッド配置グループは、少数の重要なインスタンスを、それぞれ別のハードウェア（ラック）に配置して同時障害のリスクを下げる。ラックレベルのグループは同じリージョンの複数の AZ にまたがれるが、1 つの AZ で実行できるのは 7 インスタンスまでである。",
+      "examPoint": "少数の重要なインスタンスを互いに分離したいとき。7 を超える場合は複数のグループを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Placement strategies for your placement groups",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.placement-rules",
+      "title": "配置グループの共通の制約",
+      "kind": "constraint",
+      "text": "インスタンスは同時に 1 つの配置グループにしか置けず、配置グループどうしを統合することもできない。配置グループの作成に料金はかからない。Dedicated Hosts は配置グループに起動できず、停止や休止の動作を指定したスポットインスタンスも配置グループに起動できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Placement groups for your Amazon EC2 instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.spot-overview",
+      "title": "スポットインスタンス",
+      "kind": "feature",
+      "text": "スポットインスタンスは、EC2 の空き容量をオンデマンドより低い価格で使う仕組みである。スポット価格はインスタンスタイプと AZ ごとに EC2 が決め、長期的な需要と供給に応じて緩やかに調整される。データ分析、バッチ処理、バックグラウンド処理など、実行時期に柔軟で中断されてもよい処理に向く。",
+      "examPoint": "中断を許容できる処理のコストを下げる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Spot Instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.spot-interruption-behavior",
+      "title": "スポットインスタンスの中断",
+      "kind": "feature",
+      "text": "EC2 は、容量が必要になったとき、スポット価格が指定した最高価格を上回ったとき、起動グループなどの制約を満たせなくなったときにスポットインスタンスを中断する。中断時の動作として、終了、停止、休止のどれかをスポットリクエストで指定する。",
+      "trap": "スポットインスタンスはいつでも中断される可能性がある。止められない処理や唯一のデータの置き場にしない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Spot Instance interruptions",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.spot-interruption-notice",
+      "title": "スポットの中断通知（2 分前）",
+      "kind": "integration",
+      "text": "スポットインスタンスの停止または終了の 2 分前に、中断通知が出る。通知は EventBridge のイベント（EC2 Spot Instance Interruption Warning）と、インスタンスメタデータの instance-action の項目で受け取れる。通知はベストエフォートで出され、休止の場合は処理がすぐ始まるので 2 分前の警告はない。",
+      "examPoint": "2 分の間に処理の状態を保存して終了する設計にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Spot Instance interruption notices",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.spot-rebalance-recommendation",
+      "title": "スポットのリバランスの推奨",
+      "kind": "feature",
+      "text": "インスタンスのリバランスの推奨は、稼働中のスポットインスタンスの中断リスクが高まったときに EC2 が出すシグナルである。2 分前の中断通知を待たずに、既存または新しいスポットインスタンスへワークロードを先回りして移せる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Spot Instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.spot-no-savings-plans",
+      "title": "スポットインスタンスは Savings Plans の対象外",
+      "kind": "constraint",
+      "text": "スポットインスタンスは Savings Plans の対象外である。Savings Plans を持っていても、スポットの割引に上乗せされる節約はなく、スポットの支出が Compute Savings Plans の利用額のコミットに充てられることもない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Spot Instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.purchase-options-choice",
+      "title": "購入オプションの選び分け",
+      "kind": "pricing",
+      "text": "特定のインスタンス構成は決められないが利用額を約束できるなら Savings Plans、AZ の容量が必要ならリザーブドインスタンスかキャパシティ予約、柔軟で中断されてもよいならスポットインスタンスを選ぶ。既存のサーバー単位のライセンスを使い、コンプライアンス要件があるなら Dedicated Hosts か Dedicated Instances を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 billing and purchasing options",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-billing-discount",
+      "title": "リザーブドインスタンスは課金の割引",
+      "kind": "pricing",
+      "text": "リザーブドインスタンスは物理的なインスタンスではなく、アカウント内のオンデマンドインスタンスの利用に適用される課金の割引である。インスタンスタイプ、リージョン、テナンシー、プラットフォームが合うインスタンスに適用され、期間は 1 年か 3 年で、期限が切れてもインスタンスは動き続けるがオンデマンド料金になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved Instances for Amazon EC2 overview",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-no-cancel",
+      "title": "リザーブドインスタンスの購入は取り消せない",
+      "kind": "constraint",
+      "text": "リザーブドインスタンスは、購入後にキャンセルして払い戻しを受けることができない。必要が変わった場合は、変更（modify）、コンバーティブルの交換（exchange）、Reserved Instance Marketplace での販売（スタンダードのみ）のいずれかで対応できることがある。",
+      "trap": "購入をキャンセルして払い戻しを受けることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved Instances for Amazon EC2 overview",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-billed-regardless",
+      "title": "リザーブドインスタンスは使わなくても課金される",
+      "kind": "pricing",
+      "text": "リザーブドインスタンスの支払いには、全額前払い、一部前払い、前払いなしの 3 種類がある。一部前払いと前払いなしは、使っているかどうかにかかわらず、期間中のすべての時間に割引後の時間料金が請求される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Reserved Instances for Amazon EC2 overview",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-standard-convertible",
+      "title": "スタンダードとコンバーティブル",
+      "kind": "feature",
+      "text": "リザーブドインスタンスのオファリングクラスには、スタンダードとコンバーティブルがある。スタンダードは割引が最も大きいが、変更はできても交換はできない。コンバーティブルは割引が小さい代わりに、属性の異なる別のコンバーティブルと交換でき、変更もできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved Instances for Amazon EC2 overview",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-scope",
+      "title": "リージョンとゾーンのリザーブドインスタンス",
+      "kind": "feature",
+      "text": "リージョンのリザーブドインスタンスは容量を予約せず、割引はリージョン内のどの AZ にも適用され、Linux/Unix でテナンシーが既定のものはファミリー内のサイズの違いにも適用される。ゾーンのリザーブドインスタンスは指定した AZ の容量を予約するが、割引はその AZ とそのサイズにしか適用されない。価格は同じである。",
+      "trap": "リージョンのリザーブドインスタンスの割引だけでは、容量の確保にならない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Regional and zonal Reserved Instances (scope)",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/reserved-instances-scope.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-marketplace-standard-only",
+      "title": "スタンダード RI は Marketplace で販売できる",
+      "kind": "feature",
+      "text": "使わなくなったスタンダードのリザーブドインスタンスは、Reserved Instance Marketplace で販売できる。コンバーティブルは販売できない。販売額から前払い額の 12% のサービス手数料が差し引かれる。売れると容量予約と割引は失われ、そのインスタンスを使い続ければオンデマンド料金になる。",
+      "examPoint": "リザーブドインスタンスは払い戻しできないが、スタンダードなら Marketplace で他のユーザーに売れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Sell Reserved Instances for Amazon EC2 in the Reserved Instance Marketplace",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ri-marketplace-conditions",
+      "title": "Marketplace で販売する条件",
+      "kind": "constraint",
+      "text": "Reserved Instance Marketplace で販売するには、アカウントのルートユーザーが販売者として登録する必要がある。リザーブドインスタンスは契約期間が 1 か月以上残り、アカウントで 30 日以上有効で、前払いがある場合は AWS が前払いを受け取り済みでなければならない。ボリュームディスカウントで購入したものは販売できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Sell Reserved Instances for Amazon EC2 in the Reserved Instance Marketplace",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.capacity-reservation",
+      "title": "オンデマンドキャパシティ予約",
+      "kind": "feature",
+      "text": "キャパシティ予約は、特定の AZ のコンピューティング容量を、期間を問わず予約する機能である。すぐに使う予約には期間の約束がなく、いつでも変更でき、キャンセルすれば容量が解放されて課金も止まる。インスタンスタイプ、プラットフォーム、AZ、テナンシーが一致するインスタンスが、予約した容量を使う。",
+      "examPoint": "決まった日に特定の AZ で確実に起動したいとき。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserve compute capacity with EC2 On-Demand Capacity Reservations",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.capacity-vs-discount",
+      "title": "容量の予約と割引の違い",
+      "kind": "constraint",
+      "text": "キャパシティ予約は容量を予約するだけで、課金の割引はない。割引を得るには Savings Plans かリージョンのリザーブドインスタンスと組み合わせる。ゾーンのリザーブドインスタンスは容量と割引の両方を得るが、1 年か 3 年の約束が要る。リージョンのリザーブドインスタンスと Savings Plans は容量を予約しない。",
+      "trap": "割引の購入オプションだけでは容量は確保されない。容量が必要なら AZ を指定した予約を選ぶ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Reserve compute capacity with EC2 On-Demand Capacity Reservations",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.dedicated-hosts",
+      "title": "Dedicated Hosts",
+      "kind": "feature",
+      "text": "Dedicated Hosts は、インスタンス専用に占有される物理ホストの料金を支払う購入オプションで、ソケット単位、コア単位、VM 単位の既存のソフトウェアライセンスを持ち込んでコストを下げられる。コンプライアンス要件への対応にも使える。シングルテナントのハードウェアで実行する Dedicated Instances は、時間単位で支払う。",
+      "examPoint": "ライセンスが物理コアやソケットの数で決まる、またはホストの専有が要るとき。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 billing and purchasing options",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.imds-v2",
+      "title": "インスタンスメタデータサービス（IMDSv2）",
+      "kind": "feature",
+      "text": "インスタンスメタデータは、インスタンス内から 169.254.169.254 のサービスで取得できる。IMDSv2 はセッション方式で、PUT リクエストでセッショントークン（有効期間は最長 6 時間）を作り、以降の GET にそのトークンを付ける。既定では IMDSv1 と IMDSv2 の両方が使え、インスタンスごとに IMDSv2 だけを受け付ける設定にできる。",
+      "examPoint": "SSRF などへの防御を強めるには、IMDSv2 を必須にして IMDSv1 の呼び出しを失敗させる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use the Instance Metadata Service to access instance metadata",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.instance-profile",
+      "title": "インスタンスプロファイルと IAM ロール",
+      "kind": "integration",
+      "text": "EC2 は IAM ロールのコンテナとしてインスタンスプロファイルを使い、インスタンス上のアプリケーションは一時的な認証情報を取得して API を呼び出す。認証情報を配布して更新する必要がない。1 つのインスタンスにアタッチできるロールは 1 つで、同じロールを多くのインスタンスにアタッチできる。",
+      "examPoint": "EC2 上のアプリケーションに権限を与えるなら、アクセスキーを置かず IAM ロールをインスタンスプロファイルで渡す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IAM roles for Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.ami-regional",
+      "title": "AMI の範囲とコピー",
+      "kind": "feature",
+      "text": "AMI は、インスタンスの起動に必要なソフトウェアとブロックデバイスマッピングを含むイメージで、リージョン、OS、プロセッサアーキテクチャ、ルートボリュームの種類、仮想化タイプに固有である。インスタンスから AMI を作れ、別のリージョンにコピーしてそのリージョンで使え、他のアカウントと共有もできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Machine Images in Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.az-name-mapping",
+      "title": "AZ 名の対応はアカウントごとに異なる場合がある",
+      "kind": "constraint",
+      "text": "一部のリージョンでは、2025 年 11 月より前に作られたアカウントの AZ 名（us-east-1a など）は、アカウントごとに独立して物理的な AZ に割り当てられている。このため、同じ AZ 名が別のアカウントでは別の物理的な場所を指すことがある。2025 年 11 月以降に作られたアカウントは、同じ割り当てになる。",
+      "trap": "AZ 名が同じでも、アカウントをまたいで同じ物理的な AZ とは限らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AZ IDs",
+          "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/az-ids.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.az-id",
+      "title": "AZ ID はアカウント間で共通",
+      "kind": "feature",
+      "text": "AZ ID（use1-az1 など）は、すべてのアカウントで同じ物理的な場所を指す一意の識別子である。アカウントをまたいで AZ を揃えたいときに使う。自分のアカウントの AZ ID は、EC2 ダッシュボードか describe-availability-zones コマンドで確認でき、共有したサブネットは相手のアカウントの同じ AZ ID の AZ で使える。",
+      "examPoint": "複数アカウントで同じ物理 AZ に配置したいときは、AZ 名ではなく AZ ID を揃える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AZ IDs",
+          "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/az-ids.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.tag-on-create-permission",
+      "title": "作成時のタグ付けには ec2:CreateTags の許可も要る",
+      "kind": "feature",
+      "text": "EC2 のリソースを作成するときにタグを指定すると、作成の操作（ec2:RunInstances、ec2:CreateVolume など）の許可に加えて、ec2:CreateTags の許可が追加で評価される。タグを指定しない作成では ec2:CreateTags は評価されない。",
+      "trap": "ec2:RunInstances を許可しても、タグ付きで起動するには ec2:CreateTags の許可も必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Grant permission to tag Amazon EC2 resources during creation",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.create-action-condition",
+      "title": "ec2:CreateAction でタグ付けを作成時に限定する",
+      "kind": "feature",
+      "text": "ec2:CreateTags の許可に ec2:CreateAction 条件キーを付け、値を RunInstances などにすると、そのリソースを作成する操作の中でだけタグを付けられる。この許可では、既存のリソースに対して ec2:CreateTags を直接呼び出すことはできない。aws:RequestTag 条件キーを併用すると、付けるタグのキーや値も制限できる。",
+      "examPoint": "作成時だけタグを付けさせ、作成後のタグの変更を防ぎたいときの設計。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Grant permission to tag Amazon EC2 resources during creation",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/supported-iam-actions-tagging.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.encrypted-condition-key",
+      "title": "ec2:Encrypted 条件キーで暗号化なしを拒否する",
+      "kind": "feature",
+      "text": "ec2:Encrypted 条件キーが false の場合に ec2:CreateVolume と ec2:RunInstances を拒否するポリシーを使うと、暗号化されていないボリュームの作成と、暗号化されていないボリュームを持つインスタンスの起動を禁止できる。公式の例は VPC エンドポイントポリシーとして示されている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Access Amazon EC2 using an interface VPC endpoint",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/interface-vpc-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "references": [
+    {
+      "title": "Amazon EC2 FAQs",
+      "url": "https://aws.amazon.com/ec2/faqs/"
+    },
+    {
+      "title": "Amazon EC2 instance types",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+    },
+    {
+      "title": "Amazon EC2 billing and purchasing options",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
+    }
+  ],
+  "createdBy": "sc7",
+  "createdAt": "2026-11-14"
+}

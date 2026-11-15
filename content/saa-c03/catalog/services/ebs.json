@@ -1,0 +1,718 @@
+{
+  "id": "ebs",
+  "tier": 1,
+  "summary": "EC2 インスタンスに接続して使う、永続的なブロックストレージ。ボリュームは 1 つの AZ に置かれ、SSD と HDD の複数のタイプ、稼働中の変更、スナップショットによるバックアップ、暗号化を備える。",
+  "chooseWhen": [
+    {
+      "text": "EC2 の起動ディスクや、1 台のサーバーで動くデータベースのブロックストレージが必要",
+      "factRefs": [
+        "ebs.volume-az-scope",
+        "ebs.gp3-baseline"
+      ],
+      "alternatives": [
+        "efs",
+        "s3"
+      ]
+    },
+    {
+      "text": "一貫した低レイテンシーと高い IOPS が必要で、io2 Block Express を使う",
+      "factRefs": [
+        "ebs.io2-performance"
+      ]
+    },
+    {
+      "text": "サービスを止めずに容量や性能を変更したい",
+      "factRefs": [
+        "ebs.elastic-volumes-online"
+      ]
+    },
+    {
+      "text": "スナップショットで増分バックアップし、別リージョンへのコピーで備えたい",
+      "factRefs": [
+        "ebs.snapshot-incremental",
+        "ebs.snapshot-copy-region-account"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "複数の AZ のサーバーから同じファイルを共有したい",
+      "factRefs": [
+        "ebs.volume-az-scope",
+        "ebs.multi-attach-clustered-fs"
+      ],
+      "alternatives": [
+        "efs"
+      ]
+    },
+    {
+      "text": "インスタンスをまたいで汎用のファイル共有（NFS など）をしたい",
+      "factRefs": [
+        "ebs.multi-attach-clustered-fs"
+      ],
+      "alternatives": [
+        "efs"
+      ]
+    },
+    {
+      "text": "小さなランダム I/O が中心のワークロードに HDD（st1、sc1）を使う",
+      "factRefs": [
+        "ebs.hdd-sequential-io"
+      ]
+    },
+    {
+      "text": "容量を自動で増やしたい、またはオブジェクトとして大量に保存したい",
+      "alternatives": [
+        "s3",
+        "efs"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ebs.volume-az-scope",
+      "title": "ボリュームと接続先は同じ AZ",
+      "kind": "constraint",
+      "text": "EBS ボリュームと、それを接続するインスタンスは同じ Availability Zone にある必要がある。1 つのインスタンスには複数のボリュームを接続できる。ボリュームはインスタンスの稼働期間とは独立して存続する。",
+      "trap": "ボリュームを別の AZ のインスタンスに直接つなぐことはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.az-replication",
+      "title": "ボリュームのデータは AZ 内で自動複製",
+      "kind": "feature",
+      "text": "EBS ボリュームのデータは、1 つのコンポーネントの故障によるデータ損失を防ぐため、同じ Availability Zone 内の複数のサーバーに自動で複製される。複製は AZ の内側であり、AZ をまたぐ冗長化ではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        },
+        {
+          "title": "Amazon EBS FAQs",
+          "url": "https://aws.amazon.com/ebs/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.durability",
+      "title": "ボリュームタイプごとの耐久性",
+      "kind": "quota",
+      "text": "io2 Block Express は 99.999% の耐久性（年間故障率 0.001%）で設計されている。それ以外のボリュームタイプは 99.8% から 99.9%（年間故障率 0.1% から 0.2%）である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-not-automatic",
+      "title": "スナップショットは自動では取られない",
+      "kind": "constraint",
+      "text": "AWS は EBS ボリュームのデータを自動ではバックアップしない。データの回復力と災害対策のため、スナップショットを定期的に作成するか、Data Lifecycle Manager や AWS Backup で自動化するのは利用者の責任である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS snapshots",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.volume-type-categories",
+      "title": "SSD と HDD の 2 系統",
+      "kind": "feature",
+      "text": "EBS のボリュームタイプは大きく 2 系統に分かれる。SSD は小さな I/O が頻繁な処理向けで性能の決め手は IOPS、HDD は大きなストリーミング処理向けで性能の決め手はスループットである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.gp3-baseline",
+      "title": "gp3 の基本性能は容量と無関係",
+      "kind": "feature",
+      "text": "gp3 は容量に関係なく 3,000 IOPS と 125 MiB/s の基本性能が料金に含まれる。IOPS とスループットはどちらも容量とは別に追加でプロビジョニングでき、バーストの仕組みは使わず、プロビジョニングした性能を持続できる。",
+      "examPoint": "性能のために容量を増やさず、IOPS とスループットだけを追加できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS General Purpose SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.gp3-max-performance",
+      "title": "gp3 の上限",
+      "kind": "quota",
+      "text": "gp3 は 1 GiB から 64 TiB のサイズで、IOPS は最大 80,000、スループットは最大 2,000 MiB/s までプロビジョニングできる。これを超える IOPS やスループットが必要な場合は io2 Block Express を検討する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        },
+        {
+          "title": "Amazon EBS General Purpose SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.gp2-baseline-iops",
+      "title": "gp2 の IOPS は容量に比例",
+      "kind": "feature",
+      "text": "gp2 の基本 IOPS は容量に比例し、1 GiB あたり 3 IOPS である。最小 100 IOPS、最大 16,000 IOPS で、16,000 に達するのは約 5,334 GiB 以上のときである。サイズは 1 GiB から 16 TiB。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS General Purpose SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.gp2-burst",
+      "title": "gp2 の I/O クレジットによるバースト",
+      "kind": "feature",
+      "text": "1 TiB 未満（基本 IOPS が 3,000 未満）の gp2 ボリュームは、I/O クレジットを消費して 3,000 IOPS までバーストできる。クレジットが尽きると基本 IOPS に戻る。残量は CloudWatch の BurstBalance で監視する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EBS General Purpose SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.gp2-to-gp3-online",
+      "title": "gp2 から gp3 へは稼働中に移行",
+      "kind": "feature",
+      "text": "gp2 から gp3 への移行は Elastic Volumes の操作で行え、EC2 インスタンスを中断せずにボリュームタイプ、IOPS、スループットを変更できる。gp3 は gp2 より 1 GiB あたりの料金が 20% 低い。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS General Purpose SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+        },
+        {
+          "title": "Modify an Amazon EBS volume using Elastic Volumes operations",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.io2-performance",
+      "title": "io2 Block Express の性能",
+      "kind": "quota",
+      "text": "io2 Block Express は最大 256,000 IOPS、最大 4,000 MiB/s、最大 64 TiB で、平均レイテンシーは 16 KiB の I/O で 500 マイクロ秒未満を目標に設計されている。256,000 IOPS を出せるのは Nitro ベースのインスタンスである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS Provisioned IOPS SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.io-iops-ratio",
+      "title": "容量あたりのプロビジョニング可能な IOPS",
+      "kind": "quota",
+      "text": "プロビジョニングできる IOPS の容量比は、io2 Block Express が最大 1,000 IOPS 対 1 GiB、io1 が最大 50 IOPS 対 1 GiB である。io1 の上限は 64,000 IOPS で、その全量は 1,280 GiB 以上のボリュームで指定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EBS Provisioned IOPS SSD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.st1-sc1-use",
+      "title": "st1 と sc1 の用途",
+      "kind": "feature",
+      "text": "st1（スループット最適化 HDD）は頻繁にアクセスする大きな順次処理（ビッグデータ、データウェアハウス、ログ処理）向けで最大 500 MiB/s。sc1（コールド HDD）はアクセス頻度の低いデータを最も安く置く用途向けで最大 250 MiB/s である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS Throughput Optimized HDD and Cold HDD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.hdd-not-boot",
+      "title": "st1 と sc1 は起動ボリュームにできない",
+      "kind": "constraint",
+      "text": "st1 と sc1 の HDD ボリュームは起動（ブート）ボリュームとして使えない。既存のルートボリュームを st1 や sc1 に変更することもできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS Throughput Optimized HDD and Cold HDD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        },
+        {
+          "title": "Modify an Amazon EBS volume using Elastic Volumes operations",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.hdd-sequential-io",
+      "title": "HDD は小さなランダム I/O に不向き",
+      "kind": "constraint",
+      "text": "st1 と sc1 の性能モデルは大きな順次 I/O に最適化されており、小さなランダム I/O の処理は想定されていない。その場合は汎用 SSD かプロビジョンド IOPS SSD を使うことが推奨されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS Throughput Optimized HDD and Cold HDD volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-vols.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.elastic-volumes-online",
+      "title": "Elastic Volumes で稼働中に変更",
+      "kind": "feature",
+      "text": "Elastic Volumes を使うと、インスタンスのデタッチや再起動なしに、ボリュームのサイズの拡張、ボリュームタイプの変更、性能（IOPS・スループット）の調整ができる。変更自体に追加料金はなく、変更後の構成に対して課金される。",
+      "examPoint": "サービスを止めずに容量や性能を変えたいときの手段。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Modify an Amazon EBS volume using Elastic Volumes operations",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.elastic-volumes-no-shrink",
+      "title": "ボリュームのサイズは縮小できない",
+      "kind": "constraint",
+      "text": "Elastic Volumes でボリュームのサイズを小さくすることはできない。小さなボリュームを新しく作り、rsync や robocopy などで中身を移行する必要がある。また、送信済みの変更要求は取り消せない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Modify an Amazon EBS volume using Elastic Volumes operations",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.multi-attach-types",
+      "title": "Multi-Attach に対応するのは io1 と io2",
+      "kind": "constraint",
+      "text": "Multi-Attach に対応するボリュームタイプはプロビジョンド IOPS SSD の io1 と io2 だけである。gp2、gp3、st1、sc1 は非対応で、Windows インスタンスで使えるのは io2 のみである。",
+      "trap": "gp3 など汎用 SSD では Multi-Attach を有効にできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+        },
+        {
+          "title": "Amazon EBS volume types",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.multi-attach-instances",
+      "title": "Multi-Attach は同じ AZ の最大 16 台",
+      "kind": "constraint",
+      "text": "Multi-Attach を有効にしたボリュームは、同じ Availability Zone にある Nitro System ベースのインスタンスに最大 16 台まで接続できる。接続した各インスタンスは共有ボリュームへの読み書きの権限を持つ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.multi-attach-clustered-fs",
+      "title": "共有にはクラスター対応のファイルシステムが必要",
+      "kind": "constraint",
+      "text": "XFS や EXT4 などの標準的なファイルシステムは複数のサーバーから同時にアクセスする設計ではない。Multi-Attach のボリュームでデータを安全に共有するにはクラスター対応のファイルシステムを使い、書き込み順序はアプリケーション側で保証する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+        },
+        {
+          "title": "Amazon EBS FAQs",
+          "url": "https://aws.amazon.com/ebs/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.multi-attach-no-boot",
+      "title": "Multi-Attach ボリュームは起動に使えない",
+      "kind": "constraint",
+      "text": "Multi-Attach を有効にしたボリュームは起動ボリュームとして作成できない。また、インスタンスの起動時（コンソールや RunInstances API）に Multi-Attach を有効にすることもできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Attach an EBS volume to multiple EC2 instances using Multi-Attach",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+        },
+        {
+          "title": "Amazon EBS FAQs",
+          "url": "https://aws.amazon.com/ebs/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-incremental",
+      "title": "スナップショットは増分バックアップ",
+      "kind": "feature",
+      "text": "EBS スナップショットはある時点のコピーで、直前のスナップショット以降に変更されたブロックだけを保存する増分バックアップである。作成時間と保存コストを抑えられ、各スナップショットには新しいボリュームへ復元するのに必要な情報がすべて含まれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS snapshots",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-s3-storage",
+      "title": "スナップショットは S3 に保存されるが直接は見えない",
+      "kind": "constraint",
+      "text": "スナップショットは Amazon S3 に保存されるが、利用者がアクセスできない S3 バケットにあり、S3 のコンソールや API では扱えない。操作は Amazon EC2 のコンソールまたは EC2 API で行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS snapshots",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
+        },
+        {
+          "title": "Amazon EBS FAQs",
+          "url": "https://aws.amazon.com/ebs/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-restore-any-az",
+      "title": "スナップショットから任意の AZ に復元",
+      "kind": "feature",
+      "text": "スナップショットのデータはリージョン内のすべての AZ に自動で複製されるため、そのリージョンのどの AZ にも新しいボリュームを復元できる。AZ をまたいでボリュームを移すにはスナップショットを経由する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS snapshots",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
+        },
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-copy-region-account",
+      "title": "スナップショットのリージョン間・アカウント間コピー",
+      "kind": "feature",
+      "text": "スナップショットは同じリージョン内に加え、別のリージョンへコピーできる。災害対策のための別リージョンへのバックアップや、暗号化済みスナップショットを別のアカウントへコピーしてデータの保持・監査に使うことができる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Copy an Amazon EBS snapshot",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-copy-snapshot.html"
+        },
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-copy-full",
+      "title": "別リージョンや別キーへのコピーは完全コピー",
+      "kind": "pricing",
+      "text": "スナップショットを新しいリージョンへコピーするときや、別の KMS キーで暗号化してコピーするときは、増分ではなく完全なコピーが作られる。そのぶん追加のストレージ料金がかかり、リージョン間の転送にはデータ転送料金も加わる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Copy an Amazon EBS snapshot",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-copy-snapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.snapshot-archive",
+      "title": "スナップショットアーカイブ",
+      "kind": "feature",
+      "text": "EBS Snapshots Archive は、めったに取り出さないスナップショットを低コストで長期保存する階層である。アーカイブすると増分ではなく完全なスナップショットになり、90 日以上保存する場合に保存コストを最大 75% 下げられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archive Amazon EBS snapshots",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive.html"
+        },
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.fsr",
+      "title": "ファストスナップショットリストア",
+      "kind": "feature",
+      "text": "ファストスナップショットリストア（FSR）を有効にしたスナップショットからボリュームを作ると、作成時点で完全に初期化されており、初回アクセス時の遅延がなく、プロビジョニングした性能がすぐに出る。有効化はスナップショットと AZ の組ごとに行う。",
+      "examPoint": "スナップショットから作ったボリュームを作成直後から全性能で使いたいときの機能。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS fast snapshot restore",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.fsr-quota",
+      "title": "FSR の有効化できる数",
+      "kind": "quota",
+      "text": "リージョンごとに FSR を有効にできるスナップショットは既定で 5 個である。共有されたスナップショットで有効にした場合も自分の上限に数えられる。この上限は Service Quotas で引き上げを申請できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EBS fast snapshot restore",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
+        },
+        {
+          "title": "Amazon Elastic Block Store endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/ebs-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.fsr-billing",
+      "title": "FSR は有効にしている時間に課金",
+      "kind": "pricing",
+      "text": "FSR の料金は、スナップショットを AZ ごとに有効にしている時間に対して分単位で課金され、最低 1 時間分が請求される。コピーしたスナップショットでは自動では有効にならず、別途有効化が必要である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EBS fast snapshot restore",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
+        },
+        {
+          "title": "Copy an Amazon EBS snapshot",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-copy-snapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.volume-initialization",
+      "title": "スナップショットから作ったボリュームの初期化",
+      "kind": "feature",
+      "text": "スナップショットから作ったボリュームは、データブロックを S3 からボリュームへ書き込む初期化が終わるまで、I/O の遅延が増え性能が下がることがある。空のボリュームは作成直後から最大性能が出るため初期化は不要である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Initialize Amazon EBS volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.manual-initialization",
+      "title": "手動の初期化は全ブロックの読み取りで時間がかかる",
+      "kind": "constraint",
+      "text": "ボリュームを手動で初期化するには dd や fio ですべてのブロックを読み取る。完了まで数分から数時間かかり、インスタンスの帯域、IOPS、ボリュームのサイズに左右されるため、作成直後に全性能が必要な場合の手段にならない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Initialize Amazon EBS volumes",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.encryption-how",
+      "title": "暗号化は KMS キーで行われホスト側で処理",
+      "kind": "feature",
+      "text": "EBS の暗号化は AWS KMS のキーを使ってボリュームとスナップショットを暗号化する。暗号化の処理は EC2 インスタンスを動かすサーバー上で行われ、保存データとインスタンスとボリューム間の転送データを保護する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS encryption",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html"
+        },
+        {
+          "title": "What is Amazon EBS?",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.encryption-no-direct",
+      "title": "既存のボリュームは直接暗号化できない",
+      "kind": "constraint",
+      "text": "暗号化されていない既存のボリュームやスナップショットを、そのまま暗号化に切り替えることはできない。ボリュームはスナップショットから暗号化した新しいボリュームを作り、スナップショットは暗号化したコピーを作る。",
+      "examPoint": "暗号化されていないボリュームの暗号化は、スナップショット経由で作り直す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EBS encryption",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.encryption-default-new-only",
+      "title": "既定の暗号化は新しい作成だけが対象",
+      "kind": "constraint",
+      "text": "EBS の既定の暗号化は、新しく作成するボリュームと、暗号化されていないスナップショットからのコピーに適用される。既存のボリュームやスナップショットには影響せず、無効にしても既存ボリュームの暗号化状態は変わらない。",
+      "trap": "既定の暗号化を有効にしても、既存の暗号化されていないボリュームは暗号化されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable Amazon EBS encryption by default",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html"
+        },
+        {
+          "title": "DisableEbsEncryptionByDefault - Amazon EC2 API Reference",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableEbsEncryptionByDefault.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.encryption-default-scope",
+      "title": "既定の暗号化はアカウントとリージョンごとの設定",
+      "kind": "constraint",
+      "text": "EBS の既定の暗号化は、アカウントごと、かつリージョンごとの設定である。有効にしたリージョンでは、個別のボリュームやスナップショットについて無効にすることはできない。リージョンごとに有効にする必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable Amazon EBS encryption by default",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html"
+        },
+        {
+          "title": "DisableEbsEncryptionByDefault - Amazon EC2 API Reference",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableEbsEncryptionByDefault.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.recycle-bin",
+      "title": "ごみ箱による削除済みリソースの復元",
+      "kind": "feature",
+      "text": "Recycle Bin（ごみ箱）は、誤って削除した EBS ボリューム、EBS スナップショット、EBS を使う AMI を、保持ルールで指定した期間内であれば復元できる機能である。ごみ箱の中のリソースにも通常と同じ料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Recover deleted EBS volumes, snapshots, and AMIs with Recycle Bin",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ebs.dlm",
+      "title": "Data Lifecycle Manager によるスナップショットの自動化",
+      "kind": "integration",
+      "text": "Amazon Data Lifecycle Manager は、EBS スナップショットと EBS を使う AMI の作成、保持、削除を自動化する。分離したリージョンやアカウントへのバックアップポリシーも作れ、追加料金はかからない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automate backups with Amazon Data Lifecycle Manager",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-lifecycle.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "ec2.instance-store-ephemeral",
+    "ec2.ami-regional",
+    "ec2.encrypted-condition-key",
+    "rds.encryption-scope"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EBS?",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    },
+    {
+      "title": "Amazon EBS volume types",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+    },
+    {
+      "title": "Amazon EBS FAQs",
+      "url": "https://aws.amazon.com/ebs/faqs/"
+    }
+  ],
+  "createdBy": "sc13",
+  "createdAt": "2026-11-14"
+}

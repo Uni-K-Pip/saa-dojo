@@ -1,0 +1,424 @@
+{
+  "id": "fargate",
+  "tier": 1,
+  "summary": "サーバーや EC2 インスタンスのクラスターを管理せずにコンテナを実行できる、ECS と EKS 共通のサーバーレスの実行基盤。タスクごとに分離され、使った vCPU とメモリに応じて課金される。",
+  "chooseWhen": [
+    {
+      "text": "コンテナを動かしたいが、サーバー（ノード）の管理とキャパシティの計画を避けたい",
+      "factRefs": [
+        "fargate.serverless-containers"
+      ],
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "処理時間が Lambda の上限を超える、またはコンテナ化済みの処理を、サーバーレスで動かしたい",
+      "factRefs": [
+        "fargate.serverless-containers"
+      ],
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "タスクごとの分離境界が必要なコンテナワークロード",
+      "factRefs": [
+        "fargate.task-isolation"
+      ]
+    },
+    {
+      "text": "中断されても再試行できるタスクのコストを下げたい（Fargate Spot）",
+      "factRefs": [
+        "fargate.spot-capacity-provider",
+        "fargate.spot-no-fallback"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "GPU、特権コンテナ、インスタンス単位の配置制御など、ホストへの細かい制御が必要",
+      "factRefs": [
+        "fargate.unsupported-parameters"
+      ],
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "短時間のイベント駆動の処理で、コンテナの管理も要らない",
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "使用率の高い常時稼働の大規模なワークロードで、インスタンス単位の最適化でコストを下げたい",
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "Fargate Spot で、停止や起動の遅れが許されない処理を動かそうとしている",
+      "factRefs": [
+        "fargate.spot-no-fallback"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "fargate.serverless-containers",
+      "title": "サーバーを管理せずにコンテナを動かす",
+      "kind": "feature",
+      "text": "Fargate は、サーバーや EC2 インスタンスのクラスターを管理せずにコンテナを実行できる、サーバーレスのコンピューティングエンジンである。サーバーの種類の選択、クラスターのスケールの判断、パッキングの最適化が不要になる。",
+      "examPoint": "サーバー（ノード）の管理を減らしたいコンテナ処理の定石。",
+      "trap": "Fargate は実行基盤であり、オーケストレーターではない。ECS または EKS と組み合わせて使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        },
+        {
+          "title": "AWS Fargate",
+          "url": "https://aws.amazon.com/fargate/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.ecs-and-eks",
+      "title": "ECS と EKS の両方で使える",
+      "kind": "integration",
+      "text": "Fargate は Amazon ECS でも Amazon EKS でもコンテナの実行基盤として使える。ECS ではタスク、EKS ではポッドがそれぞれ専用の実行環境で動く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Fargate",
+          "url": "https://aws.amazon.com/fargate/"
+        },
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.task-isolation",
+      "title": "タスクごとの分離境界",
+      "kind": "feature",
+      "text": "Fargate の各タスクは専用の分離境界を持ち、基盤のカーネル、CPU、メモリ、ENI を他のタスクと共有しない。厳しい分離要件のあるワークロードに向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.task-size",
+      "title": "CPU とメモリはタスク単位で決まる組み合わせから選ぶ",
+      "kind": "constraint",
+      "text": "Fargate のタスク定義では、タスクレベルで CPU とメモリを指定し、CPU ごとに許される組み合わせから選ぶ。たとえば 0.25 vCPU のメモリは 512 MiB から 2 GB、1 vCPU は 2 GB から 8 GB で、自由な組み合わせはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.awsvpc-eni",
+      "title": "タスクごとに ENI を持つ awsvpc モード",
+      "kind": "feature",
+      "text": "Fargate のタスクは必ず awsvpc ネットワークモードを使い、タスクごとに ENI が割り当てられる。タスクの起動時には、ENI を置くサブネットと適用するセキュリティグループを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.alb-ip-target",
+      "title": "ロードバランサーのターゲットタイプは ip",
+      "kind": "integration",
+      "text": "Fargate のサービスは ALB、NLB、GWLB と連携でき、ターゲットグループのターゲットタイプには instance ではなく ip を選ぶ。awsvpc のタスクは EC2 インスタンスではなく ENI に関連付けられるためである。",
+      "trap": "ターゲットタイプを instance にすると Fargate のタスクを登録できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.image-pull-network",
+      "title": "イメージ取得に必要なネットワーク経路",
+      "kind": "feature",
+      "text": "パブリックサブネットの Fargate タスクがイメージを取得するには、パブリック IP を割り当てる。プライベートサブネットでは、NAT ゲートウェイを置くか、ECR のインターフェイス VPC エンドポイントを使うとタスクのプライベート IP でイメージを取得できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.ephemeral-storage-size",
+      "title": "エフェメラルストレージの容量",
+      "kind": "quota",
+      "text": "プラットフォームバージョン 1.4.0 以降の Linux タスクには、既定で最小 20 GiB のエフェメラルストレージが付く。タスク定義の ephemeralStorage で、最大 200 GiB まで増やせる。コンテナイメージもこの領域に置かれる。",
+      "trap": "容量を増やしても、永続化されるわけではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fargate task ephemeral storage for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html"
+        },
+        {
+          "title": "AWS Fargate Pricing",
+          "url": "https://aws.amazon.com/fargate/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.ephemeral-storage-scope",
+      "title": "エフェメラルストレージはタスクごとの一時領域",
+      "kind": "feature",
+      "text": "Fargate のタスクのエフェメラルストレージはバインドマウントとして提供され、同じタスク内のコンテナ間で共有できる。タスクごとに割り当てられる一時的な領域であり、永続的な保存には EFS ボリュームを使う。",
+      "examPoint": "タスクをまたぐ共有や永続化が要るなら EFS、ブロックストレージなら EBS ボリューム。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fargate task ephemeral storage for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html"
+        },
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.storage-types",
+      "title": "Fargate で使えるストレージの種類",
+      "kind": "feature",
+      "text": "Fargate のタスクで使えるストレージは、EBS ボリューム、永続ストレージの EFS ボリューム、一時的なバインドマウントである。Docker ボリュームの設定（dockerVolumeConfiguration）はサポートされない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.ephemeral-storage-encryption",
+      "title": "エフェメラルストレージの暗号化",
+      "kind": "feature",
+      "text": "プラットフォームバージョン 1.4.0 以降で 2020 年 5 月 28 日以降に起動したタスクのエフェメラルストレージは、AES-256 で暗号化される。AWS 所有のキーを使うか、カスタマー管理キーを指定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Fargate task ephemeral storage for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.os-architectures",
+      "title": "サポートする OS と CPU アーキテクチャ",
+      "kind": "feature",
+      "text": "Fargate は Linux と Windows のコンテナを実行できる。Linux では x86_64 と ARM64 を使え、Windows コンテナは x86_64 のみである。タスク定義では OS を指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.unsupported-parameters",
+      "title": "Fargate で使えないタスク定義のパラメータ",
+      "kind": "constraint",
+      "text": "Fargate のタスクでは、privileged、gpu、placementConstraints などのタスク定義のパラメータが使えない。特権コンテナや GPU が必要な処理や、インスタンス単位の配置制御が必要な処理は EC2 を使う。",
+      "trap": "GPU やホストへの細かい制御が要る要件では Fargate は選ばない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.platform-versions",
+      "title": "プラットフォームバージョン",
+      "kind": "feature",
+      "text": "プラットフォームバージョンは Fargate のタスクの実行環境（カーネルとコンテナランタイムの組み合わせ）を表す。タスクは起動から終了まで同じリビジョンで動き、新しいリビジョンを使うには新しいタスクを起動する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.spot-capacity-provider",
+      "title": "Fargate Spot で中断に強いタスクを安く動かす",
+      "kind": "feature",
+      "text": "Fargate Spot は、通常の Fargate より割引された料金で、余剰の計算容量上で中断に耐えられるタスクを実行する。AWS が容量を必要とすると、2 分前の警告のあとにタスクが中断される。",
+      "examPoint": "中断されても再試行できるバッチ処理や、コストを下げたい耐障害なワーカーに向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html"
+        },
+        {
+          "title": "Architect for AWS Fargate for Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.spot-interruption-handling",
+      "title": "Spot 中断の通知と正常終了",
+      "kind": "feature",
+      "text": "Fargate Spot の中断では、2 分前の警告が EventBridge のタスク状態変更イベントと、コンテナへの SIGTERM シグナルで送られる。stopTimeout は 120 秒以下で指定でき、SIGTERM を処理しないと待機後に SIGKILL で強制終了される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.spot-no-fallback",
+      "title": "Fargate Spot はオンデマンドで代替されない",
+      "kind": "constraint",
+      "text": "需要が極端に高い時期には Fargate Spot の容量が確保できず、タスクの起動が遅れることがある。Fargate は Spot の容量をオンデマンドの容量に置き換えないため、Spot のタスクの起動や継続は保証されない。",
+      "trap": "Spot にしたタスクの起動や継続は保証されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.capacity-provider-strategy",
+      "title": "キャパシティプロバイダー戦略の組み方",
+      "kind": "feature",
+      "text": "Fargate と Fargate Spot はキャパシティプロバイダー戦略の base と weight で配分でき、weight が 0 より大きいものが少なくとも1つ必要である。戦略に Fargate と Auto Scaling グループのプロバイダーを混在させることはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.pricing-model",
+      "title": "課金は vCPU・メモリ・ストレージなどの使用量",
+      "kind": "pricing",
+      "text": "Fargate の料金は、vCPU、メモリ、OS、CPU アーキテクチャ、ストレージの5つの要素で決まり、それぞれ独立に設定できる。秒単位で計算され、最低課金時間は 1 分である。20 GB を超えるエフェメラルストレージの分だけ追加で課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Fargate Pricing",
+          "url": "https://aws.amazon.com/fargate/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.savings-plans",
+      "title": "Compute Savings Plans の対象になる",
+      "kind": "pricing",
+      "text": "Compute Savings Plans は、1年または3年の時間あたりの利用額を約束することで、ECS と EKS の両方の Fargate の利用に適用される割引である。Fargate Spot は別の割引料金で、ECS の Linux のタスクで使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Fargate Pricing",
+          "url": "https://aws.amazon.com/fargate/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.soci-lazy-loading",
+      "title": "SOCI で大きなイメージの起動を速くする",
+      "kind": "feature",
+      "text": "Seekable OCI（SOCI）のインデックスがあると、Linux のプラットフォームバージョン 1.4.0 のタスクは、イメージ全体の取得を待たずにコンテナを起動できる。ECR のプライベートレジストリのイメージが対象で、圧縮後 250 MiB を超えるイメージで効果が出やすい。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "fargate.log-drivers",
+      "title": "ログの出力先",
+      "kind": "integration",
+      "text": "Fargate のタスク定義では、awslogs、splunk、awsfirelens のログドライバーを使える。awslogs では、コンテナのログを CloudWatch Logs に送る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task definition differences for Fargate",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-tasks-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "ecs.capacity-options",
+    "ecs.task-execution-role",
+    "ecs.efs-volume",
+    "ecs.placement-strategies",
+    "elb.alb-target-types"
+  ],
+  "references": [
+    {
+      "title": "AWS Fargate",
+      "url": "https://aws.amazon.com/fargate/"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    }
+  ],
+  "createdBy": "sc12",
+  "createdAt": "2026-11-14"
+}

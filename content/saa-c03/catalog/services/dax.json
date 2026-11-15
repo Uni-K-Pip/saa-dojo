@@ -1,0 +1,319 @@
+{
+  "id": "dax",
+  "tier": 2,
+  "summary": "DAX は DynamoDB 専用のフルマネージドなインメモリキャッシュ。DynamoDB と API 互換で、結果整合性の読み取りをミリ秒からマイクロ秒に高速化し、アプリケーションの変更は最小限で済む。",
+  "chooseWhen": [
+    {
+      "text": "DynamoDB の読み取りをマイクロ秒にしたい",
+      "factRefs": [
+        "dax.overview",
+        "dax.eventual-consistency"
+      ]
+    },
+    {
+      "text": "少数のキーが繰り返し読まれ、読み取り容量を節約したい",
+      "factRefs": [
+        "dax.use-cases"
+      ]
+    },
+    {
+      "text": "コードの変更を最小限にして DynamoDB にキャッシュを足したい",
+      "factRefs": [
+        "dax.overview"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "強力な整合性のある読み取りが必要",
+      "factRefs": [
+        "dax.strong-passthrough"
+      ],
+      "alternatives": [
+        "dynamodb"
+      ]
+    },
+    {
+      "text": "RDS や Aurora のキャッシュにしたい（DAX は DynamoDB 専用）",
+      "alternatives": [
+        "elasticache"
+      ]
+    },
+    {
+      "text": "書き込みが多い、または同じ読み取りの繰り返しが少ない",
+      "factRefs": [
+        "dax.not-ideal"
+      ]
+    },
+    {
+      "text": "Query や Scan の遅さを、キーやインデックスの設計を変えずに解決したい",
+      "factRefs": [
+        "dax.query-cache"
+      ],
+      "alternatives": [
+        "dynamodb"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "dax.overview",
+      "title": "DAX は DynamoDB 専用のインメモリキャッシュ",
+      "kind": "feature",
+      "text": "DAX は DynamoDB と API 互換のフルマネージドなキャッシュサービスで、結果整合性のある読み取りの応答を、ミリ秒からマイクロ秒に短縮する。既存のアプリケーションに必要な変更は最小限で、DAX クライアントを使い、クラスターのエンドポイントに接続する。",
+      "examPoint": "DynamoDB の読み取りをマイクロ秒にしたい、コードの変更を最小限にしたい",
+      "trap": "RDS や Aurora の前に置くキャッシュは DAX ではなく ElastiCache である",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "In-memory acceleration with DynamoDB Accelerator (DAX)",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+        },
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.eventual-consistency",
+      "title": "DAX がキャッシュするのは結果整合性の読み取り",
+      "kind": "feature",
+      "text": "結果整合性のある読み取り（既定）の場合、DAX はキャッシュにあれば DynamoDB にアクセスせずに返し、なければ DynamoDB に処理を渡して、結果をキャッシュに保存して返す。対象の API は GetItem、BatchGetItem、Query、Scan である。",
+      "trap": "DAX のキャッシュは DynamoDB の最新の状態とずれることがある",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.strong-passthrough",
+      "title": "強力な整合性のある読み取りはキャッシュされない",
+      "kind": "constraint",
+      "text": "強力な整合性のある読み取りと TransactGetItems は、DAX が DynamoDB へそのまま渡し、結果をキャッシュせずに返す。強力な整合性が必要な読み取りには、DAX による高速化は効かない。",
+      "trap": "強力な整合性のある読み取りを DAX で速くすることはできない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        },
+        {
+          "title": "DAX and DynamoDB consistency models",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.item-cache",
+      "title": "項目キャッシュは GetItem と BatchGetItem の結果を持つ",
+      "kind": "feature",
+      "text": "DAX には 2 種類のキャッシュがある。項目キャッシュは GetItem と BatchGetItem の結果を主キーで保存する。キャッシュの有効期間（TTL）は既定で 5 分で、クラスターの作成時に設定でき、一杯になると最近使われていないものから追い出される。",
+      "trap": "項目キャッシュの TTL の既定値は参照した時点の値である",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.query-cache",
+      "title": "クエリキャッシュは Query と Scan の結果をパラメータ単位で持つ",
+      "kind": "feature",
+      "text": "クエリキャッシュは、Query と Scan の結果セットを、指定したパラメータの値ごとに保存する。同じパラメータの要求がキャッシュにあれば速く返るが、なければ DynamoDB が処理するため、初めての Scan や毎回条件が変わる Scan は速くならない。",
+      "examPoint": "DAX は繰り返し同じ読み取りをするときに効き、初回の Scan や Query の設計不足を補うものではない",
+      "trap": "DAX を置いても、アクセスパターンに合う Query の設計の代わりにはならない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        },
+        {
+          "title": "DAX and DynamoDB consistency models",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.query-cache-stale",
+      "title": "更新してもクエリキャッシュは無効にならない",
+      "kind": "constraint",
+      "text": "項目の更新は、クエリキャッシュにある結果セットを無効にも更新もしない。更新が反映された結果が返るのは、その結果セットの TTL が切れたあとである。項目キャッシュとクエリキャッシュは、独立して動く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX and DynamoDB consistency models",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.write-through",
+      "title": "書き込みはライトスルー",
+      "kind": "feature",
+      "text": "PutItem、UpdateItem、DeleteItem、BatchWriteItem は、DAX を通すと、先に DynamoDB のテーブルに書き込まれ、続いて DAX の項目キャッシュに書き込まれる。両方への書き込みが成功したときだけ、操作が成功する。",
+      "trap": "DAX を迂回して DynamoDB に直接書き込むと、DAX の項目キャッシュは更新されず、古い値が残る",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        },
+        {
+          "title": "DAX and DynamoDB consistency models",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.bypass-stale",
+      "title": "DAX を迂回した更新はキャッシュに反映されない",
+      "kind": "constraint",
+      "text": "DAX を使わずに DynamoDB へ直接書き込んだ更新は、DAX の項目キャッシュを自動では更新しない。DAX から読む利用者は、項目の TTL が切れるか、DAX 経由で再び更新されるまで、古い値を読む。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX and DynamoDB consistency models",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.same-region",
+      "title": "DAX クラスターは同じリージョンの DynamoDB テーブルとだけやり取りする",
+      "kind": "constraint",
+      "text": "あるリージョンの DAX クラスターは、同じリージョンの DynamoDB テーブルとだけやり取りできる。ほかのリージョンのテーブルを使う場合は、そのリージョンにも DAX クラスターを作る必要がある。",
+      "trap": "DAX にはリージョン間でデータを複製する機能はなく、複数リージョンの読み書きにはグローバルテーブルを使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX cluster components",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.vpc-only",
+      "title": "DAX は VPC の中で動く",
+      "kind": "constraint",
+      "text": "DAX クラスターは Amazon VPC の中で動き、サブネットグループで配置先を決める。アプリケーションは同じ VPC の EC2 インスタンスなどから、クラスターのエンドポイントとセキュリティグループで許可したポート（8111）経由でアクセスする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX cluster components",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.cluster.html"
+        },
+        {
+          "title": "DAX: How it works",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.cluster-nodes",
+      "title": "クラスターのノード数と本番の推奨構成",
+      "kind": "quota",
+      "text": "DAX クラスターは、プライマリノード 1 つと最大 10 のリードレプリカ、合計 11 ノードまで構成できる。本番では、別々の AZ に置いた 3 ノード以上が推奨され、1〜2 ノードはフォールトトレラントではない。引き上げの可否は参照した出典に書かれていない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX cluster components",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.ha-failover",
+      "title": "プライマリノードの障害時にリードレプリカが昇格する",
+      "kind": "feature",
+      "text": "DAX クラスターは、プライマリノードに障害が起きると、自動でリードレプリカをプライマリに昇格させる。リードレプリカを別の AZ に置いておけば、AZ 全体が使えなくなってもクラスターは動き続けられる。",
+      "examPoint": "DAX の可用性は、複数 AZ にノードを置くことで高める",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DAX cluster components",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.not-ideal",
+      "title": "DAX が向かない用途",
+      "kind": "constraint",
+      "text": "DAX は、強力な整合性のある読み取りが必要な用途、マイクロ秒の応答や繰り返しの読み取りの削減が要らない用途、書き込みが多い用途、繰り返しの読み取りが少なくキャッシュヒット率が低い用途には向かない。ヒット率が 90% を超えると効果が高い。",
+      "trap": "書き込みが多い用途に DAX を置くと、ノード間の複製が増えて逆効果になる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "In-memory acceleration with DynamoDB Accelerator (DAX)",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.use-cases",
+      "title": "DAX が向く用途",
+      "kind": "feature",
+      "text": "DAX は、最速の読み取り応答が要る用途、少数の項目が繰り返し読まれる用途（特定の商品へのアクセス集中など）、読み取りが多くコストに敏感な用途に向く。読み取り容量を過剰に確保する必要が減り、DynamoDB のプロビジョンド容量を節約できる場合がある。",
+      "examPoint": "ホットキーへの読み取り集中を、DAX で吸収する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "In-memory acceleration with DynamoDB Accelerator (DAX)",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dax.tables-limit",
+      "title": "1 つのクラスターが扱うテーブルは 500 まで",
+      "kind": "quota",
+      "text": "1 つの DAX クラスターが扱う DynamoDB テーブルは最大 500 で、これを超えるとクラスターの可用性と性能が低下することがある。引き上げの可否は参照した出典に書かれていない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "DAX cluster components",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "dynamodb.strong-consistency",
+    "dynamodb.query-vs-scan",
+    "dynamodb.global-tables"
+  ],
+  "references": [
+    {
+      "title": "In-memory acceleration with DynamoDB Accelerator (DAX)",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+    },
+    {
+      "title": "DAX: How it works",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
+    }
+  ],
+  "createdBy": "sc10",
+  "createdAt": "2026-11-14"
+}

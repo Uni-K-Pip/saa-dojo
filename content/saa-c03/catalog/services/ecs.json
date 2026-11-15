@@ -1,0 +1,570 @@
+{
+  "id": "ecs",
+  "tier": 1,
+  "summary": "コンテナ化したアプリケーションのデプロイ・管理・スケールを行う、AWS のフルマネージドなコンテナオーケストレーションサービス。実行基盤は Fargate、EC2、オンプレミスから選べる。",
+  "chooseWhen": [
+    {
+      "text": "Kubernetes の知識や資産がなく、AWS ネイティブでシンプルにコンテナを動かしたい",
+      "factRefs": [
+        "ecs.orchestration-overview"
+      ],
+      "alternatives": [
+        "eks"
+      ]
+    },
+    {
+      "text": "タスク定義とサービスで、常時稼働のコンテナを指定台数で維持し、ロードバランサーの背後に置きたい",
+      "factRefs": [
+        "ecs.task-vs-service",
+        "ecs.service-replaces-tasks",
+        "ecs.service-load-balancer-types"
+      ]
+    },
+    {
+      "text": "サーバー管理なしでコンテナを動かしたい（実行基盤に Fargate を選ぶ）",
+      "factRefs": [
+        "ecs.capacity-options"
+      ],
+      "alternatives": [
+        "fargate"
+      ]
+    },
+    {
+      "text": "既存のオンプレミスのサーバーを、同じ ECS の API で管理したい（ECS Anywhere）",
+      "factRefs": [
+        "ecs.anywhere-external-instances"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "既存の Kubernetes のマニフェストや Helm チャートをそのまま使いたい",
+      "alternatives": [
+        "eks"
+      ]
+    },
+    {
+      "text": "短時間のイベント駆動の処理で、コンテナの管理も不要にしたい",
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "オンプレミスのコンテナを ALB の背後に置きたい（ECS Anywhere ではロードバランサー連携を使えない）",
+      "factRefs": [
+        "ecs.anywhere-no-elb"
+      ]
+    },
+    {
+      "text": "コードをアップロードするだけで、環境の構築から運用までを任せたい",
+      "alternatives": [
+        "elastic-beanstalk"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ecs.orchestration-overview",
+      "title": "フルマネージドのコンテナオーケストレーション",
+      "kind": "feature",
+      "text": "Amazon ECS は、コンテナ化したアプリケーションのデプロイ・管理・スケールを行う、フルマネージドのコンテナオーケストレーションサービスである。コントロールプレーンを自分で管理せずに、クラウドでもオンプレミスでもコンテナを実行できる。",
+      "examPoint": "AWS ネイティブでシンプルにコンテナを動かす選択肢。Kubernetes の資産があるなら EKS。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Service?",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.capacity-options",
+      "title": "コンテナを動かす基盤（キャパシティ）の選択肢",
+      "kind": "feature",
+      "text": "ECS のコンテナの実行基盤は、サーバーレスの Fargate、自分でインスタンスの種類と台数を管理する EC2、AWS が EC2 インスタンスの管理を肩代わりする ECS Managed Instances、オンプレミスの外部インスタンス（ECS Anywhere）から選ぶ。",
+      "trap": "Fargate は実行基盤であり、オーケストレーターは ECS（または EKS）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Service?",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.task-definition",
+      "title": "タスク定義はアプリケーションの設計図",
+      "kind": "feature",
+      "text": "タスク定義は ECS でアプリケーションを動かすための設計図であり、コンテナイメージや CPU・メモリ、使用する IAM ロールなどを記述する。タスクやサービスは、タスク定義を指定して起動する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Service?",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+        },
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.task-vs-service",
+      "title": "タスクとサービスの使い分け",
+      "kind": "feature",
+      "text": "ECS のタスクは、バッチ処理のように仕事をして終了するアプリケーションの実行単位である。サービスは、長時間動き続けるステートレスなアプリケーション向けで、指定した台数のタスクを維持し続ける。",
+      "examPoint": "常時稼働はサービス、1回で終わる処理は単独タスク。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Service?",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+        },
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-replaces-tasks",
+      "title": "サービススケジューラーがタスクを置き換える",
+      "kind": "feature",
+      "text": "ECS のサービスは、タスクが失敗または停止すると、サービススケジューラーが代わりのタスクを起動して、指定したタスク数を維持する。コンテナのヘルスチェックやロードバランサーのヘルスチェックで異常と判定されたタスクも置き換える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-load-balancer-types",
+      "title": "サービスと連携できるロードバランサー",
+      "kind": "integration",
+      "text": "ECS のサービスは、Application Load Balancer（HTTP/HTTPS）、Network Load Balancer（TCP/UDP）、Gateway Load Balancer と連携でき、ロードバランサーがサービスに属するタスクへトラフィックを分散する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-alb-features",
+      "title": "ECS で ALB を使う利点",
+      "kind": "integration",
+      "text": "ECS のサービスで ALB を使うと、Fargate でも EC2 でも利用でき、複数のターゲットグループで複数のポートを公開できる。EC2 では動的ホストポートマッピングで同じサービスの複数タスクを1インスタンスに置け、パスベースルーティングで1つのリスナーを複数のサービスが共有できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-interconnect",
+      "title": "ロードバランサーなしのサービス間通信",
+      "kind": "integration",
+      "text": "ECS のサービス同士は、ロードバランサーを使わずに、短い名前と標準ポートで自動検出できる Service Connect、Route 53 の名前空間を使うサービスディスカバリー、Amazon VPC Lattice で接続できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-auto-scaling",
+      "title": "サービスの Auto Scaling はタスク数を増減する",
+      "kind": "feature",
+      "text": "ECS サービスの Auto Scaling は Application Auto Scaling を使い、サービスのタスク数を自動で増減する。ターゲット追跡、ステップ、スケジュール、予測スケーリングの各方式と、SQS キューの滞留数に基づく方式が使える。",
+      "trap": "サービスの Auto Scaling が増やすのはタスク数であり、EC2 インスタンス台数ではない（台数はクラスターの Auto Scaling）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automatically scale your Amazon ECS service",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.service-scaling-scale-in-deployment",
+      "title": "デプロイ中はスケールインが止まる",
+      "kind": "constraint",
+      "text": "ECS サービスのデプロイが進行している間、Application Auto Scaling はスケールインの処理を止める。スケールアウトはデプロイ中も続き、外部デプロイコントローラーのサービスにはこの動作は当てはまらない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automatically scale your Amazon ECS service",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.task-execution-role",
+      "title": "タスク実行ロールは ECS・Fargate エージェント用",
+      "kind": "feature",
+      "text": "タスク実行ロールは、ECS のコンテナエージェントと Fargate エージェントが、ユーザーに代わって AWS API を呼ぶための権限である。ECR のプライベートリポジトリからのイメージ取得や、awslogs ドライバーでの CloudWatch Logs への送信などに使い、コンテナ内のアプリケーションからは直接使えない。",
+      "examPoint": "イメージ取得・ログ送信・シークレットの注入に要る権限はタスク実行ロール。",
+      "trap": "アプリのコードが S3 や DynamoDB を呼ぶ権限はタスク実行ロールではなくタスクロール。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS task execution IAM role",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.task-role",
+      "title": "タスクロールはコンテナ内のアプリ用",
+      "kind": "feature",
+      "text": "タスクロールは、タスク内のコンテナで動くアプリケーションのコードが、S3 など他の AWS サービスを使うための IAM ロールである。タスクごとに認証情報が渡され、EC2 のインスタンスプロファイルを使えない Fargate でも同じ方法で使える。信頼ポリシーのプリンシパルは ecs-tasks.amazonaws.com。",
+      "examPoint": "タスクごとに最小権限を分けるならタスクロール。インスタンスプロファイルに権限を足さない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS task IAM role",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.task-role-isolation",
+      "title": "Fargate 以外ではタスク間の分離がない",
+      "kind": "constraint",
+      "text": "コンテナはセキュリティ境界ではなく、タスクロールを使ってもこれは変わらない。Fargate ではタスクごとに分離境界を持つが、EC2・ECS Managed Instances・ECS Anywhere では同じインスタンス上の他のタスクの認証情報やインスタンスロールの権限に触れうる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS task IAM role",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.secrets-env-injection",
+      "title": "シークレットを環境変数として注入する",
+      "kind": "feature",
+      "text": "タスク定義のコンテナ定義の secrets に、環境変数名と Secrets Manager のシークレットの ARN（valueFrom）を指定すると、コンテナの起動時に値が環境変数として渡される。取得にはタスク実行ロールに secretsmanager:GetSecretValue の権限が要る。",
+      "examPoint": "DB の認証情報をコードに直書きせず、タスク定義の secrets で参照する。",
+      "trap": "取得するのはタスク実行ロールで、タスクロールではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pass Secrets Manager secrets through Amazon ECS environment variables",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html"
+        },
+        {
+          "title": "Amazon ECS task execution IAM role",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.secrets-no-auto-refresh",
+      "title": "注入されたシークレットは自動では更新されない",
+      "kind": "constraint",
+      "text": "環境変数として注入された Secrets Manager のシークレットは、コンテナの起動時に取得される。その後に更新やローテーションがあっても、実行中のコンテナには自動で反映されず、新しいタスクを起動するか、サービスの強制的な新規デプロイが必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pass Secrets Manager secrets through Amazon ECS environment variables",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html"
+        },
+        {
+          "title": "Pass sensitive data to an Amazon ECS container",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.secrets-json-key",
+      "title": "JSON のキーやバージョンを指定できる",
+      "kind": "feature",
+      "text": "Secrets Manager のシークレットを参照する valueFrom には、ARN の末尾に JSON のキー、バージョンステージ、バージョン ID を続けて指定でき、シークレットの一部だけを注入できる。指定しなければ、AWSCURRENT のシークレット全体が使われる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Pass Secrets Manager secrets through Amazon ECS environment variables",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.secrets-parameter-store",
+      "title": "Parameter Store のパラメータも注入できる",
+      "kind": "feature",
+      "text": "タスク定義の secrets には、Secrets Manager のシークレットのほかに、Systems Manager Parameter Store のパラメータも指定できる。自動ローテーション、ランダムなシークレットの生成、アカウント間の共有が要る場合は Secrets Manager を使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Pass sensitive data to an Amazon ECS container",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.efs-volume",
+      "title": "EFS ボリュームでタスクから共有ストレージを使う",
+      "kind": "feature",
+      "text": "タスク定義でボリュームとして Amazon EFS を指定すると、タスクが動くインスタンスや Fargate によらず、同じ永続的なファイルストレージをタスクにマウントできる。Fargate のタスクで使うには、Linux のプラットフォームバージョン 1.4.0 以降が必要になる。",
+      "examPoint": "Fargate のタスクで複数タスク間の共有や永続化が要るなら EFS ボリューム。",
+      "trap": "EFS を使えるのは EC2・Fargate・ECS Managed Instances で、外部インスタンス（ECS Anywhere）では使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Amazon EFS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.efs-access-points",
+      "title": "EFS アクセスポイントとタスクロールで制限する",
+      "kind": "feature",
+      "text": "EFS アクセスポイントは、ファイルシステムへのリクエストに特定のユーザー ID とルートディレクトリを強制する入口である。ECS のタスクロールの IAM ポリシーと組み合わせて、アプリケーションごとに使えるアクセスポイントを限定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon EFS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.cluster-auto-scaling",
+      "title": "クラスターの Auto Scaling でインスタンス台数を調整する",
+      "kind": "feature",
+      "text": "ECS のクラスターの Auto Scaling は、クラスターに登録された EC2 インスタンスの台数を ECS が調整する機能である。Auto Scaling グループのキャパシティプロバイダーでマネージドスケーリングを有効にし、目標値 targetCapacity を指定すると、ECS がターゲット追跡ポリシーと CloudWatch アラームを作成して管理する。",
+      "trap": "サービスの Auto Scaling（タスク数）とは別の仕組み。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.capacity-provider-reservation",
+      "title": "CapacityProviderReservation はタスクの必要台数を表す",
+      "kind": "feature",
+      "text": "マネージドスケーリングは、ECS が発行する CapacityProviderReservation メトリクス（必要なインスタンス数を実行中のインスタンス数で割った百分率）を基準にする。CPU 使用率ではなく、タスクが必要とするキャパシティから算出するため、空きがなくて待機中のタスクもスケールアウトの判断に反映される。",
+      "trap": "EC2 の CPU 使用率だけでは、メモリや GPU が足りず配置できないタスクを検知できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.asg-capacity-provider",
+      "title": "Auto Scaling グループをキャパシティプロバイダーにする",
+      "kind": "feature",
+      "text": "EC2 のキャパシティを使う場合、Auto Scaling グループを作ってキャパシティプロバイダーとしてクラスターに関連付け、マネージドスケーリングを有効にする。サービスにはキャパシティプロバイダー戦略を指定して、タスクを配置するプロバイダーを決める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+        },
+        {
+          "title": "Amazon ECS services",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.managed-scaling-limits",
+      "title": "マネージドスケーリングの制約",
+      "kind": "constraint",
+      "text": "マネージドスケーリングが有効なキャパシティプロバイダーは、同時に1つのクラスターにしか関連付けられない。Auto Scaling グループの最大キャパシティは 0 より大きくする必要があり、AmazonECSManaged タグを消すと ECS がスケーリングを管理できなくなる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.managed-termination-protection",
+      "title": "マネージド終了保護でスケールイン時の停止を制御",
+      "kind": "feature",
+      "text": "キャパシティプロバイダーでマネージド終了保護を有効にすると、ECS がインスタンスのスケールイン保護を管理し、Auto Scaling グループがスケールインするときに、保護されたインスタンスは終了の対象から外れる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.placement-strategies",
+      "title": "タスク配置戦略は EC2 起動のタスクで使う",
+      "kind": "feature",
+      "text": "タスク配置戦略には、使い残しが最小になるよう詰める binpack、ランダムに置く random、属性（AZ やインスタンスなど）で均等に散らす spread がある。EC2 のタスクが対象で、サービスのタスクの既定は AZ ごとの spread である。",
+      "trap": "配置戦略はベストエフォートで、配置制約（constraint）は必須条件として配置を妨げうる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use strategies to define Amazon ECS task placement",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.network-modes",
+      "title": "EC2 上のタスクのネットワークモード",
+      "kind": "feature",
+      "text": "EC2 上のタスクのネットワークモードには、タスクごとに専用の ENI とプライベート IP を持つ awsvpc、Docker のブリッジを使う bridge、ホストのネットワークを直接使う host、外部接続のない none がある。awsvpc の利用が推奨されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS task networking options for EC2",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.rolling-update",
+      "title": "ローリングアップデートの台数制御",
+      "kind": "feature",
+      "text": "ローリングアップデートは、サービスの稼働中のタスクを新しいタスクに順に置き換えるデプロイ方式である。minimumHealthyPercent が稼働を保つ下限、maximumPercent が同時に動く上限で、いずれも希望タスク数に対する百分率で指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Deploy Amazon ECS services by replacing tasks",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.deployment-failure-detection",
+      "title": "デプロイ失敗の検出とロールバック",
+      "kind": "feature",
+      "text": "ローリングアップデートの失敗は、タスクが起動できないときに止めるデプロイサーキットブレーカーと、アプリケーションのメトリクスで止める CloudWatch アラームの2つの方法で検出できる。どちらも前のサービスリビジョンへのロールバックに対応する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Deploy Amazon ECS services by replacing tasks",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.blue-green",
+      "title": "ECS のブルー/グリーンデプロイ",
+      "kind": "feature",
+      "text": "ECS のブルー/グリーンデプロイは、現行のブルーと新しいグリーンのリビジョンを並行して動かし、本番トラフィックを切り替える前にテストトラフィックで検証できる。ベイク時間のあいだブルーを残すため、問題があれば素早くロールバックできる。",
+      "trap": "一時的に両方のリビジョンが動くため、デプロイ中はリソース使用量が増える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS blue/green deployments",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.anywhere-external-instances",
+      "title": "ECS Anywhere はオンプレミスのサーバーを登録する",
+      "kind": "feature",
+      "text": "ECS Anywhere は、オンプレミスのサーバーや仮想マシンなどの外部インスタンスを ECS クラスターに登録する機能である。サービスやタスクは EXTERNAL 起動タイプで実行する。外部インスタンスには AWS API を呼ぶための IAM ロールが必要になる。",
+      "examPoint": "既存のオンプレミスのサーバーを ECS で運用したいときの選択肢。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for external instances",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.anywhere-no-elb",
+      "title": "ECS Anywhere ではロードバランサーを使えない",
+      "kind": "constraint",
+      "text": "外部インスタンスでは、サービスのロードバランシングとサービスディスカバリーがサポートされない。そのため外部インスタンスは、アウトバウンド通信が中心のアプリケーションやデータ処理に向き、インバウンドの通信を受ける Web サービスには効率が悪い。",
+      "trap": "ALB の背後にオンプレミスのコンテナを置く用途には使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for external instances",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.anywhere-unsupported",
+      "title": "ECS Anywhere で使えない機能",
+      "kind": "constraint",
+      "text": "外部インスタンスでは、awsvpc ネットワークモード、キャパシティプロバイダー、EFS ボリュームがサポートされない。タスクのネットワークモードは bridge、host、none のいずれかを使い、サービスやタスクは EXTERNAL 起動タイプで実行する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for external instances",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "elb.alb-target-types",
+    "elb.alb-listener-rules",
+    "ec2-auto-scaling.target-tracking",
+    "iam.role-trust-and-permissions"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic Container Service?",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
+    },
+    {
+      "title": "Amazon ECS services",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html"
+    }
+  ],
+  "createdBy": "sc12",
+  "createdAt": "2026-11-14"
+}

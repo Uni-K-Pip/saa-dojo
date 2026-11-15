@@ -1,0 +1,703 @@
+{
+  "id": "s3",
+  "tier": 1,
+  "summary": "Amazon S3 は、容量を気にせずデータをオブジェクトとして保存できるオブジェクトストレージ。ストレージクラス、ライフサイクル、バージョニング、レプリケーション、Object Lock、細かなアクセス制御などの管理機能を備える。",
+  "chooseWhen": [
+    {
+      "text": "データレイク・バックアップ・アーカイブなどのデータを、容量を気にせずオブジェクトとして保存したい",
+      "factRefs": [
+        "s3.object-storage-model",
+        "s3.storage-classes"
+      ]
+    },
+    {
+      "text": "アクセス頻度が変わる・不明なデータのコストを、運用の手間なしに下げたい（Intelligent-Tiering・ライフサイクル）",
+      "factRefs": [
+        "s3.storage-classes",
+        "s3.lifecycle"
+      ]
+    },
+    {
+      "text": "コンプライアンスモードの Object Lock で、ルートユーザーを含め保持期間中の削除・上書きを禁止する WORM 保存が必要",
+      "factRefs": [
+        "s3.object-lock",
+        "s3.object-lock-modes"
+      ]
+    },
+    {
+      "text": "別リージョンへ自動で複製したい、または複数リージョンのバケットを単一のエンドポイントで使いたい",
+      "factRefs": [
+        "s3.replication",
+        "s3.multi-region-access-points"
+      ]
+    },
+    {
+      "text": "共有データセットへのアクセスを、チームやアプリごとの名前とポリシーで分けて管理したい",
+      "factRefs": [
+        "s3.access-points"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "1 桁ミリ秒のレイテンシーが必要な場合は、S3 Express One Zone を使うか、CloudFront・ElastiCache でキャッシュする",
+      "factRefs": [
+        "s3.small-object-latency",
+        "s3.express-one-zone"
+      ],
+      "alternatives": [
+        "cloudfront",
+        "elasticache"
+      ]
+    },
+    {
+      "text": "SFTP・FTPS・FTP でファイルを受け付けたい場合は、S3 の前に AWS Transfer Family を置く",
+      "factRefs": [
+        "s3.transfer-family-sftp"
+      ],
+      "alternatives": [
+        "transfer-family"
+      ]
+    },
+    {
+      "text": "複数のキーをまたぐアトミックな更新が必要な用途（S3 の更新はキー単位）",
+      "factRefs": [
+        "s3.multi-key-atomicity"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "s3.object-storage-model",
+      "title": "S3 の基本構造（バケットとオブジェクト）",
+      "kind": "feature",
+      "text": "Amazon S3 は、データをオブジェクトとして、コンテナであるバケットに保存するオブジェクトストレージ。オブジェクトはバケット内のキーで一意に識別される。バケット作成時に名前とリージョンを指定し、作成後にバケット名とリージョンは変更できない。",
+      "trap": "S3 にフォルダーの実体はなく、フォルダーに見えるものはキーの接頭辞（プレフィックス）である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "Bucket policy examples using condition keys - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.strong-consistency",
+      "title": "S3 の強い整合性",
+      "kind": "feature",
+      "text": "S3 は、すべてのリージョンでオブジェクトの PUT と DELETE に対して強い read-after-write 整合性を提供する。新規書き込み、上書き、削除の直後に GET や LIST を行うと、最新の結果が返る。バケットの設定変更は結果整合性である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.bucket-policy",
+      "title": "バケットポリシーの基本",
+      "kind": "feature",
+      "text": "バケットポリシーは、バケットとその中のオブジェクトへのアクセスを許可・拒否する JSON 形式のリソースベースポリシー。バケットポリシーを関連付けられるのはバケット所有者だけで、サイズは 20 KB までに制限される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "Bucket policies for Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.policy-lockout-root",
+      "title": "すべて拒否のバケットポリシーの解除",
+      "kind": "constraint",
+      "text": "すべてのプリンシパルを拒否する誤ったバケットポリシーを付けると、通常の IAM の権限では編集・削除できない。解除は、ルートユーザーでサインインして行うか、AWS Organizations の集中ルートアクセスで許可される特権タスクとして行う。",
+      "trap": "メンバーアカウント内の通常の IAM 管理者権限では、この拒否ポリシーを編集・削除できない。ルートユーザーか、集中ルートアクセスの特権タスクが必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS account root user - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-tasks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.lifecycle-ignores-policy",
+      "title": "バケットポリシーでは止められないライフサイクル",
+      "kind": "constraint",
+      "text": "汎用バケットでは、バケットポリシーで S3 ライフサイクルルールによる削除や移行を止めることはできない。すべてのプリンシパルのすべてのアクションを拒否するバケットポリシーがあっても、ライフサイクル設定は通常どおり動作する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Bucket policies for Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"
+        },
+        {
+          "title": "Managing the lifecycle of objects - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.tls-version-condition",
+      "title": "TLS バージョンを強制する s3:TlsVersion",
+      "kind": "feature",
+      "text": "条件キー s3:TlsVersion を使うと、クライアントが使う TLS のバージョンに応じて S3 へのアクセスを制御できる。バケットポリシーで TLS 1.2 未満のリクエストを拒否するように書けば、最低 TLS バージョンを強制できる。",
+      "trap": "Deny で使うと AWS サービス間の呼び出しも拒否され得るため、aws:PrincipalIsAWSService が false の条件を併用する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Bucket policy examples using condition keys - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.acl-disabled-default",
+      "title": "ACL の無効化（2026年11月時点の既定値）",
+      "kind": "feature",
+      "text": "2026年11月時点の既定値では、S3 Object Ownership が「バケット所有者強制」になり、ACL は無効である。ACL が無効なバケットでは、所有者がすべてのオブジェクトを所有してポリシーだけでアクセスを管理し、ACL を設定・更新するリクエストは失敗する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Access control list (ACL) overview - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.acl-grantee-limits",
+      "title": "ACL で指定できる被付与者と権限",
+      "kind": "constraint",
+      "text": "ACL の被付与者は、AWS アカウント（正規ユーザー ID）か、定義済みグループ（AllUsers、AuthenticatedUsers、LogDelivery）に限られ、IAM ユーザーは指定できない。付与できる権限も READ、WRITE、READ_ACP、WRITE_ACP、FULL_CONTROL に限られ、アクセスポリシーより表現が少ない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Access control list (ACL) overview - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.block-public-access",
+      "title": "S3 ブロックパブリックアクセス",
+      "kind": "feature",
+      "text": "S3 ブロックパブリックアクセスは、アクセスポイント・バケット・アカウント・組織の各レベルで公開アクセスを制限する設定で、ACL やバケットポリシーなどによる公開設定よりも優先される。BlockPublicAcls、IgnorePublicAcls、BlockPublicPolicy、RestrictPublicBuckets の 4 つがあり、アクセスポイント・バケット・アカウントでは組み合わせて使える（組織では 4 つをまとめて適用する）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Blocking public access to your Amazon S3 storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.bpa-restrict-public-buckets",
+      "title": "RestrictPublicBuckets の効き方",
+      "kind": "constraint",
+      "text": "RestrictPublicBuckets を有効にすると、公開と評価されるポリシーを持つバケットへのアクセスは、AWS サービスプリンシパルとバケット所有者のアカウント内の認可されたユーザーだけに制限される。他アカウントからのアクセスは止まるが、AWS サービスプリンシパルによるアクセスは対象外である。",
+      "trap": "RestrictPublicBuckets は、公開と評価されるポリシーを持つバケットで他アカウントからのアクセスを止めるが、AWS サービスプリンシパルによるアクセスは止めない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Blocking public access to your Amazon S3 storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.access-points",
+      "title": "S3 アクセスポイント",
+      "kind": "feature",
+      "text": "S3 アクセスポイントは、バケットなどのデータソースにアタッチする名前付きのネットワークエンドポイントで、それぞれ専用のアクセスポイントポリシーを持つ。共有データセットへのアクセスをチームやアプリごとに分けて管理でき、VPC からのリクエストだけを受け付ける設定もできる。",
+      "trap": "アクセスポイントで実行できるのはオブジェクト操作だけで、バケットの削除やレプリケーション設定はできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing access to shared datasets with access points - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.multi-region-access-points",
+      "title": "S3 Multi-Region Access Points",
+      "kind": "feature",
+      "text": "S3 Multi-Region Access Points は、複数リージョンのバケットに対するグローバルエンドポイントを提供する。リクエストは AWS Global Accelerator を使い、AWS のグローバルネットワーク経由で、アクティブなルーティング状態にある最も近いバケットへ送られる。バケット間のデータ同期には CRR のルールを使う。",
+      "examPoint": "複数リージョンのバケットへ単一のエンドポイントでアクセスし、最寄りのリージョンへ送りたいときに使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing multi-Region traffic with Multi-Region Access Points - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.mrap-failover",
+      "title": "Multi-Region Access Points のフェイルオーバー",
+      "kind": "feature",
+      "text": "Multi-Region Access Points は、全リージョンを使うアクティブ-アクティブ構成と、アクティブとパッシブを分けるアクティブ-パッシブ構成を取れる。リージョンで障害が起きたときは、フェイルオーバーコントロールでリージョン間のトラフィックを数分で切り替えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing multi-Region traffic with Multi-Region Access Points - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.batch-operations",
+      "title": "S3 バッチオペレーション",
+      "kind": "feature",
+      "text": "S3 バッチオペレーションは、オブジェクトのリストに対して 1 種類の操作を大規模に実行するマネージドな機能で、1 つのジョブで数十億のオブジェクトを処理できる。操作には、コピー、サーバー側暗号化の更新、タグや ACL の設定、S3 Glacier Flexible Retrieval からの復元、Lambda 関数の呼び出しがある。",
+      "examPoint": "既存の大量のオブジェクトの暗号化変更やコピーを、1 回の指示でまとめて実行したいときに使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Performing object operations in bulk with Batch Operations - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.batch-operations-manifest",
+      "title": "バッチオペレーションのマニフェスト",
+      "kind": "feature",
+      "text": "バッチオペレーションのジョブには、対象のオブジェクトを列挙したマニフェストが必要で、S3 インベントリのレポートか CSV ファイルを指定する。コンソールなどでは、フィルター条件を指定して S3 にマニフェストを自動生成させることもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Performing object operations in bulk with Batch Operations - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.storage-lens",
+      "title": "S3 Storage Lens",
+      "kind": "feature",
+      "text": "S3 Storage Lens は、組織全体のオブジェクトストレージの使用状況とアクティビティを可視化する分析機能。組織・アカウント・リージョン・ストレージクラス・バケット・プレフィックスの単位でドリルダウンでき、コスト最適化やデータ保護のベストプラクティスに向けた指標と推奨事項を示す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring your storage activity and usage with Amazon S3 Storage Lens",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.storage-lens-cost-metrics",
+      "title": "Storage Lens でのコストの無駄の特定",
+      "kind": "feature",
+      "text": "S3 Storage Lens の指標で、7 日より古い未完了のマルチパートアップロードを期限切れにするライフサイクルルールがないバケットや、有効期限・移行のルールが欠けているバケットを特定できる。無料の階層にもコスト最適化の分類の指標があり、高度な階層では高度なコスト最適化の指標が加わる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring your storage activity and usage with Amazon S3 Storage Lens",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage_lens.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.inventory",
+      "title": "S3 インベントリ",
+      "kind": "feature",
+      "text": "S3 インベントリは、バケットまたはプレフィックス内のオブジェクトとメタデータの一覧を、毎日または毎週、CSV・ORC・Parquet のファイルとして出力する。同期的な List API の代わりに使え、Athena などで SQL クエリでき、バッチオペレーションのマニフェストにも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cataloging and analyzing your data with S3 Inventory - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-inventory.html"
+        },
+        {
+          "title": "Performing object operations in bulk with Batch Operations - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.inventory-size-field",
+      "title": "インベントリの Size 項目",
+      "kind": "constraint",
+      "text": "S3 インベントリの Size 項目はオブジェクトのバイト数で、未完了のマルチパートアップロードのサイズ、メタデータ、削除マーカーのサイズを含まない。全バージョンを一覧に含めるか現行バージョンだけにするかは、設定で選べる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cataloging and analyzing your data with S3 Inventory - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-inventory.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.vpce-source-ip",
+      "title": "VPC エンドポイント経由では aws:SourceIp が使えない",
+      "kind": "constraint",
+      "text": "VPC エンドポイント経由のリクエストでは、条件キー aws:SourceIp はリクエストのコンテキストに含まれず、このキーは公開 IP アドレスの範囲にしか使えない。VPC エンドポイント経由の接続元を制限するときは、aws:SourceVpce、aws:SourceVpc、aws:VpcSourceIp を使う。",
+      "trap": "バケットポリシーの aws:SourceIp にプライベート IP アドレスを書いても、VPC エンドポイント経由の制限にはならない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS global condition context keys - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        },
+        {
+          "title": "Controlling access from VPC endpoints with bucket policies - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies-vpc-endpoint.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.managed-prefix-list",
+      "title": "S3 のマネージドプレフィックスリスト",
+      "kind": "integration",
+      "text": "AWS は S3 向けに、リージョンごとのマネージドプレフィックスリスト（com.amazonaws.<リージョン>.s3）を提供する。AWS が管理するため、利用者は作成・変更・共有・削除ができず、セキュリティグループやルートテーブルから参照して使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS-managed prefix lists - Amazon VPC",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.multipart-upload",
+      "title": "マルチパートアップロード",
+      "kind": "feature",
+      "text": "マルチパートアップロードは、1 つのオブジェクトを複数のパートに分け、並列にアップロードして S3 側で結合する方法。スループットが上がり、失敗したパートだけを再送でき、サイズが 100 MB 以上のオブジェクトでは使うことがベストプラクティスとされる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Uploading and copying objects using multipart upload in Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.multipart-limits",
+      "title": "マルチパートアップロードの上限",
+      "kind": "quota",
+      "text": "2026年11月時点で、マルチパートアップロードの最大オブジェクトサイズは 48.8 TiB、1 回のアップロードの最大パート数は 10,000、パートサイズは 5 MiB から 5 GiB（最後のパートに下限なし）である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon S3 multipart upload limits",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.incomplete-mpu-billing",
+      "title": "未完了のマルチパートアップロードの課金",
+      "kind": "pricing",
+      "text": "開始したマルチパートアップロードは、完了または中止するまで S3 がパートを保持し、パートのストレージ料金がかかり続ける。ライフサイクルルールの AbortIncompleteMultipartUpload アクションで、一定日数後に未完了のアップロードを自動で削除して、コストを抑えられる。",
+      "trap": "未完了のアップロードは、完了または中止するまでパートの保存料金がかかり続ける。進行中のアップロードは list multipart uploads で確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Uploading and copying objects using multipart upload in Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.lifecycle",
+      "title": "S3 ライフサイクル",
+      "kind": "feature",
+      "text": "S3 ライフサイクル設定は、別のストレージクラスへ移す「移行」と、オブジェクトを削除する「有効期限」の 2 種類のアクションを、ルールに従って自動で実行する。ルールは、設定した時点で存在するオブジェクトにも、あとから追加されるオブジェクトにも適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing the lifecycle of objects - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.object-lock",
+      "title": "S3 Object Lock",
+      "kind": "feature",
+      "text": "S3 Object Lock は WORM（write-once-read-many）モデルで、オブジェクトバージョンの削除や上書きを、一定期間または無期限に防ぐ。保持期間とリーガルホールドの 2 つの方法があり、S3 バージョニングを有効にしたバケットでのみ使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Locking objects with Object Lock - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.object-lock-modes",
+      "title": "Object Lock の保持モード",
+      "kind": "constraint",
+      "text": "コンプライアンスモードでは、ルートユーザーを含むどのユーザーも、保持期間中はオブジェクトバージョンを削除・上書きできず、保持期間も短縮できない。ガバナンスモードでは、s3:BypassGovernanceRetention 権限を持つユーザーが専用ヘッダーを付ければ、保持設定の変更や削除ができる。",
+      "trap": "バケットポリシーや管理者権限は、コンプライアンスモードで保護されたバージョンの削除を可能にしない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Locking objects with Object Lock - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.object-lock-version-scope",
+      "title": "Object Lock が保護する範囲",
+      "kind": "constraint",
+      "text": "Object Lock の保持期間とリーガルホールドは、指定したオブジェクトバージョンだけを保護し、新しいバージョンの作成や削除マーカーの追加は防がない。保持期間が終わっても、リーガルホールドが残っている間は、そのバージョンの保護が続く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Locking objects with Object Lock - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.replication",
+      "title": "S3 レプリケーション",
+      "kind": "feature",
+      "text": "S3 レプリケーションは、オブジェクトを別のバケットへ自動かつ非同期にコピーする。同じリージョン内の SRR とリージョン間の CRR があり、別アカウントのバケットも宛先にできる。ライブレプリケーションは、設定前から存在するオブジェクトを複製しない。",
+      "trap": "設定前からあるオブジェクトの複製には、S3 バッチレプリケーションを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replicating objects within and across Regions - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.requester-pays",
+      "title": "リクエスタ支払い",
+      "kind": "pricing",
+      "text": "リクエスタ支払いを有効にしたバケットでは、リクエストとデータのダウンロードの料金を要求した側が支払い、バケット所有者は保存の料金だけを支払う。すべてのリクエストの認証が必要で、匿名アクセスは使えない。要求側は x-amz-request-payer ヘッダーなどで、料金の負担に同意を示す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.transfer-acceleration",
+      "title": "S3 Transfer Acceleration",
+      "kind": "feature",
+      "text": "S3 Transfer Acceleration は、CloudFront のグローバルなエッジロケーションを使い、クライアントとバケットの間の長距離の転送を速くするバケット単位の機能。バケットで有効にし、専用の s3-accelerate エンドポイントを使う。追加のデータ転送料金がかかる場合がある。",
+      "trap": "バケット名は DNS 準拠で、ピリオド（.）を含められない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring fast, secure file transfers using Amazon S3 Transfer Acceleration",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.request-rate",
+      "title": "プレフィックスごとのリクエスト性能",
+      "kind": "quota",
+      "text": "S3 は、パーティション化されたプレフィックスごとに、少なくとも毎秒 3,500 件の PUT/COPY/POST/DELETE、または 5,500 件の GET/HEAD リクエストを処理できる。バケット内のプレフィックスの数に上限はなく、複数のプレフィックスに分けて並列化すると、性能が拡大する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Best practices design patterns: optimizing Amazon S3 performance",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.small-object-latency",
+      "title": "小さなオブジェクトのレイテンシー",
+      "kind": "constraint",
+      "text": "S3 では、レイテンシーに敏感なアプリケーションが、小さなオブジェクトで約 100〜200 ミリ秒の一貫したレイテンシーを達成できる。1 桁ミリ秒のレイテンシーが必要な場合は、S3 Express One Zone を使うか、CloudFront や ElastiCache でキャッシュする方法がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Best practices design patterns: optimizing Amazon S3 performance",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+        },
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.express-one-zone",
+      "title": "S3 Express One Zone",
+      "kind": "feature",
+      "text": "S3 Express One Zone は、1 桁ミリ秒の一貫したデータアクセスを提供する、高性能な単一 AZ のストレージクラスで、データはディレクトリバケットに保存される。S3 Standard と比べて、アクセス速度は最大 10 倍、リクエスト料金は 80 パーセント低いとされる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.concurrent-writes",
+      "title": "同じキーへの同時書き込み",
+      "kind": "constraint",
+      "text": "S3 は、同時に書き込む複数のクライアントのためのオブジェクトのロックを提供しない。同じキーへ同時に PUT した場合は、タイムスタンプが最も新しいリクエストが優先される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.multi-key-atomicity",
+      "title": "複数のキーをまたぐ更新",
+      "kind": "constraint",
+      "text": "S3 の更新はキー（オブジェクト）単位で行われる。1 つのキーへの更新はアトミックだが、複数のキーにまたがる更新をまとめてアトミックに行う方法はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.conditional-writes",
+      "title": "条件付き書き込み",
+      "kind": "feature",
+      "text": "条件付き書き込みでは、PUT リクエストに If-None-Match ヘッダーを付けると、同じキーのオブジェクトがまだない場合にだけ書き込める。同じキーの既存のオブジェクトを上書きすることを防げる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How to prevent object overwrites with conditional writes",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-writes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.transfer-family-sftp",
+      "title": "AWS Transfer Family による SFTP・FTPS・FTP",
+      "kind": "integration",
+      "text": "AWS Transfer Family は、SFTP、FTPS、FTP を使った Amazon S3 や Amazon EFS への、またそこからのファイル転送を、フルマネージドで提供する。S3 のバケットでこれらのプロトコルのファイルを受け付けたいときは、Transfer Family を使う。",
+      "services": [
+        "AWS Transfer Family"
+      ],
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.storage-classes",
+      "title": "S3 のストレージクラス",
+      "kind": "feature",
+      "text": "S3 のストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変わる、または不明なデータは、4 つのアクセス階層の間で自動的に移す S3 Intelligent-Tiering に置く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.versioning",
+      "title": "S3 バージョニング",
+      "kind": "feature",
+      "text": "S3 バージョニングは、同じバケット内にオブジェクトの複数のバージョンを保持する機能で、意図しない削除や上書き、アプリケーションの障害から復元できる。バージョニングを有効にする前から存在したオブジェクトのバージョン ID は null になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon S3? - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "createdBy": "sc1",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-14"
+}

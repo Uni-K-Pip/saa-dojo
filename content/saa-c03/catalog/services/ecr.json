@@ -1,0 +1,303 @@
+{
+  "id": "ecr",
+  "tier": 2,
+  "summary": "コンテナイメージを保存・管理する、AWS のマネージドなレジストリ。IAM で保護されたプライベートリポジトリに、脆弱性スキャン、ライフサイクルポリシー、リージョン間のレプリケーションを備える。",
+  "chooseWhen": [
+    {
+      "text": "ECS や EKS で使うコンテナイメージを、IAM で保護して AWS 内に保存したい",
+      "factRefs": [
+        "ecr.managed-registry",
+        "ecr.private-repository-permissions"
+      ]
+    },
+    {
+      "text": "イメージの脆弱性を、新しい脆弱性の公開後も継続的に調べたい（拡張スキャン）",
+      "factRefs": [
+        "ecr.enhanced-scanning"
+      ]
+    },
+    {
+      "text": "古いイメージを自動で期限切れにして、保存量を抑えたい",
+      "factRefs": [
+        "ecr.lifecycle-policy"
+      ]
+    },
+    {
+      "text": "イメージを別のリージョンやアカウントに自動でコピーしたい",
+      "factRefs": [
+        "ecr.replication"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "基本スキャンだけで、公開後の新しい脆弱性まで継続的に検出しようとしている",
+      "factRefs": [
+        "ecr.basic-scanning"
+      ]
+    },
+    {
+      "text": "レプリケーションを設定すれば、それ以前のイメージも自動でコピーされると考えている",
+      "factRefs": [
+        "ecr.replication-new-images-only"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ecr.managed-registry",
+      "title": "マネージドのコンテナイメージレジストリ",
+      "kind": "feature",
+      "text": "Amazon ECR は、安全でスケーラブルな、AWS のマネージドなコンテナイメージレジストリである。Docker イメージ、OCI イメージ、OCI 互換のアーティファクトを、好みの CLI でプッシュ、プル、管理できる。",
+      "examPoint": "ECS や EKS で動かすコンテナイメージの保存先。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Registry?",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.private-repository-permissions",
+      "title": "プライベートリポジトリは IAM のリソースベースの権限で守る",
+      "kind": "feature",
+      "text": "ECR のプライベートリポジトリは、IAM を使ったリソースベースの権限をサポートし、指定したユーザーや EC2 インスタンスだけがリポジトリとイメージにアクセスできるようにできる。リポジトリポリシーは個別のリポジトリへのアクセスを制御し、レジストリポリシーはレプリケーションなどレジストリ単位の操作を制御する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Registry?",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+        },
+        {
+          "title": "Private image replication in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.scanning-types",
+      "title": "イメージスキャンは基本スキャンと拡張スキャンの2種類",
+      "kind": "feature",
+      "text": "ECR のイメージスキャンには、AWS ネイティブの技術と CVE データベースで OS の脆弱性を調べる基本スキャンと、Amazon Inspector と統合する拡張スキャンがある。基本スキャンと拡張スキャンを切り替えると、それまでのスキャンは使えなくなり、設定し直しが必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scan images for software vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.basic-scanning",
+      "title": "基本スキャンの頻度はプッシュ時と手動のみ",
+      "kind": "constraint",
+      "text": "基本スキャンは OS の脆弱性だけが対象で、実行のタイミングは、リポジトリに設定するプッシュ時のスキャンと手動のスキャンの2つである。継続的なスキャンは基本スキャンにはなく、拡張スキャンでのみ使える。",
+      "trap": "新しい脆弱性が見つかるたびに結果が更新される継続的なスキャンは、拡張スキャンの機能である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scan images for software vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.enhanced-scanning",
+      "title": "拡張スキャンは Inspector による継続的なスキャン",
+      "kind": "feature",
+      "text": "拡張スキャンは Amazon Inspector と統合した自動の継続的スキャンで、OS とプログラミング言語のパッケージの脆弱性を調べる。頻度はプッシュ時と継続の2つで、新しい脆弱性が見つかるとスキャン結果が更新され、Inspector が EventBridge にイベントを送る。",
+      "examPoint": "新たに公開された脆弱性にも継続的に対応したいときは、拡張スキャン（Inspector）を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scan images for software vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html"
+        },
+        {
+          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.enhanced-rescan-duration",
+      "title": "拡張スキャンの対象期間",
+      "kind": "feature",
+      "text": "拡張スキャンを有効にすると、Inspector は既定でイメージが削除されるか拡張スキャンが無効になるまでリポジトリを監視する。プッシュ日の期間と再スキャン期間は Inspector で設定でき、期間が過ぎたイメージのスキャン状態は SCAN_ELIGIBILITY_EXPIRED になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.enhanced-initial-images",
+      "title": "拡張スキャンを有効にした時点で対象になるイメージ",
+      "kind": "constraint",
+      "text": "拡張スキャンを最初に有効にしたとき、Inspector が認識するのは、直近 14 日以内にプッシュされたイメージだけである。それより古いイメージは SCAN_ELIGIBILITY_EXPIRED になり、スキャンするには再度プッシュする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.enhanced-pricing",
+      "title": "拡張スキャンの料金は Inspector にかかる",
+      "kind": "pricing",
+      "text": "拡張スキャンの機能自体に ECR からの追加料金はなく、イメージのスキャンには Amazon Inspector の料金がかかる。この機能は Inspector がサポートされているリージョンで使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.scan-filters",
+      "title": "スキャンフィルターで対象リポジトリを選ぶ",
+      "kind": "feature",
+      "text": "拡張スキャンでは、スキャンフィルターで、継続的スキャンにするリポジトリとプッシュ時のスキャンにするリポジトリを選ぶ。フィルターに一致しないリポジトリはスキャンされず、拡張スキャンでの手動スキャンはサポートされない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.lifecycle-policy",
+      "title": "ライフサイクルポリシーで不要なイメージを整理する",
+      "kind": "feature",
+      "text": "ライフサイクルポリシーは、プライベートリポジトリのイメージを期限切れにしたりアーカイブしたりする規則の集まりである。適用前にプレビューで対象を確認でき、基準を満たしたイメージは 24 時間以内に処理される。優先度は数字が小さいほど高い。",
+      "examPoint": "古いイメージが溜まってストレージ料金が増えるときの、自動の整理方法。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automate the cleanup of images by using lifecycle policies in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.lifecycle-count-types",
+      "title": "ライフサイクルポリシーの基準の種類",
+      "kind": "feature",
+      "text": "ライフサイクルポリシーの countType には、新しい順に並べて指定数を超えた分を処理する imageCountMoreThan、プッシュからの日数で処理する sinceImagePushed などがある。期限切れの処理は、常に古いイメージから先に行われる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automate the cleanup of images by using lifecycle policies in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.replication",
+      "title": "リージョン間・アカウント間のレプリケーション",
+      "kind": "feature",
+      "text": "ECR のプライベートレジストリは、リージョン間とアカウント間のレプリケーションをサポートする。設定はレジストリ単位でリージョンごとに行い、リポジトリのプレフィックスでレプリケーションの対象を絞れる。レプリケーションの後も、リポジトリ名は変わらない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Registry?",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+        },
+        {
+          "title": "Private image replication in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.replication-new-images-only",
+      "title": "レプリケーションの対象は設定後のプッシュ",
+      "kind": "constraint",
+      "text": "レプリケーションを設定する前からあるイメージは、レプリケーションされない。設定後にプッシュまたは復元された内容だけが対象で、既存のイメージにはレプリケーションのバックフィルを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Private image replication in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.replication-cross-account-policy",
+      "title": "アカウント間のレプリケーションにはコピー先のレジストリポリシー",
+      "kind": "constraint",
+      "text": "アカウント間のレプリケーションには、コピー先のアカウントで、コピー元のアカウントに ecr:ReplicateImage と ecr:CreateRepository を許可するレジストリのアクセス許可ポリシーが要る。コピー元のリポジトリには、特別なポリシーは不要である。",
+      "trap": "コピー元のリポジトリポリシーに許可を書いても、コピー先のレジストリポリシーがなければ複製できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Private image replication in Amazon ECR",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.pull-through-cache",
+      "title": "プルスルーキャッシュで上流のレジストリをキャッシュする",
+      "kind": "feature",
+      "text": "プルスルーキャッシュのルールを使うと、上流のレジストリのリポジトリを ECR のプライベートレジストリにキャッシュできる。ECR は上流のレジストリに定期的に確認して、キャッシュしたイメージを最新に保つ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Registry?",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecr.pricing",
+      "title": "料金は保存量・データ転送・追加の機能",
+      "kind": "pricing",
+      "text": "ECR の料金は、リポジトリに保存するデータ量、イメージのプッシュとプルによるデータ転送、イメージの署名やレプリケーションなど、有効にした機能の分で決まる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic Container Registry?",
+          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "ecs.task-execution-role",
+    "ecs.capacity-options",
+    "vpc.interface-endpoint",
+    "iam.role-trust-and-permissions"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic Container Registry?",
+      "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html"
+    }
+  ],
+  "createdBy": "sc12",
+  "createdAt": "2026-11-14"
+}

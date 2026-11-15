@@ -1,0 +1,487 @@
+{
+  "id": "lambda",
+  "tier": 1,
+  "summary": "サーバーを用意・管理せずにコードを実行するサーバーレスのコンピューティングサービスです。イベントを起点に関数を実行し、負荷に応じて自動でスケールして、使った分だけ課金されます。",
+  "chooseWhen": [
+    {
+      "text": "イベントをきっかけに、短時間のコードを、サーバー管理なしで動かしたいとき",
+      "factRefs": [
+        "lambda.shared-responsibility",
+        "lambda.event-triggers"
+      ]
+    },
+    {
+      "text": "負荷の増減が大きく、使った分だけ支払いたい処理",
+      "factRefs": [
+        "lambda.pricing-model",
+        "lambda.concurrency-scaling-rate"
+      ]
+    },
+    {
+      "text": "API Gateway と組み合わせてサーバーレスな API のバックエンドにしたいとき",
+      "factRefs": [
+        "lambda.event-triggers"
+      ]
+    },
+    {
+      "text": "コールドスタートの遅延を避けたいときは、プロビジョニングされた同時実行",
+      "factRefs": [
+        "lambda.provisioned-concurrency"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "1 回の処理が 15 分を超える長時間の処理",
+      "factRefs": [
+        "lambda.timeout-15min"
+      ],
+      "alternatives": [
+        "fargate",
+        "batch",
+        "ec2"
+      ]
+    },
+    {
+      "text": "展開後 250 MB を超える依存関係を .zip で持ちたいとき（コンテナイメージを使う）",
+      "factRefs": [
+        "lambda.zip-package-limit",
+        "lambda.container-image-size"
+      ]
+    },
+    {
+      "text": "同期で 6 MB を超えるデータを直接受け渡したいとき",
+      "factRefs": [
+        "lambda.invocation-payload"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "lambda.shared-responsibility",
+      "title": "基盤の管理は AWS、利用者はコードと設定",
+      "kind": "feature",
+      "text": "Lambda はサーバーレスのコンピューティングサービスで、サーバーの保守、容量の確保、スケーリング、パッチ適用といった基盤の管理を AWS が自動で行います。利用者はアプリケーションのロジックに集中できます。",
+      "examPoint": "サーバー管理の負担をなくしたい、使った分だけ払いたいなら Lambda。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Lambda?",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.timeout-15min",
+      "title": "1 回の実行は最大 15 分",
+      "kind": "quota",
+      "text": "関数のタイムアウトの上限は 900 秒（15 分）で、この上限は変更できません。Lambda Managed Instances を使う関数では、非同期呼び出しとイベントソースマッピング経由の呼び出し（Amazon MQ と Amazon DocumentDB を除く）に限り、最大 90 分まで設定できます。",
+      "examPoint": "15 分を超える処理は、Lambda の 1 回の実行では収まらない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "title": "What is AWS Lambda?",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.memory-cpu",
+      "title": "メモリは 128〜10,240 MB で、CPU はメモリに比例する",
+      "kind": "feature",
+      "text": "関数のメモリは 128〜10,240 MB の範囲で 1 MB 単位で設定でき、CPU の能力はメモリの設定量に比例して割り当てられます。1,769 MB で 1 vCPU 相当です。CPU を多く使う処理は、メモリを増やすと速くなることがあります。",
+      "examPoint": "CPU を直接指定する設定はなく、CPU を増やすにはメモリを増やす。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.tmp-storage",
+      "title": "一時ストレージ（/tmp）は別に設定する",
+      "kind": "quota",
+      "text": "/tmp ディレクトリの一時ストレージは、512〜10,240 MB の範囲で 1 MB 単位で設定できます。メモリの設定とは別の設定で、実行環境が再利用されるとき、内容が残ることがあるため一時的なキャッシュとして使えます。",
+      "trap": "メモリや /tmp の設定を変えても、デプロイパッケージのサイズ上限は変わらない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "title": "Understanding the Lambda execution environment lifecycle",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.zip-package-limit",
+      "title": ".zip のデプロイパッケージのサイズ上限",
+      "kind": "quota",
+      "text": ".zip のデプロイパッケージは、Lambda API や SDK でアップロードするとき圧縮後 50 MB まで（それより大きいものは S3 経由）、展開後は 250 MB までです。展開後の 250 MB には、レイヤーとカスタムランタイムも含まれ、この上限は変更できません。",
+      "examPoint": "依存関係が大きいときは、コンテナイメージ（最大 10 GB）にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.container-image-size",
+      "title": "コンテナイメージは最大 10 GB",
+      "kind": "quota",
+      "text": "コンテナイメージとして関数を作る場合、イメージのサイズはすべてのレイヤーを含めて展開後 10 GB までです。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.layers",
+      "title": "レイヤーは 1 関数に最大 5 つ",
+      "kind": "quota",
+      "text": "レイヤーは、ライブラリなどの依存関係を関数のコードから分けて共有するための .zip アーカイブで、1 つの関数に最大 5 つまで追加できます。レイヤーを使えるのは .zip でデプロイする関数だけで、コンテナイメージの関数は使えません。レイヤーの大きさも展開後の合計の上限に含まれます。",
+      "trap": "レイヤーに分けても、展開後 250 MB の合計の上限は増えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing Lambda dependencies with layers",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html"
+        },
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.invocation-payload",
+      "title": "呼び出しのペイロードの上限",
+      "kind": "quota",
+      "text": "同期呼び出しのペイロードは、リクエストとレスポンスがそれぞれ 6 MB までで、非同期呼び出しは 1 MB までです。レスポンスのストリーミングを使うと、同期呼び出しの応答は 200 MB まで返せます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.concurrency-default",
+      "title": "アカウントの同時実行数は既定で 1,000",
+      "kind": "quota",
+      "text": "リージョンごとのアカウント全体の同時実行数の既定値は 1,000 で、Service Quotas で引き上げを申請できます。リクエストの毎秒の上限は同時実行数の 10 倍です。この既定値は、新しいアカウントでは低く設定されることがあります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.concurrency-scaling-rate",
+      "title": "同時リクエストごとに実行環境が要り、増やせる速さに上限がある",
+      "kind": "quota",
+      "text": "同時に処理するリクエストごとに、別々の実行環境が必要です。既存の環境が空いていなければ、Lambda が新しい実行環境を作ります。関数あたりで増やせる速さは、10 秒ごとに 1,000 の実行環境までです。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        },
+        {
+          "title": "Lambda quotas",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.cold-start",
+      "title": "コールドスタートと実行環境の再利用",
+      "kind": "feature",
+      "text": "新しい実行環境を用意するとき、コードのダウンロード、環境の起動、初期化のコードの実行が先に行われ、これをコールドスタートと呼びます。処理が終わった環境は一定時間保持され、次のリクエストに再利用（ウォームスタート）されますが、保持が続く保証はありません。",
+      "examPoint": "呼び出しが少ない関数、急に増える同時実行ではコールドスタートが起きやすい。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding the Lambda execution environment lifecycle",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.reserved-concurrency",
+      "title": "予約済み同時実行は確保と上限を兼ねる",
+      "kind": "feature",
+      "text": "予約済み同時実行は、関数のために同時実行数を確保し、同時にその数を上限にもします。ほかの関数はその分を使えず、関数もその数を超えて増えません。追加の料金はかかりません。0 にすると、関数への呼び出しをすべて止められます。",
+      "examPoint": "下流の DB などを過負荷にしないよう並列度に上限を設けるのに使う。",
+      "trap": "予約済み同時実行は、初期化済みの環境を用意する機能ではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring reserved concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html"
+        },
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.provisioned-concurrency",
+      "title": "プロビジョニングされた同時実行で初期化済みの環境を用意する",
+      "kind": "feature",
+      "text": "プロビジョニングされた同時実行は、指定した数の実行環境をあらかじめ初期化して待機させる機能で、コールドスタートによる遅延を減らします。Web やモバイルのように遅延に敏感な処理に向きます。使っていなくても、確保した分の追加料金がかかります。",
+      "examPoint": "コールドスタートの遅延を避けたいなら、プロビジョニングされた同時実行（Java は SnapStart も候補）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring provisioned concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+        },
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.provisioned-alias-only",
+      "title": "プロビジョニングされた同時実行はバージョンかエイリアスに設定する",
+      "kind": "constraint",
+      "text": "プロビジョニングされた同時実行は、関数の公開済みのバージョンかエイリアスに対して設定し、$LATEST には設定できません。呼び出し元（イベントソースなど）が、その設定を持つバージョンやエイリアスを指していないと、事前に初期化した環境は使われません。",
+      "trap": "$LATEST の関数や、設定のないバージョンを呼んでいると、設定しても効かない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring provisioned concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.provisioned-auto-scaling",
+      "title": "Application Auto Scaling で同時実行を増減する",
+      "kind": "integration",
+      "text": "プロビジョニングされた同時実行の数は、Application Auto Scaling で自動的に増減できます。決まった時間帯の負荷には予定されたスケーリング（スケジュール）、読めない負荷には使用率を目標にするターゲット追跡を使います。先に初期値を設定しておく必要があります。",
+      "examPoint": "時間帯で負荷が予測できるなら、スケジュールでプロビジョニングされた同時実行を増減する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring provisioned concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.provisioned-within-reserved",
+      "title": "プロビジョニングは予約済み同時実行を超えられない",
+      "kind": "constraint",
+      "text": "同じ関数に予約済み同時実行とプロビジョニングされた同時実行の両方を設定する場合、プロビジョニングされた数は予約済みの数を超えられません。プロビジョニングの合計が予約と同じになると、すべての呼び出しがプロビジョニングで処理され、$LATEST は実行できなくなります。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        },
+        {
+          "title": "Configuring provisioned concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.snapstart",
+      "title": "SnapStart は初期化済みのスナップショットから起動する",
+      "kind": "feature",
+      "text": "SnapStart は、バージョンを公開するときに初期化を済ませ、メモリとディスクの状態のスナップショットを保存して、実行環境をそこから再開する機能です。対応するランタイム（Java など）のコールドスタートを減らせます。同じバージョンでプロビジョニングされた同時実行とは併用できません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding the Lambda execution environment lifecycle",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
+        },
+        {
+          "title": "Understanding Lambda function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.kinesis-batch-per-shard",
+      "title": "Kinesis は既定でシャードごとに 1 バッチずつ処理する",
+      "kind": "feature",
+      "text": "Kinesis Data Streams をイベントソースにすると、Lambda はシャードからレコードをバッチで読み、シャードごとに 1 度に 1 バッチを順番に処理します。関数がエラーを返すと、そのシャードの後続の処理は止まります。処理を速くするにはシャードを増やします。",
+      "trap": "1 つのシャードの並列度は、並列化係数で増やす。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Lambda to process records from Amazon Kinesis Data Streams",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.kinesis-parallelization",
+      "title": "並列化係数で 1 つのシャードを同時に処理する",
+      "kind": "feature",
+      "text": "イベントソースマッピングの並列化係数（ParallelizationFactor）を 1（既定）〜10 に設定すると、Kinesis の 1 つのシャードを、最大その数のバッチで同時に処理できます。この場合も、同じパーティションキーのレコードの順序は保たれます。",
+      "examPoint": "シャードを増やさずに処理を速め、キー単位の順序も保つなら並列化係数。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Lambda to process records from Amazon Kinesis Data Streams",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.async-invocation",
+      "title": "非同期呼び出しは Lambda がキューに入れる",
+      "kind": "feature",
+      "text": "非同期呼び出しでは、Lambda がイベントをキューに入れて成功の応答（ステータス 202）をすぐ返し、別の処理がキューから関数へ渡します。呼び出し元は関数の結果を待ちません。S3 や SNS などのサービスは、関数を非同期に呼び出します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Invoking a Lambda function asynchronously",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.event-source-mapping",
+      "title": "イベントソースマッピングは少なくとも 1 回の処理",
+      "kind": "integration",
+      "text": "イベントソースマッピングは、Kinesis などのストリームやキューから Lambda がレコードを読み取り、バッチにして関数を同期的に呼び出す仕組みです。各レコードは少なくとも 1 回処理されるため、重複して処理されることがあり、関数をべき等にします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Lambda to process records from Amazon Kinesis Data Streams",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.execution-role",
+      "title": "実行ロールで AWS リソースへの権限を与える",
+      "kind": "feature",
+      "text": "実行ロールは、関数に AWS のサービスやリソースへの権限を与える IAM ロールで、Lambda が呼び出しのたびに自動で引き受けます。信頼ポリシーには Lambda のサービスプリンシパル（lambda.amazonaws.com）を指定します。最小権限にします。",
+      "examPoint": "関数に AWS リソースへの権限を与えるのは実行ロール。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Defining Lambda function permissions with an execution role",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.vpc-access",
+      "title": "VPC に接続すると、インターネットへは VPC 側の出口が要る",
+      "kind": "feature",
+      "text": "関数をプライベートサブネットなどの VPC に接続すると、VPC 内のリソース（RDS など）にアクセスできます。接続すると関数は VPC 内のリソースにしかアクセスできなくなるため、インターネットへ出るには VPC 側でインターネットへの出口を用意する必要があります。パブリックサブネットに接続しても、インターネットには出られません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Giving Lambda functions access to resources in an Amazon VPC",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.pricing-model",
+      "title": "料金はリクエストと実行時間（GB 秒）で決まる",
+      "kind": "pricing",
+      "text": "関数の料金は、リクエストの回数と、実行時間とメモリの量を掛けた GB 秒で決まる従量課金です。プロビジョニングされた同時実行は、確保している間の別の料金がかかります。コールドスタートの初期化の時間も課金の対象です。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Lambda?",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+        },
+        {
+          "title": "Configuring provisioned concurrency for a Lambda function",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+        },
+        {
+          "title": "Understanding the Lambda execution environment lifecycle",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "lambda.event-triggers",
+      "title": "多くの AWS サービスをトリガーにできる",
+      "kind": "integration",
+      "text": "関数は、API Gateway、Amazon S3、Amazon SQS、EventBridge など 200 以上の AWS サービスをトリガーにして実行できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Lambda?",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "api-gateway.lambda-integration",
+    "step-functions.orchestration",
+    "iam.role-trust-and-permissions"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Lambda?",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    },
+    {
+      "title": "Lambda quotas",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    }
+  ],
+  "createdBy": "sc9",
+  "createdAt": "2026-11-14"
+}

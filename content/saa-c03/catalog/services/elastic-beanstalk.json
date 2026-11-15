@@ -1,0 +1,302 @@
+{
+  "id": "elastic-beanstalk",
+  "tier": 2,
+  "summary": "コードをアップロードするだけで、EC2、ロードバランサー、Auto Scaling、ヘルスモニタリングを含むアプリケーションの実行環境を自動で構築・運用する PaaS。サービス自体に追加料金はない。",
+  "chooseWhen": [
+    {
+      "text": "コードを渡して、インフラの構築から運用までを任せたい（PaaS）",
+      "factRefs": [
+        "elastic-beanstalk.upload-and-provision"
+      ]
+    },
+    {
+      "text": "Web アプリケーションを、ロードバランサーと Auto Scaling を含む構成で素早く動かしたい",
+      "factRefs": [
+        "elastic-beanstalk.load-balanced-environment"
+      ],
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "本番のデプロイで、ダウンタイムなしの方式を選びたい",
+      "factRefs": [
+        "elastic-beanstalk.deployment-policies",
+        "elastic-beanstalk.immutable-deployment"
+      ]
+    },
+    {
+      "text": "SQS のキューのメッセージを処理するバックエンドを動かしたい（ワーカー環境）",
+      "factRefs": [
+        "elastic-beanstalk.worker-environment"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Kubernetes のマニフェストや、コンテナの細かいオーケストレーションが必要",
+      "alternatives": [
+        "eks",
+        "ecs"
+      ]
+    },
+    {
+      "text": "短時間のイベント駆動の処理を、サーバー管理なしで動かしたい",
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "本番のデータベースを、環境の削除と切り離して管理したい（結合型のデータベースは避ける）",
+      "factRefs": [
+        "elastic-beanstalk.coupled-database"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "elastic-beanstalk.upload-and-provision",
+      "title": "コードをアップロードすると環境が自動で作られる",
+      "kind": "feature",
+      "text": "Elastic Beanstalk では、アプリケーションを作成してソースバンドルをアップロードすると、必要な AWS リソースを含む環境が自動で起動し構成される。EC2 インスタンスの用意、ロードバランシングの設定、ヘルスモニタリング、環境のスケールを Beanstalk が行う。",
+      "examPoint": "コードを渡すだけで Web アプリケーションの実行環境を作りたいときの選択肢（PaaS）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Elastic Beanstalk?",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.no-extra-charge",
+      "title": "Elastic Beanstalk 自体に追加料金はない",
+      "kind": "pricing",
+      "text": "Elastic Beanstalk に追加料金はなく、アプリケーションが使う EC2 やロードバランサーなどの基盤の AWS リソースの料金だけを支払う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Elastic Beanstalk?",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.supported-platforms",
+      "title": "対応するプラットフォーム",
+      "kind": "feature",
+      "text": "Elastic Beanstalk は Go、Java、.NET、Node.js、PHP、Python、Ruby で開発したアプリケーションと、言語や依存関係を自由に選べる Docker コンテナをサポートする。プラットフォームは OS、言語ランタイム、Web サーバー、アプリケーションサーバーなどの組み合わせである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Elastic Beanstalk?",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+        },
+        {
+          "title": "Understanding concepts in Elastic Beanstalk",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.standard-and-cluster",
+      "title": "Standard と Cluster の2つのモード",
+      "kind": "feature",
+      "text": "Beanstalk Standard はアプリケーションを EC2 上で直接動かし、Windows アプリケーションもサポートする。Beanstalk Cluster は Amazon EKS 上でコンテナとして動かし、デプロイやオートスケーリングが速くなる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Elastic Beanstalk?",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+        },
+        {
+          "title": "Understanding concepts in Elastic Beanstalk",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.core-concepts",
+      "title": "アプリケーション・バージョン・環境",
+      "kind": "feature",
+      "text": "Elastic Beanstalk のアプリケーションは、環境、バージョン、環境の設定をまとめた論理的なグループである。アプリケーションバージョンは S3 のコードを指し、環境は特定のバージョンを実行する AWS リソースの集まりで、1つの環境が同時に動かせるバージョンは1つである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding concepts in Elastic Beanstalk",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.environment-tiers",
+      "title": "Web サーバー層とワーカー層",
+      "kind": "feature",
+      "text": "環境を作るときは環境層を選ぶ。HTTP リクエストを処理するアプリケーションは Web サーバー環境、Amazon SQS のキューからタスクを取り出して処理するバックエンドはワーカー環境で動かす。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding concepts in Elastic Beanstalk",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.worker-environment",
+      "title": "ワーカー環境は SQS のメッセージを処理する",
+      "kind": "feature",
+      "text": "ワーカー環境では、各 EC2 インスタンスのデーモンが SQS キューからメッセージを読み、その内容をインスタンス上のアプリケーションに渡して処理させる。キューがなければ Beanstalk が作成し、ロードバランサーは含まれず、負荷に応じて Auto Scaling グループのインスタンスが増える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Elastic Beanstalk worker environments",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts-worker.html"
+        },
+        {
+          "title": "Environment types",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.load-balanced-environment",
+      "title": "負荷分散・スケーラブルな環境",
+      "kind": "feature",
+      "text": "負荷分散・スケーラブルな環境は、Elastic Load Balancing と Amazon EC2 Auto Scaling を使って EC2 インスタンスを用意する。負荷に応じてインスタンスを増減し、指定した最小台数は維持され、複数の AZ で動かせる。",
+      "examPoint": "本番で可用性とスケーラビリティが要る構成。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Environment types",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.single-instance-environment",
+      "title": "シングルインスタンス環境",
+      "kind": "feature",
+      "text": "シングルインスタンス環境は、Elastic IP アドレスを持つ EC2 インスタンス1台で構成され、ロードバランサーがない。最小台数・最大台数・希望台数がすべて1なので負荷が増えても台数は増えず、トラフィックが少ない用途や開発に向き、コストを抑えられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Environment types",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.deployment-policies",
+      "title": "デプロイポリシーの違い",
+      "kind": "feature",
+      "text": "デプロイポリシーには、All at once（最速だが停止しうる）、Rolling（バッチごとに更新、ダウンタイムなし）、Rolling with additional batch（追加バッチで容量を維持）、Immutable（新しいインスタンスに展開）、Traffic splitting（一部のトラフィックで検証）がある。",
+      "trap": "All at once は最も速いが、短時間サービスが利用できなくなる可能性がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Deploying applications to Elastic Beanstalk environments",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.immutable-deployment",
+      "title": "Immutable デプロイは新しいインスタンスに展開する",
+      "kind": "feature",
+      "text": "Immutable デプロイでは、環境内に2つ目の Auto Scaling グループを起動し、新しいインスタンスがヘルスチェックに合格するまで新旧のバージョンを並行して稼働させる。ロールバックは新しいインスタンスを終了するだけで済み、速く安全である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Deploying applications to Elastic Beanstalk environments",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.traffic-splitting",
+      "title": "トラフィック分割によるカナリアテスト",
+      "kind": "constraint",
+      "text": "Traffic splitting は、受信トラフィックの一部で新バージョンのヘルスを確認するカナリアテスト方式のデプロイである。負荷分散環境の Application Load Balancer でのみサポートされ、シングルインスタンス環境では使えない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Deploying applications to Elastic Beanstalk environments",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.blue-green-cname-swap",
+      "title": "ブルー/グリーンは新しい環境と CNAME の入れ替え",
+      "kind": "feature",
+      "text": "リソース設定の変更を伴うデプロイや、旧バージョンと並行して動かせない新バージョンは、新しいバージョンで新しい環境を起動し、CNAME を入れ替えるブルー/グリーンデプロイで切り替える。ほかのデプロイポリシーと違い、DNS の変更が必要になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Deploying applications to Elastic Beanstalk environments",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.deploy-existing-version.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.coupled-database",
+      "title": "環境に結合したデータベースは環境と運命をともにする",
+      "kind": "constraint",
+      "text": "Elastic Beanstalk の環境に RDS のデータベースを結合して作ると、接続情報が環境プロパティとしてアプリケーションに渡される。結合したデータベースは環境の終了時に削除ポリシー（Snapshot、Delete、Retain）に従って扱われるため、本番へ進むときは環境から切り離し（デカップル）、外部の RDS として運用する選択肢がある。",
+      "trap": "環境と一緒に作ったデータベースは、削除ポリシー次第で環境の終了時に消える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Adding a database to your Elastic Beanstalk environment",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elastic-beanstalk.decoupled-database-benefits",
+      "title": "データベースを環境の外に置く利点",
+      "kind": "feature",
+      "text": "環境の外の RDS データベースは、複数の環境から接続でき、結合型で未サポートのデータベースの種類も使え、ブルー/グリーンデプロイを行える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Adding a database to your Elastic Beanstalk environment",
+          "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.managing.db.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "ec2-auto-scaling.elb-integration",
+    "elb.alb-target-types",
+    "ecs.orchestration-overview",
+    "eks.managed-kubernetes"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Elastic Beanstalk?",
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+    },
+    {
+      "title": "Understanding concepts in Elastic Beanstalk",
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.html"
+    }
+  ],
+  "createdBy": "sc12",
+  "createdAt": "2026-11-14"
+}

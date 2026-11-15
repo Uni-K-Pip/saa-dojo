@@ -1,0 +1,314 @@
+{
+  "id": "step-functions",
+  "tier": 2,
+  "summary": "状態（ステート）を組み合わせたワークフロー（ステートマシン）で、Lambda などの AWS のサービスの呼び出しを、順番・分岐・並列・再試行・エラー処理・人の承認待ちつきで組み立てて実行するオーケストレーションサービスです。",
+  "chooseWhen": [
+    {
+      "text": "複数の処理の順番、条件分岐、並列実行、再試行や失敗時の代替処理を、コードを書き足さずに組み立てたい",
+      "factRefs": [
+        "step-functions.orchestration",
+        "step-functions.retry-catch"
+      ]
+    },
+    {
+      "text": "最長 1 年の長時間のワークフローや、人の承認待ちを含む処理を管理したい（Standard）",
+      "factRefs": [
+        "step-functions.standard-workflow",
+        "step-functions.wait-for-callback"
+      ]
+    },
+    {
+      "text": "大量・短時間のイベント処理を、実行回数・時間・メモリで課金されるワークフローで扱いたい（Express）",
+      "factRefs": [
+        "step-functions.express-workflow",
+        "step-functions.express-pricing"
+      ]
+    },
+    {
+      "text": "AWS Batch や ECS などのジョブの完了を待って次の処理へ進みたい（.sync、Standard のみ）",
+      "factRefs": [
+        "step-functions.integration-patterns",
+        "step-functions.express-no-sync-callback"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Express で .sync（ジョブの完了待ち）やコールバック（.waitForTaskToken）を使いたい（Express は使えない）",
+      "factRefs": [
+        "step-functions.express-no-sync-callback"
+      ]
+    },
+    {
+      "text": "作成後にワークフローの種類（Standard と Express）を切り替えたい（変更できないので作り直す）",
+      "factRefs": [
+        "step-functions.workflow-type-immutable"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "step-functions.orchestration",
+      "title": "ワークフローでサービスをつなぐ",
+      "kind": "feature",
+      "text": "Step Functions では、ステートマシン（ワークフロー）の各ステップを「ステート」と呼ぶ。Task ステートで他の AWS のサービスを呼び出し、Choice で分岐、Parallel で並列、Map でデータの各要素への処理などを組み合わせて、分散アプリケーションや自動化を作れる。コンソールでワークフローを可視化・デバッグできる。",
+      "examPoint": "複数の Lambda などの処理の順番・分岐・やり直しを管理するときの選択肢。",
+      "depth": "core",
+      "tags": [
+        "ステートマシン",
+        "オーケストレーション"
+      ],
+      "sources": [
+        {
+          "title": "What is Step Functions?",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.workflow-type-immutable",
+      "title": "ワークフローの種類は作成後に変更できない",
+      "kind": "constraint",
+      "text": "ステートマシンを作るときに、Standard（既定）か Express かの種類を選ぶ。この種類は、作成した後に更新して変えることができない。種類を変えたい場合は、別のステートマシンを作り直す必要がある。",
+      "examPoint": "種類の選択は最初に決める。",
+      "trap": "運用しながら Standard と Express を切り替えられると考える。",
+      "depth": "core",
+      "tags": [
+        "ワークフローの種類"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.standard-workflow",
+      "title": "Standard は最長 1 年・ちょうど 1 回",
+      "kind": "feature",
+      "text": "Standard ワークフローは、最長 1 年実行でき、実行は exactly-once（Retry を指定しない限り、タスクやステートが複数回実行されない）である。実行の履歴は、完了後 90 日間は API で取得できる。決済や EMR クラスターの起動のような、繰り返せない処理の調整に向く。",
+      "examPoint": "長時間・監査が必要・繰り返せない処理は Standard。",
+      "depth": "core",
+      "tags": [
+        "Standard",
+        "実行の保証"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.standard-pricing",
+      "title": "Standard は状態遷移の数で課金される",
+      "kind": "pricing",
+      "text": "Standard ワークフローの料金は、処理した状態遷移の数で決まる。実行中のステップが完了するたびに、状態遷移が1回数えられる。金額は料金のページで確認する。",
+      "examPoint": "課金の単位は Standard が状態遷移、Express が実行の回数・時間・メモリ。",
+      "depth": "core",
+      "tags": [
+        "料金",
+        "Standard"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.express-workflow",
+      "title": "Express は最長 5 分・大量のイベント向け",
+      "kind": "feature",
+      "text": "Express ワークフローは、最長 5 分まで実行でき、IoT データの取り込みやストリーミングデータの処理、モバイルアプリのバックエンドのような、高頻度のイベント処理に向く。",
+      "examPoint": "大量・短時間のイベント処理は Express。",
+      "depth": "core",
+      "tags": [
+        "Express",
+        "実行の保証"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.express-execution-semantics",
+      "title": "Express の実行の保証（非同期と同期）",
+      "kind": "feature",
+      "text": "非同期の Express ワークフローは at-least-once で、実行が複数回行われる可能性があるため、データを変換して DynamoDB に PUT するような冪等な処理の調整に向く。同期の Express ワークフローは at-most-once で、例外が起きてもワークフローは再開されない。",
+      "depth": "detail",
+      "tags": [
+        "Express",
+        "実行の保証"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.express-pricing",
+      "title": "Express は実行の回数・時間・メモリで課金される",
+      "kind": "pricing",
+      "text": "Express ワークフローの料金は、実行した回数、実行の合計の時間、実行中に使ったメモリで決まる。状態遷移の数では課金されない。金額は料金のページで確認する。",
+      "depth": "core",
+      "tags": [
+        "料金",
+        "Express"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.express-no-sync-callback",
+      "title": "Express は .sync とコールバックを使えない",
+      "kind": "constraint",
+      "text": "Express ワークフローは、ジョブの完了を待つ Run a Job（.sync）と、タスクトークンを待つ Callback（.waitForTaskToken）のサービス統合パターンに対応しない。Request Response のパターンだけが使える。これらを使う設計には Standard を選ぶ。",
+      "examPoint": "人の承認待ちやジョブの完了待ちが要る設計は Standard。",
+      "depth": "core",
+      "tags": [
+        "Express",
+        "統合パターン"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        },
+        {
+          "title": "Discover service integration patterns in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.express-no-distributed-map",
+      "title": "Express は分散 Map とアクティビティを使えない",
+      "kind": "constraint",
+      "text": "Express ワークフローは、Distributed Map ステートとアクティビティ（Step Functions の外のワーカー）に対応しない。これらは Standard ワークフローだけで使える。",
+      "depth": "detail",
+      "tags": [
+        "Express",
+        "Distributed Map"
+      ],
+      "sources": [
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.integration-patterns",
+      "title": "サービス統合の 3 つのパターン",
+      "kind": "integration",
+      "text": "Step Functions が他のサービスを呼ぶ方法には、HTTP の応答を受けたら次へ進む Request Response（既定）、ジョブの完了を待つ Run a Job（Resource に .sync を付ける）、タスクトークンが返るまで待つ Wait for a Callback（.waitForTaskToken）の3つのパターンがある。",
+      "depth": "core",
+      "tags": [
+        "統合パターン",
+        "コールバック"
+      ],
+      "sources": [
+        {
+          "title": "Discover service integration patterns in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.wait-for-callback",
+      "title": "コールバックで人の承認や外部処理を待つ",
+      "kind": "feature",
+      "text": "Wait for a Callback パターンでは、タスクトークンを外部の処理に渡し、SendTaskSuccess または SendTaskFailure でトークンが返るまでワークフローを一時停止できる。人の承認や、サードパーティ、レガシーシステムの待ち合わせに使う。待ち続けるのを避けるには、HeartbeatSeconds でハートビートのタイムアウトを設定する。",
+      "examPoint": "人の承認を挟むワークフローは、タスクトークンのコールバック（Standard）。",
+      "depth": "core",
+      "tags": [
+        "コールバック",
+        "承認"
+      ],
+      "sources": [
+        {
+          "title": "Discover service integration patterns in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.retry-catch",
+      "title": "Retry と Catch でエラーを処理する",
+      "kind": "feature",
+      "text": "ステートがエラーを報告すると、既定ではステートマシンの実行全体が失敗する。Task、Parallel、Map ステートには Retry（再試行）と Catch（失敗時に別のステートへ遷移）を指定でき、両方があるときは先に Retry が適用され、解決しなければ Catch に遷移する。",
+      "examPoint": "失敗時のやり直しや代替処理は、コードではなく Retry と Catch で定義する。",
+      "depth": "core",
+      "tags": [
+        "エラー処理",
+        "再試行"
+      ],
+      "sources": [
+        {
+          "title": "Handling errors in Step Functions workflows",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "step-functions.retry-counts-as-transition",
+      "title": "再試行も状態遷移として数えられる",
+      "kind": "pricing",
+      "text": "Step Functions では、再試行は状態遷移として扱われる。そのため、Standard ワークフローで再試行が多くなると、課金の対象になる状態遷移の数が増える。",
+      "depth": "detail",
+      "tags": [
+        "料金",
+        "再試行"
+      ],
+      "sources": [
+        {
+          "title": "Handling errors in Step Functions workflows",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html"
+        },
+        {
+          "title": "Choosing workflow type in Step Functions",
+          "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Step Functions?",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html"
+    },
+    {
+      "title": "Choosing workflow type in Step Functions",
+      "url": "https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html"
+    }
+  ],
+  "createdBy": "sc2",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-14"
+}
