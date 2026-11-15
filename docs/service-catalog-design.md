@@ -13,7 +13,7 @@ SAA Dojo に「AWS サービス図鑑」（以下、図鑑）を追加するた�
 - リポジトリ: `docs/app-spec.md`、`docs/content-guide.md`、`README.md`、`scripts/lib/schema.mjs`、`scripts/validate.mjs`、`scripts/coverage.mjs`、`app/scripts/build-content.mjs`、`app/scripts/lib/content-build.mjs`、`app/vite.config.ts`、`app/src/App.tsx`、`app/src/content/loader.ts`、`app/src/pages/GlossaryPage.tsx`、`app/src/pages/DocsPage.tsx`、`app/src/components/Layout.tsx` の画面一覧、`app/src/components/Markdown.tsx` のリンク処理、`app/src/domain/events.ts`・`selection.ts`・`links.ts`、`content/saa-c03/blueprint.json` の services と keyServices、教材の実例（`lesson-4.1-s3-storage-classes`、`cheatsheet-vpc-endpoints`、`x-cloud-network.json`、`w2c-services-a.json`、`saa-1.1-g1-001`）、`review-status.json`
 - 一部だけ読んだもの: `LessonPage.tsx`（読了ボタンと本文の描画）、`AnswerFeedback.tsx`（要点・出典・関連レッスンの表示箇所）
 - 監査の出力（読み取り専用）: `input-gap-report.md`、`input-gap-result.json` の形、`deterministic.json`、`audit-prep.mjs`、監査時に保存された公式の対象サービス一覧 `official-inscope.json`
-- 初回制作時の場所: `C:\Users\kohei\work\saa-dojo-ops` の `runner/`（Codex CLI で問題を二重チェックするキュー）、`runner/schemas/pass2.schema.json`、ジョブのプロンプト（第1段のブラインド解答、第2段の詳細レビュー）、`out/fix-lists/`、`out/livecheck/skeptic/`（出典 URL の HTTP 状態の一覧など）。`.claude/projects/...app-features` には memory フォルダや Markdown のメモはなく、`custom-title.json` だけでした。
+- 初回制作時の場所: `../saa-dojo-ops` の `runner/`（Codex CLI で問題を二重チェックするキュー）、`runner/schemas/pass2.schema.json`、ジョブのプロンプト（第1段のブラインド解答、第2段の詳細レビュー）、`out/fix-lists/`、`out/livecheck/skeptic/`（出典 URL の HTTP 状態の一覧など）。`.claude/projects/...app-features` には memory フォルダや Markdown のメモはなく、`custom-title.json` だけでした。
 - 読んでいないもの: 監査の第2段・第3段のスクリプト（`audit-stage2.mjs`・`audit-stage3.mjs`）、レッスン本文の大半、`DrillPage`・`AnalysisPage` の中身。これらの中身は断定しません。
 
 ### 0.2 設計に効く事実（確認済み）
@@ -485,7 +485,7 @@ SAA Dojo に「AWS サービス図鑑」（以下、図鑑）を追加するた�
 
 監査を再実行できるようにするための作業（7章の T9）:
 
-- 監査のスクリプト（今はセッションの作業フォルダにある `audit-prep.mjs` と第2段・第3段）を ops の場所（`C:\Users\kohei\work\saa-dojo-ops`）に移し、手順を ops の README に残す。再監査の手順の概要は、リポジトリの content-guide か README にも書く【決定 U-13】。第2段・第3段は読んでいないので、移すときに中身を確かめる。
+- 監査のスクリプト（今はセッションの作業フォルダにある `audit-prep.mjs` と第2段・第3段）を ops の場所（`../saa-dojo-ops`）に移し、手順を ops の README に残す。再監査の手順の概要は、リポジトリの content-guide か README にも書く【決定 U-13】。第2段・第3段は読んでいないので、移すときに中身を確かめる。
 - 監査の教材の範囲（`audit-prep.mjs` の `candidates()`）に、問題の `services` と同じサービスのエントリの事実と、`seeAlso` で参照される事実を加える。**`catalog-needs.json` の対応づけは監査の入力に使わない**（使うと、対応づけたものが見つかるのは当たり前になり、測定にならない）。
 - 監査はモデルの判定を含むので、結果は実行ごとに多少ぶれる（推測）。作成前の結果と比べるときは、同じ手順・同じモデルで、作成前の教材でも取り直した値と比べる。
 
@@ -667,7 +667,7 @@ SAA Dojo に「AWS サービス図鑑」（以下、図鑑）を追加するた�
 | T7 | ビルド出力 | `app/scripts/lib/content-build.mjs`（5.7 のファイル、`crossCheck`、状態での除外、`manifest.counts`）、`app/scripts/build-content.mjs`（件数の表示） | T5 | `content-build.test.mjs` |
 | T8 | 画面 | `app/src/App.tsx`、`app/src/components/Layout.tsx`（`NAV_ITEMS`）、新規 `app/src/pages/CatalogPage.tsx`（一覧・詳細・比較）、`app/src/domain/search.ts`（`searchCatalog`）、`app/src/domain/events.ts`（`catalog-read`）、`app/src/domain/progress.ts`（読了の集計）、`app/src/styles.css`（比較の表のスマホ表示） | T7 | 画面のテスト（既存の `GlossaryDocs.test.tsx` に倣う）、検索の単体テスト、E2E に「図鑑を開いて事実へ移動する」を1本 |
 | T9 | 相互リンク | `app/src/components/AnswerFeedback.tsx`、`app/src/pages/LessonPage.tsx`、`DocsPage.tsx`、`GlossaryPage.tsx`、`AnalysisPage.tsx` | T8 | 各画面のテストにリンクの有無 |
-| T10 | 制作の道具 | 入力の束を作るスクリプト、検証結果を `catalog-status.json` に書くスクリプト、`catalog-needs.json` の取り込み。置き場所は ops（`C:\Users\kohei\work\saa-dojo-ops`）。ハッシュはリポジトリの `scripts/lib/catalog.mjs` の `catalogHash` を読み込んで使う【決定 U-13】 | T5, T6 | 小さな fixture での動作確認 |
+| T10 | 制作の道具 | 入力の束を作るスクリプト、検証結果を `catalog-status.json` に書くスクリプト、`catalog-needs.json` の取り込み。置き場所は ops（`../saa-dojo-ops`）。ハッシュはリポジトリの `scripts/lib/catalog.mjs` の `catalogHash` を読み込んで使う【決定 U-13】 | T5, T6 | 小さな fixture での動作確認 |
 | T11 | 監査の取り込み | ops の場所に置く監査のスクリプト（`audit-prep.mjs` ほか。教材の範囲に図鑑を加える） | T6 | 作成前の教材で、今の結果（46 問など）が再現することを確かめる |
 | T12 | コンテンツの制作 | `content/saa-c03/catalog/**`、`catalog-status.json`、`catalog-needs.json` | T6, T10（画面がなくても進められる） | validate と coverage |
 
@@ -741,7 +741,7 @@ SAA Dojo に「AWS サービス図鑑」（以下、図鑑）を追加するた�
 
 #### U-13 制作の道具と作業フォルダの置き場所
 
-- **決定**: ops の場所（`C:\Users\kohei\work\saa-dojo-ops`）に置く。初回の制作と同じ場所で、公開されない。再監査の手順の概要は、リポジトリの content-guide か README に書く（4.4、6.4、7章の T10・T11）。
+- **決定**: ops の場所（`../saa-dojo-ops`）に置く。初回の制作と同じ場所で、公開されない。再監査の手順の概要は、リポジトリの content-guide か README に書く（4.4、6.4、7章の T10・T11）。
 - 採らなかった案: リポジトリの `scripts/catalog/` と `scripts/audit/` に置く案。
 
 #### U-14 制作の範囲
