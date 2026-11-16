@@ -1,0 +1,347 @@
+{
+  "id": "config",
+  "tier": 1,
+  "summary": "AWS リソースの設定と変更履歴を記録し、ルールに基づいて設定の準拠を評価するサービス。監査や設定変更の調査に加え、複数アカウント・リージョンの設定と準拠状況の集約にも利用できる。",
+  "chooseWhen": [
+    {
+      "text": "リソースの過去の設定を調べ、監査や設定変更に伴う問題の調査に使いたい",
+      "factRefs": [
+        "config.configuration-history"
+      ]
+    },
+    {
+      "text": "リソースの設定が定めたルールに準拠しているかを評価したい",
+      "factRefs": [
+        "config.rule-compliance",
+        "config.managed-rules"
+      ]
+    },
+    {
+      "text": "複数アカウント・リージョンの設定と準拠状況をまとめて確認したい",
+      "factRefs": [
+        "config.multi-account-aggregation"
+      ]
+    },
+    {
+      "text": "ルールで検出した非準拠リソースを自動修復につなげたい",
+      "factRefs": [
+        "config.ssm-remediation"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "非準拠のリソースのデプロイを、Config の事前対応型の評価だけで阻止したい",
+      "factRefs": [
+        "config.proactive-does-not-block"
+      ]
+    },
+    {
+      "text": "データを集約するアグリゲーターから、収集元へ Config ルールをデプロイしたい",
+      "factRefs": [
+        "config.aggregator-read-only"
+      ]
+    },
+    {
+      "text": "誰がいつ何の AWS 操作をしたかという操作記録を監査したい",
+      "factRefs": [
+        "cloudtrail.account-activity"
+      ],
+      "alternatives": [
+        "cloudtrail"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "config.configuration-history",
+      "title": "設定の変更履歴を調べる",
+      "kind": "feature",
+      "text": "AWS Config は、記録した AWS リソースの過去の設定を参照できる。特定の時点のセキュリティグループのポート設定などを調べ、設定変更に伴う問題の調査や監査に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Config?",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.resource-relationships",
+      "title": "リソース間の関連を確認する",
+      "kind": "feature",
+      "text": "AWS Config では、変更しようとしているリソースと他のリソースとの関連を確認できる。依存関係のあるリソースへの影響を把握し、設定変更による影響を評価するために利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Config?",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.recording-scope",
+      "title": "記録対象のリソースタイプを選ぶ",
+      "kind": "feature",
+      "text": "AWS Config では、対応するすべてのリソースタイプを記録対象にするか、必要なリソースタイプだけを記録対象にするかを選べる。設定変更の記録対象を、管理したいリソースの種類に合わせて指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Recording AWS Resources with AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/select-resources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.rule-compliance",
+      "title": "ルールで設定の準拠を評価する",
+      "kind": "feature",
+      "text": "AWS Config ルールは、リソースの設定がルールの条件に適合しているかを評価する。条件を満たさない場合は、そのリソースとルールを非準拠として示すため、望ましくない設定を検出する用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Components of an AWS Config Rule",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.managed-rules",
+      "title": "定義済みのマネージドルールを使う",
+      "kind": "feature",
+      "text": "AWS Config のマネージドルールは、一般的なベストプラクティスへの準拠を評価するために AWS が用意した定義済みのルールである。EBS ボリュームの暗号化の確認などに、既存のルールを利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Config Managed Rules",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_use-managed-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.configuration-change-trigger",
+      "title": "設定変更を契機にルールを評価する",
+      "kind": "feature",
+      "text": "AWS Config ルールの設定変更トリガーでは、ルールの評価範囲に一致するリソースの設定が変わったときに評価を実行する。評価は、AWS Config が設定項目の変更通知を送った後に行われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Components of an AWS Config Rule",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.periodic-rule-trigger",
+      "title": "指定した頻度でルールを評価する",
+      "kind": "feature",
+      "text": "AWS Config ルールの定期トリガーでは、選択した頻度でリソースの評価を実行する。ルールが定期トリガーを持つ場合は、そのスケジュールに従ってルールの条件への準拠を確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Components of an AWS Config Rule",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.s3-configuration-delivery",
+      "title": "設定履歴を S3 に配信する",
+      "kind": "integration",
+      "text": "AWS Config は、設定履歴や要求に応じた設定スナップショットの配信先として S3 バケットを設定できる。リソースの設定に関する記録を、指定した S3 バケットで受け取るために組み合わせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Config?",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.sns-change-notifications",
+      "title": "設定変更の通知に SNS を使う",
+      "kind": "integration",
+      "text": "AWS Config の設定ストリームの通知先には、Amazon SNS を設定できる。リソースの設定変更に関する通知を受け取りたい場合に、AWS Config と SNS トピックを組み合わせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Config?",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.conformance-packs",
+      "title": "ルールと修復をパックとして展開する",
+      "kind": "feature",
+      "text": "AWS Config のコンフォーマンスパックは、Config ルールと修復アクションをまとめ、単一の単位としてデプロイする仕組みである。パックの YAML テンプレートには、マネージドルールやカスタムルールを記述できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Conformance Packs for AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/conformance-packs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.organization-conformance-packs",
+      "title": "組織内に共通のパックを展開する",
+      "kind": "integration",
+      "text": "AWS Config は AWS Organizations と連携し、組織のメンバーアカウントへコンフォーマンスパックを一元的にデプロイできる。組織全体へ共通の Config ルールと修復アクションを配布する用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing Conformance Packs for AWS Config Across all Accounts in Your Organization",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/conformance-pack-organization-apis.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.multi-account-aggregation",
+      "title": "アカウントとリージョンをまたいで集約する",
+      "kind": "feature",
+      "text": "AWS Config のアグリゲーターは、複数の AWS アカウントやリージョンから設定データと準拠データを収集する。分散したリソースの設定と準拠状況を、集約先でまとめて確認するために利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-Account Multi-Region Data Aggregation for AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.aggregator-read-only",
+      "title": "集約しても収集元への変更権限は得られない",
+      "kind": "constraint",
+      "text": "AWS Config のアグリゲーターが提供するのは、収集元アカウントやリージョンのデータの読み取り専用の表示である。アグリゲーター経由で収集元に Config ルールをデプロイすることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-Account Multi-Region Data Aggregation for AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.ssm-remediation",
+      "title": "非準拠リソースを Automation で修復する",
+      "kind": "integration",
+      "text": "AWS Config で評価した非準拠リソースの修復には、AWS Systems Manager Automation ドキュメントを関連付ける。Config ルールに修復アクションを設定し、検出した非準拠への自動修復に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Remediating Noncompliant Resources with AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/remediation.html"
+        },
+        {
+          "title": "Setting Up Auto Remediation for AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/setup-autoremediation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.stop-customer-recorder",
+      "title": "カスタマーマネージドレコーダーは停止できる",
+      "kind": "feature",
+      "text": "AWS Config の StopConfigurationRecorder API は、カスタマーマネージドの設定レコーダーを停止する。停止すると、そのレコーダーで記録対象に指定したリソースタイプの設定変更の記録が止まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "StopConfigurationRecorder",
+          "url": "https://docs.aws.amazon.com/config/latest/APIReference/API_StopConfigurationRecorder.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.proactive-does-not-block",
+      "title": "事前評価だけではデプロイを阻止しない",
+      "kind": "constraint",
+      "text": "AWS Config の事前対応型の評価では、リソースを非準拠と判定しても、そのリソースのデプロイを阻止しない。デプロイ前に準拠を評価することと、非準拠のリソースの作成を禁止することは区別する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Turning on Proactive Evaluation for AWS Config Rules",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_turn-on-proactive-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.custom-lambda-rules",
+      "title": "独自の評価処理に Lambda を使う",
+      "kind": "integration",
+      "text": "AWS Config のカスタム Lambda ルールでは、独自の評価処理を Lambda 関数として用意してルールに関連付ける。ルールが起動すると、Config が渡した設定情報を関数が評価し、評価結果を返す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Config Custom Rules",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_develop-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.proactive-evaluation",
+      "title": "デプロイ前のプロパティを評価する",
+      "kind": "feature",
+      "text": "AWS Config の事前対応型の評価では、デプロイ前のリソースのプロパティを基に、対応するルールへの準拠を確認できる。そのアカウントとリージョンで有効にした事前対応型ルールによって評価する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Turning on Proactive Evaluation for AWS Config Rules",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_turn-on-proactive-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.advanced-queries",
+      "title": "現在の設定を SQL の一部の構文で検索する",
+      "kind": "feature",
+      "text": "AWS Config の高度なクエリは、SQL の SELECT 構文の一部を使い、現在の設定項目データをプロパティに基づいて検索する。リソースの現在の設定に条件を付け、該当するリソースを調べる用途に使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Querying the Current Configuration State of AWS Resources with AWS Config",
+          "url": "https://docs.aws.amazon.com/config/latest/developerguide/querying-AWS-resources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "cloudtrail.account-activity",
+    "cloudtrail.organization-member-restriction"
+  ],
+  "references": [
+    {
+      "title": "What Is AWS Config?",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    },
+    {
+      "title": "Components of an AWS Config Rule",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config_components.html"
+    },
+    {
+      "title": "Multi-Account Multi-Region Data Aggregation for AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/aggregate-data.html"
+    }
+  ],
+  "createdBy": "cx22",
+  "createdAt": "2026-11-16"
+}

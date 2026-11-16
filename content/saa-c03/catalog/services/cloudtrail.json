@@ -98,7 +98,7 @@
       "id": "cloudtrail.event-history-retention",
       "title": "イベント履歴の保持期間は直近 90 日",
       "kind": "quota",
-      "text": "CloudTrail のイベント履歴で参照できる管理イベントは直近 90 日分である。それより長期の操作記録が必要なら、証跡を作って S3 に継続保存する。",
+      "text": "CloudTrail のイベント履歴で参照できる管理イベントは直近 90 日分である。それより長期の記録が必要なら、証跡またはイベントデータストアを作成する。",
       "depth": "core",
       "sources": [
         {

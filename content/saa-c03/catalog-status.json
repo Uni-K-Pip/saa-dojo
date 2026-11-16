@@ -409,6 +409,56 @@
     "checkedAt": "2026-11-15",
     "hash": "1d20e5073d2f"
   },
+  "backup": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bfac98ab4f35"
+  },
+  "backup.cross-account-copy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cc14e4109736"
+  },
+  "backup.cross-region-copy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e6bcd9e233ec"
+  },
+  "backup.rds-no-cold-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "df81bc629282"
+  },
+  "backup.retention-lifecycle": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "21f4d6345242"
+  },
+  "backup.scheduled-backup-plan": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "af2fbbe0e3dd"
+  },
+  "backup.tag-based-assignment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "092291ad6f2d"
+  },
+  "backup.vault-lock-compliance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d23e8df7ea79"
+  },
+  "backup.vault-lock-early-deletion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3e709819cce8"
+  },
+  "backup.vault-lock-governance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "835f4e3ef009"
+  },
   "client-vpn": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -679,15 +729,30 @@
     "checkedAt": "2026-11-16",
     "hash": "5ec1623370ff"
   },
+  "cloudtrail.cloudwatch-logs-monitoring": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "86ef4cf41cc7"
+  },
   "cloudtrail.data-events": {
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "55fa211769ed"
   },
+  "cloudtrail.data-events-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bfcc3e6af1c9"
+  },
   "cloudtrail.data-events-pricing": {
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "b3218bd4625a"
+  },
+  "cloudtrail.event-history-account-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0ae9bc1ca8cc"
   },
   "cloudtrail.event-history-event-types": {
     "status": "verified",
@@ -769,6 +834,11 @@
     "checkedAt": "2026-11-16",
     "hash": "8125540fff11"
   },
+  "cloudwatch.custom-metrics": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b797b86da1d9"
+  },
   "cloudwatch.dashboards": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -793,6 +863,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "2ef0e2bcd4b3"
+  },
+  "cloudwatch.logs-ia-metric-filter-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "937a1c45d0be"
   },
   "cloudwatch.logs-insights": {
     "status": "verified",
@@ -1013,6 +1088,106 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "fa045a6a5f2c"
+  },
+  "direct-connect": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "81a138d0763d"
+  },
+  "direct-connect.bgp-routing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0f30095fdf7b"
+  },
+  "direct-connect.consistent-performance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3079256e6c51"
+  },
+  "direct-connect.data-transfer-out-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5c7afafd8114"
+  },
+  "direct-connect.dedicated-connection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "261faf8b052b"
+  },
+  "direct-connect.encryption-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "86158bc94425"
+  },
+  "direct-connect.gateway-multi-region": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3aafbea58ebb"
+  },
+  "direct-connect.hosted-connection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ab8ef2553f17"
+  },
+  "direct-connect.lag-aggregation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7ee90b108715"
+  },
+  "direct-connect.macsec-link-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7278c170531a"
+  },
+  "direct-connect.macsec-must-encrypt": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bbe89a326514"
+  },
+  "direct-connect.macsec-supported-connections": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b5119c71adb3"
+  },
+  "direct-connect.multi-location-resiliency": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cf7a2d54415d"
+  },
+  "direct-connect.port-hour-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "852f12a01ff7"
+  },
+  "direct-connect.private-network": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cd106cfe68c3"
+  },
+  "direct-connect.private-vif": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "602e578f610c"
+  },
+  "direct-connect.public-vif": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e6bd824c2c43"
+  },
+  "direct-connect.public-vif-aws-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "73f3804532ae"
+  },
+  "direct-connect.transit-vif": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "499e2c7527ad"
+  },
+  "direct-connect.vpn-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "92bd964ef067"
   },
   "dynamodb": {
     "status": "verified",
@@ -2064,6 +2239,91 @@
     "checkedAt": "2026-11-16",
     "hash": "d60ccabc0183"
   },
+  "efs.bursting-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "173a22cc70d2"
+  },
+  "efs.concurrent-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "65caab0192a8"
+  },
+  "efs.elastic-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "39ed03b1f34a"
+  },
+  "efs.elastic-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6925b48243ae"
+  },
+  "efs.elastic-throughput-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "53bc1b0f9975"
+  },
+  "efs.general-purpose-performance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e3aa8da54149"
+  },
+  "efs.lifecycle-tiering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9f46ac7dff8d"
+  },
+  "efs.mount-target-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "718df5a245d3"
+  },
+  "efs.nfs-egress": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cbdfba3f87aa"
+  },
+  "efs.nfs-ingress": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "37c48ecf4237"
+  },
+  "efs.nfs-protocol": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0f0c07344654"
+  },
+  "efs.one-zone-risk": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5af1cf29629b"
+  },
+  "efs.provisioned-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5b1cf33b6068"
+  },
+  "efs.regional-resilience": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "68bc298cea00"
+  },
+  "efs.same-az-mount-target": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ac0217390184"
+  },
+  "efs.storage-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "382366521589"
+  },
+  "efs.windows-unsupported": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d1627f4248a6"
+  },
   "eks": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -2829,6 +3089,186 @@
     "checkedAt": "2026-11-16",
     "hash": "33ecdd9ee82d"
   },
+  "fsx": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5591a2079446"
+  },
+  "fsx.lustre-compute": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "21a5df15bde0"
+  },
+  "fsx.lustre-s3-repository": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "88c7d3e5c0db"
+  },
+  "fsx.ontap-auto-tiering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4c52d394c0e8"
+  },
+  "fsx.ontap-file-protocols": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6d41b4686bae"
+  },
+  "fsx.ontap-snapshot-only-tiering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a914e481ab36"
+  },
+  "fsx.ontap-ssd-decrease-generation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f08568e55787"
+  },
+  "fsx.openzfs-nfs-migration": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6a013f0640c1"
+  },
+  "fsx.windows-deduplication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e6f893152fad"
+  },
+  "fsx.windows-hdd-cost": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "acf39dc393b8"
+  },
+  "fsx.windows-multi-az-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a49631c747ce"
+  },
+  "fsx.windows-multi-az-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b08240e93f4"
+  },
+  "fsx.windows-single-az-boundary": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ead86081626b"
+  },
+  "fsx.windows-smb": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "98001e27e443"
+  },
+  "fsx.windows-storage-increase-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aec6ebdf6beb"
+  },
+  "global-accelerator": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "dcc9ded79dae"
+  },
+  "global-accelerator.accelerator-hourly-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6db847404c01"
+  },
+  "global-accelerator.custom-routing-destination": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5a04695e3786"
+  },
+  "global-accelerator.custom-routing-no-auto-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c5e1ae050f0b"
+  },
+  "global-accelerator.data-transfer-premium": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e97cf53cde23"
+  },
+  "global-accelerator.dns-independent-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e69da8b04527"
+  },
+  "global-accelerator.elb-global-front": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e04cfcee6514"
+  },
+  "global-accelerator.endpoint-weights": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c987eaec4758"
+  },
+  "global-accelerator.fail-open": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a95aee61c3ec"
+  },
+  "global-accelerator.fixed-anycast-entry": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2e5cd22e9299"
+  },
+  "global-accelerator.global-network": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "90b1d9b1f28a"
+  },
+  "global-accelerator.health-based-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "522c829628ee"
+  },
+  "global-accelerator.ip-address-families": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "40d92ba069bb"
+  },
+  "global-accelerator.no-direct-onprem-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ccdc555b45d0"
+  },
+  "global-accelerator.public-ipv4-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3ae83dc53f18"
+  },
+  "global-accelerator.regional-endpoint-groups": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b12e3ca3e94e"
+  },
+  "global-accelerator.regional-traffic-dial": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "16993497e927"
+  },
+  "global-accelerator.standard-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ff2eec128901"
+  },
+  "global-accelerator.tcp-udp-listeners": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7d113716fca7"
+  },
+  "global-accelerator.traffic-dial-new-connections": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ac0f6c11fa67"
+  },
+  "guardduty": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "717799150ee4"
+  },
   "guardduty.auto-enable-all": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -2883,6 +3323,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "335515b97f7f"
+  },
+  "guardduty.regional-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "83d29e550205"
   },
   "guardduty.runtime-security-agent": {
     "status": "verified",
@@ -3128,6 +3573,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "ad8621b9faa2"
+  },
+  "kms": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "33c2c6c07e47"
   },
   "kms.automatic-rotation-eligibility": {
     "status": "verified",
@@ -3894,6 +4344,11 @@
     "checkedAt": "2026-11-16",
     "hash": "568c24c9613e"
   },
+  "route53.calculated-health-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ef9b550a65d2"
+  },
   "route53.cloudfront-target-health": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3963,6 +4418,16 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "7a110b258f37"
+  },
+  "route53.resolver-inbound": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ec989e4c0daa"
+  },
+  "route53.resolver-outbound": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b73f5babaab4"
   },
   "route53.ttl-change-delay": {
     "status": "verified",
@@ -4943,6 +5408,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "6063d1376345"
+  },
+  "waf": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0bb2efe84233"
   },
   "waf.anti-ddos-managed-rules": {
     "status": "verified",

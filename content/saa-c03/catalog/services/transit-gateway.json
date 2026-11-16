@@ -266,7 +266,7 @@
       "id": "transit-gateway.data-processing-pricing",
       "title": "ハブへ送るデータ量に応じて処理料金がかかる",
       "kind": "pricing",
-      "text": "VPC、Direct Connect、VPN、Network Firewall からトランジットゲートウェイへ送信するデータには、データ量に応じた処理料金がかかります。Private IP VPN アタッチメントでは、基盤となる Direct Connect アタッチメントの処理料金に加えて二重に処理料金は課されません。",
+      "text": "VPC、Direct Connect、VPN、Network Firewall からトランジットゲートウェイへ送信するデータには、データ量に応じた処理料金がかかります。",
       "depth": "core",
       "sources": [
         {

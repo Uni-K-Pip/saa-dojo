@@ -1,0 +1,160 @@
+{
+  "id": "security-hub",
+  "tier": 2,
+  "summary": "AWS Security Hub は複数のセキュリティサービスの検出結果を相関付け、重要なリスクへの対応を優先するためのサービスです。補完関係にある Security Hub CSPM は、標準やベストプラクティスに照らして設定を評価します。",
+  "chooseWhen": [
+    {
+      "text": "複数のセキュリティサービスの検出結果を組み合わせ、対応すべきリスクを優先したいとき。",
+      "factRefs": [
+        "security-hub.correlated-findings"
+      ]
+    },
+    {
+      "text": "Security Hub CSPM で、標準やベストプラクティスに基づく設定の評価を継続したいとき。",
+      "factRefs": [
+        "security-hub.cspm-security-checks"
+      ]
+    },
+    {
+      "text": "組織内のアカウントの Security Hub CSPM を委任管理者から管理したいとき。",
+      "factRefs": [
+        "security-hub.cspm-delegated-administrator"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "設定不備の検出とセキュリティ態勢の評価だけが目的なら、Security Hub CSPM 単独の利用を選べる。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "security-hub.correlated-findings",
+      "title": "検出結果の相関付けによるリスクの優先付け",
+      "kind": "feature",
+      "text": "AWS Security Hub は、Security Hub CSPM の設定チェックや Amazon Inspector などの検出結果を相関付け、AWS リソースのリスクを表すエクスポージャーを検出します。複数のセキュリティ情報を組み合わせ、重要な問題への対応を優先するために使います。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Introduction to AWS Security Hub",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub-v2.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-security-checks",
+      "title": "CSPM による標準に基づく設定評価",
+      "kind": "feature",
+      "text": "AWS Security Hub CSPM は、AWS のベストプラクティスや業界標準に基づくセキュリティコントロールのチェックを継続的に実行します。コントロールの検出結果によって、アカウントやリソースの設定が標準に適合しているかを評価できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Introduction to AWS Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-service-findings",
+      "title": "CSPM への他サービスの検出結果の集約",
+      "kind": "integration",
+      "text": "AWS Security Hub CSPM は、Amazon GuardDuty、Amazon Inspector、Amazon Macie などの検出結果を受け取れます。連携したサービスの検出結果を集約し、複数のセキュリティ上の問題を一つの画面から確認したい場合に使います。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Introduction to AWS Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-delegated-administrator",
+      "title": "Organizations と CSPM の委任管理者",
+      "kind": "integration",
+      "text": "AWS Security Hub CSPM を AWS Organizations と統合すると、組織の管理アカウントが指定した委任管理者から、組織内のメンバーアカウントの Security Hub CSPM を有効化・管理できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing Security Hub CSPM for multiple accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-central-policy",
+      "title": "中央設定ポリシーによる CSPM の有効化指定",
+      "kind": "feature",
+      "text": "AWS Security Hub CSPM の中央設定を使う場合、委任管理者は設定ポリシーで CSPM の有効・無効を指定できます。ポリシーをアカウント、組織単位（OU）、または組織ルートに関連付け、中央管理の対象へ適用します。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding central configuration in Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/central-configuration-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-root-auto-enablement",
+      "title": "組織ルートの設定による新規・既存アカウントの有効化",
+      "kind": "feature",
+      "text": "AWS Security Hub CSPM の中央設定で、CSPM を有効にする設定ポリシーを組織ルートに関連付けると、組織の新規・既存アカウントで自動的に有効になります。ただし、別の設定ポリシーが適用・継承されるアカウントや、自己管理のアカウントは例外です。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automatically enabling Security Hub CSPM in new organization accounts",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/accounts-orgs-auto-enable.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-central-regions",
+      "title": "中央設定ポリシーのリージョン範囲",
+      "kind": "feature",
+      "text": "AWS Security Hub CSPM の中央設定ポリシーは、委任管理者が設定を行うホームリージョンと、指定したすべてのリンク先リージョンで有効になります。複数リージョンの CSPM 設定をホームリージョンから管理する仕組みです。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding central configuration in Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/central-configuration-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "security-hub.cspm-declarative-recommendation",
+      "title": "組織管理では宣言型ポリシーを推奨",
+      "kind": "feature",
+      "text": "AWS Security Hub CSPM の組織全体の管理では、中央設定に代わって AWS Organizations の宣言型ポリシーが推奨されています。Security Hub CSPM の宣言型ポリシーは、対象となるアカウントの各リージョンで CSPM を有効化・設定するために使います。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing accounts with declarative policies in Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/accounts-orgs-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What are Security Hub and Security Hub CSPM?",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-are-securityhub-services.html"
+    },
+    {
+      "title": "Introduction to AWS Security Hub",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub-v2.html"
+    },
+    {
+      "title": "Introduction to AWS Security Hub CSPM",
+      "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"
+    }
+  ],
+  "createdBy": "cx26",
+  "createdAt": "2026-11-16"
+}

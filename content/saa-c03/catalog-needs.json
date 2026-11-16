@@ -129,7 +129,11 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Trusted Advisor は IAM ポリシーを分析して権限を自動で絞り込む機能を持たない。"
+      "knowledge": "AWS Trusted Advisor は IAM ポリシーを分析して権限を自動で絞り込む機能を持たない。",
+      "decision": "fact",
+      "factRefs": [
+        "trusted-advisor.read-only-inspection"
+      ]
     },
     {
       "key": "saa-1.1-w2m-008/a",
@@ -209,7 +213,8 @@
       "knowledge": "AWS CloudTrail の組織の証跡はメンバーアカウントで変更できないが、AWS Config のレコーダーの停止は防げない。",
       "decision": "fact",
       "factRefs": [
-        "cloudtrail.organization-member-restriction"
+        "cloudtrail.organization-member-restriction",
+        "config.stop-customer-recorder"
       ]
     },
     {
@@ -554,7 +559,13 @@
       "task": "1.2",
       "side": "correct",
       "gap": "none",
-      "knowledge": "AWS Security Hub CSPM は Organizations の委任管理者と中央設定ポリシーを組織ルートに関連付けて、新規・既存メンバーアカウントに一貫して有効化できる。"
+      "knowledge": "AWS Security Hub CSPM は Organizations の委任管理者と中央設定ポリシーを組織ルートに関連付けて、新規・既存メンバーアカウントに一貫して有効化できる。",
+      "decision": "fact",
+      "factRefs": [
+        "security-hub.cspm-delegated-administrator",
+        "security-hub.cspm-central-policy",
+        "security-hub.cspm-root-auto-enablement"
+      ]
     },
     {
       "key": "saa-1.2-w2m-016/a",
@@ -611,7 +622,8 @@
       "decision": "fact",
       "factRefs": [
         "ecr.enhanced-scanning",
-        "ecr.enhanced-rescan-duration"
+        "ecr.enhanced-rescan-duration",
+        "inspector.ecr-monitoring-criteria"
       ]
     },
     {
@@ -814,7 +826,11 @@
       "task": "1.3",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Secrets Manager のレプリカシークレットは、プライマリのローテーションによる値の変更が自動で反映されることが書かれていない。"
+      "knowledge": "AWS Secrets Manager のレプリカシークレットは、プライマリのローテーションによる値の変更が自動で反映されることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "secrets-manager.replica-rotation-propagation"
+      ]
     },
     {
       "key": "saa-1.3-w2m-012/d",

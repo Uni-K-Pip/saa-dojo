@@ -520,6 +520,10 @@
         {
           "title": "Understanding Amazon DNS - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/userguide/AmazonDNS-concepts.html"
+        },
+        {
+          "title": "What is Route 53 VPC Resolver? - Amazon Route 53",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
         }
       ],
       "checkedAt": "2026-11-14"
@@ -528,8 +532,7 @@
       "id": "vpc.dns-not-reachable-outside",
       "title": "VPC の DNS サーバーは VPC の外から使えない",
       "kind": "constraint",
-      "text": "VPC の CIDR に 2 を足した Amazon DNS サーバーへ、オンプレミスや他の VPC の DNS サーバーから転送することはサポートされない。オンプレミスから VPC の名前を引くには、Route 53 VPC Resolver（旧称 Route 53 Resolver）のインバウンドエンドポイントを使う。ピアリング先の VPC の DNS サーバーにも問い合わせられない。",
-      "trap": "VPN や Direct Connect でつないでも、オンプレミスから VPC+2 のアドレスは直接使えない。",
+      "text": "VPC の CIDR に 2 を足した Amazon DNS サーバーへ、オンプレミスや他の VPC の DNS サーバーから転送することはサポートされない。オンプレミスから VPC の名前を引くには、Route 53 VPC Resolver のインバウンドエンドポイントを使う。ピアリング先の VPC の DNS サーバーにも問い合わせられない。",
       "depth": "core",
       "sources": [
         {
