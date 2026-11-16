@@ -1726,7 +1726,12 @@
       "task": "3.3",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon Keyspaces のオンデマンドキャパシティーモードは、過去ピークの 2 倍までの急増に即応し、それを超える短時間の急増では容量不足エラーが起こり得ること。"
+      "knowledge": "Amazon Keyspaces のオンデマンドキャパシティーモードは、過去ピークの 2 倍までの急増に即応し、それを超える短時間の急増では容量不足エラーが起こり得ること。",
+      "decision": "fact",
+      "factRefs": [
+        "keyspaces.on-demand-peak-scaling",
+        "keyspaces.on-demand-rapid-growth-errors"
+      ]
     },
     {
       "key": "saa-3.3-w2m-005/a",
@@ -1931,7 +1936,12 @@
       "task": "3.5",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon AppFlow は Salesforce から S3 へのフローで、項目のマスキングや必須項目の検証を設定だけで行えること。"
+      "knowledge": "Amazon AppFlow は Salesforce から S3 へのフローで、項目のマスキングや必須項目の検証を設定だけで行えること。",
+      "decision": "fact",
+      "factRefs": [
+        "appflow.field-masking",
+        "appflow.required-field-validation"
+      ]
     },
     {
       "key": "saa-3.5-w2m-003/d",

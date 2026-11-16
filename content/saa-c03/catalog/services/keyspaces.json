@@ -1,0 +1,134 @@
+{
+  "id": "keyspaces",
+  "tier": 2,
+  "summary": "Apache Cassandra と互換性のある、サーバーレスのワイドカラムデータベース。サーバーを管理せずに既存の Cassandra ワークロードを AWS 上で実行でき、テーブルの読み書きにはオンデマンドとプロビジョンドの容量モードを選べる。",
+  "chooseWhen": [
+    {
+      "text": "対応する CQL 操作を使う Cassandra アプリケーションを、サーバー管理なしで AWS 上で動かしたい場合。",
+      "factRefs": [
+        "keyspaces.cql-compatibility",
+        "keyspaces.serverless-management"
+      ]
+    },
+    {
+      "text": "Cassandra ワークロードの読み書きを、実際のリクエスト数に応じた課金で利用したい場合。",
+      "factRefs": [
+        "keyspaces.on-demand-billing"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "オンデマンドで、過去ピークの2倍を超える負荷への30分以内の急増にも、容量不足エラーなしの即応を求める場合。",
+      "factRefs": [
+        "keyspaces.on-demand-rapid-growth-errors"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "keyspaces.cql-compatibility",
+      "title": "Cassandra の CQL との互換性",
+      "kind": "feature",
+      "text": "Amazon Keyspaces は Cassandra Query Language（CQL）と互換性があり、対応する CQL 操作を使う既存の Cassandra アプリケーションを AWS 上で実行できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Keyspaces (for Apache Cassandra)?",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html"
+        },
+        {
+          "title": "Supported Cassandra APIs, operations, functions, and data types",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/cassandra-apis.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "keyspaces.serverless-management",
+      "title": "サーバー管理が不要なサーバーレス運用",
+      "kind": "feature",
+      "text": "Amazon Keyspaces はサーバーレスであり、利用者によるサーバーのプロビジョニングやパッチ適用、データベースソフトウェアのインストール・保守・運用を必要としない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Keyspaces (for Apache Cassandra)?",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "keyspaces.on-demand-billing",
+      "title": "オンデマンドは読み書きの要求数に応じて課金",
+      "kind": "pricing",
+      "text": "Amazon Keyspaces のオンデマンドキャパシティーモードでは、テーブルで実行した読み取りと書き込みを、それぞれ読み取りリクエスト単位（RRU）と書き込みリクエスト単位（WRU）で計測し、利用量に応じて課金する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure on-demand capacity mode",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.OnDemand.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "keyspaces.provisioned-capacity",
+      "title": "プロビジョンドでは読み書き容量を事前指定",
+      "kind": "feature",
+      "text": "Amazon Keyspaces のプロビジョンドキャパシティーモードでは、アプリケーションに必要な読み書きのスループットを、読み取りキャパシティーユニット（RCU）と書き込みキャパシティーユニット（WCU）で事前に指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure provisioned capacity mode",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.Provisioned.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "keyspaces.on-demand-peak-scaling",
+      "title": "オンデマンドの過去ピークに基づく即時追従",
+      "kind": "feature",
+      "text": "Amazon Keyspaces のオンデマンドキャパシティーモードは、テーブルが過去に処理したトラフィックのピークを基準に、その2倍までのトラフィック増加へ即座に対応する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configure on-demand capacity mode",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.OnDemand.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "keyspaces.on-demand-rapid-growth-errors",
+      "title": "オンデマンドでも急増時に容量不足が起こり得る",
+      "kind": "constraint",
+      "text": "Amazon Keyspaces のオンデマンドキャパシティーモードでも、テーブルのトラフィックが30分以内に過去ピークの2倍を超えると、スループット容量不足のエラーが発生することがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configure on-demand capacity mode",
+          "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.OnDemand.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Keyspaces (for Apache Cassandra)?",
+      "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/what-is-keyspaces.html"
+    },
+    {
+      "title": "Configure on-demand capacity mode",
+      "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.OnDemand.html"
+    },
+    {
+      "title": "Configure provisioned capacity mode",
+      "url": "https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.Provisioned.html"
+    }
+  ],
+  "createdBy": "cx38",
+  "createdAt": "2026-11-16"
+}

@@ -233,7 +233,7 @@
       "id": "athena.grouped-record-count",
       "title": "GROUP BY と COUNT によるレコード件数の集計",
       "kind": "feature",
-      "text": "Athena の SQL では、GROUP BY に指定した列の値ごとにレコードをまとめ、COUNT(*) で各グループのレコード件数を集計できる。複数の列を指定して、それらの値の組み合わせごとに集計することもできる。",
+      "text": "Athena の SQL では、GROUP BY に指定した列の値ごとにレコードをまとめ、COUNT(*) で各グループのレコード件数を集計できる。",
       "depth": "detail",
       "sources": [
         {

@@ -209,6 +209,21 @@
     "checkedAt": "2026-11-14",
     "hash": "8544bec33a30"
   },
+  "appflow": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ac1c2160e543"
+  },
+  "appflow.field-masking": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b3b686c6ae27"
+  },
+  "appflow.required-field-validation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9f1e59f00b15"
+  },
   "athena": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -258,6 +273,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "ad04319ccc89"
+  },
+  "athena.grouped-record-count": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7de6b96d7d35"
   },
   "athena.lake-formation-query": {
     "status": "verified",
@@ -598,6 +618,101 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "1c5241d30401"
+  },
+  "cloudformation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "77b9a147e0db"
+  },
+  "cloudformation.change-set-no-success-guarantee": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aa3ca7825ee7"
+  },
+  "cloudformation.change-set-preview": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f5d4cb7b2623"
+  },
+  "cloudformation.deletion-policy-retain": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0d27256be7d6"
+  },
+  "cloudformation.drift-aware-change-set": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "df5226b60585"
+  },
+  "cloudformation.drift-detection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "629e78a3866f"
+  },
+  "cloudformation.drift-explicit-properties": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "09ceec131d20"
+  },
+  "cloudformation.drift-supported-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "05eaf4a7e75c"
+  },
+  "cloudformation.nested-stack-reuse": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0d3704800e56"
+  },
+  "cloudformation.preserve-created-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "333d6917cd83"
+  },
+  "cloudformation.repeatable-infrastructure": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a39c09fd0428"
+  },
+  "cloudformation.stack-resource-unit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d698752be9b5"
+  },
+  "cloudformation.stacksets-auto-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "040e78b95e41"
+  },
+  "cloudformation.stacksets-management-excluded": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ca28af1af342"
+  },
+  "cloudformation.stacksets-multi-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b745c0a1c8a1"
+  },
+  "cloudformation.stacksets-service-managed": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2f962cc511b4"
+  },
+  "cloudformation.template-parameters": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b82d899b7918"
+  },
+  "cloudformation.template-provisioning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7fd7264aa4c6"
+  },
+  "cloudformation.waf-association-template": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0ca5bc8b4bcf"
   },
   "cloudfront": {
     "status": "verified",
@@ -1144,6 +1259,41 @@
     "checkedAt": "2026-11-16",
     "hash": "efa16dc857b7"
   },
+  "cost-explorer": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6b3e3bb8afbc"
+  },
+  "cost-explorer.cost-usage-visualization": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3641feb62ee6"
+  },
+  "cost-explorer.filter-group": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c23b9e80b2e3"
+  },
+  "cost-explorer.forecast": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "62643a1f23e7"
+  },
+  "cost-explorer.resource-daily-costs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f529d87cc29b"
+  },
+  "cost-explorer.ri-recommendations": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f9c8c046a344"
+  },
+  "cost-explorer.savings-plans-recommendations": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fb43c78a3af6"
+  },
   "datasync": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -1383,6 +1533,61 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "92bd964ef067"
+  },
+  "dms": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e26e84f7b877"
+  },
+  "dms.engine-migrations": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f82dac7d1ca4"
+  },
+  "dms.full-load": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "879e28b5881e"
+  },
+  "dms.ongoing-cdc": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "72cc35800caf"
+  },
+  "dms.replication-cpu-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f39b32f7a405"
+  },
+  "dms.replication-instance-resizing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fee3b423c502"
+  },
+  "dms.schema-conversion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1b459af99a0d"
+  },
+  "dms.serverless-autoscaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "04d99ee69bc9"
+  },
+  "dms.serverless-management": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "947a9f62a8e6"
+  },
+  "dms.serverless-scaling-delay": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6110d8e8cc2e"
+  },
+  "dms.source-endpoint-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a830468b3613"
   },
   "dynamodb": {
     "status": "verified",
@@ -2192,7 +2397,7 @@
   "ecr.enhanced-initial-images": {
     "status": "verified",
     "checkedAt": "2026-11-16",
-    "hash": "42330d9ffea1"
+    "hash": "ebed5ad56e7d"
   },
   "ecr.enhanced-pricing": {
     "status": "verified",
@@ -2202,7 +2407,7 @@
   "ecr.enhanced-rescan-duration": {
     "status": "verified",
     "checkedAt": "2026-11-16",
-    "hash": "7018c6088a5d"
+    "hash": "b62b538bc72b"
   },
   "ecr.enhanced-scanning": {
     "status": "verified",
@@ -2503,6 +2708,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "5b1cf33b6068"
+  },
+  "efs.provisioned-throughput-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0a9ee82e76b4"
   },
   "efs.regional-resilience": {
     "status": "verified",
@@ -3909,6 +4119,91 @@
     "checkedAt": "2026-11-16",
     "hash": "c86fe210883e"
   },
+  "keyspaces": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "05de11bd3630"
+  },
+  "keyspaces.cql-compatibility": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f1875f3ceb6a"
+  },
+  "keyspaces.on-demand-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b7ba7cd4ebd3"
+  },
+  "keyspaces.on-demand-peak-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f4de612256fe"
+  },
+  "keyspaces.on-demand-rapid-growth-errors": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "be28c370c565"
+  },
+  "keyspaces.provisioned-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d51e2b8e63b1"
+  },
+  "keyspaces.serverless-management": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7e1fbd968c1a"
+  },
+  "kinesis-data-streams": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "17b2180dd9d7"
+  },
+  "kinesis-data-streams.direct-s3-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "afa90a18af1f"
+  },
+  "kinesis-data-streams.enhanced-fan-out": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9f74d6dd73e8"
+  },
+  "kinesis-data-streams.independent-consumers": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6bbc615345af"
+  },
+  "kinesis-data-streams.on-demand-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "76ae567fa301"
+  },
+  "kinesis-data-streams.partition-routing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "095ad16433f8"
+  },
+  "kinesis-data-streams.provisioned-shards": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c2458f8dc3ca"
+  },
+  "kinesis-data-streams.realtime-ingestion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4a8f195dac78"
+  },
+  "kinesis-data-streams.retained-replay": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "63338b09d295"
+  },
+  "kinesis-data-streams.server-side-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7e84179e6245"
+  },
   "kms": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5109,6 +5404,51 @@
     "checkedAt": "2026-11-14",
     "hash": "5f27b848c34c"
   },
+  "savings-plans": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bd867e9a8ff1"
+  },
+  "savings-plans.compute-ec2-flexibility": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c26edb57ad5c"
+  },
+  "savings-plans.compute-hourly-commitment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "45bd305ded7a"
+  },
+  "savings-plans.compute-lambda": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4fa4362cd9c2"
+  },
+  "savings-plans.compute-payment-options": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "256391653281"
+  },
+  "savings-plans.database-one-year": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b95943f9c7d0"
+  },
+  "savings-plans.ec2-instance-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6cae59bdf945"
+  },
+  "savings-plans.excess-on-demand": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7264573bda27"
+  },
+  "savings-plans.ri-covered-usage-excluded": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d1c569752b6d"
+  },
   "secrets-manager": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5118,6 +5458,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "56c8cca5df69"
+  },
+  "secrets-manager.client-side-cache": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "831b23245e23"
   },
   "secrets-manager.cloudtrail-audit": {
     "status": "verified",
@@ -5174,6 +5519,11 @@
     "checkedAt": "2026-11-16",
     "hash": "c8f91a7fcf49"
   },
+  "secrets-manager.usage-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b6f7f46b803"
+  },
   "security-hub": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5184,6 +5534,16 @@
     "checkedAt": "2026-11-16",
     "hash": "857e63aa9189"
   },
+  "security-hub.cspm-central-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "40a87c26f2b2"
+  },
+  "security-hub.cspm-central-regions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "761ae8c596dd"
+  },
   "security-hub.cspm-declarative-recommendation": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5193,6 +5553,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "bfd1d7b1940d"
+  },
+  "security-hub.cspm-root-auto-enablement": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "07ae1562a81f"
   },
   "security-hub.cspm-security-checks": {
     "status": "verified",
@@ -5669,6 +6034,66 @@
     "checkedAt": "2026-11-14",
     "hash": "3cc38ef34012"
   },
+  "transfer-family": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cfd2113165e1"
+  },
+  "transfer-family.endpoint-hourly-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b24a0db122c2"
+  },
+  "transfer-family.existing-clients": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1bb83893603c"
+  },
+  "transfer-family.ftp-internal-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ce76e595f62b"
+  },
+  "transfer-family.multiple-server-users": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ea69658db5e5"
+  },
+  "transfer-family.public-changing-ip": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "71f3d2932df9"
+  },
+  "transfer-family.public-no-security-groups": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1207a5090b1b"
+  },
+  "transfer-family.sftp-s3-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f815cbd9896c"
+  },
+  "transfer-family.user-home-directory": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ff4cf4b03ddb"
+  },
+  "transfer-family.user-s3-access-role": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7faabf5e80e7"
+  },
+  "transfer-family.vpc-elastic-ip": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "744e0d06aa49"
+  },
+  "transfer-family.vpc-source-ip-filter": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6c9adeb84a27"
+  },
   "transit-gateway": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5803,6 +6228,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "fe5a1b60bb89"
+  },
+  "trusted-advisor.service-limit-monitoring": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "285a3b67e01c"
   },
   "trusted-advisor.support-plan-access": {
     "status": "verified",

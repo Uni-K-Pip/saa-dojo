@@ -1,0 +1,76 @@
+{
+  "id": "appflow",
+  "tier": 3,
+  "summary": "Amazon AppFlow は、Salesforce などの SaaS アプリケーションと Amazon S3 や Amazon Redshift などの AWS サービスの間で、コードを書かずにデータ転送フローを作成できるフルマネージドの統合サービスです。",
+  "chooseWhen": [
+    {
+      "text": "Salesforce などの対応する SaaS と AWS サービスの間で、コードを書かずにデータを転送したい場合。"
+    },
+    {
+      "text": "転送する項目のマスキングや、値が欠落したレコードを除外する検証をフローに設定したい場合。",
+      "factRefs": [
+        "appflow.field-masking",
+        "appflow.required-field-validation"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "変更イベントを提供しない SaaS を送信元にし、イベント起動による転送が必須の場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "appflow.field-masking",
+      "title": "転送項目のマスキング",
+      "kind": "feature",
+      "text": "Amazon AppFlow は、フローの項目マッピングで選択した項目の値をマスキングできます。機密情報を含む項目をマスキングすると、転送先の項目には元の値の代わりにアスタリスク（*）だけが入ります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon AppFlow flows - Amazon AppFlow",
+          "url": "https://docs.aws.amazon.com/appflow/latest/userguide/flows.html"
+        },
+        {
+          "title": "Create a flow using the AWS console - Amazon AppFlow",
+          "url": "https://docs.aws.amazon.com/appflow/latest/userguide/create-flow-console.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "appflow.required-field-validation",
+      "title": "値の欠落を検出する検証",
+      "kind": "feature",
+      "text": "Amazon AppFlow では、選択した項目の値が欠落または null の場合に、そのレコードを転送から除外する検証ルールをフローに設定できます。これにより、必要な項目に値があるレコードだけを転送できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create a flow using the AWS console - Amazon AppFlow",
+          "url": "https://docs.aws.amazon.com/appflow/latest/userguide/create-flow-console.html"
+        },
+        {
+          "title": "Step 3: Transfer data from Amazon S3 to a SaaS destination - Amazon AppFlow",
+          "url": "https://docs.aws.amazon.com/appflow/latest/userguide/flow-tutorial-s3-salesforce.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon AppFlow? - Amazon AppFlow",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html"
+    },
+    {
+      "title": "Create a flow using the AWS console - Amazon AppFlow",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/create-flow-console.html"
+    },
+    {
+      "title": "Flow triggers - Amazon AppFlow",
+      "url": "https://docs.aws.amazon.com/appflow/latest/userguide/flow-triggers.html"
+    }
+  ],
+  "createdBy": "cx39",
+  "createdAt": "2026-11-16"
+}
