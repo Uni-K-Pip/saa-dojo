@@ -209,6 +209,91 @@
     "checkedAt": "2026-11-14",
     "hash": "8544bec33a30"
   },
+  "athena": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1498e7953813"
+  },
+  "athena.capacity-based-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d256a3116437"
+  },
+  "athena.columnar-scan": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c9f2b69563cf"
+  },
+  "athena.compressed-data-scan": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5dbe4ca260a9"
+  },
+  "athena.ctas-columnar": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "86bdf2b4458a"
+  },
+  "athena.federated-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f28d2cbf945c"
+  },
+  "athena.flow-log-packet-sum": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bdfd0fcf802e"
+  },
+  "athena.flow-log-reject-filter": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "750db4817c15"
+  },
+  "athena.flow-logs-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "21ec98cb3340"
+  },
+  "athena.glue-catalog": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ad04319ccc89"
+  },
+  "athena.lake-formation-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cf61ff835a79"
+  },
+  "athena.partition-pruning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2074a1f331cf"
+  },
+  "athena.per-query-scan-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "639c343c52e9"
+  },
+  "athena.s3-sql-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1754cbb74ede"
+  },
+  "athena.scan-based-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ad3bc8900d55"
+  },
+  "athena.serverless-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c573c6147c0f"
+  },
+  "athena.workgroups": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2407ca8919dd"
+  },
   "aurora": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -458,6 +543,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "835f4e3ef009"
+  },
+  "backup.vault-policy-removable": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a869d849271f"
   },
   "client-vpn": {
     "status": "verified",
@@ -2344,6 +2434,11 @@
     "checkedAt": "2026-11-16",
     "hash": "d60ccabc0183"
   },
+  "efs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f4e588e8647e"
+  },
   "efs.bursting-throughput": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -2944,6 +3039,51 @@
     "checkedAt": "2026-11-14",
     "hash": "dee6de2e2faf"
   },
+  "emr": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "36147e5124d2"
+  },
+  "emr.bootstrap-customization": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0a8346332988"
+  },
+  "emr.custom-automatic-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "27abc1ef23e3"
+  },
+  "emr.distributed-processing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7441f389caf3"
+  },
+  "emr.managed-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5b8eb3b8e00e"
+  },
+  "emr.managed-scaling-yarn": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f4c455686838"
+  },
+  "emr.s3-input-output": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e7dfe80b5388"
+  },
+  "emr.s3a-connector": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bf720b4bd59e"
+  },
+  "emr.serverless-runtime": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "eff99b874e4f"
+  },
   "eventbridge": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3194,6 +3334,51 @@
     "checkedAt": "2026-11-16",
     "hash": "33ecdd9ee82d"
   },
+  "firewall-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1f0d92e3210e"
+  },
+  "firewall-manager.audit-without-remediation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "034b827a8b0a"
+  },
+  "firewall-manager.config-compliance-recording": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "893f287faa45"
+  },
+  "firewall-manager.new-in-scope-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3440b9a63390"
+  },
+  "firewall-manager.organizations-prerequisite": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "52cdc3a64a94"
+  },
+  "firewall-manager.policy-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1f0e18bcee0f"
+  },
+  "firewall-manager.shield-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c81b9a098ca3"
+  },
+  "firewall-manager.waf-auto-remediation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0b558cdfe897"
+  },
+  "firewall-manager.waf-policy-web-acls": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c1fc4e9e9f06"
+  },
   "fsx": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3228,6 +3413,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f08568e55787"
+  },
+  "fsx.ontap-ssd-provisioned-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7bd9e1d9ff9e"
   },
   "fsx.openzfs-nfs-migration": {
     "status": "verified",
@@ -3829,6 +4019,66 @@
     "checkedAt": "2026-11-16",
     "hash": "7b7a22dfac7a"
   },
+  "lake-formation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7a9dcd81035c"
+  },
+  "lake-formation.athena-resource-links": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "52f92cef3afa"
+  },
+  "lake-formation.cell-filter": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0cc1cb010067"
+  },
+  "lake-formation.central-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "575162a72e38"
+  },
+  "lake-formation.column-select": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1e5de6ac5bcd"
+  },
+  "lake-formation.cross-account-column-select": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "edb40a5ae48d"
+  },
+  "lake-formation.cross-account-grant-option": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "708c49802d7f"
+  },
+  "lake-formation.filters-read-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7feaff882a0b"
+  },
+  "lake-formation.recipient-regrant": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "75a631e49a14"
+  },
+  "lake-formation.resource-link-describe": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d3dff809c4b5"
+  },
+  "lake-formation.resource-link-target-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fef9431deebf"
+  },
+  "lake-formation.row-filter": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3bde5688a023"
+  },
   "lambda": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -4053,6 +4303,51 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "eb2a94ff2c2f"
+  },
+  "network-firewall": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d2e8d75e9f6c"
+  },
+  "network-firewall.default-drop-established": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1125fc7c25e7"
+  },
+  "network-firewall.endpoint-subnet-exclusion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b3ec3298042"
+  },
+  "network-firewall.http-host-filtering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9c509975fe91"
+  },
+  "network-firewall.https-sni-filtering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "21f977f0b478"
+  },
+  "network-firewall.route-to-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7a28d323a6bc"
+  },
+  "network-firewall.strict-allowlist-no-auto-drop": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "34716991b1c0"
+  },
+  "network-firewall.strict-rule-order": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "923fffd75f69"
+  },
+  "network-firewall.suricata-inspection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "041aebef861f"
   },
   "organizations": {
     "status": "verified",
@@ -5546,8 +5841,8 @@
   },
   "vpc.dns-resolver-address": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "d4429e0a8b46"
+    "checkedAt": "2026-11-16",
+    "hash": "ca88d1282297"
   },
   "vpc.egress-only-igw": {
     "status": "verified",

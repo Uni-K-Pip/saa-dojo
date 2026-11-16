@@ -1,0 +1,197 @@
+{
+  "id": "dms",
+  "tier": 2,
+  "summary": "対応するデータストア間でデータを移行するサービスです。同種・異種のデータベース移行に対応し、既存データのロードと継続的な変更の複製を利用できます。DMS Schema Conversion によるスキーマ変換も提供します。",
+  "chooseWhen": [
+    {
+      "text": "対応するデータベース間で、同じエンジンへの移行や異なるエンジンへの移行を行いたいとき。",
+      "factRefs": [
+        "dms.engine-migrations"
+      ]
+    },
+    {
+      "text": "既存データを移した後も変更を反映し続け、移行元から移行先へ切り替えたいとき。",
+      "factRefs": [
+        "dms.full-load",
+        "dms.ongoing-cdc"
+      ]
+    },
+    {
+      "text": "レプリケーションインスタンスの容量見積もりや管理を減らし、負荷に応じて容量を自動調整したいとき。",
+      "factRefs": [
+        "dms.serverless-management",
+        "dms.serverless-autoscaling"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "対応ソース一覧に含まれない Salesforce を、データ移行のソースエンドポイントへ直接指定したいとき。",
+      "factRefs": [
+        "dms.source-endpoint-scope"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "dms.engine-migrations",
+      "title": "同種・異種のデータベース移行",
+      "kind": "feature",
+      "text": "AWS DMS は、対応するソースとターゲットの間で、同じデータベースエンジンへの移行にも、異なるデータベースエンジンへの移行にも利用できます。異種間では、ソースのスキーマを移行先エンジン用に変換してからデータを移します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Database Migration Service?",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.full-load",
+      "title": "既存データのフルロード",
+      "kind": "feature",
+      "text": "AWS DMS のフルロードは、移行元のテーブルに存在するデータを移行先のテーブルへ読み込む処理です。移行タスクでは、既存データの移行を行う段階としてフルロードを実行できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High-level view of AWS DMS",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.HighLevelView.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.ongoing-cdc",
+      "title": "CDC による継続的な変更の複製",
+      "kind": "feature",
+      "text": "AWS DMS の変更データキャプチャ（CDC）は、移行元の変更を継続的に移行先へ反映します。フルロードと蓄積した変更の適用後も複製を続け、切り替え時にはアプリケーションを停止して残りの変更を反映してから移行先で再開できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High-level view of AWS DMS",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.HighLevelView.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.schema-conversion",
+      "title": "DMS Schema Conversion による変換",
+      "kind": "feature",
+      "text": "DMS Schema Conversion は、対応する変換経路で、移行元のスキーマやストアドプロシージャなどのコードオブジェクトを移行先と互換性のある形式へ変換する AWS DMS の機能です。データそのものの移行は、別途 AWS DMS のデータ移行機能で行います。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Converting database schemas using DMS Schema Conversion",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.source-endpoint-scope",
+      "title": "データ移行のソースエンドポイントの範囲",
+      "kind": "constraint",
+      "text": "AWS DMS のデータ移行では、公式の対応ソース一覧に列挙されたデータストアをソースエンドポイントとして使用します。この一覧には Oracle、MySQL、PostgreSQL、Amazon S3 などが含まれますが、Salesforce は含まれていません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Sources for data migration",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.html"
+        },
+        {
+          "title": "Sources for AWS DMS",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Introduction.Sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.replication-instance-resizing",
+      "title": "レプリケーションインスタンスのサイズ変更",
+      "kind": "feature",
+      "text": "AWS DMS のレプリケーションインスタンスは、移行に必要な構成に合わせてインスタンスクラスを変更できます。クラスの変更にはインスタンスの再起動が伴い、変更は即時、または次のメンテナンスウィンドウで適用します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Modifying a replication instance",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.Modifying.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.replication-cpu-capacity",
+      "title": "CPU 容量と移行性能",
+      "kind": "feature",
+      "text": "AWS DMS の移行処理ではデータ型の変換などに CPU を使うため、レプリケーションインスタンスの CPU 過負荷や CPU リソース不足は移行を遅くする要因になります。インスタンスの処理能力は移行性能を左右します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Best practices for AWS Database Migration Service",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_BestPractices.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.serverless-management",
+      "title": "Serverless によるインスタンス管理の削減",
+      "kind": "feature",
+      "text": "AWS DMS Serverless は、レプリケーションインスタンスの容量見積もりやプロビジョニングといった管理作業を不要にする機能です。ソースのメタデータからレプリケーションの負荷を分析し、必要な容量を計算して確保します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with AWS DMS Serverless",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.serverless-autoscaling",
+      "title": "DCU の設定範囲内での自動調整",
+      "kind": "feature",
+      "text": "AWS DMS Serverless は、利用者が設定した DMS キャパシティーユニット（DCU）の最小値と最大値の範囲内で、変化するレプリケーション負荷に応じて容量を自動調整します。最小値が縮小の下限、最大値が拡張の上限になります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS DMS Serverless components",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.Components.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "dms.serverless-scaling-delay",
+      "title": "Serverless の容量変更にかかる時間",
+      "kind": "feature",
+      "text": "AWS DMS Serverless の容量変更には時間がかかります。急な負荷増加に備える場合は、追加の容量が確保されるまでリソース不足にならないよう、想定する急増を処理できる最小 DCU を設定することが推奨されています。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS DMS Serverless components",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.Components.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Database Migration Service?",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "Working with AWS DMS Serverless",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Serverless.html"
+    },
+    {
+      "title": "Converting database schemas using DMS Schema Conversion",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html"
+    }
+  ],
+  "createdBy": "cx35",
+  "createdAt": "2026-11-16"
+}

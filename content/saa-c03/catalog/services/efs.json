@@ -290,7 +290,7 @@
       "id": "efs.provisioned-throughput-pricing",
       "title": "Provisioned は含まれるベースラインを超える設定分に課金",
       "kind": "pricing",
-      "text": "Amazon EFS の Provisioned スループット料金は、Standard の保存量に基づいて含まれるベースラインを超えて指定した分に対して発生する。このベースラインには、リージョンの Bursting ベースラインの上限が適用される。",
+      "text": "Amazon EFS の Provisioned スループット料金は、Standard の保存量に基づいて含まれるベースラインを超えて指定した分に対して発生する。",
       "depth": "detail",
       "sources": [
         {

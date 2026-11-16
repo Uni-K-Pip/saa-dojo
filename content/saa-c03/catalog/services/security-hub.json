@@ -88,12 +88,16 @@
       "id": "security-hub.cspm-central-policy",
       "title": "中央設定ポリシーによる CSPM の有効化指定",
       "kind": "feature",
-      "text": "AWS Security Hub CSPM の中央設定を使う場合、委任管理者は設定ポリシーで CSPM の有効・無効を指定できます。ポリシーをアカウント、組織単位（OU）、または組織ルートに関連付け、中央管理の対象へ適用します。",
+      "text": "AWS Security Hub CSPM の旧式（legacy）の中央設定では、委任管理者は設定ポリシーで CSPM の有効・無効を指定できます。ポリシーをアカウント、組織単位（OU）、または組織ルートに関連付け、中央管理の対象へ適用します。現在は AWS Organizations の宣言型ポリシーが推奨されています。",
       "depth": "detail",
       "sources": [
         {
           "title": "Understanding central configuration in Security Hub CSPM",
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/central-configuration-intro.html"
+        },
+        {
+          "title": "Managing Security Hub CSPM for multiple accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
       "checkedAt": "2026-11-16"
@@ -102,12 +106,16 @@
       "id": "security-hub.cspm-root-auto-enablement",
       "title": "組織ルートの設定による新規・既存アカウントの有効化",
       "kind": "feature",
-      "text": "AWS Security Hub CSPM の中央設定で、CSPM を有効にする設定ポリシーを組織ルートに関連付けると、組織の新規・既存アカウントで自動的に有効になります。ただし、別の設定ポリシーが適用・継承されるアカウントや、自己管理のアカウントは例外です。",
+      "text": "AWS Security Hub CSPM の旧式（legacy）の中央設定で、CSPM を有効にする設定ポリシーを組織ルートに関連付けると、組織の新規・既存アカウントで自動的に有効になります。ただし、別の設定ポリシーが適用・継承されるアカウントや、自己管理のアカウントは例外です。現在は AWS Organizations の宣言型ポリシーが推奨されています。",
       "depth": "detail",
       "sources": [
         {
           "title": "Automatically enabling Security Hub CSPM in new organization accounts",
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/accounts-orgs-auto-enable.html"
+        },
+        {
+          "title": "Managing Security Hub CSPM for multiple accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
       "checkedAt": "2026-11-16"
@@ -116,12 +124,16 @@
       "id": "security-hub.cspm-central-regions",
       "title": "中央設定ポリシーのリージョン範囲",
       "kind": "feature",
-      "text": "AWS Security Hub CSPM の中央設定ポリシーは、委任管理者が設定を行うホームリージョンと、指定したすべてのリンク先リージョンで有効になります。複数リージョンの CSPM 設定をホームリージョンから管理する仕組みです。",
+      "text": "AWS Security Hub CSPM の旧式（legacy）の中央設定では、設定ポリシーは委任管理者が設定を行うホームリージョンと、指定したすべてのリンク先リージョンで有効になります。複数リージョンの CSPM 設定をホームリージョンから管理する仕組みです。現在は AWS Organizations の宣言型ポリシーが推奨されています。",
       "depth": "detail",
       "sources": [
         {
           "title": "Understanding central configuration in Security Hub CSPM",
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/central-configuration-intro.html"
+        },
+        {
+          "title": "Managing Security Hub CSPM for multiple accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
       "checkedAt": "2026-11-16"

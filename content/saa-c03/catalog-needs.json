@@ -1218,14 +1218,23 @@
       "task": "2.1",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "AWS Transfer Family の公開エンドポイントの IP アドレスは固定ではなく、セキュリティグループで接続元を制限できない。"
+      "knowledge": "AWS Transfer Family の公開エンドポイントの IP アドレスは固定ではなく、セキュリティグループで接続元を制限できない。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.public-changing-ip",
+        "transfer-family.public-no-security-groups"
+      ]
     },
     {
       "key": "saa-2.1-w2m-022/b",
       "task": "2.1",
       "side": "correct",
       "gap": "none",
-      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントはセキュリティグループで接続元の IP 範囲を制限できる。"
+      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントはセキュリティグループで接続元の IP 範囲を制限できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.vpc-source-ip-filter"
+      ]
     },
     {
       "key": "saa-2.1-w2m-022/d",
@@ -1235,7 +1244,8 @@
       "knowledge": "Amazon S3 は SFTP を受け付けず、SFTP で受け取るには AWS Transfer Family を使う。",
       "decision": "fact",
       "factRefs": [
-        "s3.transfer-family-sftp"
+        "s3.transfer-family-sftp",
+        "transfer-family.sftp-s3-storage"
       ]
     },
     {
@@ -1243,7 +1253,11 @@
       "task": "2.1",
       "side": "correct",
       "gap": "none",
-      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントに Elastic IP アドレスを関連付けると、SFTP の接続先 IP を固定できる。"
+      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントに Elastic IP アドレスを関連付けると、SFTP の接続先 IP を固定できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.vpc-elastic-ip"
+      ]
     },
     {
       "key": "saa-2.1-w2m-024/a",
@@ -1924,7 +1938,11 @@
       "task": "3.5",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "AWS DMS のレプリケーションタスクは Salesforce をソースエンドポイントとしてサポートしていないこと。"
+      "knowledge": "AWS DMS のレプリケーションタスクは Salesforce をソースエンドポイントとしてサポートしていないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.source-endpoint-scope"
+      ]
     },
     {
       "key": "saa-3.5-w2m-006/c",
@@ -2068,14 +2086,24 @@
       "task": "4.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Transfer Family のサーバーは停止中も削除するまで時間課金が続くため、停止しても費用削減にならない。"
+      "knowledge": "AWS Transfer Family のサーバーは停止中も削除するまで時間課金が続くため、停止しても費用削減にならない。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.endpoint-hourly-billing"
+      ]
     },
     {
       "key": "saa-4.1-w2m-008/c",
       "task": "4.1",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Transfer Family は 1 つのサーバーに複数ユーザーを作成でき、ユーザーごとのホームディレクトリと IAM ロールで S3 へのアクセスを分離できる。"
+      "knowledge": "AWS Transfer Family は 1 つのサーバーに複数ユーザーを作成でき、ユーザーごとのホームディレクトリと IAM ロールで S3 へのアクセスを分離できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.multiple-server-users",
+        "transfer-family.user-s3-access-role",
+        "transfer-family.user-home-directory"
+      ]
     },
     {
       "key": "saa-4.2-w2m-001/c",
@@ -2275,14 +2303,24 @@
       "task": "4.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS DMS のレプリケーションインスタンスは固定サイズで、平均負荷に合わせるとピーク時に遅延が増える。"
+      "knowledge": "AWS DMS のレプリケーションインスタンスは固定サイズで、平均負荷に合わせるとピーク時に遅延が増える。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.replication-instance-resizing",
+        "dms.replication-cpu-capacity"
+      ]
     },
     {
       "key": "saa-4.3-w2m-007/c",
       "task": "4.3",
       "side": "correct",
       "gap": "none",
-      "knowledge": "AWS DMS Serverless は最小と最大の DCU の範囲で容量を自動調整し、レプリケーションインスタンスの見積もりを不要にする。"
+      "knowledge": "AWS DMS Serverless は最小と最大の DCU の範囲で容量を自動調整し、レプリケーションインスタンスの見積もりを不要にする。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.serverless-management",
+        "dms.serverless-autoscaling"
+      ]
     },
     {
       "key": "saa-4.3-w2m-008/a",

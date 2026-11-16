@@ -57,7 +57,7 @@
       "id": "trusted-advisor.service-limit-monitoring",
       "title": "サービス制限に対する使用量の確認",
       "kind": "feature",
-      "text": "AWS Trusted Advisor は、対応するサービスについてアカウントの使用量をサービス制限と照合します。サービス制限に近づいた場合や制限を超えた場合の通知により、使用量と上限の関係を確認できます。",
+      "text": "AWS Trusted Advisor では、アカウントの使用量を確認し、アカウントがサービス制限に近づいたときや、サービス制限を超えたときに通知を受け取ることができます。",
       "depth": "core",
       "sources": [
         {

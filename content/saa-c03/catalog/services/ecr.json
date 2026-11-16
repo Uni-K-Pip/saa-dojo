@@ -127,31 +127,35 @@
     },
     {
       "id": "ecr.enhanced-rescan-duration",
-      "title": "拡張スキャンの対象期間",
+      "title": "再スキャン期間の既定値は有効化時期で異なる",
       "kind": "feature",
-      "text": "拡張スキャンを有効にすると、Inspector は既定でイメージが削除されるか拡張スキャンが無効になるまでリポジトリを監視する。プッシュ日の期間と再スキャン期間は Inspector で設定でき、期間が過ぎたイメージのスキャン状態は SCAN_ELIGIBILITY_EXPIRED になる。",
+      "text": "2026-11-16 時点で、拡張スキャンの再スキャン期間の既定値は、Amazon ECR スキャンの有効化が 2026-10-15 以降なら 7 日、2024-05-16〜2026-10-14 なら 14 日、それより前なら 90 日である。既に有効化済みのアカウントは現在の期間設定を維持する。",
       "depth": "detail",
       "sources": [
         {
-          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
-          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+          "title": "Scanning Amazon Elastic Container Registry container images with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
+        },
+        {
+          "title": "Configuring the Amazon ECR re-scan duration",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_configure_duration_setting_ecr.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-16"
     },
     {
       "id": "ecr.enhanced-initial-images",
       "title": "拡張スキャンを有効にした時点で対象になるイメージ",
       "kind": "constraint",
-      "text": "拡張スキャンを最初に有効にしたとき、Inspector が認識するのは、直近 14 日以内にプッシュされたイメージだけである。それより古いイメージは SCAN_ELIGIBILITY_EXPIRED になり、スキャンするには再度プッシュする。",
+      "text": "2026-11-16 時点で拡張スキャンを新たに有効にすると、Amazon Inspector は既定で直近 7 日以内に Amazon ECR にプッシュされたイメージを検出する。",
       "depth": "detail",
       "sources": [
         {
-          "title": "Scan images for OS and programming language package vulnerabilities in Amazon ECR",
-          "url": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html"
+          "title": "Scanning Amazon Elastic Container Registry container images with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-16"
     },
     {
       "id": "ecr.enhanced-pricing",

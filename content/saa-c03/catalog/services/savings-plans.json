@@ -1,0 +1,185 @@
+{
+  "id": "savings-plans",
+  "tier": 2,
+  "summary": "一定の期間、1時間あたりの利用額を約束することで、対象の AWS 使用量に割引料金を適用する料金モデル。Compute Savings Plans と EC2 Instance Savings Plans では、適用範囲の柔軟性が異なる。",
+  "chooseWhen": [
+    {
+      "text": "1年または3年にわたり、コンピューティングの時間あたり利用額を約束できるとき。",
+      "factRefs": [
+        "savings-plans.compute-hourly-commitment"
+      ]
+    },
+    {
+      "text": "EC2 のファミリーやリージョンを変更しても割引を継続したいときは、Compute Savings Plans を選ぶ。",
+      "factRefs": [
+        "savings-plans.compute-ec2-flexibility"
+      ]
+    },
+    {
+      "text": "同じリージョンの同じ EC2 ファミリーを使い続けるときは、EC2 Instance Savings Plans を選ぶ。",
+      "factRefs": [
+        "savings-plans.ec2-instance-scope"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "時間あたりの利用額を長期に約束できないとき。",
+      "factRefs": [
+        "savings-plans.compute-hourly-commitment"
+      ]
+    },
+    {
+      "text": "EC2 の起動容量そのものを確保したいときは、キャパシティ予約を検討する。",
+      "factRefs": [
+        "ec2.capacity-vs-discount"
+      ],
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "すでに RI でカバーされる EC2 使用量に、割引を追加したいとき。",
+      "factRefs": [
+        "savings-plans.ri-covered-usage-excluded"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "savings-plans.compute-hourly-commitment",
+      "title": "コンピューティングの時間あたり利用額を約束する",
+      "kind": "pricing",
+      "text": "Compute Savings Plans と EC2 Instance Savings Plans は、1年または3年にわたる1時間あたりの利用額の約束と引き換えに、対象の使用量にオンデマンドより低い料金を適用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Compute Savings Plans and Reserved Instances",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-ris.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.compute-ec2-flexibility",
+      "title": "Compute プランの EC2 への適用範囲",
+      "kind": "feature",
+      "text": "Compute Savings Plans は、EC2 インスタンスのファミリー、サイズ、リージョン、OS、テナンシーを問わず自動適用される。これらの構成を変更しても、対象の使用量には引き続き割引料金が適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Savings Plans types",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.compute-lambda",
+      "title": "Compute プランは Lambda にも適用される",
+      "kind": "integration",
+      "text": "Compute Savings Plans は AWS Lambda の使用量にも適用される。EC2 から Lambda にワークロードを移す場合にも、Compute Savings Plans の割引料金を引き続き利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Savings Plans FAQs",
+          "url": "https://aws.amazon.com/savingsplans/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.ec2-instance-scope",
+      "title": "EC2 Instance プランはリージョンとファミリーを指定する",
+      "kind": "feature",
+      "text": "EC2 Instance Savings Plans の適用範囲は、選択した AWS リージョンの特定の EC2 インスタンスファミリーである。その範囲内では、サイズ、OS、テナンシーが変わっても割引料金が自動適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Savings Plans types",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.excess-on-demand",
+      "title": "コミットメントを超えた使用量の課金",
+      "kind": "pricing",
+      "text": "Savings Plans では、約束した時間あたりの利用額まで対象の使用量に割引料金を適用する。コミットメントを超える使用量は、通常のオンデマンド料金で課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Savings Plans FAQs",
+          "url": "https://aws.amazon.com/savingsplans/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.ri-covered-usage-excluded",
+      "title": "RI 適用済みの使用量には重ねて適用されない",
+      "kind": "pricing",
+      "text": "Savings Plans の割引は、リザーブドインスタンス（RI）によってすでにカバーされている EC2 の使用量には適用されない。同じ使用量に RI と Savings Plans の割引を重ねることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Compute Savings Plans and Reserved Instances",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/sp-ris.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.compute-payment-options",
+      "title": "コンピューティング向けプランの支払い方法",
+      "kind": "pricing",
+      "text": "Compute Savings Plans と EC2 Instance Savings Plans のコミットメントには、全額前払い（All Upfront）、一部前払い（Partial Upfront）、前払いなし（No Upfront）の支払い方法がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What are Savings Plans?",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "savings-plans.database-one-year",
+      "title": "Database Savings Plans のコミットメントは1年",
+      "kind": "pricing",
+      "text": "Database Savings Plans では、対象となる AWS データベースサービスの1時間あたりの利用額を1年間約束することで、割引料金が適用される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Savings Plans FAQs",
+          "url": "https://aws.amazon.com/savingsplans/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "fargate.savings-plans",
+    "ec2.spot-no-savings-plans",
+    "ec2.capacity-vs-discount",
+    "ec2.ri-no-cancel",
+    "ec2.ri-marketplace-standard-only"
+  ],
+  "references": [
+    {
+      "title": "Savings Plans FAQs",
+      "url": "https://aws.amazon.com/savingsplans/faqs/"
+    },
+    {
+      "title": "What are Savings Plans?",
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html"
+    },
+    {
+      "title": "Savings Plans types",
+      "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html"
+    }
+  ],
+  "createdBy": "cx36",
+  "createdAt": "2026-11-16"
+}
