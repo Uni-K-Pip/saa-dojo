@@ -1,0 +1,153 @@
+{
+  "id": "cognito",
+  "tier": 2,
+  "summary": "Web・モバイルアプリの利用者の認証とアクセス制御を担うサービス。ユーザープールで利用者を認証してトークンを発行し、ID プールで AWS リソースにアクセスするための一時的な認証情報を提供する。",
+  "chooseWhen": [
+    {
+      "text": "Web・モバイルアプリに利用者の登録とサインインを組み込みたいとき。",
+      "factRefs": [
+        "cognito.user-pool-directory"
+      ]
+    },
+    {
+      "text": "外部 IdP でのサインインを、アプリが受け取る共通のトークンにまとめたいとき。",
+      "factRefs": [
+        "cognito.user-pool-federation"
+      ]
+    },
+    {
+      "text": "アプリの利用者に、一時的な AWS 認証情報で S3 などへアクセスさせたいとき。",
+      "factRefs": [
+        "cognito.identity-pool-credentials"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "従業員が複数の AWS アカウントへサインインするための共通の入口を用意したいとき。",
+      "factRefs": [
+        "iam-identity-center.workforce-access-portal"
+      ],
+      "alternatives": [
+        "iam-identity-center"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cognito.user-pool-directory",
+      "title": "アプリの利用者を管理するユーザープール",
+      "kind": "feature",
+      "text": "Cognito ユーザープールは、Web・モバイルアプリの利用者を認証するユーザーディレクトリである。アプリの利用者の登録とサインインを受け持ち、管理者が利用者を登録する方式も使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Authenticating users with Amazon Cognito user pools - Amazon Cognito",
+          "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.user-pool-jwt",
+      "title": "ユーザープールによる JWT の発行",
+      "kind": "feature",
+      "text": "Cognito ユーザープールは、認証した利用者の JWT をアプリや API に発行する。アプリ側でトークンを検証する構成では、ID プールと組み合わせず、ユーザープール単独で利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Cognito? - Amazon Cognito",
+          "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.user-pool-federation",
+      "title": "外部 IdP の認証をユーザープールに集約",
+      "kind": "feature",
+      "text": "Cognito ユーザープールは、SAML・OIDC・ソーシャル IdP によるサインインを仲介できる。外部 IdP のトークンやアサーションを受け取り、アプリにはユーザープールが発行した共通形式の JWT を渡す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Cognito? - Amazon Cognito",
+          "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.identity-pool-credentials",
+      "title": "ID プールによる一時的な AWS 認証情報",
+      "kind": "feature",
+      "text": "Cognito ID プールは、信頼する IdP の認証結果を、一時的で権限を限定した AWS 認証情報に交換する。アプリの利用者が S3 などの AWS リソースへアクセスするために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Cognito FAQs",
+          "url": "https://aws.amazon.com/cognito/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.identity-pool-guest-access",
+      "title": "未認証のゲストへのアクセス許可",
+      "kind": "feature",
+      "text": "Cognito ID プールでは、IdP で認証していないゲストにも、一時的な AWS 認証情報を提供するよう設定できる。ゲスト用に別の IAM ロールを定義し、アクセス権限を限定して利用させる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Cognito FAQs",
+          "url": "https://aws.amazon.com/cognito/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.identity-sub",
+      "title": "Cognito 固有の sub が表す ID",
+      "kind": "feature",
+      "text": "Cognito の cognito-identity.amazonaws.com:sub は、ID プール内のユーザーの ID を表す。ID プールが発行するトークンの sub クレームには、この ID プール内の ID が含まれる。",
+      "trap": "元の IdP が発行したトークンの sub 値ではない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "IAM roles - Amazon Cognito",
+          "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cognito.s3-identity-prefix",
+      "title": "ID ごとに S3 のアクセス範囲を分離",
+      "kind": "integration",
+      "text": "Cognito ID プールの利用者に S3 へのアクセスを許可するときは、引き受けるロールのアクセスポリシーで ${cognito-identity.amazonaws.com:sub} を使い、各 ID に対応するプレフィックス内にアクセス範囲を限定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "IAM roles - Amazon Cognito",
+          "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "iam-identity-center.workforce-access-portal",
+    "api-gateway.http-api-jwt-authorizer"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Cognito? - Amazon Cognito",
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+    },
+    {
+      "title": "Amazon Cognito FAQs",
+      "url": "https://aws.amazon.com/cognito/faqs/"
+    }
+  ],
+  "createdBy": "cx3",
+  "createdAt": "2026-11-16"
+}

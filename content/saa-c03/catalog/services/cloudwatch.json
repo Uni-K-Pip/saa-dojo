@@ -1,0 +1,359 @@
+{
+  "id": "cloudwatch",
+  "tier": 1,
+  "summary": "AWS リソースやアプリケーションの稼働状態を、メトリクスとログで監視するサービス。ダッシュボードで状況を可視化し、アラームによる通知や自動対応、ログの検索・分析を行う。",
+  "chooseWhen": [
+    {
+      "text": "メトリクスをしきい値と比較し、異常時に通知を送りたいとき。",
+      "factRefs": [
+        "cloudwatch.metric-alarms",
+        "cloudwatch.alarm-sns"
+      ]
+    },
+    {
+      "text": "アプリケーションやサーバーのログを集め、障害調査のために検索・分析したいとき。",
+      "factRefs": [
+        "cloudwatch.logs-centralization",
+        "cloudwatch.logs-insights"
+      ]
+    },
+    {
+      "text": "EC2 やオンプレミスのサーバーから、メモリ使用量などの OS 内部のメトリクスを収集したいとき。",
+      "factRefs": [
+        "cloudwatch.agent-system-metrics"
+      ]
+    },
+    {
+      "text": "複数リージョンのリソースのメトリクスやアラームを、共通のダッシュボードで確認したいとき。",
+      "factRefs": [
+        "cloudwatch.dashboards"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "CloudTrail が配信したログファイルの変更・削除を、整合性検証で確かめたいとき。",
+      "alternatives": [
+        "cloudtrail"
+      ]
+    },
+    {
+      "text": "複合アラームから EC2 の操作や Auto Scaling のアクションを直接実行したいとき。",
+      "factRefs": [
+        "cloudwatch.composite-action-limit"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cloudwatch.metric-identity",
+      "title": "メトリクスを識別する要素",
+      "kind": "feature",
+      "text": "CloudWatch メトリクスは、時間順に並ぶデータポイントの集合であり、名前空間・メトリクス名・ディメンションの組み合わせで識別される。ディメンションは名前と値の組で、特定のインスタンスなどの統計を取り出す際に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Metrics concepts",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.custom-metrics",
+      "title": "独自のメトリクスを発行する",
+      "kind": "feature",
+      "text": "CloudWatch には、AWS サービスが送るメトリクスに加え、アプリケーション独自のカスタムメトリクスを発行できる。PutMetricData API や AWS CLI を使う場合は、名前空間・メトリクス名・ディメンションを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Publish custom metrics (PutMetricData / EMF)",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.agent-system-metrics",
+      "title": "エージェントで OS 内部のメトリクスを収集する",
+      "kind": "feature",
+      "text": "CloudWatch エージェントは、EC2 インスタンスやオンプレミスのサーバーから OS 内部のメトリクスを収集する。メモリ使用量やディスク使用状況など、基本モニタリングより詳しいシステムの状態を監視するために使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Collect metrics, logs, and traces using the CloudWatch agent",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html"
+        },
+        {
+          "title": "What is Amazon CloudWatch?",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.logs-centralization",
+      "title": "ログを集約して監視する",
+      "kind": "feature",
+      "text": "CloudWatch Logs は、システム・アプリケーション・AWS サービスからのログを一か所に集約する。異なる発生元のログを時系列のイベントとして扱い、特定のエラーコードやパターンを検索する監視に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon CloudWatch Logs?",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.logs-retention",
+      "title": "ロググループごとに保持期間を設定する",
+      "kind": "feature",
+      "text": "CloudWatch Logs では、ロググループごとに保持ポリシーを設定できる。運用や調査で必要とする保存期間に合わせて保持期間を選べるほか、期限を設けずにログを保持する設定も選べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon CloudWatch Logs?",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.logs-insights",
+      "title": "Logs Insights でログを対話的に分析する",
+      "kind": "feature",
+      "text": "CloudWatch Logs Insights は、CloudWatch Logs 内のログデータをクエリで対話的に検索・分析する機能。運用上の問題が起きた際に、原因の候補を調べたり、適用した修正の効果を確かめたりするために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Analyzing log data with CloudWatch Logs Insights",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.metric-filters",
+      "title": "ログのパターンからメトリクスを生成する",
+      "kind": "feature",
+      "text": "CloudWatch Logs のメトリクスフィルターは、取り込まれるログの語句やパターンを照合し、数値の CloudWatch メトリクスに変換する。生成したメトリクスは、グラフ表示やアラームによる監視に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating metrics from log events using filters",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.metric-alarms",
+      "title": "メトリクスをしきい値と比較するアラーム",
+      "kind": "feature",
+      "text": "CloudWatch のメトリクスアラームは、単一メトリクスまたはメトリクスに基づく数式の結果を監視する。指定した複数の期間にわたり値としきい値を比較し、その結果に基づいてアクションを実行する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon CloudWatch alarms",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.alarm-sns",
+      "title": "アラーム通知に Amazon SNS を使う",
+      "kind": "integration",
+      "text": "CloudWatch のメトリクスアラームは、監視値がしきい値に対して条件を満たした際のアクションとして、Amazon SNS トピックへ通知できる。監視対象の異常を通知先へ知らせる構成に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon CloudWatch alarms",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.composite-alarms",
+      "title": "複数アラームの状態を条件式でまとめる",
+      "kind": "feature",
+      "text": "CloudWatch の複合アラームは、他のアラームの状態を条件式で評価する。複数のメトリクスアラームから個別に通知する代わりに、複合アラームの条件が成立したときだけ通知することで、通知の過多を抑えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon CloudWatch alarms",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.composite-action-limit",
+      "title": "複合アラームから実行できないアクション",
+      "kind": "constraint",
+      "text": "CloudWatch の複合アラームは、EC2 アクションや Auto Scaling アクションを実行できない。複合アラームで複数の状態をまとめられることと、メトリクスアラームと同じ操作を実行できることは区別する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon CloudWatch alarms",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Alarms.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.dashboards",
+      "title": "リージョンをまたいで状況を可視化する",
+      "kind": "feature",
+      "text": "CloudWatch ダッシュボードは、リソースのメトリクスやアラームを共通の画面にまとめて表示する。複数のリージョンに分散したリソースも一つの画面で確認でき、アプリケーションやリソースの稼働状態を把握するために使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon CloudWatch dashboards",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.metric-math",
+      "title": "複数メトリクスから数式で時系列を作る",
+      "kind": "feature",
+      "text": "CloudWatch のメトリクス数式は、複数のメトリクスをクエリし、数式で新しい時系列を作る機能。例えばエラー数を呼び出し数で割ってエラー率を求め、その結果をダッシュボードのグラフに表示できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Math expressions with metrics",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.anomaly-detection",
+      "title": "通常の変動をモデル化して異常を検出する",
+      "kind": "feature",
+      "text": "CloudWatch の異常検出は、統計と機械学習によってメトリクスの通常の範囲をモデル化する。異常検出アラームでは固定しきい値の代わりに、このモデルが予測する値の範囲と実際の値を比較する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using CloudWatch anomaly detection",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.database-fleet",
+      "title": "Database Insights で DB 群の状態を確認する",
+      "kind": "feature",
+      "text": "CloudWatch Database Insights は、構成済みのダッシュボードで複数のデータベースの状態をまとめて監視する。DB 群の中から性能が悪化したインスタンスを見つけ、そのインスタンスの詳細な調査へ進むために使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "CloudWatch Database Insights",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.log-subscriptions",
+      "title": "ログの継続的な配信にサブスクリプションを使う",
+      "kind": "integration",
+      "text": "CloudWatch Logs のサブスクリプションは、取り込んだログイベントを Kinesis Data Streams、Amazon Data Firehose、AWS Lambda などへ継続的に配信する。別の処理基盤でログの独自処理や分析を行う場合に組み合わせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Real-time processing of log data with subscriptions",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Subscriptions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.logs-insights-pricing",
+      "title": "Logs Insights はスキャンしたログ量で課金される",
+      "kind": "pricing",
+      "text": "CloudWatch Logs Insights は、クエリがスキャンした取り込み済みログデータの量に基づいて課金される。クエリを手動でキャンセルした場合も、キャンセルするまでにスキャンしたログ量が課金の対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon CloudWatch FAQs — Pricing",
+          "url": "https://aws.amazon.com/cloudwatch/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.metric-filter-forward-only",
+      "title": "メトリクスフィルターは過去のログに遡及しない",
+      "kind": "constraint",
+      "text": "CloudWatch Logs のメトリクスフィルターは、作成前のログを遡ってメトリクスに変換しない。メトリクスのデータポイントが発行されるのは、そのフィルターを作成した後に発生するログイベントについてだけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Creating metrics from log events using filters",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.logs-ia-metric-filter-limit",
+      "title": "Infrequent Access ではメトリクスフィルターを使えない",
+      "kind": "constraint",
+      "text": "CloudWatch Logs の Infrequent Access ログクラスでは、メトリクスフィルターを使用できない。ログからメトリクスを抽出する監視を構成する場合は、その機能をサポートする Standard ログクラスを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Log classes",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudwatch.database-self-managed-agent",
+      "title": "自己管理 PostgreSQL の監視にはエージェントが必要",
+      "kind": "feature",
+      "text": "CloudWatch Database Insights で自己管理 PostgreSQL を監視する場合は、データベースと同じホストに CloudWatch エージェントをインストールして設定する。エージェントがデータベースから監視用データを収集する構成になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Monitoring Self-Managed PostgreSQL",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights-Self-Managed-PostgreSQL.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "rds.database-insights",
+    "rds.enhanced-monitoring",
+    "ec2-auto-scaling.health-check-grace-period",
+    "ec2-auto-scaling.termination-policy",
+    "ec2-auto-scaling.default-instance-warmup",
+    "ec2-auto-scaling.warmup-excludes-metrics",
+    "route53.failover-record-pair",
+    "route53.calculated-health-check"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon CloudWatch?",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    },
+    {
+      "title": "Amazon CloudWatch FAQs",
+      "url": "https://aws.amazon.com/cloudwatch/faqs/"
+    },
+    {
+      "title": "Validating CloudTrail log file integrity",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
+    }
+  ],
+  "createdBy": "cx5",
+  "createdAt": "2026-11-16"
+}

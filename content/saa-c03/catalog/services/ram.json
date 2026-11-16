@@ -1,0 +1,189 @@
+{
+  "id": "ram",
+  "tier": 2,
+  "summary": "AWS リソースを複数のアカウントで共有するサービスです。共有するリソース、共有先、許可する操作をリソース共有にまとめ、アカウントごとに同じリソースを作る運用を減らします。",
+  "chooseWhen": [
+    {
+      "text": "組織や OU を共有先に指定し、アカウント ID を列挙せずにリソースを共有したいとき。",
+      "factRefs": [
+        "ram.organization-sharing"
+      ]
+    },
+    {
+      "text": "プレフィックスリストを一元管理し、他アカウントのセキュリティグループから参照したいとき。",
+      "factRefs": [
+        "ram.prefix-list-sharing"
+      ]
+    },
+    {
+      "text": "複数アカウントの VPC で DNS 転送ルールとアウトバウンドエンドポイントを共用したいとき。",
+      "factRefs": [
+        "ram.resolver-rule-sharing"
+      ]
+    },
+    {
+      "text": "同じ組織のアカウント間でサブネットを共有し、VPC の管理を集約したいとき。",
+      "factRefs": [
+        "vpc.sharing-basics",
+        "vpc.sharing-responsibilities"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "他アカウントから共有されたリソースを、自分のアカウントからさらに共有したいとき。",
+      "factRefs": [
+        "ram.no-resharing"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ram.resource-share",
+      "title": "リソース共有で共有対象と共有先をまとめる",
+      "kind": "feature",
+      "text": "AWS RAM では、共有対象のリソース、アクセスを許可する共有先、リソースタイプごとのマネージドアクセス許可を指定して、リソース共有を作成します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Resource Access Manager?",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.organization-sharing",
+      "title": "組織や OU を共有先に指定する",
+      "kind": "integration",
+      "text": "AWS RAM で AWS Organizations との共有を有効にすると、個々のアカウント ID を列挙せず、組織全体や指定した OU 内のアカウントをリソースの共有先にできます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Sharing your AWS resources",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.external-invitation",
+      "title": "組織外への共有には招待の承諾が必要",
+      "kind": "feature",
+      "text": "組織外への共有に対応するリソースを AWS RAM で組織外のアカウントへ共有すると、共有先に招待が送られます。共有先は招待を承諾してから共有リソースへアクセスできます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Resource Access Manager?",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.managed-permission-boundary",
+      "title": "マネージドアクセス許可が共有先の権限の上限になる",
+      "kind": "feature",
+      "text": "AWS RAM で別アカウントへ共有するとき、リソース共有に関連付けたマネージドアクセス許可が、共有先のロールやユーザーに付与できる権限の上限になります。共有先の管理者は、その範囲内で IAM のアイデンティティベースのポリシーによるアクセス許可を付与します。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Resource Access Manager?",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.prefix-list-sharing",
+      "title": "プレフィックスリストをアカウント間で共用する",
+      "kind": "integration",
+      "text": "AWS RAM でカスタマーマネージドプレフィックスリストを他アカウントと共有すると、共有先の VPC セキュリティグループからそのリストを参照できます。共有先には組織内のアカウントも指定できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Shareable AWS resources",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/shareable.html"
+        },
+        {
+          "title": "Share customer-managed prefix lists",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/sharing-managed-prefix-lists.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.resolver-rule-sharing",
+      "title": "DNS 転送ルールを共有してエンドポイントを共用する",
+      "kind": "integration",
+      "text": "AWS RAM で Route 53 VPC Resolver（旧称 Route 53 Resolver）の転送ルールを共有すると、同じリージョンの複数アカウントの VPC で、ルールに指定されたアウトバウンドエンドポイントを共用して DNS クエリを転送できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing forwarding rules",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-rules-managing.html"
+        },
+        {
+          "title": "Considerations when creating inbound and outbound endpoints",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-choose-vpc.html"
+        },
+        {
+          "title": "What is Route 53 VPC Resolver?",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.no-resharing",
+      "title": "共有されたリソースは再共有できない",
+      "kind": "constraint",
+      "text": "AWS RAM で共有できるのは、自分のアカウントが所有するリソースです。他アカウントから共有を受けたリソースを、共有先のアカウントから再共有することはできません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Sharing your AWS resources",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "ram.sharing-pricing",
+      "title": "RAM の利用と共有に追加料金はかからない",
+      "kind": "pricing",
+      "text": "AWS RAM の利用、リソース共有の作成、アカウント間でのリソース共有には追加料金がかかりません。共有されたリソースの利用料金は、そのリソースを提供するサービスの課金に従います。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Resource Access Manager?",
+          "url": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "vpc.sharing-basics",
+    "vpc.sharing-responsibilities",
+    "vpc.sharing-security-groups",
+    "vpc.sg-rule-sources",
+    "route53.resolver-outbound"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Resource Access Manager?",
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/what-is.html"
+    },
+    {
+      "title": "Shareable AWS resources",
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/shareable.html"
+    },
+    {
+      "title": "Sharing your AWS resources",
+      "url": "https://docs.aws.amazon.com/ram/latest/userguide/getting-started-sharing.html"
+    }
+  ],
+  "createdBy": "cx11",
+  "createdAt": "2026-11-16"
+}

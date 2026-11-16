@@ -609,6 +609,46 @@
     "checkedAt": "2026-11-14",
     "hash": "e15c25c9e33f"
   },
+  "cognito": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6aaf955e9077"
+  },
+  "cognito.identity-pool-credentials": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ad02d6225624"
+  },
+  "cognito.identity-pool-guest-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "99ade305fda8"
+  },
+  "cognito.identity-sub": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b98a902a65ee"
+  },
+  "cognito.s3-identity-prefix": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "83eefa9d8943"
+  },
+  "cognito.user-pool-directory": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0bb39f249f13"
+  },
+  "cognito.user-pool-federation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ddf1d6becb63"
+  },
+  "cognito.user-pool-jwt": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f02beb2b7896"
+  },
   "datasync": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -2568,6 +2608,51 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "8a337dfab65d"
+  },
+  "iam-identity-center": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "811ac4afca71"
+  },
+  "iam-identity-center.active-directory-source": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "70342653f7fc"
+  },
+  "iam-identity-center.built-in-directory": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4199e7d7182e"
+  },
+  "iam-identity-center.external-idp-provisioning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d6d61e72261d"
+  },
+  "iam-identity-center.external-idp-sign-in": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aaeba4b35f5d"
+  },
+  "iam-identity-center.permission-set-template": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ecaf6c6f0479"
+  },
+  "iam-identity-center.provision-account-roles": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1c9738f67e5e"
+  },
+  "iam-identity-center.session-reauthentication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8a4b228391a7"
+  },
+  "iam-identity-center.workforce-access-portal": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b2fcf8f21ed8"
   },
   "iam.boundary-basics": {
     "status": "verified",

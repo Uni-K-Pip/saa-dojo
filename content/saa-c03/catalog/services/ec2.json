@@ -413,7 +413,7 @@
       "id": "ec2.ri-no-cancel",
       "title": "リザーブドインスタンスの購入は取り消せない",
       "kind": "constraint",
-      "text": "リザーブドインスタンスは、購入後にキャンセルして払い戻しを受けることができない。必要が変わった場合は、変更（modify）、コンバーティブルの交換（exchange）、Reserved Instance Marketplace での販売（スタンダードのみ）のいずれかで対応できることがある。",
+      "text": "リザーブドインスタンスは、購入後にキャンセルして払い戻しを受けることができない。必要が変わった場合は、変更（modify）、コンバーティブルの交換（exchange）、Reserved Instance Marketplace での販売のいずれかで対応できることがある。",
       "trap": "購入をキャンセルして払い戻しを受けることはできない。",
       "depth": "core",
       "sources": [

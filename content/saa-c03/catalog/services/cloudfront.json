@@ -273,7 +273,7 @@
       "id": "cloudfront.oai-legacy",
       "title": "OAI は旧方式で OAC が推奨",
       "kind": "constraint",
-      "text": "オリジンアクセスアイデンティティ（OAI）は旧方式で、OAC の利用が推奨される。OAI はすべてのリージョンの S3 バケット（オプトインリージョンを含む）、SSE-KMS、PUT や DELETE などの動的リクエストに対応しない。新規には OAC を選ぶ。",
+      "text": "オリジンアクセスアイデンティティ（OAI）は旧方式で、OAC の利用が推奨される。OAI は、2022 年 12 月より後に始まったオプトインリージョンの S3 バケット、SSE-KMS、PUT や DELETE などの動的リクエストに対応しないか、回避策が要る。新規には OAC を選ぶ。",
       "depth": "detail",
       "sources": [
         {

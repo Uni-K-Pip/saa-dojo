@@ -72,7 +72,12 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "IAM Identity Center のサインインはブラウザーでの対話的な認証が前提で、無人で動くサーバーには向かない。"
+      "knowledge": "IAM Identity Center のサインインはブラウザーでの対話的な認証が前提で、無人で動くサーバーには向かない。",
+      "decision": "fact",
+      "factRefs": [
+        "iam-identity-center.cli-browser-sign-in",
+        "iam-identity-center.session-reauthentication"
+      ]
     },
     {
       "key": "saa-1.1-w2m-004/d",
@@ -164,35 +169,60 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon GuardDuty は組織連携で、委任管理者と自動有効化により全アカウントの検出結果を集約でき、自作より運用が少ない。"
+      "knowledge": "Amazon GuardDuty は組織連携で、委任管理者と自動有効化により全アカウントの検出結果を集約でき、自作より運用が少ない。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.organizations-admin",
+        "guardduty.auto-enable-all"
+      ]
     },
     {
       "key": "saa-1.1-w2m-009/c",
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon GuardDuty では管理アカウントを委任管理者にする構成は推奨されず、別のセキュリティアカウントを委任管理者にする。"
+      "knowledge": "Amazon GuardDuty では管理アカウントを委任管理者にする構成は推奨されず、別のセキュリティアカウントを委任管理者にする。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.separate-admin-account"
+      ]
     },
     {
       "key": "saa-1.1-w2m-009/d",
       "task": "1.1",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon GuardDuty はリージョンのサービスで、各リージョンで委任管理者の指定と組織の自動有効化(ALL)を行い、検出結果もリージョンごとに確認する。"
+      "knowledge": "Amazon GuardDuty はリージョンのサービスで、各リージョンで委任管理者の指定と組織の自動有効化(ALL)を行い、検出結果もリージョンごとに確認する。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.regional-delegated-admin",
+        "guardduty.auto-enable-all",
+        "guardduty.regional-auto-enable",
+        "guardduty.regional-findings"
+      ]
     },
     {
       "key": "saa-1.1-w2m-010/b",
       "task": "1.1",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "AWS CloudTrail の組織の証跡はメンバーアカウントで変更できないが、AWS Config のレコーダーの停止は防げない。"
+      "knowledge": "AWS CloudTrail の組織の証跡はメンバーアカウントで変更できないが、AWS Config のレコーダーの停止は防げない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.organization-member-restriction"
+      ]
     },
     {
       "key": "saa-1.1-w2m-011/d",
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Organizations の SCP は階層の途中で許可されていない操作は下位の SCP で許可しても有効にならず、上位の拒否は下位で上書きできない。"
+      "knowledge": "AWS Organizations の SCP は階層の途中で許可されていない操作は下位の SCP で許可しても有効にならず、上位の拒否は下位で上書きできない。",
+      "decision": "fact",
+      "factRefs": [
+        "organizations.scp-allow-at-every-level",
+        "organizations.scp-deny-inheritance"
+      ]
     },
     {
       "key": "saa-1.1-w2m-012/b",
@@ -334,7 +364,12 @@
       "task": "1.2",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Route 53 Resolver DNS Firewall は VPC の DNS クエリだけを制御し、IP 直接指定の通信や DNS を経由しない通信は止められない。"
+      "knowledge": "Amazon Route 53 Resolver DNS Firewall は VPC の DNS クエリだけを制御し、IP 直接指定の通信や DNS を経由しない通信は止められない。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.dns-firewall-filtering",
+        "route53.dns-firewall-non-dns"
+      ]
     },
     {
       "key": "saa-1.2-w2m-001/d",
@@ -362,7 +397,12 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Cognito ID プールで発行される認証済みロールの IAM ポリシーで、ユーザー ID を表すポリシー変数を使えば S3 のプレフィックスをユーザーごとに制限できる。"
+      "knowledge": "Cognito ID プールで発行される認証済みロールの IAM ポリシーで、ユーザー ID を表すポリシー変数を使えば S3 のプレフィックスをユーザーごとに制限できる。",
+      "decision": "fact",
+      "factRefs": [
+        "cognito.identity-sub",
+        "cognito.s3-identity-prefix"
+      ]
     },
     {
       "key": "saa-1.2-w2m-006/c",
@@ -493,7 +533,12 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "GuardDuty、Inspector、Macie の検出結果は ASFF 形式で Security Hub CSPM に統合され、両方を有効にすると統合は通常自動で有効になる。"
+      "knowledge": "GuardDuty、Inspector、Macie の検出結果は ASFF 形式で Security Hub CSPM に統合され、両方を有効にすると統合は通常自動で有効になる。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.securityhub-asff",
+        "guardduty.securityhub-auto-integration"
+      ]
     },
     {
       "key": "saa-1.2-w2m-014/d",
@@ -518,7 +563,11 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "プレフィックスリストは AWS Resource Access Manager で組織内の他アカウントに共有でき、共有先のセキュリティグループから参照できる。"
+      "knowledge": "プレフィックスリストは AWS Resource Access Manager で組織内の他アカウントに共有でき、共有先のセキュリティグループから参照できる。",
+      "decision": "fact",
+      "factRefs": [
+        "ram.prefix-list-sharing"
+      ]
     },
     {
       "key": "saa-1.2-w2m-016/e",
@@ -631,14 +680,25 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "CloudTrail ログを CloudWatch Logs に配信してメトリクスフィルターとアラームを使っても、ログファイルの改ざん検証にはならないことが書かれていない。"
+      "knowledge": "CloudTrail ログを CloudWatch Logs に配信してメトリクスフィルターとアラームを使っても、ログファイルの改ざん検証にはならないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.cloudwatch-logs-monitoring",
+        "cloudtrail.log-file-integrity",
+        "cloudtrail.validation-execution"
+      ]
     },
     {
       "key": "saa-1.3-w2m-004/c",
       "task": "1.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "AWS CloudTrail Insights は API 呼び出しの異常パターンを検出する機能で、ログファイルの改ざん検証ではないことが書かれていない。"
+      "knowledge": "AWS CloudTrail Insights は API 呼び出しの異常パターンを検出する機能で、ログファイルの改ざん検証ではないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.insights-anomaly-detection",
+        "cloudtrail.log-file-integrity"
+      ]
     },
     {
       "key": "saa-1.3-w2m-005/b",
@@ -671,7 +731,11 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS KMS のマルチリージョンキーは同じキー ID とキーマテリアルを持つため、再暗号化なしで別リージョンのレプリカキーで復号できることが書かれていない。"
+      "knowledge": "AWS KMS のマルチリージョンキーは同じキー ID とキーマテリアルを持つため、再暗号化なしで別リージョンのレプリカキーで復号できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "kms.multi-region-interoperability"
+      ]
     },
     {
       "key": "saa-1.3-w2m-007/a",
@@ -799,7 +863,8 @@
       "decision": "fact",
       "factRefs": [
         "cloudfront.signed-url",
-        "cloudfront.signed-url-vs-cookies"
+        "cloudfront.signed-url-vs-cookies",
+        "waf.ip-set-match"
       ]
     },
     {
@@ -819,7 +884,12 @@
       "task": "2.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS WAF のレートベースのルールは短い期間のリクエスト数の制限であり、月間クォータの管理には向かない。"
+      "knowledge": "AWS WAF のレートベースのルールは短い期間のリクエスト数の制限であり、月間クォータの管理には向かない。",
+      "decision": "fact",
+      "factRefs": [
+        "waf.rate-evaluation-window",
+        "waf.rate-limit-approximation"
+      ]
     },
     {
       "key": "saa-2.1-w2m-004/e",
@@ -1280,7 +1350,12 @@
       "task": "2.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Route 53 の同じ名前のフェイルオーバーレコードはプライマリとセカンダリで 1 組であり、複数の観点は計算されたヘルスチェックで束ねる必要がある。"
+      "knowledge": "Route 53 の同じ名前のフェイルオーバーレコードはプライマリとセカンダリで 1 組であり、複数の観点は計算されたヘルスチェックで束ねる必要がある。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.failover-record-pair",
+        "route53.calculated-health-check"
+      ]
     },
     {
       "key": "saa-2.2-w2m-015/c",
@@ -1597,7 +1672,11 @@
       "task": "3.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon CloudWatch の標準メトリクスは CPU 使用率などの傾向は分かるが、原因の SQL や待機イベントは分からないこと。"
+      "knowledge": "Amazon CloudWatch の標準メトリクスは CPU 使用率などの傾向は分かるが、原因の SQL や待機イベントは分からないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.database-insights"
+      ]
     },
     {
       "key": "saa-3.3-w2m-006/d",
@@ -1669,14 +1748,22 @@
       "task": "3.4",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Route 53 の位置情報ルーティングでは、デフォルトのレコードが、どの場所にも当てはまらない問い合わせと位置を特定できない問い合わせへの回答になる。"
+      "knowledge": "Route 53 の位置情報ルーティングでは、デフォルトのレコードが、どの場所にも当てはまらない問い合わせと位置を特定できない問い合わせへの回答になる。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.geolocation-default-record"
+      ]
     },
     {
       "key": "saa-3.4-g8-012/c",
       "task": "3.4",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Route 53 の位置情報ルーティングでデフォルトのレコードがないと、該当するレコードのない問い合わせに回答が返らない。"
+      "knowledge": "Route 53 の位置情報ルーティングでデフォルトのレコードがないと、該当するレコードのない問い合わせに回答が返らない。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.geolocation-no-answer"
+      ]
     },
     {
       "key": "saa-3.4-w2m-001/d",
@@ -2139,7 +2226,11 @@
       "task": "4.4",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Route 53 Resolver の転送ルールは AWS RAM で共有でき、1 つのアウトバウンドエンドポイントを複数の VPC とアカウントで使える。"
+      "knowledge": "Route 53 Resolver の転送ルールは AWS RAM で共有でき、1 つのアウトバウンドエンドポイントを複数の VPC とアカウントで使える。",
+      "decision": "fact",
+      "factRefs": [
+        "ram.resolver-rule-sharing"
+      ]
     },
     {
       "key": "saa-4.4-w2m-007/b",

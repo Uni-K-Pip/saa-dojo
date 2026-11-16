@@ -1,0 +1,320 @@
+{
+  "id": "guardduty",
+  "tier": 1,
+  "summary": "AWS 環境のログやイベントを継続的に分析し、認証情報の侵害や不審な通信などの脅威を検出するサービス。脅威インテリジェンスや機械学習を使い、疑わしい活動を検出結果として報告する。",
+  "chooseWhen": [
+    {
+      "text": "AWS アカウントやワークロードの不審な活動を継続的に検出したいとき。",
+      "factRefs": [
+        "guardduty.continuous-threat-detection",
+        "guardduty.foundational-data-sources"
+      ]
+    },
+    {
+      "text": "組織の複数アカウントで脅威検出を有効にし、委任管理者から検出結果を確認したいとき。",
+      "factRefs": [
+        "guardduty.organizations-admin",
+        "guardduty.auto-enable-all"
+      ]
+    },
+    {
+      "text": "S3 のオブジェクトへの不審なアクセスから、データ流出や破壊の兆候を検出したいとき。",
+      "factRefs": [
+        "guardduty.s3-protection"
+      ]
+    },
+    {
+      "text": "脅威の検出結果を重大度で絞り込み、Lambda による自動対応につなげたいとき。",
+      "factRefs": [
+        "eventbridge.guardduty-findings"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "分析対象となるログ原本の保存や保持期間の管理を任せたいとき。",
+      "factRefs": [
+        "guardduty.no-log-retention"
+      ]
+    },
+    {
+      "text": "GuardDuty の有効化より前の活動にさかのぼって脅威検出を行いたいとき。",
+      "factRefs": [
+        "guardduty.monitor-after-enabling"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "guardduty.continuous-threat-detection",
+      "title": "AWS 環境の脅威を継続的に検出する",
+      "kind": "feature",
+      "text": "GuardDuty は AWS 環境のデータソースやログを継続的に分析し、侵害された認証情報の使用など、不審で悪意のある可能性がある活動を検出する。検出した脅威はセキュリティの検出結果として報告する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon GuardDuty?",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.foundational-data-sources",
+      "title": "基盤となる脅威検出のデータソース",
+      "kind": "feature",
+      "text": "GuardDuty の基盤となる脅威検出は、AWS CloudTrail 管理イベント、EC2 の VPC フローログ、DNS クエリログを分析対象とする。これらから、不審な挙動や不正な活動の兆候を検出する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "GuardDuty foundational data sources",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.independent-data-streams",
+      "title": "基盤ログの出力設定を別途行う必要はない",
+      "kind": "feature",
+      "text": "GuardDuty は基盤データソースを独立したデータストリームから取得する。分析を始めるために、利用者が CloudTrail、VPC フローログ、DNS クエリログの出力を別途有効にする必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "GuardDuty foundational data sources",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.no-log-retention",
+      "title": "分析対象のログ原本は保持しない",
+      "kind": "constraint",
+      "text": "GuardDuty は分析に取り込んだログの保存・管理を行わない。異常検出などに使うフィールドを抽出した後でログを破棄するため、ログ原本の保管先としては利用できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "GuardDuty foundational data sources",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.regional-findings",
+      "title": "検出結果はリージョン単位で扱う",
+      "kind": "feature",
+      "text": "GuardDuty はリージョン単位のサービスであり、複数アカウント・複数リージョンで利用しても、検出結果はそれぞれのリージョンに残る。組織で利用する場合も、検出結果をリージョンごとに確認する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon GuardDuty FAQs",
+          "url": "https://aws.amazon.com/guardduty/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.organizations-admin",
+      "title": "組織の検出結果を委任管理者で確認する",
+      "kind": "integration",
+      "text": "GuardDuty を AWS Organizations と連携すると、組織のメンバーアカウントの検出結果を委任管理者アカウントからまとめて確認できる。複数アカウントの管理には、この組織連携が推奨される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing multiple accounts in Amazon GuardDuty",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.regional-delegated-admin",
+      "title": "委任管理者の指定はリージョンごとに行う",
+      "kind": "feature",
+      "text": "GuardDuty の委任管理者による管理範囲はリージョン単位である。複数リージョンで組織のメンバーアカウントを管理するには、GuardDuty を利用する各リージョンで委任管理者を指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing GuardDuty accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.auto-enable-all",
+      "title": "ALL で既存・新規アカウントを有効化する",
+      "kind": "feature",
+      "text": "GuardDuty の組織向け自動有効化設定を ALL にすると、組織の既存アカウントだけでなく、新たに組織へ参加するアカウントも GuardDuty の有効化対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Setting organization auto-enable preferences",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/set-guardduty-auto-enable-preferences.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.securityhub-asff",
+      "title": "Security Hub CSPM に ASFF で検出結果を送る",
+      "kind": "integration",
+      "text": "GuardDuty は、検出した脅威の情報を AWS Security Finding Format（ASFF）形式で AWS Security Hub CSPM に送信し、セキュリティ状況の分析に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Integrating with AWS Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/securityhub-integration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.securityhub-auto-integration",
+      "title": "両サービスの有効化で CSPM 連携が始まる",
+      "kind": "integration",
+      "text": "同一の AWS アカウントの同一リージョンで GuardDuty と AWS Security Hub CSPM をともに有効にすると、両サービス間の連携が自動的に有効になり、GuardDuty の検出結果の送信が始まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Integrating with AWS Security Hub CSPM",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/securityhub-integration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.s3-protection",
+      "title": "S3 Protection でデータアクセスの脅威を検出する",
+      "kind": "feature",
+      "text": "GuardDuty の S3 Protection は、オブジェクト単位の API 操作を含む S3 の CloudTrail データイベントを分析する。S3 バケット内のデータ流出や破壊などの潜在的な脅威を検出するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "GuardDuty S3 Protection",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/s3-protection.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.ec2-malware-scan",
+      "title": "EC2 の EBS ボリュームからマルウェアを検出する",
+      "kind": "feature",
+      "text": "GuardDuty の Malware Protection for EC2 は、EC2 インスタンスに接続された EBS ボリュームをスキャンしてマルウェアの存在を検出する。EC2 上で動くコンテナワークロードも対象となる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "GuardDuty Malware Protection for EC2",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/malware-protection.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.monitor-after-enabling",
+      "title": "有効化後の活動を分析する",
+      "kind": "constraint",
+      "text": "GuardDuty が活動ログから脅威を検出する対象は、有効化してから発生した活動である。有効化前の履歴データにさかのぼって活動を分析する機能としては利用できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon GuardDuty FAQs",
+          "url": "https://aws.amazon.com/guardduty/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.separate-admin-account",
+      "title": "組織の管理アカウントとの兼用は非推奨",
+      "kind": "feature",
+      "text": "GuardDuty の委任管理者には、組織の管理アカウントを指定することもできる。ただし、AWS は最小権限の原則に基づき、この兼用構成を推奨していない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing GuardDuty accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.same-admin-all-regions",
+      "title": "各リージョンで同じ委任管理者を指定する",
+      "kind": "feature",
+      "text": "同じ AWS 組織で GuardDuty を利用する場合、GuardDuty を有効にするすべてのリージョンで、同一アカウントを委任管理者に指定する必要がある。リージョンごとに別のアカウントを指定する構成にはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing GuardDuty accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_organizations.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.regional-auto-enable",
+      "title": "組織の自動有効化設定もリージョン単位",
+      "kind": "feature",
+      "text": "GuardDuty の組織向け自動有効化設定は、設定を行ったリージョンに適用される。複数リージョンで同じ設定を利用したい場合は、各リージョンで個別に設定を更新する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Setting organization auto-enable preferences",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/set-guardduty-auto-enable-preferences.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.dns-resolver-scope",
+      "title": "DNS ログの分析には AWS の DNS リゾルバーを使う",
+      "kind": "constraint",
+      "text": "GuardDuty は、EC2 インスタンスが AWS の DNS リゾルバーを使う場合に DNS クエリログを取得して分析できる。外部や自前の DNS リゾルバーを使う場合、このデータソースのログは分析できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "GuardDuty foundational data sources",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_data-sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "guardduty.runtime-security-agent",
+      "title": "Runtime Monitoring はセキュリティエージェントを使う",
+      "kind": "feature",
+      "text": "GuardDuty の Runtime Monitoring は、GuardDuty セキュリティエージェントを使って、ファイルアクセスやプロセス実行、ネットワーク接続など、ワークロードの実行時の挙動を分析する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "GuardDuty Runtime Monitoring",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "eventbridge.guardduty-findings"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon GuardDuty?",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+    },
+    {
+      "title": "Amazon GuardDuty FAQs",
+      "url": "https://aws.amazon.com/guardduty/faqs/"
+    },
+    {
+      "title": "Managing multiple accounts in Amazon GuardDuty",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_accounts.html"
+    }
+  ],
+  "createdBy": "cx8",
+  "createdAt": "2026-11-16"
+}

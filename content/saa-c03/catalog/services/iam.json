@@ -258,7 +258,7 @@
       "id": "iam.password-policy-no-mfa",
       "title": "パスワードポリシーに MFA の設定はない",
       "kind": "constraint",
-      "text": "IAM のアカウントのパスワードポリシーで設定できるのは、最小文字数、文字種、有効期限、再利用の禁止、ユーザー自身による変更の許可などである。設定できる項目に MFA はない。ポリシーはルートユーザーのパスワードと IAM ユーザーのアクセスキーには適用されず、失敗回数でロックアウトする設定もできない。",
+      "text": "IAM のアカウントのパスワードポリシーで設定できるのは、最小文字数、文字種、有効期限、再利用の禁止、ユーザー自身による変更の許可などである。設定できる項目に MFA はない。",
       "trap": "パスワードポリシーの設定項目に MFA はない。",
       "depth": "core",
       "sources": [
@@ -268,6 +268,34 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "iam.password-policy-scope",
+      "title": "パスワードポリシーはルートユーザーとアクセスキーに適用されない",
+      "kind": "constraint",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set an account password policy for IAM users - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16",
+      "text": "アカウントのパスワードポリシーは、IAM ユーザーのパスワードに適用される。ルートユーザーのパスワードと、IAM ユーザーのアクセスキーには適用されない。"
+    },
+    {
+      "id": "iam.password-policy-no-lockout",
+      "title": "パスワードポリシーでロックアウトは設定できない",
+      "kind": "constraint",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set an account password policy for IAM users - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_passwords_account-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16",
+      "text": "IAM のアカウントのパスワードポリシーでは、サインインに失敗した回数に応じてユーザーをロックアウトする設定は作れない。"
     },
     {
       "id": "iam.mfa-boolifexists-deny",

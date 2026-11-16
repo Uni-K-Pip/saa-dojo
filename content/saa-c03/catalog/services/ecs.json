@@ -336,7 +336,6 @@
       "kind": "feature",
       "text": "タスク定義でボリュームとして Amazon EFS を指定すると、タスクが動くインスタンスや Fargate によらず、同じ永続的なファイルストレージをタスクにマウントできる。Fargate のタスクで使うには、Linux のプラットフォームバージョン 1.4.0 以降が必要になる。",
       "examPoint": "Fargate のタスクで複数タスク間の共有や永続化が要るなら EFS ボリューム。",
-      "trap": "EFS を使えるのは EC2・Fargate・ECS Managed Instances で、外部インスタンス（ECS Anywhere）では使えない。",
       "depth": "core",
       "sources": [
         {

@@ -1,0 +1,353 @@
+{
+  "id": "waf",
+  "tier": 1,
+  "summary": "HTTP・HTTPS のリクエストを検査し、条件に応じて許可やブロックを行う Web アプリケーションファイアウォールです。ウェブ ACL を保護対象に関連付け、SQL インジェクションなどの攻撃や過剰なリクエストへの対策を設定します。",
+  "chooseWhen": [
+    {
+      "text": "Web リクエストに含まれる SQL インジェクションや悪意あるスクリプトを検出して対処したい",
+      "factRefs": [
+        "waf.sql-injection",
+        "waf.xss-inspection"
+      ]
+    },
+    {
+      "text": "送信元の IP アドレスや国を条件に、Web リクエストの許可・ブロックを決めたい",
+      "factRefs": [
+        "waf.ip-set-match",
+        "waf.geo-match"
+      ]
+    },
+    {
+      "text": "過剰な Web リクエストをレートベースのルールで制限し、アプリケーションを保護したい",
+      "factRefs": [
+        "waf.rate-based-rule",
+        "waf.rate-limit-approximation"
+      ]
+    },
+    {
+      "text": "提供者が保守する既成のルール群を利用し、Web 攻撃対策のルールを導入したい",
+      "factRefs": [
+        "waf.managed-rule-groups"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "リクエスト数を設定値と厳密に一致する上限で制限する必要がある",
+      "factRefs": [
+        "waf.rate-limit-approximation"
+      ]
+    },
+    {
+      "text": "利用資格をアプリケーションで確認した利用者に、有効期限付きでファイルを配信したい",
+      "factRefs": [
+        "cloudfront.signed-url"
+      ],
+      "alternatives": [
+        "cloudfront"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "waf.http-request-inspection",
+      "title": "HTTP・HTTPS リクエストを検査する",
+      "kind": "feature",
+      "text": "AWS WAF は、保護対象の Web アプリケーションへ転送される HTTP・HTTPS リクエストを検査する。送信元 IP アドレスやクエリ文字列の値など、指定した条件に基づいてコンテンツへのアクセスを制御する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.web-acl-association",
+      "title": "ウェブ ACL を保護対象へ関連付ける",
+      "kind": "integration",
+      "text": "AWS WAF の検査を適用するには、ルールを定義したウェブ ACL を保護対象のリソースへ関連付ける。対象には CloudFront ディストリビューション、Application Load Balancer、API Gateway の REST API などがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS WAF works",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html"
+        },
+        {
+          "title": "AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.web-acl-default-action",
+      "title": "ルールで処理が確定しない場合の動作",
+      "kind": "feature",
+      "text": "AWS WAF のウェブ ACL には、ルールの評価で処理が確定しなかったリクエストに適用するデフォルトアクションを設定する。このアクションで、そのリクエストを許可するかブロックするかを決める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS WAF works",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html"
+        },
+        {
+          "title": "How AWS WAF handles rule and rule group actions",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-rule-actions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.ip-set-match",
+      "title": "IP セットとの照合によるアクセス制御",
+      "kind": "feature",
+      "text": "AWS WAF の IP セット一致条件は、Web リクエストの IP アドレスを、登録した IP アドレスやアドレス範囲の集合と照合する。送信元の IP アドレスを条件に、リクエストを許可またはブロックするために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IP set match rule statement",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-ipset-match.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.geo-match",
+      "title": "送信元の国によるリクエストの照合",
+      "kind": "feature",
+      "text": "AWS WAF の地理的一致条件は、リクエストの IP アドレスから判定した送信元の国を国コードと照合する。特定の国からの Web リクエストを管理するためのルール条件として利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Geographic match rule statement",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-geo-match.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.sql-injection",
+      "title": "SQL インジェクションの検査",
+      "kind": "feature",
+      "text": "AWS WAF の SQL インジェクション一致条件は、Web リクエストに含まれる悪意ある SQL コードを検査する。クエリ文字列や本文など、検査対象となるリクエストの構成要素を指定して使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SQL injection attack rule statement",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-sqli-match.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.xss-inspection",
+      "title": "クロスサイトスクリプティングの検査",
+      "kind": "feature",
+      "text": "AWS WAF のクロスサイトスクリプティング（XSS）一致条件は、Web リクエストの構成要素に含まれる悪意あるスクリプトを検査する。検査する構成要素として、クエリ文字列や本文などを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cross-site scripting attack rule statement",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-xss-match.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.managed-rule-groups",
+      "title": "保守済みのマネージドルールグループ",
+      "kind": "feature",
+      "text": "AWS WAF のマネージドルールグループは、AWS や AWS Marketplace の販売者が作成・保守する、すぐに使える定義済みルールの集合である。一般的な Web アプリケーションの脆弱性や、特定のアプリケーション向けの防御に利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using managed rule groups in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-managed-rule-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.count-before-enforcement",
+      "title": "Count でルールを試す",
+      "kind": "feature",
+      "text": "AWS WAF の Count アクションは、一致するリクエストを数えるだけで、そのルールによる許可・ブロックの判断を行わない。リクエストの扱いを変えずに新しい検査条件を試し、許可やブロックへ切り替える前に設定を確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS WAF?",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+        },
+        {
+          "title": "Using rule actions in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-action.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.rate-based-rule",
+      "title": "レートベースのルールによる過剰アクセス対策",
+      "kind": "feature",
+      "text": "AWS WAF のレートベースのルールは、指定した条件でリクエストを集約して数え、リクエストレートが高くなった集約単位に制限を適用する。評価窓、リクエスト数のしきい値、実行するアクションを設定して動作を決める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using rate-based rule statements in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.rate-evaluation-window",
+      "title": "レート判定は直近の評価窓を使う",
+      "kind": "feature",
+      "text": "AWS WAF のレートベースのルールは、判定する時点からさかのぼった評価窓内のリクエスト数を使う。評価窓は分単位の短い期間から選ぶ設定であり、レートを確認する頻度ではなく、毎回の集計対象とする過去の期間を表す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Rate-based rule high-level settings in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-high-level-settings.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.rate-limit-approximation",
+      "title": "厳密なリクエスト数の制限は保証しない",
+      "kind": "constraint",
+      "text": "AWS WAF のレート制限は、高いリクエストレートを抑えてアプリケーションの可用性を守るためのものである。リクエストレートを推定して設定値付近で制限する仕組みであり、設定値と厳密に一致する制限は保証しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Rate-based rule caveats in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based-caveats.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.anti-ddos-managed-rules",
+      "title": "Anti-DDoS マネージドルールグループ",
+      "kind": "feature",
+      "text": "AWS WAF の Anti-DDoS マネージドルールグループは、保護対象のトラフィックの基準線を作成し、通常と異なる攻撃パターンの検出に利用する。選択した感度に応じて防御を動作させ、DDoS が疑われる状況でリクエストを管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS WAF Distributed Denial of Service (DDoS) prevention",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-anti-ddos.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.pay-as-you-go-pricing",
+      "title": "従量課金で料金を決める要素",
+      "kind": "pricing",
+      "text": "AWS WAF の従量課金は、作成したウェブ ACL 数、各ウェブ ACL に追加したルール数、受信する Web リクエスト数に基づく。保護対象となる CloudFront や Application Load Balancer などの利用料金とは別に発生する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS WAF Pricing",
+          "url": "https://aws.amazon.com/waf/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.firewall-manager-integration",
+      "title": "複数アカウントの保護管理に Firewall Manager を使う",
+      "kind": "integration",
+      "text": "AWS WAF の保護を複数のアカウントやリソースにわたって管理するときは、AWS Firewall Manager と組み合わせられる。個々のアプリケーションへのルール設定に加えて、複数アカウントの保護を管理するための連携である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What are AWS WAF, AWS Shield Advanced, AWS Shield network security director and AWS Firewall Manager?",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.captcha-and-challenge",
+      "title": "CAPTCHA と Challenge によるボット対策",
+      "kind": "feature",
+      "text": "AWS WAF では、ルールに一致したリクエストに CAPTCHA のパズルや、利用者の操作を伴わない Challenge を適用できる。これらは人間の利用者や通常のブラウザーによるアクセスを確認し、ボットからのリクエストに対処するために使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using rule actions in AWS WAF",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-action.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.rule-evaluation-order",
+      "title": "ルールは優先度の数値が小さい順に評価する",
+      "kind": "feature",
+      "text": "AWS WAF は、ウェブ ACL やルールグループ内のルールを、設定した優先度の数値が小さいものから順に評価する。評価を終了する一致が見つかるか、すべてのルールを評価し終えるまで、この順序で処理する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Setting rule priority",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/web-acl-processing-order.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.logging-destinations",
+      "title": "検査したリクエストのログ出力先",
+      "kind": "integration",
+      "text": "AWS WAF のウェブ ACL でロギングを有効にすると、リクエストの受信時刻や一致したルールなどを記録できる。出力先には CloudWatch Logs のロググループ、S3 バケット、Amazon Data Firehose の配信ストリームを指定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Logging AWS WAF protection pack (web ACL) traffic",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/logging.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "waf.flat-rate-pricing",
+      "title": "月額の定額料金プラン",
+      "kind": "pricing",
+      "text": "AWS WAF には、従量課金のほかに定額料金プランがある。リクエスト総数と必要な機能に基づいてプランを選び、毎月の料金を一定額とすることで、費用の見通しを立てる方式である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS WAF Pricing",
+          "url": "https://aws.amazon.com/waf/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "cloudfront.signed-url",
+    "cloudfront.waf-integration",
+    "api-gateway.private-endpoint",
+    "api-gateway.waf-integration"
+  ],
+  "references": [
+    {
+      "title": "AWS WAF",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html"
+    },
+    {
+      "title": "How AWS WAF works",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html"
+    },
+    {
+      "title": "AWS WAF Pricing",
+      "url": "https://aws.amazon.com/waf/pricing/"
+    }
+  ],
+  "createdBy": "cx9",
+  "createdAt": "2026-11-16"
+}
