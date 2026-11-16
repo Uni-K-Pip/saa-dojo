@@ -154,6 +154,11 @@
     "checkedAt": "2026-11-14",
     "hash": "2fed00d364ef"
   },
+  "api-gateway.private-rest-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2a810d5c4dda"
+  },
   "api-gateway.regional-endpoint": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -204,10 +209,25 @@
     "checkedAt": "2026-11-14",
     "hash": "8544bec33a30"
   },
+  "aurora": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f194d16caf2c"
+  },
   "aurora.auto-scaling": {
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "803562936d62"
+  },
+  "aurora.auto-scaling-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fb648c784a5b"
+  },
+  "aurora.auto-scaling-replica-tier": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6bca246ad236"
   },
   "aurora.backtrack": {
     "status": "verified",
@@ -224,15 +244,25 @@
     "checkedAt": "2026-11-15",
     "hash": "4a617b22f06d"
   },
-  "aurora.backtrack-window": {
-    "status": "verified",
-    "checkedAt": "2026-11-15",
-    "hash": "d8bb27a3583e"
-  },
   "aurora.clone": {
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "ade7c01a9e34"
+  },
+  "aurora.clone-cow-max-15": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c1d413b97a27"
+  },
+  "aurora.clone-needs-instance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "77d57496d109"
+  },
+  "aurora.clone-no-cross-region": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3f747d4b641c"
   },
   "aurora.cluster-volume": {
     "status": "verified",
@@ -243,6 +273,11 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "87d419c23269"
+  },
+  "aurora.encryption-no-convert": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "585915d2ec5a"
   },
   "aurora.encryption-scope": {
     "status": "verified",
@@ -264,6 +299,11 @@
     "checkedAt": "2026-11-15",
     "hash": "64d6b632c072"
   },
+  "aurora.failover-priority": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f0e1379f7cad"
+  },
   "aurora.failover-priority-tie": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -273,6 +313,11 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "73adeac668df"
+  },
+  "aurora.global-database": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e527b1eb43aa"
   },
   "aurora.global-failover": {
     "status": "verified",
@@ -309,15 +354,30 @@
     "checkedAt": "2026-11-15",
     "hash": "eb23d1d6c7c7"
   },
-  "aurora.rds-proxy-ha": {
+  "aurora.promotion-by-priority-size": {
     "status": "verified",
-    "checkedAt": "2026-11-15",
-    "hash": "8b5263cc845c"
+    "checkedAt": "2026-11-16",
+    "hash": "cef031e907e1"
+  },
+  "aurora.replica-cost": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0462e97f9c6f"
   },
   "aurora.replica-max": {
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "aa89ffde8e8e"
+  },
+  "aurora.replica-shared-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a55aa0023c9a"
+  },
+  "aurora.serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3640d87f8a3e"
   },
   "aurora.serverless-auto-pause": {
     "status": "verified",
@@ -329,15 +389,20 @@
     "checkedAt": "2026-11-15",
     "hash": "96ecce5883dc"
   },
-  "aurora.serverless-no-pause-cases": {
-    "status": "verified",
-    "checkedAt": "2026-11-15",
-    "hash": "88b20e4d0719"
-  },
   "aurora.serverless-reader-tier": {
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "a5ca107f4f90"
+  },
+  "aurora.serverless-v1-deprecated": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "51ac23330298"
+  },
+  "aurora.storage-auto-grow": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3cdd32ebd10e"
   },
   "aurora.storage-configs": {
     "status": "verified",
@@ -604,6 +669,11 @@
     "checkedAt": "2026-11-14",
     "hash": "e1dbe5d89bba"
   },
+  "dax": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a73e1696e173"
+  },
   "dax.bypass-stale": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -629,6 +699,16 @@
     "checkedAt": "2026-11-15",
     "hash": "da0a073b530b"
   },
+  "dax.not-ideal": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cc8fd1505f6d"
+  },
+  "dax.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "665607afe095"
+  },
   "dax.query-cache": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -638,6 +718,11 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "47d724445b27"
+  },
+  "dax.same-region": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "470c8f857e29"
   },
   "dax.strong-passthrough": {
     "status": "verified",
@@ -664,6 +749,16 @@
     "checkedAt": "2026-11-15",
     "hash": "fa045a6a5f2c"
   },
+  "dynamodb": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "baa23da60752"
+  },
+  "dynamodb.auto-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "468d2c0437c9"
+  },
   "dynamodb.capacity-mode-switch": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -673,6 +768,11 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "3c7eb070c00f"
+  },
+  "dynamodb.dax-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "672644bc5948"
   },
   "dynamodb.encryption": {
     "status": "verified",
@@ -684,6 +784,16 @@
     "checkedAt": "2026-11-15",
     "hash": "2376414d44bd"
   },
+  "dynamodb.global-consistency": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c6aab7a2e152"
+  },
+  "dynamodb.global-tables": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8eaa9b553fb2"
+  },
   "dynamodb.gsi": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -693,6 +803,16 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "398775b7b986"
+  },
+  "dynamodb.gsi-existing-table": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "70bbbac47bd6"
+  },
+  "dynamodb.hot-key": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "68206c04beb0"
   },
   "dynamodb.item-size": {
     "status": "verified",
@@ -714,6 +834,16 @@
     "checkedAt": "2026-11-15",
     "hash": "870e0220f21d"
   },
+  "dynamodb.no-join": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4f0c39bda33a"
+  },
+  "dynamodb.on-demand": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8fa5c12a83a2"
+  },
   "dynamodb.on-demand-backup": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -724,10 +854,25 @@
     "checkedAt": "2026-11-15",
     "hash": "34303499dcf1"
   },
+  "dynamodb.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "274e659f22ea"
+  },
   "dynamodb.parallel-scan": {
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "7ce32d185a41"
+  },
+  "dynamodb.partition-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b89f4fe7906f"
+  },
+  "dynamodb.pitr": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "63dd1c6e0c66"
   },
   "dynamodb.pitr-new-table": {
     "status": "verified",
@@ -738,6 +883,21 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "0677e666c7f0"
+  },
+  "dynamodb.provisioned": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "227f2c9e4312"
+  },
+  "dynamodb.query-vs-scan": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0b8227a8d07b"
+  },
+  "dynamodb.replication-3az": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ca793b5958ad"
   },
   "dynamodb.scan-filter": {
     "status": "verified",
@@ -774,6 +934,16 @@
     "checkedAt": "2026-11-15",
     "hash": "21f49f7d9065"
   },
+  "dynamodb.table-quota": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cefc8e4ac49c"
+  },
+  "dynamodb.transactions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "dbd347eb3dca"
+  },
   "dynamodb.ttl": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -783,6 +953,201 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "b2436c3fd878"
+  },
+  "ebs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f565347d8e29"
+  },
+  "ebs.az-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cae9acdb1ee7"
+  },
+  "ebs.dlm": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e81dfe794d30"
+  },
+  "ebs.durability": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bd2ac0b6a506"
+  },
+  "ebs.elastic-volumes-no-shrink": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bc2d6a27716d"
+  },
+  "ebs.elastic-volumes-online": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8a2e11a0988e"
+  },
+  "ebs.encryption-default-new-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "71a65c396131"
+  },
+  "ebs.encryption-default-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f67fdfe5a425"
+  },
+  "ebs.encryption-how": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "eed2e02282f1"
+  },
+  "ebs.encryption-no-direct": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e680fd350ecf"
+  },
+  "ebs.fsr": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8f7f09ae6226"
+  },
+  "ebs.fsr-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "489c0fd05c2e"
+  },
+  "ebs.fsr-quota": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bff0932aad32"
+  },
+  "ebs.gp2-baseline-iops": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "be6ef0f177e8"
+  },
+  "ebs.gp2-burst": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2836d66d00bb"
+  },
+  "ebs.gp2-to-gp3-online": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ee15065e5d33"
+  },
+  "ebs.gp3-baseline": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b7e59f731cd4"
+  },
+  "ebs.gp3-max-performance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a063022794a9"
+  },
+  "ebs.hdd-not-boot": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "18c7cfb3ca25"
+  },
+  "ebs.hdd-sequential-io": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8a86556dc99b"
+  },
+  "ebs.io-iops-ratio": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ef6c1d5e2c67"
+  },
+  "ebs.io2-performance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0e2c4e7cc50c"
+  },
+  "ebs.manual-initialization": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c55a052320cf"
+  },
+  "ebs.multi-attach-clustered-fs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "65de0292428b"
+  },
+  "ebs.multi-attach-instances": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a955782f5966"
+  },
+  "ebs.multi-attach-no-boot": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e87de7c5604a"
+  },
+  "ebs.multi-attach-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b5593bc3beb6"
+  },
+  "ebs.recycle-bin": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0edfa8accaa1"
+  },
+  "ebs.snapshot-archive": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ae26392aee49"
+  },
+  "ebs.snapshot-copy-full": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e70ee2d70d12"
+  },
+  "ebs.snapshot-copy-region-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "67becd0579a0"
+  },
+  "ebs.snapshot-incremental": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "904b8826a735"
+  },
+  "ebs.snapshot-not-automatic": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "030092add237"
+  },
+  "ebs.snapshot-restore-any-az": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "19cf03971b36"
+  },
+  "ebs.snapshot-s3-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a6a7c126aed7"
+  },
+  "ebs.st1-sc1-use": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "26f2fcfa1d87"
+  },
+  "ebs.volume-az-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fac105c8fe24"
+  },
+  "ebs.volume-initialization": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "211289bbf615"
+  },
+  "ebs.volume-type-categories": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "dadc47581588"
   },
   "ec2": {
     "status": "verified",
@@ -1179,6 +1544,571 @@
     "checkedAt": "2026-11-14",
     "hash": "c58c6fcdb4a0"
   },
+  "ecr": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b4bbd0b03883"
+  },
+  "ecr.basic-scanning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "031d7265f3d0"
+  },
+  "ecr.enhanced-initial-images": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "42330d9ffea1"
+  },
+  "ecr.enhanced-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5217eb8058a6"
+  },
+  "ecr.enhanced-rescan-duration": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7018c6088a5d"
+  },
+  "ecr.enhanced-scanning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "257bc47aeaa7"
+  },
+  "ecr.lifecycle-count-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "62662473f3ff"
+  },
+  "ecr.lifecycle-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ad4f067609ae"
+  },
+  "ecr.managed-registry": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0380059cbd83"
+  },
+  "ecr.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ccab57ec43f3"
+  },
+  "ecr.private-repository-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9fa710359856"
+  },
+  "ecr.pull-through-cache": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c567934d1588"
+  },
+  "ecr.replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cc7dfef85e58"
+  },
+  "ecr.replication-cross-account-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2ae61ea97f95"
+  },
+  "ecr.replication-new-images-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c592be138a77"
+  },
+  "ecr.scan-filters": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "45755ec609ba"
+  },
+  "ecr.scanning-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c494142418a8"
+  },
+  "ecs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b9751183c29"
+  },
+  "ecs.anywhere-external-instances": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "274e28fb9b64"
+  },
+  "ecs.anywhere-no-awsvpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2b0ae9694449"
+  },
+  "ecs.anywhere-no-capacity-provider": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5bb5e83be7f3"
+  },
+  "ecs.anywhere-no-elb": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f61c972c6dee"
+  },
+  "ecs.asg-capacity-provider": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2c1ace355307"
+  },
+  "ecs.blue-green": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a2e027616300"
+  },
+  "ecs.capacity-options": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "026f1283e7f4"
+  },
+  "ecs.capacity-provider-reservation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3a44873f3def"
+  },
+  "ecs.cluster-auto-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ced29a9c5236"
+  },
+  "ecs.deployment-failure-detection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "50bee7ec8f6e"
+  },
+  "ecs.efs-access-points": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "50d724056653"
+  },
+  "ecs.efs-volume": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "288528bc94d3"
+  },
+  "ecs.managed-scaling-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cca3ba822a31"
+  },
+  "ecs.managed-termination-protection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a27aad625476"
+  },
+  "ecs.network-modes": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4b3fb69a8727"
+  },
+  "ecs.orchestration-overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4d740e08f579"
+  },
+  "ecs.placement-strategies": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f4ae028398a2"
+  },
+  "ecs.rolling-update": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e1375b7573b1"
+  },
+  "ecs.secrets-env-injection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "56623a8a4bb7"
+  },
+  "ecs.secrets-json-key": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e0013efbbd4d"
+  },
+  "ecs.secrets-no-auto-refresh": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d22c2f38ba85"
+  },
+  "ecs.secrets-parameter-store": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bc4477960d59"
+  },
+  "ecs.service-alb-features": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3eab6b586847"
+  },
+  "ecs.service-auto-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5af9dd5a6fa5"
+  },
+  "ecs.service-interconnect": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fb9410836392"
+  },
+  "ecs.service-load-balancer-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7c4124342e0a"
+  },
+  "ecs.service-replaces-tasks": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1335b137dcaf"
+  },
+  "ecs.service-scaling-scale-in-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "36ef68e95260"
+  },
+  "ecs.task-definition": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b61300e717c5"
+  },
+  "ecs.task-execution-role": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "81dbe2506f8b"
+  },
+  "ecs.task-role": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b2c658d994fc"
+  },
+  "ecs.task-role-isolation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "033285a22fa9"
+  },
+  "ecs.task-vs-service": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d60ccabc0183"
+  },
+  "eks": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "79bd0c9f8d30"
+  },
+  "eks.auto-mode": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ac709aeccd0e"
+  },
+  "eks.auto-mode-node-lifetime": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bb00500d5573"
+  },
+  "eks.cluster-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b84b24fc7880"
+  },
+  "eks.control-plane-managed": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "277ec95178d7"
+  },
+  "eks.fargate-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8dee7c04f83e"
+  },
+  "eks.fargate-pod-isolation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "09a348220015"
+  },
+  "eks.hybrid-and-anywhere": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "965ec9262b0a"
+  },
+  "eks.irsa": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ef3afe5c5b92"
+  },
+  "eks.managed-kubernetes": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bd05f55415f4"
+  },
+  "eks.mng-automation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5534eda36b14"
+  },
+  "eks.mng-no-extra-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5490ce969035"
+  },
+  "eks.mng-responsibility": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e41ff29b687c"
+  },
+  "eks.mng-spot": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ff4c5fe1b2cd"
+  },
+  "eks.node-role-sharing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5bc81803ddd8"
+  },
+  "eks.pod-identity": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "79ba299fa655"
+  },
+  "eks.pod-identity-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "44ddf8bccab8"
+  },
+  "eks.pod-identity-vs-irsa": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "56cb3a100df3"
+  },
+  "elastic-beanstalk": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e8550bd89e1f"
+  },
+  "elastic-beanstalk.blue-green-cname-swap": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ceb53b1bf688"
+  },
+  "elastic-beanstalk.core-concepts": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "62a95edb36a8"
+  },
+  "elastic-beanstalk.coupled-database": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b7246cc1041c"
+  },
+  "elastic-beanstalk.decoupled-database-benefits": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2fa059d39dbf"
+  },
+  "elastic-beanstalk.deployment-policies": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d5caa7e3ba78"
+  },
+  "elastic-beanstalk.environment-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7e5b3461ca26"
+  },
+  "elastic-beanstalk.immutable-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "368a952202e3"
+  },
+  "elastic-beanstalk.load-balanced-environment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "067b016d9fac"
+  },
+  "elastic-beanstalk.no-extra-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "92b67990dcd7"
+  },
+  "elastic-beanstalk.single-instance-environment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e318089107fd"
+  },
+  "elastic-beanstalk.standard-and-cluster": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8b6d0c6bd0c7"
+  },
+  "elastic-beanstalk.supported-platforms": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b9ac1228f2c5"
+  },
+  "elastic-beanstalk.traffic-splitting": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e78fd4c0283a"
+  },
+  "elastic-beanstalk.upload-and-provision": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a777f220fd9f"
+  },
+  "elastic-beanstalk.worker-environment": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7323a851cda2"
+  },
+  "elasticache": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fa63bc988735"
+  },
+  "elasticache.cache-aside": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ab3c5715bfc8"
+  },
+  "elasticache.cache-reuse": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2f4f95eebc9b"
+  },
+  "elasticache.cluster-sharding": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f57d74a63ca2"
+  },
+  "elasticache.data-tiering-client-transparent": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b54195802187"
+  },
+  "elasticache.data-tiering-cost": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9660b8081177"
+  },
+  "elasticache.data-tiering-keys": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "776c34bcf614"
+  },
+  "elasticache.data-tiering-lru": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a7f6f05a442a"
+  },
+  "elasticache.data-tiering-r6gd": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a0738d2791d5"
+  },
+  "elasticache.data-tiering-workload": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fcd4c6146e0e"
+  },
+  "elasticache.database-cache": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7250235535f6"
+  },
+  "elasticache.engines": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "18187d4986b8"
+  },
+  "elasticache.global-manual-promotion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fbb642c0576d"
+  },
+  "elasticache.global-node-based-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5adf6010fcec"
+  },
+  "elasticache.global-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6986a6c3674b"
+  },
+  "elasticache.global-secondary-read-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "23b3559db856"
+  },
+  "elasticache.memcached-no-data-tiering": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7f9eb7e67eec"
+  },
+  "elasticache.memcached-node-no-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bc51f288ff94"
+  },
+  "elasticache.memcached-serverless-backup": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e92338a4ed75"
+  },
+  "elasticache.memcached-serverless-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1c826affbada"
+  },
+  "elasticache.memory-only-sharding": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "17e2345f2528"
+  },
+  "elasticache.multi-az-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3b1db96d0554"
+  },
+  "elasticache.node-based-control": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d435c632433b"
+  },
+  "elasticache.online-resharding": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8fd25fc97636"
+  },
+  "elasticache.read-replica-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "92670292ea49"
+  },
+  "elasticache.serverless-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "42ac13ea4ecc"
+  },
+  "elasticache.sorted-set-ranking": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "441476a64f0a"
+  },
+  "elasticache.ttl-expiration": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "493e5bc5219a"
+  },
   "elb": {
     "status": "verified",
     "checkedAt": "2026-11-15",
@@ -1284,6 +2214,11 @@
     "checkedAt": "2026-11-14",
     "hash": "c69fda480e33"
   },
+  "elb.deregistration-delay": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "37cb7b67ee9a"
+  },
   "elb.gwlb-endpoint": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -1334,6 +2269,11 @@
     "checkedAt": "2026-11-14",
     "hash": "160c3f3ff7ba"
   },
+  "elb.nlb-static-ip": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "eef9e4be01d4"
+  },
   "elb.nlb-tls-vs-tcp": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -1373,6 +2313,256 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "dee6de2e2faf"
+  },
+  "eventbridge": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bd3a8cb0324e"
+  },
+  "eventbridge.archive": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f3736d347bd4"
+  },
+  "eventbridge.custom-bus-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7e6f2d6bd78f"
+  },
+  "eventbridge.default-bus": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "27577b818a17"
+  },
+  "eventbridge.dlq-constraints": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "504c59abc4c4"
+  },
+  "eventbridge.dlq-no-retry-errors": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6b49ed93d93b"
+  },
+  "eventbridge.event-bus-routing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6ee167810ffe"
+  },
+  "eventbridge.event-pattern": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5207aee5e8ad"
+  },
+  "eventbridge.guardduty-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b2c5834b5e01"
+  },
+  "eventbridge.managed-rules": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e92608a8da0e"
+  },
+  "eventbridge.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a00748872d05"
+  },
+  "eventbridge.pipes": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4608f8b23208"
+  },
+  "eventbridge.pipes-filter-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aefd41d7039c"
+  },
+  "eventbridge.pipes-vs-bus": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "166b02527fc3"
+  },
+  "eventbridge.replay": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "52cba04cd757"
+  },
+  "eventbridge.replay-concurrency": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c7b9f7ef08fa"
+  },
+  "eventbridge.replay-name-field": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "135f9cd623d8"
+  },
+  "eventbridge.replay-order": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6ce8d20cd926"
+  },
+  "eventbridge.retry-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "945bf84cde24"
+  },
+  "eventbridge.rule-loop-caution": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bfe7e8754e6b"
+  },
+  "eventbridge.rule-targets": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "557e3bc32a44"
+  },
+  "eventbridge.s3-events": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4f453f173435"
+  },
+  "eventbridge.scheduled-rules-legacy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a01848e0eb8f"
+  },
+  "eventbridge.scheduler-basics": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6470e023a1e1"
+  },
+  "eventbridge.scheduler-reliability": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ed395f0d5bae"
+  },
+  "eventbridge.scheduler-targets": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aed7beaaaa96"
+  },
+  "eventbridge.target-dlq": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "382c5abc0a9c"
+  },
+  "fargate": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "88113938d7e1"
+  },
+  "fargate.alb-ip-target": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2a34fbd55192"
+  },
+  "fargate.awsvpc-eni": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b6627ddf58a1"
+  },
+  "fargate.capacity-provider-strategy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "405dabbb9b27"
+  },
+  "fargate.ecs-and-eks": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2f8a24335930"
+  },
+  "fargate.ephemeral-storage-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "467d69196d46"
+  },
+  "fargate.ephemeral-storage-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b62cd49d4366"
+  },
+  "fargate.ephemeral-storage-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ee5e83b6ca4c"
+  },
+  "fargate.image-pull-network": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9f03573a3f73"
+  },
+  "fargate.log-drivers": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "29358a0ed0c3"
+  },
+  "fargate.os-architectures": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a3543806aa3e"
+  },
+  "fargate.platform-versions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f2d3f277709a"
+  },
+  "fargate.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b8f3b91c2e2"
+  },
+  "fargate.savings-plans": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "30843d3319e7"
+  },
+  "fargate.serverless-containers": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e9598d355bee"
+  },
+  "fargate.soci-lazy-loading": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5a4864b93dbc"
+  },
+  "fargate.spot-capacity-provider": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e222e57ef8c5"
+  },
+  "fargate.spot-interruption-handling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "81cb550b3747"
+  },
+  "fargate.spot-no-fallback": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "aa6e09ab9189"
+  },
+  "fargate.storage-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9dabc98abc56"
+  },
+  "fargate.task-isolation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "54228e58aa73"
+  },
+  "fargate.task-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b6c76ce7b6fe"
+  },
+  "fargate.unsupported-parameters": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "33ecdd9ee82d"
   },
   "iam": {
     "status": "verified",
@@ -1653,6 +2843,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "58bab5fe336a"
+  },
+  "lambda.vpc-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "577e11703f81"
   },
   "lambda.zip-package-limit": {
     "status": "verified",
@@ -2043,6 +3238,291 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "5f27b848c34c"
+  },
+  "sns": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "de1a57090153"
+  },
+  "sns.alerts-and-notifications": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "61a51cdbcf22"
+  },
+  "sns.dlq-encrypted": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ff0ba5e3e75d"
+  },
+  "sns.dlq-queue-type": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "634063353b93"
+  },
+  "sns.fanout": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5f155d0e4b17"
+  },
+  "sns.fifo-group-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0003fc538038"
+  },
+  "sns.fifo-sqs-standard": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "65fca02eb004"
+  },
+  "sns.fifo-topic": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6665a68d7e84"
+  },
+  "sns.filter-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ca057e135ca5"
+  },
+  "sns.filter-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "676a18d49568"
+  },
+  "sns.message-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "de2481a4e26a"
+  },
+  "sns.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cd2d0c5d5636"
+  },
+  "sns.pubsub-topic": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "043e9a2bb8eb"
+  },
+  "sns.raw-message-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1d08a60c4b52"
+  },
+  "sns.retries-aws-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3c403ee5ca67"
+  },
+  "sns.retries-customer-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "94fcdac05b24"
+  },
+  "sns.retry-error-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "34e9193c035e"
+  },
+  "sns.sqs-delivery-permission": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "98eff7b5d460"
+  },
+  "sns.sqs-durable-fanout": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2ed70c0c7452"
+  },
+  "sns.sse": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "233073d4ec60"
+  },
+  "sns.subscriber-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7f84be28c7ba"
+  },
+  "sns.subscription-dlq": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "41aa21ee5f1c"
+  },
+  "sns.topic-access-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8d3e489bdb9d"
+  },
+  "sns.topic-policy-service-publish": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9ce20635ec58"
+  },
+  "sns.topic-type-fixed": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2938ed5af101"
+  },
+  "sqs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2e1a1850f104"
+  },
+  "sqs.batch-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4011570c7f9c"
+  },
+  "sqs.compare-sns-mq": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5a5f60ffc1f5"
+  },
+  "sqs.cross-account-no-admin-actions": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "7b030894ea87"
+  },
+  "sqs.delay-queue": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ed244ab52013"
+  },
+  "sqs.dlq": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c21f542766d6"
+  },
+  "sqs.dlq-fifo-order": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1a48a3f89bcd"
+  },
+  "sqs.dlq-retention": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0eebdf7d65ac"
+  },
+  "sqs.fifo-dedup": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "16f2a549839a"
+  },
+  "sqs.fifo-group-blocking": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "301e202e6823"
+  },
+  "sqs.fifo-message-group": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "454d1452670c"
+  },
+  "sqs.fifo-queue": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d9c1151d0298"
+  },
+  "sqs.fifo-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a6e766f8c0fd"
+  },
+  "sqs.inflight-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "df5d29cde145"
+  },
+  "sqs.lambda-batch-delete": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "df4fa186d94e"
+  },
+  "sqs.lambda-fifo-concurrency": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ae13d78b17cc"
+  },
+  "sqs.lambda-max-concurrency": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cc74dc3d255c"
+  },
+  "sqs.lambda-partial-batch": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a24554863521"
+  },
+  "sqs.lambda-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cd0a454869de"
+  },
+  "sqs.long-polling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "878bb60b45cd"
+  },
+  "sqs.message-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "189445ac0251"
+  },
+  "sqs.queue-decoupling": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "82e764b19df5"
+  },
+  "sqs.queue-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8e994f8efeef"
+  },
+  "sqs.retention-period": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "36d786a5ada9"
+  },
+  "sqs.sns-fanout": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f0ac331d8e14"
+  },
+  "sqs.sns-queue-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "edaaec483292"
+  },
+  "sqs.sse": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "07371e997a82"
+  },
+  "sqs.sse-default-key-cross-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9a2726e95b72"
+  },
+  "sqs.standard-queue": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0f89b7121494"
+  },
+  "sqs.visibility-timeout": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "36504203882c"
+  },
+  "sqs.visibility-timeout-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8cedb51822da"
+  },
+  "sqs.vpc-interface-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "1722566edc0f"
   },
   "step-functions": {
     "status": "verified",

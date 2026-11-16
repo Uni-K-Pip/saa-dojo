@@ -87,7 +87,7 @@
       "title": "購読者に指定できる宛先",
       "kind": "feature",
       "text": "トピックの購読者には、Amazon SQS、Lambda、HTTP(S) エンドポイント、メール、モバイルプッシュ通知、SMS、Amazon Data Firehose、Datadog や Splunk などの外部サービスを指定できます。宛先の種類によって、アプリケーション間（A2A）と、人へ送る（A2P）の両方に使えます。",
-      "examPoint": "メールや SMS で人へ通知できるのは SNS。SQS や EventBridge の機能ではない。",
+      "examPoint": "メールや SMS で人へ通知できるのは SNS（A2P）。",
       "depth": "core",
       "sources": [
         {
@@ -330,10 +330,24 @@
       "checkedAt": "2026-11-14"
     },
     {
-      "id": "sns.dlq-fifo-and-encryption",
-      "title": "FIFO 購読の DLQ と暗号化された DLQ",
+      "id": "sns.dlq-queue-type",
+      "title": "DLQ の SQS キューの種類は購読のトピックにそろえる",
       "kind": "constraint",
-      "text": "FIFO トピックの購読には FIFO キューを、標準トピックの購読には標準キューを DLQ にします。暗号化した SQS キューを DLQ にするには、SNS のサービスプリンシパルに AWS KMS の操作を許可するキーポリシーを持つカスタムの KMS キーが必要です。",
+      "text": "FIFO トピックの購読には FIFO キューを、標準トピックの購読には標準キューを DLQ にします。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon SNS dead-letter queues",
+          "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sns.dlq-encrypted",
+      "title": "暗号化した DLQ にはカスタムの KMS キーが要る",
+      "kind": "constraint",
+      "text": "暗号化した SQS キューを SNS の DLQ にするには、SNS のサービスプリンシパルに AWS KMS の操作を許可するキーポリシーを持つカスタムの KMS キーが必要です。",
       "depth": "detail",
       "sources": [
         {

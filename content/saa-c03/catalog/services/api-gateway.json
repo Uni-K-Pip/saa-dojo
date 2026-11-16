@@ -118,9 +118,9 @@
     },
     {
       "id": "api-gateway.private-rest-only",
-      "title": "プライベートは REST API だけで、エッジ最適化には変更できない",
+      "title": "プライベートエンドポイントは REST API だけ",
       "kind": "constraint",
-      "text": "プライベートエンドポイントを使えるのは REST API だけで、HTTP API では使えません。プライベート API をエッジ最適化 API に変更することもできません。",
+      "text": "プライベートエンドポイントを使えるのは REST API だけで、HTTP API では使えません。",
       "trap": "HTTP API は低価格だが、プライベートエンドポイントは使えない。",
       "depth": "core",
       "sources": [

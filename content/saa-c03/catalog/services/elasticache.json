@@ -1,0 +1,487 @@
+{
+  "id": "elasticache",
+  "tier": 1,
+  "summary": "Amazon ElastiCache は、Valkey、Redis OSS、Memcached を使えるマネージドなインメモリデータストア・キャッシュ。データベースの読み取り負荷を減らし、低レイテンシーでデータを返す。サーバーレスとノードベースの構成を選べる。",
+  "chooseWhen": [
+    {
+      "text": "繰り返し読まれるデータをキャッシュし、RDS や Aurora の読み取り負荷を下げたい",
+      "factRefs": [
+        "elasticache.database-cache",
+        "elasticache.cache-aside"
+      ]
+    },
+    {
+      "text": "スコア順に更新されるランキングを、Valkey / Redis OSS のソート済みセットで管理したい",
+      "factRefs": [
+        "elasticache.sorted-set-ranking"
+      ]
+    },
+    {
+      "text": "キャッシュ容量の計画と管理をサーバーレスに任せたい",
+      "factRefs": [
+        "elasticache.serverless-scaling"
+      ]
+    },
+    {
+      "text": "頻繁に参照するデータが一部に偏り、SSD 読み出しの追加遅延を許容してキャッシュ費用を抑えたい",
+      "factRefs": [
+        "elasticache.data-tiering-workload",
+        "elasticache.data-tiering-cost"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "読み取りがまれ、または要求ごとに結果が変わり、キャッシュを再利用する機会が少ない",
+      "factRefs": [
+        "elasticache.cache-reuse"
+      ]
+    },
+    {
+      "text": "グローバルデータストアの各リージョンで、同じデータへの書き込みを受け付けたい",
+      "factRefs": [
+        "elasticache.global-secondary-read-only",
+        "dynamodb.global-tables"
+      ],
+      "alternatives": [
+        "dynamodb"
+      ]
+    },
+    {
+      "text": "DynamoDB 専用のキャッシュを、アプリケーションの変更を最小限にして導入したい",
+      "factRefs": [
+        "dax.overview"
+      ],
+      "alternatives": [
+        "dax"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "elasticache.engines",
+      "title": "対応するキャッシュエンジン",
+      "kind": "feature",
+      "text": "Amazon ElastiCache は、Valkey、Redis OSS、Memcached のいずれかをエンジンとして使う、マネージドなインメモリデータストアである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon ElastiCache?",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.serverless-scaling",
+      "title": "サーバーレスによる容量の自動調整",
+      "kind": "feature",
+      "text": "ElastiCache Serverless は、アプリケーションのメモリ・コンピューティング・ネットワークの使用状況を監視し、必要な容量に自動で拡張する。利用者がノードを用意したり容量を管理したりする必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon ElastiCache?",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.node-based-control",
+      "title": "ノードベースで構成を指定する",
+      "kind": "feature",
+      "text": "ElastiCache のノードベースクラスターでは、ノードタイプ、ノード数、アベイラビリティーゾーンへの配置を利用者が指定できる。キャッシュの構成やリソースを細かく制御する用途に適する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon ElastiCache?",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+        },
+        {
+          "title": "Choosing between deployment options",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.database-cache",
+      "title": "データベースの前にキャッシュを置く",
+      "kind": "integration",
+      "text": "ElastiCache は、Amazon RDS や Amazon Aurora などのデータベースの前段でキャッシュとして使える。データベースへの負荷を減らし、読み取りのレイテンシーを小さくするために組み合わせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ElastiCache FAQs",
+          "url": "https://aws.amazon.com/elasticache/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.cache-aside",
+      "title": "キャッシュアサイドの読み取り",
+      "kind": "feature",
+      "text": "ElastiCache をキャッシュアサイド方式で使う場合、アプリケーションはまずキャッシュを読む。データがなければデータベースから取得し、その結果をキャッシュへ保存して、次の要求で再利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Caching Best Practices",
+          "url": "https://aws.amazon.com/caching/best-practices/"
+        },
+        {
+          "title": "Caching strategies for Memcached",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.ttl-expiration",
+      "title": "TTL によるキャッシュの期限管理",
+      "kind": "feature",
+      "text": "ElastiCache のキャッシュ項目に TTL を設定すると、期限を過ぎたキーの読み取りはデータが見つからないものとして扱われる。キャッシュアサイド方式では、その後データベースから取得してキャッシュを更新する。",
+      "trap": "TTL を設定するだけでは、キャッシュした値が常に最新であることは保証できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Caching strategies for Memcached",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.cache-reuse",
+      "title": "再利用されにくいデータにはキャッシュが不向き",
+      "kind": "constraint",
+      "text": "ElastiCache に何を保存するかは、データの再利用頻度を考慮して決める必要がある。読み取りがまれなデータや、要求ごとに検索結果がほぼ異なるデータは、キャッシュしても効果を得にくい。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Common ElastiCache Use Cases and How ElastiCache Can Help",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/elasticache-use-cases.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.sorted-set-ranking",
+      "title": "ソート済みセットでランキングを管理する",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS のソート済みセットは、要素をスコア順に保持する。要素が追加されると順位が再計算されるため、更新され続けるスコアからランキングを作る用途に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Common ElastiCache Use Cases and How ElastiCache Can Help",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/elasticache-use-cases.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.read-replica-scaling",
+      "title": "リードレプリカで読み取りを分散する",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS では、読み取りが多い負荷をリードレプリカに分散できる。クラスターモード無効の構成でも、レプリカの追加によって読み取り容量を拡張できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication: Valkey and Redis OSS Cluster Mode Disabled vs. Enabled",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis-RedisCluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.multi-az-failover",
+      "title": "Multi-AZ による自動フェイルオーバー",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS のノードベースクラスターで Multi-AZ を有効にすると、プライマリ障害時にレプリカを自動で昇格させる。Multi-AZ には、プライマリと異なる AZ に配置したレプリカが必要である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Minimizing downtime in ElastiCache by using Multi-AZ with Valkey and Redis OSS",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/AutoFailover.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.cluster-sharding",
+      "title": "シャード分割による書き込みと容量の拡張",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS のクラスターモード有効構成は、データを複数のシャードに分割できる。シャードごとに書き込み先が増えるため、書き込み負荷を分散し、単一ノードに収まらないデータ量を扱える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication: Valkey and Redis OSS Cluster Mode Disabled vs. Enabled",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis-RedisCluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.online-resharding",
+      "title": "オンライン再シャーディング",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS のクラスターモード有効構成では、要求を処理し続けながらシャードを追加または削除できる。オンライン再シャーディングにより、負荷や容量の変化に合わせて水平に拡張・縮小する。",
+      "trap": "オンラインでも再シャーディングは計算資源を使うため、処理中に性能が低下することがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scaling Valkey or Redis OSS (Cluster Mode Enabled) clusters",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/scaling-redis-cluster-mode-enabled.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.global-replication",
+      "title": "グローバルデータストアのリージョン間複製",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS のグローバルデータストアは、プライマリクラスターの更新を別リージョンのセカンダリクラスターへ自動で非同期複製する。離れたリージョンからの読み取りや災害対策に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication across AWS Regions using global datastores",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Redis-Global-Datastore.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.global-secondary-read-only",
+      "title": "セカンダリクラスターは読み取り専用",
+      "kind": "constraint",
+      "text": "ElastiCache のグローバルデータストアでは、書き込みを受け付けるのはプライマリクラスターである。別リージョンに置いたセカンダリクラスターは読み取りだけを受け付け、プライマリから更新を受け取る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication across AWS Regions using global datastores",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Redis-Global-Datastore.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.global-manual-promotion",
+      "title": "リージョン障害時の手動昇格",
+      "kind": "feature",
+      "text": "ElastiCache のグローバルデータストアは、プライマリのリージョンで障害が発生した場合、セカンダリを新しいプライマリへ昇格できる。このリージョン間のフェイルオーバーは、利用者が手動で開始する。",
+      "trap": "グローバルデータストアのリージョン間切り替えは、Multi-AZ の自動フェイルオーバーとは異なる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication across AWS Regions using global datastores",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Redis-Global-Datastore.html"
+        },
+        {
+          "title": "Amazon ElastiCache FAQs",
+          "url": "https://aws.amazon.com/elasticache/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.global-node-based-only",
+      "title": "グローバルデータストアの配置方式",
+      "kind": "constraint",
+      "text": "ElastiCache のグローバルデータストアを利用できるのは、Valkey または Redis OSS のノードベースクラスターである。ElastiCache Serverless のキャッシュには利用できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Replication across AWS Regions using global datastores",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Redis-Global-Datastore.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-r6gd",
+      "title": "R6gd などによるメモリと SSD の階層化",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS では、レプリケーショングループを構成する r6gd・r7gd・r8gd ファミリーのノードでデータ階層化を利用できる。データの保存先として、メモリに加えてノードのローカル SSD を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-lru",
+      "title": "使用頻度の低い値を SSD へ自動移動する",
+      "kind": "feature",
+      "text": "ElastiCache のデータ階層化では、メモリが使い切られると、最後に参照されてから長く経過した値を LRU に基づいて SSD に自動移動する。SSD 上の値が再び参照されると、メモリへ非同期で戻してから要求を処理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-keys",
+      "title": "階層化してもキーはメモリに残る",
+      "kind": "feature",
+      "text": "ElastiCache のデータ階層化で SSD へ移動する対象は値であり、キー自体は常にメモリに残る。メモリと SSD のどちらに値を配置するかは、データへのアクセス状況に基づいて管理される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-cost",
+      "title": "SSD を利用してキャッシュ容量の費用を抑える",
+      "kind": "pricing",
+      "text": "ElastiCache のデータ階層化は、メモリだけで容量を確保する代わりに、より低コストなローカル SSD も保存先に使うことで、キャッシュ容量を費用効率よく拡張する仕組みである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-workload",
+      "title": "階層化に適するアクセスパターン",
+      "kind": "feature",
+      "text": "ElastiCache のデータ階層化は、全データのうち一部だけを繰り返し参照するワークロードに適する。SSD に置かれたデータの読み出しには追加のレイテンシーが生じるため、それを許容できるアプリケーションで使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        },
+        {
+          "title": "Choosing your node size",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/CacheNodes.SelectSize.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.memory-only-sharding",
+      "title": "階層化しないシャード構成のメモリ容量",
+      "kind": "feature",
+      "text": "ElastiCache for Valkey / Redis OSS でデータ階層化を使わずにシャード分割する場合、各シャードのデータと処理用の余裕をノードのメモリに収める必要がある。シャードを増やすと、データをより小型のノードに分散できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choosing your node size",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/CacheNodes.SelectSize.html"
+        },
+        {
+          "title": "Replication: Valkey and Redis OSS Cluster Mode Disabled vs. Enabled",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/Replication.Redis-RedisCluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.memcached-no-data-tiering",
+      "title": "Memcached はデータ階層化に非対応",
+      "kind": "constraint",
+      "text": "ElastiCache for Memcached は、メモリと SSD を組み合わせるデータ階層化に対応しない。ElastiCache でデータ階層化を利用するには、対応ノードタイプの Valkey または Redis OSS を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Comparing node-based Valkey, Memcached, and Redis OSS clusters",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html"
+        },
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.memcached-node-no-replication",
+      "title": "ノードベース Memcached は複製しない",
+      "kind": "constraint",
+      "text": "ElastiCache for Memcached のノードベースクラスターにはデータ複製がない。データを複数ノードに分割しても、あるノードが故障すると、そのノードが保持していたキャッシュデータは失われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Resilience in Amazon ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/disaster-recovery-resiliency.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.memcached-serverless-replication",
+      "title": "サーバーレス Memcached の複数 AZ 複製",
+      "kind": "feature",
+      "text": "ElastiCache Serverless for Memcached は、複数 AZ にデータを複製する構成によってノード障害や AZ 障害を軽減する。利用者が個別ノードの障害を意識せずにキャッシュへアクセスできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Resilience in Amazon ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/disaster-recovery-resiliency.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.memcached-serverless-backup",
+      "title": "サーバーレス Memcached のバックアップ",
+      "kind": "feature",
+      "text": "ElastiCache for Memcached では、サーバーレスのキャッシュでバックアップと復元を利用できる。この機能は、Memcached のノードベースクラスターでは利用できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Comparing node-based Valkey, Memcached, and Redis OSS clusters",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/SelectEngine.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "elasticache.data-tiering-client-transparent",
+      "title": "階層化の利用にクライアントの変更は不要",
+      "kind": "feature",
+      "text": "ElastiCache のデータ階層化は、ElastiCache がサポートする Valkey / Redis OSS のコマンドとデータ構造に対応する。階層化を利用するために、クライアント側の処理を変更する必要はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Data tiering in ElastiCache",
+          "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/data-tiering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "dax.overview",
+    "dynamodb.global-tables"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon ElastiCache?",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+    },
+    {
+      "title": "Amazon ElastiCache FAQs",
+      "url": "https://aws.amazon.com/elasticache/faqs/"
+    },
+    {
+      "title": "Common ElastiCache Use Cases and How ElastiCache Can Help",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/elasticache-use-cases.html"
+    }
+  ],
+  "createdBy": "cx1",
+  "createdAt": "2026-11-16"
+}

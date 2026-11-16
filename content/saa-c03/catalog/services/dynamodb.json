@@ -20,9 +20,6 @@
       "text": "複数のリージョンで書き込み、リージョン障害後も書き込みを続けたい",
       "factRefs": [
         "dynamodb.global-tables"
-      ],
-      "alternatives": [
-        "aurora"
       ]
     },
     {
@@ -48,7 +45,7 @@
   ],
   "avoidWhen": [
     {
-      "text": "複数の表を結合する検索や、複雑な SQL のトランザクションが中心",
+      "text": "複数の表の結合や、SQL による検索が中心",
       "factRefs": [
         "dynamodb.no-join"
       ],
@@ -58,7 +55,7 @@
       ]
     },
     {
-      "text": "大量のデータの任意の集計や分析クエリが中心（Scan に頼る設計）",
+      "text": "表やインデックスの全体を走査する Scan に頼った読み取りが中心",
       "factRefs": [
         "dynamodb.query-vs-scan",
         "dynamodb.scan-filter"
@@ -87,7 +84,7 @@
       "kind": "feature",
       "text": "Amazon DynamoDB は、サーバーレスでフルマネージドの分散 NoSQL データベースで、キーバリューとドキュメントのデータモデルに対応する。どの規模でも 1 桁ミリ秒の性能を出し、サーバーの用意、パッチ適用、バージョン管理、メンテナンスウィンドウがない。",
       "examPoint": "キーでの読み書きを大規模に、運用負荷なく行うなら DynamoDB",
-      "trap": "複数テーブルの結合や任意の集計が中心なら、リレーショナル DB や分析用のサービスのほうが向く",
+      "trap": "複数テーブルの結合（JOIN）が必要なら、DynamoDB は JOIN をサポートしないので向かない",
       "depth": "core",
       "sources": [
         {
@@ -101,8 +98,7 @@
       "id": "dynamodb.no-join",
       "title": "DynamoDB は JOIN をサポートしない",
       "kind": "constraint",
-      "text": "DynamoDB は JOIN 演算子をサポートしない。規模が大きくても性能が落ちない設計のため、データを非正規化してデータベースへの往復を減らすことが推奨される。複数の表を結合する検索が中心の用途には向かない。",
-      "trap": "SQL の結合やトランザクションが中心の既存アプリには RDS や Aurora を選ぶ",
+      "text": "DynamoDB は JOIN 演算子をサポートしない。規模が大きくても性能が落ちない設計のため、データを非正規化してデータベースへの往復を減らすことが推奨される。",
       "depth": "core",
       "sources": [
         {
@@ -116,7 +112,7 @@
       "id": "dynamodb.replication-3az",
       "title": "データは 3 つの AZ に自動で複製される",
       "kind": "feature",
-      "text": "DynamoDB は既定で、データを 1 つのリージョン内の 3 つのアベイラビリティーゾーンに自動で複製し、高い耐久性と 99.99% の可用性 SLA を提供する。利用者がレプリカやフェイルオーバーを設定する必要はない。",
+      "text": "DynamoDB は既定で、データを 1 つのリージョン内の 3 つのアベイラビリティーゾーンに自動で複製し、高い耐久性と 99.99% の可用性 SLA を提供する。",
       "trap": "複数リージョンで読み書きするには、別途グローバルテーブルが要る",
       "depth": "core",
       "sources": [
@@ -145,9 +141,9 @@
       "id": "dynamodb.on-demand",
       "title": "オンデマンドモードはリクエスト単位で課金する",
       "kind": "feature",
-      "text": "オンデマンドモードは、容量の計画や設定をせずに、読み取りと書き込みのリクエスト数に応じて課金される。トラフィックがなければスループットの料金はかからない。予測しにくい負荷や、新しいテーブルに向く。",
+      "text": "オンデマンドモードは、容量の計画や設定をせずに、読み取りと書き込みのリクエスト数に応じて課金される。トラフィックがなければスループットの料金はかからない。新しいテーブルでは、オンデマンドが既定で推奨される。",
       "examPoint": "負荷が予測できない、急に増える、ほとんど使われない時間があるならオンデマンド",
-      "trap": "オンデマンドが常に安いわけではなく、安定した負荷ではプロビジョンドのほうが安いことがある",
+      "trap": "プロビジョンドは、安定して予測できる負荷で費用を予測しやすい",
       "depth": "core",
       "sources": [
         {
@@ -180,7 +176,7 @@
       "title": "プロビジョンドモードは容量を指定して課金される",
       "kind": "feature",
       "text": "プロビジョンドモードでは、1 秒あたりの読み取りと書き込みの容量を指定し、実際に使った量ではなく、指定した容量に対して時間単位で課金される。安定していて予測できる負荷で、費用を予測しやすい。指定した容量を超えるとスロットリングされる。",
-      "examPoint": "安定した負荷でコストを抑えるならプロビジョンド＋Auto Scaling",
+      "examPoint": "安定して予測できる負荷で、費用の予測が必要ならプロビジョンド（Auto Scaling で容量を調整できる）",
       "depth": "core",
       "sources": [
         {
@@ -217,8 +213,8 @@
       "id": "dynamodb.auto-scaling",
       "title": "プロビジョンドでは Auto Scaling で容量を自動調整する",
       "kind": "feature",
-      "text": "DynamoDB の Auto Scaling は Application Auto Scaling を使い、最小・最大の容量と目標使用率（20〜90% の範囲）に従って、テーブルやグローバルセカンダリインデックスのプロビジョンド容量を自動で増減する。反映には数分かかり、その間に既存の容量を超えたリクエストはスロットリングされうる。",
-      "trap": "急な短時間のスパイクには追従できないことがあり、そのような負荷にはオンデマンドが向く",
+      "text": "DynamoDB の Auto Scaling は Application Auto Scaling を使い、最小・最大の容量と目標使用率に従って、テーブルやグローバルセカンダリインデックスのプロビジョンド容量を自動で増減する。反映には数分かかり、その間に既存の容量を超えたリクエストはスロットリングされうる。",
+      "trap": "スケーリングの反映に数分かかり、その間は既存の容量を超えた要求がスロットリングされうる",
       "depth": "core",
       "sources": [
         {
@@ -252,9 +248,9 @@
     },
     {
       "id": "dynamodb.table-quota",
-      "title": "アカウントのテーブルあたりのスループットの既定の上限",
+      "title": "テーブルごとのスループットの既定の上限",
       "kind": "quota",
-      "text": "アカウント内のすべてのテーブルに、テーブル単位の読み取りと書き込みのスループットについて、40,000 という既定の上限がある。上限は Service Quotas で引き上げを申請でき、超えたリクエストはスロットリングされる。この値は参照した時点の既定値で、決め手にしない。",
+      "text": "アカウント内の各テーブルに、読み取りと書き込みそれぞれのスループットの既定の上限（40,000）があり、引き上げを申請できる。超えた要求はスロットリングされる。この値は参照した時点の既定値で、決め手にしない。",
       "depth": "detail",
       "sources": [
         {
@@ -287,7 +283,7 @@
       "id": "dynamodb.partition-limits",
       "title": "パーティションあたりのスループットの上限",
       "kind": "quota",
-      "text": "DynamoDB のテーブルの各パーティションは、1 秒あたり最大 3,000 の読み取りユニットと 1,000 の書き込みユニットを処理できるように設計されている。1 つのキーにアクセスが集中すると、テーブル全体の容量に余裕があってもこの上限でスロットリングされうる。",
+      "text": "DynamoDB のテーブルの各パーティションは、1 秒あたり最大 3,000 の読み取りユニットと 1,000 の書き込みユニットを処理できるように設計されている。",
       "depth": "detail",
       "sources": [
         {
@@ -302,12 +298,20 @@
       "title": "パーティションキーはアクセスが均一になるよう設計する",
       "kind": "feature",
       "text": "テーブルとセカンダリインデックスのすべてのパーティションキーに、アクセスが均一に分散するよう設計する。値の種類が少ないキーや、特定の値にアクセスが偏るキーは、特定のパーティションでスロットリングを招く。偏りを解消するには、キーの見直しや、キーに接尾辞を付けて分散するライトシャーディングを使う。",
-      "examPoint": "特定のキーにアクセスが集中するなら、容量の増加ではなくキー設計の見直し",
+      "examPoint": "アクセスが偏るなら、キーの見直しやライトシャーディングで分散する。",
       "depth": "core",
       "sources": [
         {
           "title": "Best practices for designing and using partition keys effectively in DynamoDB",
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-design.html"
+        },
+        {
+          "title": "Designing partition keys to distribute your workload in DynamoDB",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html"
+        },
+        {
+          "title": "Using write sharding to distribute workloads evenly in your DynamoDB table",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html"
         }
       ],
       "checkedAt": "2026-11-14"
@@ -350,8 +354,7 @@
       "id": "dynamodb.gsi-existing-table",
       "title": "GSI は既存のテーブルにも作れる",
       "kind": "feature",
-      "text": "GSI は、既存のテーブルに対しても作成できる。GSI は独自のプロビジョンド容量を持ち、作成中のテーブルへの書き込みが、GSI の書き込み容量が足りないとスロットリングされることがある。",
-      "trap": "ローカルセカンダリインデックスは作成後に追加できないのと対照的である",
+      "text": "GSI は、既存のテーブルに対しても作成できる。GSI は独自のプロビジョンド容量を持ち、GSI の作成中に GSI の書き込み容量が足りないと、元のテーブルへの書き込みがスロットリングされることがある。",
       "depth": "core",
       "sources": [
         {
@@ -413,7 +416,7 @@
       "id": "dynamodb.query-vs-scan",
       "title": "Query は Scan より効率がよい",
       "kind": "feature",
-      "text": "Query は、パーティションキーの値を指定して、その項目だけを読み取る。Scan はテーブルまたはインデックスの全項目を読み取るため、一般に効率が悪く、テーブルが大きくなるほど遅くなる。アクセスパターンに合う Query を使えるように、テーブルやインデックスを設計する。",
+      "text": "Scan はテーブルまたはインデックスの全項目を読み取るため、一般に効率が悪く、テーブルが大きくなるほど遅くなる。Scan の代わりに Query を使えるよう、アクセスパターンに合わせてテーブルやインデックスを設計する。",
       "examPoint": "Scan が遅い、読み取り容量を使い切るなら、Query で引けるキーやインデックスの設計に変える",
       "depth": "core",
       "sources": [
@@ -531,9 +534,8 @@
       "id": "dynamodb.pitr",
       "title": "ポイントインタイムリカバリ（PITR）は継続的バックアップ",
       "kind": "feature",
-      "text": "PITR は、テーブルのデータを自動で継続的にバックアップし、1 秒単位の粒度で最大 35 日前までの任意の時点に復元できる。有効にしても、性能や可用性への影響はなく、プロビジョンド容量も消費しない。誤った削除や更新の取り消しに使う。",
+      "text": "PITR は、テーブルのデータを自動で継続的にバックアップし、1 秒単位の粒度で最大 35 日前までの任意の時点に復元できる。有効にしても、性能や可用性への影響はなく、プロビジョンド容量も消費しない。",
       "examPoint": "誤操作の前の状態に戻すなら PITR",
-      "trap": "グローバルテーブルのレプリケーションは誤った削除や更新も複製するため、バックアップの代わりにならない",
       "depth": "core",
       "sources": [
         {
@@ -600,7 +602,6 @@
       "kind": "feature",
       "text": "グローバルテーブルは、複数のリージョンにテーブルを自動で複製し、どのレプリカでも読み書きできるマルチアクティブな機能である。プライマリのテーブルがないため、リージョン間の切り替えやフェイルオーバーの遅れがなく、ローカルの読み書きの性能を得られる。",
       "examPoint": "複数のリージョンで書き込みたい、リージョン障害時にも書き込みを続けたいときはグローバルテーブル",
-      "trap": "Aurora Global Database は書き込みがプライマリリージョンのみである点が異なる",
       "depth": "core",
       "sources": [
         {
@@ -620,7 +621,7 @@
       "kind": "constraint",
       "text": "グローバルテーブルには、マルチリージョン結果整合性（MREC）とマルチリージョン強整合性（MRSC）がある。指定しない場合は MREC になり、整合性モードは作成後に変更できず、1 つのグローバルテーブルに異なるモードのレプリカを混在させることもできない。",
       "trap": "整合性モードは作成後に切り替えられない",
-      "depth": "core",
+      "depth": "detail",
       "sources": [
         {
           "title": "Global tables - multi-active, multi-Region replication",
@@ -718,7 +719,7 @@
       "kind": "feature",
       "text": "DynamoDB は、1 つ以上のテーブルにまたがる複数の項目に対する、すべて成功するか、すべて失敗する ACID トランザクションをサポートする。注文処理や金融取引のように、複数の項目の整合性が必要な処理に使える。",
       "trap": "NoSQL でも、トランザクションが必要という理由だけで DynamoDB が除外されるわけではない",
-      "depth": "detail",
+      "depth": "core",
       "sources": [
         {
           "title": "What is Amazon DynamoDB?",
@@ -731,8 +732,8 @@
       "id": "dynamodb.dax-integration",
       "title": "DAX で読み取りをマイクロ秒に高速化する",
       "kind": "integration",
-      "text": "読み取りをミリ秒からマイクロ秒に速めたいときは、DynamoDB 専用のインメモリキャッシュである DAX を前段に置く。DAX は DynamoDB と API 互換で、結果整合性のある読み取りのキャッシュに向く。詳細は DAX のエントリで扱う。",
-      "examPoint": "DynamoDB の読み取りの高速化は DAX、RDS のキャッシュは ElastiCache",
+      "text": "読み取りをミリ秒からマイクロ秒に速めたいときは、DynamoDB 専用のインメモリキャッシュである DAX を前段に置く。DAX は DynamoDB と API 互換で、結果整合性のある読み取りのキャッシュに向く。",
+      "examPoint": "DynamoDB の読み取りの高速化は DAX",
       "depth": "core",
       "sources": [
         {

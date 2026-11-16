@@ -8,10 +8,6 @@
       "factRefs": [
         "ebs.volume-az-scope",
         "ebs.gp3-baseline"
-      ],
-      "alternatives": [
-        "efs",
-        "s3"
       ]
     },
     {
@@ -59,13 +55,6 @@
       "factRefs": [
         "ebs.hdd-sequential-io"
       ]
-    },
-    {
-      "text": "容量を自動で増やしたい、またはオブジェクトとして大量に保存したい",
-      "alternatives": [
-        "s3",
-        "efs"
-      ]
     }
   ],
   "facts": [
@@ -105,7 +94,7 @@
     {
       "id": "ebs.durability",
       "title": "ボリュームタイプごとの耐久性",
-      "kind": "quota",
+      "kind": "feature",
       "text": "io2 Block Express は 99.999% の耐久性（年間故障率 0.001%）で設計されている。それ以外のボリュームタイプは 99.8% から 99.9%（年間故障率 0.1% から 0.2%）である。",
       "depth": "core",
       "sources": [
@@ -584,8 +573,8 @@
       "id": "ebs.manual-initialization",
       "title": "手動の初期化は全ブロックの読み取りで時間がかかる",
       "kind": "constraint",
-      "text": "ボリュームを手動で初期化するには dd や fio ですべてのブロックを読み取る。完了まで数分から数時間かかり、インスタンスの帯域、IOPS、ボリュームのサイズに左右されるため、作成直後に全性能が必要な場合の手段にならない。",
-      "depth": "core",
+      "text": "ボリュームを手動で初期化するには dd や fio ですべてのブロックを読み取る。完了まで数分から数時間かかり、インスタンスの帯域、IOPS、ボリュームのサイズに左右される。作成直後から全性能が要る場合は、高速スナップショット復元（FSR）を有効にしたスナップショットから作る。",
+      "depth": "detail",
       "sources": [
         {
           "title": "Initialize Amazon EBS volumes",

@@ -1,10 +1,10 @@
 {
   "id": "eks",
   "tier": 2,
-  "summary": "AWS がコントロールプレーンを管理する、フルマネージドの Kubernetes サービス。ノードは EC2、Fargate、EKS Auto Mode から選べ、Kubernetes のマニフェストや Helm チャートをそのまま使える。",
+  "summary": "AWS がコントロールプレーンを管理する、フルマネージドの Kubernetes サービス。ノードは EC2、Fargate、EKS Auto Mode から選べ、Kubernetes のアプリケーションを作り直さずに動かせて、コミュニティのツールやプラグインも使える。",
   "chooseWhen": [
     {
-      "text": "既存の Kubernetes のマニフェスト、Helm チャート、エコシステムをそのまま使いたい",
+      "text": "既存の Kubernetes アプリケーションとコミュニティのツールをそのまま使いたい",
       "factRefs": [
         "eks.managed-kubernetes"
       ],
@@ -58,7 +58,7 @@
       "title": "フルマネージドの Kubernetes サービス",
       "kind": "feature",
       "text": "Amazon EKS は、Kubernetes クラスターの運用の複雑さを取り除くフルマネージドの Kubernetes サービスである。Kubernetes 準拠の認定を受けており、Kubernetes 対応のアプリケーションを作り直さずにデプロイでき、コミュニティのツールやプラグインも使える。",
-      "examPoint": "既存の Kubernetes のマニフェストや Helm チャート、エコシステムをそのまま使いたいときの選択肢。",
+      "examPoint": "既存の Kubernetes アプリケーションやコミュニティのツールをそのまま使いたいときの選択肢。",
       "depth": "core",
       "sources": [
         {
@@ -250,6 +250,10 @@
         {
           "title": "Automate cluster infrastructure with EKS Auto Mode",
           "url": "https://docs.aws.amazon.com/eks/latest/userguide/automode.html"
+        },
+        {
+          "title": "Simplify compute management with AWS Fargate",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html"
         }
       ],
       "checkedAt": "2026-11-14"
@@ -258,8 +262,7 @@
       "id": "eks.node-role-sharing",
       "title": "ノードの IAM ロールは Pod から共有されうる",
       "kind": "constraint",
-      "text": "EC2 のメタデータサービス（IMDS）へのアクセスを制限していない場合、Pod のコンテナはワーカーノードの IAM ロールの権限を使え、同じノード上の他の Pod のロールの認証情報にも触れうる。コンテナはセキュリティ境界ではないため、ノードのロールに権限を足す設計では Pod 単位の最小権限にならない。",
-      "trap": "ノードグループを分けても、同じノードグループの Pod はインスタンスプロファイルの権限を共有する。",
+      "text": "EC2 のメタデータサービス（IMDS）へのアクセスを制限していない場合、Pod のコンテナはワーカーノードの IAM ロールの権限を使え、同じノード上の他の Pod のロールの認証情報にも触れうる。",
       "depth": "core",
       "sources": [
         {
@@ -308,7 +311,7 @@
       "title": "自社のデータセンターでも Kubernetes を動かせる",
       "kind": "feature",
       "text": "EKS は、AWS のクラウドだけでなく、自社のデータセンターの Kubernetes クラスターにも使える。その方法として EKS Anywhere と EKS Hybrid Nodes が用意されている。",
-      "examPoint": "EKS Anywhere は自社環境で Kubernetes を自分で運用する。AWS が管理する AWS インフラ一式を置くなら Outposts。",
+      "examPoint": "自社のデータセンターで Kubernetes を動かす方法には EKS Anywhere と EKS Hybrid Nodes がある。",
       "depth": "detail",
       "sources": [
         {

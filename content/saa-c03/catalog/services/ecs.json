@@ -83,7 +83,7 @@
       "title": "コンテナを動かす基盤（キャパシティ）の選択肢",
       "kind": "feature",
       "text": "ECS のコンテナの実行基盤は、サーバーレスの Fargate、自分でインスタンスの種類と台数を管理する EC2、AWS が EC2 インスタンスの管理を肩代わりする ECS Managed Instances、オンプレミスの外部インスタンス（ECS Anywhere）から選ぶ。",
-      "trap": "Fargate は実行基盤であり、オーケストレーターは ECS（または EKS）。",
+      "trap": "Fargate はサーバーレスの実行基盤（コンピュートエンジン）であり、コンテナを管理するのは ECS。",
       "depth": "core",
       "sources": [
         {
@@ -97,7 +97,7 @@
       "id": "ecs.task-definition",
       "title": "タスク定義はアプリケーションの設計図",
       "kind": "feature",
-      "text": "タスク定義は ECS でアプリケーションを動かすための設計図であり、コンテナイメージや CPU・メモリ、使用する IAM ロールなどを記述する。タスクやサービスは、タスク定義を指定して起動する。",
+      "text": "タスク定義は ECS でアプリケーションを動かすための設計図である。サービスは、タスク定義のインスタンスを指定した数だけ動かし続ける。",
       "depth": "core",
       "sources": [
         {
@@ -197,6 +197,10 @@
         {
           "title": "Automatically scale your Amazon ECS service",
           "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html"
+        },
+        {
+          "title": "What is Amazon Elastic Container Service?",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html"
         }
       ],
       "checkedAt": "2026-11-14"
@@ -373,11 +377,10 @@
     },
     {
       "id": "ecs.capacity-provider-reservation",
-      "title": "CapacityProviderReservation はタスクの必要台数を表す",
+      "title": "マネージドスケーリングは CapacityProviderReservation で判断する",
       "kind": "feature",
-      "text": "マネージドスケーリングは、ECS が発行する CapacityProviderReservation メトリクス（必要なインスタンス数を実行中のインスタンス数で割った百分率）を基準にする。CPU 使用率ではなく、タスクが必要とするキャパシティから算出するため、空きがなくて待機中のタスクもスケールアウトの判断に反映される。",
-      "trap": "EC2 の CPU 使用率だけでは、メモリや GPU が足りず配置できないタスクを検知できない。",
-      "depth": "core",
+      "text": "マネージドスケーリングは、ECS が発行する CapacityProviderReservation メトリクス（必要なインスタンス数を実行中のインスタンス数で割った百分率）を基準に、スケールの要否を判断する。この値が targetCapacity より大きいとスケールアウトし、小さいとスケールインする。",
+      "depth": "detail",
       "sources": [
         {
           "title": "Automatically manage Amazon ECS capacity with cluster auto scaling",
@@ -406,9 +409,9 @@
     },
     {
       "id": "ecs.managed-scaling-limits",
-      "title": "マネージドスケーリングの制約",
+      "title": "マネージドスケーリングのキャパシティプロバイダーは 1 クラスターだけ",
       "kind": "constraint",
-      "text": "マネージドスケーリングが有効なキャパシティプロバイダーは、同時に1つのクラスターにしか関連付けられない。Auto Scaling グループの最大キャパシティは 0 より大きくする必要があり、AmazonECSManaged タグを消すと ECS がスケーリングを管理できなくなる。",
+      "text": "マネージドスケーリングが有効なキャパシティプロバイダーは、同時に1つのクラスターにしか関連付けられない。",
       "depth": "detail",
       "sources": [
         {
@@ -465,7 +468,7 @@
       "id": "ecs.rolling-update",
       "title": "ローリングアップデートの台数制御",
       "kind": "feature",
-      "text": "ローリングアップデートは、サービスの稼働中のタスクを新しいタスクに順に置き換えるデプロイ方式である。minimumHealthyPercent が稼働を保つ下限、maximumPercent が同時に動く上限で、いずれも希望タスク数に対する百分率で指定する。",
+      "text": "ローリングアップデートは、サービスの稼働中のタスクを新しいタスクに順に置き換えるデプロイ方式である。稼働を保つ下限と同時に動く上限を、希望タスク数に対する百分率で指定する。",
       "depth": "core",
       "sources": [
         {
@@ -535,10 +538,24 @@
       "checkedAt": "2026-11-14"
     },
     {
-      "id": "ecs.anywhere-unsupported",
-      "title": "ECS Anywhere で使えない機能",
+      "id": "ecs.anywhere-no-awsvpc",
+      "title": "ECS Anywhere では awsvpc ネットワークモードを使えない",
       "kind": "constraint",
-      "text": "外部インスタンスでは、awsvpc ネットワークモード、キャパシティプロバイダー、EFS ボリュームがサポートされない。タスクのネットワークモードは bridge、host、none のいずれかを使い、サービスやタスクは EXTERNAL 起動タイプで実行する。",
+      "text": "外部インスタンスでは、awsvpc ネットワークモードがサポートされない。タスクのネットワークモードは bridge、host、none のいずれかを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon ECS clusters for external instances",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-anywhere.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.anywhere-no-capacity-provider",
+      "title": "ECS Anywhere ではキャパシティプロバイダーを使えない",
+      "kind": "constraint",
+      "text": "外部インスタンスでは、キャパシティプロバイダーがサポートされない。サービスやタスクは EXTERNAL 起動タイプで実行する。",
       "depth": "detail",
       "sources": [
         {

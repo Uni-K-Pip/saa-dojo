@@ -620,7 +620,11 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon EBS の既定の暗号化は新規作成ボリュームだけが対象で、既存の RDS ストレージには影響しないことが書かれていない。"
+      "knowledge": "Amazon EBS の既定の暗号化は新規作成ボリュームだけが対象で、既存の RDS ストレージには影響しないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.encryption-default-new-only"
+      ]
     },
     {
       "key": "saa-1.3-w2m-004/a",
@@ -709,7 +713,11 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon EBS の既定の暗号化はアカウントとリージョンごとの設定で、Organizations の管理アカウントで有効にしてもメンバーアカウントには及ばないことが書かれていない。"
+      "knowledge": "Amazon EBS の既定の暗号化はアカウントとリージョンごとの設定で、Organizations の管理アカウントで有効にしてもメンバーアカウントには及ばないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.encryption-default-scope"
+      ]
     },
     {
       "key": "saa-1.3-w2m-010/b",
@@ -1147,7 +1155,9 @@
       "knowledge": "Aurora クローンは作成時点の状態を複製するため、誤更新後に作ると誤更新後のデータを含む。",
       "decision": "fact",
       "factRefs": [
-        "aurora.clone-point-in-time"
+        "aurora.clone",
+        "aurora.pitr",
+        "aurora.backtrack"
       ]
     },
     {
@@ -1234,7 +1244,12 @@
       "task": "2.2",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon ElastiCache のグローバルデータストアは、プライマリクラスターのデータを別リージョンのセカンダリクラスターへ自動複製し、障害時にセカンダリを昇格できる。"
+      "knowledge": "Amazon ElastiCache のグローバルデータストアは、プライマリクラスターのデータを別リージョンのセカンダリクラスターへ自動複製し、障害時にセカンダリを昇格できる。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.global-replication",
+        "elasticache.global-manual-promotion"
+      ]
     },
     {
       "key": "saa-2.2-w2m-011/a",
@@ -1256,7 +1271,7 @@
       "knowledge": "Aurora のエンドポイントの種類は接続先の指定であり、ライターに昇格するリーダーの選択には影響せず、昇格先はフェイルオーバー優先度で決まる。",
       "decision": "fact",
       "factRefs": [
-        "aurora.endpoint-no-promotion-control",
+        "aurora.promotion-by-priority-size",
         "aurora.failover-priority"
       ]
     },
@@ -1299,7 +1314,13 @@
       "task": "3.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon EBS ボリュームの全ブロックを読み取って初期化する方法は、完了まで時間がかかり、作成直後から全性能を得る要件を満たさないこと。"
+      "knowledge": "Amazon EBS ボリュームの全ブロックを読み取って初期化する方法は、完了まで時間がかかり、作成直後から全性能を得る要件を満たさないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.manual-initialization",
+        "ebs.volume-initialization",
+        "ebs.fsr"
+      ]
     },
     {
       "key": "saa-3.1-w2m-003/d",
@@ -1583,7 +1604,12 @@
       "task": "3.3",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon ElastiCache for Valkey/Redis OSS のクラスターモード有効の構成は、キーを複数のシャードに分散して書き込みとデータ量を水平に拡張でき、シャードの追加（再シャーディング）もできること。"
+      "knowledge": "Amazon ElastiCache for Valkey/Redis OSS のクラスターモード有効の構成は、キーを複数のシャードに分散して書き込みとデータ量を水平に拡張でき、シャードの追加（再シャーディング）もできること。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.cluster-sharding",
+        "elasticache.online-resharding"
+      ]
     },
     {
       "key": "saa-3.3-w2m-007/a",
@@ -1790,7 +1816,11 @@
       "task": "4.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "EBS マルチアタッチでデータを共有するにはクラスター対応のファイルシステムが必要で、NFS の代替にはならない。"
+      "knowledge": "EBS マルチアタッチでデータを共有するにはクラスター対応のファイルシステムが必要で、NFS の代替にはならない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.multi-attach-clustered-fs"
+      ]
     },
     {
       "key": "saa-4.1-w2m-007/b",
@@ -1929,7 +1959,7 @@
       "decision": "fact",
       "factRefs": [
         "rds.stop-instance",
-        "eventbridge.scheduler-start-stop"
+        "eventbridge.scheduler-targets"
       ]
     },
     {
@@ -1949,14 +1979,26 @@
       "task": "4.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "ElastiCache のノードタイプを小さくしてノード数を増やしても全データがメモリに残り、データ階層化のようにアクセス頻度の偏りを使った費用削減にならない。"
+      "knowledge": "ElastiCache のノードタイプを小さくしてノード数を増やしても全データがメモリに残り、データ階層化のようにアクセス頻度の偏りを使った費用削減にならない。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.memory-only-sharding",
+        "elasticache.data-tiering-lru",
+        "elasticache.data-tiering-cost"
+      ]
     },
     {
       "key": "saa-4.3-w2m-005/c",
       "task": "4.3",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon ElastiCache の R6gd ノードはデータ階層化に対応し、アクセスの少ない値をローカル SSD に自動で移してメモリ費用を下げる。"
+      "knowledge": "Amazon ElastiCache の R6gd ノードはデータ階層化に対応し、アクセスの少ない値をローカル SSD に自動で移してメモリ費用を下げる。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.data-tiering-r6gd",
+        "elasticache.data-tiering-lru",
+        "elasticache.data-tiering-cost"
+      ]
     },
     {
       "key": "saa-4.3-w2m-005/d",

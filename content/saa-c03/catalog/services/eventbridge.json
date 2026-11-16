@@ -25,7 +25,7 @@
       "text": "cron 式や一回限りの予定で、処理を定時に起動したい",
       "factRefs": [
         "eventbridge.scheduler-basics",
-        "eventbridge.scheduler-start-stop"
+        "eventbridge.scheduler-targets"
       ]
     },
     {
@@ -40,9 +40,6 @@
       "factRefs": [
         "eventbridge.pipes",
         "eventbridge.pipes-vs-bus"
-      ],
-      "alternatives": [
-        "sqs"
       ]
     }
   ],
@@ -51,24 +48,28 @@
       "text": "同じメッセージを購読者全員へ配り、メールや SMS で人にも通知したい",
       "alternatives": [
         "sns"
+      ],
+      "factRefs": [
+        "sns.subscriber-endpoints",
+        "sns.fanout"
       ]
     },
     {
       "text": "メッセージを溜めて、受け手が自分のペースで取り出して処理したい",
       "alternatives": [
         "sqs"
-      ]
-    },
-    {
-      "text": "複数の読み手が順序つきのデータを保持期間内に読み直したい",
-      "alternatives": [
-        "kinesis-data-streams"
+      ],
+      "factRefs": [
+        "sqs.queue-decoupling"
       ]
     },
     {
       "text": "複数の処理の順番、分岐、やり直しを 1 つの流れとして管理したい",
       "alternatives": [
         "step-functions"
+      ],
+      "factRefs": [
+        "step-functions.orchestration"
       ]
     }
   ],
@@ -234,21 +235,6 @@
       "checkedAt": "2026-11-14"
     },
     {
-      "id": "eventbridge.scheduler-start-stop",
-      "title": "Scheduler で他サービスの操作を定時に実行する",
-      "kind": "integration",
-      "text": "定時に AWS サービスの操作を起動したいとき（たとえば開発用のデータベースの停止と起動を夜間と朝に実行する）は、EventBridge Scheduler のユニバーサルターゲットで対象サービスの API を呼び出すスケジュールを作ります。停止や起動の仕組み自体は対象サービス側の機能です。",
-      "examPoint": "定時の停止・起動の自動化は、対象サービスの機能＋ EventBridge Scheduler。",
-      "depth": "core",
-      "sources": [
-        {
-          "title": "What is Amazon EventBridge Scheduler?",
-          "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
-        }
-      ],
-      "checkedAt": "2026-11-14"
-    },
-    {
       "id": "eventbridge.pipes",
       "title": "パイプは 1 つの送信元と 1 つのターゲットをつなぐ",
       "kind": "feature",
@@ -316,11 +302,11 @@
     },
     {
       "id": "eventbridge.target-dlq",
-      "title": "ターゲットの DLQ は配信に失敗したイベントだけを保存する",
+      "title": "ターゲットの DLQ は配信できなかったイベントを保存する",
       "kind": "feature",
-      "text": "ルールのターゲットにデッドレターキュー（DLQ）を設定すると、ターゲットへ正常に配信できなかったイベントだけが、その SQS キューへ送られます。配信に成功したイベントや、ルールに一致しないイベントは入りません。失敗の原因を直してから、あとで処理できます。",
+      "text": "ルールのターゲットにデッドレターキュー（DLQ）を設定すると、ターゲットへ配信できなかったイベントがその SQS キューに保存されます。失敗の原因を直してから、あとで処理できます。",
       "examPoint": "配信に失敗したイベントを残すには、ターゲットに DLQ を設定する。",
-      "trap": "DLQ に入るのは配信に失敗したイベントだけで、全イベントのコピーではない。",
+      "trap": "DLQ に入るのは配信に失敗したイベントで、再試行を使い切っても DLQ がなければイベントは失われる。",
       "depth": "core",
       "sources": [
         {
@@ -352,7 +338,7 @@
       "id": "eventbridge.dlq-no-retry-errors",
       "title": "権限不足や宛先の消失は再試行せず DLQ へ送る",
       "kind": "constraint",
-      "text": "ターゲットへの権限がない、ターゲットのリソースがなくなった、アドレスが不正で見つからない、といったエラーでは、EventBridge は再試行せず、問題が直るまで待ちません。これらのイベントは DLQ を指定していれば、直接その DLQ に送られます。",
+      "text": "ターゲットへの権限がない、ターゲットのリソースがなくなった、アドレスが不正で見つからない、といったエラーでは、原因が解消されるまで再試行は行われません。DLQ を指定していれば、イベントは直接その DLQ へ送られます。",
       "depth": "detail",
       "sources": [
         {
@@ -393,10 +379,38 @@
       "checkedAt": "2026-11-14"
     },
     {
-      "id": "eventbridge.replay-details",
-      "title": "リプレイの順序・同時実行数・識別",
+      "id": "eventbridge.replay-name-field",
+      "title": "リプレイされたイベントの replay-name",
       "kind": "feature",
-      "text": "リプレイされたイベントには replay-name のフィールドが付き、ターゲットで識別できます。アーカイブの管理ルールは、このフィールドを使って、再送されたイベントが再びアーカイブされるのを防ぎます。1 アカウント・1 リージョンで同時に実行できるリプレイは 10 件で、イベントは元の順序どおりとは限りません。リプレイの記録は 90 日後に削除されます。",
+      "text": "リプレイされたイベントには replay-name のフィールドが付き、ターゲットで識別できます。アーカイブの管理ルールは、このフィールドを使って、再送されたイベントが再びアーカイブされるのを防ぎます。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.replay-concurrency",
+      "title": "リプレイの同時実行数",
+      "kind": "quota",
+      "text": "EventBridge のイベントのリプレイは、1 アカウント・1 リージョンで同時に実行できるのが 10 件までです。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.replay-order",
+      "title": "リプレイでのイベントの順序",
+      "kind": "constraint",
+      "text": "アーカイブからリプレイされるイベントは、元のイベントが発生した順序どおりに配信されるとは限りません。",
       "depth": "detail",
       "sources": [
         {
