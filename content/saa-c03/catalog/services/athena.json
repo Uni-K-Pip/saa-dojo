@@ -1,0 +1,312 @@
+{
+  "id": "athena",
+  "tier": 1,
+  "summary": "Amazon S3 に保存したデータを標準 SQL で直接分析できる、サーバーレスの対話型クエリサービスです。データを Athena にロードせず、ログ調査などのアドホックな分析に利用できます。",
+  "chooseWhen": [
+    {
+      "text": "S3 に保存したデータに、サーバーやクラスターを管理せずアドホックな SQL 分析を行いたいとき。",
+      "factRefs": [
+        "athena.s3-sql-query",
+        "athena.serverless-query"
+      ]
+    },
+    {
+      "text": "S3 に出力した VPC フローログを、SQL で調査したいとき。",
+      "factRefs": [
+        "athena.flow-logs-query"
+      ]
+    },
+    {
+      "text": "S3 以外の対応データソースを、その場で SQL により横断的に分析したいとき。",
+      "factRefs": [
+        "athena.federated-query"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "高度に構造化された多数の巨大なテーブルを複雑に結合する分析が中心なら、Amazon Redshift を検討する。",
+      "alternatives": [
+        "redshift"
+      ]
+    },
+    {
+      "text": "分析用クラスターの構成やインストールするソフトウェアを全面的に制御したいなら、Amazon EMR を検討する。",
+      "alternatives": [
+        "emr"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "athena.s3-sql-query",
+      "title": "S3 のデータを標準 SQL で直接分析",
+      "kind": "feature",
+      "text": "Amazon Athena は、Amazon S3 に保存されたデータに標準 SQL で対話型のクエリを実行する。分析対象のデータを Athena にロードせず、必要なときにアドホックな分析を行える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Athena? - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+        },
+        {
+          "title": "When should I use Athena? - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.serverless-query",
+      "title": "インフラ管理が不要なサーバーレス実行",
+      "kind": "feature",
+      "text": "Athena SQL はサーバーレスであり、クエリを実行するためのインフラを利用者が構築・管理する必要がない。Athena がクエリ処理を自動的にスケールする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Athena? - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.glue-catalog",
+      "title": "Glue Data Catalog のメタデータを利用",
+      "kind": "integration",
+      "text": "Athena は AWS Glue Data Catalog と連携し、S3 のデータについて共有されるメタデータを基にテーブルを作成してクエリできる。データカタログを使って分析対象の定義を参照する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "When should I use Athena? - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.scan-based-pricing",
+      "title": "スキャン量に基づく SQL の料金",
+      "kind": "pricing",
+      "text": "Athena SQL をスキャン量に基づく課金で利用する場合、クエリがスキャンしたデータ量に応じて料金がかかる。クエリで読み取るデータ量を減らすことで、この方式の料金を抑えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Athena pricing",
+          "url": "https://aws.amazon.com/athena/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.partition-pruning",
+      "title": "パーティション条件でスキャン対象を限定",
+      "kind": "feature",
+      "text": "Athena のパーティション化されたテーブルでは、WHERE 句でパーティションを指定すると、そのパーティションのデータだけをスキャンする。日付などでデータを分割し、クエリの読み取り範囲を絞れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Partition your data - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/partitions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.columnar-scan",
+      "title": "列指向形式で必要な列だけを読み取る",
+      "kind": "feature",
+      "text": "Athena で Parquet や ORC などの列指向形式を使うと、クエリに必要な列だけを読み込める。必要な列を選んで問い合わせることで、S3 から読み取るデータ量を減らせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Optimize data - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-data-optimization-techniques.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.compressed-data-scan",
+      "title": "圧縮データのスキャン量",
+      "kind": "pricing",
+      "text": "Athena で圧縮データをスキャン量に基づく課金で問い合わせる場合、解凍前にスキャンしたバイト数が料金の基準になる。圧縮により読み取り量を減らすことで、クエリの費用を抑えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Optimize data - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/performance-tuning-data-optimization-techniques.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.workgroups",
+      "title": "ワークグループでクエリを分離",
+      "kind": "feature",
+      "text": "Athena のワークグループは、チームや用途ごとにクエリのワークロードを分離する管理単位である。ワークグループごとに、その中で実行したクエリの履歴や保存済みクエリを分けて扱う。",
+      "trap": "Lake Formation 登録データの読み取りには、ワークグループへのアクセスとは別に Lake Formation の権限が必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use workgroups to control query access and costs - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/workgroups-manage-queries-control-costs.html"
+        },
+        {
+          "title": "Manage Lake Formation and Athena user permissions - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/lf-athena-user-permissions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.per-query-scan-limit",
+      "title": "クエリ単位のスキャン量制限",
+      "kind": "feature",
+      "text": "Athena のワークグループには、クエリごとのデータスキャン量の制限を設定できる。そのワークグループで実行したクエリが設定値を超えると、Athena はそのクエリをキャンセルする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure per-query and per-workgroup data usage controls - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/workgroups-setting-control-limits-cloudwatch.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.lake-formation-query",
+      "title": "列の読み取り制御に Lake Formation を利用",
+      "kind": "integration",
+      "text": "Athena で S3 の元データをクエリし、利用者が読み取れる列を制御したい場合は、AWS Lake Formation と組み合わせる。Lake Formation に登録したデータを読むクエリには、その権限が適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Athena to query data registered with AWS Lake Formation - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/security-athena-lake-formation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.flow-logs-query",
+      "title": "S3 の VPC フローログを SQL で分析",
+      "kind": "integration",
+      "text": "Athena では、S3 に保存した VPC フローログをテーブルとして定義し、SQL で問い合わせられる。VPC フローログの調査に利用でき、GZIP 圧縮されたログも直接クエリできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Query Amazon VPC flow logs - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.federated-query",
+      "title": "フェデレーテッドクエリで S3 以外も分析",
+      "kind": "feature",
+      "text": "Athena Federated Query は、データソースコネクタを使い、S3 以外に保存されたデータにも SQL クエリを実行する。対応するリレーショナル型や非リレーショナル型などのデータソースを、その場所に置いたまま分析できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Amazon Athena Federated Query - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/federated-queries.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.flow-log-reject-filter",
+      "title": "フローログの拒否通信を SQL で抽出",
+      "kind": "feature",
+      "text": "Athena の VPC フローログ用テーブルでは、SQL の WHERE 句に action = 'REJECT' という条件を指定して、拒否された通信のログを抽出できる。ほかの列の条件と組み合わせて調査対象を絞れる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Create a table for Amazon VPC flow logs and query it - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs-create-table-statement.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.grouped-record-count",
+      "title": "GROUP BY と COUNT によるレコード件数の集計",
+      "kind": "feature",
+      "text": "Athena の SQL では、GROUP BY に指定した列の値ごとにレコードをまとめ、COUNT(*) で各グループのレコード件数を集計できる。複数の列を指定して、それらの値の組み合わせごとに集計することもできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "SELECT - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/select.html"
+        },
+        {
+          "title": "Securing data lakes with row-level access control - AWS Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/cbac-tutorial.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.flow-log-packet-sum",
+      "title": "フローログのパケット数は SUM で集計",
+      "kind": "feature",
+      "text": "Athena の VPC フローログ用テーブルでパケット数を集計するときは、packets 列に SUM(packets) を適用する。GROUP BY と組み合わせると、指定した列の値ごとにパケット数の合計を求められる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Create a table for Amazon VPC flow logs and query it - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs-create-table-statement.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.capacity-based-pricing",
+      "title": "予約した処理能力に基づく SQL の料金",
+      "kind": "pricing",
+      "text": "Athena SQL では Capacity Reservations を利用する課金方式も選べる。この方式の料金は、クエリがスキャンしたデータ量ではなく、予約する処理能力の DPU 数と時間に基づいて計算される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Athena pricing",
+          "url": "https://aws.amazon.com/athena/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.ctas-columnar",
+      "title": "CTAS による列指向形式への変換",
+      "kind": "feature",
+      "text": "Athena の CREATE TABLE AS SELECT（CTAS）クエリでは、保存形式に Parquet や ORC を指定して新しいテーブルを作成できる。既存の CSV や JSON などのデータを列指向形式に変換する手段として利用する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use columnar storage formats - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/columnar-storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "vpc.flow-logs-basics"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Athena? - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/what-is.html"
+    },
+    {
+      "title": "When should I use Athena? - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html"
+    },
+    {
+      "title": "Amazon Athena pricing",
+      "url": "https://aws.amazon.com/athena/pricing/"
+    }
+  ],
+  "createdBy": "cx29",
+  "createdAt": "2026-11-16"
+}

@@ -189,7 +189,7 @@
       "id": "fsx.ontap-ssd-provisioned-billing",
       "title": "ONTAP の SSD 料金は確保容量に基づく",
       "kind": "pricing",
-      "text": "Amazon FSx for NetApp ONTAP の SSD ストレージ料金は、ファイルシステムにプロビジョニングした容量の月間平均に基づきます。データを容量プールへ階層化して SSD の使用量が減っても、確保した SSD 容量が同じなら、その容量分の料金は減りません。",
+      "text": "Amazon FSx for NetApp ONTAP の SSD ストレージ料金は、ファイルシステムにプロビジョニングした容量の月間平均に基づきます。",
       "depth": "core",
       "sources": [
         {

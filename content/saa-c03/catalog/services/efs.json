@@ -40,7 +40,7 @@
       ]
     },
     {
-      "text": "AZ 喪失時にもデータを保持する必要がある場合は、One Zone を避けて Regional を使う。",
+      "text": "AZ の障害後もデータへのアクセスと保持が必要なのに、One Zone ファイルシステムで構成しようとしている場合。",
       "factRefs": [
         "efs.one-zone-risk",
         "efs.regional-resilience"
@@ -291,7 +291,7 @@
       "title": "Provisioned は含まれるベースラインを超える設定分に課金",
       "kind": "pricing",
       "text": "Amazon EFS の Provisioned スループット料金は、Standard の保存量に基づいて含まれるベースラインを超えて指定した分に対して発生する。このベースラインには、リージョンの Bursting ベースラインの上限が適用される。",
-      "depth": "core",
+      "depth": "detail",
       "sources": [
         {
           "title": "Amazon EFS performance specifications",

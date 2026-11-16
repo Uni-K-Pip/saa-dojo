@@ -1,0 +1,161 @@
+{
+  "id": "network-firewall",
+  "tier": 2,
+  "summary": "VPC のネットワーク通信を検査するマネージドファイアウォールです。ドメイン名によるフィルタリングや、Suricata 互換ルールによるステートフルな侵入検知・防止に利用します。",
+  "chooseWhen": [
+    {
+      "text": "VPC の通信に Suricata 互換の侵入防止ルールを適用したい場合。",
+      "factRefs": [
+        "network-firewall.suricata-inspection"
+      ]
+    },
+    {
+      "text": "HTTPS の接続先を TLS の SNI に含まれるドメイン名で制御したい場合。",
+      "factRefs": [
+        "network-firewall.https-sni-filtering"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "ファイアウォールエンドポイントと同じサブネットにあるリソースの出入りを、そのエンドポイントで検査したい場合。",
+      "factRefs": [
+        "network-firewall.endpoint-subnet-exclusion"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "network-firewall.suricata-inspection",
+      "title": "Suricata 互換ルールによる検査",
+      "kind": "feature",
+      "text": "AWS Network Firewall は、ステートフル検査に侵入防止システムの Suricata を使用します。VPC の通信検査には Suricata 互換のルールを利用できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Network Firewall?",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.https-sni-filtering",
+      "title": "TLS の SNI によるドメイン判定",
+      "kind": "feature",
+      "text": "AWS Network Firewall のドメインリストで HTTPS を検査する場合、TLS ハンドシェイクの Server Name Indication（SNI）から、クライアントが接続しようとするドメイン名を判定します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Stateful domain list rule groups in AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.http-host-filtering",
+      "title": "HTTP の Host ヘッダーによるドメイン判定",
+      "kind": "feature",
+      "text": "AWS Network Firewall のドメインリストで HTTP を検査する場合、HTTP の Host ヘッダーから接続先のドメイン名を取得し、ルールのドメイン指定と照合します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Stateful domain list rule groups in AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.route-to-endpoint",
+      "title": "検査対象の通信をルートで誘導",
+      "kind": "feature",
+      "text": "AWS Network Firewall のファイアウォールへ検査対象の通信を通すには、VPC のルートテーブルを変更します。ルーティングによって通信をファイアウォールへ誘導してフィルタリングします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Network Firewall?",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.endpoint-subnet-exclusion",
+      "title": "エンドポイント自身のサブネットは検査対象外",
+      "kind": "constraint",
+      "text": "AWS Network Firewall のエンドポイントは、自身が配置されたサブネットに出入りする通信をフィルタリングできません。このため、ファイアウォール用サブネットは Network Firewall 専用にします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Network Firewall?",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.strict-rule-order",
+      "title": "ステートフルルールの厳密な評価順序",
+      "kind": "feature",
+      "text": "AWS Network Firewall のステートフル検査を厳密順序（Strict order）にすると、ルールグループは優先度の数値が小さい順に評価されます。各グループ内のルールは定義した順に処理されます。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing evaluation order for Suricata compatible rules in AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.default-drop-established",
+      "title": "接続確立後の不一致通信を既定で破棄",
+      "kind": "feature",
+      "text": "AWS Network Firewall の厳密順序で既定アクションに Drop established を選ぶと、ルールに一致しない接続確立後のクライアントからサーバーへのパケットを破棄します。接続確立用の下位層の通信は許可するため、ドメインリストを使う厳密順序の構成に利用できます。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing evaluation order for Suricata compatible rules in AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html"
+        },
+        {
+          "title": "FirewallPolicy - AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/APIReference/API_FirewallPolicy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "network-firewall.strict-allowlist-no-auto-drop",
+      "title": "厳密順序の許可リストは不一致を自動拒否しない",
+      "kind": "constraint",
+      "text": "AWS Network Firewall のドメインリストを Allow にしたとき、指定プロトコルの不一致通信を自動で拒否する動作はアクション順序の構成に限られます。厳密順序ではこの自動拒否が適用されないため、許可リストだけで不一致通信が拒否されるとは扱えません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Stateful domain list rule groups in AWS Network Firewall",
+          "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Network Firewall?",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+    },
+    {
+      "title": "Stateful domain list rule groups in AWS Network Firewall",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/stateful-rule-groups-domain-names.html"
+    },
+    {
+      "title": "Managing evaluation order for Suricata compatible rules in AWS Network Firewall",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/suricata-rule-evaluation-order.html"
+    }
+  ],
+  "createdBy": "cx28",
+  "createdAt": "2026-11-16"
+}

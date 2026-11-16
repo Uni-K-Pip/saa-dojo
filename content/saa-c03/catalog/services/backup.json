@@ -162,9 +162,9 @@
     },
     {
       "id": "backup.vault-policy-removable",
-      "title": "ボールトアクセスポリシー自体は削除できる",
-      "kind": "constraint",
-      "text": "AWS Backup のボールトアクセスポリシーで復旧ポイントの削除を拒否しても、ポリシー自体は不変になりません。backup:DeleteBackupVaultAccessPolicy を実行する権限を持つ主体は、ボールトのアクセスポリシーを削除できます。",
+      "title": "ボールトアクセスポリシーを削除する API",
+      "kind": "feature",
+      "text": "AWS Backup の DeleteBackupVaultAccessPolicy API は、バックアップボールトの権限を管理するアクセスポリシー文書を削除します。",
       "depth": "detail",
       "sources": [
         {

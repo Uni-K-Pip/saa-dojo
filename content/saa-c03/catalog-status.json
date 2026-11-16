@@ -759,6 +759,11 @@
     "checkedAt": "2026-11-16",
     "hash": "894cae64c457"
   },
+  "cloudtrail.event-history-retention": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "606e736edf35"
+  },
   "cloudtrail.insights-anomaly-detection": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -948,6 +953,106 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f02beb2b7896"
+  },
+  "config": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fc5be15476a6"
+  },
+  "config.advanced-queries": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9d6d69fe6694"
+  },
+  "config.aggregator-read-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3877634a7221"
+  },
+  "config.configuration-change-trigger": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "527b90063516"
+  },
+  "config.configuration-history": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4515a1bd78f8"
+  },
+  "config.conformance-packs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4c83a206aca8"
+  },
+  "config.custom-lambda-rules": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "77563de600ce"
+  },
+  "config.managed-rules": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "024c09b6fb12"
+  },
+  "config.multi-account-aggregation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b8d696b35169"
+  },
+  "config.organization-conformance-packs": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "45cbf06ffa4a"
+  },
+  "config.periodic-rule-trigger": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c0e52ce599aa"
+  },
+  "config.proactive-does-not-block": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5df0392c4088"
+  },
+  "config.proactive-evaluation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3617e154e86a"
+  },
+  "config.recording-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "86bfb843c135"
+  },
+  "config.resource-relationships": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6d9ad5bc8997"
+  },
+  "config.rule-compliance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "228f687ef4ac"
+  },
+  "config.s3-configuration-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "400f862abef7"
+  },
+  "config.sns-change-notifications": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8dcc19ffd5ad"
+  },
+  "config.ssm-remediation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "334cb4d0f586"
+  },
+  "config.stop-customer-recorder": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "efa16dc857b7"
   },
   "datasync": {
     "status": "verified",
@@ -3379,6 +3484,11 @@
     "checkedAt": "2026-11-16",
     "hash": "4199e7d7182e"
   },
+  "iam-identity-center.cli-browser-sign-in": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "73df67513981"
+  },
   "iam-identity-center.external-idp-provisioning": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3573,6 +3683,41 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "ad8621b9faa2"
+  },
+  "inspector": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0cbb8c00571c"
+  },
+  "inspector.ec2-network-reachability": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "cfe9129cb4f3"
+  },
+  "inspector.ec2-package-vulnerabilities": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "a374e105f1f3"
+  },
+  "inspector.ecr-monitoring-criteria": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d9bc2eb522da"
+  },
+  "inspector.findings-remediation-guidance": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8391f93126f5"
+  },
+  "inspector.lambda-standard-scanning": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bc61d8dca94b"
+  },
+  "inspector.organizations-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c86fe210883e"
   },
   "kms": {
     "status": "verified",
@@ -3814,6 +3959,11 @@
     "checkedAt": "2026-11-14",
     "hash": "6c9b3d5bd706"
   },
+  "nat-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "3e49eb3015fc"
+  },
   "nat-gateway.aws-managed": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3888,6 +4038,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "77909e380de9"
+  },
+  "nat-gateway.regional-per-az-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "28bcdca186a9"
   },
   "nat-gateway.same-az-cost": {
     "status": "verified",
@@ -4279,10 +4434,25 @@
     "checkedAt": "2026-11-16",
     "hash": "9c08c63f2565"
   },
+  "redshift.on-demand-nodes": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c24fd523fdf3"
+  },
+  "redshift.parallel-query": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "04445c777a3a"
+  },
   "redshift.pause-billing": {
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "937b85f98e96"
+  },
+  "redshift.pause-resume": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "213f2f7501d7"
   },
   "redshift.pause-unavailable": {
     "status": "verified",
@@ -4643,6 +4813,101 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "5f27b848c34c"
+  },
+  "secrets-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "65d41cfc546a"
+  },
+  "secrets-manager.automatic-rotation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "56c8cca5df69"
+  },
+  "secrets-manager.cloudtrail-audit": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ac611dbd1f67"
+  },
+  "secrets-manager.kms-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "e0136569966a"
+  },
+  "secrets-manager.lambda-rotation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "d6c04e55911c"
+  },
+  "secrets-manager.managed-rotation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2cf151946948"
+  },
+  "secrets-manager.private-api-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "8af9533bb345"
+  },
+  "secrets-manager.regional-replication": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "ab001746cd26"
+  },
+  "secrets-manager.replica-promotion": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "251674cbd09e"
+  },
+  "secrets-manager.replica-rotation-propagation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "52e7b0bd7df0"
+  },
+  "secrets-manager.replica-update-constraint": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "2d94741def27"
+  },
+  "secrets-manager.runtime-retrieval": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "20521a5c8f24"
+  },
+  "secrets-manager.secret-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "c8f91a7fcf49"
+  },
+  "security-hub": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "b6344743aba6"
+  },
+  "security-hub.correlated-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "857e63aa9189"
+  },
+  "security-hub.cspm-declarative-recommendation": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "9bcf3f9d2391"
+  },
+  "security-hub.cspm-delegated-administrator": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "bfd1d7b1940d"
+  },
+  "security-hub.cspm-security-checks": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "42c75364ecff"
+  },
+  "security-hub.cspm-service-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "f4118cfb254b"
   },
   "site-to-site-vpn": {
     "status": "verified",
@@ -5124,6 +5389,11 @@
     "checkedAt": "2026-11-16",
     "hash": "daf80abbeeed"
   },
+  "transit-gateway.data-processing-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "32fdee152d64"
+  },
   "transit-gateway.direct-connect-integration": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5204,6 +5474,46 @@
     "checkedAt": "2026-11-16",
     "hash": "66a8b9804ad3"
   },
+  "trusted-advisor": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "143402e86762"
+  },
+  "trusted-advisor.best-practice-checks": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "dd2c62a33e5d"
+  },
+  "trusted-advisor.ec2-cost-optimization-hub": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "6f0970b31525"
+  },
+  "trusted-advisor.ec2-low-utilization-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "4ecf4a11c705"
+  },
+  "trusted-advisor.read-only-inspection": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "5b3ce574751f"
+  },
+  "trusted-advisor.s3-incomplete-upload-rule-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "0ca66faafaab"
+  },
+  "trusted-advisor.s3-version-lifecycle-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "fe5a1b60bb89"
+  },
+  "trusted-advisor.support-plan-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-16",
+    "hash": "15329b1b15a8"
+  },
   "vpc": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5231,8 +5541,8 @@
   },
   "vpc.dns-not-reachable-outside": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "e8b6829591e8"
+    "checkedAt": "2026-11-16",
+    "hash": "40a46244e76d"
   },
   "vpc.dns-resolver-address": {
     "status": "verified",

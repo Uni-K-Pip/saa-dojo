@@ -514,7 +514,7 @@
       "id": "vpc.dns-resolver-address",
       "title": "Amazon DNS サーバーのアドレス",
       "kind": "feature",
-      "text": "VPC には Amazon の DNS サーバー（Route 53 VPC Resolver（旧称 Route 53 Resolver））があり、VPC のプライマリ IPv4 CIDR のベースに 2 を足したアドレスと 169.254.169.253 で到達できる。ネットワーク ACL やセキュリティグループでこの通信を止めることはできない。",
+      "text": "VPC には Amazon の DNS サーバー（Route 53 VPC Resolver（旧称 Route 53 Resolver））があり、VPC のプライマリ IPv4 CIDR のベースに 2 を足したアドレスと 169.254.169.253 で到達できる。",
       "depth": "core",
       "sources": [
         {

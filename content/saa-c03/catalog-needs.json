@@ -388,7 +388,12 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Firewall Manager の WAF ポリシーは新規アカウント・リソースに自動適用され、自動修復で外された Web ACL を付け直す。"
+      "knowledge": "AWS Firewall Manager の WAF ポリシーは新規アカウント・リソースに自動適用され、自動修復で外された Web ACL を付け直す。",
+      "decision": "fact",
+      "factRefs": [
+        "firewall-manager.new-in-scope-resources",
+        "firewall-manager.waf-auto-remediation"
+      ]
     },
     {
       "key": "saa-1.2-w2m-002/d",
@@ -529,7 +534,14 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon Athena で S3 のフローログに SQL でクエリでき、action = REJECT で絞り込み srcaddr・dstport ごとに集計できる（COUNT はレコード数でパケット数ではない）。"
+      "knowledge": "Amazon Athena で S3 のフローログに SQL でクエリでき、action = REJECT で絞り込み srcaddr・dstport ごとに集計できる（COUNT はレコード数でパケット数ではない）。",
+      "decision": "fact",
+      "factRefs": [
+        "athena.flow-logs-query",
+        "athena.flow-log-reject-filter",
+        "athena.grouped-record-count",
+        "athena.flow-log-packet-sum"
+      ]
     },
     {
       "key": "saa-1.2-w2m-013/d",
@@ -1619,14 +1631,23 @@
       "task": "3.2",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon EMR のカスタム自動スケーリングは CloudWatch メトリクスに基づくルールの設計と調整が必要で、運用の手間が大きい。"
+      "knowledge": "Amazon EMR のカスタム自動スケーリングは CloudWatch メトリクスに基づくルールの設計と調整が必要で、運用の手間が大きい。",
+      "decision": "fact",
+      "factRefs": [
+        "emr.custom-automatic-scaling",
+        "emr.managed-scaling"
+      ]
     },
     {
       "key": "saa-3.2-w2m-008/c",
       "task": "3.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon EMR のマネージドスケーリングは、ワークロードのメトリクスに基づきコアノードとタスクノードの容量を、指定した最小値・最大値の範囲で自動で増減する。"
+      "knowledge": "Amazon EMR のマネージドスケーリングは、ワークロードのメトリクスに基づきコアノードとタスクノードの容量を、指定した最小値・最大値の範囲で自動で増減する。",
+      "decision": "fact",
+      "factRefs": [
+        "emr.managed-scaling"
+      ]
     },
     {
       "key": "saa-3.3-w2m-001/a",
@@ -1910,14 +1931,28 @@
       "task": "3.5",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon Athena のワークグループはクエリ実行の管理単位で、列ごとのアクセス制御の機能ではなく機密列を除外できないこと。"
+      "knowledge": "Amazon Athena のワークグループはクエリ実行の管理単位で、列ごとのアクセス制御の機能ではなく機密列を除外できないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "athena.workgroups",
+        "athena.lake-formation-query"
+      ]
     },
     {
       "key": "saa-3.5-w2m-006/d",
       "task": "3.5",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Lake Formation でクロスアカウントに列限定の SELECT 権限を付与し、共有先ではロールへの権限付与とリソースリンク作成を行って Athena で照会する手順。"
+      "knowledge": "AWS Lake Formation でクロスアカウントに列限定の SELECT 権限を付与し、共有先ではロールへの権限付与とリソースリンク作成を行って Athena で照会する手順。",
+      "decision": "fact",
+      "factRefs": [
+        "lake-formation.cross-account-column-select",
+        "lake-formation.cross-account-grant-option",
+        "lake-formation.recipient-regrant",
+        "lake-formation.athena-resource-links",
+        "lake-formation.resource-link-describe",
+        "lake-formation.resource-link-target-permissions"
+      ]
     },
     {
       "key": "saa-4.1-w2m-002/a",
