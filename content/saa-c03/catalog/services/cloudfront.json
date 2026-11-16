@@ -271,10 +271,10 @@
     },
     {
       "id": "cloudfront.oai-legacy",
-      "title": "OAI は旧方式で OAC が推奨",
+      "title": "OAI は旧方式で、新規には OAC を使う",
       "kind": "constraint",
-      "text": "オリジンアクセスアイデンティティ（OAI）は旧方式で、OAC の利用が推奨される。OAI は、2022 年 12 月より後に始まったオプトインリージョンの S3 バケット、SSE-KMS、PUT や DELETE などの動的リクエストに対応しないか、回避策が要る。新規には OAC を選ぶ。",
-      "depth": "detail",
+      "text": "オリジンアクセスアイデンティティ（OAI）は S3 オリジンへのアクセスを制限する旧方式で、現在は OAC の利用が推奨される。新規には OAC を選ぶ。",
+      "depth": "core",
       "sources": [
         {
           "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
@@ -282,6 +282,20 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.oai-no-sse-kms",
+      "title": "OAI は SSE-KMS のオブジェクトに対応しない",
+      "kind": "constraint",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-16",
+      "text": "OAI は、SSE-KMS で暗号化した S3 のオブジェクトへのアクセスに対応しないか、回避策が要る。OAC はこの場面に対応する。"
     },
     {
       "id": "cloudfront.s3-website-no-oac",

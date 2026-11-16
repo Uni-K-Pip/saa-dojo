@@ -1,0 +1,340 @@
+{
+  "id": "direct-connect",
+  "tier": 1,
+  "summary": "オンプレミスのネットワークと AWS を、Direct Connect ロケーションを経由する専用ネットワークで接続するサービスです。仮想インターフェイスを通じて、VPC や AWS のパブリックサービスへインターネットを経由せずにアクセスします。",
+  "chooseWhen": [
+    {
+      "text": "オンプレミスと AWS の間に、インターネットを経由しない接続が必要な場合。",
+      "factRefs": [
+        "direct-connect.private-network"
+      ]
+    },
+    {
+      "text": "インターネット経由の接続より、一貫したネットワーク性能を求める場合。",
+      "factRefs": [
+        "direct-connect.consistent-performance"
+      ]
+    },
+    {
+      "text": "複数アカウントや複数リージョンの VPC への接続をまとめたい場合。",
+      "factRefs": [
+        "direct-connect.gateway-multi-region"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "パブリック仮想インターフェイスを、一般のインターネット接続の代わりとして使いたい場合。",
+      "factRefs": [
+        "direct-connect.public-vif-aws-only"
+      ]
+    },
+    {
+      "text": "既存の 1 Gbps 専用接続を変更せず、MACsec を利用することが必須の場合。",
+      "factRefs": [
+        "direct-connect.macsec-supported-connections"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "direct-connect.private-network",
+      "title": "インターネットを経由しない AWS 接続",
+      "kind": "feature",
+      "text": "AWS Direct Connect は、利用者側のルーターと Direct Connect ロケーションのルーターを光ファイバーの Ethernet 接続で結びます。AWS へのネットワーク経路でインターネットサービスプロバイダーを経由せずに通信できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Direct Connect? - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.consistent-performance",
+      "title": "インターネット経由より一貫した通信性能",
+      "kind": "feature",
+      "text": "AWS Direct Connect のプライベートネットワーク接続は、インターネット経由の接続と比べて、より一貫したネットワーク性能を得るために利用できます。帯域を増やせる場合もあります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Direct Connect FAQs",
+          "url": "https://aws.amazon.com/directconnect/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.dedicated-connection",
+      "title": "単一の利用者に割り当てる専用接続",
+      "kind": "feature",
+      "text": "Direct Connect の専用接続は、単一の利用者に関連付けられる物理 Ethernet 接続です。利用者は Direct Connect のコンソール、CLI または API から専用接続をリクエストできます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect dedicated and hosted connections - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithConnections.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.hosted-connection",
+      "title": "パートナーに依頼するホスト型接続",
+      "kind": "feature",
+      "text": "Direct Connect のホスト型接続は、AWS Direct Connect パートナーが利用者に代わって用意する接続です。利用者はパートナーへ直接依頼し、パートナーが接続をプロビジョニングします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect dedicated and hosted connections - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithConnections.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.private-vif",
+      "title": "プライベート VIF で VPC へ接続する",
+      "kind": "feature",
+      "text": "Direct Connect のプライベート仮想インターフェイスは、プライベート IP アドレスを使って Amazon VPC にアクセスするための論理的な接続です。AWS のパブリックサービス向けの仮想インターフェイスとは用途が異なります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect virtual interfaces and hosted virtual interfaces - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.public-vif",
+      "title": "パブリック VIF で AWS のパブリックサービスへ接続する",
+      "kind": "feature",
+      "text": "Direct Connect のパブリック仮想インターフェイスは、パブリック IP アドレスを使って AWS のパブリックサービスにアクセスするために使います。Amazon S3 も、この仮想インターフェイスを通じてアクセスできるサービスです。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Direct Connect? - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.transit-vif",
+      "title": "トランジット VIF で Transit Gateway へ接続する",
+      "kind": "integration",
+      "text": "Direct Connect から AWS Transit Gateway へアクセスするときは、Direct Connect ゲートウェイに関連付けられたトランジットゲートウェイへ到達するためのトランジット仮想インターフェイスを使います。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect virtual interfaces and hosted virtual interfaces - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.gateway-multi-region",
+      "title": "Direct Connect ゲートウェイで複数リージョンへ接続する",
+      "kind": "feature",
+      "text": "Direct Connect ゲートウェイとプライベート仮想インターフェイスを使い、複数の VPC の仮想プライベートゲートウェイに接続できます。接続先の VPC は、同一または異なるアカウントとリージョンに配置できます。中国リージョンは対象外です。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect gateways - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/direct-connect-gateways.html"
+        },
+        {
+          "title": "What is Direct Connect? - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.bgp-routing",
+      "title": "接続装置に BGP 対応が必要",
+      "kind": "feature",
+      "text": "Direct Connect に接続する利用者側の装置は、BGP と BGP の MD5 認証をサポートする必要があります。仮想インターフェイスでは、AWS 側と利用者側の間に BGP ピアリングセッションを構成します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Direct Connect? - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+        },
+        {
+          "title": "Direct Connect virtual interfaces and hosted virtual interfaces - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.encryption-default",
+      "title": "通信の暗号化には追加の対応が必要",
+      "kind": "feature",
+      "text": "2026-11-16 時点の既定値では、Direct Connect は転送中の利用者の通信を暗号化しません。通信を暗号化するには、Direct Connect を通るデータに対応した転送中の暗号化手段を適用します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encryption in AWS Direct Connect - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.macsec-link-encryption",
+      "title": "MACsec は Direct Connect とのリンクを暗号化する",
+      "kind": "feature",
+      "text": "Direct Connect の MACsec は、利用者側の対応装置と Direct Connect 側の装置との間をレイヤー 2 で暗号化します。保護の単位は Ethernet リンクであり、複数のネットワーク区間全体にわたるエンドツーエンド暗号化は提供しません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "MAC Security in Direct Connect - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.macsec-supported-connections",
+      "title": "MACsec を使える回線種別と帯域",
+      "kind": "constraint",
+      "text": "MACsec を利用する Direct Connect の専用接続は、対応する一部のロケーションで提供される 10 Gbps、100 Gbps、400 Gbps の接続から選びます。1 Gbps の専用接続およびホスト型接続は、MACsec の利用対象ではありません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Direct Connect FAQs",
+          "url": "https://aws.amazon.com/directconnect/faqs/"
+        },
+        {
+          "title": "MAC Security in Direct Connect - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.macsec-must-encrypt",
+      "title": "MACsec の暗号化を必須にする設定",
+      "kind": "feature",
+      "text": "Direct Connect の MACsec で must_encrypt モードを指定すると、すべての通信で MACsec 暗号化が必須になります。MACsec のネゴシエーションに失敗するなど、暗号化を確立できない場合は通信を送信しません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "MAC Security in Direct Connect - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/MACsec.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.vpn-encryption",
+      "title": "Site-to-Site VPN と組み合わせて暗号化する",
+      "kind": "integration",
+      "text": "Direct Connect 上で IPsec 暗号化されたプライベート接続が必要な場合は、AWS Site-to-Site VPN と組み合わせます。専用ネットワーク接続を利用しながら、VPN による暗号化を適用できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encryption in AWS Direct Connect - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.public-vif-aws-only",
+      "title": "パブリック VIF は一般のインターネット接続ではない",
+      "kind": "constraint",
+      "text": "Direct Connect のパブリック仮想インターフェイスでアクセスできるのは、Amazon が広告するパブリック IP プレフィックスです。Amazon 以外のプレフィックスへアクセスするための一般のインターネット接続としては使えません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Direct Connect virtual interfaces and hosted virtual interfaces - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.multi-location-resiliency",
+      "title": "複数の装置とロケーションに接続を分散する",
+      "kind": "feature",
+      "text": "Direct Connect でロケーション全体の障害にも備えるには、異なるロケーションの異なる装置に終端する接続を用意します。同じロケーション内で装置だけを分ける構成では、そのロケーションの障害への耐性は得られません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Direct Connect Resiliency Toolkit - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/resiliency_toolkit.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.lag-aggregation",
+      "title": "LAG で専用接続をまとめて管理する",
+      "kind": "feature",
+      "text": "Direct Connect のリンク集約グループ（LAG）は、同じエンドポイントに終端する複数の専用接続を LACP でまとめ、単一の接続として管理する論理インターフェイスです。グループ内の接続には同じ帯域を使用します。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Direct Connect link aggregation groups (LAGs) - AWS Direct Connect",
+          "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/lags.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.port-hour-pricing",
+      "title": "通信がなくてもポート時間料金がかかる",
+      "kind": "pricing",
+      "text": "Direct Connect では、利用者向けにポートがプロビジョニングされている時間に応じたポート時間料金が発生します。ポートをデータが通っていない時間も、この時間料金の課金対象になります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Direct Connect Pay-as-you-go Pricing",
+          "url": "https://aws.amazon.com/directconnect/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "direct-connect.data-transfer-out-pricing",
+      "title": "AWS からの送信データ量に応じた料金",
+      "kind": "pricing",
+      "text": "Direct Connect 経由で AWS から外部へ送るデータには、送信量に応じたデータ転送料金が発生します。適用される単価は、送信元の AWS リージョンまたは Local Zone と、接続する Direct Connect ロケーションによって決まります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Direct Connect Pay-as-you-go Pricing",
+          "url": "https://aws.amazon.com/directconnect/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "site-to-site-vpn.private-ip-over-direct-connect",
+    "transit-gateway.direct-connect-integration",
+    "vpc.gateway-endpoint-scope"
+  ],
+  "references": [
+    {
+      "title": "What is Direct Connect? - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "AWS Direct Connect FAQs",
+      "url": "https://aws.amazon.com/directconnect/faqs/"
+    },
+    {
+      "title": "AWS Direct Connect Pay-as-you-go Pricing",
+      "url": "https://aws.amazon.com/directconnect/pricing/pay-as-you-go/"
+    }
+  ],
+  "createdBy": "cx18",
+  "createdAt": "2026-11-16"
+}

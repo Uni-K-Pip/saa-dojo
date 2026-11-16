@@ -63,7 +63,7 @@
       "id": "cloudwatch.custom-metrics",
       "title": "独自のメトリクスを発行する",
       "kind": "feature",
-      "text": "CloudWatch には、AWS サービスが送るメトリクスに加え、アプリケーション独自のカスタムメトリクスを発行できる。PutMetricData API や AWS CLI を使う場合は、名前空間・メトリクス名・ディメンションを指定する。",
+      "text": "CloudWatch には、AWS サービスが送るメトリクスに加え、アプリケーション独自のカスタムメトリクスを発行できる。PutMetricData API や AWS CLI を使う場合は、名前空間とメトリクス名を指定し、必要に応じてディメンションを付ける。",
       "depth": "core",
       "sources": [
         {
@@ -303,14 +303,14 @@
     },
     {
       "id": "cloudwatch.logs-ia-metric-filter-limit",
-      "title": "Infrequent Access ではメトリクスフィルターを使えない",
+      "title": "Essentials（旧 Infrequent Access）ではメトリクスフィルターを使えない",
       "kind": "constraint",
-      "text": "CloudWatch Logs の Infrequent Access ログクラスでは、メトリクスフィルターを使用できない。ログからメトリクスを抽出する監視を構成する場合は、その機能をサポートする Standard ログクラスを使う。",
+      "text": "CloudWatch Logs の Essentials（旧 Infrequent Access）ログクラスでは、メトリクスフィルターを使用できない。ログからメトリクスを抽出する監視を構成する場合は、その機能をサポートする Standard ログクラスを使う。",
       "depth": "detail",
       "sources": [
         {
           "title": "Log classes",
-          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html"
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.md"
         }
       ],
       "checkedAt": "2026-11-16"

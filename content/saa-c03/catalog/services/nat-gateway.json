@@ -1,0 +1,331 @@
+{
+  "id": "nat-gateway",
+  "tier": 1,
+  "summary": "プライベートサブネットのリソースから VPC 外へ接続するための、AWS 管理のアドレス変換サービスです。パブリック・プライベート接続を使い分け、IPv6 から IPv4 への NAT64 にも対応します。",
+  "chooseWhen": [
+    {
+      "text": "プライベートサブネットから IPv4 でインターネットへ接続し、外部からの接続開始は受け付けない場合。",
+      "factRefs": [
+        "nat-gateway.outbound-connections",
+        "nat-gateway.public-internet-route"
+      ]
+    },
+    {
+      "text": "NAT 用のインスタンスの保守を自分で行わず、AWS に管理を任せたい場合。",
+      "factRefs": [
+        "nat-gateway.aws-managed"
+      ]
+    },
+    {
+      "text": "IPv6 のみのワークロードから IPv4 のみの宛先へ通信する場合。",
+      "factRefs": [
+        "nat-gateway.nat64"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "インターネット側からプライベートサブネットのインスタンスへ接続を開始したい場合。",
+      "factRefs": [
+        "nat-gateway.outbound-connections"
+      ]
+    },
+    {
+      "text": "IPv6 の宛先への送信専用インターネット接続だけが必要なら、Egress-Only インターネットゲートウェイを使う。",
+      "factRefs": [
+        "vpc.egress-only-igw"
+      ],
+      "alternatives": [
+        "vpc"
+      ]
+    },
+    {
+      "text": "通信の大半が VPC エンドポイント対応サービス宛てで、NAT 経由のコストを削減したい場合はエンドポイントを検討する。",
+      "factRefs": [
+        "nat-gateway.endpoint-bypass"
+      ],
+      "alternatives": [
+        "vpc-endpoints"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "nat-gateway.outbound-connections",
+      "title": "VPC 内から開始する接続を中継する",
+      "kind": "feature",
+      "text": "NAT ゲートウェイは、プライベートサブネットのインスタンスから VPC 外のサービスへの接続を可能にします。外部サービスから、そのインスタンスへの接続を開始することはできません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.aws-managed",
+      "title": "NAT の保守は AWS が担当する",
+      "kind": "feature",
+      "text": "NAT ゲートウェイは AWS が管理し、利用者が保守する必要はありません。NAT インスタンスのように、利用者がソフトウェア更新や OS パッチ適用を行う方式とは管理の担当が異なります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Compare NAT gateways and NAT instances - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.public-zonal-placement",
+      "title": "ゾーン型のパブリック NAT の配置場所",
+      "kind": "feature",
+      "text": "ゾーン型のパブリック NAT ゲートウェイは、インターネット接続に使う際、VPC 内のパブリックサブネットに作成します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Regional NAT gateways for automatic multi-AZ expansion - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.public-elastic-ip",
+      "title": "パブリック NAT 作成時の Elastic IP",
+      "kind": "feature",
+      "text": "ゾーン型のパブリック NAT ゲートウェイを作成するときは、Elastic IP アドレスを関連付ける必要があります。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.public-internet-route",
+      "title": "インターネットゲートウェイと組み合わせる",
+      "kind": "integration",
+      "text": "パブリック NAT ゲートウェイでプライベートサブネットからインターネットへ接続するには、NAT ゲートウェイから VPC のインターネットゲートウェイへトラフィックをルーティングします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.private-connectivity",
+      "title": "プライベート NAT で他ネットワークへ接続する",
+      "kind": "integration",
+      "text": "プライベート NAT ゲートウェイは、プライベートサブネットのインスタンスから他の VPC やオンプレミスネットワークへ接続するときに使います。トランジットゲートウェイまたは仮想プライベートゲートウェイへルーティングします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.private-no-internet",
+      "title": "プライベート NAT ではインターネットへ出られない",
+      "kind": "constraint",
+      "text": "プライベート NAT ゲートウェイからインターネットゲートウェイへトラフィックを送っても、インターネットゲートウェイが破棄します。VPC にインターネットゲートウェイをアタッチしても、この制約は変わりません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.zonal-resilience",
+      "title": "ゾーン型は各 AZ のものを使い障害を分離する",
+      "kind": "feature",
+      "text": "複数の AZ でゾーン型 NAT ゲートウェイを共有すると、その NAT の AZ の障害で他の AZ もインターネット接続を失います。耐障害性を高めるには各 AZ に作成し、リソースが同じ AZ の NAT を使うようルーティングします。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateway basics - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.no-security-group",
+      "title": "NAT にセキュリティグループは付けられない",
+      "kind": "constraint",
+      "text": "NAT ゲートウェイにはセキュリティグループを関連付けられません。NAT の背後のインスタンスにセキュリティグループを関連付け、そのインスタンスのインバウンド・アウトバウンド通信を制御します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateway basics - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.nat64",
+      "title": "IPv6 から IPv4 へ NAT64 で接続する",
+      "kind": "integration",
+      "text": "NAT ゲートウェイは NAT64 により IPv6 から IPv4 へアドレス変換します。Route 53 Resolver の DNS64 または自前の DNS64 サーバーと組み合わせ、IPv6 のみのワークロードから IPv4 のみの宛先へ接続できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DNS64 and NAT64 - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-nat64-dns64.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.hourly-pricing",
+      "title": "利用可能な時間に対する課金",
+      "kind": "pricing",
+      "text": "NAT ゲートウェイには、プロビジョニングされて利用可能な時間に応じた時間料金がかかります。利用時間に端数がある場合も、その端数は丸一時間として請求されます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon VPC pricing",
+          "url": "https://aws.amazon.com/vpc/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.data-processing-pricing",
+      "title": "通過するデータ量に対する課金",
+      "kind": "pricing",
+      "text": "NAT ゲートウェイには、処理したデータ量に応じたデータ処理料金がかかります。この料金は、NAT を通過するトラフィックの送信元や宛先にかかわらず適用されます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon VPC pricing",
+          "url": "https://aws.amazon.com/vpc/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.same-az-cost",
+      "title": "同じ AZ の NAT を使い AZ 間転送を避ける",
+      "kind": "pricing",
+      "text": "EC2 インスタンスと NAT ゲートウェイが異なる AZ にあると、両者の間にデータ転送料金がかかります。ゾーン型ではリソースと同じ AZ の NAT を使う配置により、この AZ 間の転送料金を避けられます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon VPC pricing",
+          "url": "https://aws.amazon.com/vpc/pricing/"
+        },
+        {
+          "title": "Pricing for NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.endpoint-bypass",
+      "title": "対応する AWS サービスへの通信は迂回を検討する",
+      "kind": "integration",
+      "text": "NAT ゲートウェイを通る通信の大半が VPC エンドポイント対応の AWS サービス宛てなら、コスト削減のためエンドポイントの作成を検討します。その通信を NAT 経由からエンドポイント経由に切り替える使い方です。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pricing for NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.regional-auto-expansion",
+      "title": "リージョン型の自動モードは AZ に自動展開する",
+      "kind": "feature",
+      "text": "リージョン NAT ゲートウェイの自動モードは、ワークロードの存在に応じて対応する AZ を自動で拡大・縮小し、ワークロードの配置に合わせた高可用性を提供します。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Regional NAT gateways for automatic multi-AZ expansion - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.regional-no-public-subnet",
+      "title": "リージョン型には配置用パブリックサブネットが不要",
+      "kind": "feature",
+      "text": "リージョン NAT ゲートウェイは独立したリソースとして作成するため、配置先のパブリックサブネットを用意する必要がありません。作成時には VPC を選び、サブネットは指定しません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Regional NAT gateways for automatic multi-AZ expansion - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.regional-no-private-nat",
+      "title": "リージョン型はプライベート NAT に非対応",
+      "kind": "constraint",
+      "text": "リージョン NAT ゲートウェイはプライベート NAT に対応していません。プライベート接続のために NAT ゲートウェイを使う場合は、ゾーン型の可用性モードを選びます。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Regional NAT gateways for automatic multi-AZ expansion - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.regional-per-az-pricing",
+      "title": "リージョン型の時間料金は AZ ごとにかかる",
+      "kind": "pricing",
+      "text": "リージョン NAT ゲートウェイの時間料金は、NAT が構成されている AZ ごとに発生します。ワークロードの変化である AZ への対応が解除されると、その AZ の時間料金は発生しなくなります。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon VPC pricing",
+          "url": "https://aws.amazon.com/vpc/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "vpc.egress-only-igw",
+    "vpc.gateway-endpoint-services",
+    "vpc.public-ipv4-pricing"
+  ],
+  "references": [
+    {
+      "title": "NAT gateways - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+    },
+    {
+      "title": "Regional NAT gateways for automatic multi-AZ expansion - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html"
+    },
+    {
+      "title": "Amazon VPC pricing",
+      "url": "https://aws.amazon.com/vpc/pricing/"
+    }
+  ],
+  "createdBy": "cx14",
+  "createdAt": "2026-11-16"
+}

@@ -141,10 +141,9 @@
     },
     {
       "id": "iam-identity-center.cli-browser-sign-in",
-      "title": "CLI のサインインにはブラウザーでの認証が必要",
+      "title": "CLI のサインインは対話的な認証手続きが前提",
       "kind": "constraint",
       "text": "IAM Identity Center を使って AWS CLI にサインインする際は、aws sso login を実行し、ブラウザーで認証手続きを完了する。CLI がブラウザーを自動で開けない場合も、表示された案内に従って手動で認証する。",
-      "trap": "デバイス認証では、CLI を実行する端末とは別の端末で認証用 URL を開ける。",
       "depth": "core",
       "sources": [
         {

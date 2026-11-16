@@ -1,0 +1,278 @@
+{
+  "id": "fsx",
+  "tier": 2,
+  "summary": "用途に合うファイルシステムをマネージドで提供するサービスです。Windows File Server、Lustre、NetApp ONTAP、OpenZFS から、既存アプリケーションとの互換性や性能、データ管理の要件に合わせて選びます。",
+  "chooseWhen": [
+    {
+      "text": "Windows アプリケーションのファイル共有を SMB のまま利用したい場合は、Windows File Server を選ぶ",
+      "factRefs": [
+        "fsx.windows-smb"
+      ]
+    },
+    {
+      "text": "HPC や機械学習で S3 のデータを高速なファイルシステムから処理したい場合は、Lustre を選ぶ",
+      "factRefs": [
+        "fsx.lustre-compute",
+        "fsx.lustre-s3-repository"
+      ]
+    },
+    {
+      "text": "NFS と SMB で共有ファイルにアクセスしたい場合は、NetApp ONTAP を選ぶ",
+      "factRefs": [
+        "fsx.ontap-file-protocols"
+      ]
+    },
+    {
+      "text": "オンプレミスの ZFS や Linux ファイルサーバーを、アプリケーションを変えず NFS で移行したい場合は、OpenZFS を選ぶ",
+      "factRefs": [
+        "fsx.openzfs-nfs-migration"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "確保したストレージ容量を後から縮小したい場合は、Windows File Server を選ばない",
+      "factRefs": [
+        "fsx.windows-storage-increase-only"
+      ]
+    },
+    {
+      "text": "Windows File Server で AZ 障害時の別 AZ への自動切り替えが必要なら、Single-AZ を選ばない",
+      "factRefs": [
+        "fsx.windows-single-az-boundary",
+        "fsx.windows-multi-az-failover"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "fsx.windows-smb",
+      "title": "Windows 版の SMB ファイル共有",
+      "kind": "feature",
+      "text": "Amazon FSx for Windows File Server は、Windows Server を基盤とするマネージドなファイルストレージです。ネイティブな Windows ファイルシステムを SMB で利用でき、既存の Windows アプリケーションや管理ツールを変更せずに使えます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is FSx for Windows File Server?",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-multi-az-replication",
+      "title": "Windows 版 Multi-AZ の同期複製",
+      "kind": "feature",
+      "text": "Amazon FSx for Windows File Server の Multi-AZ ファイルシステムは、優先 AZ とスタンバイ AZ にまたがる Windows ファイルサーバーの高可用性クラスターです。データは、それぞれの AZ 内に加えて、両 AZ 間でも同期的に複製されます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Availability and durability: Single-AZ and Multi-AZ file systems",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-multi-az-failover",
+      "title": "Windows 版 Multi-AZ の自動切り替え",
+      "kind": "feature",
+      "text": "Amazon FSx for Windows File Server の Multi-AZ ファイルシステムは、優先ファイルサーバーが利用不能になった場合や優先 AZ の障害時に、スタンバイへ自動でフェイルオーバーします。優先サーバーの計画メンテナンスでも、この自動切り替えが行われます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Availability and durability: Single-AZ and Multi-AZ file systems",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-single-az-boundary",
+      "title": "Windows 版 Single-AZ の可用性の範囲",
+      "kind": "constraint",
+      "text": "Amazon FSx for Windows File Server の Single-AZ は、単一 AZ 内のファイルサーバーとストレージで構成されます。障害時はその構成のコンポーネントを置き換えて復旧する方式で、Multi-AZ のような別 AZ のスタンバイへの自動切り替えはありません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Availability and durability: Single-AZ and Multi-AZ file systems",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/high-availability-multiAZ.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-storage-increase-only",
+      "title": "Windows 版のストレージ容量は縮小不可",
+      "kind": "constraint",
+      "text": "Amazon FSx for Windows File Server では、作成済みファイルシステムのストレージ容量を拡張できますが、縮小はできません。容量の変更は増加方向に限られるため、不要になった確保容量を同じファイルシステム上で減らすことはできません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing storage on FSx for Windows File Server",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-hdd-cost",
+      "title": "Windows 版の低コストな HDD 選択肢",
+      "kind": "pricing",
+      "text": "Amazon FSx for Windows File Server の HDD ストレージは、SSD より低コストな選択肢です。I/O 要求が低い一般的なファイル共有やホームディレクトリ、アクセス頻度の低いコンテンツ管理などの用途に適しています。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing storage on FSx for Windows File Server",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.windows-deduplication",
+      "title": "Windows 版のデータ重複排除",
+      "kind": "feature",
+      "text": "Amazon FSx for Windows File Server は、Microsoft Data Deduplication によるデータ重複排除に対応します。有効にすると、データセット内で重複する部分を一度だけ保存することで、重複データが消費するストレージ容量を削減できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing storage on FSx for Windows File Server",
+          "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/managing-storage-configuration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.ontap-file-protocols",
+      "title": "ONTAP の NFS・SMB ファイルアクセス",
+      "kind": "feature",
+      "text": "Amazon FSx for NetApp ONTAP は、NFS と SMB による共有ファイルストレージへのアクセスに対応します。クライアントからマウントすると、ローカルのディレクトリやドライブ文字として見え、複数のクライアントで同時に利用できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Accessing your FSx for ONTAP data",
+          "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/supported-fsx-clients.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.ontap-auto-tiering",
+      "title": "ONTAP の Auto 階層化ポリシー",
+      "kind": "feature",
+      "text": "Amazon FSx for NetApp ONTAP の Auto 階層化ポリシーは、コールドになったユーザーデータとスナップショットデータを容量プール層への移動対象にします。階層化はボリュームの冷却期間やファイルシステムの SSD 利用率の条件に従って行われます。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Volume storage capacity",
+          "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/volume-storage-capacity.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.ontap-snapshot-only-tiering",
+      "title": "ONTAP の Snapshot-only 階層化ポリシー",
+      "kind": "feature",
+      "text": "Amazon FSx for NetApp ONTAP の Snapshot-only 階層化ポリシーは、冷却期間などの条件を満たすスナップショットデータだけを容量プール層へ移します。Auto と異なり、アクティブなファイルシステムのユーザーデータは、このポリシーによる移動の対象にしません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Volume storage capacity",
+          "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/volume-storage-capacity.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.ontap-ssd-provisioned-billing",
+      "title": "ONTAP の SSD 料金は確保容量に基づく",
+      "kind": "pricing",
+      "text": "Amazon FSx for NetApp ONTAP の SSD ストレージ料金は、ファイルシステムにプロビジョニングした容量の月間平均に基づきます。データを容量プールへ階層化して SSD の使用量が減っても、確保した SSD 容量が同じなら、その容量分の料金は減りません。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon FSx for NetApp ONTAP Pricing",
+          "url": "https://aws.amazon.com/fsx/netapp-ontap/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.ontap-ssd-decrease-generation",
+      "title": "ONTAP の SSD 容量縮小は第2世代で対応",
+      "kind": "feature",
+      "text": "Amazon FSx for NetApp ONTAP は、第2世代のファイルシステムでプロビジョニング済み SSD ストレージ容量の縮小に対応します。第1世代は拡張だけに対応し、同じファイルシステムの SSD 容量を縮小することはできません。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "File system storage capacity and IOPS",
+          "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/storage-capacity-and-IOPS.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.lustre-compute",
+      "title": "Lustre は高速なデータ処理向け",
+      "kind": "feature",
+      "text": "Amazon FSx for Lustre は、高速なストレージが必要な処理向けに、Lustre ファイルシステムをマネージドで提供します。機械学習、HPC、動画処理、金融モデリングなど、計算処理にストレージの速度を合わせたい用途で利用します。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon FSx for Lustre?",
+          "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.lustre-s3-repository",
+      "title": "Lustre と S3 データリポジトリの連携",
+      "kind": "integration",
+      "text": "Amazon FSx for Lustre は S3 バケットをデータリポジトリとしてリンクし、S3 のオブジェクトをファイルとして扱えます。S3 に保存したデータを Lustre で処理し、ファイルシステムのデータを S3 に書き戻すワークフローに利用できます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon FSx for Lustre?",
+          "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "fsx.openzfs-nfs-migration",
+      "title": "OpenZFS は既存ファイルサーバーの NFS 移行先",
+      "kind": "feature",
+      "text": "Amazon FSx for OpenZFS は、オンプレミスの ZFS や Linux ベースのファイルサーバーから、アプリケーションコードやデータの管理方法を変えずに移行する用途に対応します。提供されるファイルシステムには NFS プロトコルでアクセスできます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon FSx for OpenZFS?",
+          "url": "https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/what-is-fsx.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "datasync.smb-ntfs-metadata"
+  ],
+  "references": [
+    {
+      "title": "Amazon FSx",
+      "url": "https://aws.amazon.com/fsx/"
+    },
+    {
+      "title": "What is FSx for Windows File Server?",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+    },
+    {
+      "title": "What is Amazon FSx for NetApp ONTAP?",
+      "url": "https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html"
+    }
+  ],
+  "createdBy": "cx20",
+  "createdAt": "2026-11-16"
+}

@@ -514,7 +514,7 @@
       "id": "vpc.dns-resolver-address",
       "title": "Amazon DNS サーバーのアドレス",
       "kind": "feature",
-      "text": "VPC には Amazon の DNS サーバー（Route 53 Resolver）があり、VPC のプライマリ IPv4 CIDR のベースに 2 を足したアドレスと 169.254.169.253 で到達できる。ネットワーク ACL やセキュリティグループでこの通信を止めることはできない。",
+      "text": "VPC には Amazon の DNS サーバー（Route 53 VPC Resolver（旧称 Route 53 Resolver））があり、VPC のプライマリ IPv4 CIDR のベースに 2 を足したアドレスと 169.254.169.253 で到達できる。ネットワーク ACL やセキュリティグループでこの通信を止めることはできない。",
       "depth": "core",
       "sources": [
         {
@@ -528,7 +528,7 @@
       "id": "vpc.dns-not-reachable-outside",
       "title": "VPC の DNS サーバーは VPC の外から使えない",
       "kind": "constraint",
-      "text": "VPC の CIDR に 2 を足した Amazon DNS サーバーへ、オンプレミスや他の VPC の DNS サーバーから転送することはサポートされない。オンプレミスから VPC の名前を引くには、Route 53 Resolver のインバウンドエンドポイントを使う。ピアリング先の VPC の DNS サーバーにも問い合わせられない。",
+      "text": "VPC の CIDR に 2 を足した Amazon DNS サーバーへ、オンプレミスや他の VPC の DNS サーバーから転送することはサポートされない。オンプレミスから VPC の名前を引くには、Route 53 VPC Resolver（旧称 Route 53 Resolver）のインバウンドエンドポイントを使う。ピアリング先の VPC の DNS サーバーにも問い合わせられない。",
       "trap": "VPN や Direct Connect でつないでも、オンプレミスから VPC+2 のアドレスは直接使えない。",
       "depth": "core",
       "sources": [

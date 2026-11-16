@@ -98,16 +98,12 @@
       "id": "cloudtrail.event-history-retention",
       "title": "イベント履歴の保持期間は直近 90 日",
       "kind": "quota",
-      "text": "CloudTrail のイベント履歴で参照できる管理イベントは直近 90 日分である。Service Quotas で引き上げることはできず、それより長期の操作記録が必要なら、証跡を作って S3 に継続保存する。",
+      "text": "CloudTrail のイベント履歴で参照できる管理イベントは直近 90 日分である。それより長期の操作記録が必要なら、証跡を作って S3 に継続保存する。",
       "depth": "core",
       "sources": [
         {
           "title": "Working with CloudTrail event history",
           "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"
-        },
-        {
-          "title": "Quotas in AWS CloudTrail",
-          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html"
         }
       ],
       "checkedAt": "2026-11-16"
@@ -130,7 +126,7 @@
       "id": "cloudtrail.event-history-account-scope",
       "title": "イベント履歴は組織全体を集約しない",
       "kind": "constraint",
-      "text": "CloudTrail のイベント履歴の検索対象は、単一の AWS アカウントと単一のリージョンに限られる。組織の管理アカウントにサインインしても、メンバーアカウントの操作がそのイベント履歴へ集約されるわけではない。",
+      "text": "CloudTrail のイベント履歴は組織レベルでは集約されず、サインインした AWS アカウント自身の管理イベントだけを表示する。組織の管理アカウントにサインインしても、メンバーアカウントの操作はそのイベント履歴に集約されない。",
       "depth": "core",
       "sources": [
         {
@@ -204,7 +200,7 @@
       "id": "cloudtrail.cloudwatch-logs-monitoring",
       "title": "CloudWatch Logs と組み合わせて操作を監視する",
       "kind": "integration",
-      "text": "CloudTrail の証跡を CloudWatch Logs に配信すると、特定の API 呼び出しやサインインなどのイベントを監視できる。記録された操作をメトリクスフィルターとアラームにつなぎ、指定した活動の発生を通知する用途に使う。",
+      "text": "CloudTrail の証跡を CloudWatch Logs に配信すると、ConsoleLogin イベントなどの特定の活動を監視できる。記録された操作をメトリクスフィルターとアラームにつなぎ、指定した活動の発生を通知する用途に使う。",
       "depth": "core",
       "sources": [
         {
@@ -302,8 +298,8 @@
       "id": "cloudtrail.data-events-default",
       "title": "データイベントは明示的に記録を設定する",
       "kind": "feature",
-      "text": "2026-11-16 の時点の既定値では、CloudTrail の証跡はデータイベントを記録しない。S3 オブジェクトへの操作などを記録するには、必要なリソースのデータイベントを証跡の記録対象として設定する。",
-      "depth": "detail",
+      "text": "CloudTrail の証跡は、2026-11-16 時点の既定ではデータイベントを記録しない。S3 オブジェクトへの操作などを記録するには、必要なリソースのデータイベントを証跡の記録対象として設定する。",
+      "depth": "core",
       "sources": [
         {
           "title": "Logging data events",

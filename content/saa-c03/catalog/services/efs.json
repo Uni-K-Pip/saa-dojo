@@ -1,0 +1,325 @@
+{
+  "id": "efs",
+  "tier": 1,
+  "summary": "Amazon EFS は、複数のクライアントからファイルを共有できるサーバーレスのファイルストレージ。NFS で接続し、ファイルの追加・削除に応じて容量が自動で増減する。",
+  "chooseWhen": [
+    {
+      "text": "複数の Linux クライアントから同じファイルシステムを同時に使いたいとき。",
+      "factRefs": [
+        "efs.nfs-protocol",
+        "efs.concurrent-access"
+      ]
+    },
+    {
+      "text": "容量を事前に確保せず、ファイルの増減に合わせてストレージを拡張・縮小したいとき。",
+      "factRefs": [
+        "efs.elastic-capacity"
+      ]
+    },
+    {
+      "text": "予測しにくい負荷に合わせてファイルシステムのスループットを自動調整したいとき。",
+      "factRefs": [
+        "efs.elastic-throughput"
+      ]
+    },
+    {
+      "text": "ECS の Fargate タスク間で同じ永続的なファイルストレージを使いたいとき。",
+      "factRefs": [
+        "ecs.efs-volume"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Windows ベースの EC2 インスタンスから使う共有ファイルストレージが必要なとき。",
+      "factRefs": [
+        "efs.windows-unsupported"
+      ],
+      "alternatives": [
+        "fsx"
+      ]
+    },
+    {
+      "text": "AZ 喪失時にもデータを保持する必要がある場合は、One Zone を避けて Regional を使う。",
+      "factRefs": [
+        "efs.one-zone-risk",
+        "efs.regional-resilience"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "efs.elastic-capacity",
+      "title": "ファイルの増減に合わせて容量が自動で変わる",
+      "kind": "feature",
+      "text": "Amazon EFS の容量は、ファイルの追加・削除に合わせて自動で増減する。利用者がファイルシステムの容量を事前に確保・管理する必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic File System?",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.nfs-protocol",
+      "title": "NFSv4 で接続するファイルストレージ",
+      "kind": "feature",
+      "text": "Amazon EFS は NFSv4.0 と NFSv4.1 に対応するファイルストレージである。Linux の NFS クライアントからマウントして、ファイルシステムとして利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Amazon EFS works",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.concurrent-access",
+      "title": "複数のクライアントから同時に共有できる",
+      "kind": "feature",
+      "text": "Amazon EFS の同じファイルシステムには、複数の NFS クライアントから同時にアクセスできる。同一リージョン内の複数の AZ にあるコンピューティングリソースで、共通のファイルデータを共有できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Amazon EFS works",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.regional-resilience",
+      "title": "Regional は複数 AZ にデータを冗長保存する",
+      "kind": "feature",
+      "text": "Amazon EFS の Regional ファイルシステムは、同じリージョンの地理的に離れた複数の AZ にデータを冗長保存する。AZ が利用できなくなってもデータへの継続的なアクセスを提供する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic File System?",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.one-zone-risk",
+      "title": "One Zone は AZ 喪失に耐える構成ではない",
+      "kind": "constraint",
+      "text": "Amazon EFS の One Zone ファイルシステムは、単一の AZ にデータを保存する。その AZ の全体または一部が失われたり損傷したりすると、保存データが失われる可能性がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic File System?",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.windows-unsupported",
+      "title": "Windows ベースの EC2 からの利用は非対応",
+      "kind": "constraint",
+      "text": "Amazon EFS は、Microsoft Windows ベースの Amazon EC2 インスタンスでの利用をサポートしていない。Windows の EC2 向け共有ファイルストレージとしては選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Elastic File System?",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.mount-target-endpoint",
+      "title": "マウントターゲットを通じて VPC から接続する",
+      "kind": "feature",
+      "text": "Amazon EFS に VPC 内からアクセスするには、VPC にマウントターゲットを作成する。マウントターゲットは、ファイルシステムをマウントするための NFSv4 エンドポイントの IP アドレスを提供する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Amazon EFS works",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.same-az-mount-target",
+      "title": "同じ AZ のマウントターゲットを使う構成が推奨",
+      "kind": "feature",
+      "text": "Amazon EFS Regional を使う EC2 インスタンスには、性能とコストの観点から同じ AZ のマウントターゲット経由でのアクセスが推奨される。利用する AZ ごとにマウントターゲットを配置する構成にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Amazon EFS works",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.nfs-ingress",
+      "title": "マウントターゲットで TCP 2049 の受信を許可する",
+      "kind": "feature",
+      "text": "Amazon EFS のマウントターゲットに適用するセキュリティグループでは、接続する EC2 インスタンスからの NFS 通信を受け入れるため、TCP ポート 2049 のインバウンドを許可する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using VPC security groups",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/network-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.nfs-egress",
+      "title": "クライアントで TCP 2049 への送信を許可する",
+      "kind": "feature",
+      "text": "Amazon EFS をマウントする EC2 インスタンスのセキュリティグループでは、マウントターゲットの TCP ポート 2049 へのアウトバウンド通信を許可する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using VPC security groups",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/network-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.elastic-throughput",
+      "title": "Elastic は負荷に合わせてスループットを自動調整する",
+      "kind": "feature",
+      "text": "Amazon EFS の Elastic スループットは、ワークロードの動きに合わせてスループット性能を自動で増減する。負荷の変動が大きい場合や、必要な性能を予測しにくい場合に適している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EFS performance specifications",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.provisioned-throughput",
+      "title": "Provisioned は容量と独立してスループットを指定する",
+      "kind": "feature",
+      "text": "Amazon EFS の Provisioned スループットでは、ファイルシステムのサイズやバーストクレジット残高とは独立して必要なスループットを指定する。ワークロードの性能要件を把握できている場合に利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EFS performance specifications",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.bursting-throughput",
+      "title": "Bursting は Standard の保存量に基づく",
+      "kind": "feature",
+      "text": "Amazon EFS の Bursting スループットでは、Standard ストレージクラスに保存したデータ量に比例して、ファイルシステムのベースラインのスループットが決まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EFS performance specifications",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.general-purpose-performance",
+      "title": "General Purpose は操作ごとの遅延が最も小さい",
+      "kind": "feature",
+      "text": "Amazon EFS の General Purpose パフォーマンスモードは、操作ごとのレイテンシーが最も小さいモードである。AWS は、すべてのファイルシステムで General Purpose の利用を推奨している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EFS performance specifications",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.lifecycle-tiering",
+      "title": "ライフサイクルポリシーでストレージクラスを移す",
+      "kind": "feature",
+      "text": "Amazon EFS のライフサイクル管理は、設定したポリシーに従ってファイルを Standard、低頻度アクセス（IA）、Archive の間で自動的に移行する。アクセス頻度に合わせたストレージのコスト最適化に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing storage lifecycle",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/lifecycle-management-efs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.storage-pricing",
+      "title": "保存料金はストレージクラスごとのデータ量で決まる",
+      "kind": "pricing",
+      "text": "Amazon EFS のストレージ料金は、各ストレージクラスに保存したデータ量に基づいて課金される。スループットモードに応じた料金は、この保存データ量に対する料金とは別の課金要素である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Features of Amazon EFS",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/features.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.elastic-throughput-pricing",
+      "title": "Elastic のスループット料金は実際の読み書き量に基づく",
+      "kind": "pricing",
+      "text": "Amazon EFS の Elastic スループット料金は、ファイルシステムで月間に読み書きしたメタデータとデータの総量に基づく。保存データ量に対するストレージ料金とは独立して計算される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Features of Amazon EFS",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/features.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "efs.provisioned-throughput-pricing",
+      "title": "Provisioned は含まれるベースラインを超える設定分に課金",
+      "kind": "pricing",
+      "text": "Amazon EFS の Provisioned スループット料金は、Standard の保存量に基づいて含まれるベースラインを超えて指定した分に対して発生する。このベースラインには、リージョンの Bursting ベースラインの上限が適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EFS performance specifications",
+          "url": "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "ecs.efs-volume",
+    "ecs.efs-access-points",
+    "fargate.storage-types"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Elastic File System?",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "What is FSx for Windows File Server?",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+    },
+    {
+      "title": "Features of Amazon EFS",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/features.html"
+    }
+  ],
+  "createdBy": "cx19",
+  "createdAt": "2026-11-16"
+}

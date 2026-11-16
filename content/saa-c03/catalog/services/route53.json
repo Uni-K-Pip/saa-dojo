@@ -200,7 +200,7 @@
       "title": "計算されたヘルスチェックで複数の状態をまとめる",
       "kind": "feature",
       "text": "Route 53 の計算されたヘルスチェックは、他のヘルスチェックの正常・異常の状態を監視して、一つのヘルスチェックにまとめます。正常なリソース数が指定したしきい値を下回るかどうかに基づく監視を構成できます。",
-      "depth": "detail",
+      "depth": "core",
       "sources": [
         {
           "title": "Types of Amazon Route 53 health checks",
@@ -331,7 +331,7 @@
       "id": "route53.resolver-inbound",
       "title": "インバウンドエンドポイントでオンプレミスから名前解決する",
       "kind": "integration",
-      "text": "Route 53 Resolver のインバウンドエンドポイントは、オンプレミスの DNS リゾルバーから VPC に DNS クエリを転送する入口です。VPN や Direct Connect で接続した環境から、AWS 側にある名前を解決する際に利用します。",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のインバウンドエンドポイントは、オンプレミスの DNS リゾルバーから VPC に DNS クエリを転送する入口です。VPN や Direct Connect で接続した環境から、AWS 側にある名前を解決する際に利用します。",
       "depth": "core",
       "sources": [
         {
@@ -345,7 +345,7 @@
       "id": "route53.resolver-outbound",
       "title": "アウトバウンドエンドポイントでオンプレミスへ問い合わせる",
       "kind": "integration",
-      "text": "Route 53 Resolver のアウトバウンドエンドポイントは、VPC からオンプレミスの DNS リゾルバーへクエリを転送するために使います。条件付き転送ルールで、オンプレミスへ問い合わせるドメイン名を指定します。",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のアウトバウンドエンドポイントは、VPC からオンプレミスの DNS リゾルバーへクエリを転送するために使います。条件付き転送ルールで、オンプレミスへ問い合わせるドメイン名を指定します。",
       "depth": "core",
       "sources": [
         {

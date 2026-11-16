@@ -421,7 +421,11 @@
       "task": "1.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Direct Connect の MACsec は 10・100・400 Gbps の専用接続のみで使え、1 Gbps の接続では使えない。"
+      "knowledge": "AWS Direct Connect の MACsec は 10・100・400 Gbps の専用接続のみで使え、1 Gbps の接続では使えない。",
+      "decision": "fact",
+      "factRefs": [
+        "direct-connect.macsec-supported-connections"
+      ]
     },
     {
       "key": "saa-1.2-w2m-008/b",
@@ -462,7 +466,12 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Client VPN は AWS Managed Microsoft AD 認証に対応し、承認ルールでグループごとにアクセスできるネットワークを制御できる。"
+      "knowledge": "AWS Client VPN は AWS Managed Microsoft AD 認証に対応し、承認ルールでグループごとにアクセスできるネットワークを制御できる。",
+      "decision": "fact",
+      "factRefs": [
+        "client-vpn.active-directory-authentication",
+        "client-vpn.group-network-authorization"
+      ]
     },
     {
       "key": "saa-1.2-w2m-010/a",
@@ -717,7 +726,13 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Backup のボールトのアクセスポリシーや IAM ポリシーによる削除拒否は、権限のあるユーザーが変更でき、Vault Lock と違い改変を防げないことが書かれていない。"
+      "knowledge": "AWS Backup のボールトのアクセスポリシーや IAM ポリシーによる削除拒否は、権限のあるユーザーが変更でき、Vault Lock と違い改変を防げないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.vault-policy-removable",
+        "backup.vault-lock-governance",
+        "backup.vault-lock-compliance"
+      ]
     },
     {
       "key": "saa-1.3-w2m-006/a",
@@ -1064,7 +1079,14 @@
       "task": "2.1",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon EFS は AZ ごとにマウントターゲットが必要で、セキュリティグループで NFS のポート 2049 を許可する必要がある。"
+      "knowledge": "Amazon EFS は AZ ごとにマウントターゲットが必要で、セキュリティグループで NFS のポート 2049 を許可する必要がある。",
+      "decision": "fact",
+      "factRefs": [
+        "efs.mount-target-endpoint",
+        "efs.same-az-mount-target",
+        "efs.nfs-ingress",
+        "efs.nfs-egress"
+      ]
     },
     {
       "key": "saa-2.1-w2m-016/d",
@@ -1375,14 +1397,24 @@
       "task": "2.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon FSx for Windows File Server の Multi-AZ デプロイは、2 つの AZ に同期複製し、障害時に自動でスタンバイへ切り替わる SMB ファイルサーバーである。"
+      "knowledge": "Amazon FSx for Windows File Server の Multi-AZ デプロイは、2 つの AZ に同期複製し、障害時に自動でスタンバイへ切り替わる SMB ファイルサーバーである。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-smb",
+        "fsx.windows-multi-az-replication",
+        "fsx.windows-multi-az-failover"
+      ]
     },
     {
       "key": "saa-2.2-w2m-016/c",
       "task": "2.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon FSx for Windows File Server の Single-AZ デプロイには別 AZ のスタンバイへの自動フェイルオーバーがない。"
+      "knowledge": "Amazon FSx for Windows File Server の Single-AZ デプロイには別 AZ のスタンバイへの自動フェイルオーバーがない。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-single-az-boundary"
+      ]
     },
     {
       "key": "saa-3.1-w2m-002/d",
@@ -1621,14 +1653,22 @@
       "task": "3.3",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon Redshift のコンカレンシースケーリングは、WLM キューで有効にすると待ち行列発生時に適格な読み取りクエリを追加の容量へ自動で振り分けること。"
+      "knowledge": "Amazon Redshift のコンカレンシースケーリングは、WLM キューで有効にすると待ち行列発生時に適格な読み取りクエリを追加の容量へ自動で振り分けること。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.concurrency-scaling"
+      ]
     },
     {
       "key": "saa-3.3-w2m-002/d",
       "task": "3.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Redshift の手動 WLM で同時実行数を上げるとクエリごとのメモリが減り、ディスクへの書き出しが増えて遅くなり、クラスターの容量は増えないこと。"
+      "knowledge": "Amazon Redshift の手動 WLM で同時実行数を上げるとクエリごとのメモリが減り、ディスクへの書き出しが増えて遅くなり、クラスターの容量は増えないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.manual-wlm-memory"
+      ]
     },
     {
       "key": "saa-3.3-w2m-004/b",
@@ -1695,21 +1735,35 @@
       "task": "3.3",
       "side": "correct",
       "gap": "none",
-      "knowledge": "Amazon Redshift の KEY 分散スタイルで結合列を分散キーにすると、同じ値の行が同じノードのスライスに置かれ、結合時の再配布が減ること。"
+      "knowledge": "Amazon Redshift の KEY 分散スタイルで結合列を分散キーにすると、同じ値の行が同じノードのスライスに置かれ、結合時の再配布が減ること。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.key-distribution"
+      ]
     },
     {
       "key": "saa-3.3-w2m-007/b",
       "task": "3.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Redshift の ALL 分散は全ノードにテーブルを複製するため、更新の少ない小さなテーブル向けで、巨大なファクトテーブルには不向きなこと。"
+      "knowledge": "Amazon Redshift の ALL 分散は全ノードにテーブルを複製するため、更新の少ない小さなテーブル向けで、巨大なファクトテーブルには不向きなこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.all-distribution"
+      ]
     },
     {
       "key": "saa-3.3-w2m-007/c",
       "task": "3.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Redshift で EVEN 分散のままソートキーを追加しても、結合する行が同じスライスに置かれず、結合時の再配布は減らないこと。"
+      "knowledge": "Amazon Redshift で EVEN 分散のままソートキーを追加しても、結合する行が同じスライスに置かれず、結合時の再配布は減らないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.even-distribution",
+        "redshift.sort-key",
+        "redshift.key-distribution"
+      ]
     },
     {
       "key": "saa-3.4-g8-009/c",
@@ -1727,21 +1781,35 @@
       "task": "3.4",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Site-to-Site VPN のアクセラレーションは、Transit Gateway にアタッチする VPN 接続でだけ使える。"
+      "knowledge": "Site-to-Site VPN のアクセラレーションは、Transit Gateway にアタッチする VPN 接続でだけ使える。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.acceleration-gateway-support"
+      ]
     },
     {
       "key": "saa-3.4-g8-011/b",
       "task": "3.4",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "アクセラレーションを有効にした Site-to-Site VPN は AWS Global Accelerator を使い、最寄りのエッジから AWS のネットワークで届け、既存の接続には後から有効にできず新規作成が必要。"
+      "knowledge": "アクセラレーションを有効にした Site-to-Site VPN は AWS Global Accelerator を使い、最寄りのエッジから AWS のネットワークで届け、既存の接続には後から有効にできず新規作成が必要。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.accelerated-routing",
+        "site-to-site-vpn.acceleration-immutable"
+      ]
     },
     {
       "key": "saa-3.4-g8-011/c",
       "task": "3.4",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "仮想プライベートゲートウェイは高速化された Site-to-Site VPN に対応せず、既存の VPN 接続のアクセラレーションは後から変更できない。"
+      "knowledge": "仮想プライベートゲートウェイは高速化された Site-to-Site VPN に対応せず、既存の VPN 接続のアクセラレーションは後から変更できない。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.acceleration-gateway-support",
+        "site-to-site-vpn.acceleration-immutable"
+      ]
     },
     {
       "key": "saa-3.4-g8-012/a",
@@ -1878,7 +1946,11 @@
       "task": "4.1",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon FSx for Windows File Server のストレージ容量は増やせるが縮小できない。"
+      "knowledge": "Amazon FSx for Windows File Server のストレージ容量は増やせるが縮小できない。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-storage-increase-only"
+      ]
     },
     {
       "key": "saa-4.1-w2m-003/c",
@@ -1888,7 +1960,9 @@
       "knowledge": "Amazon FSx for Windows File Server には HDD ストレージ(SSD より低料金)とデータ重複排除があり、DataSync は NTFS ACL を保ったまま移行できる。",
       "decision": "fact",
       "factRefs": [
-        "datasync.smb-ntfs-metadata"
+        "datasync.smb-ntfs-metadata",
+        "fsx.windows-hdd-cost",
+        "fsx.windows-deduplication"
       ]
     },
     {
@@ -1896,7 +1970,12 @@
       "task": "4.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Amazon EFS のスループットモード(プロビジョニング)の設定はスループット料金に関わり、保存容量の料金は変えない。"
+      "knowledge": "Amazon EFS のスループットモード(プロビジョニング)の設定はスループット料金に関わり、保存容量の料金は変えない。",
+      "decision": "fact",
+      "factRefs": [
+        "efs.provisioned-throughput-pricing",
+        "efs.storage-pricing"
+      ]
     },
     {
       "key": "saa-4.1-w2m-006/c",
@@ -1914,14 +1993,24 @@
       "task": "4.1",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon FSx for NetApp ONTAP のボリューム階層化ポリシー Auto はコールドデータを容量プールへ移すが、SSD 容量を縮小して初めて SSD 料金が下がる。"
+      "knowledge": "Amazon FSx for NetApp ONTAP のボリューム階層化ポリシー Auto はコールドデータを容量プールへ移すが、SSD 容量を縮小して初めて SSD 料金が下がる。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.ontap-auto-tiering",
+        "fsx.ontap-ssd-provisioned-billing",
+        "fsx.ontap-ssd-decrease-generation"
+      ]
     },
     {
       "key": "saa-4.1-w2m-007/c",
       "task": "4.1",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon FSx for NetApp ONTAP の階層化ポリシー Snapshot-only はスナップショットのデータだけを容量プールへ移し、ユーザーデータは SSD に残る。"
+      "knowledge": "Amazon FSx for NetApp ONTAP の階層化ポリシー Snapshot-only はスナップショットのデータだけを容量プールへ移し、ユーザーデータは SSD に残る。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.ontap-snapshot-only-tiering"
+      ]
     },
     {
       "key": "saa-4.1-w2m-008/a",
@@ -2035,7 +2124,11 @@
       "task": "4.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行の対象外である。"
+      "knowledge": "AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行の対象外である。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.rds-no-cold-storage"
+      ]
     },
     {
       "key": "saa-4.3-w2m-004/c",
@@ -2099,14 +2192,25 @@
       "task": "4.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Redshift のクラスターは一時停止と再開ができ、スナップショットの取得・削除・復元より少ない手順で使わない時間の費用を減らせる。"
+      "knowledge": "Amazon Redshift のクラスターは一時停止と再開ができ、スナップショットの取得・削除・復元より少ない手順で使わない時間の費用を減らせる。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.pause-resume",
+        "redshift.pause-billing"
+      ]
     },
     {
       "key": "saa-4.3-w2m-006/b",
       "task": "4.3",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon Redshift のリサイズでは最小構成のノード料金が残り、一時停止ならコンピューティング料金を止められる。"
+      "knowledge": "Amazon Redshift のリサイズでは最小構成のノード料金が残り、一時停止ならコンピューティング料金を止められる。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.resize-capacity",
+        "redshift.on-demand-nodes",
+        "redshift.pause-billing"
+      ]
     },
     {
       "key": "saa-4.3-w2m-006/d",
