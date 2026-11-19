@@ -86,7 +86,7 @@ createdBy: x
 > DAX は DynamoDB 専用のキャッシュです。RDS や Aurora の前に置くキャッシュは ElastiCache です。
 
 > **ひっかけ注意**
-> ElastiCache for Memcached には複製や永続化の機能がありません。キャッシュが消えると困るデータや、自動で切り替える高可用性が必要なら、Valkey か Redis OSS を使い、マルチ AZ を有効にします。
+> ノードベースの ElastiCache for Memcached には複製や永続化の機能がありません（サーバーレスの Memcached は複数 AZ に複製され、バックアップと復元も使えます）。キャッシュが消えると困るデータや、自動で切り替える高可用性が必要なら、Valkey か Redis OSS を使い、マルチ AZ を有効にします。
 
 > **ひっかけ注意**
 > Amazon Redshift は分析用で、1 件ずつの取引処理（OLTP）には向きません。逆に、RDS で大量のデータを集計すると、本番の取引処理を遅くします。

@@ -41,7 +41,7 @@ createdBy: w2a
 ### RDS と Aurora
 
 - **Amazon RDS**: MySQL、PostgreSQL、MariaDB、Oracle、SQL Server、Db2 のマネージドサービス。
-- **Amazon Aurora**: MySQL 互換と PostgreSQL 互換。ストレージが 3 つのアベイラビリティーゾーンに 6 つのコピーで保存され、自動で拡張される（最大 128 TiB）。リードレプリカ（Aurora レプリカ）は最大 15 台で、同じストレージを共有するのでレプリカラグが小さい。
+- **Amazon Aurora**: MySQL 互換と PostgreSQL 互換。ストレージが 3 つのアベイラビリティーゾーンに 6 つのコピーで保存され、自動で拡張される（エンジンのバージョンにより最大 256 TiB）。リードレプリカ（Aurora レプリカ）は最大 15 台で、同じストレージを共有するのでレプリカラグが小さい。
 - **Aurora Serverless v2**: 負荷に応じて Aurora キャパシティーユニット（ACU）が細かく自動で増減する。利用が変動するワークロード向け。
 
 ## 使い分け
@@ -65,7 +65,7 @@ createdBy: w2a
 
 ### 異種間の移行
 
-エンジンが違う移行（例: Oracle → Aurora PostgreSQL）では、まず **AWS SCT** でスキーマとコードを変換し、**AWS DMS** でデータを移行します。DMS の全ロードに加えて、変更データキャプチャ（CDC）で継続的に同期し、切り替え時の停止時間を最小限にします。同種の移行は、ネイティブのツールや DMS で行えます。
+エンジンが違う移行（例: Oracle → Aurora PostgreSQL）では、まず **AWS SCT**（または DMS Schema Conversion）でスキーマとコードを変換し、**AWS DMS** でデータを移行します。DMS の全ロードに加えて、変更データキャプチャ（CDC）で継続的に同期し、切り替え時の停止時間を最小限にします。同種の移行は、ネイティブのツールや DMS で行えます。
 
 ### 分析用のデータ連携（zero-ETL）
 
@@ -97,7 +97,7 @@ Aurora や RDS のデータを Redshift で分析したいとき、ETL パイプ
 > Aurora Serverless v1 は提供を終了しています。サーバーレスの Aurora は v2 を選びます。
 
 > **ひっかけ注意**
-> DMS だけではストアドプロシージャなどのコードの変換はできません。異種間の移行では SCT を使います。
+> DMS のデータ移行だけではストアドプロシージャなどのコードの変換はできません。異種間の移行では SCT か DMS Schema Conversion を使います。
 
 ## 確認問題
 
