@@ -12,6 +12,19 @@
   ],
   "rows": [
     {
+      "axis": "接続できる先",
+      "values": {
+        "nat-gateway": "インターネット（パブリック NAT ゲートウェイ）と、ほかの VPC やオンプレミスネットワーク（プライベート NAT ゲートウェイ）",
+        "vpc": "S3 と DynamoDB（ゲートウェイ型エンドポイント）と、AWS PrivateLink に対応した AWS のサービス、ほかの AWS アカウントがホストするサービス、AWS Marketplace のパートナーのサービス（インターフェイス型エンドポイント）"
+      },
+      "factRefs": [
+        "nat-gateway.public-internet-route",
+        "nat-gateway.private-connectivity",
+        "vpc.gateway-endpoint-services",
+        "vpc.interface-endpoint-targets"
+      ]
+    },
+    {
       "axis": "S3 や DynamoDB への通信の料金",
       "values": {
         "nat-gateway": "時間料金に加えて、処理したデータ量に応じたデータ処理料金がかかる（通信の宛先にかかわらない）",
@@ -38,6 +51,6 @@
       "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc29"
 }

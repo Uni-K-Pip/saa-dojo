@@ -44,6 +44,19 @@
       ]
     },
     {
+      "axis": "複数アカウントの集約",
+      "values": {
+        "cloudwatch": "クロスアカウントオブザーバビリティで、リンクしたソースアカウントのメトリクス、ロググループ、トレースなどを、モニタリングアカウントに共有する（リージョン内で、複数のアカウントにまたがって監視する）",
+        "cloudtrail": "組織の証跡で、AWS Organizations の管理アカウントとすべてのメンバーアカウントのイベントを記録し、共通の S3 バケットへ集める",
+        "config": "アグリゲーターで、複数のアカウントやリージョンから、設定データと準拠データを収集する"
+      },
+      "factRefs": [
+        "cloudwatch.cross-account-observability",
+        "cloudtrail.organization-trail",
+        "config.multi-account-aggregation"
+      ]
+    },
+    {
       "axis": "料金のかかり方",
       "values": {
         "cloudwatch": "カスタムメトリクスと詳細モニタリングのメトリクスの数、メトリクスアラームが参照するメトリクスの数、ログの取り込み量と保存量に対してかかる（多くの AWS サービスの基本モニタリングのメトリクスは無料）",

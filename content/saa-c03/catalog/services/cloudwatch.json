@@ -218,6 +218,20 @@
       "checkedAt": "2026-11-16"
     },
     {
+      "id": "cloudwatch.cross-account-observability",
+      "title": "複数のアカウントを横断して監視する",
+      "kind": "feature",
+      "text": "CloudWatch のクロスアカウントオブザーバビリティは、リージョン内で複数のアカウントにまたがるアプリケーションを監視する機能である。モニタリングアカウントに、リンクしたソースアカウントのメトリクス、ロググループ、トレースなどを共有し、検索・可視化・分析できる。AWS Organizations を使うと、組織や OU のアカウントをまとめてリンクでき、後から作られたアカウントも自動で組み込まれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "CloudWatch cross-account observability",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "cloudwatch.metric-math",
       "title": "複数メトリクスから数式で時系列を作る",
       "kind": "feature",

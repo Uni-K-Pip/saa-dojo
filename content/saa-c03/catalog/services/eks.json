@@ -83,6 +83,24 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "eks.pod-and-deployment",
+      "title": "アプリケーションは Pod と Deployment のマニフェストで定義する",
+      "kind": "feature",
+      "text": "EKS では、Pod がデプロイできる最小の単位で、通常は 1 つのコンテナを入れる。Deployment などのワークロードリソースを YAML のマニフェストで定義し、kubectl で適用すると、マニフェストに指定したレプリカ（Pod）の数が Kubernetes によって保たれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Kubernetes concepts",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-concepts.html"
+        },
+        {
+          "title": "Deploy a sample application on Linux",
+          "url": "https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "eks.cluster-pricing",
       "title": "料金はクラスター単位とワーカーノードの資源",
       "kind": "pricing",
@@ -340,5 +358,6 @@
     }
   ],
   "createdBy": "sc12",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-21"
 }

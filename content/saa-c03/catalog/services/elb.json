@@ -818,6 +818,39 @@
       "checkedAt": "2026-11-20"
     },
     {
+      "id": "elb.nlb-target-types",
+      "title": "NLB のターゲットタイプ",
+      "kind": "feature",
+      "text": "NLB のターゲットグループのターゲットタイプは、instance、ip、alb のいずれかで、作成後に変更できない。instance はインスタンス ID、ip は IP アドレスでターゲットを指定し、alb は Application Load Balancer をターゲットにする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elb.nlb-alb-target",
+      "title": "ALB を NLB のターゲットにする",
+      "kind": "feature",
+      "text": "ターゲットタイプが alb のターゲットグループには、単一の ALB をターゲットとして登録でき、ALB に届いたあとは ALB が振り分けを担う。NLB の固定 IP や AWS PrivateLink（エンドポイントサービス）と、ALB のレイヤー 7 のリクエストに基づくルーティングを組み合わせられる。",
+      "examPoint": "固定 IP や PrivateLink と、リクエストの内容に基づく振り分けの両方が要るなら、ALB を NLB のターゲットにする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html"
+        },
+        {
+          "title": "Use an Application Load Balancer as a target of a Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/application-load-balancer-target.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "elb.alb-grpc-health-check",
       "title": "gRPC のターゲットグループのヘルスチェック",
       "kind": "constraint",

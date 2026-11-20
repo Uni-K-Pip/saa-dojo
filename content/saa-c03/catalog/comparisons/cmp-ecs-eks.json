@@ -11,14 +11,14 @@
   ],
   "rows": [
     {
-      "axis": "オーケストレーションの方式",
+      "axis": "アプリケーションの定義",
       "values": {
         "ecs": "タスク定義とサービス（タスク定義が設計図で、サービスが、指定した数だけ動かし続ける）",
-        "eks": "Kubernetes（Kubernetes 準拠の認定を受けていて、Kubernetes 対応のアプリケーションを作り直さずにデプロイできる）"
+        "eks": "Kubernetes の Pod と、Deployment などのワークロードリソース（YAML のマニフェストで定義して適用すると、指定した数の Pod が保たれる）"
       },
       "factRefs": [
         "ecs.task-definition",
-        "eks.managed-kubernetes"
+        "eks.pod-and-deployment"
       ]
     },
     {

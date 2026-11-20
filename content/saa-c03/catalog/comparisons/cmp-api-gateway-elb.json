@@ -29,12 +29,13 @@
       "axis": "転送・統合の先",
       "values": {
         "api-gateway": "Lambda 関数、HTTP エンドポイント（REST API は、ほかの AWS サービスとも統合する）",
-        "elb": "ALB では、ターゲットグループに登録したターゲット（ターゲットタイプは instance、ip、lambda のいずれか）"
+        "elb": "ターゲットグループに登録したターゲット（ターゲットタイプは、ALB では instance、ip、lambda、NLB では instance、ip、alb のいずれか）"
       },
       "factRefs": [
         "api-gateway.rest-api-overview",
         "api-gateway.lambda-integration",
-        "elb.alb-target-types"
+        "elb.alb-target-types",
+        "elb.nlb-target-types"
       ]
     },
     {

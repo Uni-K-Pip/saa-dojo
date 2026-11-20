@@ -1114,6 +1114,11 @@
     "checkedAt": "2026-11-16",
     "hash": "8125540fff11"
   },
+  "cloudwatch.cross-account-observability": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c640edd3d1b9"
+  },
   "cloudwatch.custom-metrics": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -1197,7 +1202,7 @@
   "cmp-api-gateway-elb": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "3e08c8e087a3"
+    "hash": "fbf5ca5513e4"
   },
   "cmp-athena-redshift-emr": {
     "status": "verified",
@@ -1217,7 +1222,7 @@
   "cmp-cloudwatch-cloudtrail-config": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "97a3d9056d1f"
+    "hash": "e81560c4bc0d"
   },
   "cmp-direct-connect-site-to-site-vpn": {
     "status": "verified",
@@ -1227,7 +1232,7 @@
   "cmp-ecs-eks": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "820fcf925192"
+    "hash": "228ba6dbe93f"
   },
   "cmp-efs-fsx": {
     "status": "verified",
@@ -1271,8 +1276,8 @@
   },
   "cmp-nat-gateway-vpc": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "2a2c6916722d"
+    "checkedAt": "2026-11-21",
+    "hash": "383f1764c54b"
   },
   "cmp-rds-aurora-dynamodb": {
     "status": "verified",
@@ -3279,6 +3284,11 @@
     "checkedAt": "2026-11-16",
     "hash": "5bc81803ddd8"
   },
+  "eks.pod-and-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2372597fa573"
+  },
   "eks.pod-identity": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -3669,6 +3679,11 @@
     "checkedAt": "2026-11-14",
     "hash": "b8eafb849d16"
   },
+  "elb.nlb-alb-target": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c9329b72f48c"
+  },
   "elb.nlb-client-ip-preservation": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -3698,6 +3713,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "eef9e4be01d4"
+  },
+  "elb.nlb-target-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f2c62b64df73"
   },
   "elb.nlb-tls-vs-tcp": {
     "status": "verified",
@@ -7043,6 +7063,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "3fa726baf4aa"
+  },
+  "vpc.interface-endpoint-targets": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "15ef96dcf0ab"
   },
   "vpc.ipam": {
     "status": "verified",
