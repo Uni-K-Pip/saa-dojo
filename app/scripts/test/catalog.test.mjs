@@ -96,6 +96,34 @@ describe('図鑑のスキーマ', () => {
   });
 });
 
+describe('recheck と確認日の古さ', () => {
+  const TODAY = '2026-11-14';
+  const daysAgo = (n) => new Date(Date.parse(TODAY) - n * 86400000).toISOString().slice(0, 10);
+  const oldWarn = (f) => {
+    const e = entry('iam', { facts: [f, fact('iam.beta'), fact('iam.gamma'), fact('iam.delta')] });
+    const model = buildCatalogModel({ entries: [{ file: 'catalog/services/iam.json', data: e }], comparisons: [], serviceIndex });
+    const out = checkCatalog(model, { serviceIndex, lessonIds: new Set(), docIds: new Set(), today: TODAY });
+    return out.find((p) => p.code === 'catalog-old-check')?.message ?? '';
+  };
+
+  it('recheck のない事実は 179 日では警告されず、180 日で警告される', () => {
+    for (const kind of ['feature', 'quota']) {
+      expect(oldWarn(fact('iam.alpha', { kind, checkedAt: daysAgo(179) }))).not.toContain('iam.alpha');
+      expect(oldWarn(fact('iam.alpha', { kind, checkedAt: daysAgo(180) }))).toContain('iam.alpha');
+    }
+  });
+
+  it("recheck: 'end-of-life' の事実は 89 日では警告されず、90 日で警告される", () => {
+    expect(oldWarn(fact('iam.alpha', { recheck: 'end-of-life', checkedAt: daysAgo(89) }))).not.toContain('iam.alpha');
+    expect(oldWarn(fact('iam.alpha', { recheck: 'end-of-life', checkedAt: daysAgo(90) }))).toContain('iam.alpha');
+  });
+
+  it('recheck に決まった値以外を入れるとスキーマのエラーになる', () => {
+    expect(issues(CatalogEntrySchema.safeParse(entry('s3', { facts: [fact('s3.alpha', { recheck: 'default-value' }), fact('s3.beta', { recheck: 'end-of-life' })] })))).toEqual([]);
+    expect(CatalogEntrySchema.safeParse(entry('s3', { facts: [fact('s3.alpha', { recheck: 'soon' })] })).success).toBe(false);
+  });
+});
+
 describe('検証状態のハッシュ', () => {
   it('本文が変わると変わり、分類や確認日だけの変更では変わらない', () => {
     const f = fact('s3.alpha', { tags: ['a'], services: ['Amazon S3'] });
@@ -103,6 +131,12 @@ describe('検証状態のハッシュ', () => {
     expect(catalogHash('fact', { ...f, tags: ['b'], services: [], checkedAt: '2027-01-01', kind: 'quota' })).toBe(h);
     expect(catalogHash('fact', { ...f, text: `${f.text}追記` })).not.toBe(h);
     expect(catalogHash('fact', { ...f, depth: 'detail' })).not.toBe(h);
+  });
+
+  it('recheck を付け外ししても変わらない', () => {
+    const f = fact('s3.alpha');
+    expect(catalogHash('fact', { ...f, recheck: 'end-of-life' })).toBe(catalogHash('fact', f));
+    expect(catalogHash('fact', { ...f, recheck: 'default-value' })).toBe(catalogHash('fact', f));
   });
 
   it('記録がない・内容が変わった項目は pending として扱う', () => {

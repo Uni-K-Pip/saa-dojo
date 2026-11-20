@@ -24,6 +24,7 @@ export const FACT_ID = /^([a-z][a-z0-9-]{1,39})\.([a-z0-9][a-z0-9-]{1,39})$/;
 export const COMPARISON_ID = /^cmp-[a-z0-9][a-z0-9-]{1,60}$/;
 export const FACT_KINDS = ['feature', 'constraint', 'quota', 'pricing', 'integration'];
 export const FACT_DEPTHS = ['core', 'detail'];
+export const FACT_RECHECKS = ['default-value', 'end-of-life'];
 export const REVIEW_STATUSES = ['verified', 'pending', 'needs-fix', 'rejected'];
 
 // 判断軸: 問題文の制約語が何を最優先しているか
@@ -306,6 +307,7 @@ export const CatalogFactSchema = z
     tags: z.array(z.string().min(1).max(20)).max(6).optional(),
     sources: z.array(ReferenceSchema).min(1).max(3),
     checkedAt: z.string().regex(DATE),
+    recheck: z.enum(FACT_RECHECKS).optional(),
   })
   .strict();
 

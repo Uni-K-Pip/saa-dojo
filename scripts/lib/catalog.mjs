@@ -15,8 +15,9 @@ export const TIER_RULES = {
   3: { facts: [0, 2], points: false },
 };
 
-// checkedAt の再確認の目安（日数）。数値と料金は変わりやすいので短くする
-export const RECHECK_DAYS = { quota: 180, pricing: 180, default: 365 };
+// checkedAt の再確認の目安（日数）。事実は半年。recheck の印がある事実（既定値に依存・提供終了に関わる）は 3 か月。比較は 1 年
+export const RECHECK_DAYS = { fact: 180, short: 90, comparison: 365 };
+export const recheckLimit = (fact) => (fact.recheck ? RECHECK_DAYS.short : RECHECK_DAYS.fact);
 
 // ---------------------------------------------------------------- ハッシュ
 
@@ -34,7 +35,7 @@ export function stableStringify(v) {
 }
 
 // 検証状態のハッシュに含める欄。ここが変わったら検証し直す。
-// services・tags・kind・tier・checkedAt のような分類や記録の欄は含めない（表記の整理で検証が無効にならないように）
+// services・tags・kind・tier・checkedAt・recheck のような分類や記録の欄は含めない（表記の整理で検証が無効にならないように）
 export const HASH_FIELDS = {
   entry: ['summary', 'chooseWhen', 'avoidWhen', 'references'],
   fact: ['title', 'text', 'examPoint', 'trap', 'depth', 'sources'],
@@ -231,13 +232,13 @@ export function checkCatalog(model, ctx) {
   if (ctx.today) {
     const old = [];
     for (const { fact } of model.factById.values()) {
-      const limit = RECHECK_DAYS[fact.kind] ?? RECHECK_DAYS.default;
+      const limit = recheckLimit(fact);
       if (daysBetween(fact.checkedAt, ctx.today) >= limit) old.push(`${fact.id}(${fact.checkedAt})`);
     }
     for (const { data: c } of model.comparisonById.values()) {
-      if (daysBetween(c.checkedAt, ctx.today) >= RECHECK_DAYS.default) old.push(`${c.id}(${c.checkedAt})`);
+      if (daysBetween(c.checkedAt, ctx.today) >= RECHECK_DAYS.comparison) old.push(`${c.id}(${c.checkedAt})`);
     }
-    if (old.length) warn('catalog-old-check', null, `出典での確認から日がたった項目 ${old.length} 件（数値・料金は ${RECHECK_DAYS.quota} 日、その他は ${RECHECK_DAYS.default} 日）: ${old.slice(0, 12).join(', ')}${old.length > 12 ? ' ほか' : ''}`);
+    if (old.length) warn('catalog-old-check', null, `出典での確認から日がたった項目 ${old.length} 件（事実は ${RECHECK_DAYS.fact} 日、recheck の印がある事実は ${RECHECK_DAYS.short} 日、比較は ${RECHECK_DAYS.comparison} 日）: ${old.slice(0, 12).join(', ')}${old.length > 12 ? ' ほか' : ''}`);
   }
 
   // 不足の対応表

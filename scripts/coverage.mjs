@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
 import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
-import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus } from './lib/catalog.mjs';
+import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, recheckLimit } from './lib/catalog.mjs';
 
 // ---------- 目標値 ----------
 const TARGET_DIFFICULTY = { 1: 20, 2: 50, 3: 30 }; // 難易度 1・2・3 の比率（%）
@@ -162,13 +162,13 @@ export function computeCatalogCoverage(content, { serviceRows = [], today = loca
   // 3. 再確認リスト（catalog-old-check と同じ基準）
   const recheck = [];
   for (const { fact, entryId } of model.factById.values()) {
-    const limit = RECHECK_DAYS[fact.kind] ?? RECHECK_DAYS.default;
+    const limit = recheckLimit(fact);
     const days = daysBetween(fact.checkedAt, today);
-    if (days >= limit) recheck.push({ id: fact.id, type: 'fact', kind: fact.kind, entryId, checkedAt: fact.checkedAt, days, limit });
+    if (days >= limit) recheck.push({ id: fact.id, type: 'fact', kind: fact.kind, entryId, recheck: fact.recheck ?? null, checkedAt: fact.checkedAt, days, limit });
   }
   for (const { data: c } of model.comparisonById.values()) {
     const days = daysBetween(c.checkedAt, today);
-    if (days >= RECHECK_DAYS.default) recheck.push({ id: c.id, type: 'comparison', kind: 'comparison', entryId: null, checkedAt: c.checkedAt, days, limit: RECHECK_DAYS.default });
+    if (days >= RECHECK_DAYS.comparison) recheck.push({ id: c.id, type: 'comparison', kind: 'comparison', entryId: null, recheck: null, checkedAt: c.checkedAt, days, limit: RECHECK_DAYS.comparison });
   }
   recheck.sort((a, b) => b.days - a.days || byText(a.id, b.id));
 
@@ -632,9 +632,9 @@ function renderCatalogMarkdown(c, { full, push }) {
   }
 
   push('### 再確認リスト', '');
-  push(`checkedAt が古い事実・比較（${c.today} 時点。数値・料金は ${RECHECK_DAYS.quota} 日、その他は ${RECHECK_DAYS.default} 日以上）: ${c.recheck.length} 件`, '');
+  push(`checkedAt が古い事実・比較（${c.today} 時点。事実は ${RECHECK_DAYS.fact} 日、recheck の印がある事実は ${RECHECK_DAYS.short} 日、比較は ${RECHECK_DAYS.comparison} 日以上）: ${c.recheck.length} 件`, '');
   const shown = full ? c.recheck : c.recheck.slice(0, MAX_LISTED);
-  for (const r of shown) push(`- ${r.id}（${r.kind}、${r.checkedAt}、${r.days} 日前）`);
+  for (const r of shown) push(`- ${r.id}（${r.kind}${r.recheck ? `、recheck: ${r.recheck}` : ''}、${r.checkedAt}、${r.days} 日前）`);
   if (shown.length < c.recheck.length) push(`- …ほか ${c.recheck.length - shown.length} 件（--full で全件表示）`);
   if (c.recheck.length) push('');
 

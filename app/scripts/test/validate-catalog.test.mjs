@@ -268,7 +268,7 @@ describe('coverage: サービス図鑑', () => {
   it('checkedAt が古い事実を再確認リストに出す', () => {
     const e = entry('s3');
     e.facts[0] = fact('s3.f0', 0, { kind: 'quota', checkedAt: '2026-01-01' });
-    e.facts[1] = fact('s3.f1', 1, { kind: 'feature', checkedAt: '2026-01-01' });
+    e.facts[1] = fact('s3.f1', 1, { kind: 'feature', checkedAt: '2026-06-01' });
     const cov = computeCoverage(load({ 'catalog/services/s3.json': e }), { today: TODAY });
     expect(cov.catalog.recheck.map((r) => r.id)).toEqual(['s3.f0']);
     expect(renderMarkdown(cov)).toContain('s3.f0');
