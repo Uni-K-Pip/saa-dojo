@@ -150,6 +150,25 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.successor-network-security-manager",
+      "title": "置き換えていく別のサービス AWS Network Security Manager がある",
+      "kind": "feature",
+      "text": "AWS Firewall Manager には、置き換えていくサービスとして AWS Network Security Manager がある。2 つは別々のサービスで、互いに独立して並行して動く。Firewall Manager で作った既存のファイアウォールとポリシーは、利用者が終了させないかぎり動き続ける。Network Security Manager のポリシーの対象範囲に、Firewall Manager のポリシーがすでに扱うリソースが入ると、修復では Network Security Manager が優先される。Firewall Manager は、いずれ販売を終え、その後に稼働を終えるとされている。",
+      "examPoint": "SAA-C03 の試験ガイドの範囲内のサービスの一覧（網羅的ではなく、変わることがある）には、AWS Firewall Manager が載っている（2026 年 11 月 20 日に確認）",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Network Security Manager and AWS Firewall Manager",
+          "url": "https://docs.aws.amazon.com/network-security-manager/latest/devguide/firewall-manager.html"
+        },
+        {
+          "title": "In-Scope AWS Services",
+          "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [

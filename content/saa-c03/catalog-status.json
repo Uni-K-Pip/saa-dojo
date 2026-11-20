@@ -3784,6 +3784,11 @@
     "checkedAt": "2026-11-16",
     "hash": "c81b9a098ca3"
   },
+  "firewall-manager.successor-network-security-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "4446c058f7cf"
+  },
   "firewall-manager.waf-auto-remediation": {
     "status": "verified",
     "checkedAt": "2026-11-16",
