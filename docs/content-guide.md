@@ -36,7 +36,7 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 | `options` | `id` は a から順。`correct` と、その選択肢がなぜ正しい／誤りなのかを書く `rationale` |
 | `explanation` | 正解の理由を仕組みで説明する総合解説 |
 | `keyPoints` | 他の問題にも使える判断のコツ（1〜5個） |
-| `references` | AWS 公式の実在 URL（1〜3個） |
+| `references` | AWS 公式の実在 URL（1〜4個） |
 | `lessonRefs` | 関連レッスンの ID |
 | `factRefs` | 任意。決め手になる図鑑の事実の ID（最大6個）。既存の問題には、その問題を直す機会に書き足す |
 | `pool` | `basics` 基礎講座、`practice` 演習、`mockA`・`mockB` 保留模試（演習には出ない） |
