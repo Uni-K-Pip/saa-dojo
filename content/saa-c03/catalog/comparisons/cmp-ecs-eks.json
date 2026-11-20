@@ -35,6 +35,18 @@
         "eks.fargate-pod-isolation",
         "eks.hybrid-and-anywhere"
       ]
+    },
+    {
+      "axis": "アプリケーションに IAM ロールの権限を渡す単位",
+      "values": {
+        "ecs": "タスクの単位（タスクロール。タスクごとに認証情報が渡される）",
+        "eks": "Kubernetes のサービスアカウントの単位（EKS Pod Identity か IRSA。そのサービスアカウントを使う Pod だけに、ロールの権限が渡る）"
+      },
+      "factRefs": [
+        "ecs.task-role",
+        "eks.pod-identity",
+        "eks.irsa"
+      ]
     }
   ],
   "sources": [
