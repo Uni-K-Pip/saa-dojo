@@ -69,12 +69,12 @@
       "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/control-behavior.html"
     },
     {
-      "title": "CloudFormation Hooks の概念 - AWS CloudFormation Hooks ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/cloudformation-cli/latest/hooks-userguide/hooks-concepts.html"
+      "title": "Proactive controls - AWS Control Tower",
+      "url": "https://docs.aws.amazon.com/controltower/latest/controlreference/proactive-controls.html"
     },
     {
-      "title": "CloudFormation Hooks - Cloud Control API ユーザーガイド",
-      "url": "https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/security-hooks.html"
+      "title": "CloudFormation Hooks の概念 - AWS CloudFormation Hooks ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/cloudformation-cli/latest/hooks-userguide/hooks-concepts.html"
     }
   ],
   "lessonRefs": [
