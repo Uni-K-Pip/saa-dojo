@@ -304,7 +304,7 @@
       "id": "cloudformation.stacksets-update-propagation",
       "title": "StackSet の更新を展開先に反映する",
       "kind": "feature",
-      "text": "StackSet を更新すると、更新対象に指定したアカウントとリージョンのスタックへ、CloudFormation が更新を適用する。更新の内容は、StackSet のテンプレートの置換やパラメータ値の更新である。",
+      "text": "StackSet を更新するときは、更新を適用するアカウントとリージョンを指定し、CloudFormation がその展開先のスタックへ更新を適用する。更新できる内容には、テンプレートの置換やパラメータ値の更新などがある。",
       "depth": "core",
       "sources": [
         {

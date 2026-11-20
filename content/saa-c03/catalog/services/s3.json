@@ -720,9 +720,9 @@
     },
     {
       "id": "s3.managed-prefix-list-contents",
-      "title": "S3 のマネージドプレフィックスリストの中身",
+      "title": "AWS マネージドプレフィックスリストとは",
       "kind": "integration",
-      "text": "AWS マネージドプレフィックスリストは、AWS のサービスが使う IP アドレス範囲の集合である。S3 用のリストは com.amazonaws.<リージョン>.s3 という名前で、S3 というサービスの IP アドレス範囲を表す。",
+      "text": "AWS マネージドプレフィックスリストは、AWS のサービスが使う IP アドレス範囲の集合である。",
       "depth": "detail",
       "sources": [
         {
@@ -736,7 +736,7 @@
       "id": "s3.bucket-policy-modify-permissions",
       "title": "バケットポリシーの設定・削除に必要な権限",
       "kind": "feature",
-      "text": "汎用バケットのバケットポリシーを設定（PutBucketPolicy）するには s3:PutBucketPolicy、削除（DeleteBucketPolicy）するには s3:DeleteBucketPolicy の権限が必要である。ルートユーザー以外の ID は、この権限に加えて、バケット所有者のアカウントに属している必要がある。",
+      "text": "汎用バケットのバケットポリシーを設定（PutBucketPolicy）するには s3:PutBucketPolicy、削除（DeleteBucketPolicy）するには s3:DeleteBucketPolicy の権限が必要である。",
       "depth": "core",
       "sources": [
         {
@@ -754,7 +754,7 @@
       "id": "s3.glacier-instant-retrieval",
       "title": "S3 Glacier Instant Retrieval の取り出し",
       "kind": "feature",
-      "text": "S3 Glacier Instant Retrieval は、四半期に一度程度アクセスされる長期のアーカイブデータ向けのストレージクラスで、ミリ秒で取り出せる。GET で即時に利用でき、Flexible Retrieval や Deep Archive のような RestoreObject による復元は要らない。取り出しにはギガバイト単位の料金がかかり、最小保存期間は 90 日である。",
+      "text": "S3 Glacier Instant Retrieval は、四半期に一度程度アクセスされる長期のアーカイブデータ向けのストレージクラスで、ミリ秒で取り出せる。GET で即時に利用でき、Flexible Retrieval や Deep Archive のような RestoreObject による復元は要らない。",
       "depth": "core",
       "sources": [
         {
@@ -764,6 +764,34 @@
         {
           "title": "Understanding archive retrieval options - Amazon S3",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.glacier-instant-retrieval-retrieval-fee",
+      "title": "S3 Glacier Instant Retrieval の取り出し料金",
+      "kind": "pricing",
+      "text": "S3 Glacier Instant Retrieval には、ギガバイト単位の取り出し料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding and managing Amazon S3 storage classes - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.glacier-instant-retrieval-min-duration",
+      "title": "S3 Glacier Instant Retrieval の最小保存期間",
+      "kind": "constraint",
+      "text": "S3 Glacier Instant Retrieval の最小保存期間は 90 日である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding and managing Amazon S3 storage classes - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
         }
       ],
       "checkedAt": "2026-11-20"

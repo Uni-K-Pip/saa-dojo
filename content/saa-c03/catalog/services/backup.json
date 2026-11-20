@@ -200,7 +200,7 @@
       "id": "backup.vault-lock-retention-range",
       "title": "Vault Lock で最小・最大の保持期間を設定する",
       "kind": "feature",
-      "text": "AWS Backup Vault Lock では、ボールトの最小保持期間（MinRetentionDays、最短 1 日）と最大保持期間（MaxRetentionDays、最長 36,500 日）を日数で設定できます。API・コンソールではどちらも任意の設定で、指定しなければその側の保持期間は強制されません。CloudFormation では MinRetentionDays が必須です。",
+      "text": "AWS Backup Vault Lock では、ボールトの最小保持期間と最大保持期間を日数で設定できます。指定しなかった側の保持期間は強制されません。",
       "depth": "core",
       "sources": [
         {

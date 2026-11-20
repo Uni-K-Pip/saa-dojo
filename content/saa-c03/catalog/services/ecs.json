@@ -582,7 +582,7 @@
       "id": "ecs.ebs-volume-deleted-with-task",
       "title": "サービスのタスクの EBS ボリュームはタスク終了時に削除される",
       "kind": "feature",
-      "text": "サービスが管理するタスクにアタッチされた EBS ボリュームは保持されず、タスクの終了時に必ず削除される。永続的に保存したいデータには向かない。",
+      "text": "サービスが管理するタスクにアタッチされた EBS ボリュームは保持されず、タスクの終了時に必ず削除される。",
       "depth": "detail",
       "sources": [
         {
@@ -596,7 +596,21 @@
       "id": "ecs.ebs-volume-fargate-support",
       "title": "Fargate では Linux のプラットフォームバージョン 1.4.0 以降で EBS ボリュームを使える",
       "kind": "constraint",
-      "text": "タスクへの EBS ボリュームのアタッチは、Fargate では Linux のプラットフォームバージョン 1.4.0 以降でサポートされ、Windows ではサポートされない。Fargate のタスクでは、マグネティック（standard）の EBS ボリュームタイプも使えない。",
+      "text": "Fargate では、タスクへの EBS ボリュームのアタッチは Linux のプラットフォームバージョン 1.4.0 以降でサポートされ、Windows のタスクではサポートされない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon EBS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ebs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ecs.ebs-volume-fargate-no-magnetic",
+      "title": "Fargate のタスクではマグネティックの EBS ボリュームタイプを使えない",
+      "kind": "constraint",
+      "text": "Fargate のタスクでは、マグネティック（standard）の EBS ボリュームタイプを使えない。",
       "depth": "detail",
       "sources": [
         {

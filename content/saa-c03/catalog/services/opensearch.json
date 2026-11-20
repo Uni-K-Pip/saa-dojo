@@ -46,7 +46,7 @@
       "title": "検索とログ分析のエンジン",
       "kind": "feature",
       "text": "OpenSearch は、ログ分析、リアルタイムのアプリケーション監視、クリックストリーム分析などに使うオープンソースの検索・分析エンジンである。Amazon OpenSearch Service はこのエンジンのクラスターを AWS 上で提供する。",
-      "examPoint": "ログの検索・分析や全文検索の基盤として名前が挙がる。",
+      "examPoint": "ログの検索・分析の基盤として名前が挙がる。",
       "depth": "core",
       "sources": [
         {
@@ -74,13 +74,45 @@
       "id": "opensearch.full-text-search",
       "title": "全文検索を提供する",
       "kind": "feature",
-      "text": "OpenSearch Service は、データベースの検索を超えるリアルタイムのドキュメント検索を提供する。キーワード検索、自然言語検索、同義語、複数の言語に対応する。アプリケーション用の検索エンジンとして使える。",
-      "examPoint": "全文検索が要件なら、キーと値を引く DynamoDB や ElastiCache ではなくこのサービスを考える。",
+      "text": "OpenSearch Service は、データベースの検索を超えるリアルタイムのドキュメント検索を提供する。検索エンジンの OpenSearch は、全文検索、キーワード検索、自然言語検索、同義語、複数の言語に対応する。",
+      "examPoint": "全文検索や、データベースの検索を超えるドキュメント検索（キーワード検索、同義語、複数言語）が要件なら、このサービスを考える。",
       "depth": "core",
       "sources": [
         {
           "title": "Amazon OpenSearch Service features",
           "url": "https://aws.amazon.com/opensearch-service/features/"
+        },
+        {
+          "title": "What is OpenSearch?",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.sql-fuzzy-matching",
+      "title": "SQL でファジーマッチングなどの検索ができる",
+      "kind": "feature",
+      "text": "OpenSearch の SQL では、ファジーマッチング、ブースト、フレーズマッチングなどの検索ができる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is OpenSearch? - Amazon Web Services",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.sql-aggregations",
+      "title": "SQL で集計できる",
+      "kind": "feature",
+      "text": "OpenSearch の SQL では、集計、group by、where 句を使って、インデックスのデータを調べられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is OpenSearch? - Amazon Web Services",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
         }
       ],
       "checkedAt": "2026-11-20"
@@ -89,7 +121,7 @@
       "id": "opensearch.japanese-analysis",
       "title": "日本語の形態素解析（kuromoji）",
       "kind": "feature",
-      "text": "日本語の形態素解析を行う kuromoji の分析プラグインは、OpenSearch 1.0 以降のドメインに含まれている。日本語の文章を単語に分けて検索できる。",
+      "text": "日本語の形態素解析を行う kuromoji の分析プラグインは、OpenSearch 1.0 以降のドメインに含まれている。",
       "depth": "core",
       "sources": [
         {
@@ -117,7 +149,7 @@
       "id": "opensearch.dashboards",
       "title": "OpenSearch Dashboards で可視化",
       "kind": "feature",
-      "text": "データの可視化には OpenSearch Dashboards を使う。ダッシュボードでの検索と可視化に加え、BI アプリケーションと連携するための SQL にも対応する。",
+      "text": "OpenSearch Service は、OpenSearch Dashboards による可視化の機能を備える。",
       "depth": "core",
       "sources": [
         {
@@ -150,7 +182,7 @@
       "id": "opensearch.ingest-firehose",
       "title": "Amazon Data Firehose から取り込む",
       "kind": "integration",
-      "text": "Amazon Data Firehose は OpenSearch Service を配信先にできる。ストリームのデータを、コンシューマーのコードなしでドメインへ届ける場面で組み合わせる。取り込み前に Lambda で変換することもできる。",
+      "text": "Amazon Data Firehose は OpenSearch Service を配信先にできる。取り込み前に Lambda で変換することもできる。",
       "depth": "core",
       "sources": [
         {

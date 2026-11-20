@@ -77,7 +77,7 @@
       "title": "1 回の実行は最大 30 分",
       "kind": "quota",
       "text": "関数のタイムアウトの上限は 1,800 秒（30 分）です。Lambda Managed Instances を使う関数では、非同期呼び出しとイベントソースマッピング経由の呼び出し（Amazon MQ と Amazon DocumentDB を除く）に限り、最大 5,400 秒（90 分）まで設定できます。",
-      "examPoint": "30 分を超える処理は、Lambda の 1 回の実行では収まらない。",
+      "examPoint": "30 分（Lambda Managed Instances の一部の呼び出しは 90 分）を超える処理は、Lambda の 1 回の実行では収まらない。",
       "depth": "core",
       "sources": [
         {
@@ -485,32 +485,13 @@
       "id": "lambda.managed-instances",
       "title": "Lambda Managed Instances ではインスタンスを選べる",
       "kind": "feature",
-      "text": "Lambda Managed Instances は、利用者のアカウントの EC2 現行世代インスタンス上で Lambda 関数を実行する仕組みで、性能とコストの要件に合わせてインスタンスを選べる。最新の CPU や GPU、メモリと CPU の比率の設定、高帯域のネットワークを使える。インスタンスの寿命管理、OS とランタイムのパッチ適用、ルーティング、負荷分散は不要である。",
+      "text": "Lambda Managed Instances は、利用者のアカウントの EC2 現行世代インスタンス上で Lambda 関数を実行する仕組みで、性能とコストの要件に合わせてインスタンスを選べます。最新の CPU や GPU、メモリと CPU の比率の設定、高帯域のネットワークを使えます。インスタンスの寿命管理、OS とランタイムのパッチ適用、ルーティング、負荷分散は不要です。",
       "examPoint": "EC2 のインスタンスの種類やハードウェアを選んで Lambda 関数を動かしたいときの選択肢である。",
       "depth": "detail",
       "sources": [
         {
           "title": "Lambda Managed Instances",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
-        }
-      ],
-      "checkedAt": "2026-11-20"
-    },
-    {
-      "id": "lambda.default-compute-type",
-      "title": "既定のコンピューティングタイプとメモリ設定",
-      "kind": "feature",
-      "text": "Lambda（既定）のコンピューティングタイプはマルチテナントで、共有の Lambda フリート上で Firecracker MicroVM により実行環境を分離する。1 つの実行環境が同時に処理できる呼び出しは最大 1 件である。関数ごとに設定する性能の項目はメモリ量で、CPU 能力はメモリに比例して割り当てられる。",
-      "examPoint": "既定のコンピューティングタイプでは、メモリ量の設定で関数の性能を調整する。",
-      "depth": "detail",
-      "sources": [
-        {
-          "title": "Lambda Managed Instances",
-          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
-        },
-        {
-          "title": "Lambda quotas",
-          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
         }
       ],
       "checkedAt": "2026-11-20"

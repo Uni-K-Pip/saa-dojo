@@ -742,7 +742,21 @@
       "id": "vpc.traffic-mirroring-components",
       "title": "トラフィックミラーリングの構成要素",
       "kind": "feature",
-      "text": "トラフィックミラーリングは、ソース（監視するネットワークインターフェイス）、フィルター（ミラーするトラフィックを定める規則）、ターゲット（ミラーした通信の送り先）、セッション（ソース・フィルター・ターゲットを関連づけるもの）で構成する。ターゲットは、単体のインスタンスのほか、UDP リスナーを持つ Network Load Balancer か Gateway Load Balancer の配下のインスタンス群にできる。",
+      "text": "トラフィックミラーリングは、ソース（監視するネットワークインターフェイス）、フィルター（ミラーするトラフィックを定める規則）、ターゲット（ミラーした通信の送り先）、セッション（ソース・フィルター・ターゲットを関連づけるもの）で構成する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "vpc.traffic-mirroring-target-types",
+      "title": "トラフィックミラーリングのターゲットの種類",
+      "kind": "constraint",
+      "text": "トラフィックミラーリングのターゲットは、単体のインスタンスのほか、UDP リスナーを持つ Network Load Balancer か Gateway Load Balancer の配下のインスタンス群にできる。",
       "depth": "detail",
       "sources": [
         {

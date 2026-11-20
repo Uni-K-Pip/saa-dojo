@@ -55,8 +55,10 @@
       "side": "incorrect",
       "gap": "none",
       "knowledge": "AWS Organizations では、条件キー aws:ResourceOrgID はリソースが属する組織を確認するもので、呼び出し元の限定には aws:PrincipalOrgID を使う。",
-      "decision": "skip",
-      "note": "iam に事実を足す（第2波）: aws:ResourceOrgID はリクエスト先のリソースを所有するアカウントが属する組織の ID を表すグローバル条件キーで、呼び出し元を組織内に限る条件ではない（呼び出し元の限定は既存の iam.global-key-principalorgid）。"
+      "decision": "fact",
+      "factRefs": [
+        "iam.global-key-resourceorgid"
+      ]
     },
     {
       "key": "saa-1.1-w2m-003/c",
@@ -589,7 +591,8 @@
       "decision": "fact",
       "factRefs": [
         "vpc.traffic-mirroring",
-        "vpc.traffic-mirroring-components"
+        "vpc.traffic-mirroring-components",
+        "vpc.traffic-mirroring-target-types"
       ]
     },
     {
@@ -941,8 +944,10 @@
       "side": "correct",
       "gap": "partial",
       "knowledge": "暗号化された Aurora のスナップショットを別リージョンへコピーするときは、コピー先リージョンの KMS キーを指定し、そのキーで再暗号化されることが書かれていない。",
-      "decision": "skip",
-      "note": "aurora に事実を足す（第2波）: 暗号化済みの DB クラスタースナップショットを別リージョンへコピーするときは、コピー先リージョンの KMS キーを指定し、コピーはそのキーで暗号化される。"
+      "decision": "fact",
+      "factRefs": [
+        "aurora.snapshot-copy-cross-region-kms"
+      ]
     },
     {
       "key": "saa-1.3-w2m-012/e",
@@ -1069,8 +1074,11 @@
       "side": "incorrect",
       "gap": "partial",
       "knowledge": "Lambda のデフォルトのコンピューティングタイプでは、基盤のインスタンスタイプなどを利用者が指定・調整できない。",
-      "decision": "skip",
-      "note": "lambda に事実を足す（第2波）: 既定のコンピューティングタイプでは基盤のインスタンスタイプを利用者が選べず、性能はメモリの設定で調整する（インスタンスタイプを選べるのは Lambda Managed Instances）。"
+      "decision": "fact",
+      "factRefs": [
+        "lambda.memory-cpu",
+        "lambda.managed-instances"
+      ]
     },
     {
       "key": "saa-2.1-w2m-009/d",
@@ -1207,8 +1215,13 @@
       "side": "incorrect",
       "gap": "partial",
       "knowledge": "Fargate のタスクにアタッチする Amazon EBS ボリュームは 1 つのタスク専用で、複数タスクや複数 AZ では共有できない。",
-      "decision": "skip",
-      "note": "ecs に事実を足す（第2波）: ECS のタスク（Fargate を含む）にアタッチする EBS ボリュームは 1 つのタスク専用で、複数のタスクで共有できず、タスクと同じ AZ に作られる（複数タスクでの共有は既存の ecs.efs-volume の EFS を使う）。"
+      "decision": "fact",
+      "factRefs": [
+        "ecs.ebs-volume-one-per-task",
+        "ecs.ebs-volume-deleted-with-task",
+        "ecs.ebs-volume-fargate-support",
+        "ecs.ebs-volume-fargate-no-magnetic"
+      ]
     },
     {
       "key": "saa-2.1-w2m-016/b",
@@ -1412,7 +1425,7 @@
         "aurora.clone",
         "aurora.pitr",
         "aurora.backtrack",
-        "aurora.clone-snapshot-at-creation"
+        "aurora.clone-changes-independent"
       ]
     },
     {
@@ -1880,6 +1893,7 @@
       "factRefs": [
         "redshift.resize-types",
         "redshift.resize-elastic-impact",
+        "redshift.resize-elastic-node-type-change",
         "redshift.resize-classic-impact",
         "redshift.concurrency-scaling"
       ]
@@ -2017,7 +2031,9 @@
       "decision": "fact",
       "factRefs": [
         "opensearch.full-text-search",
-        "opensearch.japanese-analysis"
+        "opensearch.japanese-analysis",
+        "opensearch.sql-fuzzy-matching",
+        "opensearch.sql-aggregations"
       ]
     },
     {
@@ -2448,6 +2464,8 @@
       "decision": "fact",
       "factRefs": [
         "s3.glacier-instant-retrieval",
+        "s3.glacier-instant-retrieval-retrieval-fee",
+        "s3.glacier-instant-retrieval-min-duration",
         "rds.snapshot-export-s3",
         "athena.glacier-restored-objects"
       ]
@@ -2684,8 +2702,10 @@
       "side": "incorrect",
       "gap": "partial",
       "knowledge": "Route 53 Resolver のエンドポイントは ENI ごとに時間料金がかかるため、VPC ごとに作ると費用が積み上がる。",
-      "decision": "skip",
-      "note": "route53 に事実を足す（第2波）: Route 53 VPC Resolver のインバウンド・アウトバウンドエンドポイントには、エンドポイントの ENI（IP アドレス）ごとに時間料金がかかる（転送ルールを共有してエンドポイントを共用する方法は既存の ram.resolver-rule-sharing）。"
+      "decision": "fact",
+      "factRefs": [
+        "route53.resolver-endpoint-eni-pricing"
+      ]
     },
     {
       "key": "saa-4.4-w2m-006/d",

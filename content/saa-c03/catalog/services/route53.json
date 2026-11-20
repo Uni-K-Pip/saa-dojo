@@ -373,12 +373,16 @@
       "id": "route53.resolver-endpoint-eni-pricing",
       "title": "Resolver エンドポイントは ENI ごとに時間料金がかかる",
       "kind": "pricing",
-      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のエンドポイントは、ENI ごとに時間単位の料金がかかる。エンドポイントには 2 つ以上の IP アドレスが必要で、IP アドレス 1 つが ENI 1 つに対応する。",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のエンドポイントは、ENI ごとに時間単位の料金がかかります。IP アドレス 1 つが ENI 1 つに対応し、エンドポイントには 2 つ以上の IP アドレスが必要です。",
       "depth": "detail",
       "sources": [
         {
           "title": "Amazon Route 53 Pricing",
           "url": "https://aws.amazon.com/route53/pricing/"
+        },
+        {
+          "title": "What is Route 53 VPC Resolver?",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
         }
       ],
       "checkedAt": "2026-11-20"

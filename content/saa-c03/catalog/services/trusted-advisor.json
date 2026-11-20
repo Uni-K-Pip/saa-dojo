@@ -141,7 +141,7 @@
       "id": "trusted-advisor.review-and-follow-recommendations",
       "title": "チェック結果を確認して推奨手順に従う",
       "kind": "feature",
-      "text": "Trusted Advisor Recommendations ページでアカウントのチェック結果を確認し、推奨される手順に従って問題を修正する。例えば、不要な EC2 インスタンスの削除を推奨されることがある。",
+      "text": "Trusted Advisor Recommendations ページでアカウントのチェック結果を確認し、推奨される手順に従って問題を修正します。例えば、不要な EC2 インスタンスの削除を推奨されることがあります。",
       "depth": "core",
       "sources": [
         {

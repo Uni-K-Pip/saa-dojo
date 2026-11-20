@@ -359,6 +359,11 @@
     "checkedAt": "2026-11-15",
     "hash": "ade7c01a9e34"
   },
+  "aurora.clone-changes-independent": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "6162485974fe"
+  },
   "aurora.clone-cow-max-15": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -569,6 +574,11 @@
     "checkedAt": "2026-11-16",
     "hash": "3e709819cce8"
   },
+  "backup.vault-lock-existing-recovery-points": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "2c3db0ec8253"
+  },
   "backup.vault-lock-governance": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -578,6 +588,16 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "b065d06d9c2c"
+  },
+  "backup.vault-lock-nonconforming-job-fails": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f0da3cde6cb2"
+  },
+  "backup.vault-lock-retention-range": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "26cd0b1f56a4"
   },
   "backup.vault-policy-removable": {
     "status": "verified",
@@ -713,6 +733,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "2f962cc511b4"
+  },
+  "cloudformation.stacksets-update-propagation": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "fcafdb622e81"
   },
   "cloudformation.template-parameters": {
     "status": "verified",
@@ -993,6 +1018,16 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "403ad61382e1"
+  },
+  "cloudtrail.lake-new-customer-availability": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ba824dfe7a85"
+  },
+  "cloudtrail.lake-sql-event-data-store": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "82845bcc126f"
   },
   "cloudtrail.log-file-integrity": {
     "status": "verified",
@@ -1484,6 +1519,11 @@
     "checkedAt": "2026-11-20",
     "hash": "39d2e8ec843e"
   },
+  "detective.free-trial": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5c5e508e4d26"
+  },
   "detective.guardduty-pivot": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1493,6 +1533,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "e0f58334e126"
+  },
+  "detective.independent-streams": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "4c48a69ad2f0"
   },
   "detective.investigation": {
     "status": "verified",
@@ -1513,6 +1558,21 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "59149f37dae2"
+  },
+  "detective.tiered-per-gb-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d4cd01be97eb"
+  },
+  "detective.volume-quota": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "eddbc33a97ff"
+  },
+  "detective.volume-quota-member-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a3947d1b3695"
   },
   "direct-connect": {
     "status": "verified",
@@ -1808,6 +1868,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "227f2c9e4312"
+  },
+  "dynamodb.query-sort-order": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ef9ed5710548"
   },
   "dynamodb.query-vs-scan": {
     "status": "verified",
@@ -2264,6 +2329,11 @@
     "checkedAt": "2026-11-14",
     "hash": "93644c26039a"
   },
+  "ec2.accelerated-gpu-p-family": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f93578aa6583"
+  },
   "ec2.ami-regional": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -2358,6 +2428,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "ca8b7c6c9c91"
+  },
+  "ec2.monitoring-basic-detailed": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "17712be8c4c4"
   },
   "ec2.placement-cluster": {
     "status": "verified",
@@ -2603,6 +2678,21 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "50bee7ec8f6e"
+  },
+  "ecs.ebs-volume-deleted-with-task": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ccaad4637f90"
+  },
+  "ecs.ebs-volume-fargate-no-magnetic": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5637c33d0a84"
+  },
+  "ecs.ebs-volume-fargate-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d9a44d59d6bc"
   },
   "ecs.ebs-volume-one-per-task": {
     "status": "verified",
@@ -4466,8 +4556,8 @@
   },
   "lambda": {
     "status": "verified",
-    "checkedAt": "2026-11-15",
-    "hash": "f607216034f5"
+    "checkedAt": "2026-11-20",
+    "hash": "5da7c3103cb7"
   },
   "lambda.async-invocation": {
     "status": "verified",
@@ -4529,6 +4619,11 @@
     "checkedAt": "2026-11-14",
     "hash": "5a6bda88b17e"
   },
+  "lambda.managed-instances": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "0dfbbf26df26"
+  },
   "lambda.memory-cpu": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -4573,6 +4668,16 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "b847373a84f8"
+  },
+  "lambda.timeout-max": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "fc571f2c868e"
+  },
+  "lambda.timeout-setting": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "78795483b5bc"
   },
   "lambda.tmp-storage": {
     "status": "verified",
@@ -4734,10 +4839,30 @@
     "checkedAt": "2026-11-20",
     "hash": "9428ae083800"
   },
+  "opensearch.dashboards": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "32f6e969023f"
+  },
+  "opensearch.full-text-search": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "037942fe15c3"
+  },
   "opensearch.ingest-cloudwatch-logs": {
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "1703cdce1ce3"
+  },
+  "opensearch.ingest-firehose": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "8d2156af4739"
+  },
+  "opensearch.japanese-analysis": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f8be1776d433"
   },
   "opensearch.managed-domain": {
     "status": "verified",
@@ -4754,6 +4879,16 @@
     "checkedAt": "2026-11-20",
     "hash": "71181593e773"
   },
+  "opensearch.sql-aggregations": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "3925fb92eb3b"
+  },
+  "opensearch.sql-fuzzy-matching": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c3dc88fc9cc9"
+  },
   "opensearch.sudachi-plugin": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -4763,6 +4898,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "b350b8554f74"
+  },
+  "opensearch.use-cases": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f0f4dd3c67a8"
   },
   "organizations": {
     "status": "verified",
@@ -5179,10 +5319,35 @@
     "checkedAt": "2026-11-16",
     "hash": "99fb3afc5f52"
   },
+  "redshift.reserved-nodes-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1b83a193310a"
+  },
   "redshift.resize-capacity": {
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f7473d643f31"
+  },
+  "redshift.resize-classic-impact": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a271914f0254"
+  },
+  "redshift.resize-elastic-impact": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f5505787009d"
+  },
+  "redshift.resize-elastic-node-type-change": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "b015ab4f0518"
+  },
+  "redshift.resize-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c5d75666817a"
   },
   "redshift.scheduled-pause-resume": {
     "status": "verified",
@@ -5309,6 +5474,11 @@
     "checkedAt": "2026-11-16",
     "hash": "7a110b258f37"
   },
+  "route53.resolver-endpoint-eni-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e895c7c179ca"
+  },
   "route53.resolver-inbound": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5374,6 +5544,11 @@
     "checkedAt": "2026-11-14",
     "hash": "0e20c2351271"
   },
+  "s3.bucket-policy-modify-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "eda3a723ec67"
+  },
   "s3.concurrent-writes": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5393,6 +5568,21 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "a6dc50f294fe"
+  },
+  "s3.glacier-instant-retrieval": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "58e67776e71b"
+  },
+  "s3.glacier-instant-retrieval-min-duration": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7dbf05c0f325"
+  },
+  "s3.glacier-instant-retrieval-retrieval-fee": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "992621a16121"
   },
   "s3.glacier-retrieval-tiers": {
     "status": "verified",
@@ -5428,6 +5618,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "44f5a65187ea"
+  },
+  "s3.managed-prefix-list-contents": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "4dd7360c5772"
   },
   "s3.mrap-failover": {
     "status": "verified",
@@ -6359,6 +6554,11 @@
     "checkedAt": "2026-11-16",
     "hash": "5b3ce574751f"
   },
+  "trusted-advisor.review-and-follow-recommendations": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "3a07b5bd7abb"
+  },
   "trusted-advisor.s3-incomplete-upload-rule-check": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -6588,6 +6788,16 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "6063d1376345"
+  },
+  "vpc.traffic-mirroring-components": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "eedcf523b123"
+  },
+  "vpc.traffic-mirroring-target-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "4d4079f456d3"
   },
   "waf": {
     "status": "verified",
