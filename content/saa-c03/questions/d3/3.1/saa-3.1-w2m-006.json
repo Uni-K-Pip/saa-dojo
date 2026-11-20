@@ -65,6 +65,10 @@
     {
       "title": "AWS KMS キーによるサーバー側の暗号化（SSE-KMS）の使用 - Amazon S3 ユーザーガイド",
       "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+    },
+    {
+      "title": "Amazon S3 ストレージクラスの理解と管理 - Amazon S3 ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
     }
   ],
   "lessonRefs": [],

@@ -66,6 +66,10 @@
     {
       "title": "リザーブドノード - Amazon Redshift 管理ガイド",
       "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/purchase-reserved-node-instance.html"
+    },
+    {
+      "title": "クラスターのサイズ変更 - Amazon Redshift 管理ガイド",
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
     }
   ],
   "lessonRefs": [],

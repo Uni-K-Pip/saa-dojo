@@ -65,6 +65,10 @@
     {
       "title": "Classic Load Balancer とは？ - Elastic Load Balancing",
       "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html"
+    },
+    {
+      "title": "Application Load Balancer とは？ - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
     }
   ],
   "lessonRefs": [
