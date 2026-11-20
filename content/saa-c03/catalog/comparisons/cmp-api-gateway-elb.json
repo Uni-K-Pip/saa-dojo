@@ -36,6 +36,17 @@
         "api-gateway.lambda-integration",
         "elb.alb-target-types"
       ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "api-gateway": "HTTP API と REST API では、受け取った API コールの数と、外へ転送したデータの量に対してかかる（プライベート API には、外へのデータ転送の料金がかからないが、AWS PrivateLink の料金がかかる）",
+        "elb": "ALB・NLB・GWLB では、ロードバランサーが動いている時間と、キャパシティーユニット（LCU・NLCU・GLCU）の使用量に対してかかる"
+      },
+      "factRefs": [
+        "api-gateway.billing-units",
+        "elb.pricing-billing-units"
+      ]
     }
   ],
   "sources": [
@@ -52,6 +63,6 @@
       "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc34"
 }

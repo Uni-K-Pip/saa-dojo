@@ -295,6 +295,20 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "api-gateway.billing-units",
+      "title": "API Gateway の料金は使った量に対して課金される",
+      "kind": "pricing",
+      "text": "API Gateway は使った分だけの支払いで、最低料金や前払いの契約はない。HTTP API と REST API は、受け取った API コールの数と、外へ転送したデータの量に対して課金される（プライベート API には、外へのデータ転送の料金がかからないが、AWS PrivateLink の料金がかかる）。WebSocket API は、送受信したメッセージの数と、接続していた時間（接続分数）に対して課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon API Gateway Pricing",
+          "url": "https://aws.amazon.com/api-gateway/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "api-gateway.http-api-jwt-authorizer",
       "title": "HTTP API の JWT オーソライザー",
       "kind": "feature",
@@ -574,5 +588,5 @@
   ],
   "createdBy": "sc9",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

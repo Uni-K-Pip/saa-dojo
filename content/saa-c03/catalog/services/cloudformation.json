@@ -91,6 +91,20 @@
       "checkedAt": "2026-11-16"
     },
     {
+      "id": "cloudformation.pricing-model",
+      "title": "CloudFormation の料金のかかり方",
+      "kind": "pricing",
+      "text": "AWS CloudFormation は、AWS::* と Alexa::* の名前空間のリソースプロバイダーを使う限り、CloudFormation そのものに追加料金がかからない。CloudFormation で作った EC2 インスタンスやロードバランサーなどの AWS リソースには、手動で作った場合と同じ料金がかかる。レジストリの拡張機能を使う場合は、ハンドラーオペレーションごとに課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudFormation Pricing",
+          "url": "https://aws.amazon.com/cloudformation/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "cloudformation.template-parameters",
       "title": "パラメータで環境ごとの値を渡す",
       "kind": "feature",
@@ -335,5 +349,5 @@
   ],
   "createdBy": "cx33",
   "createdAt": "2026-11-16",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

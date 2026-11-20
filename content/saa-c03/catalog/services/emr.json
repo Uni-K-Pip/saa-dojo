@@ -164,6 +164,20 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "emr.ec2-cluster-pricing",
+      "title": "EC2 上のクラスターの料金は EMR 料金と EC2 料金の合算",
+      "kind": "pricing",
+      "text": "Amazon EMR on EC2 のクラスターでは、EMR の料金が、基盤のサーバーである EC2 の料金と、EBS ボリュームを付けている場合は EBS の料金に追加でかかる。いずれも秒単位の課金で、最小は 1 分である。EC2 側の料金は、オンデマンド、リザーブドインスタンス、Capacity Savings Plans、スポットインスタンスなどから選べる。EMR on EKS と EMR Serverless は、課金のしかたが異なる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EMR Pricing",
+          "url": "https://aws.amazon.com/emr/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "references": [
@@ -182,5 +196,5 @@
   ],
   "createdBy": "cx30",
   "createdAt": "2026-11-16",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

@@ -274,6 +274,24 @@
       "checkedAt": "2026-11-16"
     },
     {
+      "id": "cloudwatch.pricing-units",
+      "title": "CloudWatch の料金は、メトリクス・アラーム・ログごとの単位でかかる",
+      "kind": "pricing",
+      "text": "CloudWatch には初期費用や最低料金がなく、使った分だけ支払う。カスタムメトリクスと詳細モニタリングは、送信するメトリクスの数に対して課金される。メトリクスアラームは、アラームが参照するメトリクスの数に対して課金される。ログは、収集（取り込み）した量と保存した量に対して課金される。多くの AWS サービスの基本モニタリングのメトリクスは無料で送られる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon CloudWatch Pricing | Free Tier Available",
+          "url": "https://aws.amazon.com/cloudwatch/pricing/"
+        },
+        {
+          "title": "Analyzing, optimizing, and reducing CloudWatch costs - Amazon CloudWatch",
+          "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_billing.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "cloudwatch.logs-insights-pricing",
       "title": "Logs Insights はスキャンしたログ量で課金される",
       "kind": "pricing",
@@ -354,6 +372,7 @@
       "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
     }
   ],
+  "updatedAt": "2026-11-21",
   "createdBy": "cx5",
   "createdAt": "2026-11-16"
 }

@@ -42,6 +42,20 @@
         "cloudtrail.cloudwatch-logs-monitoring",
         "config.sns-change-notifications"
       ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "cloudwatch": "カスタムメトリクスと詳細モニタリングのメトリクスの数、メトリクスアラームが参照するメトリクスの数、ログの取り込み量と保存量に対してかかる（多くの AWS サービスの基本モニタリングのメトリクスは無料）",
+        "cloudtrail": "証跡で S3 に配信する管理イベントの追加コピーと、データイベントの記録に対してかかる（管理イベントの各リージョンの最初のコピーには、CloudTrail の配信料金がかからない）",
+        "config": "記録した設定項目の数、有効な AWS Config ルールの評価の数、コンフォーマンスパックの評価の数に基づいてかかる"
+      },
+      "factRefs": [
+        "cloudwatch.pricing-units",
+        "cloudtrail.management-copy-pricing",
+        "cloudtrail.data-events-pricing",
+        "config.pricing-model"
+      ]
     }
   ],
   "sources": [
@@ -58,6 +72,6 @@
       "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc23"
 }

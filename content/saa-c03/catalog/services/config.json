@@ -322,6 +322,20 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "config.pricing-model",
+      "title": "料金は記録と評価の数に基づいてかかる",
+      "kind": "pricing",
+      "text": "AWS Config の料金は、記録した設定項目の数、有効な AWS Config ルールの評価の数、コンフォーマンスパックの評価の数に基づいて課金される。使った分だけを支払う仕組みで、最低料金や前払いの契約はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Config Pricing",
+          "url": "https://aws.amazon.com/config/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "seeAlso": [
@@ -343,5 +357,6 @@
     }
   ],
   "createdBy": "cx22",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-21"
 }

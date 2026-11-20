@@ -74,6 +74,11 @@
     "checkedAt": "2026-11-14",
     "hash": "53bccf7a4b74"
   },
+  "api-gateway.billing-units": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a33c0adde7f4"
+  },
   "api-gateway.cache-get-only": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -709,6 +714,11 @@
     "checkedAt": "2026-11-16",
     "hash": "333d6917cd83"
   },
+  "cloudformation.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bfb77b123b08"
+  },
   "cloudformation.repeatable-infrastructure": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -1179,15 +1189,20 @@
     "checkedAt": "2026-11-16",
     "hash": "1f773cd2e43e"
   },
+  "cloudwatch.pricing-units": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6756dd41628f"
+  },
   "cmp-api-gateway-elb": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "5a0d1d98dbe9"
+    "checkedAt": "2026-11-21",
+    "hash": "3e08c8e087a3"
   },
   "cmp-athena-redshift-emr": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "6c42d14d160f"
+    "checkedAt": "2026-11-21",
+    "hash": "6971ab99464f"
   },
   "cmp-cloudformation-elastic-beanstalk": {
     "status": "verified",
@@ -1201,8 +1216,8 @@
   },
   "cmp-cloudwatch-cloudtrail-config": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "d7755dff1796"
+    "checkedAt": "2026-11-21",
+    "hash": "97a3d9056d1f"
   },
   "cmp-direct-connect-site-to-site-vpn": {
     "status": "verified",
@@ -1388,6 +1403,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "c0e52ce599aa"
+  },
+  "config.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "031691af71b5"
   },
   "config.proactive-does-not-block": {
     "status": "verified",
@@ -3689,6 +3709,11 @@
     "checkedAt": "2026-11-14",
     "hash": "da00f923af04"
   },
+  "elb.pricing-billing-units": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ae9d4ab0dc49"
+  },
   "elb.quota-load-balancers": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -3738,6 +3763,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "7441f389caf3"
+  },
+  "emr.ec2-cluster-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c5793ee97c26"
   },
   "emr.managed-scaling": {
     "status": "verified",

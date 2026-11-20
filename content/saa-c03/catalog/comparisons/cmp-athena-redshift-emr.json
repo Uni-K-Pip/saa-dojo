@@ -39,6 +39,19 @@
         "redshift.sql-analytics",
         "emr.distributed-processing"
       ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "athena": "スキャン量に基づく課金では、クエリがスキャンしたデータ量に応じてかかる",
+        "redshift": "プロビジョンドクラスターのオンデマンドでは、ノードタイプとノード数に応じて、時間単位でかかる",
+        "emr": "EC2 上のクラスターでは、EMR の料金が、EC2 の料金と、EBS ボリュームを付けていれば EBS の料金に追加で、秒単位（最小 1 分）でかかる"
+      },
+      "factRefs": [
+        "athena.scan-based-pricing",
+        "redshift.on-demand-nodes",
+        "emr.ec2-cluster-pricing"
+      ]
     }
   ],
   "sources": [
@@ -47,6 +60,6 @@
       "url": "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc31"
 }

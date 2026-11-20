@@ -743,6 +743,20 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "elb.pricing-billing-units",
+      "title": "ロードバランサーの料金の課金単位",
+      "kind": "pricing",
+      "text": "ALB・NLB・GWLB は、ロードバランサーが動いている時間（1 時間に満たない分は 1 時間分）と、キャパシティーユニットの使用量（1 分あたり）に対して課金される。キャパシティーユニットは ALB が LCU、NLB が NLCU、GWLB が GLCU である。CLB は、動いている時間（1 時間に満たない分は 1 時間分）と、ロードバランサーを通して転送したデータの量（GB 単位）に対して課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Elastic Load Balancing pricing",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "elb.quota-load-balancers",
       "title": "ロードバランサー数のクォータ",
       "kind": "quota",
@@ -838,5 +852,5 @@
   ],
   "createdBy": "sc8",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }
