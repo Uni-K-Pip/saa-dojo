@@ -169,6 +169,11 @@
     "checkedAt": "2026-11-14",
     "hash": "f597bd00b8f3"
   },
+  "api-gateway.rest-api-overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d2124f9c6872"
+  },
   "api-gateway.rest-no-jwt-authorizer": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -3239,6 +3244,26 @@
     "checkedAt": "2026-11-14",
     "hash": "5771a09b3aa0"
   },
+  "elb.alb-grpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "24046e2c7daf"
+  },
+  "elb.alb-grpc-health-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "58b42ba71add"
+  },
+  "elb.alb-grpc-listener-https": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "10ae7fc011fd"
+  },
+  "elb.alb-grpc-target-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f24e98653889"
+  },
   "elb.alb-hc-settings": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -3453,6 +3478,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f4c455686838"
+  },
+  "emr.manual-resize": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "9d0a4e2ac9d6"
   },
   "emr.s3-input-output": {
     "status": "verified",
@@ -5074,6 +5104,11 @@
     "checkedAt": "2026-11-14",
     "hash": "48b3f2825e0a"
   },
+  "rds.database-insights-enable": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1c6860258cd7"
+  },
   "rds.encrypt-at-creation": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5549,6 +5584,11 @@
     "checkedAt": "2026-11-20",
     "hash": "eda3a723ec67"
   },
+  "s3.byte-range-parallel-get": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a85dc0ecef6c"
+  },
   "s3.concurrent-writes": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5693,6 +5733,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "a8210f6f42a1"
+  },
+  "s3.sse-kms-decryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7c05a4ca163c"
   },
   "s3.storage-classes": {
     "status": "verified",
@@ -6618,6 +6663,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "9aaf656b1b89"
+  },
+  "vpc.egress-only-igw-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "9c06d32c6eb2"
   },
   "vpc.flow-logs-basics": {
     "status": "verified",

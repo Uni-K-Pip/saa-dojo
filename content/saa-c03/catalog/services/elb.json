@@ -749,6 +749,62 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-grpc",
+      "title": "ALB の gRPC プロトコルバージョン",
+      "kind": "feature",
+      "text": "ALB のターゲットグループは、プロトコルバージョンに gRPC を指定できる。ALB は gRPC のリクエストを解析し、パッケージ、サービス、メソッドに基づいて gRPC の呼び出しを適切なターゲットグループへ振り分ける。単項、クライアント側ストリーミング、サーバー側ストリーミング、双方向ストリーミングに対応する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.alb-grpc-listener-https",
+      "title": "gRPC のターゲットグループのリスナーは HTTPS",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループでは、リスナーのプロトコルとして対応しているのは HTTPS だけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.alb-grpc-target-types",
+      "title": "gRPC のターゲットグループのターゲットタイプ",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループで対応しているターゲットタイプは instance と ip だけで、Lambda 関数はターゲットにできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.alb-grpc-health-check",
+      "title": "gRPC のターゲットグループのヘルスチェック",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループでは、ヘルスチェックに /package.service/method の形式のカスタムメソッドと、成功とみなす gRPC のステータスコードを指定する必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -770,5 +826,6 @@
     }
   ],
   "createdBy": "sc8",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

@@ -539,6 +539,20 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "api-gateway.rest-api-overview",
+      "title": "REST API はリソースとメソッドの集まり",
+      "kind": "feature",
+      "text": "API Gateway の REST API は、リソースとメソッドの集まりで、バックエンドの HTTP エンドポイント、Lambda 関数、ほかの AWS サービスと統合します。クライアントがリクエストを送り、サービスが同期的に応答を返す、リクエスト／レスポンスのモデルで動きます。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "API Gateway REST APIs",
+          "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -555,5 +569,6 @@
     }
   ],
   "createdBy": "sc9",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

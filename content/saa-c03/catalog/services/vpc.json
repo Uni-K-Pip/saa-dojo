@@ -765,6 +765,20 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "vpc.egress-only-igw-pricing",
+      "title": "Egress-Only インターネットゲートウェイの料金",
+      "kind": "pricing",
+      "text": "Egress-Only インターネットゲートウェイ自体には料金がかからない。ただし、インターネットゲートウェイを使う EC2 インスタンスには、データ転送の料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable outbound IPv6 traffic using an egress-only internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/egress-only-internet-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [

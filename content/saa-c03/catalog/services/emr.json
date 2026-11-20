@@ -150,6 +150,20 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.manual-resize",
+      "title": "稼働中クラスターの手動のサイズ変更",
+      "kind": "feature",
+      "text": "稼働中の Amazon EMR クラスターのコアとタスクのインスタンスグループやインスタンスフリートは、コンソール、AWS CLI、EMR API で手動でサイズを変更できる。インスタンスグループではインスタンス数を、インスタンスフリートではオンデマンドインスタンスとスポットインスタンスのターゲットユニットを変更する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Manually resize a running Amazon EMR cluster",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-resize.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [
@@ -167,5 +181,6 @@
     }
   ],
   "createdBy": "cx30",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
 }

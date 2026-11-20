@@ -26,7 +26,7 @@
       "id": "a",
       "text": "Amazon API Gateway の REST API を作成し、リソースとメソッドを定義して、gRPC のリクエストを、HTTP 統合で ECS のサービスに転送する。",
       "correct": false,
-      "rationale": "API Gateway の REST API は、gRPC に対応していません。HTTP/2 のストリーミングを必要とする gRPC の通信には向きません。"
+      "rationale": "API Gateway の REST API は、リソースとメソッドをバックエンドに統合する、リクエスト・レスポンス型の API です。プロトコルバージョンを gRPC にした ALB のターゲットグループなら、gRPC の呼び出しをサービスとメソッドで振り分け、gRPC のステータスコードでヘルスチェックできます。"
     },
     {
       "id": "b",
@@ -47,7 +47,7 @@
       "rationale": "NLB はレイヤー 4 で動作し、パスなどの内容に基づく振り分けができません。gRPC のステータスコードによるヘルスチェックもできません。"
     }
   ],
-  "explanation": "gRPC は、HTTP/2 上で動作する RPC のフレームワークです。ロードバランサーのうち、Application Load Balancer（ALB）は、HTTP/2 と gRPC に対応しています。ターゲットグループのプロトコルバージョンを gRPC に設定し、HTTPS のリスナーでリクエストを受け付けます。リスナールールでパス（/サービス名/メソッド名）に基づくルーティングができ、ヘルスチェックでは、gRPC のステータスコードを成功の条件に指定できます。\n\nNetwork Load Balancer はレイヤー 4 のロードバランサーで、TCP の通信を転送しますが、HTTP のパスやヘッダーなどの内容による振り分けはできません。Classic Load Balancer は旧世代のため、gRPC に非対応で、新しい設計には使いません。API Gateway の REST API は、gRPC をサポートしません。\n\nそのため、gRPC のパスベースのルーティングと gRPC ヘルスチェックには、ALB を選びます。",
+  "explanation": "gRPC は、HTTP/2 上で動作する RPC のフレームワークです。ロードバランサーのうち、Application Load Balancer（ALB）は、HTTP/2 と gRPC に対応しています。ターゲットグループのプロトコルバージョンを gRPC に設定し、HTTPS のリスナーでリクエストを受け付けます。リスナールールでパス（/サービス名/メソッド名）に基づくルーティングができ、ヘルスチェックでは、gRPC のステータスコードを成功の条件に指定できます。\n\nNetwork Load Balancer はレイヤー 4 のロードバランサーで、TCP の通信を転送しますが、HTTP のパスやヘッダーなどの内容による振り分けはできません。Classic Load Balancer は旧世代のため、gRPC に非対応で、新しい設計には使いません。API Gateway の REST API は、リソースとメソッドをバックエンドの HTTP エンドポイントなどに統合する、リクエスト・レスポンス型の API です。\n\nそのため、gRPC のパスベースのルーティングと gRPC ヘルスチェックには、ALB を選びます。",
   "keyPoints": [
     "gRPC（HTTP/2）のパスベースのルーティング → ALB（ターゲットグループのプロトコルバージョンを gRPC に）",
     "NLB はレイヤー 4 で、内容によるルーティングはできない",
@@ -57,6 +57,10 @@
     {
       "title": "Application Load Balancer のターゲットグループ - プロトコルバージョン - Elastic Load Balancing",
       "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version"
+    },
+    {
+      "title": "API Gateway の REST API - Amazon API Gateway デベロッパーガイド",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html"
     }
   ],
   "lessonRefs": [

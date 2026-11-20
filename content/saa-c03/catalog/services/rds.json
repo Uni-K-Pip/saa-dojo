@@ -598,6 +598,20 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "rds.database-insights-enable",
+      "title": "Database Insights の Advanced モードの有効化",
+      "kind": "feature",
+      "text": "Database Insights の Advanced モードは、DB インスタンスや Multi-AZ DB クラスターの作成時または変更時に有効にできる。既存の DB インスタンスを変更して Advanced モードを有効にしても、ダウンタイムは発生しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Turning on the Advanced mode of Database Insights for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DatabaseInsights.TurningOnAdvanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [

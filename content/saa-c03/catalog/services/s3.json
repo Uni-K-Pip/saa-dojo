@@ -795,6 +795,36 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.byte-range-parallel-get",
+      "title": "バイト範囲を指定した並列ダウンロード",
+      "kind": "feature",
+      "text": "大きなオブジェクトをダウンロードするときは、オブジェクトの特定のバイト範囲を指定したリクエストを複数同時に送ると、ネットワークのスループットを引き出せ、単一のリクエストで全体を取得するより集約スループットが高くなる。マルチパートアップロードで置いたオブジェクトは、元のパートの境界に合わせて取得すると性能が良い。",
+      "examPoint": "大きなオブジェクトの取得を速くしたいときは、バイト範囲を指定した GET を並列に送る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Performance design patterns for Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.sse-kms-decryption",
+      "title": "SSE-KMS で暗号化したオブジェクトの復号",
+      "kind": "feature",
+      "text": "SSE-KMS で暗号化したオブジェクトを取得するとき、復号は S3 が行う。S3 がオブジェクトに保存された暗号化データキーを AWS KMS へ Decrypt リクエストで送り、KMS が返した平文のデータキーで S3 がデータを復号する。ダウンロードするには、その KMS キーに対する kms:Decrypt 権限が必要である。",
+      "examPoint": "SSE-KMS のオブジェクトをダウンロードするには、その KMS キーに対する kms:Decrypt 権限が要る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using server-side encryption with AWS KMS keys (SSE-KMS)",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [
