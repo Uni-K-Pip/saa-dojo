@@ -1,0 +1,57 @@
+{
+  "id": "cmp-api-gateway-elb",
+  "title": "Amazon API Gateway と Elastic Load Balancing",
+  "services": [
+    "api-gateway",
+    "elb"
+  ],
+  "decide": [
+    "API の作成・公開・保守・監視・保護を、まとめて任せたいなら API Gateway",
+    "API キーと使用量プランで、API の利用者ごとにリクエスト数を制限したいなら API Gateway",
+    "受けた通信を、EC2 インスタンスやコンテナなどの複数のターゲットへ分散したいなら ELB"
+  ],
+  "rows": [
+    {
+      "axis": "扱う通信",
+      "values": {
+        "api-gateway": "API へのリクエスト（REST API は同期のリクエスト／レスポンス、WebSocket API は接続を保った双方向の通信）",
+        "elb": "ALB は第 7 層の HTTP・HTTPS、NLB は第 4 層の TCP・UDP・TLS など、GWLB は第 3 層の通信"
+      },
+      "factRefs": [
+        "api-gateway.rest-api-overview",
+        "api-gateway.websocket-api",
+        "elb.alb-layer7",
+        "elb.nlb-layer4",
+        "elb.gwlb-transparent-gateway"
+      ]
+    },
+    {
+      "axis": "転送・統合の先",
+      "values": {
+        "api-gateway": "Lambda 関数、HTTP エンドポイント（REST API は、ほかの AWS サービスとも統合する）",
+        "elb": "ALB では、ターゲットグループに登録したターゲット（ターゲットタイプは instance、ip、lambda のいずれか）"
+      },
+      "factRefs": [
+        "api-gateway.rest-api-overview",
+        "api-gateway.lambda-integration",
+        "elb.alb-target-types"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon API Gateway? - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+    },
+    {
+      "title": "Usage plans and API keys for REST APIs in API Gateway - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+    },
+    {
+      "title": "What is Elastic Load Balancing? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc34"
+}

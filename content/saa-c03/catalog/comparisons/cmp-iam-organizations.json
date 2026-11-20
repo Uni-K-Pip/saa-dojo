@@ -1,0 +1,51 @@
+{
+  "id": "cmp-iam-organizations",
+  "title": "AWS Identity and Access Management (IAM) のポリシーと AWS Organizations の SCP",
+  "services": [
+    "iam",
+    "organizations"
+  ],
+  "decide": [
+    "組織内の IAM ユーザーとロールが使える権限の上限を、組織でまとめて決めたいなら Organizations の SCP",
+    "IAM ユーザーやロールに、操作の権限を与えたいなら IAM のアイデンティティベースのポリシー",
+    "IAM ユーザーやロールごとに、アイデンティティベースのポリシーで与えられる権限の上限を決めたいなら IAM の権限の境界"
+  ],
+  "rows": [
+    {
+      "axis": "権限を与えるか",
+      "values": {
+        "iam": "与える（アイデンティティベースやリソースベースのポリシーが許可する。権限の境界は、与えずに上限だけを決める）",
+        "organizations": "与えない（SCP は権限の上限を定め、実際の許可には IAM ポリシーなどが要る）"
+      },
+      "factRefs": [
+        "iam.policy-evaluation-allow-deny",
+        "iam.boundary-basics",
+        "organizations.scp-permission-ceiling"
+      ]
+    },
+    {
+      "axis": "上限をかける対象",
+      "values": {
+        "iam": "権限の境界を設定した IAM ユーザーまたはロール",
+        "organizations": "メンバーアカウントの IAM ユーザー、ロール、ルートユーザー（管理アカウントは対象外）"
+      },
+      "factRefs": [
+        "iam.boundary-basics",
+        "organizations.scp-member-root",
+        "organizations.scp-management-exemption"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Service control policies (SCPs) - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "title": "Policies and permissions in AWS Identity and Access Management - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc33"
+}

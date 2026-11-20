@@ -1,0 +1,58 @@
+{
+  "id": "cmp-lambda-fargate-ec2",
+  "title": "AWS Lambda・AWS Fargate・Amazon EC2",
+  "services": [
+    "lambda",
+    "fargate",
+    "ec2"
+  ],
+  "decide": [
+    "イベントや API 呼び出しに応じて、サーバーを管理せずにコードを実行したいなら Lambda",
+    "サーバーや EC2 インスタンスのクラスターを管理せずに、コンテナを実行したいなら Fargate",
+    "仮想サーバーを起動して、セキュリティ・ネットワーク・ストレージを自分で設定・管理したいなら EC2"
+  ],
+  "rows": [
+    {
+      "axis": "動かすもの",
+      "values": {
+        "lambda": "関数のコード（API Gateway、S3 などの AWS サービスをトリガーに実行する）",
+        "fargate": "コンテナ（ECS ではタスク、EKS では Pod）",
+        "ec2": "AMI から起動するインスタンス"
+      },
+      "factRefs": [
+        "lambda.event-triggers",
+        "fargate.ecs-and-eks",
+        "ec2.ami-regional"
+      ]
+    },
+    {
+      "axis": "計算資源の決まり方",
+      "values": {
+        "lambda": "関数のメモリの設定で決まる（CPU の能力は、メモリの設定量に比例して割り当てられる）",
+        "fargate": "タスクレベルの CPU とメモリの指定で決まる（CPU ごとに許される組み合わせから選ぶ）",
+        "ec2": "インスタンスタイプで決まる（CPU、メモリ、ストレージ、ネットワークの容量の組み合わせ）"
+      },
+      "factRefs": [
+        "lambda.memory-cpu",
+        "fargate.task-size",
+        "ec2.instance-types-families"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is AWS Lambda? - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+    },
+    {
+      "title": "What is Amazon EC2? - Amazon Elastic Compute Cloud",
+      "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc30"
+}

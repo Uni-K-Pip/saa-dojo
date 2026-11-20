@@ -1,0 +1,46 @@
+{
+  "id": "cmp-ecs-eks",
+  "title": "Amazon ECS と Amazon EKS",
+  "services": [
+    "ecs",
+    "eks"
+  ],
+  "decide": [
+    "Kubernetes 対応のアプリケーションを、作り直さずに動かしたいなら EKS"
+  ],
+  "rows": [
+    {
+      "axis": "オーケストレーションの方式",
+      "values": {
+        "ecs": "タスク定義とサービス（タスク定義が設計図で、サービスが、指定した数だけ動かし続ける）",
+        "eks": "Kubernetes（Kubernetes 準拠の認定を受けていて、Kubernetes 対応のアプリケーションを作り直さずにデプロイできる）"
+      },
+      "factRefs": [
+        "ecs.task-definition",
+        "eks.managed-kubernetes"
+      ]
+    },
+    {
+      "axis": "コンテナの実行基盤",
+      "values": {
+        "ecs": "Fargate、EC2、ECS Managed Instances、オンプレミスの外部インスタンス（ECS Anywhere）",
+        "eks": "Fargate、EC2 のノード（マネージドノードグループや EKS Auto Mode で管理する）、自社のデータセンター（EKS Anywhere、EKS Hybrid Nodes）"
+      },
+      "factRefs": [
+        "ecs.capacity-options",
+        "eks.mng-automation",
+        "eks.auto-mode",
+        "eks.fargate-pod-isolation",
+        "eks.hybrid-and-anywhere"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon EKS? - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc30"
+}

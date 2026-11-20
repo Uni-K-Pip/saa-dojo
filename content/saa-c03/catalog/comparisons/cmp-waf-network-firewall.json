@@ -1,0 +1,64 @@
+{
+  "id": "cmp-waf-network-firewall",
+  "title": "AWS WAF と AWS Network Firewall",
+  "services": [
+    "waf",
+    "network-firewall"
+  ],
+  "decide": [
+    "Web アプリケーションへの HTTP・HTTPS リクエストを、送信元の IP アドレスやクエリ文字列の値などの条件で許可・ブロックしたいなら AWS WAF",
+    "VPC の境界で、出入りする通信をフィルタリングしたいなら AWS Network Firewall",
+    "VPC 内のアプリケーションがアクセスできるドメイン名を、リストで制限したいなら AWS Network Firewall"
+  ],
+  "rows": [
+    {
+      "axis": "検査する対象",
+      "values": {
+        "waf": "保護対象の Web アプリケーションへ転送される HTTP・HTTPS リクエスト",
+        "network-firewall": "VPC の通信"
+      },
+      "factRefs": [
+        "waf.http-request-inspection",
+        "network-firewall.suricata-inspection"
+      ]
+    },
+    {
+      "axis": "ルールで指定するもの",
+      "values": {
+        "waf": "送信元の IP アドレスや国、SQL インジェクション、クロスサイトスクリプティングなどの条件",
+        "network-firewall": "Suricata 互換のルールや、ドメイン名のリスト"
+      },
+      "factRefs": [
+        "waf.ip-set-match",
+        "waf.geo-match",
+        "waf.sql-injection",
+        "waf.xss-inspection",
+        "network-firewall.suricata-inspection",
+        "network-firewall.https-sni-filtering"
+      ]
+    },
+    {
+      "axis": "適用のしかた",
+      "values": {
+        "waf": "ルールを定義したウェブ ACL を、CloudFront、ALB、API Gateway の REST API などへ関連付ける",
+        "network-firewall": "VPC のルートテーブルを変更し、検査対象の通信をファイアウォールへ誘導する"
+      },
+      "factRefs": [
+        "waf.web-acl-association",
+        "network-firewall.route-to-endpoint"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What are AWS WAF, AWS Shield Advanced, AWS Shield network security director and AWS Firewall Manager? - AWS WAF, AWS Firewall Manager, AWS Shield Advanced, and AWS Shield network security director",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+    },
+    {
+      "title": "What is AWS Network Firewall? - AWS Network Firewall",
+      "url": "https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc32"
+}

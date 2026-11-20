@@ -1179,6 +1179,21 @@
     "checkedAt": "2026-11-16",
     "hash": "1f773cd2e43e"
   },
+  "cmp-api-gateway-elb": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5a0d1d98dbe9"
+  },
+  "cmp-athena-redshift-emr": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "6c42d14d160f"
+  },
+  "cmp-cloudformation-elastic-beanstalk": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "705a25929015"
+  },
   "cmp-cloudfront-global-accelerator": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1194,6 +1209,11 @@
     "checkedAt": "2026-11-20",
     "hash": "3011f360b1e6"
   },
+  "cmp-ecs-eks": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5240d3ab50a9"
+  },
   "cmp-efs-fsx": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1204,15 +1224,50 @@
     "checkedAt": "2026-11-20",
     "hash": "24009101e08b"
   },
+  "cmp-elb-ec2-auto-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "756db35ce9b7"
+  },
+  "cmp-guardduty-inspector-detective": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "6a2ca02d5a87"
+  },
+  "cmp-iam-identity-center-cognito": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d25d9feed9bc"
+  },
+  "cmp-iam-organizations": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1f207ffdc88d"
+  },
   "cmp-kms-secrets-manager-acm": {
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "1a6c1251ddda"
   },
+  "cmp-lambda-fargate-ec2": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "150cbaf9c373"
+  },
+  "cmp-nat-gateway-vpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "2a2c6916722d"
+  },
   "cmp-rds-aurora-dynamodb": {
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "f3fc48f5af63"
+  },
+  "cmp-route53-global-accelerator": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "fd4f32632e97"
   },
   "cmp-s3-ebs-efs": {
     "status": "verified",
@@ -1233,6 +1288,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "7e6d9ce30b08"
+  },
+  "cmp-waf-network-firewall": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ee7d23704cf9"
   },
   "cognito": {
     "status": "verified",
