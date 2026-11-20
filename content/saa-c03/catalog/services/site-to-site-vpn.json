@@ -1,7 +1,7 @@
 {
   "id": "site-to-site-vpn",
   "tier": 2,
-  "summary": "オンプレミスや拠点のネットワークと AWS を、IPsec の暗号化トンネルで接続するサービスです。VPN 接続には冗長化用のトンネルが含まれ、インターネット経由の接続に加えて Direct Connect 上にも構成できます。",
+  "summary": "オンプレミスや拠点のネットワークと AWS を、IPsec の暗号化トンネルで接続するサービスである。VPN 接続には冗長化用のトンネルが含まれ、インターネット経由の接続に加えて Direct Connect 上にも構成できる。",
   "chooseWhen": [
     {
       "text": "オンプレミスや拠点のネットワークと VPC の間を、IPsec で暗号化して接続したい場合。",
@@ -36,7 +36,7 @@
       "id": "site-to-site-vpn.ipsec-connectivity",
       "title": "IPsec でネットワーク間の通信を暗号化する",
       "kind": "feature",
-      "text": "AWS Site-to-Site VPN は、オンプレミスのネットワークと VPC の間を IPsec VPN で接続します。ネットワーク間のデータは、暗号化された VPN トンネルを通って送受信されます。",
+      "text": "AWS Site-to-Site VPN は、オンプレミスのネットワークと VPC の間を IPsec VPN で接続する。ネットワーク間のデータは、暗号化された VPN トンネルを通って送受信される。",
       "depth": "core",
       "sources": [
         {
@@ -50,7 +50,7 @@
       "id": "site-to-site-vpn.dual-tunnel-redundancy",
       "title": "2 本のトンネルで接続を冗長化する",
       "kind": "feature",
-      "text": "Site-to-Site VPN の各接続には 2 本のトンネルが含まれ、冗長化のため両方を設定します。一方のトンネルがメンテナンスなどで利用できなくなると、その VPN 接続の通信は利用可能なトンネルに自動で切り替わります。",
+      "text": "Site-to-Site VPN の各接続には 2 本のトンネルが含まれ、冗長化のため両方を設定する。一方のトンネルがメンテナンスなどで利用できなくなると、その VPN 接続の通信は利用可能なトンネルに自動で切り替わる。",
       "depth": "core",
       "sources": [
         {
@@ -64,7 +64,7 @@
       "id": "site-to-site-vpn.accelerated-routing",
       "title": "アクセラレーションで AWS のネットワークを活用する",
       "kind": "integration",
-      "text": "Site-to-Site VPN のアクセラレーションは、インターネット上の混雑による影響を抑えたい場合に利用します。AWS Global Accelerator と連携し、カスタマーゲートウェイ装置に最も近い AWS エッジロケーションを経由する経路へ通信を誘導します。",
+      "text": "Site-to-Site VPN のアクセラレーションは、インターネット上の混雑による影響を抑えたい場合に利用する。AWS Global Accelerator と連携し、カスタマーゲートウェイ装置に最も近い AWS エッジロケーションを経由する経路へ通信を誘導する。",
       "depth": "core",
       "sources": [
         {
@@ -82,7 +82,7 @@
       "id": "site-to-site-vpn.acceleration-gateway-support",
       "title": "アクセラレーションの接続先は Transit Gateway に限定",
       "kind": "constraint",
-      "text": "Site-to-Site VPN のアクセラレーションを利用できるのは、AWS 側の接続先がトランジットゲートウェイである VPN 接続だけです。仮想プライベートゲートウェイを接続先にする VPN 接続では利用できません。",
+      "text": "Site-to-Site VPN のアクセラレーションを利用できるのは、AWS 側の接続先がトランジットゲートウェイである VPN 接続だけである。仮想プライベートゲートウェイを接続先にする VPN 接続では利用できない。",
       "depth": "core",
       "sources": [
         {
@@ -96,7 +96,7 @@
       "id": "site-to-site-vpn.acceleration-immutable",
       "title": "既存接続のアクセラレーション設定は変更できない",
       "kind": "constraint",
-      "text": "既存の Site-to-Site VPN 接続では、アクセラレーションの有効・無効を切り替えられません。設定を変える場合は、必要な設定で VPN 接続を新規作成し、カスタマーゲートウェイ装置を新しい接続へ切り替えます。",
+      "text": "既存の Site-to-Site VPN 接続では、アクセラレーションの有効・無効を切り替えられない。設定を変える場合は、必要な設定で VPN 接続を新規作成し、カスタマーゲートウェイ装置を新しい接続へ切り替える。",
       "depth": "detail",
       "sources": [
         {
@@ -110,7 +110,7 @@
       "id": "site-to-site-vpn.private-ip-over-direct-connect",
       "title": "Direct Connect 上にプライベート IP VPN を構成する",
       "kind": "integration",
-      "text": "Direct Connect 上の通信を暗号化したい場合、Site-to-Site VPN のプライベート IP VPN を組み合わせられます。Direct Connect のトランジット仮想インターフェイスを経由し、パブリック IP アドレスを使わずに IPsec VPN を構成します。",
+      "text": "Direct Connect 上の通信を暗号化したい場合、Site-to-Site VPN のプライベート IP VPN を組み合わせられる。Direct Connect のトランジット仮想インターフェイスを経由し、パブリック IP アドレスを使わずに IPsec VPN を構成する。",
       "depth": "core",
       "sources": [
         {
@@ -124,7 +124,7 @@
       "id": "site-to-site-vpn.connection-hour-pricing",
       "title": "利用可能な VPN 接続に時間料金がかかる",
       "kind": "pricing",
-      "text": "Site-to-Site VPN は、VPN 接続が作成されて利用可能な状態にある時間に応じて、接続ごとの時間料金が発生します。通信している時間だけを課金対象とする仕組みではありません。",
+      "text": "Site-to-Site VPN は、VPN 接続が作成されて利用可能な状態にある時間に応じて、接続ごとの時間料金が発生する。通信している時間だけを課金対象とする仕組みではない。",
       "depth": "core",
       "sources": [
         {
@@ -138,7 +138,7 @@
       "id": "site-to-site-vpn.data-transfer-out-pricing",
       "title": "AWS からのデータ送信には転送料金がかかる",
       "kind": "pricing",
-      "text": "Site-to-Site VPN で AWS から外部へデータを送信する場合、送信したデータに対してデータ転送料金が発生します。この料金は、VPN 接続自体にかかる時間料金とは別に計算されます。",
+      "text": "Site-to-Site VPN で AWS から外部へデータを送信する場合、送信したデータに対してデータ転送料金が発生する。この料金は、VPN 接続自体にかかる時間料金とは別に計算される。",
       "depth": "core",
       "sources": [
         {
@@ -152,7 +152,7 @@
       "id": "site-to-site-vpn.acceleration-additional-pricing",
       "title": "アクセラレーションには追加料金がかかる",
       "kind": "pricing",
-      "text": "Site-to-Site VPN のアクセラレーションを有効にすると、VPN 接続の料金に加え、接続用に作成される Global Accelerator の時間料金と、通信量に応じた Data Transfer Premium 料金が発生します。",
+      "text": "Site-to-Site VPN のアクセラレーションを有効にすると、VPN 接続の料金に加え、接続用に作成される Global Accelerator の時間料金と、通信量に応じた Data Transfer Premium 料金が発生する。",
       "depth": "detail",
       "sources": [
         {

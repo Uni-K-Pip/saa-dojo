@@ -1,7 +1,7 @@
 {
   "id": "lake-formation",
   "tier": 2,
-  "summary": "AWS Lake Formation は、Amazon S3 のデータレイクと AWS Glue Data Catalog のメタデータに対するアクセス権限を一元管理するサービスです。列・行・セル単位の制御や、アカウントをまたぐデータ共有に使います。",
+  "summary": "AWS Lake Formation は、Amazon S3 のデータレイクと AWS Glue Data Catalog のメタデータに対するアクセス権限を一元管理するサービスである。列・行・セル単位の制御や、アカウントをまたぐデータ共有に使う。",
   "chooseWhen": [
     {
       "text": "データレイクの読み取り範囲を、利用者ごとに列・行・セルの単位で制御したい場合。",

@@ -7,7 +7,8 @@
   ],
   "decide": [
     "多数の VPC とオンプレミスのネットワークを、中央のハブで相互接続したいなら Transit Gateway",
-    "2 つの VPC だけを、ゲートウェイを置かずに 1 対 1 でつなぎたいなら VPC ピアリング"
+    "2 つの VPC だけを、ゲートウェイを置かずに 1 対 1 でつなぎたいなら VPC ピアリング",
+    "VPC どうしを、接続の作成に料金がかからない方法でつなぎたいなら VPC ピアリング"
   ],
   "docRef": "cheatsheet-hybrid-connectivity",
   "sources": [
@@ -24,6 +25,6 @@
       "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc27"
 }

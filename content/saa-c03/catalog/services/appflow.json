@@ -1,7 +1,7 @@
 {
   "id": "appflow",
   "tier": 3,
-  "summary": "Amazon AppFlow は、Salesforce などの SaaS アプリケーションと Amazon S3 や Amazon Redshift などの AWS サービスの間で、コードを書かずにデータ転送フローを作成できるフルマネージドの統合サービスです。",
+  "summary": "Amazon AppFlow は、Salesforce などの SaaS アプリケーションと Amazon S3 や Amazon Redshift などの AWS サービスの間で、コードを書かずにデータ転送フローを作成できるフルマネージドの統合サービスである。",
   "chooseWhen": [
     {
       "text": "Salesforce などの対応する SaaS と AWS サービスの間で、コードを書かずにデータを転送したい場合。"
@@ -24,7 +24,7 @@
       "id": "appflow.field-masking",
       "title": "転送項目のマスキング",
       "kind": "feature",
-      "text": "Amazon AppFlow は、フローの項目マッピングで選択した項目の値をマスキングできます。機密情報を含む項目をマスキングすると、転送先の項目には元の値の代わりにアスタリスク（*）だけが入ります。",
+      "text": "Amazon AppFlow は、フローの項目マッピングで選択した項目の値をマスキングできる。機密情報を含む項目をマスキングすると、転送先の項目には元の値の代わりにアスタリスク（*）だけが入る。",
       "depth": "core",
       "sources": [
         {
@@ -42,7 +42,7 @@
       "id": "appflow.required-field-validation",
       "title": "値の欠落を検出する検証",
       "kind": "feature",
-      "text": "Amazon AppFlow では、選択した項目の値が欠落または null の場合に、そのレコードを転送から除外する検証ルールをフローに設定できます。これにより、必要な項目に値があるレコードだけを転送できます。",
+      "text": "Amazon AppFlow では、選択した項目の値が欠落または null の場合に、そのレコードを転送から除外する検証ルールをフローに設定できる。これにより、必要な項目に値があるレコードだけを転送できる。",
       "depth": "core",
       "sources": [
         {

@@ -1,7 +1,7 @@
 {
   "id": "sns",
   "tier": 1,
-  "summary": "1 つのメッセージを複数の購読者へ一斉に届けるパブリッシュ／サブスクライブのサービスです。SQS・Lambda・HTTP(S) への配信（ファンアウト）に加え、メール・SMS・モバイルプッシュで人へ通知できます。",
+  "summary": "1 つのメッセージを複数の購読者へ一斉に届けるパブリッシュ／サブスクライブのサービスである。SQS・Lambda・HTTP(S) への配信（ファンアウト）に加え、メール・SMS・モバイルプッシュで人へ通知できる。",
   "chooseWhen": [
     {
       "text": "1 つのイベントを、複数のシステムへ同時に届けたい（ファンアウト）",
@@ -71,22 +71,26 @@
       "id": "sns.pubsub-topic",
       "title": "トピックに発行して購読者へ届ける",
       "kind": "feature",
-      "text": "SNS は、発行者（パブリッシャー）がトピックにメッセージを送り、トピックを購読する複数の購読者へ非同期に届けるフルマネージドのサービスです。トピックは論理的なアクセスポイントで、通信の経路になります。SNS が購読者へメッセージを押し出す（プッシュ）仕組みです。",
+      "text": "SNS は、発行者（パブリッシャー）がトピックにメッセージを送り、トピックを購読する複数の購読者へ非同期に届けるフルマネージドのサービスである。トピックは論理的なアクセスポイントで、通信の経路になる。SNS が購読者へメッセージを押し出す（プッシュ）仕組みである。",
       "examPoint": "1 つのメッセージを多数の受け手へ同時に届けるなら SNS のトピック。",
       "depth": "core",
       "sources": [
         {
           "title": "What is Amazon SNS?",
           "url": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html"
+        },
+        {
+          "title": "Fanout Amazon SNS notifications to Amazon SQS queues for asynchronous processing",
+          "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "sns.subscriber-endpoints",
       "title": "購読者に指定できる宛先",
       "kind": "feature",
-      "text": "トピックの購読者には、Amazon SQS、Lambda、HTTP(S) エンドポイント、メール、モバイルプッシュ通知、SMS、Amazon Data Firehose、Datadog や Splunk などの外部サービスを指定できます。宛先の種類によって、アプリケーション間（A2A）と、人へ送る（A2P）の両方に使えます。",
+      "text": "トピックの購読者には、Amazon SQS、Lambda、HTTP(S) エンドポイント、メール、モバイルプッシュ通知、SMS、Amazon Data Firehose、Datadog や Splunk などの外部サービスを指定できる。宛先の種類によって、アプリケーション間（A2A）と、人へ送る（A2P）の両方に使える。",
       "examPoint": "メールや SMS で人へ通知できるのは SNS（A2P）。",
       "depth": "core",
       "sources": [
@@ -101,7 +105,7 @@
       "id": "sns.fanout",
       "title": "1 つのメッセージを複数の宛先へ複製するファンアウト",
       "kind": "integration",
-      "text": "ファンアウトは、トピックに発行したメッセージを複製して、複数の宛先（Firehose、SQS キュー、HTTP(S)、Lambda）へ同時に届ける形です。各宛先が並行して非同期に処理できます。同じトピックに別の SQS キューを購読させれば、本番のデータをテスト環境へ複製することにも使えます。",
+      "text": "ファンアウトは、トピックに発行したメッセージを複製して、複数の宛先（Firehose、SQS キュー、HTTP(S)、Lambda）へ同時に届ける形である。各宛先が並行して非同期に処理できる。同じトピックに別の SQS キューを購読させれば、本番のデータをテスト環境へ複製することにも使える。",
       "examPoint": "1 つのイベントを複数の系統で処理するなら SNS のファンアウト。",
       "depth": "core",
       "sources": [
@@ -116,7 +120,7 @@
       "id": "sns.sqs-durable-fanout",
       "title": "SQS キューを購読先にして配信を保持する",
       "kind": "integration",
-      "text": "SNS と SQS を併用すると、メッセージは SNS から購読したキューへ届き、キューに残って、他のアプリケーションがあとで処理できます。SNS は購読者へ押し出す仕組みなので、受け手が止まる可能性のある処理系の前には SQS キューを置いて、メッセージを保持させます。",
+      "text": "SNS と SQS を併用すると、メッセージは SNS から購読したキューへ届き、キューに残って、他のアプリケーションがあとで処理できる。SNS は購読者へ押し出す仕組みなので、受け手が止まる可能性のある処理系の前には SQS キューを置いて、メッセージを保持させる。",
       "examPoint": "購読者が止まっていても失いたくないなら、SNS の宛先を SQS キューにする。",
       "trap": "SNS 自体はキューではなく、受け手が自分のペースで取りに行く使い方には向かない。",
       "depth": "core",
@@ -136,7 +140,7 @@
       "id": "sns.sqs-delivery-permission",
       "title": "SQS への配信はキュー側のポリシーで許可する",
       "kind": "integration",
-      "text": "SNS トピックから SQS キューへ送るには、キューに付けるポリシーで、SNS（sns.amazonaws.com）に sqs:SendMessage を許可します。aws:SourceArn にトピックの ARN を入れると、送信元のトピックを限定できます。複数のトピックを購読させるなら、ステートメントをトピックごとに書きます。",
+      "text": "SNS トピックから SQS キューへ送るには、キューに付けるポリシーで、SNS（sns.amazonaws.com）に sqs:SendMessage を許可する。aws:SourceArn にトピックの ARN を入れると、送信元のトピックを限定できる。複数のトピックを購読させるなら、ステートメントをトピックごとに書く。",
       "examPoint": "SNS から SQS への配信は、SQS のキューポリシーで許可する。",
       "trap": "許可はキュー側のポリシーで行う。SNS 側のトピックのポリシーではない。",
       "depth": "core",
@@ -156,7 +160,7 @@
       "id": "sns.filter-policy",
       "title": "購読ごとのフィルターポリシー",
       "kind": "feature",
-      "text": "既定では、トピックの購読者はトピックに発行されたすべてのメッセージを受け取ります。購読にフィルターポリシー（JSON）を付けると、条件に合うメッセージだけを受け取らせることができます。フィルターポリシーがない購読には、全メッセージが届きます。",
+      "text": "既定では、トピックの購読者はトピックに発行されたすべてのメッセージを受け取る。購読にフィルターポリシー（JSON）を付けると、条件に合うメッセージだけを受け取らせることができる。フィルターポリシーがない購読には、全メッセージが届く。",
       "examPoint": "購読者ごとに受け取るメッセージを絞るなら、購読のフィルターポリシー。",
       "depth": "core",
       "sources": [
@@ -172,7 +176,7 @@
       "id": "sns.filter-scope",
       "title": "フィルターポリシーの対象は属性か本文",
       "kind": "feature",
-      "text": "フィルターポリシーは、購読ごとに決めるスコープに応じて、メッセージ属性か、メッセージ本文のどちらかに対して条件を評価します。本文に対するフィルターは、ペイロードが正しい形式の JSON であることが前提です。すべての条件を満たしたときだけ、その購読者へ配信されます。",
+      "text": "フィルターポリシーは、購読ごとに決めるスコープに応じて、メッセージ属性か、メッセージ本文のどちらかに対して条件を評価する。本文に対するフィルターは、ペイロードが正しい形式の JSON であることが前提である。すべての条件を満たしたときだけ、その購読者へ配信される。",
       "depth": "detail",
       "sources": [
         {
@@ -186,8 +190,8 @@
       "id": "sns.fifo-topic",
       "title": "FIFO トピックは順序と重複排除を扱う",
       "kind": "feature",
-      "text": "FIFO トピックは、メッセージの順序と重複排除が必要なときのトピックです。名前の末尾は .fifo にし、SQS FIFO キューと組み合わせて、順序と重複排除を保ったままファンアウトできます。メッセージグループ ID は発行時に必須で、同じグループの中でだけ順序が保たれます。",
-      "examPoint": "順序と重複排除を保ったファンアウトは、FIFO トピック＋SQS FIFO キュー。",
+      "text": "FIFO トピックは、メッセージの順序と重複排除が必要なときのトピックである。名前の末尾は .fifo にし、SQS FIFO キューと組み合わせて、順序と重複排除を保てる。メッセージグループ ID は発行時に必須で、同じグループの中でだけ順序が保たれる。",
+      "examPoint": "順序と重複排除が要る配信は、FIFO トピック＋SQS FIFO キュー。",
       "depth": "core",
       "sources": [
         {
@@ -197,15 +201,19 @@
         {
           "title": "Amazon SNS message grouping for FIFO topics",
           "url": "https://docs.aws.amazon.com/sns/latest/dg/fifo-message-grouping.html"
+        },
+        {
+          "title": "Message ordering and deduplication strategies using Amazon SNS FIFO topics",
+          "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-fifo-topics.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "sns.fifo-sqs-standard",
       "title": "FIFO トピックから標準キューへは順序が保証されない",
       "kind": "constraint",
-      "text": "FIFO トピックのメッセージグループ ID は、購読した SQS FIFO キューへ渡されますが、SQS 標準キューには渡されません。標準キューではメッセージグループが存在せず、順序も保証されません。",
+      "text": "FIFO トピックのメッセージグループ ID は、購読した SQS FIFO キューへ渡されるが、SQS 標準キューには渡されない。標準キューではメッセージグループが存在せず、順序も保証されない。",
       "trap": "FIFO トピックでも、購読先が標準キューなら順序は保証されない。",
       "depth": "detail",
       "sources": [
@@ -220,7 +228,7 @@
       "id": "sns.fifo-group-throughput",
       "title": "FIFO トピックはグループごとに毎秒 300 メッセージ",
       "kind": "quota",
-      "text": "FIFO トピックは、異なるメッセージグループのメッセージを並列に配信し、各グループの中では順序を厳密に保ちます。1 つのメッセージグループが配信できるのは毎秒最大 300 メッセージなので、トピックの処理量を上げるには、多くの異なるグループ ID を使います。",
+      "text": "FIFO トピックは、異なるメッセージグループのメッセージを並列に配信し、各グループの中では順序を厳密に保つ。1 つのメッセージグループが配信できるのは毎秒最大 300 メッセージなので、トピックの処理量を上げるには、多くの異なるグループ ID を使う。",
       "depth": "detail",
       "sources": [
         {
@@ -234,7 +242,7 @@
       "id": "sns.topic-type-fixed",
       "title": "トピックの種類と名前は作成後に変えられない",
       "kind": "constraint",
-      "text": "トピックを作るときに種類（標準か FIFO）と名前を決めます。作成後に、トピックの種類や名前は変更できません。そのほかの設定は、作成時には任意で、あとから編集できます。",
+      "text": "トピックを作るときに種類（標準か FIFO）と名前を決める。作成後に、トピックの種類や名前は変更できない。そのほかの設定は、作成時には任意で、あとから編集できる。",
       "trap": "標準トピックを FIFO トピックに変えることはできない。",
       "depth": "detail",
       "sources": [
@@ -249,7 +257,7 @@
       "id": "sns.message-size",
       "title": "メッセージの大きさは既定 256 KiB、最大 1,024 KiB",
       "kind": "quota",
-      "text": "トピックが受け付けるメッセージは、既定では 256 KiB までです。トピックの最大メッセージサイズを設定すると、最大 1,024 KiB まで受け付けられます。",
+      "text": "トピックが受け付けるメッセージは、既定では 256 KiB までである。トピックの最大メッセージサイズを設定すると、最大 1,024 KiB まで受け付けられる。",
       "depth": "detail",
       "sources": [
         {
@@ -264,7 +272,7 @@
       "id": "sns.retries-aws-endpoints",
       "title": "SQS と Lambda への配信は長い期間再試行される",
       "kind": "quota",
-      "text": "SQS や Lambda といった AWS が管理する宛先でサーバー側のエラーがあると、SNS は合計 100,015 回、約 23 日にわたって配信を再試行します。この配信ポリシーは SNS が定義していて、HTTP/S を除いて変えられません。ポリシーを使い切ると、SNS は再試行をやめ、メッセージを破棄します。",
+      "text": "SQS や Lambda といった AWS が管理する宛先でサーバー側のエラーがあると、SNS は合計 100,015 回、約 23 日にわたって配信を再試行する。この配信ポリシーは SNS が定義していて、HTTP/S を除いて変えられない。ポリシーを使い切ると、SNS は再試行をやめる。購読に DLQ を付けていなければ、メッセージは破棄される。",
       "examPoint": "SQS・Lambda への配信は、サーバー側のエラーなら約 23 日再試行される。",
       "depth": "core",
       "sources": [
@@ -277,13 +285,14 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
     },
     {
       "id": "sns.retries-customer-endpoints",
       "title": "メール・SMS・モバイルプッシュ・HTTP/S の再試行",
       "kind": "quota",
-      "text": "SMTP、SMS、モバイルプッシュのような利用者管理の宛先では、SNS の既定の配信ポリシーは 50 回、約 6 時間の再試行です。HTTP/S だけは、トピックか購読の単位でカスタムの配信ポリシーを設定でき、合計の再試行時間は 3,600 秒を超えられません。",
+      "text": "SMTP、SMS、モバイルプッシュのような利用者管理の宛先では、SNS の既定の配信ポリシーは 50 回、約 6 時間の再試行である。HTTP/S だけは、トピックか購読の単位でカスタムの配信ポリシーを設定でき、合計の再試行時間は 3,600 秒を超えられない。",
       "depth": "detail",
       "sources": [
         {
@@ -302,7 +311,7 @@
       "id": "sns.retry-error-types",
       "title": "再試行されるエラーとされないエラー",
       "kind": "constraint",
-      "text": "配信ポリシーに従って再試行されるのは、5XX と 429（リクエストが多すぎる）のエラーです。宛先の削除や、宛先のポリシーの変更による配信不能などのクライアント側のエラーは、再試行されません。",
+      "text": "配信ポリシーに従って再試行されるのは、5XX と 429（リクエストが多すぎる）のエラーである。宛先の削除や、宛先のポリシーの変更による配信不能などのクライアント側のエラーは、再試行されない。",
       "trap": "購読先の Lambda 関数を削除するなどして起きた配信の失敗は、再試行されない。",
       "depth": "detail",
       "sources": [
@@ -321,7 +330,7 @@
       "id": "sns.subscription-dlq",
       "title": "配信できないメッセージは購読の DLQ に残す",
       "kind": "feature",
-      "text": "配信できなかったメッセージは、既定では破棄されますが、購読にデッドレターキュー（DLQ）を付けると、SQS キューに保持して分析や再処理に使えます。DLQ はトピックではなく購読に付け、購読と同じアカウント・リージョンの SQS キューにします。リドライブポリシーの deadLetterTargetArn で指定し、DLQ の保持期間は最大の 14 日を推奨しています。",
+      "text": "配信できなかったメッセージは、既定では破棄されるが、購読にデッドレターキュー（DLQ）を付けると、SQS キューに保持して分析や再処理に使える。DLQ はトピックではなく購読に付け、購読と同じアカウント・リージョンの SQS キューにする。リドライブポリシーの deadLetterTargetArn で指定し、DLQ の保持期間は最大の 14 日を推奨している。",
       "examPoint": "SNS で配信に失敗したメッセージを残すには、購読にデッドレターキューを付ける。",
       "depth": "core",
       "sources": [
@@ -337,7 +346,7 @@
       "id": "sns.dlq-queue-type",
       "title": "DLQ の SQS キューの種類は購読のトピックにそろえる",
       "kind": "constraint",
-      "text": "FIFO トピックの購読には FIFO キューを、標準トピックの購読には標準キューを DLQ にします。",
+      "text": "FIFO トピックの購読には FIFO キューを、標準トピックの購読には標準キューを DLQ にする。",
       "depth": "detail",
       "sources": [
         {
@@ -351,7 +360,7 @@
       "id": "sns.dlq-encrypted",
       "title": "暗号化した DLQ にはカスタムの KMS キーが要る",
       "kind": "constraint",
-      "text": "暗号化した SQS キューを SNS の DLQ にするには、SNS のサービスプリンシパルに AWS KMS の操作を許可するキーポリシーを持つカスタムの KMS キーが必要です。",
+      "text": "暗号化した SQS キューを SNS の DLQ にするには、SNS のサービスプリンシパルに AWS KMS の操作を許可するキーポリシーを持つカスタムの KMS キーが必要である。",
       "depth": "detail",
       "sources": [
         {
@@ -365,7 +374,7 @@
       "id": "sns.raw-message-delivery",
       "title": "ローメッセージ配信（Raw Message Delivery）",
       "kind": "feature",
-      "text": "SQS、HTTP/S、Firehose の購読では、既定で SNS の JSON の形式で包んだメッセージが届きます。Raw Message Delivery を有効にすると、SNS のメタデータを除いて、発行したメッセージがそのまま届きます。SQS の購読で有効にすると、送れるメッセージ属性は 10 個までです。",
+      "text": "SQS、HTTP/S、Firehose の購読では、既定で SNS の JSON の形式で包んだメッセージが届く。Raw Message Delivery を有効にすると、SNS のメタデータを除いて、発行したメッセージがそのまま届く。SQS の購読で有効にすると、送れるメッセージ属性は 10 個までである。",
       "depth": "detail",
       "sources": [
         {
@@ -380,7 +389,7 @@
       "id": "sns.topic-access-policy",
       "title": "トピックは既定では所有者だけが使える",
       "kind": "feature",
-      "text": "SNS のトピックは、作成時の既定では、トピックの所有者だけが発行・購読できます。他のアカウントや AWS サービスに使わせるには、トピックのアクセスポリシーで許可します。AddPermission でアカウントを許可でき、条件を付けるときは SetTopicAttributes でポリシーを直接書きます。",
+      "text": "SNS のトピックは、作成時の既定では、トピックの所有者だけが発行・購読できる。他のアカウントや AWS サービスに使わせるには、トピックのアクセスポリシーで許可する。AddPermission でアカウントを許可でき、条件を付けるときは SetTopicAttributes でポリシーを直接書く。",
       "examPoint": "別アカウントや AWS サービスが発行するには、トピックのアクセスポリシーで許可する。",
       "depth": "core",
       "sources": [
@@ -400,7 +409,7 @@
       "id": "sns.topic-policy-service-publish",
       "title": "サービスが発行するときの送信元の条件",
       "kind": "integration",
-      "text": "S3 などの AWS サービスにトピックへ発行させるときは、トピックのポリシーで Principal にサービス（例 s3.amazonaws.com）を指定し、aws:SourceAccount などの条件で送信元のアカウントを限定します。aws:SourceOwner は非推奨で、新しいサービスは aws:SourceArn と aws:SourceAccount だけで連携します。",
+      "text": "S3 などの AWS サービスにトピックへ発行させるときは、トピックのポリシーで Principal にサービス（例 s3.amazonaws.com）を指定し、aws:SourceAccount などの条件で送信元のアカウントを限定する。aws:SourceOwner は非推奨で、新しいサービスは aws:SourceArn と aws:SourceAccount だけで連携する。",
       "depth": "detail",
       "sources": [
         {
@@ -415,7 +424,7 @@
       "id": "sns.sse",
       "title": "トピックのサーバー側暗号化",
       "kind": "feature",
-      "text": "SNS のサーバー側暗号化（SSE）は、AWS KMS のキーでトピックのメッセージ本文を暗号化します。トピック名や属性、メッセージの件名・ID・時刻・属性は暗号化されません。暗号化を有効にする前に送ったメッセージは暗号化されません。対称暗号化の KMS キーだけが使え、リクエストは HTTPS が必須です。",
+      "text": "SNS のサーバー側暗号化（SSE）は、AWS KMS のキーでトピックのメッセージ本文を暗号化する。トピック名や属性、メッセージの件名・ID・時刻・属性は暗号化されない。暗号化を有効にする前に送ったメッセージは暗号化されない。対称暗号化の KMS キーだけが使え、リクエストは HTTPS が必須である。",
       "depth": "detail",
       "sources": [
         {
@@ -429,7 +438,7 @@
       "id": "sns.alerts-and-notifications",
       "title": "アラームや人への通知に使う",
       "kind": "integration",
-      "text": "SNS は、CloudWatch のメトリクスのしきい値超過や、EC2 Auto Scaling グループの変化、S3 へのファイルのアップロードなどのイベントを、メールや SMS で通知できます。アプリケーションのアラートと、利用者への通知（注文確認など）が代表的な使い方です。",
+      "text": "SNS は、CloudWatch のメトリクスのしきい値超過や、EC2 Auto Scaling グループの変化、S3 へのファイルのアップロードなどのイベントを、メールや SMS で通知できる。アプリケーションのアラートと、利用者への通知（注文確認など）が代表的な使い方である。",
       "examPoint": "CloudWatch アラームからメールや SMS で知らせるなら SNS。",
       "depth": "core",
       "sources": [
@@ -444,7 +453,7 @@
       "id": "sns.pricing-model",
       "title": "料金は発行数と配信数などに応じる",
       "kind": "pricing",
-      "text": "SNS に初期費用はなく、発行したメッセージの数、配信した通知の数、トピックや購読を管理する追加の API 呼び出しに応じて支払います。配信の料金は宛先の種類によって異なり、無料利用枠があります。",
+      "text": "SNS に初期費用はなく、発行したメッセージの数、配信した通知の数、トピックや購読を管理する追加の API 呼び出しに応じて支払う。配信の料金は宛先の種類によって異なり、無料利用枠がある。",
       "depth": "detail",
       "sources": [
         {

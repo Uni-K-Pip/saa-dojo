@@ -1,7 +1,7 @@
 {
   "id": "trusted-advisor",
   "tier": 2,
-  "summary": "AWS Trusted Advisor は、AWS 環境をベストプラクティスに照らして評価し、改善のための推奨事項を示すサービスです。コスト最適化、パフォーマンス、セキュリティ、耐障害性、運用上の優秀性、サービス制限の観点で確認できます。",
+  "summary": "AWS Trusted Advisor は、AWS 環境をベストプラクティスに照らして評価し、改善のための推奨事項を示すサービスである。コスト最適化、パフォーマンス、セキュリティ、耐障害性、運用上の優秀性、サービス制限の観点で確認できる。",
   "chooseWhen": [
     {
       "text": "AWS 環境をベストプラクティスと照合し、改善が必要な箇所と推奨アクションを確認したいとき。",
@@ -29,7 +29,7 @@
       "id": "trusted-advisor.best-practice-checks",
       "title": "AWS 環境のベストプラクティスチェック",
       "kind": "feature",
-      "text": "AWS Trusted Advisor は AWS 環境をベストプラクティスに照らして評価し、逸脱を改善するためのアクションを推奨します。チェックの観点はコスト最適化、パフォーマンス、セキュリティ、耐障害性、運用上の優秀性、サービス制限です。",
+      "text": "AWS Trusted Advisor は AWS 環境をベストプラクティスに照らして評価し、逸脱を改善するためのアクションを推奨する。チェックの観点はコスト最適化、パフォーマンス、セキュリティ、耐障害性、運用上の優秀性、サービス制限である。",
       "depth": "core",
       "sources": [
         {
@@ -43,7 +43,7 @@
       "id": "trusted-advisor.read-only-inspection",
       "title": "環境チェックに使う権限は読み取り専用",
       "kind": "constraint",
-      "text": "AWS Trusted Advisor が AWS リソースを調査するために使う AWSServiceRoleForTrustedAdvisor の権限は、読み取り専用です。このサービスにリンクされたロールを使って、環境のチェックと改善の推奨事項の作成を行います。",
+      "text": "AWS Trusted Advisor が AWS リソースを調査するために使う AWSServiceRoleForTrustedAdvisor の権限は、読み取り専用である。このサービスにリンクされたロールを使って、環境のチェックと改善の推奨事項の作成を行う。",
       "depth": "core",
       "sources": [
         {
@@ -57,7 +57,7 @@
       "id": "trusted-advisor.service-limit-monitoring",
       "title": "サービス制限に対する使用量の確認",
       "kind": "feature",
-      "text": "AWS Trusted Advisor では、アカウントの使用量を確認し、アカウントがサービス制限に近づいたときや、サービス制限を超えたときに通知を受け取ることができます。",
+      "text": "AWS Trusted Advisor では、アカウントの使用量を確認し、アカウントがサービス制限に近づいたときや、サービス制限を超えたときに通知を受け取ることができる。",
       "depth": "core",
       "sources": [
         {
@@ -71,7 +71,7 @@
       "id": "trusted-advisor.support-plan-access",
       "title": "チェックへのアクセス範囲はサポートプランで異なる",
       "kind": "constraint",
-      "text": "Basic Support では、サービス制限カテゴリの全チェックと、セキュリティおよび耐障害性カテゴリの一部のチェックを利用できます。すべてのチェックを利用するには、AWS Business Support+、AWS Enterprise Support、AWS Unified Operations のいずれかのプランが必要です。",
+      "text": "Basic Support では、サービス制限カテゴリの全チェックと、セキュリティおよび耐障害性カテゴリの一部のチェックを利用できる。すべてのチェックを利用するには、AWS Business Support+、AWS Enterprise Support、AWS Unified Operations のいずれかのプランが必要である。",
       "depth": "core",
       "sources": [
         {
@@ -79,13 +79,14 @@
           "url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     },
     {
       "id": "trusted-advisor.s3-version-lifecycle-check",
       "title": "バージョニング有効バケットのライフサイクル設定",
       "kind": "feature",
-      "text": "AWS Trusted Advisor の「Amazon S3 version-enabled buckets without lifecycle policies configured」は、バージョニングが有効な S3 バケットにライフサイクルポリシーが設定されているかを調べ、設定されていないバケットを警告します。",
+      "text": "AWS Trusted Advisor の「Amazon S3 version-enabled buckets without lifecycle policies configured」は、バージョニングが有効な S3 バケットにライフサイクルポリシーが設定されているかを調べ、設定されていないバケットを警告する。",
       "depth": "detail",
       "sources": [
         {
@@ -99,7 +100,7 @@
       "id": "trusted-advisor.s3-incomplete-upload-rule-check",
       "title": "不完全なマルチパートアップロードの中止ルール",
       "kind": "feature",
-      "text": "AWS Trusted Advisor の「Amazon S3 Incomplete Multipart Upload Abort Configuration」は、未完了のマルチパートアップロードを中止するライフサイクルルールが S3 バケットに設定されているかをチェックします。レポートには該当ルールと開始後の日数が含まれます。",
+      "text": "AWS Trusted Advisor の「Amazon S3 Incomplete Multipart Upload Abort Configuration」は、未完了のマルチパートアップロードを中止するライフサイクルルールが S3 バケットに設定されているかをチェックする。レポートには該当ルールと開始後の日数が含まれる。",
       "depth": "detail",
       "sources": [
         {
@@ -113,7 +114,7 @@
       "id": "trusted-advisor.ec2-low-utilization-check",
       "title": "従来の EC2 低使用率チェックの判定指標",
       "kind": "feature",
-      "text": "AWS Trusted Advisor の従来の「Low utilization Amazon EC2 instances」は、日次の CPU 使用率とネットワーク I/O を組み合わせた条件で、使用率の低いインスタンスを抽出します。レポートには CPU 使用率とネットワーク I/O の平均値が含まれます。",
+      "text": "AWS Trusted Advisor の従来の「Low utilization Amazon EC2 instances」は、日次の CPU 使用率とネットワーク I/O を組み合わせた条件で、使用率の低いインスタンスを抽出する。レポートには CPU 使用率とネットワーク I/O の平均値が含まれる。",
       "depth": "detail",
       "sources": [
         {
@@ -128,7 +129,7 @@
       "id": "trusted-advisor.ec2-cost-optimization-hub",
       "title": "EC2 のコスト最適化推奨事項の取り込み",
       "kind": "integration",
-      "text": "AWS Trusted Advisor の「Amazon EC2 cost optimization recommendations for instances」では、AWS Cost Optimization Hub の最上位の推奨アクションをリソースごとに表示できます。利用には Cost Optimization Hub と AWS Compute Optimizer へのオプトインが必要です。",
+      "text": "AWS Trusted Advisor の「Amazon EC2 cost optimization recommendations for instances」では、AWS Cost Optimization Hub の最上位の推奨アクションをリソースごとに表示できる。利用には Cost Optimization Hub と AWS Compute Optimizer へのオプトインが必要である。",
       "depth": "detail",
       "sources": [
         {
@@ -142,7 +143,7 @@
       "id": "trusted-advisor.review-and-follow-recommendations",
       "title": "チェック結果を確認して推奨手順に従う",
       "kind": "feature",
-      "text": "Trusted Advisor Recommendations ページでアカウントのチェック結果を確認し、推奨される手順に従って問題を修正します。例えば、不要な EC2 インスタンスの削除を推奨されることがあります。",
+      "text": "Trusted Advisor Recommendations ページでアカウントのチェック結果を確認し、推奨される手順に従って問題を修正する。例えば、不要な EC2 インスタンスの削除を推奨されることがある。",
       "depth": "core",
       "sources": [
         {

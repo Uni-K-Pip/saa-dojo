@@ -1,7 +1,7 @@
 {
   "id": "client-vpn",
   "tier": 2,
-  "summary": "利用者の端末から AWS やオンプレミスのリソースへ安全に接続する、マネージドなリモートアクセス VPN です。OpenVPN ベースのクライアントを使い、TLS で暗号化した接続を確立します。",
+  "summary": "利用者の端末から AWS やオンプレミスのリソースへ安全に接続する、マネージドなリモートアクセス VPN である。OpenVPN ベースのクライアントを使い、TLS で暗号化した接続を確立する。",
   "chooseWhen": [
     {
       "text": "利用者の端末から AWS やオンプレミスのリソースへ、安全にリモートアクセスしたい場合。",
@@ -39,7 +39,7 @@
       "id": "client-vpn.remote-access-tls",
       "title": "端末から TLS で暗号化してリモートアクセスする",
       "kind": "feature",
-      "text": "AWS Client VPN は、利用者の端末から AWS やオンプレミスのリソースへアクセスするための VPN です。OpenVPN ベースのクライアントを使い、TLS で暗号化した接続を確立します。",
+      "text": "AWS Client VPN は、利用者の端末から AWS やオンプレミスのリソースへアクセスするための VPN である。OpenVPN ベースのクライアントを使い、TLS で暗号化した接続を確立する。",
       "depth": "core",
       "sources": [
         {
@@ -53,7 +53,7 @@
       "id": "client-vpn.managed-elasticity",
       "title": "接続する利用者数の変化に合わせて自動で拡張する",
       "kind": "feature",
-      "text": "AWS Client VPN はマネージドサービスであり、AWS やオンプレミスのリソースに接続する利用者数の変化に合わせて、手動操作なしで動的にスケールします。",
+      "text": "AWS Client VPN はマネージドサービスであり、AWS やオンプレミスのリソースに接続する利用者数の変化に合わせて、手動操作なしで動的にスケールする。",
       "depth": "core",
       "sources": [
         {
@@ -67,7 +67,7 @@
       "id": "client-vpn.active-directory-authentication",
       "title": "Directory Service と連携して AD 認証を使う",
       "kind": "integration",
-      "text": "Client VPN は AWS Directory Service と連携し、AWS Managed Microsoft AD を使って VPN 利用者を認証できます。既存の Active Directory 認証基盤をリモートアクセスにも利用するときに組み合わせます。",
+      "text": "Client VPN は AWS Directory Service と連携し、AWS Managed Microsoft AD を使って VPN 利用者を認証できる。既存の Active Directory 認証基盤をリモートアクセスにも利用するときに組み合わせる。",
       "depth": "core",
       "sources": [
         {
@@ -81,7 +81,7 @@
       "id": "client-vpn.group-network-authorization",
       "title": "承認ルールでグループごとの接続先を制御する",
       "kind": "feature",
-      "text": "Client VPN の承認ルールでは、アクセスを許可する宛先ネットワークごとに Active Directory または SAML ベースの IdP のグループを指定できます。そのグループに所属する利用者に、対象ネットワークへのアクセスを許可します。",
+      "text": "Client VPN の承認ルールでは、アクセスを許可する宛先ネットワークごとに Active Directory または SAML ベースの IdP のグループを指定できる。そのグループに所属する利用者に、対象ネットワークへのアクセスを許可する。",
       "depth": "core",
       "sources": [
         {
@@ -90,13 +90,13 @@
         }
       ],
       "checkedAt": "2026-11-16",
-      "trap": "VPN 接続時の認証に成功しただけでは、ネットワークやリソースへのアクセスは許可されません。"
+      "trap": "VPN 接続時の認証に成功しただけでは、ネットワークやリソースへのアクセスは許可されない。"
     },
     {
       "id": "client-vpn.certificate-mutual-authentication",
       "title": "クライアント証明書を使って相互認証する",
       "kind": "feature",
-      "text": "Client VPN の相互認証では、クライアントとサーバーの間の認証に証明書を使用します。サーバーは、VPN エンドポイントへ接続しようとするクライアントを、クライアント証明書によって認証します。",
+      "text": "Client VPN の相互認証では、クライアントとサーバーの間の認証に証明書を使用する。サーバーは、VPN エンドポイントへ接続しようとするクライアントを、クライアント証明書によって認証する。",
       "depth": "core",
       "sources": [
         {
@@ -110,7 +110,7 @@
       "id": "client-vpn.saml-federation",
       "title": "SAML 2.0 の IdP と連携して認証する",
       "kind": "integration",
-      "text": "Client VPN のエンドポイントは、SAML 2.0 に対応する IdP と連携したフェデレーション認証を利用できます。利用者は、IdP で一元管理されている認証情報を使って VPN 接続します。",
+      "text": "Client VPN のエンドポイントは、SAML 2.0 に対応する IdP と連携したフェデレーション認証を利用できる。利用者は、IdP で一元管理されている認証情報を使って VPN 接続する。",
       "depth": "core",
       "sources": [
         {
@@ -124,7 +124,7 @@
       "id": "client-vpn.split-tunnel-routing",
       "title": "必要な宛先の通信だけを VPN トンネルへ送る",
       "kind": "feature",
-      "text": "Client VPN でスプリットトンネルを有効にすると、エンドポイントのルートテーブルにある経路がクライアント端末へ配布されます。その経路に一致する宛先への通信だけが、Client VPN のトンネルを通ります。",
+      "text": "Client VPN でスプリットトンネルを有効にすると、エンドポイントのルートテーブルにある経路がクライアント端末へ配布される。その経路に一致する宛先への通信だけが、Client VPN のトンネルを通る。",
       "depth": "detail",
       "sources": [
         {
@@ -138,7 +138,7 @@
       "id": "client-vpn.endpoint-association-pricing",
       "title": "エンドポイントの関連付けごとに時間料金がかかる",
       "kind": "pricing",
-      "text": "Client VPN では、VPN エンドポイントの関連付けを課金単位として、関連付けごとに時間料金が発生します。利用者による VPN 接続の時間料金とは別に計算されます。",
+      "text": "Client VPN では、VPN エンドポイントの関連付けを課金単位として、関連付けごとに時間料金が発生する。利用者による VPN 接続の時間料金とは別に計算される。",
       "depth": "detail",
       "sources": [
         {
@@ -152,7 +152,7 @@
       "id": "client-vpn.client-connection-pricing",
       "title": "VPN 接続ごとに時間料金がかかる",
       "kind": "pricing",
-      "text": "Client VPN では、利用者による VPN 接続ごとに時間単位で料金が発生します。エンドポイントの関連付けに対する料金とは別に、各 VPN 接続が課金対象になります。",
+      "text": "Client VPN では、利用者による VPN 接続ごとに時間単位で料金が発生する。エンドポイントの関連付けに対する料金とは別に、各 VPN 接続が課金対象になる。",
       "depth": "detail",
       "sources": [
         {

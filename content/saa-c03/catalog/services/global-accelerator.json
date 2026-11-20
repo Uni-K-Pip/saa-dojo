@@ -1,7 +1,7 @@
 {
   "id": "global-accelerator",
   "tier": 1,
-  "summary": "利用者の近くの AWS エッジロケーションで通信を受け付け、AWS のグローバルネットワーク経由でアプリケーションへ転送するサービスです。静的なエニーキャスト IP を入り口とし、標準アクセラレーターでは正常性や利用者の位置に応じて転送先を選びます。",
+  "summary": "利用者の近くの AWS エッジロケーションで通信を受け付け、AWS のグローバルネットワーク経由でアプリケーションへ転送するサービスである。静的なエニーキャスト IP を入り口とし、標準アクセラレーターでは正常性や利用者の位置に応じて転送先を選ぶ。",
   "chooseWhen": [
     {
       "text": "世界中の利用者から TCP・UDP を使うアプリケーションへの接続を高速化したい場合。",
@@ -64,7 +64,7 @@
       "id": "global-accelerator.global-network",
       "title": "最寄りのエッジから AWS のネットワークへ入る",
       "kind": "feature",
-      "text": "Global Accelerator は、利用者に最も近い AWS エッジロケーションで通信を受け付け、AWS のグローバルネットワーク経由でアプリケーションのエンドポイントへ転送します。",
+      "text": "Global Accelerator は、利用者に最も近い AWS エッジロケーションで通信を受け付け、AWS のグローバルネットワーク経由でアプリケーションのエンドポイントへ転送する。",
       "depth": "core",
       "sources": [
         {
@@ -78,7 +78,7 @@
       "id": "global-accelerator.tcp-udp-listeners",
       "title": "TCP・UDP の接続をリスナーで受け付ける",
       "kind": "feature",
-      "text": "Global Accelerator のリスナーは、設定したプロトコルとポートまたはポート範囲に基づいて接続を処理します。利用できるプロトコルは TCP と UDP です。",
+      "text": "Global Accelerator のリスナーは、設定したプロトコルとポートまたはポート範囲に基づいて接続を処理する。利用できるプロトコルは TCP と UDP である。",
       "depth": "core",
       "sources": [
         {
@@ -92,7 +92,7 @@
       "id": "global-accelerator.fixed-anycast-entry",
       "title": "静的なエニーキャスト IP を入り口にする",
       "kind": "feature",
-      "text": "Global Accelerator は、AWS エッジネットワークから広告する静的なエニーキャスト IP アドレスをアプリケーションの固定の入り口にします。背後のエンドポイントを別のリージョンへ移しても、クライアント側の接続先を変えずに利用できます。",
+      "text": "Global Accelerator は、AWS エッジネットワークから広告する静的なエニーキャスト IP アドレスをアプリケーションの固定の入り口にする。背後のエンドポイントを別のリージョンへ移しても、クライアント側の接続先を変えずに利用できる。",
       "depth": "core",
       "sources": [
         {
@@ -106,7 +106,7 @@
       "id": "global-accelerator.standard-endpoints",
       "title": "標準アクセラレーターに登録できるリソース",
       "kind": "integration",
-      "text": "Global Accelerator の標準アクセラレーターの転送先には、Network Load Balancer、Application Load Balancer、EC2 インスタンス、Elastic IP アドレスを登録できます。",
+      "text": "Global Accelerator の標準アクセラレーターの転送先には、Network Load Balancer、Application Load Balancer、EC2 インスタンス、Elastic IP アドレスを登録できる。",
       "depth": "core",
       "sources": [
         {
@@ -120,7 +120,7 @@
       "id": "global-accelerator.regional-endpoint-groups",
       "title": "エンドポイントをリージョン単位でまとめる",
       "kind": "feature",
-      "text": "Global Accelerator のエンドポイントグループは、特定の AWS リージョンに対応します。そのグループには、対応するリージョン内のエンドポイントを登録します。",
+      "text": "Global Accelerator のエンドポイントグループは、特定の AWS リージョンに対応する。そのグループには、対応するリージョン内のエンドポイントを登録する。",
       "depth": "core",
       "sources": [
         {
@@ -134,7 +134,7 @@
       "id": "global-accelerator.health-based-failover",
       "title": "異常検出後の新しい接続を正常な転送先へ向ける",
       "kind": "feature",
-      "text": "標準アクセラレーターはエンドポイントの正常性を継続的に監視します。稼働中の転送先が異常だと判断すると、利用可能な別のエンドポイントへ新しい接続の通信を振り向けます。",
+      "text": "標準アクセラレーターはエンドポイントの正常性を継続的に監視する。稼働中の転送先が異常だと判断すると、利用可能な別のエンドポイントへ新しい接続の通信を振り向ける。",
       "depth": "core",
       "sources": [
         {
@@ -148,7 +148,7 @@
       "id": "global-accelerator.dns-independent-failover",
       "title": "DNS キャッシュの更新を待たずに切り替える",
       "kind": "feature",
-      "text": "Global Accelerator のルーティング変更では、クライアントや DNS リゾルバーに保存された IP アドレスのキャッシュ更新に依存しません。固定の入り口の背後で、障害や構成変更に応じて転送先を変更できます。",
+      "text": "Global Accelerator のルーティング変更では、クライアントや DNS リゾルバーに保存された IP アドレスのキャッシュ更新に依存しない。固定の入り口の背後で、障害や構成変更に応じて転送先を変更できる。",
       "depth": "core",
       "sources": [
         {
@@ -162,7 +162,7 @@
       "id": "global-accelerator.regional-traffic-dial",
       "title": "トラフィックダイヤルでリージョンへの流量を調整する",
       "kind": "feature",
-      "text": "標準アクセラレーターのトラフィックダイヤルは、エンドポイントグループへ向けられた通信のうち、そのグループが受け入れる割合を調整します。リージョンごとの性能試験やブルー／グリーンデプロイの試験に利用できます。",
+      "text": "標準アクセラレーターのトラフィックダイヤルは、エンドポイントグループへ向けられた通信のうち、そのグループが受け入れる割合を調整する。リージョンごとの性能試験やブルー／グリーンデプロイの試験に利用できる。",
       "depth": "core",
       "sources": [
         {
@@ -176,7 +176,7 @@
       "id": "global-accelerator.endpoint-weights",
       "title": "重みで同じグループ内の配分を調整する",
       "kind": "feature",
-      "text": "標準アクセラレーターでは、同じエンドポイントグループ内の各エンドポイントに重みを設定し、通信の配分を調整できます。配分はグループ内の重みの合計に対する各エンドポイントの相対的な重みに基づきます。",
+      "text": "標準アクセラレーターでは、同じエンドポイントグループ内の各エンドポイントに重みを設定し、通信の配分を調整できる。配分はグループ内の重みの合計に対する各エンドポイントの相対的な重みに基づく。",
       "depth": "core",
       "sources": [
         {
@@ -190,7 +190,7 @@
       "id": "global-accelerator.elb-global-front",
       "title": "リージョンのロードバランサーの前段に置く",
       "kind": "integration",
-      "text": "複数リージョンのロードバランサーに共通の入り口を設けたい場合は、Global Accelerator のエンドポイントとして登録します。リージョンをまたぐ通信の振り分けを Global Accelerator が担当する構成にできます。",
+      "text": "複数リージョンのロードバランサーに共通の入り口を設けたい場合は、Global Accelerator のエンドポイントとして登録する。リージョンをまたぐ通信の振り分けを Global Accelerator が担当する構成にできる。",
       "depth": "core",
       "sources": [
         {
@@ -204,7 +204,7 @@
       "id": "global-accelerator.no-direct-onprem-endpoint",
       "title": "オンプレミスのリソースは直接登録できない",
       "kind": "constraint",
-      "text": "Global Accelerator の静的 IP アドレスに対応するエンドポイントとして、オンプレミスのリソースを直接登録することはできません。",
+      "text": "Global Accelerator の静的 IP アドレスに対応するエンドポイントとして、オンプレミスのリソースを直接登録することはできない。",
       "depth": "core",
       "sources": [
         {
@@ -218,7 +218,7 @@
       "id": "global-accelerator.accelerator-hourly-charge",
       "title": "無効化中もアクセラレーターの時間料金がかかる",
       "kind": "pricing",
-      "text": "Global Accelerator は、アカウントにプロビジョニングしたアクセラレーターごとに固定の時間料金を課金します。アクセラレーターを無効にして通信を受け付けない状態でも、この時間料金の対象です。",
+      "text": "Global Accelerator は、アカウントにプロビジョニングしたアクセラレーターごとに固定の時間料金を課金する。アクセラレーターを無効にして通信を受け付けない状態でも、この時間料金の対象である。",
       "depth": "core",
       "sources": [
         {
@@ -232,7 +232,7 @@
       "id": "global-accelerator.data-transfer-premium",
       "title": "通信量に応じた追加のデータ転送料金がかかる",
       "kind": "pricing",
-      "text": "Global Accelerator では、通常のデータ転送料金に加え、アクセラレーターを通る通信のうちデータ量が多い方向の通信量に対して追加料金がかかります。追加料金の単価は AWS リージョンとエッジロケーションの組み合わせで異なります。",
+      "text": "Global Accelerator では、通常のデータ転送料金に加え、アクセラレーターを通る通信のうちデータ量が多い方向の通信量に対して追加料金がかかる。追加料金の単価は AWS リージョンとエッジロケーションの組み合わせで異なる。",
       "depth": "core",
       "sources": [
         {
@@ -246,7 +246,7 @@
       "id": "global-accelerator.ip-address-families",
       "title": "IP アドレスの構成はアドレスタイプで異なる",
       "kind": "feature",
-      "text": "Global Accelerator が提供する静的 IP アドレスは、IPv4 タイプでは IPv4 が 2 個です。デュアルスタックでは IPv4 が 2 個、IPv6 が 2 個の合計 4 個となり、常に合計 2 個という構成ではありません。",
+      "text": "Global Accelerator が提供する静的 IP アドレスは、IPv4 タイプでは IPv4 が 2 個である。デュアルスタックでは IPv4 が 2 個、IPv6 が 2 個の合計 4 個となり、常に合計 2 個という構成ではない。",
       "depth": "detail",
       "sources": [
         {
@@ -260,7 +260,7 @@
       "id": "global-accelerator.custom-routing-destination",
       "title": "特定の EC2 宛先へ決定的に転送する",
       "kind": "feature",
-      "text": "カスタムルーティングアクセラレーターは、アクセラレーターの IP アドレスとポートを、VPC サブネット内の特定の EC2 インスタンスとポートに対応づけます。アプリケーション側で利用者の転送先を指定したい場合に使います。",
+      "text": "カスタムルーティングアクセラレーターは、アクセラレーターの IP アドレスとポートを、VPC サブネット内の特定の EC2 インスタンスとポートに対応づける。アプリケーション側で利用者の転送先を指定したい場合に使う。",
       "depth": "detail",
       "sources": [
         {
@@ -274,7 +274,7 @@
       "id": "global-accelerator.custom-routing-no-auto-failover",
       "title": "カスタムルーティングでは自動フェイルオーバーしない",
       "kind": "constraint",
-      "text": "カスタムルーティングアクセラレーターは転送先を指定する方式であり、宛先障害時の自動フェイルオーバーは行いません。正常性に応じて自動で転送先を切り替える標準アクセラレーターとは、この点が異なります。",
+      "text": "カスタムルーティングアクセラレーターは転送先を指定する方式であり、宛先障害時の自動フェイルオーバーは行わない。正常性に応じて自動で転送先を切り替える標準アクセラレーターとは、この点が異なる。",
       "depth": "detail",
       "sources": [
         {
@@ -288,7 +288,7 @@
       "id": "global-accelerator.fail-open",
       "title": "正常な転送先を見つけられないとフェイルオープンする",
       "kind": "feature",
-      "text": "標準アクセラレーターは、近いエンドポイントグループを探索しても正の重みを持つ正常な転送先を見つけられない場合、フェイルオープンします。この場合は、クライアントに最も近いグループのランダムなエンドポイントへ通信を送ります。",
+      "text": "標準アクセラレーターは、近いエンドポイントグループを探索しても正の重みを持つ正常な転送先を見つけられない場合、フェイルオープンする。この場合は、クライアントに最も近いグループのランダムなエンドポイントへ通信を送る。",
       "depth": "detail",
       "sources": [
         {
@@ -302,7 +302,7 @@
       "id": "global-accelerator.traffic-dial-new-connections",
       "title": "ダイヤルの変更は新しい接続に適用する",
       "kind": "feature",
-      "text": "標準アクセラレーターでトラフィックダイヤルを変更すると、新しい設定は新規接続に適用されます。現在の通信量を設定に合わせるために、すでに確立している接続を切断する動作は行いません。",
+      "text": "標準アクセラレーターでトラフィックダイヤルを変更すると、新しい設定は新規接続に適用される。現在の通信量を設定に合わせるために、すでに確立している接続を切断する動作は行わない。",
       "depth": "detail",
       "sources": [
         {
@@ -316,7 +316,7 @@
       "id": "global-accelerator.public-ipv4-charge",
       "title": "使用するパブリック IPv4 アドレスにも課金される",
       "kind": "pricing",
-      "text": "Global Accelerator のアクセラレーターで使用する IPv4 アドレスには、標準のパブリック IPv4 アドレス料金が発生します。これはアクセラレーター自体の時間料金とは別に考慮する料金です。",
+      "text": "Global Accelerator のアクセラレーターで使用する IPv4 アドレスには、標準のパブリック IPv4 アドレス料金が発生する。これはアクセラレーター自体の時間料金とは別に考慮する料金である。",
       "depth": "detail",
       "sources": [
         {

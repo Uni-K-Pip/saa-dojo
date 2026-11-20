@@ -1,7 +1,7 @@
 {
   "id": "api-gateway",
   "tier": 1,
-  "summary": "REST・HTTP・WebSocket の API を作成・公開・保護・監視するマネージドサービスです。認証・認可、スロットリング、キャッシュ、カスタムドメインなどを備え、Lambda などのバックエンドの前面の入り口になります。",
+  "summary": "REST・HTTP・WebSocket の API を作成・公開・保護・監視するマネージドサービスである。認証・認可、スロットリング、キャッシュ、カスタムドメインなどを備え、Lambda などのバックエンドの前面の入り口になる。",
   "chooseWhen": [
     {
       "text": "Lambda や HTTP バックエンドを公開するサーバーレスな API の入り口がほしいとき",
@@ -70,7 +70,7 @@
       "id": "api-gateway.edge-optimized-endpoint",
       "title": "エッジ最適化エンドポイントは既定の種類",
       "kind": "feature",
-      "text": "REST API のエンドポイントの種類は、エッジ最適化・リージョン・プライベートの 3 つです。エッジ最適化は REST API の既定の種類で、リクエストを最寄りの CloudFront のエッジロケーション（POP）経由で受けるため、地理的に分散した利用者に向きます。",
+      "text": "REST API のエンドポイントの種類は、エッジ最適化・リージョン・プライベートの 3 つである。エッジ最適化は REST API の既定の種類で、リクエストを最寄りの CloudFront のエッジロケーション（POP）経由で受けるため、地理的に分散した利用者に向く。",
       "examPoint": "世界中に分散した利用者向けの公開 API は、エッジ最適化エンドポイントが既定。",
       "trap": "VPC 内からだけ呼べるのはプライベートエンドポイントで、エッジ最適化ではない。",
       "depth": "core",
@@ -87,7 +87,7 @@
       "id": "api-gateway.regional-endpoint",
       "title": "リージョンエンドポイントは同じリージョンの利用者向け",
       "kind": "feature",
-      "text": "リージョンエンドポイントは、同じリージョンの利用者（同じリージョンの EC2 など）に向く種類で、接続のオーバーヘッドを減らせます。利用者が分散していても、自分の CloudFront ディストリビューションと組み合わせて使うこともできます。",
+      "text": "リージョンエンドポイントは、同じリージョンの利用者（同じリージョンの EC2 など）に向く種類で、接続のオーバーヘッドを減らせる。利用者が分散していても、自分の CloudFront ディストリビューションと組み合わせて使うこともできる。",
       "trap": "VPC 内からだけ呼べるのはプライベートエンドポイントで、リージョンエンドポイントではない。",
       "depth": "core",
       "sources": [
@@ -102,7 +102,7 @@
       "id": "api-gateway.private-endpoint",
       "title": "プライベート API は VPC のインターフェイスエンドポイント経由だけ",
       "kind": "feature",
-      "text": "プライベート API は、VPC 内に作ったインターフェイス VPC エンドポイント経由でのみ呼び出せる REST API です。Direct Connect で接続したオンプレミスからも、その VPC 経由で呼び出せ、通信は公開インターネットを通りません。",
+      "text": "プライベート API は、VPC 内に作ったインターフェイス VPC エンドポイント経由でのみ呼び出せる REST API である。Direct Connect で接続したオンプレミスからも、その VPC 経由で呼び出せ、通信は公開インターネットを通らない。",
       "examPoint": "API を VPC 内（や接続したオンプレミス）からだけ呼べるようにするのはプライベート API。",
       "depth": "core",
       "sources": [
@@ -121,7 +121,7 @@
       "id": "api-gateway.private-rest-only",
       "title": "プライベートエンドポイントは REST API だけ",
       "kind": "constraint",
-      "text": "プライベートエンドポイントを使えるのは REST API だけで、HTTP API では使えません。",
+      "text": "プライベートエンドポイントを使えるのは REST API だけで、HTTP API では使えない。",
       "trap": "HTTP API は低価格だが、プライベートエンドポイントは使えない。",
       "depth": "core",
       "sources": [
@@ -140,7 +140,7 @@
       "id": "api-gateway.private-resource-policy",
       "title": "リソースポリシーで接続元の VPC を限定する",
       "kind": "feature",
-      "text": "プライベート API では、API のリソースポリシーに aws:SourceVpc または aws:SourceVpce の条件を書いて、呼び出せる VPC や VPC エンドポイントを限定できます。VPC エンドポイントポリシーを併用すると、データの境界をさらに厳しくできます。",
+      "text": "プライベート API では、API のリソースポリシーに aws:SourceVpc または aws:SourceVpce の条件を書いて、呼び出せる VPC や VPC エンドポイントを限定できる。VPC エンドポイントポリシーを併用すると、データの境界をさらに厳しくできる。",
       "examPoint": "プライベート API の接続元の限定は、リソースポリシーの aws:SourceVpc / aws:SourceVpce。",
       "depth": "core",
       "sources": [
@@ -155,7 +155,7 @@
       "id": "api-gateway.resource-policy-overview",
       "title": "リソースポリシーで呼び出せる主体と接続元を制御する",
       "kind": "feature",
-      "text": "API Gateway のリソースポリシーは API に付ける JSON ポリシーで、指定したアカウントの利用者、送信元 IP アドレスの範囲（CIDR）、指定した VPC や VPC エンドポイントからの呼び出しだけを許可できます。IAM のアイデンティティベースポリシーとは別で、併用できます。",
+      "text": "API Gateway のリソースポリシーは API に付ける JSON ポリシーで、指定したアカウントの利用者、送信元 IP アドレスの範囲（CIDR）、指定した VPC や VPC エンドポイントからの呼び出しだけを許可できる。IAM のアイデンティティベースポリシーとは別で、併用できる。",
       "depth": "core",
       "sources": [
         {
@@ -169,7 +169,7 @@
       "id": "api-gateway.http-api-no-resource-policy",
       "title": "HTTP API はリソースポリシーを使えない",
       "kind": "constraint",
-      "text": "リソースポリシーを使えるのは REST API で、HTTP API では使えません。HTTP API の認可の手段は、IAM、Lambda オーソライザー、JWT オーソライザー（Amazon Cognito を含む）です。",
+      "text": "リソースポリシーを使えるのは REST API で、HTTP API では使えない。HTTP API の認可の手段は、IAM、Lambda オーソライザー、JWT オーソライザー（Amazon Cognito を含む）である。",
       "depth": "detail",
       "sources": [
         {
@@ -183,7 +183,7 @@
       "id": "api-gateway.cache-stage",
       "title": "ステージのキャッシュで応答を保持する",
       "kind": "feature",
-      "text": "REST API では、ステージごとにキャッシュを有効にして、バックエンドの応答を指定した TTL の間保持できます。キャッシュにあるリクエストはバックエンドを呼び出さずに応答するため、呼び出しの回数と遅延を減らせます。専用のキャッシュインスタンスが作られ、容量を選びます。",
+      "text": "REST API では、ステージごとにキャッシュを有効にして、バックエンドの応答を指定した TTL の間保持できる。キャッシュにあるリクエストはバックエンドを呼び出さずに応答するため、呼び出しの回数と遅延を減らせる。専用のキャッシュインスタンスが作られ、容量を選ぶ。",
       "examPoint": "同じ応答を繰り返し返す API のバックエンド負荷とレイテンシーを下げるのは、API Gateway のステージキャッシュ。",
       "depth": "core",
       "sources": [
@@ -198,7 +198,7 @@
       "id": "api-gateway.cache-ttl",
       "title": "キャッシュの TTL は既定 300 秒・最大 3,600 秒",
       "kind": "quota",
-      "text": "API キャッシュの TTL の既定値は 300 秒で、0〜3,600 秒の範囲で設定できます。TTL を 0 にするとキャッシュは無効です。上限の 3,600 秒は引き上げられません。",
+      "text": "API キャッシュの TTL の既定値は 300 秒で、0〜3,600 秒の範囲で設定できる。TTL を 0 にするとキャッシュは無効である。上限の 3,600 秒は引き上げられない。",
       "depth": "core",
       "sources": [
         {
@@ -217,7 +217,7 @@
       "id": "api-gateway.cache-keys",
       "title": "キャッシュキーにパラメーターを指定する",
       "kind": "feature",
-      "text": "キャッシュキーに、メソッドや統合のパラメーター（カスタムヘッダー、URL パス、クエリ文字列）を指定すると、キーの値ごとに応答が別々に保持されます。キーに含めなかったパラメーターが違うだけのリクエストには、保持済みの同じ応答が返ります。",
+      "text": "キャッシュキーに、メソッドや統合のパラメーター（カスタムヘッダー、URL パス、クエリ文字列）を指定すると、キーの値ごとに応答が別々に保持される。キーに含めなかったパラメーターが違うだけのリクエストには、保持済みの同じ応答が返る。",
       "depth": "core",
       "sources": [
         {
@@ -231,7 +231,7 @@
       "id": "api-gateway.cache-get-only",
       "title": "キャッシュは既定で GET だけが対象",
       "kind": "constraint",
-      "text": "ステージでキャッシュを有効にしても、既定でキャッシュされるのは GET メソッドだけです。ほかのメソッドは、メソッドごとの設定の上書きで有効にできます。キャッシュはベストエフォートで、確実に保持されるとは限りません。",
+      "text": "ステージでキャッシュを有効にしても、既定でキャッシュされるのは GET メソッドだけである。ほかのメソッドは、メソッドごとの設定の上書きで有効にできる。キャッシュはベストエフォートで、確実に保持されるとは限らない。",
       "depth": "detail",
       "sources": [
         {
@@ -246,7 +246,7 @@
       "id": "api-gateway.cache-rest-only-billed",
       "title": "キャッシュは REST API だけで、時間単位で課金される",
       "kind": "pricing",
-      "text": "API のキャッシュは REST API の機能で、HTTP API にはありません。料金は選んだキャッシュ容量に応じて時間単位で課金され、無料利用枠の対象ではありません。キャッシュを使うとバックエンドの呼び出しは減りますが、キャッシュ自体の費用は発生します。",
+      "text": "API のキャッシュは REST API の機能で、HTTP API にはない。料金は選んだキャッシュ容量に応じて時間単位で課金され、無料利用枠の対象ではない。キャッシュを使うとバックエンドの呼び出しは減るが、キャッシュ自体の費用は発生する。",
       "depth": "core",
       "sources": [
         {
@@ -264,7 +264,7 @@
       "id": "api-gateway.rest-vs-http-features",
       "title": "REST API だけにある管理機能",
       "kind": "constraint",
-      "text": "API キー、クライアントごとのレート制限と使用量プラン、リクエストの検証、AWS WAF との連携、プライベートエンドポイント、キャッシュ、カナリアリリースは REST API の機能で、HTTP API にはありません。これらが要らなければ HTTP API で足ります。",
+      "text": "API キー、クライアントごとのレート制限と使用量プラン、リクエストの検証、AWS WAF との連携、プライベートエンドポイント、キャッシュ、カナリアリリースは REST API の機能で、HTTP API にはない。これらが要らなければ HTTP API で足りる。",
       "examPoint": "「使用量プランや WAF などが不要で低価格に」なら HTTP API。必要なら REST API。",
       "depth": "core",
       "sources": [
@@ -279,7 +279,7 @@
       "id": "api-gateway.http-api-lower-price",
       "title": "HTTP API は機能を絞って低価格にした API",
       "kind": "pricing",
-      "text": "HTTP API は最小限の機能にして、REST API より低い価格で提供される API の種類です。Lambda 関数や任意の HTTP エンドポイントにリクエストを送れ、OpenID Connect と OAuth 2.0 による認可、CORS、自動デプロイを備えています。",
+      "text": "HTTP API は最小限の機能にして、REST API より低い価格で提供される API の種類である。Lambda 関数や任意の HTTP エンドポイントにリクエストを送れ、OpenID Connect と OAuth 2.0 による認可、CORS、自動デプロイを備えている。",
       "trap": "低価格の代わりに、API キー・使用量プラン・キャッシュ・WAF 連携は使えない。",
       "depth": "core",
       "sources": [
@@ -312,7 +312,7 @@
       "id": "api-gateway.http-api-jwt-authorizer",
       "title": "HTTP API の JWT オーソライザー",
       "kind": "feature",
-      "text": "HTTP API では、ルートに JWT オーソライザーを設定すると、API Gateway がクライアントの JWT を検証して許可や拒否を決めます。発行者（issuer）と audience を指定し、Amazon Cognito のユーザープールも発行者にできます。ルートにスコープを設定することもできます。",
+      "text": "HTTP API では、ルートに JWT オーソライザーを設定すると、API Gateway がクライアントの JWT を検証して許可や拒否を決める。発行者（issuer）と audience を指定し、Amazon Cognito のユーザープールも発行者にできる。ルートにスコープを設定することもできる。",
       "examPoint": "Cognito ユーザープールのトークンで HTTP API を保護する簡単な方法は、JWT オーソライザー。",
       "depth": "core",
       "sources": [
@@ -331,7 +331,7 @@
       "id": "api-gateway.http-api-cors",
       "title": "HTTP API は CORS を組み込みで設定できる",
       "kind": "feature",
-      "text": "HTTP API では CORS の設定（許可するオリジン、メソッド、ヘッダーなど）を API に持たせられます。設定すると、OPTIONS ルートがなくても、API Gateway がプリフライトリクエストに自動で応答します。バックエンドが返す CORS ヘッダーは無視されます。",
+      "text": "HTTP API では CORS の設定（許可するオリジン、メソッド、ヘッダーなど）を API に持たせられる。設定すると、OPTIONS ルートがなくても、API Gateway がプリフライトリクエストに自動で応答する。バックエンドが返す CORS ヘッダーは無視される。",
       "depth": "detail",
       "sources": [
         {
@@ -342,24 +342,28 @@
       "checkedAt": "2026-11-14"
     },
     {
-      "id": "api-gateway.rest-no-jwt-authorizer",
-      "title": "REST API には JWT オーソライザーがない",
-      "kind": "constraint",
-      "text": "JWT オーソライザーは HTTP API の機能で、REST API にはありません。REST API で JWT を検証するには、Lambda オーソライザーを使います。REST API では、Amazon Cognito ユーザープールを使う Cognito オーソライザーも選べます。",
+      "id": "api-gateway.rest-jwt-authorizer",
+      "title": "REST API の JWT オーソライザー",
+      "kind": "feature",
+      "text": "REST API でも JWT オーソライザーを使える。API Gateway がゲートウェイ内でトークンを検証するので、検証のための関数を動かす必要がない。発行者（issuer）・audience・許可する署名アルゴリズムを指定し、Amazon Cognito のユーザープールも使える。リージョン、エッジ最適化、プライベートのどの REST API でも使える。トークンの検証以外の独自の認可ロジックが要るときは Lambda オーソライザーを使う。",
       "depth": "core",
       "sources": [
+        {
+          "title": "Control access to REST APIs using JWT authorizers",
+          "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-jwt-authorizer.html"
+        },
         {
           "title": "Choose between REST APIs and HTTP APIs",
           "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "api-gateway.websocket-api",
       "title": "WebSocket API は双方向の持続的な接続向け",
       "kind": "feature",
-      "text": "WebSocket API は、クライアントとバックエンドの間で、接続を保ったまま双方向（フルデュプレックス）に通信する API です。バックエンドから接続中のクライアントへメッセージを送れます。受け取った JSON メッセージの内容に応じて、設定したルートの統合に振り分けます。",
+      "text": "WebSocket API は、クライアントとバックエンドの間で、接続を保ったまま双方向（フルデュプレックス）に通信する API である。バックエンドから接続中のクライアントへメッセージを送れる。受け取った JSON メッセージの内容に応じて、設定したルートの統合に振り分ける。",
       "examPoint": "チャットや通知など、サーバーからクライアントへ送る必要があるなら WebSocket API。",
       "depth": "core",
       "sources": [
@@ -378,8 +382,8 @@
       "id": "api-gateway.websocket-authorization",
       "title": "WebSocket API の認可は IAM と Lambda オーソライザー",
       "kind": "constraint",
-      "text": "WebSocket API のアクセス制御の手段は、IAM のロールとポリシー、Lambda オーソライザーです。接続を開始する $connect ルートにオーソライザーを設定することが推奨されています。HTTP API の JWT オーソライザーは、WebSocket API の手段としては挙げられていません。",
-      "trap": "JWT オーソライザーは HTTP API の機能。WebSocket API では Lambda オーソライザーなどを使う。",
+      "text": "WebSocket API のアクセス制御の手段は、IAM のロールとポリシー、Lambda オーソライザーである。接続を開始する $connect ルートにオーソライザーを設定することが推奨されている。HTTP API の JWT オーソライザーは、WebSocket API の手段としては挙げられていない。",
+      "trap": "WebSocket API のアクセス制御の手段は IAM と Lambda オーソライザーで、JWT オーソライザーは挙げられていない。",
       "depth": "core",
       "sources": [
         {
@@ -387,13 +391,13 @@
           "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "api-gateway.websocket-limits",
       "title": "WebSocket 接続の時間とメッセージの大きさ",
       "kind": "quota",
-      "text": "WebSocket API は、クライアントが 10 分間アイドルになるか、接続が最大 2 時間に達すると、接続を閉じます。1 つのメッセージの大きさは最大 128 KB です。バイナリのメディアタイプには対応していません。",
+      "text": "WebSocket API は、クライアントが 10 分間アイドルになるか、接続が最大 2 時間に達すると、接続を閉じる。1 つのメッセージの大きさは最大 128 KB である。バイナリのメディアタイプには対応していない。",
       "depth": "detail",
       "sources": [
         {
@@ -411,7 +415,7 @@
       "id": "api-gateway.payload-limit-10mb",
       "title": "リクエストペイロードの上限は 10 MB",
       "kind": "quota",
-      "text": "REST API と HTTP API のペイロードサイズの上限は 10 MB で、引き上げられません。API Gateway を通して、この大きさを超えるリクエストやレスポンスのデータを受け渡すことはできません。",
+      "text": "REST API と HTTP API のペイロードサイズの上限は 10 MB で、引き上げられない。API Gateway を通して、この大きさを超えるリクエストやレスポンスのデータを受け渡すことはできない。",
       "trap": "大きなファイルは API Gateway を経由して渡せない。上限は引き上げ不可。",
       "depth": "core",
       "sources": [
@@ -430,7 +434,7 @@
       "id": "api-gateway.integration-timeout",
       "title": "統合のタイムアウトは通常 29 秒まで",
       "kind": "quota",
-      "text": "REST API の統合のタイムアウトは 50 ミリ秒〜29 秒で、Lambda を含むすべての統合に適用されます。リージョンとプライベートの API では Service Quotas で引き上げを申請できますが、リージョン全体のスロットルクォータを下げる必要が出ることがあります。エッジ最適化 API は引き上げられません。HTTP API の上限は 30 秒です。",
+      "text": "REST API の統合のタイムアウトは 50 ミリ秒〜29 秒で、Lambda を含むすべての統合に適用される。リージョンとプライベートの API では 29 秒より長くできるが、アカウントのリージョンのスロットルクォータを下げる必要が出ることがある。エッジ最適化 API は引き上げられない。HTTP API の上限は 30 秒である。",
       "depth": "core",
       "sources": [
         {
@@ -442,13 +446,14 @@
           "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-quotas.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
     },
     {
       "id": "api-gateway.account-throttle-quota",
       "title": "アカウントのスロットルは 1 リージョン 10,000 RPS",
       "kind": "quota",
-      "text": "API Gateway は、リージョンごとにアカウント内のすべての API を合わせて、ほとんどのリージョンで 1 秒あたり 10,000 リクエストを既定の上限にします（一部のリージョンは 2,500）。バーストはトークンバケットで、バケット容量は 5,000 リクエスト（一部は 1,250）です。この既定値は、Service Quotas で引き上げを申請できます。",
+      "text": "API Gateway は、リージョンごとにアカウント内のすべての API を合わせて、ほとんどのリージョンで 1 秒あたり 10,000 リクエストを既定の上限にする（一部のリージョンは 2,500）。バーストはトークンバケットで、バケット容量は 5,000 リクエスト（一部は 1,250）である。1 秒あたりのリクエスト数の上限は、AWS Support Center への連絡で引き上げを申請できる。バーストの上限は API Gateway のサービスチームが決めるもので、申請の対象ではない。",
       "depth": "core",
       "sources": [
         {
@@ -460,14 +465,14 @@
           "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html"
         }
       ],
-      "checkedAt": "2026-11-14",
+      "checkedAt": "2026-11-21",
       "recheck": "default-value"
     },
     {
       "id": "api-gateway.throttling-429",
       "title": "スロットリングを超えると 429 が返る",
       "kind": "feature",
-      "text": "API Gateway はトークンバケットでリクエストを制限し、リクエストが定常レートとバーストの上限を超えると、クライアントに 429 Too Many Requests を返します。制限は、使用量プラン、ステージのメソッド、アカウントの順に適用され、ベストエフォートの目標値です。",
+      "text": "API Gateway はトークンバケットでリクエストを制限し、リクエストが定常レートとバーストの上限を超えると、クライアントに 429 Too Many Requests を返す。制限は、使用量プラン、ステージのメソッド、アカウントの順に適用され、ベストエフォートの目標値である。",
       "depth": "core",
       "sources": [
         {
@@ -481,7 +486,7 @@
       "id": "api-gateway.usage-plans-api-keys",
       "title": "使用量プランと API キーで利用者ごとに制限する",
       "kind": "feature",
-      "text": "使用量プランは、API キーで利用者を識別し、利用者ごとのスロットリング（レートとバースト）とクォータ（一定期間のリクエスト数）を決める REST API の機能です。API を外部の開発者に提供する場面で使います。HTTP API にはありません。",
+      "text": "使用量プランは、API キーで利用者を識別し、利用者ごとのスロットリング（レートとバースト）とクォータ（一定期間のリクエスト数）を決める REST API の機能である。API を外部の開発者に提供する場面で使う。HTTP API にはない。",
       "examPoint": "利用者（API キー）ごとの上限や、外部への API 提供は REST API の使用量プラン。",
       "depth": "core",
       "sources": [
@@ -500,7 +505,7 @@
       "id": "api-gateway.api-keys-not-auth",
       "title": "API キーは認証・認可の手段ではない",
       "kind": "constraint",
-      "text": "API キーは認証や認可の代わりにはなりません。使用量プランに複数の API があると、その中の 1 つの API の有効なキーでプラン内のすべての API を呼べます。アクセス制御には IAM、Lambda オーソライザー、Cognito ユーザープールを使います。使用量プランの制限は、コストの管理にも向きません。",
+      "text": "API キーは認証や認可の代わりにはならない。使用量プランに複数の API があると、その中の 1 つの API の有効なキーでプラン内のすべての API を呼べる。アクセス制御には IAM、Lambda オーソライザー、Cognito ユーザープールを使う。使用量プランの制限は、コストの管理にも向かない。",
       "trap": "API キーを付ければ認証できる、は誤り。",
       "depth": "core",
       "sources": [
@@ -515,7 +520,7 @@
       "id": "api-gateway.lambda-integration",
       "title": "Lambda をバックエンドにしたサーバーレス API",
       "kind": "integration",
-      "text": "API Gateway は、Lambda 関数や HTTP エンドポイントとのプロキシ統合に対応し、Lambda と組み合わせてサーバーレスアプリケーションのアプリ側の入り口になります。Lambda のほかに、EC2 上のワークロードや任意の Web アプリケーションもバックエンドにできます。",
+      "text": "API Gateway は、Lambda 関数や HTTP エンドポイントとのプロキシ統合に対応し、Lambda と組み合わせてサーバーレスアプリケーションのアプリ側の入り口になる。Lambda のほかに、EC2 上のワークロードや任意の Web アプリケーションもバックエンドにできる。",
       "examPoint": "サーバーレスの API は、API Gateway と Lambda の組み合わせ。",
       "depth": "core",
       "sources": [
@@ -530,7 +535,7 @@
       "id": "api-gateway.waf-integration",
       "title": "REST API は AWS WAF と連携できる",
       "kind": "integration",
-      "text": "REST API は AWS WAF と連携して、一般的な Web の攻撃から API を保護できます。HTTP API は AWS WAF と連携できません。ルールの書き方などは AWS WAF 側の機能です。",
+      "text": "REST API は AWS WAF と連携して、一般的な Web の攻撃から API を保護できる。HTTP API は AWS WAF と連携できない。",
       "depth": "core",
       "sources": [
         {
@@ -542,13 +547,13 @@
           "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "api-gateway.custom-domain-endpoint-scope",
       "title": "カスタムドメイン名の範囲はエンドポイントの種類で変わる",
       "kind": "feature",
-      "text": "エッジ最適化 API のカスタムドメイン名は全リージョンに適用されます。リージョン API のカスタムドメイン名はそのリージョン専用で、複数のリージョンに同じドメイン名で API を置き、Route 53 のレイテンシーベースルーティングと組み合わせることもできます。",
+      "text": "エッジ最適化 API のカスタムドメイン名は全リージョンに適用される。リージョン API のカスタムドメイン名はそのリージョン専用で、複数のリージョンに同じドメイン名で API を置き、Route 53 のレイテンシーベースルーティングと組み合わせることもできる。",
       "depth": "detail",
       "sources": [
         {
@@ -562,7 +567,7 @@
       "id": "api-gateway.rest-api-overview",
       "title": "REST API はリソースとメソッドの集まり",
       "kind": "feature",
-      "text": "API Gateway の REST API は、リソースとメソッドの集まりで、バックエンドの HTTP エンドポイント、Lambda 関数、ほかの AWS サービスと統合します。クライアントがリクエストを送り、サービスが同期的に応答を返す、リクエスト／レスポンスのモデルで動きます。",
+      "text": "API Gateway の REST API は、リソースとメソッドの集まりで、バックエンドの HTTP エンドポイント、Lambda 関数、ほかの AWS サービスと統合する。クライアントがリクエストを送り、サービスが同期的に応答を返す、リクエスト／レスポンスのモデルで動く。",
       "depth": "core",
       "sources": [
         {

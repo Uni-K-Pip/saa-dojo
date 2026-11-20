@@ -26,7 +26,7 @@
       "axis": "コンテナの実行基盤",
       "values": {
         "ecs": "Fargate、EC2、ECS Managed Instances、オンプレミスの外部インスタンス（ECS Anywhere）",
-        "eks": "Fargate、EC2 のノード（マネージドノードグループや EKS Auto Mode で管理する）、自社のデータセンター（EKS Anywhere、EKS Hybrid Nodes）"
+        "eks": "Fargate、EC2 のノード（マネージドノードグループ、EKS Auto Mode）、自社のデータセンター（EKS Anywhere、EKS Hybrid Nodes）"
       },
       "factRefs": [
         "ecs.capacity-options",

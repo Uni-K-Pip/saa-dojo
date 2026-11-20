@@ -1,7 +1,7 @@
 {
   "id": "kinesis-data-streams",
   "tier": 2,
-  "summary": "ログやクリックストリームなどのデータを継続的に取り込み、リアルタイム処理に利用するサービスです。レコードをストリームに保持し、複数のアプリケーションが独立して読み取り、保持期間内のデータを再処理できます。",
+  "summary": "ログやクリックストリームなどのデータを継続的に取り込み、リアルタイム処理に利用するサービスである。レコードをストリームに保持し、複数のアプリケーションが独立して読み取り、保持期間内のデータを再処理できる。",
   "chooseWhen": [
     {
       "text": "ログやクリックストリームを継続的に収集し、独自のアプリケーションでリアルタイムに処理したいとき",
@@ -42,7 +42,7 @@
       "id": "kinesis-data-streams.realtime-ingestion",
       "title": "継続的な取り込みとリアルタイム処理",
       "kind": "feature",
-      "text": "Kinesis Data Streamsは、ログやクリックストリームなどのレコードを継続的に取り込みます。コンシューマーとなるアプリケーションがストリームから読み取り、データの到着に応じてリアルタイムに処理できます。",
+      "text": "Kinesis Data Streamsは、ログやクリックストリームなどのレコードを継続的に取り込む。コンシューマーとなるアプリケーションがストリームから読み取り、データの到着に応じてリアルタイムに処理できる。",
       "depth": "core",
       "sources": [
         {
@@ -56,7 +56,7 @@
       "id": "kinesis-data-streams.independent-consumers",
       "title": "複数のアプリケーションが独立して読む",
       "kind": "feature",
-      "text": "Kinesis Data Streamsでは、同じストリームを複数のコンシューマーアプリケーションが独立して同時に読み取れます。たとえば、リアルタイムの集計処理とアーカイブ処理を別々のアプリケーションで並行して行えます。",
+      "text": "Kinesis Data Streamsでは、同じストリームを複数のコンシューマーアプリケーションが独立して同時に読み取れる。たとえば、リアルタイムの集計処理とアーカイブ処理を別々のアプリケーションで並行して行える。",
       "depth": "core",
       "sources": [
         {
@@ -70,7 +70,7 @@
       "id": "kinesis-data-streams.retained-replay",
       "title": "保持期間内のレコードを再読み取りする",
       "kind": "feature",
-      "text": "Kinesis Data Streamsでは、ストリームに保持されているレコードをあとから再読み取りできます。先行するアプリケーションが処理したデータを、別のアプリケーションが時間をおいて読み取る使い方ができます。",
+      "text": "Kinesis Data Streamsでは、ストリームに保持されているレコードをあとから再読み取りできる。保持期間内であれば、過去のデータを再処理できる。",
       "depth": "core",
       "sources": [
         {
@@ -82,13 +82,13 @@
           "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "kinesis-data-streams.partition-routing",
       "title": "パーティションキーでシャードへ振り分ける",
       "kind": "feature",
-      "text": "Kinesis Data Streamsは、レコードに付けられたパーティションキーを使い、書き込み先のシャードを決めます。プロデューサーはレコードを書き込む際にパーティションキーを指定します。",
+      "text": "Kinesis Data Streamsは、レコードに付けられたパーティションキーを使い、書き込み先のシャードを決める。プロデューサーはレコードを書き込む際にパーティションキーを指定する。",
       "depth": "core",
       "sources": [
         {
@@ -102,7 +102,7 @@
       "id": "kinesis-data-streams.on-demand-capacity",
       "title": "オンデマンドではシャードを自動管理する",
       "kind": "feature",
-      "text": "Kinesis Data Streamsのオンデマンドでは、必要なスループットに応じてサービスがシャードを自動で管理します。容量を事前に計画しにくい、変動が大きく予測困難なトラフィックに適しています。",
+      "text": "Kinesis Data Streamsのオンデマンドでは、必要なスループットに応じてサービスがシャードを自動で管理する。容量を事前に計画しにくい、変動が大きく予測困難なトラフィックに適している。",
       "depth": "core",
       "sources": [
         {
@@ -116,7 +116,7 @@
       "id": "kinesis-data-streams.provisioned-shards",
       "title": "プロビジョンドではシャード数を指定する",
       "kind": "feature",
-      "text": "Kinesis Data Streamsのプロビジョンドでは、利用者がストリームのシャード数を指定して容量を管理します。容量の要件を予測しやすい負荷や、シャードへのデータ分散を細かく制御したい場合に適しています。",
+      "text": "Kinesis Data Streamsのプロビジョンドでは、利用者がストリームのシャード数を指定して容量を管理する。容量の要件を予測しやすい負荷や、シャードへのデータ分散を細かく制御したい場合に適している。",
       "depth": "core",
       "sources": [
         {
@@ -130,7 +130,7 @@
       "id": "kinesis-data-streams.enhanced-fan-out",
       "title": "拡張ファンアウトで読み取り帯域を専有する",
       "kind": "feature",
-      "text": "Kinesis Data Streamsの拡張ファンアウトでは、コンシューマーごとにシャードの専用読み取りスループットを利用できます。同じシャードを読む他のコンシューマーと、読み取り帯域を奪い合わずにデータを受け取れます。",
+      "text": "Kinesis Data Streamsの拡張ファンアウトでは、コンシューマーごとにシャードの専用読み取りスループットを利用できる。同じシャードを読む他のコンシューマーと、読み取り帯域を奪い合わずにデータを受け取れる。",
       "depth": "core",
       "sources": [
         {
@@ -144,7 +144,7 @@
       "id": "kinesis-data-streams.server-side-encryption",
       "title": "KMSキーによるサーバー側の暗号化",
       "kind": "feature",
-      "text": "Kinesis Data Streamsは、サーバー側の暗号化によって、プロデューサーがストリームへ書き込むデータを暗号化できます。ストリームのデータを保護するための暗号化にはAWS KMSのキーを使用します。",
+      "text": "Kinesis Data Streamsは、サーバー側の暗号化によって、プロデューサーがストリームへ書き込むデータを暗号化できる。ストリームのデータを保護するための暗号化にはAWS KMSのキーを使用する。",
       "depth": "core",
       "sources": [
         {
@@ -158,7 +158,7 @@
       "id": "kinesis-data-streams.direct-s3-delivery",
       "title": "オンデマンドのストリームからS3へ直接配信する",
       "kind": "integration",
-      "text": "Kinesis Data Streamsのオンデマンドのストリームは、データ配信機能で同じリージョンのAmazon S3汎用バケットへ直接配信できます。ログのアーカイブなどに利用でき、配信用のコンシューマーアプリケーションを用意する必要はありません。",
+      "text": "Kinesis Data Streamsのオンデマンドのストリームは、データ配信機能で同じリージョンのAmazon S3汎用バケットへ直接配信できる。ログのアーカイブなどに利用でき、配信用のコンシューマーアプリケーションを用意する必要はない。",
       "depth": "detail",
       "sources": [
         {
