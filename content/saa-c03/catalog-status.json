@@ -1207,7 +1207,7 @@
   "cmp-athena-redshift-emr": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "6971ab99464f"
+    "hash": "a27d461d51ec"
   },
   "cmp-cloudformation-elastic-beanstalk": {
     "status": "verified",
@@ -1232,7 +1232,7 @@
   "cmp-ecs-eks": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "228ba6dbe93f"
+    "hash": "8263ef6fc354"
   },
   "cmp-efs-fsx": {
     "status": "verified",
