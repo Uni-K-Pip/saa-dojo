@@ -37,12 +37,23 @@
       "axis": "上限をかける対象",
       "values": {
         "iam": "権限の境界を設定した IAM ユーザーまたはロール",
-        "organizations": "メンバーアカウントの IAM ユーザー、ロール、ルートユーザー（管理アカウントは対象外）"
+        "organizations": "メンバーアカウントの IAM ユーザー、ロール、ルートユーザー"
       },
       "factRefs": [
         "iam.boundary-basics",
-        "organizations.scp-member-root",
-        "organizations.scp-management-exemption"
+        "organizations.scp-member-root"
+      ]
+    },
+    {
+      "axis": "上限がかからない相手",
+      "values": {
+        "iam": "サービスにリンクされたロール（権限の境界を設定できない）",
+        "organizations": "管理アカウントのユーザーやロールと、サービスにリンクされたロール（SCP が適用されない）"
+      },
+      "factRefs": [
+        "iam.boundary-basics",
+        "organizations.scp-management-exemption",
+        "organizations.scp-service-linked-role-exemption"
       ]
     }
   ],

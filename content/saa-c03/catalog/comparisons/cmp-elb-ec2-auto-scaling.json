@@ -14,17 +14,6 @@
   ],
   "rows": [
     {
-      "axis": "インスタンスの起動・終了",
-      "values": {
-        "elb": "追従する（Auto Scaling グループにアタッチすると、グループが起動したインスタンスは自動で登録され、終了したインスタンスは自動で登録解除される）",
-        "ec2-auto-scaling": "行う（スケーリングポリシーを設定すると、最小と最大の範囲内で、需要に応じて起動・終了する）"
-      },
-      "factRefs": [
-        "elb.asg-integration",
-        "ec2-auto-scaling.capacity-bounds"
-      ]
-    },
-    {
       "axis": "異常なインスタンスへの対処",
       "values": {
         "elb": "そのターゲットへの転送を止め、正常に戻ると再開する",
@@ -34,6 +23,18 @@
         "elb.health-check-routing",
         "ec2-auto-scaling.health-replace-process",
         "ec2-auto-scaling.health-check-types"
+      ]
+    },
+    {
+      "axis": "異常の判定に使うヘルスチェック",
+      "values": {
+        "elb": "ロードバランサーのヘルスチェック（ターゲットグループ単位で設定する）",
+        "ec2-auto-scaling": "既定では、EC2 のステータスチェックとスケジュールされたイベントで判定する。グループで有効にすると、ELB のヘルスチェックの結果も使う"
+      },
+      "factRefs": [
+        "elb.health-check-routing",
+        "ec2-auto-scaling.health-check-types",
+        "ec2-auto-scaling.elb-health-check-replace"
       ]
     }
   ],
@@ -51,6 +52,6 @@
       "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc34"
 }

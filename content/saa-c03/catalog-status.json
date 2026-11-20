@@ -1226,13 +1226,13 @@
   },
   "cmp-elb-ec2-auto-scaling": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "756db35ce9b7"
+    "checkedAt": "2026-11-21",
+    "hash": "f7b4a907e0d9"
   },
   "cmp-guardduty-inspector-detective": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "7c403f2f18eb"
+    "hash": "3c6f8ab6fffc"
   },
   "cmp-iam-identity-center-cognito": {
     "status": "verified",
@@ -1242,7 +1242,7 @@
   "cmp-iam-organizations": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "c99d7e7134b7"
+    "hash": "6eadb70d6d20"
   },
   "cmp-kms-secrets-manager-acm": {
     "status": "verified",
