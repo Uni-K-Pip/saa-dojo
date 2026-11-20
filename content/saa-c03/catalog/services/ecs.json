@@ -563,6 +563,48 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ecs.ebs-volume-one-per-task",
+      "title": "タスクにアタッチする EBS ボリュームは 1 タスクに 1 つ",
+      "kind": "constraint",
+      "text": "ECS のタスクにアタッチできる Amazon EBS ボリュームは 1 タスクにつき最大 1 つで、新しいボリュームでなければならない。既存のボリュームはアタッチできず、既存ボリュームのスナップショットから新しいボリュームを構成する。サービスでは、タスクごとに 1 つのボリュームが付く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Amazon EBS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ebs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ecs.ebs-volume-deleted-with-task",
+      "title": "サービスのタスクの EBS ボリュームはタスク終了時に削除される",
+      "kind": "feature",
+      "text": "サービスが管理するタスクにアタッチされた EBS ボリュームは保持されず、タスクの終了時に必ず削除される。永続的に保存したいデータには向かない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon EBS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ebs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ecs.ebs-volume-fargate-support",
+      "title": "Fargate では Linux のプラットフォームバージョン 1.4.0 以降で EBS ボリュームを使える",
+      "kind": "constraint",
+      "text": "タスクへの EBS ボリュームのアタッチは、Fargate では Linux のプラットフォームバージョン 1.4.0 以降でサポートされ、Windows ではサポートされない。Fargate のタスクでは、マグネティック（standard）の EBS ボリュームタイプも使えない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon EBS volumes with Amazon ECS",
+          "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ebs-volumes.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -582,5 +624,6 @@
     }
   ],
   "createdBy": "sc12",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

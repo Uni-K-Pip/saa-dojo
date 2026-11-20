@@ -288,6 +288,20 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "athena.glacier-restored-objects",
+      "title": "復元した S3 Glacier のオブジェクトのクエリ",
+      "kind": "feature",
+      "text": "Athena は、S3 Glacier Flexible Retrieval と S3 Glacier Deep Archive のオブジェクトのうち、復元済みのものをクエリできる。テーブルごとにテーブルプロパティ read_restored_glacier_objects を true にする必要があり、有効にしないと、Athena はそのテーブルの両クラスのオブジェクトをスキップする。復元は利用者が事前に行い、Athena は復元しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Query restored Amazon Glacier objects - Amazon Athena",
+          "url": "https://docs.aws.amazon.com/athena/latest/ug/querying-glacier.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -308,5 +322,6 @@
     }
   ],
   "createdBy": "cx29",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
 }

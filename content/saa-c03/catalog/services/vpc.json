@@ -723,6 +723,34 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "vpc.ipam",
+      "title": "Amazon VPC IP Address Manager（IPAM）",
+      "kind": "feature",
+      "text": "Amazon VPC IP Address Manager（IPAM）は、AWS のワークロードの IP アドレスを計画・追跡・監視しやすくする VPC の機能である。使用中のアドレス空間の監視、IP アドレスの割り当て履歴の確認、ビジネスルールに沿った VPC への CIDR の自動割り当てができる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is IPAM? - Amazon VPC IP Address Manager",
+          "url": "https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "vpc.traffic-mirroring-components",
+      "title": "トラフィックミラーリングの構成要素",
+      "kind": "feature",
+      "text": "トラフィックミラーリングは、ソース（監視するネットワークインターフェイス）、フィルター（ミラーするトラフィックを定める規則）、ターゲット（ミラーした通信の送り先）、セッション（ソース・フィルター・ターゲットを関連づけるもの）で構成する。ターゲットは、単体のインスタンスのほか、UDP リスナーを持つ Network Load Balancer か Gateway Load Balancer の配下のインスタンス群にできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -740,5 +768,6 @@
     }
   ],
   "createdBy": "sc5",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

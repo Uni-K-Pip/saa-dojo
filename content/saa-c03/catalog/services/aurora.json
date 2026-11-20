@@ -698,6 +698,34 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.snapshot-copy-cross-region-kms",
+      "title": "暗号化スナップショットの別リージョンへのコピーはコピー先の KMS キーを指定",
+      "kind": "constraint",
+      "text": "暗号化された Aurora DB クラスタースナップショットを別の AWS リージョンへコピーするときは、コピー先のリージョンで有効な KMS キーを指定する必要がある。リージョン固有のキーでもマルチリージョンキーでもよい。暗号化されたスナップショットのコピーは、必ず暗号化される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DB cluster snapshot copying",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_CopySnapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "aurora.clone-snapshot-at-creation",
+      "title": "クローンは作成時点のページを引き継ぎ、以降は別々に変わる",
+      "kind": "feature",
+      "text": "Aurora のクローンは、作成した時点でソースのクラスターと同じデータページを指して始まる。作成後にソースで変更があっても、新しいページがソース側に作られるだけで、クローンは元のページを参照し続ける。クローン側の変更も同様にソースへは反映されない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -720,5 +748,6 @@
     }
   ],
   "createdBy": "sc10",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

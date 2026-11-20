@@ -570,6 +570,34 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.sqlserver-winauth-managed-ad",
+      "title": "SQL Server の Windows 認証は AWS Managed Microsoft AD だけ",
+      "kind": "constraint",
+      "text": "RDS for SQL Server の Windows 認証に使えるディレクトリは AWS Managed Microsoft AD だけで、RDS は AD Connector を Windows 認証に使うことをサポートしない。DB インスタンスはこのディレクトリのドメインに参加し、認証要求がそのドメインに転送される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS Managed Active Directory with RDS for SQL Server",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "rds.sqlserver-winauth-forest-trust",
+      "title": "オンプレミスの AD は信頼関係で Windows 認証に使う",
+      "kind": "feature",
+      "text": "オンプレミスや自己管理（セルフホスト）の Microsoft Active Directory で RDS for SQL Server の Windows 認証を使うには、AWS Managed Microsoft AD との間にフォレストの信頼関係を作る。信頼は一方向でも双方向でもよい。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS Managed Active Directory with RDS for SQL Server",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [
@@ -583,5 +611,6 @@
     }
   ],
   "createdBy": "sc4",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

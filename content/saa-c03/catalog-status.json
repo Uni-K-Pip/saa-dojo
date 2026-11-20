@@ -269,6 +269,11 @@
     "checkedAt": "2026-11-16",
     "hash": "21ec98cb3340"
   },
+  "athena.glacier-restored-objects": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ba726ceee899"
+  },
   "athena.glue-catalog": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -504,6 +509,11 @@
     "checkedAt": "2026-11-16",
     "hash": "51ac23330298"
   },
+  "aurora.snapshot-copy-cross-region-kms": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "2ce6b0e33a21"
+  },
   "aurora.storage-auto-grow": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -563,6 +573,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "835f4e3ef009"
+  },
+  "backup.vault-lock-grace-time-minimum": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "b065d06d9c2c"
   },
   "backup.vault-policy-removable": {
     "status": "verified",
@@ -818,6 +833,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "6b6bbc727f40"
+  },
+  "cloudfront.origin-protocol-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a78bd8df7422"
   },
   "cloudfront.origin-protocol-separate": {
     "status": "verified",
@@ -1433,6 +1453,66 @@
     "status": "verified",
     "checkedAt": "2026-11-15",
     "hash": "fa045a6a5f2c"
+  },
+  "detective": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "058d8c0f7f2b"
+  },
+  "detective.auto-collect": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "974f3c0ba318"
+  },
+  "detective.baseline": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d482cd87234e"
+  },
+  "detective.behavior-graph": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5b257b8dea8f"
+  },
+  "detective.core-sources": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c906143ef418"
+  },
+  "detective.finding-groups": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "39d2e8ec843e"
+  },
+  "detective.guardduty-pivot": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "cfdd54ca4ecf"
+  },
+  "detective.history": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e0f58334e126"
+  },
+  "detective.investigation": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5e91034a3436"
+  },
+  "detective.multi-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c3af30a90cea"
+  },
+  "detective.optional-sources": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c4f02ece1146"
+  },
+  "detective.purpose": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "59149f37dae2"
   },
   "direct-connect": {
     "status": "verified",
@@ -2523,6 +2603,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "50bee7ec8f6e"
+  },
+  "ecs.ebs-volume-one-per-task": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "df00008d37df"
   },
   "ecs.efs-access-points": {
     "status": "verified",
@@ -3984,6 +4069,11 @@
     "checkedAt": "2026-11-14",
     "hash": "01f81e616c92"
   },
+  "iam.global-key-resourceorgid": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5d8d978cb2c9"
+  },
   "iam.global-key-securetransport": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -4484,11 +4574,6 @@
     "checkedAt": "2026-11-14",
     "hash": "b847373a84f8"
   },
-  "lambda.timeout-15min": {
-    "status": "verified",
-    "checkedAt": "2026-11-15",
-    "hash": "1b5adad552d2"
-  },
   "lambda.tmp-storage": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -4643,6 +4728,41 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "041aebef861f"
+  },
+  "opensearch": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "9428ae083800"
+  },
+  "opensearch.ingest-cloudwatch-logs": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1703cdce1ce3"
+  },
+  "opensearch.managed-domain": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e318a5279dc6"
+  },
+  "opensearch.multi-az": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "18b46bf7677c"
+  },
+  "opensearch.security": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "71181593e773"
+  },
+  "opensearch.sudachi-plugin": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "76c8306b2d12"
+  },
+  "opensearch.ultrawarm": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "b350b8554f74"
   },
   "organizations": {
     "status": "verified",
@@ -4943,6 +5063,16 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "801cbd087ad4"
+  },
+  "rds.sqlserver-winauth-forest-trust": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e9f1d13f0af4"
+  },
+  "rds.sqlserver-winauth-managed-ad": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7faf52430d7e"
   },
   "rds.stop-instance": {
     "status": "verified",
@@ -5254,10 +5384,20 @@
     "checkedAt": "2026-11-14",
     "hash": "070a4505bed1"
   },
+  "s3.default-encryption-new-objects": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "979372c19cc1"
+  },
   "s3.express-one-zone": {
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "a6dc50f294fe"
+  },
+  "s3.glacier-retrieval-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ad5846b2bf00"
   },
   "s3.incomplete-mpu-billing": {
     "status": "verified",
@@ -6328,6 +6468,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "3fa726baf4aa"
+  },
+  "vpc.ipam": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ee9df4dd0b68"
   },
   "vpc.nacl-custom-default-deny": {
     "status": "verified",

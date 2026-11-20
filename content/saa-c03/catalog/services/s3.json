@@ -689,6 +689,84 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "s3.default-encryption-new-objects",
+      "title": "バケットの既定の暗号化と既存のオブジェクト",
+      "kind": "feature",
+      "text": "バケットの既定の暗号化は、バケットに新しくアップロードするオブジェクトの暗号化の動作を決める設定である（SSE-S3、SSE-KMS、DSSE-KMS）。すでに保存されている暗号化されていないオブジェクトを暗号化するには、S3 バッチオペレーションのコピー操作か CopyObject API で、同じバケットへ暗号化したオブジェクトとして書き戻す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Setting default server-side encryption behavior for Amazon S3 buckets - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.glacier-retrieval-tiers",
+      "title": "S3 Glacier Flexible Retrieval の取り出しオプション",
+      "kind": "feature",
+      "text": "S3 Glacier Flexible Retrieval のアーカイブは、RestoreObject の Tier で迅速（Expedited）・標準（Standard）・大容量（Bulk）から選んで取り出す。迅速は通常 1〜5 分で、プレミアム機能として迅速用の料金で課金される。標準は通常 3〜5 時間で、指定しない場合の既定。大容量は通常 5〜12 時間で、S3 Glacier の取り出しで最も低コストである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding archive retrieval options - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.managed-prefix-list-contents",
+      "title": "S3 のマネージドプレフィックスリストの中身",
+      "kind": "integration",
+      "text": "AWS マネージドプレフィックスリストは、AWS のサービスが使う IP アドレス範囲の集合である。S3 用のリストは com.amazonaws.<リージョン>.s3 という名前で、S3 というサービスの IP アドレス範囲を表す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS-managed prefix lists - Amazon VPC",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.bucket-policy-modify-permissions",
+      "title": "バケットポリシーの設定・削除に必要な権限",
+      "kind": "feature",
+      "text": "汎用バケットのバケットポリシーを設定（PutBucketPolicy）するには s3:PutBucketPolicy、削除（DeleteBucketPolicy）するには s3:DeleteBucketPolicy の権限が必要である。ルートユーザー以外の ID は、この権限に加えて、バケット所有者のアカウントに属している必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "PutBucketPolicy - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketPolicy.html"
+        },
+        {
+          "title": "DeleteBucketPolicy - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketPolicy.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.glacier-instant-retrieval",
+      "title": "S3 Glacier Instant Retrieval の取り出し",
+      "kind": "feature",
+      "text": "S3 Glacier Instant Retrieval は、四半期に一度程度アクセスされる長期のアーカイブデータ向けのストレージクラスで、ミリ秒で取り出せる。GET で即時に利用でき、Flexible Retrieval や Deep Archive のような RestoreObject による復元は要らない。取り出しにはギガバイト単位の料金がかかり、最小保存期間は 90 日である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding and managing Amazon S3 storage classes - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+        },
+        {
+          "title": "Understanding archive retrieval options - Amazon S3",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [
@@ -699,5 +777,5 @@
   ],
   "createdBy": "sc1",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-14"
+  "updatedAt": "2026-11-20"
 }

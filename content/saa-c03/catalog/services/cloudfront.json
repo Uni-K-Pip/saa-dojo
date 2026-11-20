@@ -664,6 +664,20 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-protocol-policy",
+      "title": "オリジンプロトコルポリシー",
+      "kind": "feature",
+      "text": "オリジンプロトコルポリシーは、CloudFront がオリジンからオブジェクトを取得するときに使うプロトコルを決める設定で、カスタムオリジンに適用される。HTTP のみは HTTP だけ、HTTPS のみは HTTPS だけを使い、ビューアーに合わせる（Match viewer）は、ビューアーのリクエストのプロトコルに応じて HTTP か HTTPS を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Origin settings - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesOrigin.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -680,5 +694,6 @@
     }
   ],
   "createdBy": "sc6",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

@@ -578,6 +578,20 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "iam.global-key-resourceorgid",
+      "title": "aws:ResourceOrgID",
+      "kind": "feature",
+      "text": "aws:ResourceOrgID は、リクエストの対象となるリソースが属する組織の ID を返すグローバル条件キーで、アイデンティティベースポリシーの Resource 要素に指定したリソースが特定の組織のものかどうかを条件にできる。アカウントの追加・削除にも自動で追従する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS global condition context keys - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -601,5 +615,6 @@
     }
   ],
   "createdBy": "sc3",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

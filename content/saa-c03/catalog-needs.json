@@ -134,7 +134,8 @@
       "knowledge": "AWS Trusted Advisor は IAM ポリシーを分析して権限を自動で絞り込む機能を持たない。",
       "decision": "fact",
       "factRefs": [
-        "trusted-advisor.read-only-inspection"
+        "trusted-advisor.read-only-inspection",
+        "trusted-advisor.review-and-follow-recommendations"
       ]
     },
     {
@@ -142,7 +143,12 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "RDS for SQL Server の Windows 認証は AWS Managed Microsoft AD を使い、AD Connector には対応しない。"
+      "knowledge": "RDS for SQL Server の Windows 認証は AWS Managed Microsoft AD を使い、AD Connector には対応しない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.sqlserver-winauth-managed-ad",
+        "rds.sqlserver-winauth-forest-trust"
+      ]
     },
     {
       "key": "saa-1.1-w2m-008/a",
@@ -464,7 +470,8 @@
       "knowledge": "Amazon S3 のマネージドプレフィックスリストはリージョンの S3 全体の IP 範囲であり、特定バケットや他アカウントのバケットを区別できない。",
       "decision": "fact",
       "factRefs": [
-        "s3.managed-prefix-list"
+        "s3.managed-prefix-list",
+        "s3.managed-prefix-list-contents"
       ]
     },
     {
@@ -519,7 +526,11 @@
       "task": "1.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "CloudFront のオリジンプロトコルポリシーは、CloudFront とオリジンの間の通信のプロトコルを決める設定で、オリジンへの直接アクセスを防ぐ機能ではない。"
+      "knowledge": "CloudFront のオリジンプロトコルポリシーは、CloudFront とオリジンの間の通信のプロトコルを決める設定で、オリジンへの直接アクセスを防ぐ機能ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.origin-protocol-policy"
+      ]
     },
     {
       "key": "saa-1.2-w2m-012/c",
@@ -577,7 +588,8 @@
       "knowledge": "VPC トラフィックミラーリングは有効化後の通信パケットだけを分析用ターゲットへ送り、過去の通信は調べられない。",
       "decision": "fact",
       "factRefs": [
-        "vpc.traffic-mirroring"
+        "vpc.traffic-mirroring",
+        "vpc.traffic-mirroring-components"
       ]
     },
     {
@@ -610,14 +622,25 @@
       "task": "1.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で関連付け、IAM ロールや IP アドレスなどの活動をグラフと時系列で可視化して、調査を助ける。"
+      "knowledge": "Amazon Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で関連付け、IAM ロールや IP アドレスなどの活動をグラフと時系列で可視化して、調査を助ける。",
+      "decision": "fact",
+      "factRefs": [
+        "detective.core-sources",
+        "detective.behavior-graph",
+        "detective.auto-collect"
+      ]
     },
     {
       "key": "saa-1.2-w2m-015/d",
       "task": "1.2",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "CloudTrail Lake は、イベントデータストアに集めたイベントを SQL で分析する機能で、関連付けや可視化は利用者が用意する。"
+      "knowledge": "CloudTrail Lake は、イベントデータストアに集めたイベントを SQL で分析する機能で、関連付けや可視化は利用者が用意する。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.lake-sql-event-data-store",
+        "cloudtrail.lake-new-customer-availability"
+      ]
     },
     {
       "key": "saa-1.2-w2m-016/a",
@@ -635,7 +658,11 @@
       "task": "1.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "CloudFormation StackSets で配ったスタックの内容を変えるには、スタックセットを更新して各スタックインスタンスへ配り直す操作が要る。"
+      "knowledge": "CloudFormation StackSets で配ったスタックの内容を変えるには、スタックセットを更新して各スタックインスタンスへ配り直す操作が要る。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudformation.stacksets-update-propagation"
+      ]
     },
     {
       "key": "saa-1.2-w2m-016/d",
@@ -729,7 +756,8 @@
       "decision": "fact",
       "factRefs": [
         "s3.bucket-policy",
-        "s3.object-lock-modes"
+        "s3.object-lock-modes",
+        "s3.bucket-policy-modify-permissions"
       ]
     },
     {
@@ -797,7 +825,14 @@
       "task": "1.3",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "AWS Backup Vault Lock では最小・最大の保持期間を設定でき、条件に合わないバックアップジョブやコピージョブは失敗する。コンプライアンスモードには 3 日以上の猶予期間がある。"
+      "knowledge": "AWS Backup Vault Lock では最小・最大の保持期間を設定でき、条件に合わないバックアップジョブやコピージョブは失敗する。コンプライアンスモードには 3 日以上の猶予期間がある。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.vault-lock-retention-range",
+        "backup.vault-lock-nonconforming-job-fails",
+        "backup.vault-lock-grace-time-minimum",
+        "backup.vault-lock-existing-recovery-points"
+      ]
     },
     {
       "key": "saa-1.3-w2m-005/d",
@@ -937,7 +972,11 @@
       "task": "1.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "S3 バケットの既定の暗号化の設定を変えても、新しくアップロードされるオブジェクトにだけ適用され、既存のオブジェクトは自動では再暗号化されない。"
+      "knowledge": "S3 バケットの既定の暗号化の設定を変えても、新しくアップロードされるオブジェクトにだけ適用され、既存のオブジェクトは自動では再暗号化されない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.default-encryption-new-objects"
+      ]
     },
     {
       "key": "saa-1.3-w2m-014/b",
@@ -1050,7 +1089,12 @@
       "task": "2.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Lambda 関数のタイムアウトは 1 回の実行の最大時間を決める設定で、同時実行数を制限する設定ではない。"
+      "knowledge": "Lambda 関数のタイムアウトは 1 回の実行の最大時間を決める設定で、同時実行数を制限する設定ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.timeout-setting",
+        "lambda.reserved-concurrency"
+      ]
     },
     {
       "key": "saa-2.1-w2m-010/b",
@@ -1367,7 +1411,8 @@
       "factRefs": [
         "aurora.clone",
         "aurora.pitr",
-        "aurora.backtrack"
+        "aurora.backtrack",
+        "aurora.clone-snapshot-at-creation"
       ]
     },
     {
@@ -1386,7 +1431,11 @@
       "task": "2.2",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "EC2 の詳細モニタリングは、メトリクスの間隔を 1 分に短くする機能で、インスタンスやアプリケーションのヘルスチェックではない。"
+      "knowledge": "EC2 の詳細モニタリングは、メトリクスの間隔を 1 分に短くする機能で、インスタンスやアプリケーションのヘルスチェックではない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.monitoring-basic-detailed"
+      ]
     },
     {
       "key": "saa-2.2-w2m-004/c",
@@ -1675,7 +1724,11 @@
       "task": "3.2",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "EC2 の高速コンピューティングインスタンスのうち P 系は、複数の GPU を備え、機械学習のトレーニングや HPC に向く。"
+      "knowledge": "EC2 の高速コンピューティングインスタンスのうち P 系は、複数の GPU を備え、機械学習のトレーニングや HPC に向く。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.accelerated-gpu-p-family"
+      ]
     },
     {
       "key": "saa-3.2-w2m-006/c",
@@ -1811,14 +1864,25 @@
       "task": "3.3",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "DynamoDB の Query は既定でソートキーの昇順で結果を返し、ScanIndexForward を false にすると降順で返す。"
+      "knowledge": "DynamoDB の Query は既定でソートキーの昇順で結果を返し、ScanIndexForward を false にすると降順で返す。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.query-sort-order"
+      ]
     },
     {
       "key": "saa-3.3-w2m-002/a",
       "task": "3.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Redshift のプロビジョンドクラスターのリサイズは利用者が実行する操作で、実行中はクラスターの利用に影響が出ることがある。急な同時実行の増加に自動で対応する機能ではない。"
+      "knowledge": "Redshift のプロビジョンドクラスターのリサイズは利用者が実行する操作で、実行中はクラスターの利用に影響が出ることがある。急な同時実行の増加に自動で対応する機能ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.resize-types",
+        "redshift.resize-elastic-impact",
+        "redshift.resize-classic-impact",
+        "redshift.concurrency-scaling"
+      ]
     },
     {
       "key": "saa-3.3-w2m-002/c",
@@ -1949,14 +2013,23 @@
       "task": "3.3",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "Amazon OpenSearch Service は全文検索に使え、部分一致、あいまい検索、日本語の形態素解析、カテゴリごとの件数の集計に対応する。"
+      "knowledge": "Amazon OpenSearch Service は全文検索に使え、部分一致、あいまい検索、日本語の形態素解析、カテゴリごとの件数の集計に対応する。",
+      "decision": "fact",
+      "factRefs": [
+        "opensearch.full-text-search",
+        "opensearch.japanese-analysis"
+      ]
     },
     {
       "key": "saa-3.3-w2m-008/d",
       "task": "3.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "ElastiCache はキーを指定して値を取り出すインメモリのデータストアで、属性への部分一致・あいまい検索や集計のための検索エンジンではない。"
+      "knowledge": "ElastiCache はキーを指定して値を取り出すインメモリのデータストアで、属性への部分一致・あいまい検索や集計のための検索エンジンではない。",
+      "decision": "fact",
+      "factRefs": [
+        "opensearch.full-text-search"
+      ]
     },
     {
       "key": "saa-3.4-g8-009/c",
@@ -2031,7 +2104,11 @@
       "task": "3.4",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "Amazon VPC IP Address Manager（IPAM）は、IP アドレスの計画・割り当て・追跡・監視を一元化する VPC の機能である。"
+      "knowledge": "Amazon VPC IP Address Manager（IPAM）は、IP アドレスの計画・割り当て・追跡・監視を一元化する VPC の機能である。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.ipam"
+      ]
     },
     {
       "key": "saa-3.4-w2m-001/d",
@@ -2133,7 +2210,11 @@
       "task": "4.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "S3 Glacier Flexible Retrieval の取り出しには迅速・標準・大容量があり、迅速取り出しは最も速い代わりに料金が最も高い。"
+      "knowledge": "S3 Glacier Flexible Retrieval の取り出しには迅速・標準・大容量があり、迅速取り出しは最も速い代わりに料金が最も高い。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.glacier-retrieval-tiers"
+      ]
     },
     {
       "key": "saa-4.1-w2m-002/a",
@@ -2366,7 +2447,9 @@
       "knowledge": "Amazon RDS のスナップショットは Apache Parquet 形式で S3 にエクスポートでき、S3 Glacier Instant Retrieval はミリ秒で取り出せ Athena で分析できる。",
       "decision": "fact",
       "factRefs": [
-        "rds.snapshot-export-s3"
+        "s3.glacier-instant-retrieval",
+        "rds.snapshot-export-s3",
+        "athena.glacier-restored-objects"
       ]
     },
     {
@@ -2469,7 +2552,11 @@
       "task": "4.3",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Redshift のリザーブドノードは、使っているかどうかや一時停止にかかわらず、契約期間の料金が発生する。"
+      "knowledge": "Redshift のリザーブドノードは、使っているかどうかや一時停止にかかわらず、契約期間の料金が発生する。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.reserved-nodes-billing"
+      ]
     },
     {
       "key": "saa-4.3-w2m-006/d",

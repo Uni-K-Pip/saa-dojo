@@ -657,6 +657,40 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2.monitoring-basic-detailed",
+      "title": "基本モニタリングと詳細モニタリングの間隔",
+      "kind": "feature",
+      "text": "EC2 は既定で、インスタンスのメトリクスを CloudWatch に送り、各データポイントは 5 分間の活動を対象とする（基本モニタリング）。詳細モニタリングを有効にすると、既定の各メトリクスのデータポイントは 1 分間の活動を対象とする。",
+      "examPoint": "メトリクスの間隔を 1 分に短くしたいときは、詳細モニタリングを有効にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "CloudWatch metrics that are available for your instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ec2.accelerated-gpu-p-family",
+      "title": "高速コンピューティングの P 系（GPU）インスタンス",
+      "kind": "feature",
+      "text": "高速コンピューティングインスタンスは、ハードウェアアクセラレーターを使い、浮動小数点演算やグラフィックス処理などを CPU 上のソフトウェアより効率よく実行する。P 系（P4d、P5 など）は NVIDIA GPU を備え、たとえば p5.48xlarge は 8 基の NVIDIA H100 GPU を持つ。P5 系は深層学習と HPC 向けで、大規模言語モデルの学習とデプロイに使える。",
+      "examPoint": "深層学習や HPC のように GPU を使う処理には、高速コンピューティングインスタンスの P 系（P5 など）が向く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Specifications for Amazon EC2 accelerated computing instances",
+          "url": "https://docs.aws.amazon.com/ec2/latest/instancetypes/ac.html"
+        },
+        {
+          "title": "Amazon EC2 P5 Instances",
+          "url": "https://aws.amazon.com/ec2/instance-types/p5/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "references": [
@@ -674,5 +708,6 @@
     }
   ],
   "createdBy": "sc7",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

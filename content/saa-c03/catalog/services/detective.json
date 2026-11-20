@@ -1,0 +1,296 @@
+{
+  "id": "detective",
+  "tier": 2,
+  "summary": "Amazon Detective は、CloudTrail・VPC フローログ・GuardDuty の検出結果を自動で関連付け、動作グラフと時系列で可視化して、セキュリティ事象の調査と根本原因の特定を助けるサービス。",
+  "chooseWhen": [
+    {
+      "text": "検出結果の根本原因や影響範囲を、グラフと時系列で調べたいとき",
+      "factRefs": [
+        "detective.behavior-graph",
+        "detective.purpose"
+      ]
+    },
+    {
+      "text": "IAM ロールや IP アドレスなどの活動が通常と違うかを過去にさかのぼって確かめたいとき",
+      "factRefs": [
+        "detective.baseline",
+        "detective.history"
+      ]
+    },
+    {
+      "text": "GuardDuty の検出結果から調査に進みたいとき",
+      "factRefs": [
+        "detective.guardduty-pivot"
+      ],
+      "alternatives": [
+        "guardduty"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "脅威そのものを検出したいとき（検出は GuardDuty の役割）",
+      "alternatives": [
+        "guardduty"
+      ]
+    },
+    {
+      "text": "検出結果の集約や優先順位付けが目的のとき",
+      "alternatives": [
+        "security-hub"
+      ]
+    },
+    {
+      "text": "API 操作の記録を残す目的のとき（記録は CloudTrail）",
+      "alternatives": [
+        "cloudtrail"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "detective.purpose",
+      "title": "調査と根本原因の特定を助ける",
+      "kind": "feature",
+      "text": "Amazon Detective は、セキュリティ上の検出結果や不審な活動を分析し、根本原因を素早く特定するための調査サービスである。機械学習・統計分析・グラフ理論を使い、調査向けの可視化を自動で作る。",
+      "examPoint": "検知ではなく、検知後の調査・根本原因の特定を担う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.auto-collect",
+      "title": "ログを自動で収集して関連付ける",
+      "kind": "feature",
+      "text": "Detective は AWS リソースのログデータを自動で収集し、ログイン試行・API 呼び出し・ネットワークトラフィックなどの時系列イベントを抽出する。利用者が自分でデータを整理したり、クエリやアルゴリズムを用意したりする必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.core-sources",
+      "title": "コアのデータソース",
+      "kind": "feature",
+      "text": "Detective が取り込むコアのデータソースは、AWS CloudTrail ログ、Amazon VPC フローログ、GuardDuty の検出結果（GuardDuty に加入しているアカウントの場合）である。",
+      "examPoint": "CloudTrail・VPC フローログ・GuardDuty の検出結果を材料に、活動を関連付けて調べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.independent-streams",
+      "title": "既存のログ設定に依存しない",
+      "kind": "feature",
+      "text": "Detective は CloudTrail と VPC フローログを独立した重複のストリームで取り込む。利用者が有効化・保存しているログの設定には影響せず、それらのサービスの性能や費用も増やさない。",
+      "trap": "Detective の取り込みは、既存の CloudTrail・VPC フローログの設定にも、それらのサービスの性能や費用にも影響しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.behavior-graph",
+      "title": "動作グラフで活動を可視化",
+      "kind": "feature",
+      "text": "Detective は収集したイベントから、リソースの動作とその相互作用を時間軸で示す動作グラフ（behavior graph）を作る。失敗したログオンや不審な API 呼び出しを調べ、アカウントや EC2 インスタンスなどへの影響を確認できる。",
+      "examPoint": "IAM ロールや IP アドレスなどの活動をグラフと時系列で可視化して調査する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.baseline",
+      "title": "通常の挙動との比較",
+      "kind": "feature",
+      "text": "Detective の可視化は、アカウントの情報の基準を示して要約する。「このロールにとってこの API 呼び出しは普通か」「このインスタンスのトラフィック急増は想定内か」といった問いに答える助けになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.guardduty-pivot",
+      "title": "GuardDuty の検出結果から調査へ",
+      "kind": "integration",
+      "text": "GuardDuty と Security Hub CSPM では、GuardDuty の検出結果から Detective のコンソールへ直接移って調査を始められる。Detective は GuardDuty の検出結果を取り込み、活動の変化を検出結果に結び付ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        },
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.history",
+      "title": "最大 1 年分の履歴",
+      "kind": "quota",
+      "text": "Detective では最大 1 年分の過去のイベントデータにアクセスでき、データソースのパッケージごとに受け取ったデータを最長 1 年保持する。活動の種類や量の変化を、選んだ期間で可視化できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        },
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.finding-groups",
+      "title": "検出結果グループ",
+      "kind": "feature",
+      "text": "Detective の検出結果グループは、関連する複数の検出結果とエンティティを、1 件のセキュリティ事象として調べられるようにまとめる。重大度の高い GuardDuty の検出結果の根本原因の分析に使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.investigation",
+      "title": "侵害の兆候による Detective Investigation",
+      "kind": "feature",
+      "text": "Detective Investigation は、IAM ユーザーと IAM ロールを侵害の兆候（IOC）で調べ、セキュリティインシデントに関わっているかを判断する。機械学習モデルと脅威インテリジェンスで重要な不審事項に絞る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.multi-account",
+      "title": "複数アカウントの動作グラフ",
+      "kind": "feature",
+      "text": "Detective を有効にしたアカウントは動作グラフの管理者アカウントになり、メンバーアカウントを招待してデータを集められる。AWS Organizations と統合でき、組織の管理アカウントが Detective の管理者アカウントを指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.optional-sources",
+      "title": "任意のデータソースパッケージ",
+      "kind": "feature",
+      "text": "コア以外に、EKS 監査ログと AWS セキュリティ検出結果（Security Hub CSPM から）の任意のデータソースパッケージがあり、動作グラフごとにいつでも開始・停止できる。再開しても過去分はさかのぼって取り込まれない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.volume-quota",
+      "title": "動作グラフのデータ量 15 TB で取り込みが止まる",
+      "kind": "quota",
+      "text": "動作グラフのデータ量が 1 日 15 TB を超えると、Detective は取り込みを止める。既存のデータは残り、再開にはサポートへの連絡が要る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.volume-quota-member-limit",
+      "title": "動作グラフのデータ量 10 TB でメンバーを追加できない",
+      "kind": "quota",
+      "text": "動作グラフのデータ量が 1 日 10 TB を超えると、新しいメンバーアカウントを追加できない。管理者アカウント自身のデータ量が 10 TB を超える場合は、Detective を有効にできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Source data used in a Detective behavior graph - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/detective-source-data-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.free-trial",
+      "title": "30 日間の無料トライアル",
+      "kind": "pricing",
+      "text": "Detective を初めて有効にすると、30 日間の無料トライアルが自動で始まる。トライアル中は、対象のリージョンでの利用に料金がかからない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "detective.tiered-per-gb-pricing",
+      "title": "料金はデータ量に応じた階層制の GB 単価",
+      "kind": "pricing",
+      "text": "Detective の料金は、データの出どころによらず、データ量に応じた階層制の GB 単価で決まる。利用見込みの推定は、コンソールで確認できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Detective? - Amazon Detective",
+          "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Detective? - Amazon Detective",
+      "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+    }
+  ],
+  "createdBy": "sc20",
+  "createdAt": "2026-11-20"
+}

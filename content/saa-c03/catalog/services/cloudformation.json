@@ -299,6 +299,20 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-update-propagation",
+      "title": "StackSet の更新を展開先に反映する",
+      "kind": "feature",
+      "text": "StackSet を更新すると、更新対象に指定したアカウントとリージョンのスタックへ、CloudFormation が更新を適用する。更新の内容は、StackSet のテンプレートの置換やパラメータ値の更新である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Update CloudFormation StackSets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-update.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -320,5 +334,6 @@
     }
   ],
   "createdBy": "cx33",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
 }

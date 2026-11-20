@@ -746,6 +746,21 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "dynamodb.query-sort-order",
+      "title": "Query の結果はソートキー順に並ぶ",
+      "kind": "feature",
+      "text": "Query の結果は常にソートキーの値で並ぶ。既定は昇順で、ソートキーが数値型なら数値順、それ以外の型では UTF-8 バイト順になる。降順で返すには、ScanIndexForward パラメータを false にする。",
+      "examPoint": "ソートキーの降順で取得したいときは、ScanIndexForward を false にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Query - Amazon DynamoDB API Reference",
+          "url": "https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -763,5 +778,6 @@
     }
   ],
   "createdBy": "sc10",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
 }

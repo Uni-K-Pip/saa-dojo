@@ -136,6 +136,24 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "trusted-advisor.review-and-follow-recommendations",
+      "title": "チェック結果を確認して推奨手順に従う",
+      "kind": "feature",
+      "text": "Trusted Advisor Recommendations ページでアカウントのチェック結果を確認し、推奨される手順に従って問題を修正する。例えば、不要な EC2 インスタンスの削除を推奨されることがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Trusted Advisor - AWS Support",
+          "url": "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+        },
+        {
+          "title": "Get started with Trusted Advisor Recommendations",
+          "url": "https://docs.aws.amazon.com/awssupport/latest/user/get-started-with-aws-trusted-advisor.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -152,5 +170,6 @@
     }
   ],
   "createdBy": "cx23",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
 }

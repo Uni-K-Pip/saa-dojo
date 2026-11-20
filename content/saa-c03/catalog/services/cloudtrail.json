@@ -307,6 +307,34 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.lake-sql-event-data-store",
+      "title": "CloudTrail Lake はイベントを SQL で分析する",
+      "kind": "feature",
+      "text": "CloudTrail Lake は、イベントデータストアに集めたイベントに対して SQL ベースのクエリを実行できる機能である。イベントデータストアは、選択した条件に基づくイベントの変更できない集まりで、クエリの対象になるイベントはその条件で決まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "cloudtrail.lake-new-customer-availability",
+      "title": "CloudTrail Lake は新規の顧客に提供されない",
+      "kind": "feature",
+      "text": "AWS CloudTrail Lake は、2026 年 5 月 31 日以降、新規の顧客には提供されない。既存の顧客は引き続き利用できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
     }
   ],
   "seeAlso": [
@@ -326,5 +354,6 @@
     }
   ],
   "createdBy": "cx6",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
 }
