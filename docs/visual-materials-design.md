@@ -605,7 +605,7 @@ AWS アカウントでのハンズオンの代わりです。ハンズオンで�
 | W3 | 残りの 4 種類の描画、図を画面いっぱいに広げる表示 | `app/src/components/` | W2 |
 | W4 | Markdown からの参照（図、実物）と、その場の確認の表示と記録 | `app/src/components/Markdown.tsx`、`markdown-plugins.ts` | W3 |
 | W5 | 実物を読む（スキーマ、validate、表示） | `schema.mjs`、`app/src/components/` | W1 |
-| W6 | `material-status.json` と、ビルドでの絞り込み | `app/scripts/lib/`、`scripts/` | W1 |
+| W6 | `material-status.json` と、ビルドでの絞り込み。既存のレッスン・早見表・ガイド・カード・用語集の検証状態（`learning-design.md` の 4.3）も同じファイルに持つ | `app/scripts/lib/`、`scripts/` | W1 |
 | W7 | 学習コース（`course.json` のスキーマ、validate、画面、ホームの「次にやること」、ユニット演習） | `schema.mjs`、`app/src/pages/` | なし |
 | W8 | ミニラボと設計パターン（スキーマ、validate、画面） | `schema.mjs`、`app/src/pages/` | W3、W5 |
 | W9 | coverage の拡張（11.4）と `coverage-lists.json` | `scripts/coverage.mjs` | W1、W5、W8 |
@@ -638,11 +638,15 @@ W1・W2・W7 は、既存のレッスンを変えないので、図鑑の作業�
 - 幅が足りないときは縮め、横にはスクロールしない。広い画面では 1.25 倍で止める。
 - レイアウトは `scripts/lib/` に置く（validate が幅と重なりを検査するのに使うため。当初の案は `app/scripts/lib/`）。
 
+利用者が決めたこと（2026-11-20。`learning-design.md` の 0.2）。
+
+- 【L-13】構成図を、問題の解説と、図鑑のエントリにも付ける。問題は、難易度 3 の、構成を問う問題から始め、問題に `diagramRefs` を足して、採点後の解説に正解の構成の図を出す。図鑑は、区分 1 のエントリに `diagramRefs` を足し、そのサービスが構成のどこに置かれるかの図を 1 枚出す。どちらも量産（F3）のあとに作る。図は、ほかの図と同じく 1 枚ずつ検証する。
+- 【L-7】その場の確認の誤答は、復習の予定に入れない（7章）。
+
 ### 14.2 未決事項
 
 | ID | 内容 | 推奨 |
 |---|---|---|
 | V-Q1 | 2.5 の上限と、分類の色 | **決定**（2026-11-20 の試作。14.1） |
-| V-Q2 | 図鑑のエントリに図を付けるか（区分 1 の「置き場所の図」） | 付ける。エントリに `diagramRefs` を足す。量産（F3）のあと |
-| V-Q3 | 問題の解説に構成図を付けるか（`learning-design.md` の L-Q3 と同じ） | 付ける。量産のあと |
-| V-Q4 | その場の確認の誤答を、復習の予定に入れるか | 入れない（【L-7】）。利用者の学習記録を見て見直す |
+
+V-Q2〜V-Q4 は 2026-11-20 に利用者が決めました（14.1）。今、この文書に未決事項はありません。
