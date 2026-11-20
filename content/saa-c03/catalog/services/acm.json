@@ -80,7 +80,8 @@
           "url": "https://docs.aws.amazon.com/acm/latest/userguide/email-validation.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "acm.dns-validation-auto-renewal",

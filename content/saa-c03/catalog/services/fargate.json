@@ -179,7 +179,8 @@
           "url": "https://aws.amazon.com/fargate/pricing/"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "fargate.ephemeral-storage-scope",

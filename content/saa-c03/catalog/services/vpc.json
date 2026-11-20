@@ -183,7 +183,8 @@
           "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "vpc.route-priority",
@@ -708,7 +709,8 @@
           "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "vpc.quota-sg-per-eni",
@@ -722,7 +724,8 @@
           "url": "https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "vpc.ipam",

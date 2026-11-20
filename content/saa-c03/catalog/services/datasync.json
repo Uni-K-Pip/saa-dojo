@@ -140,7 +140,8 @@
           "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "datasync.nfs-to-s3-metadata",

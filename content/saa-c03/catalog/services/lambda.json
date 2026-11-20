@@ -203,7 +203,8 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.concurrency-scaling-rate",
@@ -356,7 +357,8 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.kinesis-parallelization",
@@ -371,7 +373,8 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.async-invocation",
@@ -479,7 +482,8 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.managed-instances",

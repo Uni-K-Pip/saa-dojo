@@ -131,7 +131,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "ec2-auto-scaling.mixed-instances",
@@ -169,7 +170,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.elb-health-check-replace",
@@ -184,7 +186,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.health-replace-process",
@@ -213,7 +216,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.grace-period-scope",
@@ -247,7 +251,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.default-instance-warmup",
@@ -262,7 +267,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.warmup-excludes-metrics",
@@ -298,7 +304,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.target-tracking",
@@ -425,7 +432,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.termination-default",
@@ -439,7 +447,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.termination-predefined",
@@ -468,7 +477,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.lifecycle-hook-timeouts",
@@ -482,7 +492,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.lifecycle-notification-targets",
@@ -641,7 +652,8 @@
           "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-quotas.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2-auto-scaling.quota-group-config",

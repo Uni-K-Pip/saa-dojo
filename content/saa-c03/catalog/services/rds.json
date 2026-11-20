@@ -87,7 +87,8 @@
           "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "rds.instance-classes",

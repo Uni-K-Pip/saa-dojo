@@ -553,7 +553,8 @@
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2.instance-profile",
@@ -671,7 +672,8 @@
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
     },
     {
       "id": "ec2.accelerated-gpu-p-family",

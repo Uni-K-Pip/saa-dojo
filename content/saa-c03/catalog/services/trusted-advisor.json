@@ -121,7 +121,8 @@
           "url": "https://docs.aws.amazon.com/awssupport/latest/user/cost-optimization-checks.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     },
     {
       "id": "trusted-advisor.ec2-cost-optimization-hub",

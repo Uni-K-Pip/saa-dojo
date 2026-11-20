@@ -121,7 +121,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.item-size",
@@ -155,7 +156,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.on-demand-scaling",
@@ -262,7 +264,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.table-classes",
@@ -580,7 +583,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Point-in-time-recovery.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.on-demand-backup",
@@ -632,7 +636,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.global-conflict",
@@ -696,7 +701,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.encryption",
@@ -711,7 +717,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dynamodb.transactions",
@@ -760,7 +767,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
     }
   ],
   "seeAlso": [

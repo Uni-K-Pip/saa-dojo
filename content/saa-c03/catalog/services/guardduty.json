@@ -183,7 +183,8 @@
           "url": "https://docs.aws.amazon.com/guardduty/latest/ug/securityhub-integration.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
     },
     {
       "id": "guardduty.s3-protection",

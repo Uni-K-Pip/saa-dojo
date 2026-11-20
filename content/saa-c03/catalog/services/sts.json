@@ -120,7 +120,8 @@
           "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sts.role-chaining-one-hour",
@@ -257,7 +258,8 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     }
   ],
   "references": [

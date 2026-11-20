@@ -183,7 +183,8 @@
           "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
     },
     {
       "id": "direct-connect.macsec-link-encryption",

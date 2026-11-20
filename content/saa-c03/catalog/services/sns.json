@@ -165,7 +165,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.filter-scope",
@@ -256,7 +257,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-create-topic.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.retries-aws-endpoints",
@@ -293,7 +295,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.retry-error-types",
@@ -327,7 +330,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.dlq-queue-type",
@@ -369,7 +373,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-large-payload-raw-message-delivery.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.topic-access-policy",
@@ -388,7 +393,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-create-topic.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "sns.topic-policy-service-publish",
@@ -402,7 +408,8 @@
           "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "sns.sse",

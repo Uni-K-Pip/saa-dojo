@@ -535,7 +535,8 @@
           "url": "https://docs.aws.amazon.com/general/latest/gr/ebs-service.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ebs.fsr-billing",

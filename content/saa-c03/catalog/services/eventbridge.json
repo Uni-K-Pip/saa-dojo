@@ -137,7 +137,8 @@
           "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "eventbridge.event-pattern",
@@ -189,7 +190,8 @@
           "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
     },
     {
       "id": "eventbridge.scheduler-basics",
@@ -298,7 +300,8 @@
           "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-retry-policy.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "eventbridge.target-dlq",
@@ -361,7 +364,8 @@
           "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "eventbridge.replay",

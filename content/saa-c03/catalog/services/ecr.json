@@ -141,7 +141,8 @@
           "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_configure_duration_setting_ecr.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
     },
     {
       "id": "ecr.enhanced-initial-images",
@@ -155,7 +156,8 @@
           "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
     },
     {
       "id": "ecr.enhanced-pricing",

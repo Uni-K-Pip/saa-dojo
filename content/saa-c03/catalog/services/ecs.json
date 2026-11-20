@@ -314,7 +314,8 @@
           "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ecs.secrets-parameter-store",
@@ -447,7 +448,8 @@
           "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ecs.network-modes",

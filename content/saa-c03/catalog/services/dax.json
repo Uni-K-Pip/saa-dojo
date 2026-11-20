@@ -88,7 +88,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dax.strong-passthrough",
@@ -122,7 +123,8 @@
           "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.concepts.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "dax.query-cache",

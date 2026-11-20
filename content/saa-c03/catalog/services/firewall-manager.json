@@ -168,7 +168,8 @@
           "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-20",
+      "recheck": "end-of-life"
     }
   ],
   "seeAlso": [

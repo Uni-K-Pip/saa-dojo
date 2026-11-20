@@ -306,7 +306,8 @@
           "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
     },
     {
       "id": "cloudtrail.lake-sql-event-data-store",
@@ -334,7 +335,8 @@
           "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-20",
+      "recheck": "end-of-life"
     }
   ],
   "seeAlso": [

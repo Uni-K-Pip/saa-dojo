@@ -100,7 +100,8 @@
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     },
     {
       "id": "security-hub.cspm-root-auto-enablement",
@@ -118,7 +119,8 @@
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     },
     {
       "id": "security-hub.cspm-central-regions",
@@ -136,7 +138,8 @@
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-accounts-orgs.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     },
     {
       "id": "security-hub.cspm-declarative-recommendation",
@@ -150,7 +153,8 @@
           "url": "https://docs.aws.amazon.com/securityhub/latest/userguide/accounts-orgs-policies.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-16",
+      "recheck": "end-of-life"
     }
   ],
   "references": [
