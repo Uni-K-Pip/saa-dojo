@@ -326,7 +326,7 @@ export const CatalogEntrySchema = z
     summary: z.string().min(40).max(200),
     chooseWhen: z.array(CatalogPointSchema).min(1).max(6).optional(),
     avoidWhen: z.array(CatalogPointSchema).min(1).max(6).optional(),
-    facts: z.array(CatalogFactSchema).max(40),
+    facts: z.array(CatalogFactSchema).max(60),
     seeAlso: z.array(factId).max(12).optional(),
     lessonRefs: z.array(z.string().regex(LESSON_ID)).max(6).optional(),
     docRefs: z.array(z.string().regex(DOC_ID)).max(6).optional(),
