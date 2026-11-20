@@ -1,0 +1,32 @@
+{
+  "id": "cmp-sqs-kinesis-data-streams",
+  "title": "Amazon SQS と Amazon Kinesis Data Streams",
+  "services": [
+    "sqs",
+    "kinesis-data-streams"
+  ],
+  "decide": [
+    "メッセージを受け手が処理し、処理が済んだらキューから削除する形にしたいなら SQS",
+    "負荷の急増を、事前の設定なしでキューに吸収させたいなら SQS",
+    "同じデータを複数のアプリケーションが独立して同時に読みたいなら Kinesis Data Streams",
+    "保持期間内のデータを、あとから読み直して再処理したいなら Kinesis Data Streams",
+    "ログやクリックストリームを継続的に取り込み、リアルタイムに処理したいなら Kinesis Data Streams"
+  ],
+  "docRef": "cheatsheet-messaging-streaming",
+  "sources": [
+    {
+      "title": "What is Amazon Simple Queue Service? - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+    },
+    {
+      "title": "What is Amazon Kinesis Data Streams? - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    },
+    {
+      "title": "Managed Streaming Data Service – Amazon Kinesis Data Streams FAQs – AWS",
+      "url": "https://aws.amazon.com/kinesis/data-streams/faqs/"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc26"
+}

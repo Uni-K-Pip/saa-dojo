@@ -1,0 +1,31 @@
+{
+  "id": "cmp-elasticache-dax",
+  "title": "Amazon ElastiCache と Amazon DynamoDB Accelerator (DAX)",
+  "services": [
+    "elasticache",
+    "dax"
+  ],
+  "decide": [
+    "結果整合性のある DynamoDB の読み取りを、ミリ秒からマイクロ秒に短縮したいなら DAX",
+    "DynamoDB を、アプリケーションの変更を最小限にして高速化したいなら DAX",
+    "RDS や Aurora などのデータベースの前段に置くキャッシュが欲しいなら ElastiCache",
+    "キャッシュのエンジンを Valkey、Redis OSS、Memcached から選びたいなら ElastiCache"
+  ],
+  "docRef": "cheatsheet-databases",
+  "sources": [
+    {
+      "title": "In-memory acceleration with DynamoDB Accelerator (DAX) - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html"
+    },
+    {
+      "title": "What is Amazon ElastiCache? - Amazon ElastiCache",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html"
+    },
+    {
+      "title": "Valkey-, Memcached-, and Redis OSS-Compatible Cache – Amazon ElastiCache FAQs - AWS",
+      "url": "https://aws.amazon.com/elasticache/faqs/"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc24"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "cmp-transit-gateway-vpc",
+  "title": "AWS Transit Gateway と Amazon VPC のピアリング接続",
+  "services": [
+    "transit-gateway",
+    "vpc"
+  ],
+  "decide": [
+    "多数の VPC とオンプレミスのネットワークを、中央のハブで相互接続したいなら Transit Gateway",
+    "2 つの VPC だけを、ゲートウェイを置かずに 1 対 1 でつなぎたいなら VPC ピアリング"
+  ],
+  "docRef": "cheatsheet-hybrid-connectivity",
+  "sources": [
+    {
+      "title": "What is AWS Transit Gateway for Amazon VPC? - Amazon VPC",
+      "url": "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html"
+    },
+    {
+      "title": "What is VPC peering? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html"
+    },
+    {
+      "title": "How VPC peering connections work - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-basics.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc27"
+}

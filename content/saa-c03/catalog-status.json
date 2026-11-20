@@ -1189,6 +1189,51 @@
     "checkedAt": "2026-11-20",
     "hash": "d7755dff1796"
   },
+  "cmp-direct-connect-site-to-site-vpn": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "3011f360b1e6"
+  },
+  "cmp-efs-fsx": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7e5ff37923f0"
+  },
+  "cmp-elasticache-dax": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "24009101e08b"
+  },
+  "cmp-kms-secrets-manager-acm": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1a6c1251ddda"
+  },
+  "cmp-rds-aurora-dynamodb": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f3fc48f5af63"
+  },
+  "cmp-s3-ebs-efs": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e78f7a0a2300"
+  },
+  "cmp-sqs-kinesis-data-streams": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "aa117b071f50"
+  },
+  "cmp-sqs-sns-eventbridge": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "31a932cbfea1"
+  },
+  "cmp-transit-gateway-vpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7e6d9ce30b08"
+  },
   "cognito": {
     "status": "verified",
     "checkedAt": "2026-11-16",

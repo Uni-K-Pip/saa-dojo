@@ -1,0 +1,32 @@
+{
+  "id": "cmp-direct-connect-site-to-site-vpn",
+  "title": "AWS Direct Connect と AWS Site-to-Site VPN",
+  "services": [
+    "direct-connect",
+    "site-to-site-vpn"
+  ],
+  "decide": [
+    "インターネットを通らない専用のネットワーク接続でつなぎたいなら Direct Connect",
+    "インターネット経由の接続より一貫したネットワーク性能を得たいなら Direct Connect",
+    "オンプレミスのネットワークと VPC を IPsec の暗号化トンネルでつなぎたいなら Site-to-Site VPN",
+    "すぐに接続を用意したいなら Site-to-Site VPN",
+    "Direct Connect 上の通信を IPsec で暗号化したいなら Direct Connect と Site-to-Site VPN の組み合わせ"
+  ],
+  "docRef": "cheatsheet-hybrid-connectivity",
+  "sources": [
+    {
+      "title": "AWS Direct Connect | FAQ | Amazon Web Services (AWS)",
+      "url": "https://aws.amazon.com/directconnect/faqs/"
+    },
+    {
+      "title": "What is AWS Site-to-Site VPN? - AWS Site-to-Site VPN",
+      "url": "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html"
+    },
+    {
+      "title": "Encryption in AWS Direct Connect - AWS Direct Connect",
+      "url": "https://docs.aws.amazon.com/directconnect/latest/UserGuide/encryption-in-transit.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc27"
+}

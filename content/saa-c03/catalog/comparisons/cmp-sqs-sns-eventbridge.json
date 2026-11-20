@@ -1,0 +1,33 @@
+{
+  "id": "cmp-sqs-sns-eventbridge",
+  "title": "Amazon SQS・Amazon SNS・Amazon EventBridge",
+  "services": [
+    "sqs",
+    "sns",
+    "eventbridge"
+  ],
+  "decide": [
+    "メッセージをキューにためて、受け手が取り出して処理したいなら SQS",
+    "1 つのメッセージを複数の購読者へ一斉に配りたい（ファンアウト）なら SNS",
+    "AWS サービスや SaaS などのイベントを、ルールでターゲットへ振り分けたいなら EventBridge",
+    "購読者が止まっていても、配ったメッセージを失いたくないなら SNS と SQS の組み合わせ（SNS の購読先を SQS キューにする）",
+    "メールや SMS で人へ通知したいなら SNS"
+  ],
+  "docRef": "cheatsheet-messaging-streaming",
+  "sources": [
+    {
+      "title": "What is Amazon Simple Queue Service? - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+    },
+    {
+      "title": "What is Amazon SNS? - Amazon Simple Notification Service",
+      "url": "https://docs.aws.amazon.com/sns/latest/dg/welcome.html"
+    },
+    {
+      "title": "What Is Amazon EventBridge? - Amazon EventBridge",
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc26"
+}
