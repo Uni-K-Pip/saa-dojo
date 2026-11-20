@@ -10,6 +10,7 @@ AWS Certified Solutions Architect – Associate に向けた非公式の学習 P
 - ブランチ: develop が統合用の既定、main はリリース専用。
 - 確認: `npm run validate`
 - 読む順: README.md、docs/content-guide.md、docs/app-spec.md
+- 上流の設計(未実装を含む): docs/learning-design.md(目標、教材の体系、学習コース、網羅と受け入れの基準、計画)、docs/visual-materials-design.md(図解・操作型教材)。教材の種類や計画に関わる作業のときに読む。
 
 ## 引き継ぎ
 - 教材の進み具合は `../saa-dojo-ops/catalog/wave1-plan.md` で確かめる。
