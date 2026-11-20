@@ -1211,8 +1211,8 @@
   },
   "cmp-ecs-eks": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "5240d3ab50a9"
+    "checkedAt": "2026-11-21",
+    "hash": "820fcf925192"
   },
   "cmp-efs-fsx": {
     "status": "verified",
@@ -1231,18 +1231,18 @@
   },
   "cmp-guardduty-inspector-detective": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "6a2ca02d5a87"
+    "checkedAt": "2026-11-21",
+    "hash": "7c403f2f18eb"
   },
   "cmp-iam-identity-center-cognito": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "d25d9feed9bc"
+    "checkedAt": "2026-11-21",
+    "hash": "05a4a8bf31e9"
   },
   "cmp-iam-organizations": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "1f207ffdc88d"
+    "checkedAt": "2026-11-21",
+    "hash": "c99d7e7134b7"
   },
   "cmp-kms-secrets-manager-acm": {
     "status": "verified",
@@ -1251,8 +1251,8 @@
   },
   "cmp-lambda-fargate-ec2": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "150cbaf9c373"
+    "checkedAt": "2026-11-21",
+    "hash": "cc2d6eac394f"
   },
   "cmp-nat-gateway-vpc": {
     "status": "verified",
@@ -2629,6 +2629,11 @@
     "checkedAt": "2026-11-14",
     "hash": "c4471d4167e7"
   },
+  "ec2.customer-responsibility": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "87802a320763"
+  },
   "ec2.dedicated-hosts": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -2698,6 +2703,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "17712be8c4c4"
+  },
+  "ec2.on-demand-billing-unit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cc619a745075"
   },
   "ec2.placement-cluster": {
     "status": "verified",
@@ -4389,6 +4399,11 @@
     "checkedAt": "2026-11-16",
     "hash": "b2fcf8f21ed8"
   },
+  "iam.access-method-human-workload": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "56bc3a2e94b5"
+  },
   "iam.boundary-basics": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -4473,6 +4488,16 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "33fef4b49434"
+  },
+  "iam.identity-policy-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "25636bd08607"
+  },
+  "iam.managed-vs-inline": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "dcfb09e67b05"
   },
   "iam.mfa-boolifexists-deny": {
     "status": "verified",
@@ -4573,6 +4598,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "a374e105f1f3"
+  },
+  "inspector.ecr-image-package-vulnerabilities": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fd6c42661dcf"
   },
   "inspector.ecr-monitoring-criteria": {
     "status": "verified",

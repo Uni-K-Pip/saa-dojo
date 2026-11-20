@@ -693,6 +693,34 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ec2.customer-responsibility",
+      "title": "EC2 で利用者が責任を持つ範囲",
+      "kind": "feature",
+      "text": "EC2 では、AWS がクラウドを動かすインフラストラクチャを保護し、利用者はクラウド内のセキュリティに責任を持つ。利用者の責任は、VPC やセキュリティグループなどによるインスタンスへのネットワークアクセスの制御、インスタンスへの接続に使う認証情報の管理、ゲスト OS とそこに入れたソフトウェア（更新とセキュリティパッチを含む）の管理、インスタンスにアタッチする IAM ロールとその権限の設定である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Security in Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "ec2.on-demand-billing-unit",
+      "title": "オンデマンドインスタンスは秒単位で課金される",
+      "kind": "pricing",
+      "text": "オンデマンドインスタンスは、長期の約束なしに、コンピューティング容量の料金を秒単位で支払う。課金されるのは running 状態の秒数だけで、最小は 60 秒である。起動、停止、休止、開始、再起動、終了の時期は利用者が決められる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Purchasing On-Demand Instances for Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "references": [
@@ -711,5 +739,5 @@
   ],
   "createdBy": "sc7",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

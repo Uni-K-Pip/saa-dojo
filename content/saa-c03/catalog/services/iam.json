@@ -592,6 +592,49 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "iam.identity-policy-types",
+      "title": "アイデンティティベースのポリシーの付け先と種類",
+      "kind": "feature",
+      "text": "アイデンティティベースのポリシーは、IAM ユーザー、ユーザーが属するグループ、ロールに付け、その ID が何をどのリソースにどんな条件で実行できるかを決める JSON のポリシーである。種類は、複数の ID に付けられる管理ポリシー（AWS 管理ポリシーとカスタマー管理ポリシー）と、1 つの ID に直接付けるインラインポリシーに分かれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Policies and permissions in AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "iam.managed-vs-inline",
+      "title": "管理ポリシーとインラインポリシーの違い",
+      "kind": "feature",
+      "text": "AWS 管理ポリシーは AWS が作成・管理し、権限を変更できず、更新は付け先のすべての ID に及ぶ。カスタマー管理ポリシーは自分のアカウントで作成して自由に更新でき、複数の ID に付けられる。インラインポリシーは 1 つの ID とだけ 1 対 1 で結び付き、その ID を削除すると一緒に削除される。複数の ID に当てはまるポリシーは管理ポリシーが向く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managed policies and inline policies",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "iam.access-method-human-workload",
+      "title": "人のユーザーとワークロードへの推奨されるアクセス方法",
+      "kind": "feature",
+      "text": "IAM のベストプラクティスでは、人のユーザーには、ID プロバイダーとのフェデレーションでロールを引き受けさせ、一時的な認証情報で AWS にアクセスさせる。アクセスの集中管理には、IAM Identity Center が推奨される。ワークロード（アプリケーションやバックエンド処理など、リソースとコードの集まり）には、IAM ロールの一時的な認証情報を使わせる。",
+      "examPoint": "人のユーザーにもワークロードにも、一時的な認証情報を使わせることが推奨される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Security best practices in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "seeAlso": [
@@ -616,5 +659,5 @@
   ],
   "createdBy": "sc3",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

@@ -36,7 +36,7 @@
       "factRefs": [
         "guardduty.foundational-data-sources",
         "inspector.ec2-package-vulnerabilities",
-        "inspector.ecr-monitoring-criteria",
+        "inspector.ecr-image-package-vulnerabilities",
         "inspector.lambda-standard-scanning",
         "detective.core-sources"
       ]
@@ -56,6 +56,6 @@
       "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc32"
 }

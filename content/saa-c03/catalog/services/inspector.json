@@ -115,6 +115,20 @@
       "checkedAt": "2026-11-16"
     },
     {
+      "id": "inspector.ecr-image-package-vulnerabilities",
+      "title": "ECR のコンテナイメージのパッケージ脆弱性を検出する",
+      "kind": "feature",
+      "text": "Amazon Inspector は、Amazon ECR に保存されたコンテナイメージをソフトウェアの脆弱性についてスキャンし、パッケージ脆弱性の検出結果を作成する。拡張スキャンでは、オペレーティングシステムとプログラミング言語のパッケージの脆弱性を、レジストリのレベルでスキャンする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scanning Amazon Elastic Container Registry container images with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "inspector.ecr-monitoring-criteria",
       "title": "ECR イメージの監視終了はプッシュ日と最終使用日で判定する",
       "kind": "feature",
@@ -147,5 +161,6 @@
     }
   ],
   "createdBy": "cx25",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-21"
 }

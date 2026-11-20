@@ -37,6 +37,32 @@
         "fargate.task-size",
         "ec2.instance-types-families"
       ]
+    },
+    {
+      "axis": "サーバーの管理",
+      "values": {
+        "lambda": "利用者は行わない（サーバーの保守、容量の確保、スケーリング、パッチ適用を、AWS が自動で行う）",
+        "fargate": "利用者は行わない（サーバーや EC2 インスタンスのクラスターを管理せずに、コンテナを実行できる）",
+        "ec2": "利用者が行う（ゲスト OS と、そこに入れたソフトウェアを、更新とセキュリティパッチを含めて管理する。クラウドを動かすインフラストラクチャは、AWS が保護する）"
+      },
+      "factRefs": [
+        "lambda.shared-responsibility",
+        "fargate.serverless-containers",
+        "ec2.customer-responsibility"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "lambda": "リクエストの回数と、実行時間とメモリの量を掛けた GB 秒で決まる（プロビジョニングされた同時実行には、確保している間の別の料金がかかる）",
+        "fargate": "vCPU、メモリ、OS、CPU アーキテクチャ、ストレージの 5 つの要素で決まり、秒単位で計算される",
+        "ec2": "オンデマンドインスタンスでは、コンピューティング容量の料金を秒単位で支払う（課金されるのは running 状態の秒数だけで、最小は 60 秒）"
+      },
+      "factRefs": [
+        "lambda.pricing-model",
+        "fargate.pricing-model",
+        "ec2.on-demand-billing-unit"
+      ]
     }
   ],
   "sources": [
@@ -53,6 +79,6 @@
       "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc30"
 }

@@ -12,14 +12,24 @@
   ],
   "rows": [
     {
+      "axis": "ポリシーを付ける先",
+      "values": {
+        "iam": "アイデンティティベースのポリシーは、IAM ユーザー、ユーザーが属するグループ、ロールに付ける",
+        "organizations": "SCP は、組織のルート、OU、アカウントに付ける"
+      },
+      "factRefs": [
+        "iam.identity-policy-types",
+        "organizations.scp-deny-inheritance"
+      ]
+    },
+    {
       "axis": "権限を与えるか",
       "values": {
-        "iam": "与える（アイデンティティベースやリソースベースのポリシーが許可する。権限の境界は、与えずに上限だけを決める）",
+        "iam": "与える（アイデンティティベースやリソースベースのポリシーが許可する）",
         "organizations": "与えない（SCP は権限の上限を定め、実際の許可には IAM ポリシーなどが要る）"
       },
       "factRefs": [
         "iam.policy-evaluation-allow-deny",
-        "iam.boundary-basics",
         "organizations.scp-permission-ceiling"
       ]
     },
@@ -46,6 +56,6 @@
       "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc33"
 }

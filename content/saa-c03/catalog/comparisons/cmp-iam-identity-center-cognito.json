@@ -14,6 +14,19 @@
   ],
   "rows": [
     {
+      "axis": "アクセスする主体",
+      "values": {
+        "iam": "ワークロードと人のユーザー（ベストプラクティスでは、ワークロードは IAM ロールの一時的な認証情報を使い、人のユーザーは ID プロバイダーとのフェデレーションでロールを引き受ける）",
+        "iam-identity-center": "従業員（AWS アクセスポータルから、割り当てられた AWS アカウントや業務アプリケーションへ、シングルサインオンでアクセスする）",
+        "cognito": "Web・モバイルアプリの利用者（ユーザープールが、登録とサインインを受け持つ）"
+      },
+      "factRefs": [
+        "iam.access-method-human-workload",
+        "iam-identity-center.workforce-access-portal",
+        "cognito.user-pool-directory"
+      ]
+    },
+    {
       "axis": "AWS の権限のしくみ",
       "values": {
         "iam": "ロールを引き受けると、一時的な認証情報が得られる",
@@ -54,6 +67,6 @@
       "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc33"
 }

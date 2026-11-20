@@ -6,6 +6,7 @@
     "eks"
   ],
   "decide": [
+    "運用の負担がより小さい、AWS ネイティブのオーケストレーターを使いたいなら ECS",
     "Kubernetes 対応のアプリケーションを、作り直さずに動かしたいなら EKS"
   ],
   "rows": [
@@ -39,8 +40,12 @@
     {
       "title": "What is Amazon EKS? - Amazon EKS",
       "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+    },
+    {
+      "title": "Choosing an AWS container service - AWS Decision Guides",
+      "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/choosing-aws-container-service.html"
     }
   ],
-  "checkedAt": "2026-11-20",
+  "checkedAt": "2026-11-21",
   "createdBy": "sc30"
 }
