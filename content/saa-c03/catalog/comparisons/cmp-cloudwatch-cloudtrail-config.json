@@ -1,0 +1,63 @@
+{
+  "id": "cmp-cloudwatch-cloudtrail-config",
+  "title": "Amazon CloudWatch・AWS CloudTrail・AWS Config",
+  "services": [
+    "cloudwatch",
+    "cloudtrail",
+    "config"
+  ],
+  "decide": [
+    "だれが、いつ、どの操作を行ったかを記録・調査したいなら CloudTrail",
+    "リソースの設定の変更履歴を調べたいなら Config",
+    "リソースの設定がルールに適合しているかを評価したいなら Config",
+    "メトリクスやログで、リソースやアプリケーションの状態を監視したいなら CloudWatch",
+    "メトリクスをしきい値と比べてアラームを出したいなら CloudWatch"
+  ],
+  "rows": [
+    {
+      "axis": "記録の対象",
+      "values": {
+        "cloudwatch": "メトリクスと、システム・アプリケーション・AWS サービスのログ",
+        "cloudtrail": "ユーザー・ロール・AWS サービスが行った操作のイベント",
+        "config": "記録対象にしたリソースの設定と、その過去の設定"
+      },
+      "factRefs": [
+        "cloudwatch.metric-alarms",
+        "cloudwatch.logs-centralization",
+        "cloudtrail.account-activity",
+        "config.configuration-history",
+        "config.recording-scope"
+      ]
+    },
+    {
+      "axis": "通知のきっかけ",
+      "values": {
+        "cloudwatch": "メトリクスの値が、しきい値の条件を満たしたとき（アラームから SNS へ通知する）",
+        "cloudtrail": "特定の操作が行われたとき（証跡を CloudWatch Logs に配信し、メトリクスフィルターとアラームにつなぐ）",
+        "config": "リソースの設定が変わったとき（設定ストリームの通知先に SNS を設定する）"
+      },
+      "factRefs": [
+        "cloudwatch.metric-alarms",
+        "cloudwatch.alarm-sns",
+        "cloudtrail.cloudwatch-logs-monitoring",
+        "config.sns-change-notifications"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon CloudWatch? - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    },
+    {
+      "title": "What Is AWS CloudTrail? - AWS CloudTrail",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    },
+    {
+      "title": "What Is AWS Config? - AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc23"
+}

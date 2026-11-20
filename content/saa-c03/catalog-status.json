@@ -1179,6 +1179,16 @@
     "checkedAt": "2026-11-16",
     "hash": "1f773cd2e43e"
   },
+  "cmp-cloudfront-global-accelerator": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "c22c186f7295"
+  },
+  "cmp-cloudwatch-cloudtrail-config": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "d7755dff1796"
+  },
   "cognito": {
     "status": "verified",
     "checkedAt": "2026-11-16",
