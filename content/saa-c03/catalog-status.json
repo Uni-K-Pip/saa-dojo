@@ -1319,6 +1319,126 @@
     "checkedAt": "2026-11-16",
     "hash": "efa16dc857b7"
   },
+  "control-tower": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a1f26d951801"
+  },
+  "control-tower.account-creation-flow": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1970418f135f"
+  },
+  "control-tower.account-factory": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "7fb0545c8725"
+  },
+  "control-tower.control-kinds": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "1d02a2756f33"
+  },
+  "control-tower.control-ou-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "3c09a3071675"
+  },
+  "control-tower.detective-control": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e8f9738f024d"
+  },
+  "control-tower.drift-detection": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "0728cd8a8d3a"
+  },
+  "control-tower.drift-policy-scan": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "3690aac5e0bf"
+  },
+  "control-tower.enroll-audit-log-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "2345ddde73bf"
+  },
+  "control-tower.enroll-existing-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "8773169f879d"
+  },
+  "control-tower.enroll-vpc-handling": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a0f06dec773a"
+  },
+  "control-tower.guidance-categories": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "07f2a29f6393"
+  },
+  "control-tower.identity-center-directory": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "a263d5d0826a"
+  },
+  "control-tower.landing-zone": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "cb3c52ebf202"
+  },
+  "control-tower.management-account-exception": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "04535a036560"
+  },
+  "control-tower.orchestrated-services": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "b8f0f08d0555"
+  },
+  "control-tower.preventive-control": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "989de67945ff"
+  },
+  "control-tower.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "b564104cec60"
+  },
+  "control-tower.proactive-control": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e62ef3969070"
+  },
+  "control-tower.proactive-hook-timing": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "9be771b8fde4"
+  },
+  "control-tower.register-ou": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f6b5b5a10944"
+  },
+  "control-tower.register-ou-account-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "5dbb0eab67f1"
+  },
+  "control-tower.security-ou-shared-accounts": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "ef726b600d50"
+  },
+  "control-tower.stacksets-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "62f90b76a90a"
+  },
   "cost-explorer": {
     "status": "verified",
     "checkedAt": "2026-11-16",

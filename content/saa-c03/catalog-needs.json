@@ -298,8 +298,12 @@
       "side": "incorrect",
       "gap": "partial",
       "knowledge": "Control Tower のプロアクティブコントロール(CloudFormation フック)は、CloudFormation 経由以外の直接変更や既存リソースの継続評価には使えない。",
-      "decision": "skip",
-      "note": "control-tower に事実を足す（第2波）: プロアクティブコントロールは CloudFormation フックとして CloudFormation によるリソースの作成・更新だけをデプロイ前に検査し、CloudFormation 以外の直接変更や既存リソースの継続的な評価には検出コントロールを使う（control-tower のエントリはまだない）。"
+      "decision": "fact",
+      "factRefs": [
+        "control-tower.proactive-control",
+        "control-tower.proactive-hook-timing",
+        "control-tower.detective-control"
+      ]
     },
     {
       "key": "saa-1.1-w2m-015/a",
