@@ -186,6 +186,8 @@ export interface Manifest {
     catalogFacts?: number;
     comparisons?: number;
     catalogFactStatus?: { verified: number; pending: number };
+    /** 図の枚数（古いデータにはない） */
+    diagrams?: number;
   };
   files: Record<string, ManifestFile>;
 }
@@ -314,4 +316,112 @@ export interface CatalogComparison {
   sources: Reference[];
   checkedAt: string;
   createdBy: string;
+}
+
+// ---------- 図（app/scripts/lib/diagram-build.mjs と scripts/lib/diagram-layout.mjs の出力） ----------
+
+export type DiagramStatus = 'verified' | 'pending';
+export type DiagramEdgeKind = 'request' | 'data' | 'control' | 'blocked';
+export type DiagramMarkState = 'down' | 'off' | 'standby' | 'new' | 'promoted';
+export type DiagramCategory =
+  | 'compute'
+  | 'container'
+  | 'storage'
+  | 'database'
+  | 'network'
+  | 'security'
+  | 'integration'
+  | 'analytics'
+  | 'management'
+  | 'migration'
+  | 'other';
+export type DiagramPoint = [number, number];
+export interface DiagramRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** 一覧の 1 件 */
+export interface DiagramIndexEntry {
+  id: string;
+  title: string;
+  type: 'architecture';
+  /** 段階の数 */
+  steps: number;
+  status: DiagramStatus;
+}
+
+/** 入れ物（位置は scene の座標。depth は入れ子の深さで 1 がいちばん外側） */
+export interface DiagramBox {
+  id: string;
+  kind: string;
+  /** 種類の語を補った表示用のラベル */
+  label: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  depth: number;
+  /** いちばん近い外側の入れ物の id */
+  parent: string | null;
+  /** 状態の札の矩形（どの段階でも marks に出ないなら null） */
+  tag: DiagramRect | null;
+}
+
+/** 部品。short があれば 1 行目に short（太字）、2 行目に label。short がなければ label を 1 行で太字 */
+export interface DiagramNode {
+  id: string;
+  kind: string;
+  category: DiagramCategory;
+  short: string | null;
+  label: string | null;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  parent: string | null;
+  /** 状態の札の矩形（どの段階でも marks に出ないなら null） */
+  tag: DiagramRect | null;
+}
+
+export interface DiagramEdge {
+  id: string;
+  kind: DiagramEdgeKind;
+  from: string;
+  to: string;
+  both: boolean;
+  /** 直交の折れ線（from 側から to 側へ） */
+  points: DiagramPoint[];
+  label: string | null;
+  /** ラベルの中心 */
+  labelAt: DiagramPoint | null;
+  /** ラベルの背面の矩形 */
+  labelBox: DiagramRect | null;
+}
+
+export interface DiagramStep {
+  text: string;
+  focus: string[];
+  edges: string[];
+  reveal: string[];
+  marks: { id: string; state: DiagramMarkState }[];
+  /** 段階の番号の丸の中心（置き場所がなければ null） */
+  badgeAt: DiagramPoint | null;
+}
+
+/** レイアウト済みの構成図 */
+export interface DiagramScene {
+  id: string;
+  type: 'architecture';
+  title: string;
+  alt: string;
+  width: number;
+  height: number;
+  boxes: DiagramBox[];
+  nodes: DiagramNode[];
+  edges: DiagramEdge[];
+  steps: DiagramStep[];
+  status: DiagramStatus;
 }

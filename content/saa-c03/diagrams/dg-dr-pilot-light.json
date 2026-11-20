@@ -1,0 +1,89 @@
+{
+  "id": "dg-dr-pilot-light",
+  "type": "architecture",
+  "title": "パイロットライトでの切り替え",
+  "alt": "本番のリージョンでアプリケーションとデータベースが動いています。復旧先のリージョンには、データベースのレプリカだけを置いて常に複製し、アプリケーションは止めておきます。本番のリージョンが止まったら、レプリカを昇格させ、アプリケーションを起動して拡大し、Route 53 で接続先を復旧先に切り替えます。",
+  "lessonRefs": ["lesson-2.2-disaster-recovery"],
+  "factRefs": [],
+  "createdBy": "v1",
+  "root": {
+    "dir": "col",
+    "children": [
+      { "id": "users", "node": "actor", "label": "利用者" },
+      { "id": "dns", "node": "route53", "label": "切り替え" },
+      {
+        "dir": "row",
+        "children": [
+          {
+            "id": "region-p",
+            "box": "region",
+            "label": "本番のリージョン",
+            "dir": "col",
+            "children": [
+              { "id": "app-p", "node": "ec2", "label": "アプリ" },
+              { "id": "db-p", "node": "rds", "label": "プライマリ" }
+            ]
+          },
+          {
+            "id": "region-d",
+            "box": "region",
+            "label": "復旧先のリージョン",
+            "dir": "col",
+            "children": [
+              { "id": "app-d", "node": "ec2", "label": "アプリ" },
+              { "id": "db-d", "node": "rds", "label": "レプリカ" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    { "id": "e1", "from": "users", "to": "dns" },
+    { "id": "e2", "from": "dns", "to": "app-p" },
+    { "id": "e3", "from": "app-p", "to": "db-p" },
+    { "id": "e4", "from": "db-p", "to": "db-d", "kind": "data", "label": "常に複製" },
+    { "id": "e5", "from": "dns", "to": "app-d" },
+    { "id": "e6", "from": "app-d", "to": "db-d" }
+  ],
+  "steps": [
+    {
+      "text": "平常時は、利用者のリクエストを本番のリージョンのアプリケーションとデータベースが処理します。",
+      "focus": ["users", "dns", "app-p", "db-p"],
+      "edges": ["e1", "e2", "e3"],
+      "marks": [{ "id": "app-d", "state": "standby" }]
+    },
+    {
+      "text": "復旧先のリージョンには、データベースだけを常に複製しておきます。アプリケーションは止めておくので、平常時の費用を抑えられます。",
+      "focus": ["db-p", "db-d", "app-d"],
+      "edges": ["e4"],
+      "marks": [{ "id": "app-d", "state": "standby" }]
+    },
+    {
+      "text": "本番のリージョンが災害で止まり、利用者のリクエストを処理できなくなりました。",
+      "focus": ["region-p"],
+      "edges": [],
+      "marks": [
+        { "id": "region-p", "state": "down" },
+        { "id": "app-d", "state": "standby" }
+      ]
+    },
+    {
+      "text": "復旧先でレプリカを昇格させ、アプリケーションを起動して必要な台数まで増やします。",
+      "focus": ["region-d"],
+      "edges": [],
+      "marks": [
+        { "id": "region-p", "state": "down" },
+        { "id": "db-d", "state": "promoted" },
+        { "id": "app-d", "state": "new" }
+      ]
+    },
+    {
+      "text": "Route 53 で接続先を復旧先に切り替えると、利用者のリクエストは復旧先のリージョンで処理されます。",
+      "focus": ["users", "dns", "app-d", "db-d"],
+      "edges": ["e1", "e5", "e6"],
+      "reveal": ["e5", "e6"],
+      "marks": [{ "id": "region-p", "state": "down" }]
+    }
+  ]
+}

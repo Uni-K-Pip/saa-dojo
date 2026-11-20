@@ -1114,3 +1114,274 @@ details.fact.is-target {
     color: var(--muted);
   }
 }
+
+/* ---------- 図（components/Diagram.tsx。docs/visual-materials-design.md の 2章） ---------- */
+:root {
+  --dg-bg: #ffffff;
+  --dg-text: #1f2933;
+  --dg-muted: #52606d;
+  --dg-line: #1f2933;
+  --dg-emph: #0a58a8;
+  --dg-node-bg: #ffffff;
+  --dg-box-line: #7b8794;
+  --dg-az-line: #7b8794;
+  --dg-sub-pub-fill: #eaf6ee;
+  --dg-sub-pub-line: #3f8f5f;
+  --dg-sub-pub-text: #2f7d4f;
+  --dg-sub-pri-fill: #e8f1fb;
+  --dg-sub-pri-line: #4a84c4;
+  --dg-sub-pri-text: #2f69a8;
+  --dg-sub-iso-fill: #f0f1f3;
+  --dg-sub-iso-line: #7b8794;
+  --dg-sub-iso-text: #52606d;
+  --dg-onprem-fill: #f3f4f6;
+  --dg-badge-bg: #1f2933;
+  --dg-badge-text: #ffffff;
+  --dg-ng: #b0221a;
+  --dg-ok: #11692c;
+  --dg-promoted: #0a58a8;
+  --dg-off: #5a6673;
+  --dg-cat-compute: #b4531c;
+  --dg-cat-container: #8a6a00;
+  --dg-cat-storage: #2f7d4f;
+  --dg-cat-database: #2a5fb0;
+  --dg-cat-network: #6b4fbb;
+  --dg-cat-security: #b3323f;
+  --dg-cat-integration: #a8327f;
+  --dg-cat-analytics: #0f7286;
+  --dg-cat-management: #52606d;
+  --dg-cat-migration: #17766b;
+  --dg-cat-other: #5a6673;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --dg-bg: #191d23;
+    --dg-text: #e9ecf0;
+    --dg-muted: #b3bdc7;
+    --dg-line: #d5dbe2;
+    --dg-emph: #79b3ff;
+    --dg-node-bg: #1f242b;
+    --dg-box-line: #8a96a3;
+    --dg-az-line: #7d8894;
+    --dg-sub-pub-fill: #15291c;
+    --dg-sub-pub-line: #5fb882;
+    --dg-sub-pub-text: #7fcf9e;
+    --dg-sub-pri-fill: #142236;
+    --dg-sub-pri-line: #6fa3e0;
+    --dg-sub-pri-text: #8db7f0;
+    --dg-sub-iso-fill: #22262c;
+    --dg-sub-iso-line: #8a96a3;
+    --dg-sub-iso-text: #b3bdc7;
+    --dg-onprem-fill: #23272d;
+    --dg-badge-bg: #e9ecf0;
+    --dg-badge-text: #101317;
+    --dg-ng: #ff9b92;
+    --dg-ok: #7fd99a;
+    --dg-promoted: #79b3ff;
+    --dg-off: #aab3bd;
+    --dg-cat-compute: #f0a56e;
+    --dg-cat-container: #e2c15a;
+    --dg-cat-storage: #7fcf9e;
+    --dg-cat-database: #8db7f0;
+    --dg-cat-network: #b9a4f0;
+    --dg-cat-security: #f09aa2;
+    --dg-cat-integration: #ee9bcf;
+    --dg-cat-analytics: #74cfe0;
+    --dg-cat-management: #b3bdc7;
+    --dg-cat-migration: #6fd3c5;
+    --dg-cat-other: #aab3bd;
+  }
+}
+
+:root[data-theme='dark'] {
+  --dg-bg: #191d23;
+  --dg-text: #e9ecf0;
+  --dg-muted: #b3bdc7;
+  --dg-line: #d5dbe2;
+  --dg-emph: #79b3ff;
+  --dg-node-bg: #1f242b;
+  --dg-box-line: #8a96a3;
+  --dg-az-line: #7d8894;
+  --dg-sub-pub-fill: #15291c;
+  --dg-sub-pub-line: #5fb882;
+  --dg-sub-pub-text: #7fcf9e;
+  --dg-sub-pri-fill: #142236;
+  --dg-sub-pri-line: #6fa3e0;
+  --dg-sub-pri-text: #8db7f0;
+  --dg-sub-iso-fill: #22262c;
+  --dg-sub-iso-line: #8a96a3;
+  --dg-sub-iso-text: #b3bdc7;
+  --dg-onprem-fill: #23272d;
+  --dg-badge-bg: #e9ecf0;
+  --dg-badge-text: #101317;
+  --dg-ng: #ff9b92;
+  --dg-ok: #7fd99a;
+  --dg-promoted: #79b3ff;
+  --dg-off: #aab3bd;
+  --dg-cat-compute: #f0a56e;
+  --dg-cat-container: #e2c15a;
+  --dg-cat-storage: #7fcf9e;
+  --dg-cat-database: #8db7f0;
+  --dg-cat-network: #b9a4f0;
+  --dg-cat-security: #f09aa2;
+  --dg-cat-integration: #ee9bcf;
+  --dg-cat-analytics: #74cfe0;
+  --dg-cat-management: #b3bdc7;
+  --dg-cat-migration: #6fd3c5;
+  --dg-cat-other: #aab3bd;
+}
+
+.dg {
+  margin: 1rem 0;
+}
+
+.dg-frame {
+  overflow-x: auto;
+  background: var(--dg-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 0;
+}
+
+/* 表示の倍率は 1.25 倍まで（--dg-w は scene の幅。Diagram.tsx がインラインで渡す）。狭い画面では入る幅まで縮む */
+.dg-svg {
+  display: block;
+  width: 100%;
+  max-width: calc(var(--dg-w, 328) * 1.25px);
+  height: auto;
+  margin: 0 auto;
+  font-family: inherit;
+}
+
+.dg-svg text {
+  font-family: inherit;
+}
+
+.dg-box,
+.dg-node,
+.dg-edge,
+.dg-box-label,
+.dg-edge-label {
+  transition: opacity 0.2s ease;
+}
+
+.dg-svg .is-dim {
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-box,
+  .dg-node,
+  .dg-edge,
+  .dg-box-label,
+  .dg-edge-label {
+    transition: none;
+  }
+}
+
+/* 入れ物 */
+.dg-box rect { fill: none; stroke: var(--dg-box-line); stroke-width: 1; }
+.dg-box--org rect,
+.dg-box--ou rect,
+.dg-box--account rect { stroke-width: 1.2; }
+.dg-box--region rect,
+.dg-box--edge rect { stroke-width: 1.3; stroke-dasharray: 6 4; }
+.dg-box--vpc rect { stroke: var(--dg-cat-network); stroke-width: 2; }
+.dg-box--az rect { stroke: var(--dg-az-line); stroke-width: 1.5; stroke-dasharray: 2 3; }
+.dg-box--subnet-public rect { fill: var(--dg-sub-pub-fill); stroke: var(--dg-sub-pub-line); stroke-width: 1.2; }
+.dg-box--subnet-private rect { fill: var(--dg-sub-pri-fill); stroke: var(--dg-sub-pri-line); stroke-width: 1.2; }
+.dg-box--subnet-isolated rect { fill: var(--dg-sub-iso-fill); stroke: var(--dg-sub-iso-line); stroke-width: 1.2; }
+.dg-box--asg rect { stroke-width: 1.2; stroke-dasharray: 5 3; }
+.dg-box--sg rect { stroke-dasharray: 3 2; }
+.dg-box--onprem rect { fill: var(--dg-onprem-fill); stroke: var(--dg-box-line); stroke-width: 1.5; }
+.dg-box.is-down rect { stroke: var(--dg-ng); stroke-width: 2; stroke-dasharray: 5 3; }
+.dg-box.is-off rect,
+.dg-box.is-standby rect { stroke: var(--dg-off); stroke-dasharray: 2 3; }
+.dg-box.is-new rect { stroke: var(--dg-ok); stroke-width: 2.5; }
+.dg-box.is-promoted rect { stroke: var(--dg-promoted); stroke-width: 2.5; }
+
+.dg-asg-mark { font-size: 11px; font-weight: 700; text-anchor: middle; fill: var(--dg-muted); }
+
+/* 入れ物のラベルは、入れ物の地の色で縁取る（線がラベルの後ろで切れて見える） */
+.dg-box-label {
+  font-size: 10px;
+  paint-order: stroke;
+  stroke: var(--dg-bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  fill: var(--dg-muted);
+}
+.dg-box-label--subnet-public { stroke: var(--dg-sub-pub-fill); }
+.dg-box-label--subnet-private { stroke: var(--dg-sub-pri-fill); }
+.dg-box-label--subnet-isolated { stroke: var(--dg-sub-iso-fill); }
+.dg-box-label--onprem { stroke: var(--dg-onprem-fill); }
+.dg-box-label--vpc { fill: var(--dg-cat-network); font-weight: 700; }
+.dg-box-label--subnet-public { fill: var(--dg-sub-pub-text); font-weight: 700; }
+.dg-box-label--subnet-private { fill: var(--dg-sub-pri-text); font-weight: 700; }
+.dg-box-label--subnet-isolated { fill: var(--dg-sub-iso-text); font-weight: 700; }
+.dg-edge-label rect { fill: var(--dg-bg); }
+.dg-edge-label text { font-size: 10px; fill: var(--dg-text); text-anchor: middle; }
+
+/* 線 */
+.dg-line { fill: none; stroke: var(--dg-line); stroke-width: 1.5; stroke-linejoin: round; }
+.dg-arrow { fill: var(--dg-line); }
+.dg-edge--data .dg-line-outer { stroke-width: 4.5; }
+.dg-edge--data .dg-line-inner { stroke: var(--dg-bg); stroke-width: 1.5; }
+.dg-edge--control .dg-line { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+.dg-blocked-x { fill: none; stroke: var(--dg-ng); stroke-width: 2; stroke-linecap: round; }
+.dg-edge.is-active .dg-line { stroke: var(--dg-emph); stroke-width: 2.25; }
+.dg-edge.is-active.dg-edge--data .dg-line-outer { stroke-width: 5.5; }
+.dg-edge.is-active.dg-edge--data .dg-line-inner { stroke: var(--dg-bg); stroke-width: 1.5; }
+.dg-edge.is-active .dg-arrow { fill: var(--dg-emph); }
+
+/* 部品 */
+.dg-cat-compute { --dg-cat: var(--dg-cat-compute); }
+.dg-cat-container { --dg-cat: var(--dg-cat-container); }
+.dg-cat-storage { --dg-cat: var(--dg-cat-storage); }
+.dg-cat-database { --dg-cat: var(--dg-cat-database); }
+.dg-cat-network { --dg-cat: var(--dg-cat-network); }
+.dg-cat-security { --dg-cat: var(--dg-cat-security); }
+.dg-cat-integration { --dg-cat: var(--dg-cat-integration); }
+.dg-cat-analytics { --dg-cat: var(--dg-cat-analytics); }
+.dg-cat-management { --dg-cat: var(--dg-cat-management); }
+.dg-cat-migration { --dg-cat: var(--dg-cat-migration); }
+.dg-cat-other { --dg-cat: var(--dg-cat-other); }
+.dg-node-body { fill: var(--dg-node-bg); stroke: var(--dg-cat); stroke-width: 1.5; }
+.dg-node-band { fill: var(--dg-cat); }
+.dg-node-short { font-size: 11px; font-weight: 700; text-anchor: middle; fill: var(--dg-text); }
+.dg-node-label { font-size: 10px; text-anchor: middle; fill: var(--dg-muted); }
+.dg-node.is-down .dg-node-body { stroke-dasharray: 4 3; }
+.dg-node.is-off .dg-node-body,
+.dg-node.is-standby .dg-node-body { stroke: var(--dg-off); stroke-dasharray: 2 3; }
+.dg-node.is-off .dg-node-band,
+.dg-node.is-standby .dg-node-band { fill: var(--dg-off); }
+.dg-node.is-new .dg-node-body { stroke: var(--dg-ok); stroke-width: 2.5; }
+.dg-node.is-promoted .dg-node-body { stroke: var(--dg-promoted); stroke-width: 2.5; }
+
+/* 印の札と × */
+.dg-down-x { fill: none; stroke: var(--dg-ng); stroke-width: 2.25; stroke-linecap: round; }
+.dg-tag rect { fill: var(--dg-bg); stroke-width: 1.2; }
+.dg-tag text { font-size: 10px; font-weight: 700; text-anchor: middle; }
+.dg-tag--down rect { stroke: var(--dg-ng); }
+.dg-tag--down text { fill: var(--dg-ng); }
+.dg-tag--off rect,
+.dg-tag--standby rect { stroke: var(--dg-off); }
+.dg-tag--off text,
+.dg-tag--standby text { fill: var(--dg-off); }
+.dg-tag--new rect { stroke: var(--dg-ok); }
+.dg-tag--new text { fill: var(--dg-ok); }
+.dg-tag--promoted rect { stroke: var(--dg-promoted); }
+.dg-tag--promoted text { fill: var(--dg-promoted); }
+
+/* 段階の番号 */
+.dg-badge circle { fill: var(--dg-badge-bg); }
+.dg-badge text { fill: var(--dg-badge-text); font-size: 10px; font-weight: 700; text-anchor: middle; }
+
+/* 段階の操作と説明 */
+.dg-caption { margin-top: 0.4rem; font-size: 0.9rem; color: var(--muted); text-align: center; }
+.dg-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 0.6rem; }
+.dg-count { min-width: 4.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.dg-hint { text-align: center; margin: 0.2rem 0 0; }
+.dg-step-text { min-height: 3.4em; margin: 0.5rem 0; }
+.dg-all-steps summary { cursor: pointer; }
