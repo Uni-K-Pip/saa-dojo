@@ -24,7 +24,7 @@
       "id": "a",
       "text": "AWS Control Tower でランディングゾーンを設定し、必要なコントロールを有効にして、事業部には Account Factory でアカウントを作成させる。",
       "correct": true,
-      "rationale": "AWS Control Tower は、Organizations、IAM Identity Center、Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーンを自動で構築します。ログアーカイブ用と監査用の共有アカウントが作られ、予防的・発見的なコントロールを有効にでき、Account Factory で承認済みの構成のアカウントを作成できます。"
+      "rationale": "AWS Control Tower は、Organizations、IAM Identity Center、Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーンを自動で構築します。ログアーカイブ用と監査用の共有アカウントが作られ、予防コントロールと検出コントロールを有効にでき、Account Factory で承認済みの構成のアカウントを作成できます。"
     },
     {
       "id": "b",
@@ -45,10 +45,10 @@
       "rationale": "Security Hub と Config は設定の問題を検出する発見的な統制で、操作を防ぐ予防的なガードレールにはなりません。承認済みの構成で新しいアカウントを作る仕組みも含まれません。"
     }
   ],
-  "explanation": "AWS Control Tower は、マルチアカウント環境の構築と統制を自動化するサービスです。AWS Organizations、AWS IAM Identity Center、AWS Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーン（OU、アカウント、ユーザーなどを含む、統制の効いたマルチアカウント環境）を短時間で構築します。ランディングゾーンには、ログを集約するログアーカイブアカウントと、セキュリティチームが使う監査アカウントが共有アカウントとして作られます。\n\nコントロール（ガードレールとも呼ばれます）は、環境全体を継続的に統制するルールです。操作そのものを防ぐ予防的コントロール（SCP や RCP で実装）、違反を検出する発見的コントロール（AWS Config ルールで実装）、リソースを作る前にテンプレートを検査する事前対応型のコントロール（CloudFormation フックで実装）の 3 種類があります。Account Factory を使うと、承認済みの構成で新しいアカウントを作成し、コントロールを自動で適用できます。\n\nOrganizations と StackSets などを組み合わせて自作することもできますが、設計と保守の負荷が大きくなります。「ベストプラクティスに沿ったマルチアカウント環境を素早く」「運用負荷を最小に」とあれば Control Tower を選びます。",
+  "explanation": "AWS Control Tower は、マルチアカウント環境の構築と統制を自動化するサービスです。AWS Organizations、AWS IAM Identity Center、AWS Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーン（OU、アカウント、ユーザーなどを含む、統制の効いたマルチアカウント環境）を短時間で構築します。ランディングゾーンには、ログを集約するログアーカイブアカウントと、セキュリティチームが使う監査アカウントが共有アカウントとして作られます。ランディングゾーンのバージョン 4.0 以降では、それぞれ CloudTrail administrator アカウント、Config aggregator アカウントと呼ばれ、AWS CloudTrail と AWS Config の統合を有効にしたときに用意されます。\n\nコントロール（ガードレールとも呼ばれます）は、環境全体を継続的に統制するルールです。操作そのものを防ぐ予防コントロール（SCP や RCP で実装）、違反を検出する検出コントロール（AWS Config ルールで実装）、リソースを作る前にテンプレートを検査するプロアクティブコントロール（CloudFormation フックで実装）の 3 種類があります。Account Factory を使うと、承認済みの構成で新しいアカウントを作成し、コントロールを自動で適用できます。\n\nOrganizations と StackSets などを組み合わせて自作することもできますが、設計と保守の負荷が大きくなります。「ベストプラクティスに沿ったマルチアカウント環境を素早く」「運用負荷を最小に」とあれば Control Tower を選びます。",
   "keyPoints": [
     "ベストプラクティスに沿ったマルチアカウント環境を少ない運用負荷で → AWS Control Tower",
-    "コントロールは予防的（SCP など）・発見的（Config ルール）・事前対応型（CloudFormation フック）の 3 種類",
+    "コントロールは予防（SCP など）・検出（Config ルール）・プロアクティブ（CloudFormation フック）の 3 種類",
     "承認済みの構成でアカウントを払い出す → Account Factory"
   ],
   "references": [
@@ -59,6 +59,10 @@
     {
       "title": "How controls work - AWS Control Tower",
       "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+    },
+    {
+      "title": "Service integration accounts - AWS Control Tower",
+      "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
     }
   ],
   "lessonRefs": ["lesson-1.1-multi-account"],
