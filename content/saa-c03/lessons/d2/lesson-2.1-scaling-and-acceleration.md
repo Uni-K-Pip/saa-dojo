@@ -125,7 +125,7 @@ ElastiCache のうち、Redis OSS と Valkey はレプリケーション、Multi
 
 ### 世界の利用者に速く届ける
 
-静的ファイルは S3 に置いて CloudFront で配信し、API もパスを分けて同じ CloudFront から出します。毎回最新の応答が必要なパスはキャッシュしません。TCP/UDP の独自プロトコルや固定 IP アドレスが必要なら Global Accelerator を選びます。
+静的ファイルは S3 に置いて CloudFront で配信し、API もパスを分けて同じ CloudFront から出します。毎回最新の応答が必要なパスはキャッシュしません。TCP/UDP の独自プロトコルの通信や、固定 IP アドレスで受けたい通信には、Global Accelerator を選びます（固定 IP アドレスは、条件付きで CloudFront でも使えます）。
 
 ## 試験のポイント
 
@@ -148,6 +148,9 @@ ElastiCache のうち、Redis OSS と Valkey はレプリケーション、Multi
 
 > **ひっかけ注意**
 > CloudFront と Global Accelerator は別物です。キャッシュで速くするのは CloudFront、キャッシュせずに AWS のネットワークと固定 IP で経路を速く安定させるのは Global Accelerator です。S3 は Global Accelerator のエンドポイントにできません。
+
+> **ひっかけ注意**
+> 固定 IP アドレスを使えるのは、Global Accelerator だけではありません。CloudFront でも、申請して承認されれば、アカウント専用の [Anycast 静的 IP アドレス](#/services/cloudfront?f=anycast-static-ip)を使えます。許可リストへの登録などに使うもので、ディストリビューションの価格クラスを、すべてのエッジロケーションにする必要があります。
 
 > **ひっかけ注意**
 > Lambda の「予約された同時実行」は確保と上限で、コールドスタート対策ではありません。避けるのは「プロビジョニングされた同時実行」です。
