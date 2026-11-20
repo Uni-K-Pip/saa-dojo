@@ -442,6 +442,95 @@
       "checkedAt": "2026-11-20"
     },
     {
+      "id": "control-tower.service-integration-accounts",
+      "title": "サービス統合アカウントの呼び方",
+      "kind": "feature",
+      "text": "AWS Control Tower は、管理アカウントのほかに、Config aggregator アカウントと CloudTrail administrator アカウントの 2 つの特別なアカウントを使い、この 2 つを総称してサービス統合アカウントと呼ぶ。ランディングゾーンのバージョン 4.0 より前の共有アカウントに当たり、以前の名前は Config aggregator アカウントが監査アカウント、CloudTrail administrator アカウントがログアーカイブアカウントである。",
+      "depth": "detail",
+      "tags": [
+        "共有アカウント",
+        "サービス統合アカウント"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.service-integration-setup",
+      "title": "サービス統合アカウントのセットアップ契機",
+      "kind": "feature",
+      "text": "CloudTrail administrator アカウントは、AWS CloudTrail の集中ログ統合を有効にしたときに AWS Control Tower がセットアップする。Config aggregator アカウントは、AWS Config のサービス統合を有効にしたときにセットアップされる。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.service-integration-log-buckets",
+      "title": "ログの保存先の分離",
+      "kind": "feature",
+      "text": "CloudTrail administrator アカウントの中央の S3 バケットは、全アカウントのログファイルを保管する。ランディングゾーンのバージョン 4.0 より前は、このバケットに CloudTrail と AWS Config の両方のログが入ったが、バージョン 4.0 以降は CloudTrail のログだけが入り、AWS Config のログは Config aggregator アカウントの専用バケットに保存される。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ログ"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.optional-service-integrations",
+      "title": "有効にするサービス統合の選択",
+      "kind": "feature",
+      "text": "ランディングゾーンのバージョン 4.0 では、AWS Config、AWS CloudTrail、Security Roles、AWS Backup の各サービス統合を、有効にするものを選べる。統合を無効にすると、その統合に固有の AWS Control Tower のリソースが、管理対象アカウントとサービス統合アカウントから削除される。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ランディングゾーン"
+      ],
+      "sources": [
+        {
+          "title": "January 2025 - December 2025 - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/2025-all.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.config-integration-dependency",
+      "title": "AWS Config 統合を無効にするときの依存",
+      "kind": "constraint",
+      "text": "ランディングゾーンのバージョン 4.0 で AWS Config の統合を無効にするには、Security Roles、IAM Identity Center、AWS Backup の統合も無効にする必要がある。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ランディングゾーン"
+      ],
+      "sources": [
+        {
+          "title": "January 2025 - December 2025 - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/2025-all.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
       "id": "control-tower.identity-center-directory",
       "title": "IAM Identity Center のディレクトリ",
       "kind": "integration",
@@ -496,5 +585,6 @@
     }
   ],
   "createdBy": "sc22",
-  "createdAt": "2026-11-20"
+  "createdAt": "2026-11-20",
+  "updatedAt": "2026-11-20"
 }

@@ -1334,6 +1334,11 @@
     "checkedAt": "2026-11-20",
     "hash": "7fb0545c8725"
   },
+  "control-tower.config-integration-dependency": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "930d186f3af7"
+  },
   "control-tower.control-kinds": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1394,6 +1399,11 @@
     "checkedAt": "2026-11-20",
     "hash": "04535a036560"
   },
+  "control-tower.optional-service-integrations": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "f5a9a665af16"
+  },
   "control-tower.orchestrated-services": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1433,6 +1443,21 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "ef726b600d50"
+  },
+  "control-tower.service-integration-accounts": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "da005ba0efb6"
+  },
+  "control-tower.service-integration-log-buckets": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "e1d8ce527c05"
+  },
+  "control-tower.service-integration-setup": {
+    "status": "verified",
+    "checkedAt": "2026-11-20",
+    "hash": "800bd1e2772f"
   },
   "control-tower.stacksets-deployment": {
     "status": "verified",
