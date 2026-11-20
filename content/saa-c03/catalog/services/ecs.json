@@ -621,6 +621,20 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "ecs.pricing-no-orchestration-charge",
+      "title": "ECS のオーケストレーション自体に追加料金はなく、基盤のリソースに支払う",
+      "kind": "pricing",
+      "text": "ECS のオーケストレーション自体に追加料金はかからず、Fargate や EC2 など、コンテナを動かす基盤のリソースに対して支払う。例外として、ECS Managed Instances では EC2 の料金に加えてインスタンスごとの管理料金がかかり、ECS Anywhere ではオンプレミスの登録インスタンスごとの固定料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon ECS Pricing",
+          "url": "https://aws.amazon.com/ecs/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "seeAlso": [
@@ -641,5 +655,5 @@
   ],
   "createdBy": "sc12",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

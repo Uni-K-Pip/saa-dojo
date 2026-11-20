@@ -47,6 +47,17 @@
         "eks.pod-identity",
         "eks.irsa"
       ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "ecs": "オーケストレーション自体に追加料金はかからず、Fargate や EC2 など、基盤のリソースの料金がかかる（ECS Managed Instances では EC2 の料金に加えてインスタンスごとの管理料金、ECS Anywhere ではオンプレミスの登録インスタンスごとの固定料金がかかる）",
+        "eks": "クラスター単位の料金がかかり、ワーカーノードとして使う EC2 インスタンスや EBS ボリューム、パブリック IPv4 アドレスなどの AWS リソースの料金が別にかかる（EKS Auto Mode や EKS Hybrid Nodes には、それぞれ別の料金体系がある）"
+      },
+      "factRefs": [
+        "ecs.pricing-no-orchestration-charge",
+        "eks.cluster-pricing"
+      ]
     }
   ],
   "sources": [

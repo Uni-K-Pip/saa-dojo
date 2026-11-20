@@ -1232,7 +1232,7 @@
   "cmp-ecs-eks": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "43906f6c2864"
+    "hash": "8130a2959caf"
   },
   "cmp-efs-fsx": {
     "status": "verified",
@@ -3033,6 +3033,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f4ae028398a2"
+  },
+  "ecs.pricing-no-orchestration-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "576f38603d1b"
   },
   "ecs.rolling-update": {
     "status": "verified",
