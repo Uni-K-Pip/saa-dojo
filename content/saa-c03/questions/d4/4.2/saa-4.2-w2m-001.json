@@ -46,10 +46,10 @@
       "id": "d",
       "text": "AWS Compute Optimizer を組織全体で有効にし、CloudWatch エージェントでメモリ使用率も収集して、推奨事項をもとにサイズを見直す。",
       "correct": true,
-      "rationale": "Compute Optimizer は、実際の利用状況のメトリクスを機械学習で分析し、最適なインスタンスタイプとサイズを推奨します。メモリのメトリクスは CloudWatch エージェントで収集すると、推奨に反映されます。"
+      "rationale": "Compute Optimizer は、実際の利用状況のメトリクスを分析し、最適なインスタンスタイプとサイズを推奨します。メモリのメトリクスは CloudWatch エージェントで収集すると、推奨に反映されます。"
     }
   ],
-  "explanation": "AWS Compute Optimizer は、AWS リソース（EC2 インスタンス、Auto Scaling グループ、EBS ボリューム、Lambda 関数など）の設定と、過去の利用状況のメトリクス（CloudWatch）を分析して、最適なリソースの構成を推奨するサービスです。EC2 インスタンスについては、CPU、ネットワーク、ディスクなどのメトリクスから、現在のインスタンスが過剰または不足かを判定し、適切なインスタンスタイプとサイズ、削減できる費用の目安を示します。\n\nメモリの使用率は、既定では CloudWatch に出力されないため、CloudWatch エージェントをインストールして収集すると、推奨に反映されます。AWS Organizations の管理アカウントで有効にすると、組織内の複数のアカウントを対象にできます。\n\nTrusted Advisor の従来の使用率の低い EC2 インスタンスのチェックは、CPU 使用率とネットワーク I/O で候補を抽出するもので、勧める対応は停止・終了や Auto Scaling による台数の調整です。",
+  "explanation": "AWS Compute Optimizer は、AWS リソース（EC2 インスタンス、Auto Scaling グループ、EBS ボリューム、Lambda 関数など）の設定と、過去の利用状況のメトリクス（CloudWatch）を分析して、最適なリソースの構成を推奨するサービスです。EC2 インスタンスについては、CPU、ネットワーク、ディスクなどのメトリクスから、現在のインスタンスが過剰または不足かを判定し、適切なインスタンスタイプとサイズ、削減できる費用の目安を示します。\n\nメモリの使用率は、インスタンスに CloudWatch エージェントをインストールして収集すると、推奨に反映されます。AWS Organizations の管理アカウントで有効にすると、組織内の複数のアカウントを対象にできます。\n\nTrusted Advisor の従来の使用率の低い EC2 インスタンスのチェックは、CPU 使用率とネットワーク I/O で候補を抽出するもので、勧める対応は停止・終了や Auto Scaling による台数の調整です。",
   "keyPoints": [
     "実績に基づくインスタンスのライトサイジング → AWS Compute Optimizer（Organizations で複数アカウント対応）",
     "メモリ使用率は CloudWatch エージェントで収集すると推奨に反映される",
