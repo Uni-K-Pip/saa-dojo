@@ -837,12 +837,7 @@
   "cli": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "2d1b9d9f1e7f"
-  },
-  "cli.cloudshell-preauth": {
-    "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "18409da347d7"
+    "hash": "26a061f30f5e"
   },
   "cli.config-files": {
     "status": "verified",
@@ -9623,11 +9618,6 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "702078a3a6ed"
-  },
-  "xray.adot-multiple-backends": {
-    "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "3d90d7769db1"
   },
   "xray.annotations-metadata": {
     "status": "verified",

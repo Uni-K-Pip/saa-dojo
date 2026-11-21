@@ -127,24 +127,6 @@
       "recheck": "end-of-life"
     },
     {
-      "id": "xray.adot-multiple-backends",
-      "title": "ADOT で計装し、複数の送り先へテレメトリを送る",
-      "kind": "integration",
-      "text": "AWS Distro for OpenTelemetry（ADOT）を使うと、アプリケーションを一度計装して、相関したメトリクスとトレースを、Amazon CloudWatch、AWS X-Ray、Amazon OpenSearch Service、Amazon Managed Service for Prometheus などの複数のモニタリングへ送れる。",
-      "depth": "detail",
-      "sources": [
-        {
-          "title": "Integrating AWS X-Ray with other AWS services",
-          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-services.html"
-        },
-        {
-          "title": "Instrumenting your application for AWS X-Ray",
-          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-instrumenting-your-app.html"
-        }
-      ],
-      "checkedAt": "2026-11-21"
-    },
-    {
       "id": "xray.lambda-integration",
       "title": "Lambda は能動と受動の計装に対応する",
       "kind": "integration",

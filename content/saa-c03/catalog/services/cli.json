@@ -1,7 +1,7 @@
 {
   "id": "cli",
   "tier": 2,
-  "summary": "AWS CLI は、コマンドラインのシェルから AWS のサービスを操作できるオープンソースのツール。認証情報と設定をプロファイルで管理し、一時的な認証情報を使ったロールの引き受けにも対応する。ブラウザーからは AWS CloudShell で使える。",
+  "summary": "AWS CLI は、コマンドラインのシェルから AWS のサービスを操作できるオープンソースのツール。認証情報と設定をプロファイルで管理し、一時的な認証情報を使ったロールの引き受けにも対応する。",
   "chooseWhen": [
     {
       "text": "コンソールでの操作と同等のことを、コマンドやシェルスクリプトで実行・自動化したい",
@@ -16,12 +16,6 @@
         "cli.profiles",
         "cli.role-profile",
         "cli.config-files"
-      ]
-    },
-    {
-      "text": "インストールや認証情報の設定なしに、ブラウザーからすぐ CLI を使いたい（AWS CloudShell）",
-      "factRefs": [
-        "cli.cloudshell-preauth"
       ]
     },
     {
@@ -209,20 +203,6 @@
         {
           "title": "Setting the output format in the AWS CLI",
           "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-output-format.html"
-        }
-      ],
-      "checkedAt": "2026-11-21"
-    },
-    {
-      "id": "cli.cloudshell-preauth",
-      "title": "CloudShell なら認証情報の設定なしで CLI を使える",
-      "kind": "integration",
-      "text": "AWS CloudShell は、AWS マネジメントコンソールから起動するブラウザーベースの認証済みシェルである。コンソールへのサインインに使った認証情報が自動で使えるので、認証情報の設定は要らない。AWS CLI はあらかじめインストールされている。",
-      "depth": "core",
-      "sources": [
-        {
-          "title": "What is AWS CloudShell?",
-          "url": "https://docs.aws.amazon.com/cloudshell/latest/userguide/welcome.html"
         }
       ],
       "checkedAt": "2026-11-21"
