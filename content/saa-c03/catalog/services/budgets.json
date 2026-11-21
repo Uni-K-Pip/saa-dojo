@@ -1,0 +1,250 @@
+{
+  "id": "budgets",
+  "tier": 2,
+  "summary": "コストと使用量の予算を決め、実績や予測がしきい値を超えたときに通知し、必要なら自動で対応も実行するコスト管理のサービスである。リザーブドインスタンスや Savings Plans の使用率とカバレッジの予算も作れる。",
+  "chooseWhen": [
+    {
+      "text": "予算を決め、実績や見込みが予算を超えそうなときに、メールや SNS で通知を受けたい場合。",
+      "factRefs": [
+        "budgets.budget-types",
+        "budgets.forecast-alerts"
+      ]
+    },
+    {
+      "text": "しきい値を超えたときに、IAM ポリシーや SCP の適用、EC2 や RDS のインスタンスの操作を自動で行いたい場合。",
+      "factRefs": [
+        "budgets.budget-actions"
+      ]
+    },
+    {
+      "text": "リザーブドインスタンスや Savings Plans の使用率やカバレッジが下がったときに気づきたい場合。",
+      "factRefs": [
+        "budgets.reservation-budgets"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "コストと使用状況の推移を分析し、支出の内訳や傾向を調べたい場合は、Cost Explorer を選ぶ。",
+      "alternatives": [
+        "cost-explorer"
+      ],
+      "factRefs": [
+        "cost-explorer.cost-usage-visualization"
+      ]
+    },
+    {
+      "text": "リアルタイムに近い通知が要る場合は、予算の情報の更新が 1 日に最大 3 回である点に注意する。",
+      "factRefs": [
+        "budgets.update-frequency"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "budgets.budget-types",
+      "title": "コストと使用量の予算",
+      "kind": "feature",
+      "text": "AWS Budgets では、コスト予算で支出の上限を、使用量予算で 1 つ以上のサービスの使用量の上限を設定できる。どちらも、実績や予測がしきい値に近づいたり超えたりしたときにアラートを受け取れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.reservation-budgets",
+      "title": "RI と Savings Plans の使用率・カバレッジの予算",
+      "kind": "feature",
+      "text": "AWS Budgets では、リザーブドインスタンス（RI）と Savings Plans について、使用率とカバレッジの予算を作れる。使用率の予算は、使用率がしきい値を下回ったときに未使用や使用が少ない購入を見つけるために、カバレッジの予算は、購入によってカバーされた割合がしきい値を下回ったときに通知する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.forecast-alerts",
+      "title": "実績と予測のアラート",
+      "kind": "feature",
+      "text": "AWS Budgets の通知は、コストや使用量が予算を超えたときだけでなく、超える見込みのときにも設定できる。通知先は Amazon SNS トピック、メールアドレス、またはその両方である。",
+      "examPoint": "予算を超える前に知りたい場面では、予測値に対するアラートを設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.alert-limits",
+      "title": "1 件のアラートの通知先の上限",
+      "kind": "quota",
+      "text": "AWS Budgets のアラート 1 件あたりの通知先は、最大 10 件のメールアドレスと 1 つの Amazon SNS トピックである。アラートは、実績値と予測値のどちらに対しても設定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Best practices for AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.sns-same-account",
+      "title": "通知先の SNS トピックは同じアカウント",
+      "kind": "constraint",
+      "text": "AWS Budgets が通知を送る Amazon SNS トピックは、予算を設定しているのと同じアカウントに置く必要がある。アカウントをまたぐ SNS は対応していない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Creating an Amazon SNS topic for budget notifications",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-sns-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.budget-actions",
+      "title": "予算アクションで自動対応する",
+      "kind": "feature",
+      "text": "AWS Budgets の予算アクションは、予算がコストや使用量のしきい値を超えたときに、利用者に代わって処理を実行する。自動で実行するか、手動の承認のあとに実行するかを選べ、IAM ポリシーや SCP の適用、特定の EC2 や RDS のインスタンスの操作を指定できる。",
+      "examPoint": "SCP を使えば、予算の期間中に新しいリソースをプロビジョニングしないようにできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring budget actions",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.budget-actions-cross-account",
+      "title": "別のアカウントのインスタンスは対象にできない",
+      "kind": "constraint",
+      "text": "管理アカウントから、予算アクションとして別のアカウントに SCP を適用することはできる。しかし、別のアカウントの EC2 や RDS のインスタンスを予算アクションの対象にすることはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configuring budget actions",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.budget-actions-asg",
+      "title": "Auto Scaling グループのインスタンスの停止",
+      "kind": "constraint",
+      "text": "予算アクションで Auto Scaling グループ内の EC2 インスタンスを停止すると、Amazon EC2 Auto Scaling がそのインスタンスを再起動するか、停止したインスタンスを置き換える新しいインスタンスを起動する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Best practices for AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.update-frequency",
+      "title": "予算の情報は 1 日に最大 3 回更新される",
+      "kind": "constraint",
+      "text": "AWS Budgets の情報は、1 日に最大 3 回更新され、更新は通常、前回の更新から 8〜12 時間後に行われる。料金が発生してから通知が届くまでに遅れがあり、通知のしきい値を超える費用や使用量が先に発生することがある。",
+      "trap": "予算を設定しても、費用の発生を即座に通知するわけではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.custom-period",
+      "title": "カスタム期間の予算",
+      "kind": "feature",
+      "text": "AWS Budgets では、会計年度やプロジェクトの期間に合わせた、開始日と終了日を指定するカスタム期間の予算を作れる。カスタム期間の予算は自動で更新されず、終了日に失効する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        },
+        {
+          "title": "Best practices for AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.custom-period-max-range",
+      "title": "カスタム期間は開始日から 3 年以内",
+      "kind": "constraint",
+      "text": "AWS Budgets のカスタム期間の予算では、終了日を開始日から 3 年以内に設定する必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Best practices for AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "budgets.member-account-access",
+      "title": "メンバーアカウントの予算の権限",
+      "kind": "feature",
+      "text": "一括請求を使う組織の管理アカウントの所有者は、IAM ポリシーでメンバーアカウントの予算へのアクセスを制御できる。既定では、メンバーアカウントの所有者は自分の予算を作れるが、ほかのユーザーの予算は作成も編集もできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing your costs with AWS Budgets",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "budgets.pricing",
+      "title": "料金の仕組み",
+      "kind": "pricing",
+      "text": "AWS Budgets は、予算の監視と通知は無料で利用できる。予算にアクションを追加した場合は、アクション付きの予算のうち毎月 2 つまでが無料で、それを超えるアクション付きの予算には 1 日ごとの料金がかかる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Budgets Pricing",
+          "url": "https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "cost-explorer.forecast"
+  ],
+  "references": [
+    {
+      "title": "Managing your costs with AWS Budgets",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "title": "AWS Budgets Pricing",
+      "url": "https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/"
+    }
+  ],
+  "createdBy": "sc38",
+  "createdAt": "2026-11-21"
+}

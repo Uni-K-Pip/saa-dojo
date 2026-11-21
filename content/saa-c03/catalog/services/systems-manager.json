@@ -1,0 +1,327 @@
+{
+  "id": "systems-manager",
+  "tier": 2,
+  "summary": "EC2 やオンプレミスのサーバーなどのノードを、SSM Agent を通じて一元的に運用管理するサービスである。Session Manager、Run Command、Patch Manager、Automation、Parameter Store などのツールで、接続、コマンド実行、パッチ適用、運用作業の自動化、設定値の保管を行う。",
+  "chooseWhen": [
+    {
+      "text": "受信ポートの開放も、踏み台ホストや SSH キーの管理もなしで、ノードへ接続したい場合。",
+      "factRefs": [
+        "systems-manager.session-manager",
+        "systems-manager.instance-permissions"
+      ]
+    },
+    {
+      "text": "多数のノードへ、ログインせずに同じコマンドや構成変更を実行したい場合。",
+      "factRefs": [
+        "systems-manager.run-command"
+      ]
+    },
+    {
+      "text": "パッチの適用と準拠の確認を、パッチベースラインに沿って自動化したい場合。",
+      "factRefs": [
+        "systems-manager.patch-manager",
+        "systems-manager.patch-baseline"
+      ]
+    },
+    {
+      "text": "AMI ID や接続先の URL などの設定値を一元的に保管し、アプリケーションから取得したい場合。",
+      "factRefs": [
+        "systems-manager.parameter-store"
+      ]
+    },
+    {
+      "text": "ノードを定義した状態に保ちたい場合や、指定した時間帯に障害につながり得る作業を行いたい場合。",
+      "factRefs": [
+        "systems-manager.state-manager",
+        "systems-manager.maintenance-windows"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "データベースの認証情報などを自動ローテーションで管理したい場合は、Secrets Manager を選ぶ。",
+      "factRefs": [
+        "systems-manager.parameter-vs-secrets"
+      ],
+      "alternatives": [
+        "secrets-manager"
+      ]
+    },
+    {
+      "text": "ルールで設定の準拠を評価したい場合は、AWS Config を選ぶ。",
+      "factRefs": [
+        "config.rule-compliance"
+      ],
+      "alternatives": [
+        "config"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "systems-manager.managed-node-agent",
+      "title": "管理されるノードには SSM Agent が要る",
+      "kind": "feature",
+      "text": "Systems Manager でノードを操作するには、そのノードがマネージドノードである必要がある。マネージドノードとは、SSM Agent がインストールされ、エージェントが Systems Manager のサービスと通信できるマシンのことである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Systems Manager?",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.agent-network",
+      "title": "エージェントは外向きに接続する",
+      "kind": "integration",
+      "text": "SSM Agent が Systems Manager のサービスへのすべての接続を開始するため、Systems Manager のためにインスタンスへの受信通信を許可する設定は要らない。ノードからの接続先は、インターフェイス VPC エンドポイントで AWS PrivateLink 経由にするか、ssm、ssmmessages、ec2messages の各エンドポイントへ HTTPS（443）の送信を許可する。",
+      "examPoint": "AWS PrivateLink を使えば、インターネットゲートウェイも NAT デバイスも仮想プライベートゲートウェイも要らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Improve the security of EC2 instances by using VPC endpoints for Systems Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.instance-permissions",
+      "title": "既定ではインスタンスへの権限がない",
+      "kind": "feature",
+      "text": "既定では、Systems Manager にはインスタンスに対して操作を行う権限がない。権限は、アカウント単位では Default Host Management Configuration、インスタンス単位ではインスタンスプロファイルを通じた IAM ロールで与える。AWS 管理ポリシー AmazonSSMManagedInstanceCore を含むインスタンスプロファイルがあれば、Session Manager に必要な権限が備わる。",
+      "trap": "オンプレミスのサーバーや VM はインスタンスプロファイルを使わず、ハイブリッドアクティベーションに関連付けた IAM サービスロールで権限を得る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Step 2: Verify or add instance permissions for Session Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-instance-profile.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "systems-manager.session-manager",
+      "title": "Session Manager は受信ポートなしで接続する",
+      "kind": "feature",
+      "text": "Session Manager は、受信ポートを開けず、踏み台ホストも SSH キーも管理せずに、マネージドノードへ安全に接続できる Systems Manager のツールである。どのユーザーやグループがどのノードを使えるかは、IAM ポリシーだけで制御する。",
+      "examPoint": "パブリック IP アドレスを持たないノードへの接続を許可する場面でも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.session-logging",
+      "title": "セッションの記録先",
+      "kind": "integration",
+      "text": "Session Manager のセッションの記録は、AWS CloudTrail が Session Manager の API 呼び出しを記録し、セッションのログデータは S3 バケットや CloudWatch Logs のロググループへ送れる。",
+      "trap": "ポート転送や SSH を通すセッションは、ログを取れない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Session Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.run-command",
+      "title": "Run Command で遠隔から大規模に実行する",
+      "kind": "feature",
+      "text": "Run Command は、マネージドノードの構成を遠隔から安全に管理する Systems Manager のツールである。よくある管理作業の自動化や、一回限りの構成変更を、多数のノードに対して実行できる。",
+      "examPoint": "サーバーにログインせずに、多数のノードを遠隔で管理する場面で使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Run Command",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/run-command.html"
+        },
+        {
+          "title": "What is AWS Systems Manager?",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.patch-manager",
+      "title": "Patch Manager でパッチ適用を自動化する",
+      "kind": "feature",
+      "text": "Patch Manager は、マネージドノードにセキュリティ関連の更新とそのほかの更新を適用する作業を自動化する。不足しているパッチのレポートだけを得るスキャンと、スキャンしたうえで不足しているパッチをすべて自動でインストールする運用を選べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.patch-baseline",
+      "title": "準拠の基準はパッチベースラインで定める",
+      "kind": "feature",
+      "text": "パッチベースラインは、ノードにどのパッチをインストールすべきかの規則を定める設定である。準拠の基準は AWS や OS ベンダーではなく利用者が定め、承認基準を満たす利用可能なパッチがすべて適用されたノードが準拠となる。",
+      "trap": "パッチベースラインに準拠していても、そのノードが安全であるとは限らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Patch Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.parameter-store",
+      "title": "Parameter Store で設定値を保管する",
+      "kind": "feature",
+      "text": "Parameter Store は、設定データを名前付きの値（パラメーター）として一元的に保管する Systems Manager のツールである。パラメーターの型は String、StringList、SecureString で、SecureString の値は AWS KMS で暗号化される。",
+      "examPoint": "テキスト、名前のリスト、AMI の ID、ライセンスキーなどを保管できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.parameter-vs-secrets",
+      "title": "シークレットには Secrets Manager を勧める",
+      "kind": "feature",
+      "text": "ユーザー名やパスワードなどの認証情報を管理する場合、公式のページは AWS Secrets Manager を推奨している。認証情報のローテーションは、Parameter Store では「なし」、Secrets Manager では自動（データベースとの組み込み連携つき）と整理されている。",
+      "trap": "SecureString で暗号化できても、Parameter Store にはシークレットの自動ローテーションの機能はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.parameter-tiers",
+      "title": "標準と高度のティアの上限",
+      "kind": "quota",
+      "text": "Parameter Store のパラメーターは、標準か高度のティアを 1 件ごとに選ぶ。1 つのアカウントとリージョンあたりの最大数は標準が 10,000、高度が 100,000 で、値の最大サイズは標準が 4 KB、高度が 8 KB である（既定の上限）。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        },
+        {
+          "title": "AWS Systems Manager endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/ssm.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "systems-manager.parameter-tiers-advanced-only",
+      "title": "高度のティアだけが対応する機能",
+      "kind": "constraint",
+      "text": "Parameter Store のパラメーターポリシーと、他の AWS アカウントとのパラメーターの共有は、高度のティアのパラメーターだけが対応する。標準のパラメーターはどちらも対応していない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Parameter Store",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.automation",
+      "title": "Automation でランブックを実行する",
+      "kind": "feature",
+      "text": "Automation は、EC2、RDS、Redshift、S3 などの AWS サービスについて、よくある保守、デプロイ、修復の作業を自動化する Systems Manager のツールである。AWS が用意した定義済みのランブックも、利用者が作るカスタムのランブックも使える。",
+      "examPoint": "同時実行数とエラーのしきい値を指定して、フリート全体への展開を制御できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Automation",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.maintenance-windows",
+      "title": "メンテナンスウィンドウで作業の時間帯を決める",
+      "kind": "feature",
+      "text": "メンテナンスウィンドウは、OS のパッチ適用やドライバーの更新のような、障害につながり得る作業を行う時間帯のスケジュールを定める。タスクの種類は、Run Command のコマンド、Automation のワークフロー、Lambda の関数、Step Functions のタスクの 4 つである。",
+      "examPoint": "システムの準拠を自動で保つなら State Manager、優先度が高く時間が決まった作業を指定した期間に行うならメンテナンスウィンドウを選ぶ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Maintenance Windows",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.maintenance-windows-sfn-standard",
+      "title": "Step Functions は Standard のみ",
+      "kind": "constraint",
+      "text": "メンテナンスウィンドウのタスクとして実行できる Step Functions は、Standard ステートマシンのワークフローだけである。Express ステートマシンのワークフローには対応していない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Systems Manager Maintenance Windows",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "systems-manager.state-manager",
+      "title": "State Manager でノードを定義した状態に保つ",
+      "kind": "feature",
+      "text": "State Manager は、マネージドノードなどの AWS リソースを、利用者が定義した状態に保つ構成管理のツールである。アソシエーションに適用のスケジュールとターゲットを指定し、たとえばウイルス対策ソフトがインストールされていなければインストールさせる、といった運用ができる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Systems Manager State Manager",
+          "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-state.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "secrets-manager.automatic-rotation",
+    "config.ssm-remediation",
+    "vpc.interface-endpoint"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Systems Manager?",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/what-is-systems-manager.html"
+    },
+    {
+      "title": "AWS Systems Manager Parameter Store",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    },
+    {
+      "title": "AWS Systems Manager Session Manager",
+      "url": "https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"
+    }
+  ],
+  "createdBy": "sc38",
+  "createdAt": "2026-11-21"
+}

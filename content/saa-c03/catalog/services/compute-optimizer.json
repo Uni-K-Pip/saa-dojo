@@ -1,0 +1,254 @@
+{
+  "id": "compute-optimizer",
+  "tier": 2,
+  "summary": "AWS リソースの構成と CloudWatch の使用状況のメトリクスを分析し、ライトサイジングの推奨事項を出して、使われていないアイドルのリソースを見つけるサービスである。EC2、Auto Scaling グループ、EBS、Lambda などが対象である。",
+  "chooseWhen": [
+    {
+      "text": "使用状況のメトリクスに基づいて、EC2 インスタンスなどの過剰なサイズや不足を見つけ、より適切なタイプを知りたい場合。",
+      "factRefs": [
+        "compute-optimizer.rightsizing",
+        "compute-optimizer.finding-classifications"
+      ]
+    },
+    {
+      "text": "使われていないアイドルのリソースを見つけて、停止や削除を検討したい場合。",
+      "factRefs": [
+        "compute-optimizer.rightsizing"
+      ]
+    },
+    {
+      "text": "EC2 インスタンスのほか、Auto Scaling グループ、EBS ボリューム、Lambda 関数などもまとめて適正化したい場合。",
+      "factRefs": [
+        "compute-optimizer.supported-resources"
+      ]
+    },
+    {
+      "text": "追加料金なしで、既定のメトリクス分析に基づく推奨を得たい場合。",
+      "factRefs": [
+        "compute-optimizer.pricing"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "購入オプション（Savings Plans や RI）の推奨が目的なら、Cost Explorer を選ぶ。",
+      "alternatives": [
+        "cost-explorer"
+      ]
+    },
+    {
+      "text": "コストだけでなく、セキュリティや耐障害性も含む幅広いチェックが目的なら、Trusted Advisor を選ぶ。",
+      "alternatives": [
+        "trusted-advisor"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "compute-optimizer.rightsizing",
+      "title": "ライトサイジングの推奨とアイドルの検出",
+      "kind": "feature",
+      "text": "AWS Compute Optimizer は、AWS リソースの構成と使用状況のメトリクスを分析して、ライトサイジング（サイズの適正化）の推奨事項を出し、アイドル状態のリソースを見つける。推奨を適用すると、コストを下げ、ワークロードの性能を改善できる。",
+      "examPoint": "推奨を比べるために、最近の使用状況と、各推奨を適用した場合に見込まれる使用状況を示す使用率のグラフを使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Compute Optimizer?",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.supported-resources",
+      "title": "推奨の対象になるリソース",
+      "kind": "feature",
+      "text": "Compute Optimizer が推奨を出す対象には、EC2 インスタンス、EC2 Auto Scaling グループ、EBS ボリューム、Lambda 関数、AWS Fargate 上の ECS サービス、Aurora と RDS のデータベースなどがある。要件を満たし、十分なメトリクスのデータがあるリソースだけが対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Compute Optimizer?",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.opt-in",
+      "title": "オプトインするまで分析しない",
+      "kind": "feature",
+      "text": "Compute Optimizer は、オプトインするまでリソースを分析せず、推奨も出さない。オプトインできるのは、単独の AWS アカウント、組織のメンバーアカウント、組織の管理アカウントである。メンバーアカウントでオプトインした場合は、そのアカウントのリソースだけが分析される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Compute Optimizer?",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        },
+        {
+          "title": "Getting started with AWS Compute Optimizer",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/getting-started.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.organization-opt-in",
+      "title": "管理アカウントでメンバーアカウントも含めてオプトインする",
+      "kind": "feature",
+      "text": "組織の管理アカウントでオプトインするときは、管理アカウントだけか、管理アカウントとすべてのメンバーアカウントかを選べる。すべてのメンバーアカウントを含める場合は、組織のすべての機能を有効にする必要があり、Compute Optimizer は組織で信頼されたアクセスを有効にする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Getting started with AWS Compute Optimizer",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/getting-started.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.default-lookback",
+      "title": "既定では過去 14 日の CloudWatch メトリクスを分析する",
+      "kind": "feature",
+      "text": "オプトインしたあと、Compute Optimizer はリソースの仕様と、Amazon CloudWatch の使用状況のメトリクスを過去 14 日分について調べる。EC2 インスタンスでは、vCPU、メモリ、ストレージなどの仕様と、CPU 使用率、ネットワークの入出力、ディスクの読み書きなどのメトリクスを見る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Compute Optimizer?",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "compute-optimizer.memory-cloudwatch-agent",
+      "title": "メモリの分析には CloudWatch エージェントが要る",
+      "kind": "integration",
+      "text": "Compute Optimizer が EC2 インスタンスのメモリ使用率を分析するには、インスタンスに CloudWatch エージェントをインストールする。メモリのデータがあると、Compute Optimizer が扱うデータが増え、推奨が良くなる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "EC2 instance metrics",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.external-metrics",
+      "title": "外部の監視製品のメモリのメトリクス",
+      "kind": "integration",
+      "text": "Compute Optimizer は、Datadog、Dynatrace、Instana、New Relic の 4 つのオブザーバビリティ製品から取り込んだ外部の EC2 インスタンスのメモリ使用率のメトリクスも分析する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "EC2 instance metrics",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/ec2-metrics-analyzed.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.enhanced-infrastructure-metrics",
+      "title": "拡張インフラストラクチャメトリクスで 93 日に延ばす",
+      "kind": "feature",
+      "text": "拡張インフラストラクチャメトリクスは、使用状況のメトリクスの参照期間を最大 93 日に延ばす Compute Optimizer の有料の機能である。既定の期間は 14 日で、EC2 インスタンス、EC2 Auto Scaling グループ内のインスタンス、RDS の DB インスタンスに適用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enhanced infrastructure metrics",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/enhanced-infrastructure-metrics.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "compute-optimizer.pricing",
+      "title": "既定の分析は追加料金なし",
+      "kind": "pricing",
+      "text": "Compute Optimizer は、既定のメトリクス分析に基づく推奨を追加料金なしで提供する。参照期間を延ばす拡張インフラストラクチャメトリクスは、有料の機能である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Compute Optimizer?",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.finding-classifications",
+      "title": "EC2 の判定は 3 つに分かれる",
+      "kind": "feature",
+      "text": "EC2 インスタンスの判定は、不足（Under-provisioned）、過剰（Over-provisioned）、最適（Optimized）に分かれる。仕様の 1 つでも性能の要件を満たさないと不足、不足の仕様がなく、仕様の 1 つでも性能の要件を満たしたまま小さくできると過剰、すべての仕様が要件を満たし、過剰でもないと最適になる。",
+      "trap": "最適と判定されたインスタンスにも、新しい世代のインスタンスタイプが推奨されることがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Viewing EC2 instance recommendations",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.min-metric-data",
+      "title": "推奨に必要なメトリクスのデータ量",
+      "kind": "quota",
+      "text": "EC2 インスタンスと EC2 Auto Scaling グループには、過去 14 日間に少なくとも 30 時間分の CloudWatch メトリクスのデータが要る。拡張インフラストラクチャメトリクスを有効にした場合は、過去 93 日間に少なくとも 30 時間分である。分析が終わるまでに最大 24 時間かかる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resource requirements",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.cost-explorer-requirement",
+      "title": "節約額の計算には Cost Explorer を有効にする",
+      "kind": "integration",
+      "text": "Compute Optimizer が節約額を計算し、推奨の料金情報を表示するには、Cost Explorer を有効にして、その請求データを使えるようにする必要がある。Reserved Instances や Savings Plans の料金モデルを考慮したライトサイジングの推奨を得るには、Cost Optimization Hub へのオプトインも勧められている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resource requirements",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/requirements.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "compute-optimizer.rightsizing-preferences",
+      "title": "ライトサイジングの推奨の設定を調整する",
+      "kind": "feature",
+      "text": "ライトサイジングの推奨の設定では、CPU 使用率の余裕としきい値、メモリ使用率の余裕、参照期間、インスタンスファミリーの希望を、組織、アカウント、リージョンのレベルで調整できる。CPU とメモリの設定は EC2 インスタンスだけが対象である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Rightsizing recommendation preferences",
+          "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/rightsizing-preferences.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "trusted-advisor.ec2-low-utilization-check",
+    "trusted-advisor.ec2-cost-optimization-hub"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Compute Optimizer?",
+      "url": "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+    },
+    {
+      "title": "AWS Compute Optimizer Pricing",
+      "url": "https://aws.amazon.com/compute-optimizer/pricing/"
+    }
+  ],
+  "createdBy": "sc38",
+  "createdAt": "2026-11-21"
+}

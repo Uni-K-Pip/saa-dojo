@@ -614,6 +614,76 @@
     "checkedAt": "2026-11-21",
     "hash": "f11ea35c429f"
   },
+  "budgets": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d9c84a909596"
+  },
+  "budgets.alert-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ba2080f7f55c"
+  },
+  "budgets.budget-actions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b9ffe1f0bce6"
+  },
+  "budgets.budget-actions-asg": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0bd81eacceab"
+  },
+  "budgets.budget-actions-cross-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "103632c2e308"
+  },
+  "budgets.budget-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7f8a39041d32"
+  },
+  "budgets.custom-period": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "64904ed4a0be"
+  },
+  "budgets.custom-period-max-range": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "78714f8b082b"
+  },
+  "budgets.forecast-alerts": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0570aedb7add"
+  },
+  "budgets.member-account-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0c98d301e018"
+  },
+  "budgets.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ff194ce9c251"
+  },
+  "budgets.reservation-budgets": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1ea6e9f85ee2"
+  },
+  "budgets.sns-same-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bec866efa6af"
+  },
+  "budgets.update-frequency": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8ef4b3676fc5"
+  },
   "client-vpn": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -1354,6 +1424,76 @@
     "checkedAt": "2026-11-16",
     "hash": "f02beb2b7896"
   },
+  "compute-optimizer": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "facaeb93e0f4"
+  },
+  "compute-optimizer.cost-explorer-requirement": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cb2d5827b1be"
+  },
+  "compute-optimizer.default-lookback": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4bf25837c3fa"
+  },
+  "compute-optimizer.enhanced-infrastructure-metrics": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7faed7eef02c"
+  },
+  "compute-optimizer.external-metrics": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a43a50eae29d"
+  },
+  "compute-optimizer.finding-classifications": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f998c6b4b685"
+  },
+  "compute-optimizer.memory-cloudwatch-agent": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "51293d8c1d33"
+  },
+  "compute-optimizer.min-metric-data": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fa387d195f9e"
+  },
+  "compute-optimizer.opt-in": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fc141d838ef7"
+  },
+  "compute-optimizer.organization-opt-in": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fd900007aa9a"
+  },
+  "compute-optimizer.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a33b8e2468f9"
+  },
+  "compute-optimizer.rightsizing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "683dacd4b027"
+  },
+  "compute-optimizer.rightsizing-preferences": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "14eccdd50efc"
+  },
+  "compute-optimizer.supported-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "54221a097a51"
+  },
   "config": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -1603,6 +1743,76 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "62f90b76a90a"
+  },
+  "cost-and-usage-report": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f0791e02613e"
+  },
+  "cost-and-usage-report.athena-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "908910771e30"
+  },
+  "cost-and-usage-report.cur2-recommended": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3a0f2c71aa94"
+  },
+  "cost-and-usage-report.cur2-schema": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6d1cda1dacaa"
+  },
+  "cost-and-usage-report.data-exports-customize": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c5b5b111bb88"
+  },
+  "cost-and-usage-report.detailed-data": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a5e9106b48ab"
+  },
+  "cost-and-usage-report.legacy-report-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6b068a4cab31"
+  },
+  "cost-and-usage-report.organizations-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c1643e5894b7"
+  },
+  "cost-and-usage-report.overwrite-or-create-new": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3b598433cf45"
+  },
+  "cost-and-usage-report.redshift-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ffe3addce6ef"
+  },
+  "cost-and-usage-report.refresh-cadence": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e24782ca3bab"
+  },
+  "cost-and-usage-report.resource-level": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0966764f7f66"
+  },
+  "cost-and-usage-report.s3-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cba33d8d8a08"
+  },
+  "cost-and-usage-report.time-granularity": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1ff135bdcfe8"
   },
   "cost-explorer": {
     "status": "verified",
@@ -7528,6 +7738,91 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "3cc38ef34012"
+  },
+  "systems-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c088fe19048e"
+  },
+  "systems-manager.agent-network": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "746ed949256a"
+  },
+  "systems-manager.automation": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1a4e4c10ff0d"
+  },
+  "systems-manager.instance-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "eb7e6bec6dbf"
+  },
+  "systems-manager.maintenance-windows": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a5a7a7005a16"
+  },
+  "systems-manager.maintenance-windows-sfn-standard": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c6a919e45f9e"
+  },
+  "systems-manager.managed-node-agent": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2e2b82dead2f"
+  },
+  "systems-manager.parameter-store": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "642d122fabd2"
+  },
+  "systems-manager.parameter-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e60364acf369"
+  },
+  "systems-manager.parameter-tiers-advanced-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "da80cc11d4ba"
+  },
+  "systems-manager.parameter-vs-secrets": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7e19d606b941"
+  },
+  "systems-manager.patch-baseline": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6b2657aaadb9"
+  },
+  "systems-manager.patch-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6cd90f06423a"
+  },
+  "systems-manager.run-command": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cc06413cdc3a"
+  },
+  "systems-manager.session-logging": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b556de3f12a2"
+  },
+  "systems-manager.session-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "08c23d8a70f0"
+  },
+  "systems-manager.state-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cd921be97718"
   },
   "transfer-family": {
     "status": "verified",
