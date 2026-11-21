@@ -158,7 +158,7 @@
       "title": "JSON から Parquet・ORC への形式変換",
       "kind": "feature",
       "text": "Amazon Data Firehose は、入力データの形式を JSON から Apache Parquet または Apache ORC に変換してから S3 に保存できる。Parquet と ORC は列指向の形式で、JSON のような行指向の形式に比べて、容量を節約でき、クエリも速くなる。",
-      "trap": "JSON 以外の形式（CSV など）の入力は、先に Lambda で JSON に変換する必要がある。",
+      "trap": "JSON 以外の形式（CSV など）の入力を変換したいときは、先に Lambda で JSON に変換できる。",
       "depth": "core",
       "sources": [
         {
