@@ -328,11 +328,11 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "Gateway endpoints - AWS PrivateLink",
+          "title": "Gateway endpoints - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
         },
         {
-          "title": "Gateway endpoints for Amazon S3 - AWS PrivateLink",
+          "title": "Gateway endpoints for Amazon S3 - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
         }
       ],
@@ -417,15 +417,15 @@
       "title": "ゲートウェイエンドポイントは S3 と DynamoDB 用",
       "kind": "feature",
       "text": "ゲートウェイエンドポイントは Amazon S3 と Amazon DynamoDB 専用の VPC エンドポイントで、インターネットゲートウェイや NAT デバイスなしで接続できる。ルートテーブルにサービスのプレフィックスリストへのルートが追加され、追加料金はかからない。",
-      "examPoint": "プライベートサブネットから S3 や DynamoDB への通信コストを下げる第一候補。",
+      "examPoint": "プライベートサブネットから S3 や DynamoDB へ、NAT デバイスを通さずに、追加料金なしで接続したいときに使う。",
       "depth": "core",
       "sources": [
         {
-          "title": "Gateway endpoints - AWS PrivateLink",
+          "title": "Gateway endpoints - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "vpc.gateway-endpoint-scope",
@@ -436,7 +436,7 @@
       "depth": "core",
       "sources": [
         {
-          "title": "Gateway endpoints for Amazon S3 - AWS PrivateLink",
+          "title": "Gateway endpoints for Amazon S3 - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
         }
       ],
@@ -450,11 +450,11 @@
       "depth": "core",
       "sources": [
         {
-          "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+          "title": "Access an AWS service using an interface VPC endpoint - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
         },
         {
-          "title": "Access AWS services through AWS PrivateLink - AWS PrivateLink",
+          "title": "Access AWS services through AWS PrivateLink - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
         }
       ],
@@ -483,11 +483,11 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "AWS PrivateLink concepts - AWS PrivateLink",
+          "title": "AWS PrivateLink concepts - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
         },
         {
-          "title": "Configure an interface endpoint - AWS PrivateLink",
+          "title": "Configure an interface endpoint - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/interface-endpoints.html"
         }
       ],
@@ -501,11 +501,11 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "Access AWS services through AWS PrivateLink - AWS PrivateLink",
+          "title": "Access AWS services through AWS PrivateLink - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
         },
         {
-          "title": "Access an AWS service using an interface VPC endpoint - AWS PrivateLink",
+          "title": "Access an AWS service using an interface VPC endpoint - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-interface-endpoint.html"
         }
       ],
@@ -624,7 +624,7 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "title": "What is Traffic Mirroring? - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
         }
       ],
@@ -749,7 +749,7 @@
       "depth": "core",
       "sources": [
         {
-          "title": "What is IPAM? - Amazon VPC IP Address Manager",
+          "title": "What is IPAM? - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html"
         }
       ],
@@ -763,7 +763,7 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "title": "What is Traffic Mirroring? - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
         }
       ],
@@ -777,7 +777,7 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "What is Traffic Mirroring? - Amazon VPC Traffic Mirroring",
+          "title": "What is Traffic Mirroring? - Amazon Virtual Private Cloud",
           "url": "https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html"
         }
       ],

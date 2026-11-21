@@ -81,7 +81,7 @@
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         },
         {
@@ -99,7 +99,7 @@
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         },
         {
@@ -131,7 +131,7 @@
       "depth": "detail",
       "sources": [
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         },
         {
@@ -448,7 +448,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
         },
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         }
       ],
@@ -466,7 +466,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-copy-snapshot.html"
         },
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         }
       ],
@@ -498,7 +498,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/snapshot-archive.html"
         },
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         }
       ],
@@ -596,7 +596,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html"
         },
         {
-          "title": "What is Amazon EBS?",
+          "title": "What is Amazon Elastic Block Store?",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
         }
       ],
@@ -630,7 +630,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html"
         },
         {
-          "title": "DisableEbsEncryptionByDefault - Amazon EC2 API Reference",
+          "title": "DisableEbsEncryptionByDefault",
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableEbsEncryptionByDefault.html"
         }
       ],
@@ -648,7 +648,7 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/encryption-by-default.html"
         },
         {
-          "title": "DisableEbsEncryptionByDefault - Amazon EC2 API Reference",
+          "title": "DisableEbsEncryptionByDefault",
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DisableEbsEncryptionByDefault.html"
         }
       ],
@@ -662,7 +662,7 @@
       "depth": "core",
       "sources": [
         {
-          "title": "Recover deleted EBS volumes, snapshots, and AMIs with Recycle Bin",
+          "title": "Recover deleted EBS volumes, EBS snapshots, and EBS-backed AMIs with Recycle Bin",
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html"
         }
       ],
@@ -691,7 +691,7 @@
   ],
   "references": [
     {
-      "title": "What is Amazon EBS?",
+      "title": "What is Amazon Elastic Block Store?",
       "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
     },
     {

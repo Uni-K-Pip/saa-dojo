@@ -2231,13 +2231,13 @@
   },
   "ebs": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "f565347d8e29"
+    "checkedAt": "2026-11-21",
+    "hash": "4fc7d314d2c7"
   },
   "ebs.az-replication": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "cae9acdb1ee7"
+    "checkedAt": "2026-11-21",
+    "hash": "c5b01aae07e2"
   },
   "ebs.dlm": {
     "status": "verified",
@@ -2246,8 +2246,8 @@
   },
   "ebs.durability": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "bd2ac0b6a506"
+    "checkedAt": "2026-11-21",
+    "hash": "b0956de5819d"
   },
   "ebs.elastic-volumes-no-shrink": {
     "status": "verified",
@@ -2261,18 +2261,18 @@
   },
   "ebs.encryption-default-new-only": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "71a65c396131"
+    "checkedAt": "2026-11-21",
+    "hash": "f737b768e745"
   },
   "ebs.encryption-default-scope": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "f67fdfe5a425"
+    "checkedAt": "2026-11-21",
+    "hash": "b16e9e8ee4a7"
   },
   "ebs.encryption-how": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "eed2e02282f1"
+    "checkedAt": "2026-11-21",
+    "hash": "7c90c952d24d"
   },
   "ebs.encryption-no-direct": {
     "status": "verified",
@@ -2366,13 +2366,13 @@
   },
   "ebs.recycle-bin": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "0edfa8accaa1"
+    "checkedAt": "2026-11-21",
+    "hash": "69d92384798e"
   },
   "ebs.snapshot-archive": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "ae26392aee49"
+    "checkedAt": "2026-11-21",
+    "hash": "e6b8efcd870e"
   },
   "ebs.snapshot-copy-full": {
     "status": "verified",
@@ -2381,8 +2381,8 @@
   },
   "ebs.snapshot-copy-region-account": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "67becd0579a0"
+    "checkedAt": "2026-11-21",
+    "hash": "6b5df8de4c0b"
   },
   "ebs.snapshot-incremental": {
     "status": "verified",
@@ -2396,8 +2396,8 @@
   },
   "ebs.snapshot-restore-any-az": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "19cf03971b36"
+    "checkedAt": "2026-11-21",
+    "hash": "9db6cd5ee81b"
   },
   "ebs.snapshot-s3-storage": {
     "status": "verified",
@@ -2421,8 +2421,8 @@
   },
   "ebs.volume-type-categories": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "dadc47581588"
+    "checkedAt": "2026-11-21",
+    "hash": "19bea309ca8b"
   },
   "ec2": {
     "status": "verified",
@@ -7031,13 +7031,13 @@
   },
   "vpc.gateway-endpoint-scope": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "028e57c4ea61"
+    "checkedAt": "2026-11-21",
+    "hash": "2764add3fbd7"
   },
   "vpc.gateway-endpoint-services": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "4cadb310016e"
+    "checkedAt": "2026-11-21",
+    "hash": "fb01ca6fb338"
   },
   "vpc.igw-basics": {
     "status": "verified",
@@ -7051,8 +7051,8 @@
   },
   "vpc.interface-endpoint": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "4ef110af270c"
+    "checkedAt": "2026-11-21",
+    "hash": "7f84912e4919"
   },
   "vpc.interface-endpoint-central": {
     "status": "verified",
@@ -7061,13 +7061,13 @@
   },
   "vpc.interface-endpoint-enis": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "a1db2388f5fc"
+    "checkedAt": "2026-11-21",
+    "hash": "b2fae528ceac"
   },
   "vpc.interface-endpoint-private-dns": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "3fa726baf4aa"
+    "checkedAt": "2026-11-21",
+    "hash": "30017db05de0"
   },
   "vpc.interface-endpoint-targets": {
     "status": "verified",
@@ -7076,8 +7076,8 @@
   },
   "vpc.ipam": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "ee9df4dd0b68"
+    "checkedAt": "2026-11-21",
+    "hash": "e3ca1615fb4e"
   },
   "vpc.nacl-custom-default-deny": {
     "status": "verified",
@@ -7086,8 +7086,8 @@
   },
   "vpc.nacl-no-prefix-list": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "eed576097ab3"
+    "checkedAt": "2026-11-21",
+    "hash": "453eb423eb0e"
   },
   "vpc.nacl-stateless": {
     "status": "verified",
@@ -7191,18 +7191,18 @@
   },
   "vpc.traffic-mirroring": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "6063d1376345"
+    "checkedAt": "2026-11-21",
+    "hash": "d6c9a8378363"
   },
   "vpc.traffic-mirroring-components": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "eedcf523b123"
+    "checkedAt": "2026-11-21",
+    "hash": "45552c707d09"
   },
   "vpc.traffic-mirroring-target-types": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "4d4079f456d3"
+    "checkedAt": "2026-11-21",
+    "hash": "2d9928410c63"
   },
   "waf": {
     "status": "verified",
