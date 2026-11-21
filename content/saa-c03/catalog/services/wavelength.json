@@ -1,0 +1,231 @@
+{
+  "id": "wavelength",
+  "tier": 2,
+  "summary": "AWS Wavelength は、通信事業者のネットワークのエッジに標準的な AWS のコンピューティングとストレージを展開し、モバイル端末やエンドユーザーへ低レイテンシーで提供するサービス。VPC を Wavelength Zone へ拡張して使う。",
+  "chooseWhen": [
+    {
+      "text": "モバイル端末やエンドユーザーへ、アプリケーションを低レイテンシーで提供したい",
+      "factRefs": [
+        "wavelength.edge-compute",
+        "wavelength.latency-scope"
+      ]
+    },
+    {
+      "text": "通信事業者のネットワークのエッジで EC2 を動かし、リージョンの AWS サービスとも通信させたい",
+      "factRefs": [
+        "wavelength.edge-compute",
+        "wavelength.subnet-vpc"
+      ],
+      "alternatives": [
+        "ec2"
+      ]
+    },
+    {
+      "text": "通信事業者のネットワーク上のデバイスから、Wavelength Zone のアプリケーションへ直接接続させたい",
+      "factRefs": [
+        "wavelength.carrier-gateway"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "低レイテンシーが得られるのは同じ都市圏・同じ通信事業者のデバイスに限られ、広い地域の利用者向けには別の手段を検討する",
+      "factRefs": [
+        "wavelength.latency-scope"
+      ],
+      "alternatives": [
+        "cloudfront",
+        "global-accelerator"
+      ]
+    },
+    {
+      "text": "同じ VPC の別の Wavelength Zone のインスタンスとは直接通信できないので、Zone 間の通信が前提の構成は避ける",
+      "factRefs": [
+        "wavelength.no-inter-zone"
+      ]
+    },
+    {
+      "text": "Dedicated Instances・Dedicated Hosts が必要な構成や、オンデマンドと Instance Savings Plan 以外の購入オプションが前提の構成には向かない",
+      "factRefs": [
+        "wavelength.ec2-restrictions",
+        "wavelength.pricing"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "wavelength.edge-compute",
+      "title": "通信事業者のネットワークのエッジで動かす",
+      "kind": "feature",
+      "text": "AWS Wavelength は、モバイル端末やエンドユーザーへの低レイテンシーや、既存のエッジアプリケーションの回復性を必要とするアプリケーション向けに、標準的な AWS のコンピューティングとストレージを、通信事業者（CSP）のネットワークのエッジに展開する。VPC を 1 つ以上の Wavelength Zone へ拡張できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Wavelength?",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.zone-region",
+      "title": "Wavelength Zone はリージョンの論理的な拡張",
+      "kind": "feature",
+      "text": "Wavelength Zone は、通信事業者の拠点で Wavelength のインフラストラクチャを展開する場所で、AWS リージョンに関連付けられる。リージョンの論理的な拡張であり、リージョンのコントロールプレーンで管理される。リソースを操作するときは親リージョンを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Wavelength?",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.subnet-vpc",
+      "title": "Wavelength Zone のサブネットで VPC を拡張する",
+      "kind": "feature",
+      "text": "Wavelength Zone にリソースを置くには、先にその Wavelength Zone へオプトインし、VPC に関連付けたサブネットをその Zone に作る。1 つの VPC は、アベイラビリティーゾーン、Local Zone、Wavelength Zone にまたがれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Wavelength?",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+        },
+        {
+          "title": "How AWS Wavelength works",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.carrier-gateway",
+      "title": "キャリアゲートウェイ",
+      "kind": "feature",
+      "text": "キャリアゲートウェイは、特定の場所の通信事業者のネットワークからのインバウンドの通信を許可し、通信事業者のネットワークとインターネットへのアウトバウンドの通信を許可する。Wavelength Zone のサブネットを含む VPC でだけ使え、サブネットのデフォルトルートの向け先に指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS Wavelength works",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.carrier-gateway-no-inbound",
+      "title": "インターネットからのインバウンド接続の設定はない",
+      "kind": "constraint",
+      "text": "キャリアゲートウェイには、インターネットから Wavelength Zone へのインバウンド接続を設定する仕組みがない。インバウンドを受けるのは、通信事業者のネットワークからの通信である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS Wavelength works",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.carrier-ip",
+      "title": "キャリア IP アドレス",
+      "kind": "feature",
+      "text": "キャリア IP アドレスは、Wavelength Zone のサブネットにあるネットワークインターフェイス（EC2 インスタンスなど）に割り当てるアドレスで、ネットワークボーダーグループから確保する。キャリアゲートウェイが NAT でこのアドレスに変換し、インターネットやモバイル端末へ通信を送る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How AWS Wavelength works",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.resources",
+      "title": "Wavelength Zone で作れるリソース",
+      "kind": "integration",
+      "text": "Wavelength Zone には、EC2 インスタンス、EBS ボリューム、VPC のサブネットとキャリアゲートウェイを作れる。EC2 Auto Scaling、EKS クラスター、ECS クラスターなども使え、Application Load Balancer は一部の Wavelength Zone で使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Wavelength?",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.no-inter-zone",
+      "title": "別の Wavelength Zone のインスタンスとは通信できない",
+      "kind": "constraint",
+      "text": "同じ VPC にある、2 つの異なる Wavelength Zone の EC2 インスタンスは、互いに通信できない。Wavelength Zone の間で通信させるには、Zone ごとに VPC を作り、トランジットゲートウェイでつなぐ構成が推奨される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Quotas and considerations for Wavelength Zones",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/wavelength-quotas.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.latency-scope",
+      "title": "低レイテンシーで届く範囲",
+      "kind": "constraint",
+      "text": "キャリアネットワークからのインバウンドのルーティングは、Wavelength Zone の場所にあるデバイスに最適化されている。低レイテンシーのアクセスが得られるのは、同じ都市圏にあり、同じ通信事業者のネットワークにあるデバイスからだけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas and considerations for Wavelength Zones",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/wavelength-quotas.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.ec2-restrictions",
+      "title": "EC2 の制約（専有の購入と上限）",
+      "kind": "constraint",
+      "text": "Wavelength Zone の EC2 では、Dedicated Instances と Dedicated Hosts は使えない。EC2 のクォータは、親リージョンのクォータで管理される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas and considerations for Wavelength Zones",
+          "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/wavelength-quotas.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "wavelength.pricing",
+      "title": "Wavelength Zone の料金と購入オプション",
+      "kind": "pricing",
+      "text": "Wavelength Zone の EC2 インスタンスなどの AWS リソースの料金は、親リージョンとは異なる。EC2 インスタンスはオンデマンドでだけ提供され、Instance Savings Plan は Wavelength Zone で使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "5G Edge Computing Infrastructure – AWS Wavelength Pricing – Amazon Web Services",
+          "url": "https://aws.amazon.com/wavelength/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Wavelength?",
+      "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+    },
+    {
+      "title": "How AWS Wavelength works",
+      "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/how-wavelengths-work.html"
+    },
+    {
+      "title": "5G Edge Computing Infrastructure – AWS Wavelength Pricing – Amazon Web Services",
+      "url": "https://aws.amazon.com/wavelength/pricing/"
+    }
+  ],
+  "createdBy": "sc35",
+  "createdAt": "2026-11-21"
+}

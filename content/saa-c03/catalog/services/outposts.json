@@ -1,0 +1,289 @@
+{
+  "id": "outposts",
+  "tier": 2,
+  "summary": "AWS Outposts は、AWS のインフラストラクチャ、サービス、API、ツールを顧客の施設に拡張するフルマネージドのサービス。リージョンと同じインターフェイスで、オンプレミスの設備と低レイテンシーで通信し、データをローカルで処理する。",
+  "chooseWhen": [
+    {
+      "text": "データを特定の国や地域、自社の施設にとどめる要件があり、AWS のサービスを現地で動かしたい",
+      "factRefs": [
+        "outposts.use-cases",
+        "outposts.local-services"
+      ]
+    },
+    {
+      "text": "オンプレミスの設備と低レイテンシーで通信するワークロードを、リージョンと同じ API で動かしたい",
+      "factRefs": [
+        "outposts.extends-aws",
+        "outposts.use-cases"
+      ]
+    },
+    {
+      "text": "設置スペースが限られる拠点で、小さなキャパシティのローカルコンピューティングを使いたい",
+      "factRefs": [
+        "outposts.form-factors"
+      ]
+    },
+    {
+      "text": "既存の VPC を拡張し、オンプレミスのネットワークと直接通信するリソースを置きたい",
+      "factRefs": [
+        "outposts.vpc-subnet",
+        "outposts.local-gateway"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Outposts サーバーでは EC2・ECS・IoT Greengrass 以外のサービスは動かせないので、他のサービスが要るならラックを選ぶ",
+      "factRefs": [
+        "outposts.local-services"
+      ]
+    },
+    {
+      "text": "リージョンへのサービスリンクを安定して確保できない拠点では、リージョンに依存する DNS などが使えなくなる",
+      "factRefs": [
+        "outposts.service-link",
+        "outposts.dns-service-link"
+      ]
+    },
+    {
+      "text": "リージョンから Outpost への転送量が大きい構成は、データ転送の料金が加わるので見積もりに入れる",
+      "factRefs": [
+        "outposts.pricing-data-transfer"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "outposts.extends-aws",
+      "title": "AWS を顧客の施設へ拡張するフルマネージドのサービス",
+      "kind": "feature",
+      "text": "AWS Outposts は、AWS のインフラストラクチャ、サービス、API、ツールを顧客の施設へ拡張する、フルマネージドのサービスである。顧客は、AWS リージョンと同じプログラミングインターフェイスで、ローカルのコンピューティングとストレージを使い、低レイテンシーとローカルでのデータ処理を実現する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.use-cases",
+      "title": "Outposts が向く用途",
+      "kind": "feature",
+      "text": "Outposts が対象とするのは、オンプレミスのシステムへの低レイテンシーのアクセス、ローカルでのデータ処理、データレジデンシー、ローカルのシステム依存を持つアプリケーションの移行が必要なワークロードやデバイスである。データレジデンシーは、データを特定の国、州、自治体にとどめる要件を指す。",
+      "examPoint": "データをオンプレミスの特定の場所にとどめる要件や、設備との低レイテンシーの通信が決め手になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "On Premises Private Cloud - AWS Outposts - AWS",
+          "url": "https://aws.amazon.com/outposts/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.form-factors",
+      "title": "Outposts ラックと Outposts サーバー",
+      "kind": "feature",
+      "text": "Outposts のフォームファクターには、業界標準の 42U のラックである Outposts ラックと、1U または 2U のサーバーである Outposts サーバーがある。サーバーは、設置スペースが限られる拠点や、小さなキャパシティで足りる拠点にローカルのコンピューティングとネットワークを提供する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.local-services",
+      "title": "ラックとサーバーで動かせるサービスの違い",
+      "kind": "constraint",
+      "text": "Outposts ラックでは、EC2、ECS、EKS、EBS、S3、RDS、Application Load Balancer、Route 53 Resolver などのサービスを現地で動かせる。Outposts サーバーで動かせるのは、EC2、ECS、AWS IoT Greengrass である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "On Premises Private Cloud - AWS Outposts - AWS",
+          "url": "https://aws.amazon.com/outposts/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.vpc-subnet",
+      "title": "VPC を Outpost へ拡張するサブネット",
+      "kind": "feature",
+      "text": "リージョンの VPC は、Outpost のサブネットを追加して Outpost まで拡張できる。サブネットを作るときに Outpost の ARN を指定する。Outpost のサブネットのインスタンスは、同じ VPC の中でリージョンのインスタンスとプライベート IP アドレスで通信できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        },
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.az-extension",
+      "title": "Outpost はアベイラビリティーゾーンの拡張",
+      "kind": "feature",
+      "text": "Outpost はリージョン内の 1 つのアベイラビリティーゾーンに紐づけられ、その AZ の拡張として扱われる。回復性のために使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.service-link",
+      "title": "サービスリンクでリージョンとつなぐ",
+      "kind": "feature",
+      "text": "サービスリンクは、Outpost とホームのリージョンをつなぐ接続で、暗号化された VPN 接続の集合である。Outpost の管理と、リージョンと Outpost の間の通信に使われる。Outpost は、リージョンとの接続が常に保たれる前提で動き、オンプレミスのネットワークはリージョンへの WAN アクセスを提供する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        },
+        {
+          "title": "Connectivity through service link",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/service-links.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.service-link-connection",
+      "title": "サービスリンクの接続方法",
+      "kind": "feature",
+      "text": "サービスリンクには Direct Connect またはインターネット接続を使え、パブリックとプライベートの接続から選べる。プライベートでは、Direct Connect のプライベート VIF かトランジット VIF を使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Connectivity through service link",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/service-links.html"
+        },
+        {
+          "title": "Service link private connectivity options",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/private-connectivity.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.local-gateway",
+      "title": "ラックのローカルゲートウェイ",
+      "kind": "feature",
+      "text": "Outposts ラックのローカルゲートウェイは、Outpost のサブネットとオンプレミスのネットワークの間の通信を実現する論理的なルーターである。オンプレミス宛てのルートのターゲットに指定し、使えるのは Outposts ラックに関連付けたルートテーブルだけである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        },
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.local-network-interface",
+      "title": "サーバーのローカルネットワークインターフェイス",
+      "kind": "constraint",
+      "text": "Outposts サーバーは、ローカルゲートウェイではなくローカルネットワークインターフェイスでオンプレミスのネットワークとつながる。Outpost のサブネットで動く Outposts サーバーでだけ使え、Outposts ラックのインスタンスやリージョンのインスタンスからは使えない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.dns-service-link",
+      "title": "Route 53 の DNS にはサービスリンクが必要",
+      "kind": "constraint",
+      "text": "Route 53 のリゾルバーはリージョンにホストされるため、Outpost のインスタンスが Route 53 の DNS 機能を使うには、リージョンへのサービスリンクが稼働している必要がある。自前の DNS サーバーを使うには、そのための DHCP オプションセットを作り、VPC に関連付ける。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.no-outpost-to-outpost",
+      "title": "同じ VPC の Outpost 間の接続の注意",
+      "kind": "constraint",
+      "text": "同じ VPC の中で、Outpost を別の Outpost や Local Zone に接続することはできないと注記されている。一方、同じ VPC のサブネット間であれば、ローカルゲートウェイと direct VPC routing を使って、別の Outpost にまたがる通信を設定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        },
+        {
+          "title": "How AWS Outposts works",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/how-outposts-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.pricing",
+      "title": "注文内容で決まる料金",
+      "kind": "pricing",
+      "text": "Outposts の料金は注文内容で決まる。EC2 のインスタンスタイプとストレージの組み合わせである構成、契約期間、支払いオプションを選ぶ。ラックの料金には、配送、設置、インフラのメンテナンス、ソフトウェアのパッチとアップグレード、ラックの撤去が含まれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "outposts.pricing-data-transfer",
+      "title": "リージョンからのデータ転送の課金",
+      "kind": "pricing",
+      "text": "共有リソースと、AWS リージョンから Outpost へのデータ転送には課金される。可用性とセキュリティを維持するために AWS が行うデータ転送も課金の対象である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Outposts?",
+          "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "direct-connect.private-vif"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Outposts?",
+      "url": "https://docs.aws.amazon.com/outposts/latest/userguide/what-is-outposts.html"
+    },
+    {
+      "title": "On Premises Private Cloud - AWS Outposts - AWS",
+      "url": "https://aws.amazon.com/outposts/"
+    }
+  ],
+  "createdBy": "sc35",
+  "createdAt": "2026-11-21"
+}

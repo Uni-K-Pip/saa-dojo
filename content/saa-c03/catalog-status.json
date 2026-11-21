@@ -5399,6 +5399,156 @@
     "checkedAt": "2026-11-16",
     "hash": "a7c622f8276c"
   },
+  "outposts": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b7e21d28f582"
+  },
+  "outposts.az-extension": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d0ba83d6c3eb"
+  },
+  "outposts.dns-service-link": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "af3d53b98bc8"
+  },
+  "outposts.extends-aws": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "238c3e8c8cd6"
+  },
+  "outposts.form-factors": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "469e28b8ca39"
+  },
+  "outposts.local-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d31b57f2f919"
+  },
+  "outposts.local-network-interface": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "dc2badeb49ee"
+  },
+  "outposts.local-services": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "051a9fe5950c"
+  },
+  "outposts.no-outpost-to-outpost": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cf91088bd47f"
+  },
+  "outposts.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5ed295ed825b"
+  },
+  "outposts.pricing-data-transfer": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5f4bdf8a5202"
+  },
+  "outposts.service-link": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f2442b7eac01"
+  },
+  "outposts.service-link-connection": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ce1f18f865fe"
+  },
+  "outposts.use-cases": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ba0a26426a35"
+  },
+  "outposts.vpc-subnet": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c8a3f2ce4a69"
+  },
+  "privatelink": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0ad7dd559d6a"
+  },
+  "privatelink.cross-region": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1605eeaf8871"
+  },
+  "privatelink.cross-region-consumer-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "abb3242d70e6"
+  },
+  "privatelink.cross-region-provider-charge": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2d714d1b1e64"
+  },
+  "privatelink.endpoint-service-load-balancer": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "87471fa918f2"
+  },
+  "privatelink.limited-reachability": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e5ce29c3f42d"
+  },
+  "privatelink.overlapping-cidr": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "79acc7795df4"
+  },
+  "privatelink.permission-removal": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a2280089dce9"
+  },
+  "privatelink.permissions-acceptance": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6018bd15c09e"
+  },
+  "privatelink.private-connectivity": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3a815fab082d"
+  },
+  "privatelink.provider-azs": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9b59596d5da7"
+  },
+  "privatelink.provider-consumer-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ae698e5520d9"
+  },
+  "privatelink.resource-sharing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c2abaacdc51b"
+  },
+  "privatelink.service-private-dns": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "148633c4407a"
+  },
+  "privatelink.source-ip-proxy-protocol": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5ce7324e4475"
+  },
   "ram": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -7004,6 +7154,91 @@
     "checkedAt": "2026-11-14",
     "hash": "a5fc00866bc9"
   },
+  "vpc-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2c87b56bcfd4"
+  },
+  "vpc-endpoints.gateway-route-association": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5c754c9e41b9"
+  },
+  "vpc-endpoints.gateway-route-precedence": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9ac40bdb50d8"
+  },
+  "vpc-endpoints.gateway-sg-nacl": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "31e082d17564"
+  },
+  "vpc-endpoints.gwlb-no-private-dns": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "98aa6f9f9cf8"
+  },
+  "vpc-endpoints.gwlb-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a5568610c2b0"
+  },
+  "vpc-endpoints.interface-az-ha": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "20cd801a7eab"
+  },
+  "vpc-endpoints.policy-basics": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ca469aca46c8"
+  },
+  "vpc-endpoints.policy-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "95dca897543e"
+  },
+  "vpc-endpoints.policy-gateway-principal": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e58f3a0f4a3c"
+  },
+  "vpc-endpoints.policy-no-override": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7d60aa3342ba"
+  },
+  "vpc-endpoints.pricing-hourly": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "abd1fc0ef8da"
+  },
+  "vpc-endpoints.quota-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "076519b5ee70"
+  },
+  "vpc-endpoints.quota-interface-gwlb": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fa92834ee89b"
+  },
+  "vpc-endpoints.s3-cost-dns": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "766b91ad9f0a"
+  },
+  "vpc-endpoints.s3-ddb-both": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e089a93fbb6f"
+  },
+  "vpc-endpoints.types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "beeed5a0ce80"
+  },
   "vpc.az-id": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -7328,5 +7563,65 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "c36f3dbf8d9d"
+  },
+  "wavelength": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9ef486ebec19"
+  },
+  "wavelength.carrier-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e48b6170427b"
+  },
+  "wavelength.carrier-gateway-no-inbound": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "dd61fef0a627"
+  },
+  "wavelength.carrier-ip": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "aebc68c69e56"
+  },
+  "wavelength.ec2-restrictions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e4be0a56f870"
+  },
+  "wavelength.edge-compute": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "daa6dcb7aa47"
+  },
+  "wavelength.latency-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6527ef184bec"
+  },
+  "wavelength.no-inter-zone": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7f79d079350b"
+  },
+  "wavelength.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "660677dfff12"
+  },
+  "wavelength.resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6e9c1ddd5cc1"
+  },
+  "wavelength.subnet-vpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c281c4a3bd91"
+  },
+  "wavelength.zone-region": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "96ffe24fb970"
   }
 }

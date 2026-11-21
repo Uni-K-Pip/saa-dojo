@@ -1,0 +1,360 @@
+{
+  "id": "vpc-endpoints",
+  "tier": 2,
+  "summary": "VPC エンドポイントは、VPC から AWS のサービスなどへ、インターネットゲートウェイや NAT デバイスを通さずに接続する入口。S3 と DynamoDB 向けのゲートウェイ型と、AWS PrivateLink を使うインターフェイス型などの種類がある。",
+  "chooseWhen": [
+    {
+      "text": "プライベートサブネットから S3・DynamoDB へ、インターネットゲートウェイや NAT デバイスを使わず追加料金なしで接続したい",
+      "factRefs": [
+        "vpc.gateway-endpoint-services",
+        "vpc-endpoints.gateway-route-association"
+      ]
+    },
+    {
+      "text": "VPC 内のリソースから AWS のサービスへ、プライベート IP アドレスで接続したい（インターフェイス型）",
+      "factRefs": [
+        "vpc.interface-endpoint",
+        "vpc-endpoints.pricing-hourly"
+      ],
+      "alternatives": [
+        "privatelink"
+      ]
+    },
+    {
+      "text": "S3 へ、VPC 内はゲートウェイ型、オンプレミスはインターフェイス型で届け、料金を抑えたい",
+      "factRefs": [
+        "vpc-endpoints.s3-cost-dns"
+      ]
+    },
+    {
+      "text": "エンドポイントを使ってアクセスできるプリンシパルを、エンドポイント単位で絞りたい",
+      "factRefs": [
+        "vpc-endpoints.policy-basics",
+        "vpc-endpoints.policy-no-override"
+      ]
+    },
+    {
+      "text": "VPC の通信を仮想アプライアンスへ通して検査したい（Gateway Load Balancer エンドポイント）",
+      "factRefs": [
+        "vpc-endpoints.types",
+        "elb.gwlb-endpoint"
+      ],
+      "alternatives": [
+        "elb"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "オンプレミスなど VPC の外から S3 へ届けるには、ゲートウェイ型では足りない",
+      "factRefs": [
+        "vpc.gateway-endpoint-scope",
+        "vpc-endpoints.s3-ddb-both"
+      ],
+      "alternatives": [
+        "privatelink"
+      ]
+    },
+    {
+      "text": "S3・DynamoDB だけなら、時間料金のかかるインターフェイス型の前に、追加料金のないゲートウェイ型で足りるかを確かめる",
+      "factRefs": [
+        "vpc-endpoints.pricing-hourly",
+        "vpc.gateway-endpoint-services"
+      ]
+    },
+    {
+      "text": "自社のサービスを他のアカウントへ公開するには、エンドポイントだけでなく PrivateLink のエンドポイントサービスを作る",
+      "factRefs": [
+        "vpc.interface-endpoint-targets",
+        "privatelink.provider-consumer-model"
+      ],
+      "alternatives": [
+        "privatelink"
+      ]
+    },
+    {
+      "text": "エンドポイントポリシーは他のポリシーを置き換えないので、これだけで許可を完結させない",
+      "factRefs": [
+        "vpc-endpoints.policy-no-override"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "vpc-endpoints.types",
+      "title": "VPC エンドポイントの種類",
+      "kind": "feature",
+      "text": "VPC エンドポイントには、Interface、GatewayLoadBalancer、Resource、Tunnel、Service network、Gateway の種類があり、必要な種類を指定して作る。Gateway だけは S3 と DynamoDB 向けで、ほかの種類と違って AWS PrivateLink を使わない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS PrivateLink concepts",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+        },
+        {
+          "title": "Gateway endpoints",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.s3-ddb-both",
+      "title": "S3 と DynamoDB は 2 種類のエンドポイントに対応",
+      "kind": "feature",
+      "text": "Amazon S3 と Amazon DynamoDB は、ゲートウェイエンドポイントとインターフェイスエンドポイントの両方に対応する。S3 では、ゲートウェイエンドポイントでは足りないオンプレミスなどからの接続に、追加料金のかかるインターフェイスエンドポイントを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Gateway endpoints",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        },
+        {
+          "title": "Gateway endpoints for Amazon S3",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.gateway-route-association",
+      "title": "ゲートウェイエンドポイントを使うサブネット",
+      "kind": "feature",
+      "text": "ゲートウェイエンドポイントを使うのは、エンドポイントに関連付けたルートテーブルのサブネットにあるインスタンスだけである。関連付けのないルートテーブルのサブネットのインスタンスは、エンドポイントではなく公開のサービスエンドポイントを使う。",
+      "trap": "エンドポイントを作っても、ルートテーブルを関連付けなければ、そのサブネットの通信は変わらない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Gateway endpoints",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.gateway-route-precedence",
+      "title": "ゲートウェイエンドポイントの経路の優先",
+      "kind": "feature",
+      "text": "ゲートウェイエンドポイントのあるルートテーブルでは、0.0.0.0/0 がインターネットゲートウェイへ向いていても、同じリージョンの S3 や DynamoDB 宛ての通信にはエンドポイントの経路が優先される。同じリージョンのサービスの IP 範囲をそのまま指定した経路があれば、そちらがエンドポイントの経路より優先される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Gateway endpoints",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.gateway-sg-nacl",
+      "title": "ゲートウェイエンドポイントとセキュリティグループ・ACL",
+      "kind": "constraint",
+      "text": "ゲートウェイエンドポイントを使っても、インスタンスはサービスのパブリックなエンドポイントにアクセスする。そのため、インスタンスのセキュリティグループとサブネットのネットワーク ACL は、S3 や DynamoDB との通信を許可している必要がある。セキュリティグループにはサービスのプレフィックスリストの ID を指定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Gateway endpoints",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+        },
+        {
+          "title": "Gateway endpoints for Amazon S3",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.interface-az-ha",
+      "title": "インターフェイスエンドポイントを複数 AZ に置く",
+      "kind": "feature",
+      "text": "本番環境では、インターフェイスエンドポイントを 2 つ以上のアベイラビリティーゾーンに構成し、サービスへアクセスするリソースもそれらの AZ に置くことが推奨される。エンドポイントが 1 つの AZ だけにあると、その AZ が障害になったとき、別の AZ のリソースもサービスへアクセスできなくなる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Access AWS services through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-access-aws-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.pricing-hourly",
+      "title": "PrivateLink のエンドポイントは AZ ごとの時間課金",
+      "kind": "pricing",
+      "text": "AWS PrivateLink のエンドポイントは、プロビジョニングされている時間が AZ ごとに課金され、サービスとの関連付けの状態は関係ない。1 時間に満たない時間も 1 時間として課金され、エンドポイントを削除すると時間課金は止まる。",
+      "examPoint": "インターフェイスエンドポイントを複数の AZ に作ると、時間料金は AZ ごとにかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS PrivateLink Pricing",
+          "url": "https://aws.amazon.com/privatelink/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.s3-cost-dns",
+      "title": "S3 の 2 種類のエンドポイントで料金を抑える",
+      "kind": "feature",
+      "text": "S3 でゲートウェイエンドポイントとインターフェイスエンドポイントの両方を作り、インターフェイスエンドポイントのプライベート DNS を「インバウンド Resolver エンドポイントのみ」にすると、オンプレミスからの要求はインターフェイスエンドポイントを、VPC からの要求はゲートウェイエンドポイントを使う。インターフェイスエンドポイントの料金は、ゲートウェイエンドポイントを使えない通信だけにかかる。",
+      "trap": "「インバウンド Resolver エンドポイントのみ」にしないと、VPC からの要求もインターフェイスエンドポイントを通り、料金がかかる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Gateway endpoints for Amazon S3",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.policy-basics",
+      "title": "エンドポイントポリシーの役割",
+      "kind": "feature",
+      "text": "エンドポイントポリシーは、VPC エンドポイントにアタッチするリソースベースのポリシーで、そのエンドポイントを使って AWS サービスへアクセスできる AWS プリンシパルを制御する。IAM ポリシー言語の JSON ドキュメントで、Principal 要素を含める必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control access to VPC endpoints using endpoint policies",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.policy-no-override",
+      "title": "エンドポイントポリシーは他のポリシーを置き換えない",
+      "kind": "constraint",
+      "text": "エンドポイントポリシーは、アイデンティティベースのポリシーやリソースベースのポリシーを上書きも置き換えもしない。たとえば S3 では、バケットポリシーでも特定のエンドポイントや VPC からのバケットへのアクセスを制御できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control access to VPC endpoints using endpoint policies",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.policy-default",
+      "title": "既定のエンドポイントポリシーはフルアクセス",
+      "kind": "feature",
+      "text": "AWS サービス向けのエンドポイントでポリシーをアタッチしなければ、デフォルトのエンドポイントポリシーが付く。このポリシーは、すべてのプリンシパルによるすべてのリソースへのすべてのアクションを、エンドポイント経由で許可する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control access to VPC endpoints using endpoint policies",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "vpc-endpoints.policy-gateway-principal",
+      "title": "ゲートウェイエンドポイントのポリシーのプリンシパル",
+      "kind": "constraint",
+      "text": "ゲートウェイエンドポイントのエンドポイントポリシーでは、Principal 要素を * にする必要があり、プリンシパルを指定するには aws:PrincipalArn 条件キーを使う。",
+      "trap": "\"AWS\": \"アカウント ID\" の形式で指定すると、アカウントのルートユーザーだけが許可され、すべてのユーザーとロールは許可されない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Control access to VPC endpoints using endpoint policies",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.gwlb-pricing",
+      "title": "Gateway Load Balancer エンドポイントの課金",
+      "kind": "pricing",
+      "text": "Gateway Load Balancer エンドポイントは、プロビジョニングされている時間が AZ ごとに課金され、処理したデータの GB 数にも課金される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Access virtual appliances through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.gwlb-no-private-dns",
+      "title": "GWLB エンドポイントではプライベート DNS 名が使えない",
+      "kind": "constraint",
+      "text": "Gateway Load Balancer エンドポイントでは、プライベート DNS 名はサポートされない。サービスへ通信を送るには、ルートテーブルでエンドポイントの ID をターゲットに指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Manage DNS names for VPC endpoint services",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/manage-dns-names.html"
+        },
+        {
+          "title": "Access virtual appliances through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "vpc-endpoints.quota-interface-gwlb",
+      "title": "VPC あたりのインターフェイス・GWLB エンドポイント数",
+      "kind": "quota",
+      "text": "VPC あたりのインターフェイスエンドポイントと Gateway Load Balancer エンドポイントの数は、合わせて既定値が 50 で、Service Quotas で引き上げられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink quotas",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-limits-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "vpc-endpoints.quota-gateway",
+      "title": "ゲートウェイエンドポイントの数の既定値",
+      "kind": "quota",
+      "text": "ゲートウェイエンドポイントの数は、リージョンあたりの既定値が 20 で、Service Quotas で引き上げられる。1 つの VPC には最大 255 個まで作れる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink quotas",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-limits-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    }
+  ],
+  "seeAlso": [
+    "vpc.gateway-endpoint-services",
+    "vpc.gateway-endpoint-scope",
+    "vpc.interface-endpoint",
+    "vpc.interface-endpoint-targets",
+    "vpc.interface-endpoint-private-dns",
+    "vpc.interface-endpoint-enis",
+    "vpc.interface-endpoint-central",
+    "vpc.nacl-no-prefix-list",
+    "s3.vpce-source-ip",
+    "nat-gateway.endpoint-bypass",
+    "elb.gwlb-endpoint"
+  ],
+  "references": [
+    {
+      "title": "AWS PrivateLink concepts",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+    },
+    {
+      "title": "Gateway endpoints",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html"
+    },
+    {
+      "title": "AWS PrivateLink Pricing",
+      "url": "https://aws.amazon.com/privatelink/pricing/"
+    }
+  ],
+  "createdBy": "sc35",
+  "createdAt": "2026-11-21"
+}
