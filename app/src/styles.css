@@ -1071,7 +1071,12 @@ details.fact.is-target {
   background: var(--surface-2);
 }
 
-/* 幅 600px 未満: 観点ごとに見出しを置き、その下にサービスごとの値を縦に並べる */
+.compare-axis,
+.compare-facts {
+  display: block;
+}
+
+/* 幅 600px 未満: 観点ごとに見出しを置き、その下にサービスごとの値を縦に並べる。根拠の事実へのリンクは、値の後ろに回す */
 @media (max-width: 599px) {
   .compare-table,
   .compare-table tbody,
@@ -1096,21 +1101,48 @@ details.fact.is-target {
     overflow: hidden;
   }
 
+  /* 行の見出しのセルは箱を作らず、中の「観点」と「根拠の事実」を、値のセルと同じ並びに置く */
+  .compare-table tbody tr {
+    display: flex;
+    flex-direction: column;
+  }
+
   .compare-table tbody th {
+    display: contents;
+  }
+
+  .compare-axis {
+    order: 0;
+    padding: 8px 10px;
     background: var(--surface-2);
-    border: none;
+    font-weight: 700;
   }
 
   .compare-table td {
+    order: 1;
     border: none;
     border-top: 1px solid var(--border);
   }
 
-  .compare-table td::before {
-    content: attr(data-label);
+  .compare-table td::before,
+  .compare-facts::before {
     display: block;
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--muted);
+  }
+
+  .compare-table td::before {
+    content: attr(data-label);
+  }
+
+  .compare-facts {
+    order: 2;
+    padding: 8px 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .compare-facts::before {
+    content: '根拠の事実';
   }
 }

@@ -66,23 +66,31 @@ export default function ComparePage() {
                 </tr>
               </thead>
               <tbody>
-                {c.rows.map((r) => (
-                  <tr key={r.axis}>
-                    <th scope="row">
-                      {r.axis}
-                      {resolveFactLinks(r.factRefs, index).map((l) => (
-                        <span key={l.id} className="small fact-ref">
-                          <Link to={catalogPath(l.entryId, l.slug)}>{l.title}</Link>
-                        </span>
+                {c.rows.map((r) => {
+                  const links = resolveFactLinks(r.factRefs, index);
+                  return (
+                    <tr key={r.axis}>
+                      {/* 幅の狭い画面では、スタイルで「観点 → サービスごとの値 → 根拠の事実」の順に並べ替える */}
+                      <th scope="row">
+                        <span className="compare-axis">{r.axis}</span>
+                        {links.length > 0 && (
+                          <span className="compare-facts">
+                            {links.map((l) => (
+                              <span key={l.id} className="small fact-ref">
+                                <Link to={catalogPath(l.entryId, l.slug)}>{l.title}</Link>
+                              </span>
+                            ))}
+                          </span>
+                        )}
+                      </th>
+                      {c.services.map((s) => (
+                        <td key={s} data-label={nameOf(s)}>
+                          {r.values[s]}
+                        </td>
                       ))}
-                    </th>
-                    {c.services.map((s) => (
-                      <td key={s} data-label={nameOf(s)}>
-                        {r.values[s]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
