@@ -1,0 +1,65 @@
+{
+  "id": "cmp-documentdb-dynamodb",
+  "title": "Amazon DocumentDB (with MongoDB compatibility) と Amazon DynamoDB",
+  "services": [
+    "documentdb",
+    "dynamodb"
+  ],
+  "decide": [
+    "MongoDB で使うものと同じアプリケーションのコード、ドライバー、ツールを使いたいなら DocumentDB",
+    "キーバリューのデータを、どの規模でも 1 桁ミリ秒の性能で扱いたいなら DynamoDB",
+    "複数のリージョンのレプリカで、それぞれ読み書きしたいなら DynamoDB のグローバルテーブル",
+    "最大 15 個のレプリカインスタンスを足して、読み取りのスループットを増やしたいなら DocumentDB"
+  ],
+  "rows": [
+    {
+      "axis": "データベースの種類と互換性",
+      "values": {
+        "documentdb": "MongoDB の API と互換性を持つフルマネージドのデータベース",
+        "dynamodb": "キーバリューとドキュメントのデータモデルに対応する、サーバーレスでフルマネージドの NoSQL データベース"
+      },
+      "factRefs": [
+        "documentdb.mongodb-compatible",
+        "dynamodb.overview"
+      ]
+    },
+    {
+      "axis": "別のリージョンへの複製",
+      "values": {
+        "documentdb": "グローバルクラスターは、プライマリリージョンへ書き込み、最大 10 個の読み取り専用のセカンダリリージョンへ複製する",
+        "dynamodb": "グローバルテーブルは、複数のリージョンにテーブルを自動で複製し、どのレプリカでも読み書きできる"
+      },
+      "factRefs": [
+        "documentdb.global-cluster",
+        "dynamodb.global-tables"
+      ]
+    },
+    {
+      "axis": "容量の扱い",
+      "values": {
+        "documentdb": "serverless 構成では、需要に応じて容量を自動で増減し、使ったリソースにだけ課金される",
+        "dynamodb": "オンデマンドモードでは、容量の計画や設定をせずに、リクエスト数に応じて課金される"
+      },
+      "factRefs": [
+        "documentdb.serverless",
+        "dynamodb.on-demand"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon DocumentDB (with MongoDB compatibility) - Amazon DocumentDB",
+      "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+    },
+    {
+      "title": "What is Amazon DynamoDB? - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+    },
+    {
+      "title": "Global tables - multi-active, multi-Region replication - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc45"
+}

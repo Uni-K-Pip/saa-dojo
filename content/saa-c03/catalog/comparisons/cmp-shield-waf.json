@@ -1,0 +1,72 @@
+{
+  "id": "cmp-shield-waf",
+  "title": "AWS Shield と AWS WAF",
+  "services": [
+    "shield",
+    "waf"
+  ],
+  "decide": [
+    "追加料金なしで、AWS のリソースを DDoS 攻撃から守りたいなら Shield Standard",
+    "Shield Response Team（SRT）の専用の支援を受けたいなら Shield Advanced",
+    "送信元 IP アドレスやクエリ文字列の値などの条件で、HTTP・HTTPS リクエストを許可・ブロックしたいなら AWS WAF",
+    "指定した時間の中で、指定した数を超えるリクエストを、ブロックまたはカウントしたいなら AWS WAF のレートベースのルール"
+  ],
+  "sources": [
+    {
+      "title": "How AWS Shield and Shield Advanced work - AWS WAF, AWS Firewall Manager, AWS Shield Advanced, and AWS Shield network security director",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"
+    },
+    {
+      "title": "What are AWS WAF, AWS Shield Advanced, AWS Shield network security director and AWS Firewall Manager? - AWS WAF, AWS Firewall Manager, AWS Shield Advanced, and AWS Shield network security director",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html"
+    }
+  ],
+  "rows": [
+    {
+      "axis": "対象とする攻撃・リクエスト",
+      "values": {
+        "shield": "ネットワークのボリューム型、ネットワークのプロトコル型、アプリケーション層の DDoS 攻撃を検出する",
+        "waf": "保護対象へ転送される HTTP・HTTPS リクエストを検査し、指定した条件でアクセスを制御する"
+      },
+      "factRefs": [
+        "shield.attack-classes",
+        "waf.http-request-inspection"
+      ]
+    },
+    {
+      "axis": "保護を有効にする対象",
+      "values": {
+        "shield": "Shield Advanced は、明示的に指定したリソースか、Firewall Manager のポリシーで保護するリソースにだけ有効になる",
+        "waf": "ルールを定義したウェブ ACL を、保護対象のリソースへ関連付ける"
+      },
+      "factRefs": [
+        "shield.explicit-protection",
+        "waf.web-acl-association"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "shield": "Shield Advanced は、月額料金に加えて、CloudFront、ELB、EC2、Global Accelerator からのデータ転送アウトに基づく使用料がかかる",
+        "waf": "従量課金では、ウェブ ACL の数、ルールの数、受信する Web リクエストの数に基づいて料金がかかる"
+      },
+      "factRefs": [
+        "shield.advanced-pricing",
+        "waf.pay-as-you-go-pricing"
+      ]
+    },
+    {
+      "axis": "アプリケーション層の DDoS への対策",
+      "values": {
+        "shield": "Shield Advanced は、アプリケーション層の保護の一部として、AWS WAF のウェブ ACL、ルール、ルールグループを使う",
+        "waf": "Anti-DDoS マネージドルールグループが、トラフィックの基準線をもとに通常と異なる攻撃パターンを検出して防御する"
+      },
+      "factRefs": [
+        "shield.waf-integration",
+        "waf.anti-ddos-managed-rules"
+      ]
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc44"
+}

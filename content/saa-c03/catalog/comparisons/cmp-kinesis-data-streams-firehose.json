@@ -1,0 +1,32 @@
+{
+  "id": "cmp-kinesis-data-streams-firehose",
+  "title": "Amazon Kinesis Data Streams と Amazon Data Firehose",
+  "services": [
+    "kinesis-data-streams",
+    "firehose"
+  ],
+  "decide": [
+    "レコードを独自のコンシューマーアプリケーションで読み取り、リアルタイムに処理したいなら Kinesis Data Streams",
+    "同じストリームのレコードを、複数のコンシューマーで並行して独立に処理したいなら Kinesis Data Streams",
+    "保持期間内の過去のレコードを、あとから再処理したいなら Kinesis Data Streams",
+    "アプリケーションを書いたりリソースを管理したりせずに、Redshift や OpenSearch Service、Splunk などの宛先へ配信したいなら Firehose",
+    "宛先へ配信する前に、ストリーミングデータを変換したいなら Firehose"
+  ],
+  "docRef": "cheatsheet-messaging-streaming",
+  "sources": [
+    {
+      "title": "What is Amazon Kinesis Data Streams? - Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    },
+    {
+      "title": "What is Amazon Data Firehose? - Amazon Data Firehose",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    },
+    {
+      "title": "Managed Streaming Data Service – Amazon Kinesis Data Streams FAQs – AWS",
+      "url": "https://aws.amazon.com/kinesis/data-streams/faqs/"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc45"
+}

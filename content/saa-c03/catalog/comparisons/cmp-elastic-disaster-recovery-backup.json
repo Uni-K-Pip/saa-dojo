@@ -1,0 +1,31 @@
+{
+  "id": "cmp-elastic-disaster-recovery-backup",
+  "title": "AWS Elastic Disaster Recovery と AWS Backup",
+  "services": [
+    "elastic-disaster-recovery",
+    "backup"
+  ],
+  "decide": [
+    "障害のあと、復旧用のインスタンスを AWS 上で数分以内に起動したいなら Elastic Disaster Recovery",
+    "オンプレミスのアプリケーションを、AWS を復旧先として守りたいなら Elastic Disaster Recovery",
+    "複数の AWS サービスのリソースに、バックアップポリシーを一元的に適用したいなら AWS Backup",
+    "バックアップを別のリージョンへコピーしたいなら AWS Backup"
+  ],
+  "docRef": "cheatsheet-dr-strategies",
+  "sources": [
+    {
+      "title": "What is Elastic Disaster Recovery? - AWS Elastic Disaster Recovery",
+      "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+    },
+    {
+      "title": "What is AWS Backup? - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+    },
+    {
+      "title": "Creating backup copies across AWS Regions - AWS Backup",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc43"
+}

@@ -1564,10 +1564,20 @@
     "checkedAt": "2026-11-21",
     "hash": "2986c009849a"
   },
+  "cmp-application-migration-service-dms-datasync": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "735635d53302"
+  },
   "cmp-athena-redshift-emr": {
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "a27d461d51ec"
+  },
+  "cmp-budgets-cost-explorer": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a89bec3701ea"
   },
   "cmp-cloudformation-elastic-beanstalk": {
     "status": "verified",
@@ -1579,6 +1589,11 @@
     "checkedAt": "2026-11-20",
     "hash": "c22c186f7295"
   },
+  "cmp-cloudhsm-kms": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "391ba011602f"
+  },
   "cmp-cloudwatch-cloudtrail-config": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -1589,6 +1604,11 @@
     "checkedAt": "2026-11-20",
     "hash": "3011f360b1e6"
   },
+  "cmp-documentdb-dynamodb": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c433458e0859"
+  },
   "cmp-ecs-eks": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -1598,6 +1618,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "7e5ff37923f0"
+  },
+  "cmp-elastic-disaster-recovery-backup": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "447ef388ab51"
   },
   "cmp-elasticache-dax": {
     "status": "verified",
@@ -1624,6 +1649,11 @@
     "checkedAt": "2026-11-21",
     "hash": "11c4dfa07474"
   },
+  "cmp-kinesis-data-streams-firehose": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4bf78a56a928"
+  },
   "cmp-kms-secrets-manager-acm": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1634,10 +1664,30 @@
     "checkedAt": "2026-11-21",
     "hash": "cc2d6eac394f"
   },
+  "cmp-macie-guardduty": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ee1b8d75bf68"
+  },
+  "cmp-mq-sqs": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8be5fc0b684a"
+  },
   "cmp-nat-gateway-vpc": {
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "383f1764c54b"
+  },
+  "cmp-outposts-wavelength": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "68d255f07363"
+  },
+  "cmp-privatelink-vpc": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bc617f40c06f"
   },
   "cmp-rds-aurora-dynamodb": {
     "status": "verified",
@@ -1654,6 +1704,16 @@
     "checkedAt": "2026-11-20",
     "hash": "e78f7a0a2300"
   },
+  "cmp-sct-dms": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "01138e4183f1"
+  },
+  "cmp-shield-waf": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3b3fa143c30a"
+  },
   "cmp-sqs-kinesis-data-streams": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -1664,6 +1724,16 @@
     "checkedAt": "2026-11-20",
     "hash": "31a932cbfea1"
   },
+  "cmp-storage-gateway-datasync": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "64378edc64b6"
+  },
+  "cmp-systems-manager-secrets-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "81dc97436b73"
+  },
   "cmp-transit-gateway-vpc": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -1673,6 +1743,11 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "ee7d23704cf9"
+  },
+  "cmp-xray-cloudwatch": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "17824962bbfe"
   },
   "cognito": {
     "status": "verified",

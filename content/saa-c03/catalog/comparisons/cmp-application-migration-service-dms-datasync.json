@@ -1,0 +1,71 @@
+{
+  "id": "cmp-application-migration-service-dms-datasync",
+  "title": "AWS Application Migration Service・AWS Database Migration Service・AWS DataSync",
+  "services": [
+    "application-migration-service",
+    "dms",
+    "datasync"
+  ],
+  "decide": [
+    "物理・仮想・クラウドのサーバーを、最小のダウンタイムで AWS へ移したいなら Application Migration Service（AWS Transform MGN）",
+    "データベースのデータを、異なるエンジンへ移したいなら DMS",
+    "オンプレミスの NFS・SMB などのファイルやオブジェクトを、AWS のストレージへ転送したいなら DataSync"
+  ],
+  "rows": [
+    {
+      "axis": "移すもの",
+      "values": {
+        "application-migration-service": "物理・仮想・クラウドのサーバー",
+        "dms": "対応するソースとターゲットの間のデータベース（同じエンジンへも、異なるエンジンへも）",
+        "datasync": "ファイルやオブジェクトのデータ"
+      },
+      "factRefs": [
+        "application-migration-service.overview",
+        "dms.engine-migrations",
+        "datasync.overview"
+      ]
+    },
+    {
+      "axis": "移行元",
+      "values": {
+        "application-migration-service": "物理サーバー、VMware vSphere、Microsoft Hyper-V、他のクラウドプロバイダーのサーバー",
+        "dms": "公式の対応ソース一覧に列挙されたデータストア（Oracle、MySQL、PostgreSQL、Amazon S3 など）",
+        "datasync": "オンプレミスの NFS・SMB・HDFS・オブジェクトストレージ、他のクラウドのストレージ"
+      },
+      "factRefs": [
+        "application-migration-service.source-support",
+        "dms.source-endpoint-scope",
+        "datasync.supported-locations"
+      ]
+    },
+    {
+      "axis": "移行中の変更の反映",
+      "values": {
+        "application-migration-service": "AWS Replication Agent が書き込みを捉え、ブロックレベルの変更をレプリケーションサーバーへ複製する",
+        "dms": "変更データキャプチャ（CDC）で、移行元の変更を継続的に移行先へ反映する",
+        "datasync": "「変更されたデータだけを転送」を選ぶと、最初の全体の転送のあと、差のあるデータとメタデータだけをコピーする"
+      },
+      "factRefs": [
+        "application-migration-service.replication-agent",
+        "dms.ongoing-cdc",
+        "datasync.incremental-transfer"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What Is AWS Transform MGN? - AWS Transform MGN",
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+    },
+    {
+      "title": "What is AWS Database Migration Service? - AWS Database Migration Service",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc43"
+}

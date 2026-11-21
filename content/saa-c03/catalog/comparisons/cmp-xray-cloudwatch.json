@@ -1,0 +1,62 @@
+{
+  "id": "cmp-xray-cloudwatch",
+  "title": "AWS X-Ray と Amazon CloudWatch",
+  "services": [
+    "xray",
+    "cloudwatch"
+  ],
+  "decide": [
+    "リクエストの経路をたどり、ボトルネックやレイテンシーの急増を特定したいなら X-Ray",
+    "メトリクスをしきい値で監視し、超えたときに通知やアクションを実行したいなら CloudWatch のアラーム",
+    "ログを対話的なクエリで調べたいなら CloudWatch Logs Insights",
+    "EC2 やオンプレミスのサーバーのメモリやディスクの使用状況を監視したいなら CloudWatch エージェント"
+  ],
+  "rows": [
+    {
+      "axis": "集めるもの",
+      "values": {
+        "xray": "アプリケーションが処理するリクエストのデータを、セグメントとして受け取り、トレースにまとめる",
+        "cloudwatch": "時間順に並ぶデータポイントであるメトリクスを扱い、システム・アプリケーション・AWS サービスからのログを一か所に集約する"
+      },
+      "factRefs": [
+        "xray.segments-traces",
+        "cloudwatch.metric-identity",
+        "cloudwatch.logs-centralization"
+      ]
+    },
+    {
+      "axis": "問題の調べ方",
+      "values": {
+        "xray": "トレースマップで、エラーが起きているサービスやレイテンシーの高い接続を見つける",
+        "cloudwatch": "CloudWatch Logs Insights で、ログデータをクエリで対話的に検索・分析し、原因の候補を調べる"
+      },
+      "factRefs": [
+        "xray.trace-map",
+        "cloudwatch.logs-insights"
+      ]
+    },
+    {
+      "axis": "データの保持",
+      "values": {
+        "xray": "トレースのデータとサービスグラフのデータは、30 日間保持される",
+        "cloudwatch": "CloudWatch Logs では、ロググループごとに保持期間を選べ、期限を設けない設定も選べる"
+      },
+      "factRefs": [
+        "xray.retention-30-days",
+        "cloudwatch.logs-retention"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is AWS X-Ray? - AWS X-Ray",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+    },
+    {
+      "title": "What is Amazon CloudWatch? - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc46"
+}

@@ -1,0 +1,50 @@
+{
+  "id": "cmp-storage-gateway-datasync",
+  "title": "AWS Storage Gateway と AWS DataSync",
+  "services": [
+    "storage-gateway",
+    "datasync"
+  ],
+  "decide": [
+    "オンプレミスのアプリケーションを変えずに、NFS や SMB のファイル共有として S3 を使いたいなら Storage Gateway（S3 File Gateway）",
+    "オンプレミスのサーバーに、iSCSI のデバイスとしてボリュームをマウントさせたいなら Storage Gateway（Volume Gateway）",
+    "バックアップアプリケーションに、メディアチェンジャーとテープドライブから成る仮想テープライブラリを見せたいなら Storage Gateway（Tape Gateway）",
+    "オンプレミスの NFS・SMB などから、AWS のストレージへデータを移行したいなら DataSync"
+  ],
+  "rows": [
+    {
+      "axis": "役割",
+      "values": {
+        "storage-gateway": "NFS・SMB・iSCSI などの既存のプロトコルのまま、オンプレミスのアプリケーションが AWS のストレージを使えるようにする",
+        "datasync": "ファイルやオブジェクトのデータを、AWS のストレージサービスとの間、またはその間で、安全・高速に転送する"
+      },
+      "factRefs": [
+        "storage-gateway.gateway-types",
+        "datasync.overview"
+      ]
+    },
+    {
+      "axis": "NFS・SMB のファイル共有の扱い",
+      "values": {
+        "storage-gateway": "S3 File Gateway は、NFS または SMB のファイル共有を通じて、Amazon S3 のオブジェクトを保存・取得できるようにする",
+        "datasync": "オンプレミスの NFS・SMB などと、AWS の S3・EFS・FSx などの間で、データを転送する"
+      },
+      "factRefs": [
+        "storage-gateway.s3-file-gateway",
+        "datasync.supported-locations"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
+    },
+    {
+      "title": "What is AWS DataSync? - AWS DataSync",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc43"
+}
