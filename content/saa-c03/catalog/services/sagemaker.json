@@ -1,0 +1,297 @@
+{
+  "id": "sagemaker",
+  "tier": 2,
+  "summary": "Amazon SageMaker AI は、機械学習モデルの構築・学習・デプロイをまとめて行えるフルマネージドの ML サービス。推論の方式は、リアルタイム・サーバーレス・非同期・バッチ変換から用途に合わせて選ぶ。",
+  "chooseWhen": [
+    {
+      "text": "自分のアルゴリズムやフレームワークでモデルを学習し、本番のホスト環境へデプロイしたい",
+      "factRefs": [
+        "sagemaker.what-is",
+        "sagemaker.custom-models"
+      ]
+    },
+    {
+      "text": "事前学習済みのモデルを使い、複雑な設定なしにデプロイしたい（JumpStart）",
+      "factRefs": [
+        "sagemaker.jumpstart"
+      ]
+    },
+    {
+      "text": "対話的で待ち時間の短い推論ならリアルタイム推論、アイドル期間があり起動の遅れを許容できるならサーバーレス推論を選ぶ",
+      "factRefs": [
+        "sagemaker.realtime-inference",
+        "sagemaker.serverless-inference"
+      ]
+    },
+    {
+      "text": "大きなペイロードや長い処理時間の推論は非同期推論、データセット全体への推論はバッチ変換を選ぶ",
+      "factRefs": [
+        "sagemaker.async-inference",
+        "sagemaker.batch-transform"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "モデルのカスタマイズや学習が不要で、用途に合う既製の AI サービスで足りる",
+      "factRefs": [
+        "sagemaker.target-use"
+      ],
+      "alternatives": [
+        "rekognition",
+        "textract",
+        "transcribe",
+        "translate",
+        "comprehend",
+        "polly"
+      ]
+    },
+    {
+      "text": "データセット全体の推論のために、常駐のエンドポイントを立てる（バッチ変換なら不要）",
+      "factRefs": [
+        "sagemaker.batch-transform"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "sagemaker.what-is",
+      "title": "SageMaker AI はフルマネージドの ML サービス",
+      "kind": "feature",
+      "text": "Amazon SageMaker AI は、フルマネージドの機械学習（ML）サービスである。データサイエンティストや開発者が、ML モデルを構築・学習し、本番向けのホスト環境へデプロイできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon SageMaker AI?",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.naming",
+      "title": "Amazon SageMaker AI と Amazon SageMaker の関係",
+      "kind": "feature",
+      "text": "2024年12月3日に、Amazon SageMaker は Amazon SageMaker AI に改称された。同日にリリースされた次世代の Amazon SageMaker は、データ・分析・AI を統合するプラットフォームで、SageMaker AI はその機能の 1 つである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon SageMaker AI?",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.custom-models",
+      "title": "独自のアルゴリズム・フレームワークを持ち込める",
+      "kind": "feature",
+      "text": "SageMaker AI は、マネージドの ML アルゴリズムを提供するほか、独自のアルゴリズムやフレームワークの持ち込みに対応する。PyTorch、TensorFlow、JAX などのフレームワークと、任意のコンテナを使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon SageMaker AI?",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html"
+        },
+        {
+          "title": "Machine Learning Service - Amazon Sagemaker AI - AWS",
+          "url": "https://aws.amazon.com/sagemaker/ai/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.jumpstart",
+      "title": "JumpStart の事前学習済みモデル",
+      "kind": "feature",
+      "text": "SageMaker JumpStart は、幅広い問題の種類に向けた事前学習済みのオープンソースモデルを提供する。Amazon SageMaker Studio から、複雑な設定なしに事前学習済みモデルをデプロイできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SageMaker JumpStart pretrained models",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jumpstart.html"
+        },
+        {
+          "title": "Deploy models for inference",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.canvas",
+      "title": "Canvas でコードなし・低コードにモデルを作る",
+      "kind": "feature",
+      "text": "コードなし・低コードの UI でモデルを作るには、Amazon SageMaker Canvas を使う。カスタムモデルを作るときは、データに基づいてアルゴリズムが自動で選ばれる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Train a Model with Amazon SageMaker",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-training.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.realtime-inference",
+      "title": "リアルタイム推論は低遅延の常駐エンドポイント",
+      "kind": "feature",
+      "text": "リアルタイム推論は、常駐のエンドポイントで 1 件ずつ予測を返す方式で、対話的で低遅延の要件がある推論に向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Model deployment options in Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html"
+        },
+        {
+          "title": "Deploy models for inference",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.serverless-inference",
+      "title": "サーバーレス推論はアイドルがあるワークロード向け",
+      "kind": "feature",
+      "text": "サーバーレス推論は、基盤のインフラを設定・管理せずにモデルをデプロイする方式である。トラフィックの合間にアイドル期間があり、コールドスタートを許容できるワークロードに向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Deploy models for inference",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+        },
+        {
+          "title": "Model deployment options in Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.async-inference",
+      "title": "非同期推論は大きなペイロードと長い処理向け",
+      "kind": "feature",
+      "text": "非同期推論は、受け取ったリクエストをキューに入れて非同期に処理する方式で、ニアリアルタイムの遅延要件のもと、大きなペイロード（最大 1 GB）と長い処理時間（最大 1 時間）の推論に向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Deploy models for inference",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+        },
+        {
+          "title": "Model deployment options in Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.batch-transform",
+      "title": "バッチ変換はデータセット全体への推論",
+      "kind": "feature",
+      "text": "バッチ変換は、データセット全体に対する予測を得る方式で、永続的なエンドポイントが要らない。大きなデータセットからの推論や、データの前処理にも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Batch transform for inference with Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html"
+        },
+        {
+          "title": "Model deployment options in Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.batch-s3",
+      "title": "バッチ変換は S3 のオブジェクトを入出力に使う",
+      "kind": "integration",
+      "text": "バッチ変換のジョブは、入力の S3 オブジェクトをキーで分割して各インスタンスへ割り当て、出力ファイルを S3 の指定した場所に保存する。入力ファイルの数と出力ファイルの数は等しい。",
+      "depth": "detail",
+      "services": [
+        "Amazon S3"
+      ],
+      "sources": [
+        {
+          "title": "Batch transform for inference with Amazon SageMaker AI",
+          "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.target-use",
+      "title": "モデルをカスタマイズ・学習する ML チーム向け",
+      "kind": "feature",
+      "text": "SageMaker AI は、基盤のインフラを自分で構築・管理せずに、AI モデルのカスタマイズ・学習・デプロイ・ガバナンスを行いたい ML チーム向けのサービスである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Machine Learning Service - Amazon Sagemaker AI - AWS",
+          "url": "https://aws.amazon.com/sagemaker/ai/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.pricing-payment",
+      "title": "料金はオンデマンドと Savings Plans",
+      "kind": "pricing",
+      "text": "SageMaker AI は使った分だけ支払う。支払いの選び方は 2 つで、最低料金も前払いの約束もないオンデマンドと、一定の使用量を約束する代わりに使用量ベースの柔軟な料金になる Amazon SageMaker Savings Plans がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SageMaker Pricing",
+          "url": "https://aws.amazon.com/sagemaker/ai/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.pricing-instance",
+      "title": "リアルタイム・非同期・バッチ変換は選んだインスタンスで課金",
+      "kind": "pricing",
+      "text": "リアルタイム推論と非同期推論は、選んだインスタンスタイプの利用に対して課金される。バッチ変換も、選んだインスタンスタイプを使った時間に対して課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SageMaker Pricing",
+          "url": "https://aws.amazon.com/sagemaker/ai/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sagemaker.pricing-serverless",
+      "title": "サーバーレス推論は処理した分だけ課金",
+      "kind": "pricing",
+      "text": "オンデマンドのサーバーレス推論は、推論リクエストの処理に使ったコンピューティング容量がミリ秒単位で、処理したデータ量とあわせて課金される。コンピューティングの料金は、選んだメモリ構成で決まる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "SageMaker Pricing",
+          "url": "https://aws.amazon.com/sagemaker/ai/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon SageMaker AI?",
+      "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html"
+    },
+    {
+      "title": "Deploy models for inference",
+      "url": "https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html"
+    },
+    {
+      "title": "SageMaker Pricing",
+      "url": "https://aws.amazon.com/sagemaker/ai/pricing/"
+    }
+  ],
+  "createdBy": "sc42",
+  "createdAt": "2026-11-21"
+}

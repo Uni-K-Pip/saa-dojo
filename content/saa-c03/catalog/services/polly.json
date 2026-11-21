@@ -1,0 +1,250 @@
+{
+  "id": "polly",
+  "tier": 2,
+  "summary": "Amazon Polly は、テキストを自然な音声に変換するクラウドサービス（テキスト読み上げ）。SSML による発音や速度の調整、スピーチマークの取得に対応し、長い文章は非同期の合成タスクで S3 に出力できる。",
+  "chooseWhen": [
+    {
+      "text": "ニュースの読み上げ、eラーニング、視覚に障害のある人向けのアクセシビリティなど、テキストを音声にしたい",
+      "factRefs": [
+        "polly.what-is"
+      ]
+    },
+    {
+      "text": "発音・音量・話す速さを調整したい（SSML）",
+      "factRefs": [
+        "polly.ssml"
+      ]
+    },
+    {
+      "text": "音声と同期して単語をハイライトしたり、口の動きをアニメーションに合わせたりしたい（スピーチマーク）",
+      "factRefs": [
+        "polly.speech-marks"
+      ]
+    },
+    {
+      "text": "短いテキストは同期で即時に、3,000 文字を超える長文は非同期の合成タスクで S3 に出力する",
+      "factRefs": [
+        "polly.sync-limit",
+        "polly.async-synthesis",
+        "polly.async-s3-sns"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "音声をテキストにしたい（Polly はテキストから音声への変換）",
+      "factRefs": [
+        "polly.what-is"
+      ],
+      "alternatives": [
+        "transcribe"
+      ]
+    },
+    {
+      "text": "3,000 文字を超える長文を、near-real time の同期 API（SynthesizeSpeech）で処理しようとする",
+      "factRefs": [
+        "polly.sync-limit",
+        "polly.async-synthesis"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "polly.what-is",
+      "title": "Polly はテキストを音声に変換する",
+      "kind": "feature",
+      "text": "Amazon Polly は、テキストを自然な音声に変換するクラウドサービスである。複数の言語と多様な音声に対応し、ニュースの読み上げ、ゲーム、eラーニング、視覚に障害のある人向けのアクセシビリティなどのアプリケーションに使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Polly?",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.voice-engines",
+      "title": "音声の種類（Generative・Long-Form・Neural・Standard）",
+      "kind": "feature",
+      "text": "Amazon Polly の音声には、Generative、Long-Form、Neural、Standard のテキスト読み上げ（TTS）の選択肢がある。Neural は、ニュース読み上げ向けの Newscaster の話し方にも対応する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is Amazon Polly?",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.ssml",
+      "title": "SSML で発音・音量・速さを制御",
+      "kind": "feature",
+      "text": "Amazon Polly は、プレーンテキストのほか、音声合成マークアップ言語（SSML）で記述した文書からも音声を作れる。SSML のタグで、発音、音量、話す速さなどを調整できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Generating speech from SSML documents",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/ssml.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.lexicons",
+      "title": "発音レキシコンはリージョンごとに保存",
+      "kind": "feature",
+      "text": "発音レキシコンを使うと、単語の発音をカスタマイズできる。レキシコンは AWS リージョンに保存され、そのリージョンのものを SynthesizeSpeech の呼び出しで 1 つ以上指定して使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Managing lexicons",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/managing-lexicons.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.speech-marks",
+      "title": "スピーチマークは音声ではなくメタデータ",
+      "kind": "feature",
+      "text": "スピーチマークは、合成する音声について、文や単語が音声の中でどこから始まりどこで終わるかを示すメタデータである。スピーチマークを要求すると、音声の代わりにこのメタデータが返る。リップシンクや読み上げ中の単語の強調表示に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Speech marks",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/speechmarks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.speech-mark-types",
+      "title": "スピーチマークの 4 つの要素",
+      "kind": "feature",
+      "text": "スピーチマークは、文（Sentence）、単語（Word）、口の形を表すビゼーム（Viseme）、テキスト内の SSML 要素（SSML）の 4 つの要素のうち、1 つから全部までを含む JSON のストリームで返る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Polly FAQs",
+          "url": "https://aws.amazon.com/polly/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.sync-limit",
+      "title": "同期の SynthesizeSpeech は 3,000 文字まで",
+      "kind": "quota",
+      "text": "SynthesizeSpeech は、ほとんどの場合に比較的小さい遅延で、ニアリアルタイムに音声を作る。そのために合成できるのは 3,000 文字までである。",
+      "examPoint": "ニアリアルタイムの同期処理は 3,000 文字までで、長いテキストは非同期の合成を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Long audio files",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/asynchronous.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.async-synthesis",
+      "title": "非同期の合成タスクで長文を処理",
+      "kind": "feature",
+      "text": "長いテキストの音声は、StartSpeechSynthesisTask などの SpeechSynthesisTask の API による非同期の合成で作る。リクエストはキューに入り、システムの資源が空きしだいバックグラウンドで処理される。ニアリアルタイムの処理を除く機能が、最大 100,000 課金文字（合計 200,000 文字）のテキストで使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Long audio files",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/asynchronous.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.async-s3-sns",
+      "title": "非同期の結果は S3、完了通知は SNS",
+      "kind": "integration",
+      "text": "非同期の合成では、できあがった音声（またはスピーチマーク）を、利用者が用意する書き込み可能な S3 バケットへ Polly が直接アップロードする。完了は、任意で指定する SNS トピックで通知できる。",
+      "depth": "core",
+      "services": [
+        "Amazon S3",
+        "Amazon SNS"
+      ],
+      "sources": [
+        {
+          "title": "Long audio files",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/asynchronous.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.pricing-characters",
+      "title": "料金は変換したテキストの文字数",
+      "kind": "pricing",
+      "text": "Amazon Polly は、音声またはスピーチマークのメタデータに変換したテキストの文字数に対して課金される。同じ文字列で音声とスピーチマークの両方を要求すると、それぞれのリクエストの文字数が課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Polly Pricing",
+          "url": "https://aws.amazon.com/polly/pricing/"
+        },
+        {
+          "title": "Amazon Polly FAQs",
+          "url": "https://aws.amazon.com/polly/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.pricing-voice-rate",
+      "title": "文字あたりの単価は音声の種類ごとに違う",
+      "kind": "pricing",
+      "text": "Amazon Polly の 100 万文字あたりの料金は、Standard、Neural、Long-Form、Generative の音声の種類ごとに異なる。Generative の音声は、音声のリクエストに対して課金される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Polly Pricing",
+          "url": "https://aws.amazon.com/polly/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "polly.pricing-cache",
+      "title": "生成した音声のキャッシュと再生は追加料金なし",
+      "kind": "pricing",
+      "text": "Amazon Polly が生成した音声は、追加料金なしでキャッシュして再生できる。課金されるのは合成したテキストに対してだけである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Polly?",
+          "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
+        },
+        {
+          "title": "Amazon Polly Pricing",
+          "url": "https://aws.amazon.com/polly/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "What Is Amazon Polly?",
+      "url": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
+    },
+    {
+      "title": "Amazon Polly FAQs",
+      "url": "https://aws.amazon.com/polly/faqs/"
+    },
+    {
+      "title": "Amazon Polly Pricing",
+      "url": "https://aws.amazon.com/polly/pricing/"
+    }
+  ],
+  "createdBy": "sc42",
+  "createdAt": "2026-11-21"
+}

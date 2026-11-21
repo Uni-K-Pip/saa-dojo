@@ -1,0 +1,287 @@
+{
+  "id": "comprehend",
+  "tier": 2,
+  "summary": "Amazon Comprehend は、自然言語処理（NLP）でテキスト文書から、エンティティ・キーフレーズ・言語・感情などの洞察を取り出すマネージドサービス。少量はリアルタイム、大量は S3 を使う非同期ジョブで処理する。",
+  "chooseWhen": [
+    {
+      "text": "テキストの感情（肯定・否定・中立・混在）やエンティティ、キーフレーズを、NLP の専門知識なしに知りたい",
+      "factRefs": [
+        "comprehend.what-is",
+        "comprehend.insight-types",
+        "comprehend.sentiment",
+        "comprehend.pretrained-models"
+      ]
+    },
+    {
+      "text": "自社独自のカテゴリへの分類や、独自の用語の抽出がしたい（Comprehend Custom）",
+      "factRefs": [
+        "comprehend.custom-models"
+      ]
+    },
+    {
+      "text": "文書内の個人を特定できる情報（PII）の位置を見つけ、伏せ字にした文書を作りたい",
+      "factRefs": [
+        "comprehend.pii-detection"
+      ]
+    },
+    {
+      "text": "1 件ずつ即時に結果が要るなら同期の API、大量の文書は S3 に置いて非同期の分析ジョブを使う",
+      "factRefs": [
+        "comprehend.sync-modes",
+        "comprehend.async-batch"
+      ]
+    },
+    {
+      "text": "検索エンジンにキーフレーズ・エンティティ・感情を索引させ、意図や文脈に沿った検索にしたい",
+      "factRefs": [
+        "comprehend.semantic-search"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "解析したいのが音声や画像そのもの（標準の機能が受け取る入力は UTF-8 のテキスト文書）",
+      "factRefs": [
+        "comprehend.input-formats"
+      ],
+      "alternatives": [
+        "transcribe",
+        "textract",
+        "rekognition"
+      ]
+    },
+    {
+      "text": "トピックモデリング・イベント検出・プロンプトの安全性分類を、新たに使い始める",
+      "factRefs": [
+        "comprehend.feature-availability"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "comprehend.what-is",
+      "title": "Comprehend は NLP でテキストから洞察を取り出す",
+      "kind": "feature",
+      "text": "Amazon Comprehend は、自然言語処理（NLP）を使って、文書の内容に関する洞察を取り出すサービスである。文書内のエンティティ、キーフレーズ、言語、感情などを認識して洞察を作る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.insight-types",
+      "title": "分析できる洞察の種類",
+      "kind": "feature",
+      "text": "Amazon Comprehend が分析する洞察は、エンティティ（人・場所・品目など）、キーフレーズ、個人を特定できる情報（PII）、言語、感情、特定のエンティティに対する感情（ターゲット感情）、構文（単語ごとの品詞）である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.sentiment",
+      "title": "感情分析の結果は 4 種類",
+      "kind": "feature",
+      "text": "感情分析は、テキスト全体の感情を、肯定（Positive）・否定（Negative）・混在（Mixed）・中立（Neutral）のいずれかで返す。あわせて、各感情である可能性を表すスコアも返す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Sentiment",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/how-sentiment.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.pretrained-models",
+      "title": "学習済みモデルを使うので学習データは不要",
+      "kind": "feature",
+      "text": "Amazon Comprehend の洞察の分析は、大量のテキストで継続的に学習された学習済みモデルで行う。利用者が学習データを用意する必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.custom-models",
+      "title": "Comprehend Custom で独自の分類・エンティティ抽出",
+      "kind": "feature",
+      "text": "Amazon Comprehend Custom は、自動機械学習（AutoML）で、手元のデータからカスタムの NLP モデルを作る。独自のカテゴリに文書を分類するカスタム分類と、独自の用語や名詞句を抽出するカスタムエンティティ認識がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.pii-detection",
+      "title": "PII の検出と伏せ字",
+      "kind": "feature",
+      "text": "PII の検出 API は、文書内の指定した個人を特定できる情報（PII）のエンティティの位置を見つけ、伏せ字にした文書を作るのに使える。住所、銀行口座番号、電話番号などが PII の例である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Comprehend Pricing",
+          "url": "https://aws.amazon.com/comprehend/pricing/"
+        },
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.input-formats",
+      "title": "標準の入力は UTF-8 のテキスト文書",
+      "kind": "constraint",
+      "text": "Amazon Comprehend のすべての機能は、UTF-8 のテキスト文書を入力として受け取る。カスタム分類とカスタムエンティティ認識は、これに加えて画像・PDF・Word のファイルも入力にできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.sync-modes",
+      "title": "同期の処理は単一文書と最大 25 文書",
+      "kind": "feature",
+      "text": "同期の処理には 2 つある。単一文書の同期は対話的なアプリ向けで結果がすぐ返る。複数文書の同期は Batch 系の API で 1 リクエストに最大 25 文書を送り、応答を待つ。",
+      "examPoint": "即時の結果が要る場合は同期、大量の文書は非同期バッチ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Document processing modes",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/how-async.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.async-batch",
+      "title": "非同期バッチは S3 を入出力に使う",
+      "kind": "integration",
+      "text": "大量の文書は、Amazon S3 のバケットに置いて非同期ジョブを開始して分析する。Amazon Comprehend は分析結果を、リクエストで指定した S3 のバケットとフォルダーに保存する。",
+      "depth": "core",
+      "services": [
+        "Amazon S3"
+      ],
+      "sources": [
+        {
+          "title": "Document processing modes",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/how-async.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.semantic-search",
+      "title": "検索エンジンへの洞察の索引（セマンティック検索）",
+      "kind": "feature",
+      "text": "Amazon Comprehend で、検索エンジンにキーフレーズ・エンティティ・感情を索引させると、単純なキーワードではなく、記事の意図や文脈に沿った検索にできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Comprehend - FAQs",
+          "url": "https://aws.amazon.com/comprehend/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.feature-availability",
+      "title": "トピックモデリングなど 3 機能は新規には選ばない",
+      "kind": "constraint",
+      "text": "Amazon Comprehend のトピックモデリング、イベント検出、プロンプトの安全性分類の機能は、新規の顧客には提供されなくなった。過去 12 か月以内に使ったアカウントは引き続き使える。ほかの機能には影響がない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Comprehend feature availability change",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/comprehend-availability-change.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "comprehend.pricing-usage",
+      "title": "料金は分析した文書と学習したモデルに対して",
+      "kind": "pricing",
+      "text": "Amazon Comprehend には、最低料金も前払いの約束もない。分析した文書と、学習したカスタムモデルに対して支払う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.pricing-units",
+      "title": "NLP の API は 100 文字単位で課金",
+      "kind": "pricing",
+      "text": "エンティティ認識、感情分析、構文分析、キーフレーズ抽出、言語の検出の API は、100 文字を 1 単位として課金される。1 リクエストあたり 3 単位（300 文字）が最低課金である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Comprehend Pricing",
+          "url": "https://aws.amazon.com/comprehend/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "comprehend.pricing-endpoint",
+      "title": "カスタムモデルのリアルタイム用エンドポイントは起動中ずっと課金",
+      "kind": "pricing",
+      "text": "カスタムモデルでリアルタイムのリクエストを処理するときは、エンドポイントを開始してから削除するまでの時間に対して課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Comprehend?",
+          "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+        },
+        {
+          "title": "Amazon Comprehend Pricing",
+          "url": "https://aws.amazon.com/comprehend/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Comprehend?",
+      "url": "https://docs.aws.amazon.com/comprehend/latest/dg/what-is.html"
+    },
+    {
+      "title": "Document processing modes",
+      "url": "https://docs.aws.amazon.com/comprehend/latest/dg/how-async.html"
+    },
+    {
+      "title": "Amazon Comprehend Pricing",
+      "url": "https://aws.amazon.com/comprehend/pricing/"
+    }
+  ],
+  "createdBy": "sc42",
+  "createdAt": "2026-11-21"
+}

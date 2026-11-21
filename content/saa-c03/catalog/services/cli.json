@@ -1,0 +1,267 @@
+{
+  "id": "cli",
+  "tier": 2,
+  "summary": "AWS CLI は、コマンドラインのシェルから AWS のサービスを操作できるオープンソースのツール。認証情報と設定をプロファイルで管理し、一時的な認証情報を使ったロールの引き受けにも対応する。ブラウザーからは AWS CloudShell で使える。",
+  "chooseWhen": [
+    {
+      "text": "コンソールでの操作と同等のことを、コマンドやシェルスクリプトで実行・自動化したい",
+      "factRefs": [
+        "cli.what-is",
+        "cli.console-parity"
+      ]
+    },
+    {
+      "text": "アカウントや用途ごとに認証情報・設定を切り替えたい（名前付きプロファイル、ロールの引き受け）",
+      "factRefs": [
+        "cli.profiles",
+        "cli.role-profile",
+        "cli.config-files"
+      ]
+    },
+    {
+      "text": "インストールや認証情報の設定なしに、ブラウザーからすぐ CLI を使いたい（AWS CloudShell）",
+      "factRefs": [
+        "cli.cloudshell-preauth"
+      ]
+    },
+    {
+      "text": "AWS が直接はサポートしない方法で認証情報を取得したい（外部プロセスから取得する credential_process）",
+      "factRefs": [
+        "cli.credential-process"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "新たに導入するバージョンとして AWS CLI バージョン 1 を選ぶ（バージョン 2 で導入された機能の一部は 1 に移植されない）",
+      "factRefs": [
+        "cli.v2-latest",
+        "cli.v1-lifecycle"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cli.what-is",
+      "title": "AWS CLI はコマンドで AWS を操作するツール",
+      "kind": "feature",
+      "text": "AWS Command Line Interface（AWS CLI）は、コマンドラインのシェルから AWS のサービスを操作できるオープンソースのツールである。AWS のサービスの公開 API に直接アクセスでき、シェルスクリプトでリソースを管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is the AWS Command Line Interface?",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.console-parity",
+      "title": "コンソールの IaaS の機能は API・CLI でも使える",
+      "kind": "feature",
+      "text": "AWS マネジメントコンソールにある IaaS の管理・アクセス機能は、すべて AWS API と AWS CLI でも使える。新しい IaaS の機能やサービスは、開始時または開始から 180 日以内に、コンソールと同等の機能が API と CLI で提供される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Command Line Interface?",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.v2-latest",
+      "title": "AWS CLI バージョン 2 が最新の主要バージョン",
+      "kind": "constraint",
+      "text": "AWS CLI バージョン 2 は最新の主要バージョンで、最新の機能をすべてサポートする。バージョン 2 で導入された機能の一部はバージョン 1 に移植されないので、それらの機能にはバージョン 2 への移行が要る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is the AWS Command Line Interface?",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html"
+        },
+        {
+          "title": "Migration guide for the AWS CLI version 2",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cliv2-migration.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "cli.v1-lifecycle",
+      "title": "AWS CLI バージョン 1 のサポートの状況",
+      "kind": "constraint",
+      "text": "バージョン別のサポートの状況の一覧では、AWS CLI 1.x は Maintenance Announcement のフェーズ、2.x は一般提供（General Availability）である。Maintenance Announcement の間は、バージョン 1 も完全にサポートされる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS SDKs and Tools version lifecycle",
+          "url": "https://docs.aws.amazon.com/sdkref/latest/guide/version-support-matrix.html"
+        },
+        {
+          "title": "AWS SDKs and Tools maintenance policy",
+          "url": "https://docs.aws.amazon.com/sdkref/latest/guide/maint-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "cli.v1-v2-same-command",
+      "title": "バージョン 1 と 2 は同じ aws コマンド名",
+      "kind": "constraint",
+      "text": "AWS CLI のバージョン 1 と 2 は、同じ aws というコマンド名を使う。両方をインストールしていると、検索パスで最初に見つかった方が使われるので、新しい方を入れても古いバージョンが呼ばれることがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Migration guide for the AWS CLI version 2",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cliv2-migration.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.config-files",
+      "title": "credentials ファイルと config ファイル",
+      "kind": "feature",
+      "text": "aws configure で指定した機密性の高い認証情報は、ホームディレクトリの .aws フォルダーにある credentials ファイルに、それ以外の設定（既定のリージョンや出力形式など）は同じフォルダーの config ファイルに保存される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuration and credential file settings in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html"
+        },
+        {
+          "title": "Configuring settings for the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.profiles",
+      "title": "名前付きプロファイルで設定を切り替える",
+      "kind": "feature",
+      "text": "設定ファイルはプロファイルに分かれていて、既定では default という名前のプロファイルの設定が使われる。別のプロファイルを使うには、コマンドに --profile を付けるか、環境変数 AWS_PROFILE で指定する。--profile の方が環境変数より優先される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuration and credential file settings in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.precedence",
+      "title": "認証情報と設定の優先順位",
+      "kind": "feature",
+      "text": "AWS CLI の認証情報と設定は、次の順に優先される。コマンドラインのオプション、環境変数、ロールの引き受け、ウェブ ID でのロールの引き受け、IAM Identity Center、credentials ファイル、カスタムプロセス、config ファイル、コンテナの認証情報、EC2 インスタンスプロファイルの認証情報。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring settings for the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.role-profile",
+      "title": "ロールのプロファイルで一時的な認証情報を使う",
+      "kind": "feature",
+      "text": "プロファイルに role_arn と、ロールを使う権限を持つ別のプロファイルを指す source_profile を定義すると、AWS CLI は裏で sts:AssumeRole を呼び、ロールの一時的な認証情報を取得して使う。取得した認証情報はキャッシュされ、期限が切れると自動で更新される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using an IAM role in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html"
+        },
+        {
+          "title": "Configuration and credential file settings in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.credential-process",
+      "title": "外部プロセスから認証情報を取得する",
+      "kind": "feature",
+      "text": "AWS CLI が直接サポートしていない方法で認証情報を生成・取得するときは、config ファイルの credential_process に外部のコマンドを設定する。このコマンドが他のプロセスやユーザーから見えると、セキュリティ上のリスクになる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Sourcing credentials with an external process in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.output-formats",
+      "title": "出力の形式（json・yaml・text・table など）",
+      "kind": "feature",
+      "text": "AWS CLI の出力の形式は、json、yaml、yaml-stream、text、table、off から選べる。形式は、config ファイルのプロファイルの output、環境変数 AWS_DEFAULT_OUTPUT、コマンドの --output で指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Setting the output format in the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-output-format.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.cloudshell-preauth",
+      "title": "CloudShell なら認証情報の設定なしで CLI を使える",
+      "kind": "integration",
+      "text": "AWS CloudShell は、AWS マネジメントコンソールから起動するブラウザーベースの認証済みシェルである。コンソールへのサインインに使った認証情報が自動で使えるので、認証情報の設定は要らない。AWS CLI はあらかじめインストールされている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS CloudShell?",
+          "url": "https://docs.aws.amazon.com/cloudshell/latest/userguide/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cli.request-signing",
+      "title": "リクエストの署名と端末の時刻",
+      "kind": "constraint",
+      "text": "AWS は、受け取るリクエストすべてに暗号の署名を求め、AWS CLI がこの署名を行う。署名には日時が含まれるので、端末の日付と時刻が AWS のサービスが認識する日時と大きくずれていると、リクエストは拒否される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configuring settings for the AWS CLI",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "iam-identity-center.cli-browser-sign-in",
+    "iam-identity-center.session-reauthentication",
+    "iam.access-method-human-workload",
+    "sts.temporary-credentials"
+  ],
+  "references": [
+    {
+      "title": "What is the AWS Command Line Interface?",
+      "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html"
+    },
+    {
+      "title": "Configuring settings for the AWS CLI",
+      "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html"
+    },
+    {
+      "title": "AWS SDKs and Tools version lifecycle",
+      "url": "https://docs.aws.amazon.com/sdkref/latest/guide/version-support-matrix.html"
+    }
+  ],
+  "createdBy": "sc42",
+  "createdAt": "2026-11-21"
+}

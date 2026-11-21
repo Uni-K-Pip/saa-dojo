@@ -684,6 +684,76 @@
     "checkedAt": "2026-11-21",
     "hash": "8ef4b3676fc5"
   },
+  "cli": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2d1b9d9f1e7f"
+  },
+  "cli.cloudshell-preauth": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "18409da347d7"
+  },
+  "cli.config-files": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "965c7686fdc7"
+  },
+  "cli.console-parity": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3245b3b26e53"
+  },
+  "cli.credential-process": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2b9626b9a2d5"
+  },
+  "cli.output-formats": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9cf4a99da925"
+  },
+  "cli.precedence": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2340dbb5ff58"
+  },
+  "cli.profiles": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4f4f036c1521"
+  },
+  "cli.request-signing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cdf3069ce0e0"
+  },
+  "cli.role-profile": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6894171b9127"
+  },
+  "cli.v1-lifecycle": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "eb2be07b9fbf"
+  },
+  "cli.v1-v2-same-command": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "54a7807616a6"
+  },
+  "cli.v2-latest": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6f86cf049e02"
+  },
+  "cli.what-is": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d37fb461d248"
+  },
   "client-vpn": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -1498,6 +1568,81 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f02beb2b7896"
+  },
+  "comprehend": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "edd293e8854d"
+  },
+  "comprehend.async-batch": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7c54b83d6f56"
+  },
+  "comprehend.custom-models": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "801e813d158d"
+  },
+  "comprehend.feature-availability": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b816ef6809a8"
+  },
+  "comprehend.input-formats": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ea40d49d75cf"
+  },
+  "comprehend.insight-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "22e23d738910"
+  },
+  "comprehend.pii-detection": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9af9d80c0ca7"
+  },
+  "comprehend.pretrained-models": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7a1422c164b5"
+  },
+  "comprehend.pricing-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7a472b30a74d"
+  },
+  "comprehend.pricing-units": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7c195b60f5de"
+  },
+  "comprehend.pricing-usage": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d946fe23bccf"
+  },
+  "comprehend.semantic-search": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "be51744340e3"
+  },
+  "comprehend.sentiment": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3bc4987458c6"
+  },
+  "comprehend.sync-modes": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6f436d15a453"
+  },
+  "comprehend.what-is": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e8ebec40c694"
   },
   "compute-optimizer": {
     "status": "verified",
@@ -6429,6 +6574,71 @@
     "checkedAt": "2026-11-21",
     "hash": "c8a3f2ce4a69"
   },
+  "polly": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b72e0e202076"
+  },
+  "polly.async-s3-sns": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3a16aa9b4ff9"
+  },
+  "polly.async-synthesis": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5d9b5621f037"
+  },
+  "polly.lexicons": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "89670dc1a89a"
+  },
+  "polly.pricing-cache": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d2939d5813d5"
+  },
+  "polly.pricing-characters": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e890e2f65a96"
+  },
+  "polly.pricing-voice-rate": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "37fd9bc978c5"
+  },
+  "polly.speech-mark-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fe55405b6b4a"
+  },
+  "polly.speech-marks": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9b60b009add8"
+  },
+  "polly.ssml": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ad3054ab5ab0"
+  },
+  "polly.sync-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f6cdcaab1f4c"
+  },
+  "polly.voice-engines": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0472fcb0b6fb"
+  },
+  "polly.what-is": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "443e5e2ffae0"
+  },
   "privatelink": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -7398,6 +7608,81 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "5f27b848c34c"
+  },
+  "sagemaker": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4cffc5976469"
+  },
+  "sagemaker.async-inference": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "da7e9f85db81"
+  },
+  "sagemaker.batch-s3": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9abf01f53f61"
+  },
+  "sagemaker.batch-transform": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9847c7cf7fb2"
+  },
+  "sagemaker.canvas": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a077ddd2b3ce"
+  },
+  "sagemaker.custom-models": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f30ac7853e1f"
+  },
+  "sagemaker.jumpstart": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "015f90b502b7"
+  },
+  "sagemaker.naming": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ebd0c3dac617"
+  },
+  "sagemaker.pricing-instance": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8cf9ccfd6f88"
+  },
+  "sagemaker.pricing-payment": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3a593d9a5dbd"
+  },
+  "sagemaker.pricing-serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ff4f528c565b"
+  },
+  "sagemaker.realtime-inference": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ee9d6de84d8f"
+  },
+  "sagemaker.serverless-inference": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e5a1beaa58f6"
+  },
+  "sagemaker.target-use": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cd79bc8e55c2"
+  },
+  "sagemaker.what-is": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a31989e95373"
   },
   "savings-plans": {
     "status": "verified",
