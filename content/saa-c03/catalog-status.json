@@ -521,8 +521,8 @@
   },
   "aurora.serverless-v1-deprecated": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "51ac23330298"
+    "checkedAt": "2026-11-21",
+    "hash": "ec6cec8f2b05"
   },
   "aurora.snapshot-copy-cross-region-kms": {
     "status": "verified",
@@ -2367,7 +2367,12 @@
   "ebs.recycle-bin": {
     "status": "verified",
     "checkedAt": "2026-11-21",
-    "hash": "69d92384798e"
+    "hash": "8b2da7a5287a"
+  },
+  "ebs.recycle-bin-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0ba9d4243a85"
   },
   "ebs.snapshot-archive": {
     "status": "verified",
@@ -2793,6 +2798,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "f9a2852efc01"
+  },
+  "ec2.ri-payment-options": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "129b56575343"
   },
   "ec2.ri-scope": {
     "status": "verified",
@@ -6449,6 +6459,16 @@
     "checkedAt": "2026-11-21",
     "hash": "3bf36d601e42"
   },
+  "sns.standard-topic-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fc67352237ea"
+  },
+  "sns.standard-topic-throughput": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "073e2b003044"
+  },
   "sns.subscriber-endpoints": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -6473,6 +6493,11 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "3cfc9335ed0a"
+  },
+  "sns.vpc-endpoint-publish": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a1a66fa751bd"
   },
   "sqs": {
     "status": "verified",

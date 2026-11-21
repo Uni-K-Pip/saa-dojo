@@ -210,6 +210,35 @@
       "checkedAt": "2026-11-21"
     },
     {
+      "id": "sns.standard-topic-delivery",
+      "title": "標準トピックは順序がベストエフォートで重複しうる",
+      "kind": "feature",
+      "text": "標準トピックの順序はベストエフォートで、発行した順と違う順でメッセージが届くことがある。メッセージは少なくとも 1 回届くが、まれに同じメッセージが 2 回以上届く。順序が違っても、重複しても処理できるアプリケーションに向く。",
+      "examPoint": "順序の入れ替わりと重複を許せる配信は標準トピックで足りる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Simple Notification Service (SNS) Features",
+          "url": "https://aws.amazon.com/sns/features/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sns.standard-topic-throughput",
+      "title": "標準トピックは 1 秒あたりのメッセージ数にほぼ上限がない",
+      "kind": "quota",
+      "text": "標準トピックは、1 秒あたりに扱えるメッセージの数が、ほぼ無制限であるトピックの種類である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Simple Notification Service (SNS) Features",
+          "url": "https://aws.amazon.com/sns/features/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "sns.fifo-sqs-standard",
       "title": "FIFO トピックから標準キューへは順序が保証されない",
       "kind": "constraint",
@@ -462,6 +491,21 @@
         }
       ],
       "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sns.vpc-endpoint-publish",
+      "title": "インターフェイス VPC エンドポイントでインターネットを通さずに発行できる",
+      "kind": "integration",
+      "text": "Amazon SNS のインターフェイス VPC エンドポイントを定義すると、VPC と SNS の間にプライベートな接続ができ、VPC の中からパブリックなインターネットを通さずにトピックへメッセージを発行できる。インターネットゲートウェイ、NAT インスタンス、VPN 接続は要らない。",
+      "trap": "VPC エンドポイントを使っても、トピックをプライベート IP アドレスに購読させることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Securing Amazon SNS traffic with VPC endpoints",
+          "url": "https://docs.aws.amazon.com/sns/latest/dg/sns-internetwork-traffic-privacy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     }
   ],
   "seeAlso": [
@@ -482,5 +526,6 @@
     }
   ],
   "createdBy": "sc11",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-21"
 }

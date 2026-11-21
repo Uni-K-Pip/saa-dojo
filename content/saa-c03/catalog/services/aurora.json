@@ -688,18 +688,22 @@
     },
     {
       "id": "aurora.serverless-v1-deprecated",
-      "title": "Aurora Serverless v1 は新規には選ばない",
+      "title": "Aurora Serverless v1 は終了日が告知され、新規には選ばない",
       "kind": "constraint",
-      "text": "Aurora Serverless v1 は deprecated（非推奨）で、現在の Aurora serverless とは別のアーキテクチャである。サーバーレスの Aurora が要件のときは、新規には v1 を選ばず、現在の Aurora serverless を選ぶ。",
-      "trap": "名前が似ているが、v1 は現在の Aurora serverless とは別のアーキテクチャである",
+      "text": "Aurora Serverless v1 は、現在の Aurora serverless とは別のアーキテクチャの非推奨のプロダクトで、終了日は 2025 年 3 月 31 日と告知された。2025 年 1 月 8 日以降は、マネジメントコンソールでも CLI でも、新しい v1 のクラスターやインスタンスを作成できない。サーバーレスの Aurora が要件のときは、新規には v1 を選ばず、現在の Aurora serverless を選ぶ。",
+      "trap": "v1 は非推奨にとどまらず終了日が告知されており、名前が似ていても現在の Aurora serverless とは別のアーキテクチャである",
       "depth": "core",
       "sources": [
         {
           "title": "How Aurora serverless works",
           "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html"
+        },
+        {
+          "title": "Document history",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/WhatsNew.html"
         }
       ],
-      "checkedAt": "2026-11-14",
+      "checkedAt": "2026-11-21",
       "recheck": "end-of-life"
     },
     {
@@ -752,5 +756,5 @@
   ],
   "createdBy": "sc10",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-21"
 }

@@ -658,7 +658,7 @@
       "id": "ebs.recycle-bin",
       "title": "ごみ箱による削除済みリソースの復元",
       "kind": "feature",
-      "text": "Recycle Bin（ごみ箱）は、誤って削除した EBS ボリューム、EBS スナップショット、EBS を使う AMI を、保持ルールで指定した期間内であれば復元できる機能である。ごみ箱の中のリソースにも通常と同じ料金がかかる。",
+      "text": "Recycle Bin（ごみ箱）は、誤って削除した EBS ボリューム、EBS スナップショット、EBS を使う AMI を、保持ルールで指定した期間内であれば復元できる機能である。",
       "depth": "core",
       "sources": [
         {
@@ -666,7 +666,21 @@
           "url": "https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "ebs.recycle-bin-billing",
+      "title": "ごみ箱の中のリソースの料金",
+      "kind": "pricing",
+      "text": "ごみ箱の中の EBS ボリュームとスナップショットは、通常のボリューム、スナップショットと同じ料金で課金される（アーカイブ階層のスナップショットは、アーカイブ階層のスナップショットの料金）。EBS を使う AMI には、ごみ箱の中では追加の料金がかからない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Recover deleted EBS volumes, EBS snapshots, and EBS-backed AMIs with Recycle Bin",
+          "url": "https://docs.aws.amazon.com/ebs/latest/userguide/recycle-bin.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
     },
     {
       "id": "ebs.dlm",
@@ -704,5 +718,6 @@
     }
   ],
   "createdBy": "sc13",
-  "createdAt": "2026-11-14"
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-21"
 }

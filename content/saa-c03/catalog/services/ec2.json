@@ -438,6 +438,24 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "ec2.ri-payment-options",
+      "title": "リザーブドインスタンスの支払い方法ごとの前払いと時間料金",
+      "kind": "pricing",
+      "text": "全額前払いは、期間の開始時に全額を支払い、期間の残りに追加の時間料金がかからない。一部前払いは、費用の一部を前払いし、残りの時間は割引後の時間料金で請求される。前払いなしは、前払いが不要で、期間内のすべての時間が割引後の時間料金で請求される。割引が最も大きいのは全額前払いである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Reserved Instances for Amazon EC2 overview",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html"
+        },
+        {
+          "title": "Amazon EC2 Reserved Instances Pricing",
+          "url": "https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
       "id": "ec2.ri-standard-convertible",
       "title": "スタンダードとコンバーティブル",
       "kind": "feature",
