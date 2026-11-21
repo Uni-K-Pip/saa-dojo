@@ -49,11 +49,11 @@
       "rationale": "WebSocket API には HTTP API のような組み込みの JWT オーソライザーがなく、この構成では Cognito ユーザープールの JWT 検証の要件を満たしません。また、双方向の持続的な接続も要求されていません。"
     }
   ],
-  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低価格の API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Amazon Cognito ユーザープールなど、OIDC に対応したプロバイダーを発行者として設定）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nこの問題は、JWT の検証に組み込みの認証機能を使い、独自の認証コードは実装しないという条件です。その条件で、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が費用と性能の面で最も適しています。Lambda の関数 URL はエンドポイント自体に追加料金がなく CORS にも対応しますが、認証は IAM か認証なしの選択で、Cognito の JWT の検証は関数のコードで実装することになります。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用で、HTTP API のような組み込みの JWT オーソライザーはありません。",
+  "explanation": "Amazon API Gateway には、REST API、HTTP API、WebSocket API があります。\n\nHTTP API は、REST API よりも機能を絞った、低価格の API です。Lambda 関数や HTTP バックエンドへのプロキシ、JWT オーソライザー（Amazon Cognito ユーザープールなど、OIDC に対応したプロバイダーを発行者として設定）、CORS、自動デプロイに対応しています。REST API が持つ、使用量プランと API キー、リクエストの検証、AWS WAF の統合、リソースポリシー、プライベート API、キャッシュなどの機能は、HTTP API にはありません。\n\nこの問題は、JWT の検証に組み込みの認証機能を使い、独自の認証コードは実装しないという条件です。その条件で、JWT の認証と Lambda のプロキシだけが必要で、REST API の高度な機能が不要なら、HTTP API が費用と性能の面で最も適しています。REST API にも JWT オーソライザーと Amazon Cognito ユーザープールのオーソライザーがあり、認証の要件は満たせますが、HTTP API は REST API より低価格で提供されています。Lambda の関数 URL はエンドポイント自体に追加料金がなく CORS にも対応しますが、認証は IAM か認証なしの選択で、Cognito の JWT の検証は関数のコードで実装することになります。必要な機能が REST API にしかない場合は、REST API を選びます。WebSocket API は双方向通信用で、HTTP API のような組み込みの JWT オーソライザーはありません。",
   "keyPoints": [
     "シンプルな API で、組み込みの JWT 認証を使い低価格に抑えたい → API Gateway の HTTP API（JWT オーソライザー対応）",
     "使用量プラン・API キー・WAF・キャッシュ・リクエストの検証が必要 → REST API",
-    "Lambda の関数 URL は追加料金なしだが、認証は IAM か認証なし。JWT の検証を組み込みの機能で行うなら HTTP API",
+    "Lambda の関数 URL は追加料金なしだが、認証は IAM か認証なし。JWT の検証を組み込みの機能で行うなら API Gateway（REST API と HTTP API の両方に JWT オーソライザーがある）",
     "WebSocket API は双方向のリアルタイム通信用"
   ],
   "references": [
