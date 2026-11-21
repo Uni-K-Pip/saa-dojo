@@ -234,6 +234,81 @@
     "checkedAt": "2026-11-21",
     "hash": "4b5b72b0f82f"
   },
+  "application-migration-service": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "900c728efc80"
+  },
+  "application-migration-service.cutover-launch": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "78ffd508deff"
+  },
+  "application-migration-service.finalize-cutover": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "10c935c4be4d"
+  },
+  "application-migration-service.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "825e87923a44"
+  },
+  "application-migration-service.pricing-free-period": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b46358fa421d"
+  },
+  "application-migration-service.pricing-infrastructure": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "067e85f3a24b"
+  },
+  "application-migration-service.private-path": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "09277662e2ea"
+  },
+  "application-migration-service.rehost-no-changes": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "99fc918cb2e5"
+  },
+  "application-migration-service.rename": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fdd70f535a99"
+  },
+  "application-migration-service.replication-agent": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "79c8a3fe46ce"
+  },
+  "application-migration-service.source-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ec8fc9213979"
+  },
+  "application-migration-service.staging-area": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0d8723a52e70"
+  },
+  "application-migration-service.templates": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "01af5d4e60a1"
+  },
+  "application-migration-service.test-instances": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f99d12b79024"
+  },
+  "application-migration-service.waves": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e1192e5bb87f"
+  },
   "athena": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -613,6 +688,81 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "f11ea35c429f"
+  },
+  "batch": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a15a0c49ac8a"
+  },
+  "batch.array-jobs": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "055d96c5e693"
+  },
+  "batch.components": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4abd503f1f88"
+  },
+  "batch.compute-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "94e65c1d2d16"
+  },
+  "batch.dependency-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f1c8211b9fbd"
+  },
+  "batch.fargate-ec2-queue": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3e92d94e668d"
+  },
+  "batch.job-dependencies": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a8c5462e2423"
+  },
+  "batch.managed-unmanaged": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f7b37f4e13ac"
+  },
+  "batch.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "77d03754f3d2"
+  },
+  "batch.pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ce2b11f15eec"
+  },
+  "batch.queue-priority": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7831a3003d96"
+  },
+  "batch.retry-attempts": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "528b044517dc"
+  },
+  "batch.retry-strategy": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ecca6a8464dc"
+  },
+  "batch.spot-managed": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "aac87c38219e"
+  },
+  "batch.timeout-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7430a7969abc"
   },
   "budgets": {
     "status": "verified",
@@ -7729,6 +7879,76 @@
     "checkedAt": "2026-11-16",
     "hash": "d1c569752b6d"
   },
+  "sct": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7f030a95dc15"
+  },
+  "sct.application-sql": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3e11a7f0458a"
+  },
+  "sct.assessment-report": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f5b65794a30b"
+  },
+  "sct.dms-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d6358482d7dd"
+  },
+  "sct.dw-extraction-agent": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ba938b2c2ec8"
+  },
+  "sct.extension-pack": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "99508938c773"
+  },
+  "sct.mysql-to-aurora-without-sct": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cb1025125667"
+  },
+  "sct.purpose": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d0f46bac1440"
+  },
+  "sct.redshift-keys": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "617890b9e01b"
+  },
+  "sct.same-engine-cost": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8ee5ed3ae164"
+  },
+  "sct.standalone-app": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c51993ee22e8"
+  },
+  "sct.targets": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "891dfd892ea5"
+  },
+  "sct.unconvertible-guidance": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5052df0cbf02"
+  },
+  "sct.vs-dms-sc": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0f4c4c3202ca"
+  },
   "secrets-manager": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -9398,5 +9618,80 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "96ffe24fb970"
+  },
+  "xray": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "702078a3a6ed"
+  },
+  "xray.adot-multiple-backends": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3d90d7769db1"
+  },
+  "xray.annotations-metadata": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "155252d05a81"
+  },
+  "xray.api-gateway-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "333b4b7f5470"
+  },
+  "xray.application-signals": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2dd287ed2c73"
+  },
+  "xray.daemon": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9533c47e5ed4"
+  },
+  "xray.lambda-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "55dd41c1fdc4"
+  },
+  "xray.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "63003887d497"
+  },
+  "xray.pricing-traces": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "cb315e5e5fd9"
+  },
+  "xray.retention-30-days": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e5e10dd70acb"
+  },
+  "xray.sampling-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "86b18895d8cf"
+  },
+  "xray.sdk-daemon-maintenance": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "482d43ee7976"
+  },
+  "xray.segments-traces": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6f5987b42934"
+  },
+  "xray.trace-map": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a991285ec363"
+  },
+  "xray.trace-map-merged": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "52f1169724c3"
   }
 }

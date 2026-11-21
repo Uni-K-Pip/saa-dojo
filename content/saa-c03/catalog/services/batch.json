@@ -1,0 +1,297 @@
+{
+  "id": "batch",
+  "tier": 2,
+  "summary": "バッチコンピューティングのジョブを実行するフルマネージドのサービス。ジョブキューとコンピューティング環境を管理し、ジョブの量に応じて EC2（スポットを含む）や Fargate の容量を自動で用意して、依存関係と再試行も設定で扱える。",
+  "chooseWhen": [
+    {
+      "text": "多数の独立したジョブを並列に実行し、サーバーの用意と増減を任せたいとき",
+      "factRefs": [
+        "batch.overview",
+        "batch.array-jobs"
+      ]
+    },
+    {
+      "text": "ジョブ同士の依存関係や、失敗時の自動の再試行を設定で指定したいとき",
+      "factRefs": [
+        "batch.job-dependencies",
+        "batch.retry-strategy"
+      ]
+    },
+    {
+      "text": "スポットインスタンスを使い、Batch 自体は無料で基盤の料金だけに抑えたいとき",
+      "factRefs": [
+        "batch.spot-managed",
+        "batch.pricing"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "ジョブキューや依存関係が要らず、イベントを契機に起動する単発の処理",
+      "factRefs": [
+        "lambda.event-triggers"
+      ],
+      "alternatives": [
+        "lambda"
+      ]
+    },
+    {
+      "text": "Hadoop や Spark などのフレームワークでデータを分散処理したいとき",
+      "factRefs": [
+        "emr.distributed-processing"
+      ],
+      "alternatives": [
+        "emr"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "batch.overview",
+      "title": "バッチ処理のジョブを実行するフルマネージドのサービス",
+      "kind": "feature",
+      "text": "AWS Batch は、バッチコンピューティングのジョブを実行するフルマネージドのサービスである。投入されたジョブの量と規模に応じてコンピューティングリソースを自動でプロビジョニングし、バッチ処理用のソフトウェアやサーバークラスターの導入と管理が不要になる。",
+      "examPoint": "複数のジョブを並列に実行して規模を広げる処理に最適化されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Batch?",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html"
+        },
+        {
+          "title": "AWS Batch FAQs",
+          "url": "https://aws.amazon.com/batch/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.components",
+      "title": "ジョブ・ジョブ定義・ジョブキュー・コンピューティング環境",
+      "kind": "feature",
+      "text": "AWS Batch の主な構成要素は、作業の単位であるジョブ、ジョブの実行方法を決めるジョブ定義、ジョブが実行先を待つジョブキュー、ジョブを実行するリソースの集まりであるコンピューティング環境である。ジョブはジョブキューに投入される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Components of AWS Batch",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.compute-types",
+      "title": "マネージド型の環境で選べるコンピューティングの種類",
+      "kind": "feature",
+      "text": "マネージド型のコンピューティング環境では、コンピューティングの種類として Fargate、Amazon EC2、Amazon ECS Managed Instances を指定できる。インスタンスのサイズも指定できる。",
+      "examPoint": "インフラの用意を意識したくないなら Fargate、特定のプロセッサー・GPU・アーキテクチャが要る場合や非常に大規模な処理なら EC2。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Components of AWS Batch",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch_components.html"
+        },
+        {
+          "title": "AWS Batch FAQs",
+          "url": "https://aws.amazon.com/batch/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.managed-unmanaged",
+      "title": "マネージド型とアンマネージド型のコンピューティング環境",
+      "kind": "feature",
+      "text": "コンピューティング環境には、AWS がプロビジョニングして管理するマネージド型と、利用者が管理するアンマネージド型がある。アンマネージド型では、AWS Batch が作成する Amazon ECS クラスターのインスタンスの設定とスケーリングを利用者が行う。",
+      "examPoint": "アンマネージド型は、Dedicated Hosts、大きなストレージ構成、Amazon EFS などの特殊なリソースを使う手段になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Batch FAQs",
+          "url": "https://aws.amazon.com/batch/faqs/"
+        },
+        {
+          "title": "Components of AWS Batch",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.spot-managed",
+      "title": "マネージド型の環境でスポットインスタンスを使う",
+      "kind": "feature",
+      "text": "マネージド型のコンピューティング環境では、EC2 スポットインスタンスの利用を指定し、支払ってよいオンデマンド価格に対する割合を与えると、あとは AWS Batch が処理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Batch FAQs",
+          "url": "https://aws.amazon.com/batch/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.queue-priority",
+      "title": "ジョブキューの優先度で実行の順番を決める",
+      "kind": "feature",
+      "text": "1 つのアカウントに複数のジョブキューを作れ、各キューの優先度をスケジューラーが使って、どのキューのジョブを先に実行の対象にするかを決める。たとえば、オンデマンドインスタンスを使う優先度の高いキューと、スポットインスタンスを使う優先度の低いキューに分けられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Job queues",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_queues.html"
+        },
+        {
+          "title": "Components of AWS Batch",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/batch_components.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.job-dependencies",
+      "title": "ジョブの依存関係を指定する",
+      "kind": "feature",
+      "text": "ジョブの投入時に、そのジョブが依存するジョブの ID を指定できる。スケジューラーは、指定された依存先がすべて成功したあとにだけそのジョブを実行する。依存先のいずれかが失敗すると、依存するジョブは自動的に PENDING から FAILED になる。",
+      "examPoint": "ジョブを実行する順番を決めたいときは、SubmitJob の dependsOn パラメーターで各ジョブの依存関係を指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Job dependencies",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_dependencies.html"
+        },
+        {
+          "title": "Fair-share scheduling policies",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_scheduling.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.dependency-limit",
+      "title": "1 つのジョブが依存できるジョブは最大 20",
+      "kind": "quota",
+      "text": "1 つのジョブが依存を指定できるジョブの数は最大 20 である。この上限は Service Quotas では調整できない値として示されている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Job dependencies",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_dependencies.html"
+        },
+        {
+          "title": "AWS Batch endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/batch.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.retry-strategy",
+      "title": "失敗したジョブを自動で再試行する",
+      "kind": "feature",
+      "text": "失敗したジョブを自動で再試行する再試行戦略を、ジョブ定義またはジョブの投入時に指定できる。再試行の対象になる失敗には、コンテナジョブの 0 以外の終了コード、Amazon EC2 インスタンスの障害や終了、AWS の内部サービスのエラーや障害がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automated job retries",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.retry-attempts",
+      "title": "再試行の試行回数は 1〜10 回",
+      "kind": "quota",
+      "text": "ジョブが RUNNING 状態になることが 1 回の試行と数えられる。既定では各ジョブに 1 回の試行が与えられ、ジョブ定義かジョブの投入で、再試行戦略の試行回数を 1〜10 回の範囲で指定できる（2026 年 11 月時点の既定値）。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Automated job retries",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_retries.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "batch.array-jobs",
+      "title": "配列ジョブで並列度の高い処理を 1 回の投入で実行する",
+      "kind": "feature",
+      "text": "配列ジョブは、ジョブ定義・vCPU・メモリなどの共通のパラメーターを持つ関連ジョブの集まりである。配列サイズ（2〜10,000。Service Quotas では調整できない）を指定して 1 回投入すると、その数の子ジョブが生成され、複数のホストで同時に実行されうる。モンテカルロシミュレーションや大規模なレンダリングなど、非常に並列度の高い処理に向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Array jobs",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html"
+        },
+        {
+          "title": "AWS Batch endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/batch.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.timeout-default",
+      "title": "ジョブのタイムアウトは既定では設定されない",
+      "kind": "feature",
+      "text": "AWS Batch には、既定ではジョブのタイムアウトがなく、定義しなければジョブはコンテナが終了するまで実行される。タイムアウトは attemptDurationSeconds（60 秒以上）をジョブ定義か投入時に指定し、超えるとジョブは終了される（2026 年 11 月時点の既定の動作）。",
+      "trap": "タイムアウトを超えて終了されたジョブは再試行されない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Job timeouts",
+          "url": "https://docs.aws.amazon.com/batch/latest/userguide/job_timeouts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "batch.fargate-ec2-queue",
+      "title": "Fargate と EC2 の環境は同じジョブキューに接続できない",
+      "kind": "constraint",
+      "text": "1 つのジョブキューに、Fargate または Fargate Spot のコンピューティング環境と、EC2 またはスポットのコンピューティング環境の両方を接続することはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Batch FAQs",
+          "url": "https://aws.amazon.com/batch/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "batch.pricing",
+      "title": "Batch 自体に追加料金はなく、使ったリソースの料金を払う",
+      "kind": "pricing",
+      "text": "AWS Batch 自体に追加料金はなく、作成して使うリソース（EC2 インスタンス、Lambda 関数、Fargate など）に対して支払う。コンピューティング環境の設定で、リザーブドインスタンス、Savings Plans、EC2 スポットインスタンス、Fargate を利用でき、割引は請求時に適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Batch Pricing",
+          "url": "https://aws.amazon.com/batch/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "ec2.spot-overview",
+    "fargate.spot-capacity-provider"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Batch?",
+      "url": "https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html"
+    },
+    {
+      "title": "AWS Batch FAQs",
+      "url": "https://aws.amazon.com/batch/faqs/"
+    }
+  ],
+  "createdBy": "sc41",
+  "createdAt": "2026-11-21"
+}
