@@ -1,0 +1,291 @@
+{
+  "id": "directory-service",
+  "tier": 2,
+  "summary": "Microsoft Active Directory を AWS で使うための複数のディレクトリ型を提供するサービス。AWS Managed Microsoft AD、AD Connector などを、既存の AD や LDAP 対応アプリの利用形態に合わせて選ぶ。",
+  "chooseWhen": [
+    {
+      "text": "AD 対応のワークロードや Windows ワークロード、RDS for SQL Server のために、本物の Active Directory が AWS で必要",
+      "factRefs": [
+        "directory-service.managed-microsoft-ad",
+        "directory-service.rds-sql-server-compat"
+      ]
+    },
+    {
+      "text": "ディレクトリ情報をクラウドへ複製せず、オンプレミスの AD の認証情報で AWS アプリケーションにサインインさせたい",
+      "factRefs": [
+        "directory-service.ad-connector"
+      ]
+    },
+    {
+      "text": "既存の AD との信頼関係を設定し、AWS のリソースを別のフォレストで管理したい",
+      "factRefs": [
+        "directory-service.trust-relationships",
+        "directory-service.two-way-trust"
+      ]
+    },
+    {
+      "text": "1 つのディレクトリを複数の AWS アカウントで共有したい",
+      "factRefs": [
+        "directory-service.directory-sharing"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "自社アプリの利用者（顧客）のサインアップやサインインを扱いたい",
+      "factRefs": [
+        "cognito.user-pool-directory"
+      ],
+      "alternatives": [
+        "cognito"
+      ]
+    },
+    {
+      "text": "従業員の AWS アカウントへのシングルサインオンと権限を一元管理したい（AD は ID ソースとして接続する）",
+      "factRefs": [
+        "iam-identity-center.active-directory-source"
+      ],
+      "alternatives": [
+        "iam-identity-center"
+      ]
+    },
+    {
+      "text": "RDS for SQL Server で使うために、AD Connector や Simple AD を選びたい",
+      "factRefs": [
+        "directory-service.rds-sql-server-compat"
+      ]
+    },
+    {
+      "text": "新しく Simple AD を選びたい（新規の利用者には提供されていない）",
+      "factRefs": [
+        "directory-service.simple-ad-new-customers"
+      ]
+    },
+    {
+      "text": "AD Connector を複数のアカウントで共有したい",
+      "factRefs": [
+        "directory-service.directory-sharing"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "directory-service.managed-microsoft-ad",
+      "title": "AWS Managed Microsoft AD は本物の Active Directory",
+      "kind": "feature",
+      "text": "AWS Managed Microsoft AD は、実際の Microsoft Windows Server Active Directory を、AWS が AWS クラウドで管理して提供する。Microsoft SharePoint、SQL Server Always On 可用性グループ、多くの .NET アプリケーションなど、AD に対応した幅広いアプリケーションを AWS へ移行できる。",
+      "examPoint": "AD の機能が必要な AWS アプリケーションや Windows ワークロード（RDS for SQL Server を含む）には、AWS Managed Microsoft AD が最適とされる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.managed-ad-ha",
+      "title": "ドメインコントローラーは複数の AZ に作られ AWS が運用する",
+      "kind": "feature",
+      "text": "AWS Managed Microsoft AD は、Amazon VPC 内の異なるアベイラビリティーゾーンに、高可用なドメインコントローラー 2 台の組を作る。ホストの監視、復旧、データのレプリケーション、スナップショット、ソフトウェアの更新は、AWS が自動で管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Managed Microsoft AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.trust-relationships",
+      "title": "自己管理の AD との信頼関係を設定できる",
+      "kind": "feature",
+      "text": "AWS Managed Microsoft AD は、自己管理（オンプレミス）のディレクトリとの間に、外部信頼とフォレスト信頼を設定できる。信頼の方向は、受信、送信、双方向のすべてに対応する。",
+      "examPoint": "ユーザー ID は既存の AD のドメインに残し、AWS のリソースは信頼関係でつないだリソースフォレストで管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trust relationship between your AWS Managed Microsoft AD and self-managed AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_setup_trust.html"
+        },
+        {
+          "title": "AWS Managed Microsoft AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.two-way-trust",
+      "title": "AWS のエンタープライズアプリには双方向の信頼が必要",
+      "kind": "constraint",
+      "text": "信頼関係を使う場合、Amazon WorkSpaces、AWS IAM Identity Center、AWS マネジメントコンソールなどの AWS エンタープライズアプリには双方向の信頼が必要である。Amazon EC2、Amazon RDS、Amazon FSx は、一方向の信頼でも双方向の信頼でも動作する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trust relationship between your AWS Managed Microsoft AD and self-managed AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_setup_trust.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.ad-connector",
+      "title": "AD Connector はオンプレミスの AD へ要求を転送するゲートウェイ",
+      "kind": "feature",
+      "text": "AD Connector は、ディレクトリの要求をオンプレミスの Microsoft Active Directory へリダイレクトするディレクトリゲートウェイで、クラウドに情報をキャッシュしない。利用者は既存の社内の認証情報で、WorkSpaces などの AWS アプリケーションにサインインできる。",
+      "examPoint": "ディレクトリの同期は不要で、AD の管理は引き続きオンプレミスの AD で行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        },
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.rds-sql-server-compat",
+      "title": "AD Connector と Simple AD は RDS for SQL Server に使えない",
+      "kind": "constraint",
+      "text": "AD Connector と Simple AD は、RDS for SQL Server と互換性がない。RDS for SQL Server でディレクトリを使う場合は、AWS Managed Microsoft AD を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.simple-ad-new-customers",
+      "title": "Simple AD は新規の利用者には提供されていない",
+      "kind": "constraint",
+      "text": "Simple AD は、新規の利用者には提供されていない。AWS は、同様の機能として AWS Managed Microsoft AD か AD Connector を検討するよう案内しているので、新規には選ばない。",
+      "recheck": "end-of-life",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simple AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_simple_ad.html"
+        },
+        {
+          "title": "Simple AD availability changes",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/simple-ad-availability-change.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.directory-sharing",
+      "title": "AWS Managed Microsoft AD は複数のアカウントで共有できる",
+      "kind": "feature",
+      "text": "AWS Managed Microsoft AD のディレクトリは、複数の AWS アカウントで共有でき、別のアカウントのリソースでも EC2 のドメイン参加と AD 認証が使える。AD Connector は、ほかの AWS アカウントと共有できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Simple AD availability changes",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/simple-ad-availability-change.html"
+        },
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.aws-managed-apps",
+      "title": "AWS のマネージドアプリケーションに対応する",
+      "kind": "integration",
+      "text": "AWS Managed Microsoft AD は、Amazon WorkSpaces や、Amazon RDS（SQL Server、Oracle、PostgreSQL）などの、AWS のマネージドアプリケーションとサービスに対応する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.ad-connector-one-to-one",
+      "title": "AD Connector はドメインごとに 1 つ作る",
+      "kind": "constraint",
+      "text": "AD Connector とオンプレミスの AD ドメインは 1 対 1 の関係にある。認証の対象にしたいドメインごとに、AD フォレストの子ドメインも含めて、それぞれ別の AD Connector を作る必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AD Connector",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.hybrid-edition",
+      "title": "Hybrid Edition は自己管理の AD を AWS へ広げる",
+      "kind": "feature",
+      "text": "AWS Managed Microsoft AD（Hybrid Edition）は、自己管理の Active Directory と AWS Directory Service for Microsoft Active Directory をつなぎ、AWS へディレクトリサービスを広げる。ユーザー ID は同期せず、環境間に信頼関係を設定して、既存の認証情報でアクセスできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Managed Microsoft AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.managed-ad-editions",
+      "title": "Standard と Enterprise のオブジェクト数の目安",
+      "kind": "quota",
+      "text": "AWS Managed Microsoft AD の Standard Edition は、最大 5,000 人の従業員の中小企業向けで、約 30,000 のディレクトリオブジェクトを格納できる。Enterprise Edition は、約 500,000 のオブジェクトまでを想定する。上限は概算である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.ad-connector-mfa",
+      "title": "AD Connector は RADIUS の MFA 基盤と連携できる",
+      "kind": "feature",
+      "text": "AD Connector は、既存の RADIUS ベースの MFA 基盤に接続することで、AWS アプリケーションの利用者に多要素認証（MFA）を有効にできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Directory Service?",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "iam-identity-center.active-directory-source",
+    "cognito.user-pool-directory"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Directory Service?",
+      "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/what_is.html"
+    },
+    {
+      "title": "AWS Managed Microsoft AD",
+      "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html"
+    }
+  ],
+  "createdBy": "sc39",
+  "createdAt": "2026-11-21"
+}

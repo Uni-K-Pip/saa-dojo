@@ -1049,6 +1049,81 @@
     "checkedAt": "2026-11-14",
     "hash": "e15c25c9e33f"
   },
+  "cloudhsm": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f9b1f84b06c7"
+  },
+  "cloudhsm.aws-no-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "eb78d6d55afe"
+  },
+  "cloudhsm.cluster-sync": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "61b0c50c01a5"
+  },
+  "cloudhsm.daily-backups": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7820bae6d27a"
+  },
+  "cloudhsm.dedicated-hsm": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "245e8bb05bc8"
+  },
+  "cloudhsm.fips-modes": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8edf7e29f519"
+  },
+  "cloudhsm.fips-validation": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4511907e837d"
+  },
+  "cloudhsm.high-availability": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "48f89be9aa56"
+  },
+  "cloudhsm.hsm-quota": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2f43228f1c4f"
+  },
+  "cloudhsm.hsm1-end-of-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "df95dfe3bee2"
+  },
+  "cloudhsm.no-key-recovery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "aaf7eb6f3c2c"
+  },
+  "cloudhsm.pricing-hourly": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "634b2619f3d6"
+  },
+  "cloudhsm.single-hsm-key-loss": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "42cf3fb2b192"
+  },
+  "cloudhsm.standard-apis": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8f9aa892dd67"
+  },
+  "cloudhsm.vpc-required": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f89ae38b4e6b"
+  },
   "cloudtrail": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -2173,6 +2248,76 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "99969f2a3665"
+  },
+  "directory-service": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "63ff09d1e6d8"
+  },
+  "directory-service.ad-connector": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4c3db793a3ca"
+  },
+  "directory-service.ad-connector-mfa": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1399b6ab9380"
+  },
+  "directory-service.ad-connector-one-to-one": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9b71de3d4a70"
+  },
+  "directory-service.aws-managed-apps": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7b8277bbac0f"
+  },
+  "directory-service.directory-sharing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f7d0c7f28099"
+  },
+  "directory-service.hybrid-edition": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a95714add528"
+  },
+  "directory-service.managed-ad-editions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e06e86895c85"
+  },
+  "directory-service.managed-ad-ha": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3e441687d786"
+  },
+  "directory-service.managed-microsoft-ad": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0dd4e3aa3df2"
+  },
+  "directory-service.rds-sql-server-compat": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a4df6af843a6"
+  },
+  "directory-service.simple-ad-new-customers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2a91c8e2a04b"
+  },
+  "directory-service.trust-relationships": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1a16696e2050"
+  },
+  "directory-service.two-way-trust": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d43c3f0b6c31"
   },
   "dms": {
     "status": "verified",
@@ -5519,6 +5664,81 @@
     "checkedAt": "2026-11-21",
     "hash": "13beb67ed5d9"
   },
+  "macie": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "11f7cc31fa28"
+  },
+  "macie.automated-discovery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a7f6f41d055b"
+  },
+  "macie.bucket-inventory-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5abbd503cf75"
+  },
+  "macie.custom-data-identifiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ebc43f3abf42"
+  },
+  "macie.discovery-jobs": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "02eb9d89b10e"
+  },
+  "macie.eventbridge-findings": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6ae0fdd6680a"
+  },
+  "macie.kms-customer-key": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "83c8adffb0ed"
+  },
+  "macie.managed-data-identifiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f32400ed5e87"
+  },
+  "macie.organizations": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d430bbb15db0"
+  },
+  "macie.policy-finding-after-enable": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1081fdd61f52"
+  },
+  "macie.pricing-dimensions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "68e366be3210"
+  },
+  "macie.s3-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7cb63a07b4b6"
+  },
+  "macie.sensitive-data-discovery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "461181fe1317"
+  },
+  "macie.unsupported-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "05f05789ed03"
+  },
+  "macie.unsupported-storage-classes": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c4e129494d2d"
+  },
   "mq": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -7108,6 +7328,81 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "a5125c737e01"
+  },
+  "shield": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5197b953581b"
+  },
+  "shield.advanced-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "95c70a24c182"
+  },
+  "shield.attack-classes": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e95564fcad41"
+  },
+  "shield.cost-protection": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b489f1fba134"
+  },
+  "shield.explicit-protection": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "db535dba9e67"
+  },
+  "shield.health-based-detection": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a959a92d5709"
+  },
+  "shield.l7am-superseded": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9ff5635ceb78"
+  },
+  "shield.proactive-engagement": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "25a916a4d70a"
+  },
+  "shield.protected-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7c6b6255ec2d"
+  },
+  "shield.srt-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "38b3f568bf0b"
+  },
+  "shield.srt-support-plan": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fdf0f6681421"
+  },
+  "shield.standard-edge-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "89aee93bbb45"
+  },
+  "shield.standard-free": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f4119aaf822f"
+  },
+  "shield.waf-fees-included": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b396fd732a93"
+  },
+  "shield.waf-integration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3ba7e5914a53"
   },
   "site-to-site-vpn": {
     "status": "verified",
