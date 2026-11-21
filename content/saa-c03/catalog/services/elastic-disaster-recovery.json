@@ -1,0 +1,286 @@
+{
+  "id": "elastic-disaster-recovery",
+  "tier": 2,
+  "summary": "AWS Elastic Disaster Recovery（AWS DRS）は、オンプレミスやクラウド上のサーバーを、安価なストレージと最小限のコンピューティングで AWS へ継続的にレプリケートし、障害時に数分で復旧用のインスタンスを起動できるようにする災害対策のサービス。",
+  "chooseWhen": [
+    {
+      "text": "オンプレミスのサーバーを、平常時の費用を抑えながら、RPO は秒単位、RTO は分単位で AWS へ復旧したい",
+      "factRefs": [
+        "elastic-disaster-recovery.overview",
+        "elastic-disaster-recovery.rpo-rto",
+        "elastic-disaster-recovery.pricing-model"
+      ]
+    },
+    {
+      "text": "AWS 上の EC2 インスタンスを、別の AZ や別のリージョンへ復旧したい",
+      "factRefs": [
+        "elastic-disaster-recovery.aws-to-aws"
+      ]
+    },
+    {
+      "text": "本番に影響しない復旧ドリルを行い、障害が解決したあとは元の拠点へフェイルバックしたい",
+      "factRefs": [
+        "elastic-disaster-recovery.drills",
+        "elastic-disaster-recovery.failback"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "失ったファイルやオブジェクトの復旧、長期のアーカイブや保持が目的なら、災害対策ではなくバックアップを使う",
+      "factRefs": [
+        "elastic-disaster-recovery.backup-vs-dr"
+      ],
+      "alternatives": [
+        "backup"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "elastic-disaster-recovery.overview",
+      "title": "継続的なレプリケーションによる災害対策",
+      "kind": "feature",
+      "text": "AWS DRS は、ソースサーバーにセットアップしたあと、データを選んだリージョンの利用者の AWS アカウントにあるステージングエリアのサブネットへ継続的に複製する。安価なストレージと最小限のコンピューティングでレプリケーションを保つので、使われない復旧サイトの費用を省ける。",
+      "examPoint": "復旧サイトの全体の費用は、ドリルや復旧のときにだけかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Elastic Disaster Recovery?",
+          "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.rpo-rto",
+      "title": "RPO は秒単位、RTO は分単位",
+      "kind": "feature",
+      "text": "AWS DRS は、RPO（目標復旧時点）を秒単位、RTO（目標復旧時間）を分単位にできる。ソフトウェアの問題やデータセンターのハードウェア障害といった予期しない事象のあとに、オンプレミスから AWS へすばやく業務を復旧する用途で使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery",
+          "url": "https://aws.amazon.com/disaster-recovery/"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.replication-agent",
+      "title": "AWS Replication Agent によるブロックの継続的な取得",
+      "kind": "feature",
+      "text": "ソースサーバーの AWS Replication Agent は、ディスクに書き込まれるブロックを継続的に取得し、圧縮して暗号化してから複製する。データのコピーにスナップショットは使わないので、アプリケーションの性能への影響は目立たない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.staging-disks",
+      "title": "ステージングのディスクとレプリケーションサーバー",
+      "kind": "feature",
+      "text": "レプリケーションのために、AWS DRS はソースの各ディスクと同じサイズの EBS ボリューム（ステージングディスク）を作る。また、レプリケーションサーバーとして EC2 インスタンスを使い、AWS DRS が必要に応じて自動で起動・終了する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Disaster Recovery Pricing",
+          "url": "https://aws.amazon.com/disaster-recovery/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.replication-server-default",
+      "title": "レプリケーションサーバーの既定のインスタンスタイプ",
+      "kind": "feature",
+      "text": "レプリケーションサーバーには、既定では低コストの t3.small の EC2 インスタンスが使われる。書き込みの多いソースサーバーには、より高性能なインスタンスタイプをレプリケーションサーバーに選べる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Disaster Recovery Pricing",
+          "url": "https://aws.amazon.com/disaster-recovery/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elastic-disaster-recovery.pricing-model",
+      "title": "料金はレプリケート中のサーバー数に応じた時間料金",
+      "kind": "pricing",
+      "text": "AWS DRS の料金は、実際にレプリケートしているソースサーバーに対する 1 時間あたりの定額で、前払いや最低料金はない。ディスクの数やサイズ、ドリルや復旧の起動の回数、レプリケート先のリージョンでは変わらない。レプリケーションで使う EBS や EC2 のリソースの料金は、別に利用者のアカウントへ課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Disaster Recovery Pricing",
+          "url": "https://aws.amazon.com/disaster-recovery/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.recovery-launch",
+      "title": "復旧用インスタンスを数分で起動",
+      "kind": "feature",
+      "text": "復旧が必要になったときは、AWS 上に復旧用のインスタンスを数分以内に起動できる。起動の元には、最新のサーバーの状態、または以前の時点（ポイントインタイム）を選べる。起動時に、AWS DRS がサーバーを AWS 上でネイティブに起動・実行できる形へ自動で変換する。",
+      "examPoint": "セキュリティインシデントの前の時点の状態へ戻したいときは、ポイントインタイムの復旧で、インシデント前の状態のコピーを起動できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Elastic Disaster Recovery?",
+          "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.drills",
+      "title": "本番に影響しない復旧ドリル",
+      "kind": "feature",
+      "text": "復旧やフェイルバックのドリルは、本番に影響しない形で実行できる。ドリルを行ってもレプリケーションは止まらず（RPO に影響しない）、ソースのアプリケーションにも影響しない。レプリケーションは、ターゲットのテスト環境とは独立したステージングエリアへ続く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        },
+        {
+          "title": "What is Elastic Disaster Recovery?",
+          "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.failback",
+      "title": "元の拠点へのフェイルバック",
+      "kind": "feature",
+      "text": "AWS 上で動いている復旧したアプリケーションは、元の拠点の問題が解決したあとに、元の拠点へのデータのレプリケーションを開始して、準備ができたときにフェイルバックできる。そのまま AWS 上に残すこともできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Elastic Disaster Recovery?",
+          "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.supported-sources",
+      "title": "復旧できるソースのインフラ",
+      "kind": "feature",
+      "text": "AWS DRS は、物理インフラ、VMware vSphere、Microsoft Hyper-V、他のクラウドプロバイダーのクラウドインフラから、AWS へアプリケーションを復旧できる。復旧の対象は、対応する Windows と Linux の OS バージョンで動くアプリケーションとデータベースである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.aws-to-aws",
+      "title": "AWS 上のインスタンスを別の AZ・リージョンへ復旧",
+      "kind": "feature",
+      "text": "AWS DRS は、Amazon EC2 インスタンスを、別のアベイラビリティーゾーンや別の AWS リージョンへ復旧するのにも使える。AWS 上のアプリケーションの回復性を高め、可用性の目標を満たすために、別のリージョンで復旧できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery",
+          "url": "https://aws.amazon.com/disaster-recovery/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.backup-vs-dr",
+      "title": "バックアップと災害対策の違い",
+      "kind": "feature",
+      "text": "バックアップはデータの追加のコピーを作る処理で、失ったファイルやオブジェクトの復旧、長期のアーカイブ、データの保持に向く。災害対策は、障害のあとにアプリケーション、データ、IT リソースへのアクセスをすばやく再確立する処理で、災害対策サイトへフェイルオーバーする。両者は補い合う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.quota-replicating-servers",
+      "title": "同時にレプリケートできるサーバー数",
+      "kind": "quota",
+      "text": "1 つの AWS アカウントで、リージョンごとに同時にレプリケートできるソースサーバーは 300 台で、この上限は引き上げられない。複数のステージングアカウントを使えば、300 台を超えるサーバーを 1 つのターゲットアカウントへ復旧でき、最大 3,000 台まで復旧できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/drs.html"
+        },
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elastic-disaster-recovery.private-replication-path",
+      "title": "転送データの暗号化とプライベート接続",
+      "kind": "integration",
+      "text": "複製されるデータは TLS 1.2 で暗号化され、ソースサーバーから直接 VPC へ転送される。AWS Direct Connect、VPN、VPC ピアリングなどのプライベート接続でレプリケーションの経路を制御でき、公衆インターネットを避けられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Elastic Disaster Recovery FAQs",
+          "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "backup.cross-region-copy",
+    "backup.scheduled-backup-plan",
+    "ebs.snapshot-incremental",
+    "direct-connect.private-network"
+  ],
+  "references": [
+    {
+      "title": "What is Elastic Disaster Recovery?",
+      "url": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+    },
+    {
+      "title": "AWS Elastic Disaster Recovery",
+      "url": "https://aws.amazon.com/disaster-recovery/"
+    },
+    {
+      "title": "AWS Elastic Disaster Recovery FAQs",
+      "url": "https://aws.amazon.com/disaster-recovery/faqs/"
+    }
+  ],
+  "createdBy": "sc36",
+  "createdAt": "2026-11-21"
+}

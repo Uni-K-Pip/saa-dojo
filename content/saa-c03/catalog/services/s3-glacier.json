@@ -1,0 +1,267 @@
+{
+  "id": "s3-glacier",
+  "tier": 2,
+  "summary": "Amazon S3 Glacier は、めったにアクセスしない長期のアーカイブデータを低コストで保存する、Amazon S3 のストレージクラス群（Instant Retrieval、Flexible Retrieval、Deep Archive）。取り出しの速さと保存期間の違いで使い分ける。",
+  "chooseWhen": [
+    {
+      "text": "年に 1〜2 回しかアクセスせず、数分から数時間の取り出しを待てるアーカイブやバックアップを低コストで保存したい（Flexible Retrieval）",
+      "factRefs": [
+        "s3-glacier.flexible-retrieval-fit"
+      ]
+    },
+    {
+      "text": "年に 1 回未満しかアクセスしない、複数年の保持やコンプライアンス目的のデータを保存したい（Deep Archive）",
+      "factRefs": [
+        "s3-glacier.deep-archive-fit"
+      ]
+    },
+    {
+      "text": "ミリ秒で取り出す必要があるアーカイブは、Flexible Retrieval ではなく Instant Retrieval を選ぶ",
+      "factRefs": [
+        "s3.glacier-instant-retrieval"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "アーカイブしたデータをすぐにリアルタイムで読む必要があるなら、Flexible Retrieval と Deep Archive は選ばない",
+      "factRefs": [
+        "s3-glacier.restore-temporary-copy"
+      ],
+      "alternatives": [
+        "s3"
+      ]
+    },
+    {
+      "text": "最小保存期間より前に削除や別のクラスへの移行をするデータには向かない。残りの日数分が課金される",
+      "factRefs": [
+        "s3-glacier.min-storage-duration"
+      ]
+    },
+    {
+      "text": "新しい設計で、ボールトを使う元の独立した Amazon Glacier サービスは選ばない",
+      "factRefs": [
+        "s3-glacier.glacier-service-eol"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "s3-glacier.flexible-retrieval-fit",
+      "title": "Flexible Retrieval の向く用途",
+      "kind": "feature",
+      "text": "S3 Glacier Flexible Retrieval は、年に 1〜2 回アクセスし、即時のアクセスは要らないアーカイブデータ向けのストレージクラスである。取り出しの時間は数分から数時間の範囲で選べ、バックアップや災害復旧に向く。",
+      "examPoint": "ミリ秒の取り出しが要るなら Instant Retrieval、数分から数時間待てるなら Flexible Retrieval。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.deep-archive-fit",
+      "title": "Deep Archive の向く用途",
+      "kind": "feature",
+      "text": "S3 Glacier Deep Archive は、年に 1 回未満しかアクセスしないアーカイブデータ向けのストレージクラスである。数年にわたるデータの保持やコンプライアンス要件を満たす用途のほか、取り出しを待てるバックアップや災害復旧のデータにも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.restore-temporary-copy",
+      "title": "アーカイブのオブジェクトは一時的なコピーを復元して読む",
+      "kind": "constraint",
+      "text": "S3 Glacier Flexible Retrieval と Deep Archive のオブジェクトはアーカイブされており、リアルタイムでは読めない。読むには、指定した日数だけ使える一時的なコピーをバケットへ復元する。恒久的なコピーが要るときは、復元したあとにコピーを作る。",
+      "trap": "復元しても、コピーを作ってストレージクラスを変えない限り、オブジェクト自体は元のアーカイブのクラスに残る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restoring an archived object",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.deep-archive-retrieval-tiers",
+      "title": "Deep Archive の取り出しの種類",
+      "kind": "feature",
+      "text": "S3 Glacier Deep Archive の取り出しは、標準（Standard）が通常 12 時間以内、大容量（Bulk）が通常 48 時間以内である。迅速（Expedited）は Flexible Retrieval などの取り出しで、Deep Archive では選べない。",
+      "examPoint": "分単位の取り出しが要る場合は、Deep Archive ではなく Flexible Retrieval を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        },
+        {
+          "title": "Understanding archive retrieval options",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.min-storage-duration",
+      "title": "Flexible Retrieval と Deep Archive の最小保存期間",
+      "kind": "quota",
+      "text": "最小保存期間は、S3 Glacier Flexible Retrieval が 90 日、S3 Glacier Deep Archive が 180 日である。この期間より前にオブジェクトを削除、上書き、または別のストレージクラスへ移行すると、その期間の残りの日数分が課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.lifecycle-one-way",
+      "title": "ライフサイクルでの移行の向き",
+      "kind": "constraint",
+      "text": "ライフサイクルルールで S3 Glacier Flexible Retrieval のオブジェクトを移せる先は S3 Glacier Deep Archive だけで、Deep Archive から他のクラスへはルールで移せない。別のクラスへ変えるには、一時的なコピーを復元し、コピー操作でストレージクラスを指定して上書きする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Transitioning objects using Amazon S3 Lifecycle",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.classes-are-s3-objects",
+      "title": "S3 Glacier のクラスは S3 のオブジェクト",
+      "kind": "feature",
+      "text": "S3 Glacier のストレージクラスは Amazon S3 の一部で、データを S3 バケットのオブジェクトとして保存する。S3 コンソールや S3 API・SDK で管理でき、暗号化、オブジェクトのタグ付け、ライフサイクル設定などの S3 の機能を使える。",
+      "trap": "S3 Glacier クラスのオブジェクトは S3 に残り、独立した Amazon Glacier サービスからは直接アクセスできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        },
+        {
+          "title": "Understanding and managing Amazon S3 storage classes",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.glacier-service-eol",
+      "title": "元の独立した Amazon Glacier サービスは新規を受け付けない",
+      "kind": "constraint",
+      "text": "Amazon Glacier（ボールトと独自の REST API を使う、元の独立したサービス）は、新規の利用者を受け付けていない。既存のデータは引き続き利用できる。低コストの長期アーカイブには S3 Glacier のストレージクラスが推奨されている。新規には選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Glacier?",
+          "url": "https://docs.aws.amazon.com/amazonglacier/latest/dev/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "s3-glacier.restore-billing",
+      "title": "復元中はアーカイブと復元コピーの両方に課金",
+      "kind": "pricing",
+      "text": "S3 Glacier Flexible Retrieval または Deep Archive のオブジェクトを復元すると、アーカイブされたオブジェクトと、一時的に復元したコピーの両方に対して料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restoring an archived object",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.archive-metadata-overhead",
+      "title": "アーカイブのオブジェクトごとの追加メタデータ",
+      "kind": "pricing",
+      "text": "S3 Glacier Flexible Retrieval と Deep Archive は、オブジェクトごとに 40 KB の追加メタデータが要る。このうち 32 KB はデータの特定と取り出しに使い、そのクラスの料金で課金される。残りの 8 KB はユーザー定義の名前とメタデータの保持に使い、S3 Standard の料金で課金される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.expedited-provisioned-capacity",
+      "title": "迅速な取り出しのプロビジョニング済みキャパシティ",
+      "kind": "feature",
+      "text": "S3 Glacier Flexible Retrieval の迅速な取り出しには、プロビジョニング済みキャパシティを購入できる。1 ユニットで、5 分ごとに少なくとも 3 回の迅速な取り出しと、最大 300 MB/秒のスループットを確保する。購入しないと、需要が高い期間は迅速な取り出しが受け付けられないことがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding archive retrieval options",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.restore-status-check",
+      "title": "復元の状態と有効期限の確認",
+      "kind": "integration",
+      "text": "復元リクエストの状態と復元したコピーの有効期限は、S3 コンソール、S3 イベント通知、AWS CLI、S3 REST API で確認できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Restoring an archived object",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "s3-glacier.instant-retrieval-min-size",
+      "title": "Instant Retrieval の最小オブジェクトサイズ",
+      "kind": "quota",
+      "text": "S3 Glacier Instant Retrieval に保存するデータには、128 KB の最小オブジェクトサイズがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding S3 Glacier storage classes for long-term data storage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "s3.storage-classes",
+    "s3.glacier-retrieval-tiers",
+    "s3.glacier-instant-retrieval",
+    "s3.glacier-instant-retrieval-retrieval-fee",
+    "s3.glacier-instant-retrieval-min-duration",
+    "s3.lifecycle",
+    "s3.batch-operations",
+    "s3.object-lock"
+  ],
+  "references": [
+    {
+      "title": "Understanding S3 Glacier storage classes for long-term data storage",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/glacier-storage-classes.html"
+    },
+    {
+      "title": "Amazon S3 Glacier storage classes",
+      "url": "https://aws.amazon.com/s3/storage-classes/glacier/"
+    }
+  ],
+  "createdBy": "sc36",
+  "createdAt": "2026-11-21"
+}

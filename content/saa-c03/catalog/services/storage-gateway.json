@@ -1,0 +1,343 @@
+{
+  "id": "storage-gateway",
+  "tier": 2,
+  "summary": "AWS Storage Gateway は、オンプレミスのアプリケーションが、NFS・SMB・iSCSI などの既存のプロトコルのまま AWS のストレージを使えるようにするハイブリッドストレージのサービス。ファイル型、ボリューム型、テープ型があり、ローカルのキャッシュで低レイテンシーのアクセスを保つ。",
+  "chooseWhen": [
+    {
+      "text": "オンプレミスのアプリを変えずに、NFS や SMB のファイル共有として S3 にファイルを置きたい（S3 File Gateway）",
+      "factRefs": [
+        "storage-gateway.s3-file-gateway",
+        "storage-gateway.s3-file-gateway-s3-features",
+        "storage-gateway.local-cache"
+      ]
+    },
+    {
+      "text": "物理テープに書き出す既存のバックアップ運用を、バックアップソフトを変えずに AWS へ置き換えたい（Tape Gateway）",
+      "factRefs": [
+        "storage-gateway.tape-gateway",
+        "storage-gateway.tape-archive"
+      ]
+    },
+    {
+      "text": "オンプレミスのサーバーに iSCSI のブロックボリュームを見せ、主データを S3 に置く、またはローカルに置いて AWS へバックアップしたい（Volume Gateway）",
+      "factRefs": [
+        "storage-gateway.volume-cached",
+        "storage-gateway.volume-stored",
+        "storage-gateway.volume-snapshots"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "オンプレミスと AWS のストレージの間でデータを転送・移行したいだけなら DataSync を選ぶ",
+      "factRefs": [
+        "datasync.overview",
+        "datasync.use-cases"
+      ],
+      "alternatives": [
+        "datasync"
+      ]
+    },
+    {
+      "text": "新しい設計で Amazon FSx File Gateway を選ばない。新しい利用者には提供されていない",
+      "factRefs": [
+        "storage-gateway.fsx-file-gateway-unavailable"
+      ],
+      "alternatives": [
+        "fsx"
+      ]
+    },
+    {
+      "text": "S3 のオブジェクトとして直接読みたいデータの置き場に、Volume Gateway のキャッシュ型を選ばない",
+      "factRefs": [
+        "storage-gateway.volume-no-s3-api"
+      ],
+      "alternatives": [
+        "s3"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "storage-gateway.gateway-types",
+      "title": "ゲートウェイの種類",
+      "kind": "feature",
+      "text": "AWS Storage Gateway は、ファイル型（S3 File Gateway と FSx File Gateway。FSx File Gateway は新しい利用者には提供されていない）、ボリューム型（Volume Gateway）、テープ型（Tape Gateway）のストレージを提供する。iSCSI、SMB、NFS といった標準のプロトコルで、既存のアプリケーションを変更せずに AWS のストレージを使える。",
+      "examPoint": "オンプレミスのアプリケーションを変えずに AWS のストレージを使い続ける場面で選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Tape Gateway?",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+        },
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        },
+        {
+          "title": "What is Amazon FSx File Gateway",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/filefsxw/what-is-file-fsxw.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "storage-gateway.deployment",
+      "title": "ゲートウェイの配置先",
+      "kind": "feature",
+      "text": "ゲートウェイは、オンプレミスの VMware ESXi・KVM・Microsoft Hyper-V・Nutanix AHV 上の仮想マシン、ハードウェアアプライアンス、または AWS 上の Amazon EC2 インスタンスとして配置できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Tape Gateway?",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/WhatIsStorageGateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.s3-file-gateway",
+      "title": "S3 File Gateway は NFS・SMB で S3 を使う",
+      "kind": "feature",
+      "text": "S3 File Gateway は、NFS または SMB のファイル共有を通じて、Amazon S3 のオブジェクトを保存・取得できるようにする。ファイル共有に書いたファイルはパスをキーとする S3 のオブジェクトになり、ファイルとオブジェクトは 1 対 1 に対応する。",
+      "examPoint": "ファイルをそのまま S3 のオブジェクトとして残したいときは S3 File Gateway を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3 File Gateway",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+        },
+        {
+          "title": "How Amazon S3 File Gateway works",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.s3-file-gateway-s3-features",
+      "title": "S3 File Gateway のデータを S3 側から使う",
+      "kind": "integration",
+      "text": "S3 File Gateway に保存したデータは、AWS 上のアプリケーションやサービスから S3 のデータとして直接使える。保存先のバケットでは、ライフサイクルポリシー、クロスリージョンレプリケーション、バージョニングでデータを管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon S3 File Gateway",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.file-gateway-glacier-io-error",
+      "title": "Glacier へ移したファイルは共有から読めない",
+      "kind": "constraint",
+      "text": "S3 File Gateway が作ったオブジェクトを、バケットのライフサイクルで S3 Glacier へ移すと、そのファイルやオブジェクトにファイル共有からアクセスしたときに、汎用の I/O エラーになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.local-cache",
+      "title": "ローカルのキャッシュとライトバック",
+      "kind": "feature",
+      "text": "S3 File Gateway は、ローカルのディスクに、S3 へ転送する前の変更データと、低レイテンシーで読むためのキャッシュを置く。書き込みはライトバック方式で、先にディスクへ保存してから非同期に S3 へアップロードする。キャッシュにないデータは S3 から取得する。",
+      "trap": "キャッシュのディスクが小さすぎると、読み取りのレイテンシーが増え、空きがなければ書き込みが失敗することがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.file-gateway-direct-overwrite",
+      "title": "ゲートウェイが書いたオブジェクトの直接の上書き",
+      "kind": "constraint",
+      "text": "ファイル共有経由でアクセスするオブジェクトは、ゲートウェイだけで管理する。S3 File Gateway が書いたオブジェクトを S3 側で直接上書きまたは更新すると、ファイル共有からそのオブジェクトにアクセスしたときの動作は未定義になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.volume-cached",
+      "title": "Volume Gateway のキャッシュ型ボリューム",
+      "kind": "feature",
+      "text": "Volume Gateway のキャッシュ型ボリュームは、iSCSI デバイスとしてマウントでき、主データの保存先に Amazon S3 を使う。頻繁にアクセスするデータだけをオンプレミスのキャッシュに残すので、オンプレミスのストレージを拡張する必要を抑えながら、よく使うデータに低レイテンシーでアクセスできる。",
+      "examPoint": "オンプレミスのストレージ容量を節約したいときは、キャッシュ型を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Volume Gateway works",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html"
+        },
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.volume-stored",
+      "title": "Volume Gateway の保管型ボリューム",
+      "kind": "feature",
+      "text": "Volume Gateway の保管型ボリュームは、主データをオンプレミスのストレージに置き、そのデータを非同期に Amazon EBS のスナップショットとして AWS へバックアップする。オンプレミスのアプリケーションはデータ全体に低レイテンシーでアクセスでき、同時にオフサイトのバックアップも持てる。",
+      "examPoint": "データ全体にローカルで低レイテンシーのアクセスが要るときは、保管型を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Volume Gateway works",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.volume-snapshots",
+      "title": "Volume Gateway のスナップショットは EBS スナップショット",
+      "kind": "feature",
+      "text": "Volume Gateway のボリュームは、スケジュールまたは 1 回限りの指定で増分のスナップショットを取れる。スナップショットは Amazon EBS のスナップショットとして保存され、新しいスナップショットには前回から変わったデータだけが保存される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Volume Gateway works",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.volume-no-s3-api",
+      "title": "キャッシュ型のデータは S3 の API から見えない",
+      "kind": "constraint",
+      "text": "キャッシュ型ボリュームのゲートウェイデータとスナップショットのデータは Amazon S3 に保存され、サーバー側の暗号化で保護されるが、S3 の API や S3 マネジメントコンソールなどのツールからはアクセスできない。",
+      "examPoint": "S3 のオブジェクトとして読みたいデータには、Volume Gateway ではなく S3 File Gateway を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Volume Gateway works",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/vgw/StorageGatewayConcepts.html"
+        },
+        {
+          "title": "What is Amazon S3 File Gateway",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.tape-gateway",
+      "title": "Tape Gateway は仮想テープライブラリ",
+      "kind": "feature",
+      "text": "Tape Gateway は、メディアチェンジャーとテープドライブから成る仮想テープライブラリ（VTL）を、iSCSI ベースの標準のテープライブラリのインターフェイスでバックアップアプリケーションに見せる。既存のバックアップの手順を変えずに、物理テープを AWS の仮想テープに置き換えられる。",
+      "examPoint": "物理テープのバックアップ運用を、バックアップソフトを変えずに置き換える場面で選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        },
+        {
+          "title": "AWS Storage Gateway",
+          "url": "https://aws.amazon.com/storagegateway/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.tape-archive",
+      "title": "仮想テープのアーカイブ先",
+      "kind": "feature",
+      "text": "バックアップソフトがテープを取り出す（イジェクトする）と、仮想テープは、テープの作成時に選んだアーカイブプールへ自動でアーカイブされる。Glacier Pool なら S3 Glacier Flexible Retrieval、Deep Archive Pool なら S3 Glacier Deep Archive に置かれる。",
+      "examPoint": "Flexible Retrieval は分単位で取り出す、より活発なアーカイブ向け。Deep Archive はほとんど取り出さない長期保存向け。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Archiving Virtual Tapes",
+          "url": "https://docs.aws.amazon.com/storagegateway/latest/tgw/archiving-tapes-vtl.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.tape-retrieval",
+      "title": "アーカイブ済みのテープは取り出してから使う",
+      "kind": "feature",
+      "text": "アーカイブされた仮想テープのデータを使うには、先にテープを仮想テープライブラリへ取り出す（retrieve）必要がある。標準の取り出しは、S3 Glacier のテープで通常 3〜5 時間、S3 Glacier Deep Archive のテープで通常 12 時間以内。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.tape-no-s3-api",
+      "title": "仮想テープのデータは S3 の API で読めない",
+      "kind": "constraint",
+      "text": "仮想テープのデータは、Amazon S3 や Amazon S3 Glacier の API ではアクセスできない。仮想テープライブラリと仮想テープシェルフの管理には、Tape Gateway の API を使う。",
+      "trap": "仮想テープは Amazon S3 を基盤にしているが、S3 のオブジェクトとして直接は扱えない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Storage Gateway FAQs",
+          "url": "https://aws.amazon.com/storagegateway/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "storage-gateway.fsx-file-gateway-unavailable",
+      "title": "FSx File Gateway は新規の利用者に提供されていない",
+      "kind": "constraint",
+      "text": "Amazon FSx File Gateway は、オンプレミスから FSx for Windows File Server のファイル共有へ低レイテンシーでアクセスするための File Gateway の種類で、新しい利用者には提供されていない。既存の利用者は通常どおり使い続けられる。新規には選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon FSx File Gateway",
+          "url": "https://docs.aws.amazon.com/filegateway/latest/filefsxw/what-is-file-fsxw.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "s3.storage-classes",
+    "s3.lifecycle",
+    "s3.replication",
+    "s3.versioning",
+    "s3.glacier-retrieval-tiers",
+    "fsx.windows-smb",
+    "datasync.overview",
+    "datasync.use-cases"
+  ],
+  "references": [
+    {
+      "title": "AWS Storage Gateway",
+      "url": "https://aws.amazon.com/storagegateway/"
+    },
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
+    }
+  ],
+  "createdBy": "sc36",
+  "createdAt": "2026-11-21"
+}

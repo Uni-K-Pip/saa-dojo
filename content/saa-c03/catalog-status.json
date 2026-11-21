@@ -3399,6 +3399,81 @@
     "checkedAt": "2026-11-16",
     "hash": "7323a851cda2"
   },
+  "elastic-disaster-recovery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "20961960f6f6"
+  },
+  "elastic-disaster-recovery.aws-to-aws": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "30915ee95eb5"
+  },
+  "elastic-disaster-recovery.backup-vs-dr": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ad8f879f8b97"
+  },
+  "elastic-disaster-recovery.drills": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2b9e7159c9db"
+  },
+  "elastic-disaster-recovery.failback": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "78403921f5aa"
+  },
+  "elastic-disaster-recovery.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a8c16334c871"
+  },
+  "elastic-disaster-recovery.pricing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ca2c6c1438a4"
+  },
+  "elastic-disaster-recovery.private-replication-path": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f9aa5988a756"
+  },
+  "elastic-disaster-recovery.quota-replicating-servers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d48bbe751f4a"
+  },
+  "elastic-disaster-recovery.recovery-launch": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5d387b6bfee5"
+  },
+  "elastic-disaster-recovery.replication-agent": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4c3b706150d1"
+  },
+  "elastic-disaster-recovery.replication-server-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d0d7c6e8adc7"
+  },
+  "elastic-disaster-recovery.rpo-rto": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0bbe61e82aab"
+  },
+  "elastic-disaster-recovery.staging-disks": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "11ca2971ade5"
+  },
+  "elastic-disaster-recovery.supported-sources": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9c86d8cf6fd5"
+  },
   "elasticache": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -6049,6 +6124,76 @@
     "checkedAt": "2026-11-14",
     "hash": "3549c142bff4"
   },
+  "s3-glacier": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f15a6f0085bb"
+  },
+  "s3-glacier.archive-metadata-overhead": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "44c8d256b4bb"
+  },
+  "s3-glacier.classes-are-s3-objects": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a9e73a9f0e8e"
+  },
+  "s3-glacier.deep-archive-fit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2cf6de0d6ebf"
+  },
+  "s3-glacier.deep-archive-retrieval-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7a8a89b3d7b3"
+  },
+  "s3-glacier.expedited-provisioned-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e18d1c977fea"
+  },
+  "s3-glacier.flexible-retrieval-fit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "48613db71c04"
+  },
+  "s3-glacier.glacier-service-eol": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fd93d197d712"
+  },
+  "s3-glacier.instant-retrieval-min-size": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "49d60a7766a7"
+  },
+  "s3-glacier.lifecycle-one-way": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e37db46c7152"
+  },
+  "s3-glacier.min-storage-duration": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1e3b386a9732"
+  },
+  "s3-glacier.restore-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "102a977055e1"
+  },
+  "s3-glacier.restore-status-check": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3d8beb9abaf4"
+  },
+  "s3-glacier.restore-temporary-copy": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3f344fccbf15"
+  },
   "s3.access-points": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -6509,6 +6654,71 @@
     "checkedAt": "2026-11-21",
     "hash": "cca953904535"
   },
+  "snow-family": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4e01360e08d2"
+  },
+  "snow-family.cluster": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e2e724d0bea8"
+  },
+  "snow-family.data-interfaces": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e4175750f188"
+  },
+  "snow-family.device-configurations": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8c7482cb78a6"
+  },
+  "snow-family.encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ee22995bcba9"
+  },
+  "snow-family.end-of-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b7642694b282"
+  },
+  "snow-family.job-duration-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bf75558d8ee5"
+  },
+  "snow-family.job-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fed7a2e8ad13"
+  },
+  "snow-family.large-transfer-low-bandwidth": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ae1610bbe654"
+  },
+  "snow-family.local-compute": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "65f8aa59f5cd"
+  },
+  "snow-family.same-region-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a5aeac7decc2"
+  },
+  "snow-family.snowball-edge-not-for-new": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "09097044e54b"
+  },
+  "snow-family.transfer-flow": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7f62616d286e"
+  },
   "sns": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -6878,6 +7088,91 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "eb19f17dc6f0"
+  },
+  "storage-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f2572620b163"
+  },
+  "storage-gateway.deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b66e4cadd70c"
+  },
+  "storage-gateway.file-gateway-direct-overwrite": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "133272873ebb"
+  },
+  "storage-gateway.file-gateway-glacier-io-error": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2e98fa181f2f"
+  },
+  "storage-gateway.fsx-file-gateway-unavailable": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "07d7e8bca944"
+  },
+  "storage-gateway.gateway-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7f65b59e2aef"
+  },
+  "storage-gateway.local-cache": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "eb0bb1b1f02e"
+  },
+  "storage-gateway.s3-file-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "542e2b9145a5"
+  },
+  "storage-gateway.s3-file-gateway-s3-features": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3939432048aa"
+  },
+  "storage-gateway.tape-archive": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0bd2937a4e2e"
+  },
+  "storage-gateway.tape-gateway": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "796439201cea"
+  },
+  "storage-gateway.tape-no-s3-api": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5907bf6eacc1"
+  },
+  "storage-gateway.tape-retrieval": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8a7708663016"
+  },
+  "storage-gateway.volume-cached": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2f6263845bb1"
+  },
+  "storage-gateway.volume-no-s3-api": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "78a2fa075687"
+  },
+  "storage-gateway.volume-snapshots": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "416738b1f735"
+  },
+  "storage-gateway.volume-stored": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c5181ac83695"
   },
   "sts": {
     "status": "verified",
