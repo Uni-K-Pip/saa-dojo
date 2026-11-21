@@ -1,0 +1,296 @@
+{
+  "id": "neptune",
+  "tier": 2,
+  "summary": "つながりの多いデータを保存して、関係をたどる問い合わせを行う、フルマネージドのグラフデータベース。Gremlin・openCypher・SPARQL に対応し、1 つのプライマリと最大 15 個のリードレプリカ、3 つの AZ に複製されるストレージで高い可用性を持つ。",
+  "chooseWhen": [
+    {
+      "text": "レコメンデーションや不正の検出など、つながりをたどるデータを扱う",
+      "factRefs": [
+        "neptune.graph-purpose",
+        "neptune.query-languages"
+      ]
+    },
+    {
+      "text": "読み取りをレプリカへ分散し、リージョンをまたぐ低遅延の読み取りも必要",
+      "factRefs": [
+        "neptune.cluster-replicas",
+        "neptune.global-database"
+      ]
+    },
+    {
+      "text": "変動の大きい負荷に合わせて、容量を自動で増減したい",
+      "factRefs": [
+        "neptune.serverless"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "グラフ全体の分析やベクトル検索が中心なら、Neptune Analytics を検討する",
+      "factRefs": [
+        "neptune.neptune-analytics"
+      ]
+    },
+    {
+      "text": "リードレプリカなしで、プライマリの障害に耐える可用性を求める",
+      "factRefs": [
+        "neptune.failover-promotion"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "neptune.graph-purpose",
+      "title": "つながりの多いデータ向けのグラフデータベース",
+      "kind": "feature",
+      "text": "Amazon Neptune は、つながりの多いデータセットを扱うアプリケーション向けの、フルマネージドのグラフデータベースである。レコメンデーションエンジン、不正の検出、ナレッジグラフなどの用途に使う。",
+      "examPoint": "レコメンデーションや不正の検出のように、つながりをたどる用途にはグラフデータベースを選ぶ",
+      "trap": "リレーショナルデータベースを土台にしたサービスではなく、グラフ専用に作られたエンジンである",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Neptune?",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+        },
+        {
+          "title": "Managed Graph Database – Amazon Neptune FAQs",
+          "url": "https://aws.amazon.com/neptune/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.query-languages",
+      "title": "クエリ言語は Gremlin・openCypher・SPARQL",
+      "kind": "feature",
+      "text": "Neptune は、プロパティグラフのクエリ言語である Apache TinkerPop Gremlin と openCypher、RDF のクエリ言語である SPARQL をサポートする。つながりをたどる検索を、これらの言語で書く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Neptune?",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.cluster-replicas",
+      "title": "プライマリ 1 つとリードレプリカ最大 15 個",
+      "kind": "feature",
+      "text": "Neptune の DB クラスターは、書き込みを担うプライマリ DB インスタンス 1 つと、最大 15 個のリードレプリカで構成される。すべてのインスタンスが同じストレージボリュームを共有し、レプリカは読み取りだけを受け持つ。",
+      "examPoint": "読み取りの負荷は、リードレプリカ（最大 15 個）へ分散する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Neptune?",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+        },
+        {
+          "title": "Amazon Neptune DB Clusters and Instances",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-db-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.volume-three-az",
+      "title": "クラスターボリュームは 3 つの AZ にコピーを持つ",
+      "kind": "feature",
+      "text": "Neptune のデータは、クラスターボリュームに保存される。クラスターボリュームは、1 つの AWS リージョンの 3 つのアベイラビリティーゾーンにデータのコピーを持ち、高い耐久性と可用性を提供する。",
+      "trap": "ストレージのコピーは 1 つのリージョンの中にあり、リージョンをまたがない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Neptune storage, reliability and availability",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.failover-promotion",
+      "title": "プライマリの障害ではレプリカへ自動で昇格する",
+      "kind": "feature",
+      "text": "プライマリ DB インスタンスが使えなくなると、Neptune は指定できる優先度に従って、リードレプリカの 1 つへ自動でフェイルオーバーする。昇格したインスタンスが再起動する間は短い中断があり、プライマリへの読み書きのリクエストは例外で失敗する。",
+      "examPoint": "可用性を高めるには、プライマリとは別の AZ にリードレプリカを置く",
+      "trap": "リードレプリカがないクラスターは、プライマリの障害後、再作成されるまで利用できない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Neptune DB Clusters and Instances",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-db-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.backups-continuous",
+      "title": "自動バックアップは連続的で、1〜35 日の保持期間内に復元できる",
+      "kind": "feature",
+      "text": "Neptune はクラスターボリュームを自動でバックアップし、保持期間のあいだ復元用のデータを保持する。バックアップは連続的かつ増分で、保持期間（1〜35 日）内の任意の時点へ復元でき、バックアップの書き込み中も性能への影響や中断はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backing up and restoring an Amazon Neptune DB cluster",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/backup-restore.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.backup-default-retention",
+      "title": "既定のバックアップ保持期間は 1 日",
+      "kind": "constraint",
+      "text": "Neptune の DB クラスターの既定のバックアップ保持期間は、クラスターの作成方法にかかわらず 1 日である。保持期間は作成時または変更時に 1〜35 日で指定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Backing up and restoring an Amazon Neptune DB cluster",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/backup-restore.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "neptune.backup-no-disable",
+      "title": "自動バックアップは無効にできない",
+      "kind": "constraint",
+      "text": "Neptune では、自動バックアップを無効にできない。バックアップの保持期間は DB クラスターが管理する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Backing up and restoring an Amazon Neptune DB cluster",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/backup-restore.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.serverless",
+      "title": "Neptune Serverless は容量を自動で増減する",
+      "kind": "feature",
+      "text": "Neptune Serverless は、負荷に応じて DB クラスターの容量を自動で増減する構成で、容量を Neptune キャパシティユニット（NCU）で表す。スケールするのはコンピュートだけで、ストレージのボリュームは影響を受けない。",
+      "examPoint": "突然で予測しにくい CPU 負荷の増加がある、変動の大きいワークロードに向く",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Neptune Serverless",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/neptune-serverless.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.global-database",
+      "title": "グローバルデータベースは書き込みをプライマリのリージョンだけで行う",
+      "kind": "feature",
+      "text": "Neptune のグローバルデータベースは、1 つのプライマリリージョンの DB クラスターと、最大 5 つのセカンダリリージョンの読み取り専用 DB クラスターで構成される。書き込みができるのはプライマリのリージョンだけである。",
+      "examPoint": "複数のリージョンでの低遅延の読み取りと、リージョン全体の障害からの復旧に使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon Neptune with a global database",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.global-failover",
+      "title": "グローバルデータベースのフェイルオーバーは 2 通り",
+      "kind": "feature",
+      "text": "グローバルデータベースのフェイルオーバーには 2 通りある。リージョン全体の障害には、セカンダリのクラスターを切り離して新しいプライマリへ昇格させる手動の手順を使う。メンテナンスなど計画した作業には、データを失わずにプライマリを別のリージョンへ移す、管理された計画的フェイルオーバーを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Amazon Neptune with a global database",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.endpoints-cluster-reader",
+      "title": "書き込みはクラスターエンドポイント、読み取りはリーダーエンドポイント",
+      "kind": "feature",
+      "text": "クラスターエンドポイントは現在のプライマリ DB インスタンスにつながり、書き込みにはこれを使う。リーダーエンドポイントは、利用できるレプリカの 1 つへ接続をラウンドロビンで振り分け、読み取りに使う。",
+      "trap": "リーダーエンドポイントは書き込みに使えない。例外はレプリカのない単一インスタンスのクラスターだけである",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Connecting to Amazon Neptune Endpoints",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.encryption-at-rest",
+      "title": "保存データは KMS のキーで暗号化できる",
+      "kind": "feature",
+      "text": "Neptune は、AWS KMS で作成・管理するキーで保存データを暗号化できる。暗号化した Neptune インスタンスでは、基になるストレージのデータに加えて、自動バックアップ、スナップショット、同じクラスター内のレプリカも暗号化される。",
+      "trap": "暗号化していないクラスターに暗号化したリードレプリカは作れず、その逆も作れない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon Neptune?",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+        },
+        {
+          "title": "Amazon Neptune DB Clusters and Instances",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/feature-overview-db-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.neptune-analytics",
+      "title": "Neptune Analytics はグラフの分析用エンジン",
+      "kind": "feature",
+      "text": "Neptune Analytics は、Neptune データベースを補完する分析用のデータベースエンジンで、グラフの分析、グラフアルゴリズム、グラフデータのベクトル検索に使う。データは S3 または Neptune データベースから読み込む。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is Amazon Neptune?",
+          "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+        },
+        {
+          "title": "Managed Graph Database – Amazon Neptune FAQs",
+          "url": "https://aws.amazon.com/neptune/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "neptune.pricing-options",
+      "title": "料金の選択肢はオンデマンド・サーバーレス・Savings Plans",
+      "kind": "pricing",
+      "text": "Neptune の料金の選択肢は、オンデマンド、サーバーレス、Database Savings Plans の 3 つである。オンデマンドとサーバーレスには、最低料金と前払いの約束がない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Neptune Pricing",
+          "url": "https://aws.amazon.com/neptune/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "aurora.global-database",
+    "dynamodb.global-tables"
+  ],
+  "references": [
+    {
+      "title": "What Is Amazon Neptune?",
+      "url": "https://docs.aws.amazon.com/neptune/latest/userguide/intro.html"
+    },
+    {
+      "title": "Managed Graph Database – Amazon Neptune FAQs",
+      "url": "https://aws.amazon.com/neptune/faqs/"
+    }
+  ],
+  "createdBy": "sc40",
+  "createdAt": "2026-11-21"
+}

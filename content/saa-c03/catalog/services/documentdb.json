@@ -1,0 +1,308 @@
+{
+  "id": "documentdb",
+  "tier": 2,
+  "summary": "MongoDB の API と互換性を持つ、フルマネージドのドキュメントデータベース。ストレージは 3 つの AZ に 6 つのコピーを持って自動で拡張され、最大 15 個のレプリカで読み取りを拡張する。既存の MongoDB のアプリケーションの移行に向く。",
+  "chooseWhen": [
+    {
+      "text": "既存の MongoDB のアプリケーションやドライバーを、ほぼそのまま使いたい",
+      "factRefs": [
+        "documentdb.mongodb-compatible"
+      ]
+    },
+    {
+      "text": "JSON のドキュメントを保存し、レプリカで読み取りを拡張したい",
+      "factRefs": [
+        "documentdb.replicas-read-scaling",
+        "documentdb.endpoints-cluster-reader"
+      ]
+    },
+    {
+      "text": "毎秒数百万回の読み書きや、ペタバイト級の容量が必要",
+      "factRefs": [
+        "documentdb.elastic-clusters"
+      ]
+    },
+    {
+      "text": "需要の変動が大きく、容量を自動で増減したい",
+      "factRefs": [
+        "documentdb.serverless"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "MongoDB のすべての API を、そのまま使えることを前提にしたい",
+      "factRefs": [
+        "documentdb.mongodb-compatible"
+      ]
+    },
+    {
+      "text": "レプリカなしの単一インスタンスで、障害時の素早い切り替えを求める",
+      "factRefs": [
+        "documentdb.failover-replica"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "documentdb.mongodb-compatible",
+      "title": "MongoDB の API と互換性があるドキュメントデータベース",
+      "kind": "feature",
+      "text": "Amazon DocumentDB は、MongoDB の API と互換性を持つフルマネージドのデータベースである。MongoDB で使うものと同じアプリケーションのコード、ドライバー、ツールを使える。ただし、MongoDB のすべての API をサポートするわけではない。",
+      "examPoint": "既存の MongoDB のアプリケーションを、ほぼそのまま移したいときの選択肢になる",
+      "trap": "互換とは、オープンソースの MongoDB の API とやり取りできるという意味で、すべての MongoDB API を網羅するわけではない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        },
+        {
+          "title": "Managed Cloud Database - Amazon DocumentDB (with MongoDB compatibility) FAQs",
+          "url": "https://aws.amazon.com/documentdb/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.storage-six-copies",
+      "title": "ストレージは 3 つの AZ に 6 つのコピーを持つ",
+      "kind": "feature",
+      "text": "Amazon DocumentDB のクラスターボリュームは、データの 6 つのコピーを、1 つのリージョンの 3 つのアベイラビリティーゾーンにまたがって自動で複製する。ストレージは分散型で、障害から自動で回復する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB: how it works",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/how-it-works.html"
+        },
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.storage-auto-grow",
+      "title": "ストレージは 10 GB 単位で自動で拡張される",
+      "kind": "quota",
+      "text": "ストレージのボリュームは、必要に応じて 10 GB 単位で自動で拡張される。インスタンスベースのクラスターの最大は、エンジンバージョン 8.0 以降で 256 TiB、それより前のバージョンで 128 TiB であり、先にストレージを確保する必要はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.replicas-read-scaling",
+      "title": "プライマリ 1 つとレプリカ最大 15 個で読み取りを拡張する",
+      "kind": "feature",
+      "text": "1 つのクラスターは、読み書きを受け付けるプライマリインスタンス 1 つと、最大 15 個のレプリカインスタンスで構成できる。レプリカは同じストレージを共有し、読み取りのリクエストだけを受け付ける。",
+      "examPoint": "読み取りのスループットは、レプリカを追加して増やす",
+      "trap": "レプリカは結果整合性で、プライマリへの書き込みから少し遅れて読み取れる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB high availability and replication",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/replication.html"
+        },
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.failover-replica",
+      "title": "フェイルオーバーではレプリカがプライマリに昇格する",
+      "kind": "feature",
+      "text": "プライマリインスタンスに障害が起きると、Amazon DocumentDB は既存のレプリカの 1 つをプライマリに昇格させる。フェイルオーバーが機能するには、プライマリのほかにレプリカが少なくとも 1 つ必要で、通常は開始から完了まで 30 秒以内に終わる。",
+      "examPoint": "可用性を高めるには、別の AZ にレプリカを置く",
+      "trap": "レプリカがない単一インスタンスのクラスターでは、同じ AZ に新しいインスタンスの作成を試みるだけで、成功するとは限らない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB failover",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/failover.html"
+        },
+        {
+          "title": "Amazon DocumentDB high availability and replication",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.failover-tiers",
+      "title": "フェイルオーバーの優先度は 0〜15 のティアで決める",
+      "kind": "feature",
+      "text": "各レプリカにはフェイルオーバーのティア（0〜15）があり、フェイルオーバーでは番号の小さい（優先度の高い）ティアのレプリカがプライマリに昇格する。同じティアに複数あるときは、前のプライマリに最も近いサイズのレプリカが昇格する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB failover",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.endpoints-cluster-reader",
+      "title": "クラスターエンドポイントとリーダーエンドポイント",
+      "kind": "feature",
+      "text": "クラスターエンドポイントは現在のプライマリインスタンスにつながり、読み書きの両方に使える。リーダーエンドポイントは、読み取り専用の接続を利用できるレプリカに分散する。どちらもクラスターに 1 つずつある。",
+      "trap": "リーダーエンドポイントへ直接接続（directConnection=true）して書き込むと、エラーになる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB: how it works",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.backup-pitr",
+      "title": "連続バックアップで保持期間内の任意の時点へ復元できる",
+      "kind": "feature",
+      "text": "Amazon DocumentDB は、データを Amazon S3 へ連続的にバックアップし、1〜35 日の保持期間内の任意の時点へ復元できる。ポイントインタイムリカバリでは、保持期間内の任意の 1 秒へ、直近 5 分前まで復元できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backing up and restoring in Amazon DocumentDB",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/backup_restore.html"
+        },
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.encryption-at-rest",
+      "title": "保存データは KMS のキーで暗号化できる",
+      "kind": "feature",
+      "text": "Amazon DocumentDB は、AWS KMS で作成・管理するキーでクラスターを暗号化できる。暗号化したクラスターでは、基になるストレージの保存データに加えて、自動バックアップ、スナップショット、同じクラスター内のレプリカも暗号化される。",
+      "trap": "暗号化していない既存のクラスターは暗号化できず、暗号化を有効にした新しいクラスターを作ってデータを移行する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        },
+        {
+          "title": "Managed Cloud Database - Amazon DocumentDB (with MongoDB compatibility) FAQs",
+          "url": "https://aws.amazon.com/documentdb/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.global-cluster",
+      "title": "グローバルクラスターは書き込みをプライマリのリージョンで行う",
+      "kind": "feature",
+      "text": "Amazon DocumentDB のグローバルクラスターは、1 つのプライマリリージョンと、最大 10 個の読み取り専用のセカンダリリージョンで構成される。書き込みはプライマリリージョンのクラスターへ直接行い、データは専用のインフラストラクチャでセカンダリへ自動で複製される。",
+      "examPoint": "リージョン全体の障害では、セカンダリのクラスターをプライマリへ昇格させて復旧する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Overview of Amazon DocumentDB global clusters",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/global-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.elastic-clusters",
+      "title": "エラスティッククラスターは大規模な読み書きと容量に向く",
+      "kind": "feature",
+      "text": "Amazon DocumentDB のエラスティッククラスターは、毎秒数百万回の読み書きとペタバイト級のストレージ容量のワークロードをサポートする。インスタンスを選ぶ・管理する・アップグレードする必要がない。",
+      "trap": "エラスティッククラスターでは、IAM 認証でのログインはサポートされない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon DocumentDB Elastic Clusters",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/docdb-using-elastic-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.serverless",
+      "title": "DocumentDB serverless は容量を自動で増減する",
+      "kind": "feature",
+      "text": "Amazon DocumentDB serverless は、アプリケーションの需要に応じて容量を自動で増減する構成である。容量は DocumentDB キャパシティユニット（DCU）で表し、0.5 DCU 単位で増減できる。使ったリソースにだけ課金される。",
+      "trap": "serverless は、エラスティッククラスターをサポートしない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon DocumentDB serverless",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/docdb-serverless.html"
+        },
+        {
+          "title": "Amazon DocumentDB Pricing",
+          "url": "https://aws.amazon.com/documentdb/pricing/"
+        },
+        {
+          "title": "Managed Cloud Database - Amazon DocumentDB (with MongoDB compatibility) FAQs",
+          "url": "https://aws.amazon.com/documentdb/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.pricing-storage-config",
+      "title": "ストレージの構成は Standard と I/O-Optimized",
+      "kind": "pricing",
+      "text": "インスタンスベースのクラスターは、ストレージの構成として Standard と I/O-Optimized を選べる。Standard は、インスタンス、I/O、ストレージ、バックアップのストレージの 4 つの要素で課金される。I/O-Optimized は I/O の料金がなく、3 つの要素で課金される。",
+      "trap": "I/O-Optimized では、データベースの I/O の操作に課金されない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon DocumentDB Pricing",
+          "url": "https://aws.amazon.com/documentdb/pricing/"
+        },
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "documentdb.vpc-only",
+      "title": "インスタンスは VPC の中でだけ動く",
+      "kind": "constraint",
+      "text": "Amazon DocumentDB のインスタンスは、Amazon VPC の環境の中でだけ動く。IP アドレスの範囲、サブネット、ルーティング、アクセス制御リスト（ACL）は、利用者が VPC で決める。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+          "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "keyspaces.cql-compatibility",
+    "aurora.global-database"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon DocumentDB (with MongoDB compatibility)",
+      "url": "https://docs.aws.amazon.com/documentdb/latest/devguide/what-is.html"
+    },
+    {
+      "title": "Managed Cloud Database - Amazon DocumentDB (with MongoDB compatibility) FAQs",
+      "url": "https://aws.amazon.com/documentdb/faqs/"
+    }
+  ],
+  "createdBy": "sc40",
+  "createdAt": "2026-11-21"
+}

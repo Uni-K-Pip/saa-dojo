@@ -2374,6 +2374,81 @@
     "checkedAt": "2026-11-21",
     "hash": "97a10fc83932"
   },
+  "documentdb": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6089f9826533"
+  },
+  "documentdb.backup-pitr": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "73921cbbcccf"
+  },
+  "documentdb.elastic-clusters": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f188e09b2d30"
+  },
+  "documentdb.encryption-at-rest": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e986634768e4"
+  },
+  "documentdb.endpoints-cluster-reader": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4be349bdd756"
+  },
+  "documentdb.failover-replica": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a4d2b9d812ec"
+  },
+  "documentdb.failover-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0870d9cd1a4f"
+  },
+  "documentdb.global-cluster": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ad6b0ae81e0d"
+  },
+  "documentdb.mongodb-compatible": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "80c2643076ec"
+  },
+  "documentdb.pricing-storage-config": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c3ebe137a596"
+  },
+  "documentdb.replicas-read-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b32b1c8daf89"
+  },
+  "documentdb.serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3355142eab63"
+  },
+  "documentdb.storage-auto-grow": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9c11aa568f62"
+  },
+  "documentdb.storage-six-copies": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "19a3d446b36d"
+  },
+  "documentdb.vpc-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5c3a28d36eb5"
+  },
   "dynamodb": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5979,6 +6054,86 @@
     "checkedAt": "2026-11-21",
     "hash": "2425d533057a"
   },
+  "neptune": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "179d25dd49b6"
+  },
+  "neptune.backup-default-retention": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b89e5823367a"
+  },
+  "neptune.backup-no-disable": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3e247abb0da7"
+  },
+  "neptune.backups-continuous": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8894f17ed029"
+  },
+  "neptune.cluster-replicas": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f5f217a212ba"
+  },
+  "neptune.encryption-at-rest": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7383774f2a40"
+  },
+  "neptune.endpoints-cluster-reader": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ecdb04512728"
+  },
+  "neptune.failover-promotion": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "89de432d6387"
+  },
+  "neptune.global-database": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d0d0811b4a35"
+  },
+  "neptune.global-failover": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1e48b5770f11"
+  },
+  "neptune.graph-purpose": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ea3b1225b67c"
+  },
+  "neptune.neptune-analytics": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "81a40a1ac3b7"
+  },
+  "neptune.pricing-options": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "be307a17135e"
+  },
+  "neptune.query-languages": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ea96a37aab6b"
+  },
+  "neptune.serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4c7d05d6e5b3"
+  },
+  "neptune.volume-three-az": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a36fa1d2d73e"
+  },
   "network-firewall": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -6398,6 +6553,86 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "20bc8909e5eb"
+  },
+  "rds-proxy": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d5263a4405dc"
+  },
+  "rds-proxy.aurora-reader-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6932ab17e6d1"
+  },
+  "rds-proxy.cross-vpc-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a677ec537114"
+  },
+  "rds-proxy.failover-keep-connections": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f3d21407e8cb"
+  },
+  "rds-proxy.failover-no-dns": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a264743bf65f"
+  },
+  "rds-proxy.iam-end-to-end": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d7ff6a8ce8a6"
+  },
+  "rds-proxy.iam-standard": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bfe7c39eacfa"
+  },
+  "rds-proxy.lambda-pooling": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3ba8c59ba3c7"
+  },
+  "rds-proxy.pinning": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "8dd4dfe874ce"
+  },
+  "rds-proxy.pool-multiplexing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c06b661319de"
+  },
+  "rds-proxy.pricing-capacity": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e52c9cfadaa7"
+  },
+  "rds-proxy.proxies-quota": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "dbfb979c9dd9"
+  },
+  "rds-proxy.same-vpc-private": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1c8002a2cdad"
+  },
+  "rds-proxy.single-target-instance": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ce3d3a74d603"
+  },
+  "rds-proxy.supported-engines": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "969f7c55f702"
+  },
+  "rds-proxy.writer-only-target": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "00ebc7fac885"
   },
   "rds.blue-green": {
     "status": "verified",
@@ -8118,6 +8353,81 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "cd921be97718"
+  },
+  "timestream": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "ecd21ac205f0"
+  },
+  "timestream.influxdb-encryption-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0a3dde071c8c"
+  },
+  "timestream.influxdb-engine-versions": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e2db47d9889b"
+  },
+  "timestream.influxdb-managed": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "324caaa0c548"
+  },
+  "timestream.influxdb-multi-az": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a2e620874d54"
+  },
+  "timestream.influxdb-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "aa79e7583a3a"
+  },
+  "timestream.influxdb-recommended": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "08058c4ed604"
+  },
+  "timestream.influxdb-stopped-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c86d1e696f2f"
+  },
+  "timestream.influxdb3-multi-node": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2586a2808b94"
+  },
+  "timestream.la-closed-to-new": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "19a009d2f309"
+  },
+  "timestream.la-existing-customers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "004ccb777033"
+  },
+  "timestream.la-serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "389636efd35f"
+  },
+  "timestream.la-storage-tiers": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4d1ccca5c0d4"
+  },
+  "timestream.savings-plans": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0070cf20518b"
+  },
+  "timestream.time-series-data": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "144fce8b4526"
   },
   "transfer-family": {
     "status": "verified",
