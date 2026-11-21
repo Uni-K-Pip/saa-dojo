@@ -1,0 +1,270 @@
+{
+  "id": "msk",
+  "tier": 2,
+  "summary": "Apache Kafka を使うアプリケーションを構築・実行するための、フルマネージドのサービス。オープンソースの Kafka が動くため、既存のアプリケーションやツールをコードの変更なしで使える。",
+  "chooseWhen": [
+    {
+      "text": "Apache Kafka を使う既存のアプリケーションやツールを、コードを変えずに移したい",
+      "factRefs": [
+        "msk.managed-kafka",
+        "msk.open-source-compat"
+      ]
+    },
+    {
+      "text": "Kafka のクラスターの容量を管理せず、流したデータ量と保持量に応じて支払いたい",
+      "factRefs": [
+        "msk.serverless"
+      ]
+    },
+    {
+      "text": "外部のデータストアと Kafka のトピックの間で、マネージドなコネクターでデータを移したい",
+      "factRefs": [
+        "msk.connect"
+      ]
+    },
+    {
+      "text": "MSK のクラスター間で、リージョンをまたいでデータを複製したい",
+      "factRefs": [
+        "msk.replicator"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Kafka のクライアントやツールを使い続ける必要がないなら、Kinesis Data Streams も選べる",
+      "factRefs": [
+        "msk.open-source-compat"
+      ],
+      "alternatives": [
+        "kinesis-data-streams"
+      ]
+    },
+    {
+      "text": "MSK Serverless では、クライアントの認証と認可に IAM を使う前提になる",
+      "factRefs": [
+        "msk.serverless-iam-auth"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "msk.managed-kafka",
+      "title": "Apache Kafka のフルマネージドのサービス",
+      "kind": "feature",
+      "text": "Amazon MSK は、Apache Kafka を使ってストリーミングデータを処理するアプリケーションを構築・実行できる、フルマネージドのサービスである。クラスターの作成・更新・削除などのコントロールプレーンの操作を提供し、データの生成と消費は Kafka のデータプレーンの操作で行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Welcome to the Amazon MSK Developer Guide",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.open-source-compat",
+      "title": "オープンソースの Kafka が動くので既存の資産を使える",
+      "kind": "feature",
+      "text": "Amazon MSK はオープンソースの Apache Kafka を実行する。このため、既存のアプリケーションと、パートナーや Kafka コミュニティのツールやプラグインを、アプリケーションのコードを変更せずに使える。",
+      "examPoint": "Kafka を使う既存のアプリケーションを、変更を少なく AWS へ移したいときの選択肢になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Welcome to the Amazon MSK Developer Guide",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.broker-recovery",
+      "title": "ブローカーの障害からの自動復旧",
+      "kind": "feature",
+      "text": "Amazon MSK は、クラスターのよくある障害を検出して自動で復旧する。ブローカーの障害を検出すると、障害を緩和するか、正常でないブローカーを新しいものに置き換え、復旧後も、プロデューサーとコンシューマーは障害前と同じブローカーの IP アドレスで通信を続けられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Welcome to the Amazon MSK Developer Guide",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.broker-types",
+      "title": "Provisioned のブローカーは Standard と Express",
+      "kind": "feature",
+      "text": "Amazon MSK Provisioned のブローカーには、Standard ブローカーと Express ブローカーの 2 種類がある。MSK Serverless では、トラフィックを処理するブローカーを MSK が管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Welcome to the Amazon MSK Developer Guide",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.express-storage",
+      "title": "Express ブローカーのストレージは自動で伸縮",
+      "kind": "feature",
+      "text": "Amazon MSK の Express ブローカーには、従量課金のストレージが含まれる。ストレージは自動で拡張され、容量の見積もり、プロビジョニング、事前の監視が要らない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+          "url": "https://aws.amazon.com/msk/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.serverless",
+      "title": "MSK Serverless は容量を管理しないクラスター",
+      "kind": "feature",
+      "text": "MSK Serverless は、コンピューティングとストレージの容量を管理せずに Apache Kafka のクラスターを実行できる、Amazon MSK のクラスタータイプである。クラスターのプロビジョニング、設定、最適化は要らず、ストリーミングして保持したデータの量に応じて支払う。",
+      "examPoint": "Kafka の容量管理を不要にしたいときの選択肢になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+          "url": "https://aws.amazon.com/msk/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.serverless-iam-auth",
+      "title": "MSK Serverless のクライアント認証は IAM",
+      "kind": "constraint",
+      "text": "MSK Serverless がクライアントの認証と認可に現在サポートしているのは IAM である。クライアントは IAM ロールを引き受けて認証し、関連付けた IAM ポリシーでアクセス制御を行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+          "url": "https://aws.amazon.com/msk/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.connect",
+      "title": "MSK Connect でマネージドなコネクターを実行",
+      "kind": "feature",
+      "text": "MSK Connect は、Apache Kafka のクラスターへ、またはクラスターからデータを流すための Amazon MSK の機能である。Kafka Connect のコネクターをフルマネージドで実行し、ソースコネクターで外部システムからトピックへ、シンクコネクターでトピックから外部システムへデータを移す。",
+      "examPoint": "Kafka と S3 や OpenSearch Service などのデータストアの間で、フルマネージドのコネクターを使ってデータを移す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understand MSK Connect",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.replicator",
+      "title": "MSK Replicator でクラスター間のデータを複製",
+      "kind": "feature",
+      "text": "MSK Replicator は、MSK Provisioned のクラスター間で、異なるリージョンまたは同じリージョンのクラスターへデータを確実に複製する Amazon MSK の機能である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Welcome to the Amazon MSK Developer Guide",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.encryption-at-rest",
+      "title": "保管時のデータは常に KMS で暗号化",
+      "kind": "feature",
+      "text": "Amazon MSK は AWS KMS と連携し、透過的なサーバー側の暗号化で、保管時のデータを常に暗号化する。クラスターの作成時に使う KMS キーを指定でき、指定しなければ MSK が AWS マネージドキーを作成して使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MSK encryption",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.client-broker-encryption",
+      "title": "クライアントとブローカー間の暗号化の設定",
+      "kind": "feature",
+      "text": "Amazon MSK のクライアントとブローカー間の通信では、TLS で暗号化されたデータだけを許可する、平文と TLS の両方を許可する、平文だけを許可する、の 3 つから設定を選ぶ。既定は TLS で暗号化されたデータだけを許可する設定である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MSK encryption",
+          "url": "https://docs.aws.amazon.com/msk/latest/developerguide/msk-encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "msk.vpc-eni-access",
+      "title": "VPC 内の ENI を通じてブローカーへ接続",
+      "kind": "feature",
+      "text": "Amazon MSK は常に、MSK のサービスが管理する VPC の中で動く。クラスターのブローカーは、利用者のアカウントに作られる ENI を通じて VPC 内のクライアントからアクセスでき、ENI のセキュリティグループが、ブローカーに許可する通信の送信元と種類を決める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+          "url": "https://aws.amazon.com/msk/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.authorization-methods",
+      "title": "認証方式で認可の仕組みが変わる",
+      "kind": "feature",
+      "text": "Amazon MSK で IAM アクセスコントロールを使うと、利用者が書いたポリシーと MSK のオーソライザーで操作を認可する。TLS 証明書認証または SASL/SCRAM を使うと、Apache Kafka のアクセスコントロールリスト（ACL）で認可し、ACL を有効にするにはそのどちらかのクライアント認証が要る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+          "url": "https://aws.amazon.com/msk/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "msk.provisioned-billing",
+      "title": "Provisioned の料金はブローカーとストレージ",
+      "kind": "pricing",
+      "text": "Amazon MSK Provisioned の料金は、ブローカーのインスタンスの使用に対する時間単価（1 秒単位）と、ストレージの量で決まる。Express ブローカーでは、書き込んだデータの量（GB 単位）にも課金される。Standard ブローカーではプロビジョニングしたストレージの量、Express ブローカーでは使用したストレージの量が基準になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managed Apache Kafka - Amazon MSK pricing",
+          "url": "https://aws.amazon.com/msk/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "firehose.msk-source"
+  ],
+  "references": [
+    {
+      "title": "Welcome to the Amazon MSK Developer Guide",
+      "url": "https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html"
+    },
+    {
+      "title": "Fully Managed Apache Kafka - Amazon MSK FAQs",
+      "url": "https://aws.amazon.com/msk/faqs/"
+    },
+    {
+      "title": "Managed Apache Kafka - Amazon MSK pricing",
+      "url": "https://aws.amazon.com/msk/pricing/"
+    }
+  ],
+  "createdBy": "sc37",
+  "createdAt": "2026-11-21"
+}

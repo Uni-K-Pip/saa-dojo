@@ -1,0 +1,315 @@
+{
+  "id": "glue",
+  "tier": 2,
+  "summary": "データの検出・準備・移動・統合を行う、サーバーレスのデータ統合サービス。ETL ジョブの実行と、メタデータを一元管理するデータカタログ（クローラーでスキーマを自動検出）が中心になる。",
+  "chooseWhen": [
+    {
+      "text": "インフラを管理せずに、サーバーレスで ETL ジョブを実行したい",
+      "factRefs": [
+        "glue.serverless-etl",
+        "glue.spark-etl-jobs"
+      ],
+      "alternatives": [
+        "emr"
+      ]
+    },
+    {
+      "text": "S3 などのデータのスキーマを自動で検出し、カタログに登録したい",
+      "factRefs": [
+        "glue.data-catalog",
+        "glue.crawler-schema"
+      ]
+    },
+    {
+      "text": "定期実行のたびに、前回処理していない新しいデータだけを変換したい",
+      "factRefs": [
+        "glue.job-bookmarks"
+      ]
+    },
+    {
+      "text": "Kinesis Data Streams や Kafka のストリームを変換して、S3 などへ書き込みたい",
+      "factRefs": [
+        "glue.streaming-etl"
+      ]
+    },
+    {
+      "text": "EMR の Hive メタストアの代わりに、マネージドなカタログを使いたい",
+      "factRefs": [
+        "glue.hive-metastore"
+      ],
+      "alternatives": [
+        "emr"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "ストリームの配信と、配信後の処理の準備が中心なら、Firehose の方が勧められる",
+      "factRefs": [
+        "glue.streaming-vs-firehose"
+      ]
+    },
+    {
+      "text": "開始や完了の時刻を保証したいジョブには、Flex の実行クラスを使わない",
+      "factRefs": [
+        "glue.flex-execution"
+      ]
+    },
+    {
+      "text": "データカタログの列・行単位のきめ細かいアクセス制御は、Lake Formation で行う",
+      "alternatives": [
+        "lake-formation"
+      ]
+    },
+    {
+      "text": "S3 のデータへ SQL で直接アドホックに問い合わせるだけなら、Athena を使う",
+      "alternatives": [
+        "athena"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "glue.serverless-etl",
+      "title": "サーバーレスのデータ統合サービス",
+      "kind": "feature",
+      "text": "AWS Glue は、複数のデータソースからデータを検出・準備・移動・統合するための、サーバーレスのデータ統合サービスである。管理するインフラがなく、ETL、ELT、ストリーミングのワークロードを 1 つのサービスで扱える。",
+      "examPoint": "サーバー（インフラ）を管理せずに ETL を実行したいときの選択肢になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Glue?",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.spark-etl-jobs",
+      "title": "Apache Spark ベースの ETL エンジン",
+      "kind": "feature",
+      "text": "AWS Glue の ETL ジョブは、Apache Spark ベースのサーバーレスな ETL エンジンで実行される。ETL のコードは Scala または Python で書け、Glue が自動で生成したコードをカスタマイズすることもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Glue?",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+        },
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.data-catalog",
+      "title": "データカタログによるメタデータの一元管理",
+      "kind": "feature",
+      "text": "AWS Glue Data Catalog は、組織のデータセットのメタデータを保存する一元的なリポジトリである。データソースの場所、スキーマ、実行時のメトリクスを索引のように管理し、メタデータはデータベースとテーブルに整理される。",
+      "examPoint": "データレイクのテーブル定義（スキーマ）を一元管理する場所として使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data discovery and cataloging in AWS Glue",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.crawler-schema",
+      "title": "クローラーによるスキーマの自動検出",
+      "kind": "feature",
+      "text": "AWS Glue のクローラーは、データストアを走査して形式とスキーマを推定し、データカタログにテーブル定義を作成または更新する。1 回の実行で複数のデータストアを走査できる。",
+      "trap": "クローラーの利用は任意で、データカタログには API から直接登録することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using crawlers to populate the Data Catalog",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/add-crawler.html"
+        },
+        {
+          "title": "AWS Glue Pricing",
+          "url": "https://aws.amazon.com/glue/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.hive-metastore",
+      "title": "Hive メタストア互換のデータカタログ",
+      "kind": "integration",
+      "text": "AWS Glue Data Catalog は Apache Hive メタストア互換で、Amazon EMR 上で動くビッグデータのアプリケーションの Hive メタストアの代わりに、そのまま使える。",
+      "examPoint": "EMR で、Hive メタストアを自分で維持しない構成にできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.job-bookmarks",
+      "title": "ジョブブックマークで処理済みのデータを追跡",
+      "kind": "feature",
+      "text": "ジョブブックマークは、ETL ジョブの前回の実行で処理したデータの状態を保持する仕組みである。古いデータの再処理を防ぎ、スケジュールで再実行するたびに、新しいデータだけを処理できる。",
+      "trap": "ストリーミング ETL ジョブは、ジョブブックマークではなくチェックポイントで、読み取り済みのデータを追跡する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Tracking processed data using job bookmarks",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html"
+        },
+        {
+          "title": "Streaming ETL jobs in AWS Glue",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.job-bookmarks-default",
+      "title": "ジョブブックマークの既定は無効",
+      "kind": "feature",
+      "text": "AWS Glue のジョブブックマークの既定の設定は無効である。無効のときはブックマークを使わず、ジョブは毎回データセット全体を処理するので、前回の実行の出力は利用者が管理する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Tracking processed data using job bookmarks",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "glue.streaming-etl",
+      "title": "ストリーミング ETL ジョブ",
+      "kind": "feature",
+      "text": "AWS Glue のストリーミング ETL ジョブは継続的に実行され、Kinesis Data Streams、Apache Kafka、Amazon MSK から読み取ったデータをクレンジング・変換して、S3 のデータレイクまたは JDBC データストアへ書き込む。",
+      "examPoint": "ストリームのデータを、サーバーレスで変換してから S3 へ書き込みたいときに使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Streaming ETL jobs in AWS Glue",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html"
+        },
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.workflows",
+      "title": "ワークフローで複数のジョブとクローラーを連鎖",
+      "kind": "feature",
+      "text": "AWS Glue のワークフローは、複数のクローラー、ジョブ、トリガーにまたがる複雑な ETL 処理を作成して可視化し、各要素の実行と進捗を管理する。トリガーで、ジョブやクローラーの完了を受けて次を起動し、依存関係のある連鎖を作れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Overview of workflows in AWS Glue",
+          "url": "https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.streaming-vs-firehose",
+      "title": "ストリームの ETL は Glue と Firehose で使い分ける",
+      "kind": "feature",
+      "text": "ストリームの ETL では、ストリームの結合などの複雑な ETL や、データの内容に基づく S3 のパーティション出力が要るなら、AWS Glue が勧められる。配信と、配信後に処理しやすくする準備が中心なら、Amazon Data Firehose が勧められる。",
+      "examPoint": "複雑なストリームの変換は Glue、配信が目的なら Firehose と選び分ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.job-dpu-billing",
+      "title": "ETL ジョブは DPU 数と実行時間で課金",
+      "kind": "pricing",
+      "text": "AWS Glue の ETL ジョブの料金は、ジョブの実行にかかった時間分だけ、使った DPU（Data Processing Unit。1 DPU は 4 vCPU と 16 GB のメモリ）の数に基づく時間単価で、1 秒単位で切り上げて課金される。管理するリソースや前払いの費用はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Glue Pricing",
+          "url": "https://aws.amazon.com/glue/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.catalog-free-tier",
+      "title": "データカタログの料金の仕組み",
+      "kind": "pricing",
+      "text": "AWS Glue Data Catalog は、メタデータの保存とアクセスに月ごとの料金がかかる。最初の 100 万個のオブジェクトの保存と、毎月最初の 100 万回のメタデータへのアクセスは無料である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Glue Pricing",
+          "url": "https://aws.amazon.com/glue/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.flex-execution",
+      "title": "Flex の実行クラスで緊急でないジョブの費用を抑える",
+      "kind": "feature",
+      "text": "AWS Glue Flex は、緊急でないデータ統合ワークロードの費用を抑えるための柔軟な実行クラスである。専用でない計算リソースで実行され、ジョブの実行中にリソースが回収されることがあり、開始と完了の時刻は一定でない。",
+      "examPoint": "夜間のバッチや一括の取り込みなど、時間に厳密でないジョブの費用を抑えたいときに向く。",
+      "trap": "開始や完了の時刻を一定にしたいジョブ、特定の時刻までに終える必要があるジョブには向かない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "glue.schema-registry",
+      "title": "Schema Registry でストリームのスキーマを管理",
+      "kind": "feature",
+      "text": "AWS Glue Schema Registry は、Apache Avro と JSON Schema で登録したスキーマを使い、ストリーミングデータの検証とスキーマの変更の制御を行うサーバーレスの機能である。追加料金なしで使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Serverless Data Integration - AWS Glue FAQs",
+          "url": "https://aws.amazon.com/glue/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "athena.glue-catalog",
+    "lake-formation.central-permissions"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Glue?",
+      "url": "https://docs.aws.amazon.com/glue/latest/dg/what-is-glue.html"
+    },
+    {
+      "title": "Serverless Data Integration - AWS Glue FAQs",
+      "url": "https://aws.amazon.com/glue/faqs/"
+    },
+    {
+      "title": "AWS Glue Pricing",
+      "url": "https://aws.amazon.com/glue/pricing/"
+    }
+  ],
+  "createdBy": "sc37",
+  "createdAt": "2026-11-21"
+}

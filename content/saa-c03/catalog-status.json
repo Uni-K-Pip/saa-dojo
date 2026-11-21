@@ -4159,6 +4159,81 @@
     "checkedAt": "2026-11-16",
     "hash": "33ecdd9ee82d"
   },
+  "firehose": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2a9c2b1df423"
+  },
+  "firehose.buffering": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "25c2a119a58b"
+  },
+  "firehose.destinations": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5464641799f9"
+  },
+  "firehose.dynamic-partitioning": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d1c1ff41189e"
+  },
+  "firehose.five-kb-increments": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0bc5dffd40b4"
+  },
+  "firehose.format-conversion": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0511d10c2a6f"
+  },
+  "firehose.format-conversion-schema": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2e0afb29eaff"
+  },
+  "firehose.ingested-volume-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "3c162c393219"
+  },
+  "firehose.kds-source": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e5f5092360eb"
+  },
+  "firehose.kds-source-no-direct-put": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "baba554909e4"
+  },
+  "firehose.lambda-transform": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5101a65095de"
+  },
+  "firehose.managed-delivery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0b4ce0469ae2"
+  },
+  "firehose.msk-source": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fe048c4fb02e"
+  },
+  "firehose.redshift-via-s3": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9edbff292e79"
+  },
+  "firehose.s3-buffer-range": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e372e9cf5fc3"
+  },
   "firewall-manager": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -4388,6 +4463,81 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "e3343d0be1fe"
+  },
+  "glue": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "fd33fc094de9"
+  },
+  "glue.catalog-free-tier": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5665b04fc3bc"
+  },
+  "glue.crawler-schema": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "71038615102a"
+  },
+  "glue.data-catalog": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "26e2460e18c3"
+  },
+  "glue.flex-execution": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "d5e771817ab2"
+  },
+  "glue.hive-metastore": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "e8e8e24e82f9"
+  },
+  "glue.job-bookmarks": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "819f8a338a43"
+  },
+  "glue.job-bookmarks-default": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "efb477ca123e"
+  },
+  "glue.job-dpu-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4f62c4c9002a"
+  },
+  "glue.schema-registry": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f543be481d06"
+  },
+  "glue.serverless-etl": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "227a523cfa39"
+  },
+  "glue.spark-etl-jobs": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "62a6c9e8a295"
+  },
+  "glue.streaming-etl": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "9b7cc85a35e0"
+  },
+  "glue.streaming-vs-firehose": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "1eedc1e19815"
+  },
+  "glue.workflows": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "bf7ccc50daa3"
   },
   "guardduty": {
     "status": "verified",
@@ -5158,6 +5308,151 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "13beb67ed5d9"
+  },
+  "mq": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a7b480d3eb0a"
+  },
+  "mq.activemq-deployment": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "10fd392fc797"
+  },
+  "mq.activemq-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "2da82aacebf6"
+  },
+  "mq.billing-model": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "f39d204d2758"
+  },
+  "mq.encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0e26da39d9c2"
+  },
+  "mq.lambda-source": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "a403e0d4bb21"
+  },
+  "mq.managed-broker": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "603d1f8e950c"
+  },
+  "mq.migration-endpoints": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "32044a196379"
+  },
+  "mq.no-reserved-pricing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6e8e50d2fef7"
+  },
+  "mq.protocols": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "21df99a94e65"
+  },
+  "mq.rabbitmq-cluster": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6d79396a5fe2"
+  },
+  "mq.rabbitmq-internode-free": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "955923c20e3c"
+  },
+  "mq.vpc-private-endpoint": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "c320f66f3196"
+  },
+  "mq.vs-self-managed": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "b102b325fa57"
+  },
+  "msk": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "5930f47b939f"
+  },
+  "msk.authorization-methods": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "635940abaa46"
+  },
+  "msk.broker-recovery": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "7645df7e249b"
+  },
+  "msk.broker-types": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "18079995faba"
+  },
+  "msk.client-broker-encryption": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "380d0d294cf3"
+  },
+  "msk.connect": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "49f3054b2786"
+  },
+  "msk.encryption-at-rest": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "4f40e9544f8f"
+  },
+  "msk.express-storage": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0d881ddb7ead"
+  },
+  "msk.managed-kafka": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "07dbd2bea283"
+  },
+  "msk.open-source-compat": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "6850a12ac669"
+  },
+  "msk.provisioned-billing": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "aecadf13974e"
+  },
+  "msk.replicator": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0a8e340f260f"
+  },
+  "msk.serverless": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "113b212632dd"
+  },
+  "msk.serverless-iam-auth": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "0cbb60e872de"
+  },
+  "msk.vpc-eni-access": {
+    "status": "verified",
+    "checkedAt": "2026-11-21",
+    "hash": "340165a91c28"
   },
   "nat-gateway": {
     "status": "verified",
