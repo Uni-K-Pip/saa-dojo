@@ -3,6 +3,7 @@
 // 色は styles.css の --dg-… の変数で、明るい背景と暗い背景の両方に対応する。
 import { useId, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { DiagramBox, DiagramEdge, DiagramMarkState, DiagramNode, DiagramPoint, DiagramRect, DiagramScene } from '../content/types';
+import { DiagramFullscreen } from './DiagramFullscreen';
 
 export const MARK_LABELS: Record<DiagramMarkState, string> = { down: '停止', off: '切り離し', standby: '待機', new: '新規', promoted: '昇格' };
 
@@ -100,7 +101,7 @@ function trim(points: P[], atStart: number, atEnd: number): P[] {
 
 const pathOf = (pts: P[]) => pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${r1(p[0])},${r1(p[1])}`).join(' ');
 
-function arrowHead(from: P, tip: P): string {
+export function arrowHead(from: P, tip: P): string {
   const d = dirOf(from, tip);
   const base: P = [tip[0] - d[0] * ARROW_LEN, tip[1] - d[1] * ARROW_LEN];
   const n: P = [-d[1], d[0]];
@@ -175,9 +176,7 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
   const step = Math.max(0, Math.min(total, fixedStep ?? current));
   const view = stepView(scene, step);
   const go = (n: number) => setCurrent(Math.max(0, Math.min(total, n)));
-  const titleId = `${uid}-t`;
   const ownAltId = `${uid}-alt`;
-  const hintId = `${uid}-hint`;
   const interactive = !fixed && total > 0;
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -216,18 +215,21 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
   const atStart = step === 0;
   const atEnd = step === total;
 
-  return (
-    <figure className="dg">
+  const renderFrame = (full: boolean, expand?: () => void) => {
+    const titleId = `${uid}-${full ? 'full-' : ''}t`;
+    const hintId = `${uid}-${full ? 'full-' : ''}hint`;
+    return (
       <div
-        className="dg-frame"
+        className={`dg-frame${expand ? ' dg-frame-expandable' : ''}`}
         role="group"
         aria-label={`図: ${scene.title}`}
         aria-describedby={interactive ? hintId : undefined}
         tabIndex={interactive ? 0 : undefined}
         onKeyDown={onKeyDown}
+        onClick={expand}
       >
         <svg
-          className="dg-svg"
+          className={`dg-svg${full ? ' dg-svg--full' : ''}`}
           role="img"
           aria-labelledby={titleId}
           aria-describedby={altId ?? ownAltId}
@@ -331,7 +333,42 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
           </g>
         </svg>
       </div>
+    );
+  };
 
+  function renderSteps(full: boolean) {
+    return (
+      <>
+        {interactive && (
+          <>
+            <div className="dg-controls" onKeyDown={onKeyDown}>
+              <button type="button" className="btn small" aria-disabled={atStart} onClick={() => !atStart && go(step - 1)}>
+                前へ
+              </button>
+              <span className="dg-count">
+                {step} / {total}
+              </span>
+              <button type="button" className="btn small" aria-disabled={atEnd} onClick={() => !atEnd && go(step + 1)}>
+                次へ
+              </button>
+            </div>
+            <p id={`${uid}-${full ? 'full-' : ''}hint`} className="dg-hint small muted">
+              図かボタンを選んでいるときは、左右のキーでも段階を移れます。
+            </p>
+          </>
+        )}
+        {total > 0 && (
+          <p className="dg-step-text" aria-live="polite">
+            {stepText}
+          </p>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <figure className="dg">
+      <DiagramFullscreen title={scene.title} renderFrame={renderFrame} controls={renderSteps(true)} />
       {altId === undefined && (
         <p id={ownAltId} className="visually-hidden">
           {scene.alt}
@@ -339,29 +376,7 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
       )}
       {caption && <figcaption className="dg-caption">{caption}</figcaption>}
 
-      {interactive && (
-        <>
-          <div className="dg-controls" onKeyDown={onKeyDown}>
-            <button type="button" className="btn small" aria-disabled={atStart} onClick={() => !atStart && go(step - 1)}>
-              前へ
-            </button>
-            <span className="dg-count">
-              {step} / {total}
-            </span>
-            <button type="button" className="btn small" aria-disabled={atEnd} onClick={() => !atEnd && go(step + 1)}>
-              次へ
-            </button>
-          </div>
-          <p id={hintId} className="dg-hint small muted">
-            図かボタンを選んでいるときは、左右のキーでも段階を移れます。
-          </p>
-        </>
-      )}
-      {total > 0 && (
-        <p className="dg-step-text" aria-live="polite">
-          {stepText}
-        </p>
-      )}
+      {renderSteps(false)}
       {total > 0 && (
         <details className="dg-all-steps">
           <summary>すべての段階を文章で読む</summary>

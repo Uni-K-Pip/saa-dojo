@@ -2,8 +2,17 @@
 // ?step=<番号> で、その段階に止めた図を出す（docs/visual-materials-design.md の 4.8）。
 import { use } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
-import { Diagram } from '../components/Diagram';
+import { DiagramView } from '../components/DiagramView';
 import { loadDiagram, loadDiagramIndex } from '../content/loader';
+import type { DiagramIndexEntry } from '../content/types';
+
+const DIAGRAM_TYPE_LABELS: Record<DiagramIndexEntry['type'], string> = {
+  architecture: '構成図',
+  decision: '選択フロー',
+  position: '位置づけ図',
+  timeline: '時間の図',
+  layers: '層の図',
+};
 
 export function DiagramsPage() {
   const list = use(loadDiagramIndex());
@@ -17,6 +26,7 @@ export function DiagramsPage() {
           {list.map((d) => (
             <li key={d.id}>
               <Link to={`/diagrams/${d.id}`}>{d.title}</Link>{' '}
+              <span className="small muted">{DIAGRAM_TYPE_LABELS[d.type]}</span>{' '}
               <span className="small muted">{d.steps > 0 ? `段階 ${d.steps}` : '段階なし'}</span>{' '}
               {d.status === 'pending' && <span className="badge pending">未検証</span>}
             </li>
@@ -43,7 +53,7 @@ export default function DiagramPage() {
     );
   }
   const raw = params.get('step');
-  const step = raw !== null && /^\d+$/.test(raw) ? Number(raw) : undefined;
+  const step = scene.type === 'architecture' && raw !== null && /^\d+$/.test(raw) ? Number(raw) : undefined;
   return (
     <article>
       <p className="small muted" style={{ marginBottom: 0 }}>
@@ -51,7 +61,7 @@ export default function DiagramPage() {
       </p>
       <h1>{scene.title}</h1>
       <p className="meta-row">{scene.status === 'pending' && <span className="badge pending">未検証</span>}</p>
-      <Diagram key={scene.id} scene={scene} step={step} altId="dg-alt" />
+      <DiagramView key={scene.id} scene={scene} step={step} altId="dg-alt" />
       <section className="card" aria-labelledby="dg-alt-h">
         <h2 id="dg-alt-h">図の内容（代替文）</h2>
         <p id="dg-alt">{scene.alt}</p>
