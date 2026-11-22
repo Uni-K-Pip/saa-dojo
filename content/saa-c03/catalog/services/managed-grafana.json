@@ -1,0 +1,72 @@
+{
+  "id": "managed-grafana",
+  "tier": 3,
+  "summary": "Amazon Managed Grafana は、メトリクス・ログ・トレースを複数のソースから照会・関連付け・可視化する、フルマネージドのデータ可視化サービスである。Grafana のサーバー（ワークスペース）のプロビジョニングと運用、スケールは AWS が行う。",
+  "chooseWhen": [
+    {
+      "text": "Grafana のダッシュボードを、サーバーの構築や運用なしで使いたい場合。"
+    },
+    {
+      "text": "CloudWatch や OpenSearch Service など複数のデータソースのデータを、1 つのダッシュボードで可視化したい場合。",
+      "factRefs": [
+        "managed-grafana.data-sources-single-dashboard"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "managed-grafana.sso-authentication",
+      "title": "認証は SAML 2.0 の IdP か IAM Identity Center",
+      "kind": "constraint",
+      "text": "Amazon Managed Grafana のユーザーの認証と認可には、SAML 2.0 に対応する ID プロバイダー（IdP）か、AWS IAM Identity Center を連携させる。ワークスペース内で権限を割り当てるのに、IAM ユーザーとロールは使えない。",
+      "examPoint": "ワークスペースへのサインインは、SAML 2.0 の IdP か IAM Identity Center で行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Managed Grafana?",
+          "url": "https://docs.aws.amazon.com/grafana/latest/userguide/what-is-Amazon-Managed-Service-Grafana.html"
+        },
+        {
+          "title": "Use AWS IAM Identity Center with your Amazon Managed Grafana workspace",
+          "url": "https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG-SSO.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "managed-grafana.data-sources-single-dashboard",
+      "title": "AWS のデータソースを 1 つのダッシュボードにまとめる",
+      "kind": "integration",
+      "text": "Amazon Managed Grafana は、Amazon CloudWatch、Amazon OpenSearch Service、AWS X-Ray、Amazon Managed Service for Prometheus など、運用データを集める AWS のデータソースと統合されている。複数のデータソースのデータを、1 つのダッシュボードにまとめて表示できる。",
+      "examPoint": "複数のデータソースのデータを、1 つのダッシュボードにまとめて表示できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Managed Grafana?",
+          "url": "https://docs.aws.amazon.com/grafana/latest/userguide/what-is-Amazon-Managed-Service-Grafana.html"
+        },
+        {
+          "title": "Connect to data sources",
+          "url": "https://docs.aws.amazon.com/grafana/latest/userguide/AMG-data-sources.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "cloudwatch.dashboards",
+    "opensearch.dashboards"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Managed Grafana?",
+      "url": "https://docs.aws.amazon.com/grafana/latest/userguide/what-is-Amazon-Managed-Service-Grafana.html"
+    },
+    {
+      "title": "Amazon Managed Grafana",
+      "url": "https://aws.amazon.com/grafana/"
+    }
+  ],
+  "createdBy": "sc50",
+  "createdAt": "2026-11-22"
+}

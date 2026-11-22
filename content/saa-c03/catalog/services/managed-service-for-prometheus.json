@@ -1,0 +1,62 @@
+{
+  "id": "managed-service-for-prometheus",
+  "tier": 3,
+  "summary": "Amazon Managed Service for Prometheus は、コンテナのメトリクスを監視する、サーバーレスで Prometheus 互換のサービスである。メトリクスの取り込み、保存、クエリを、ワークロードの増減に合わせて自動でスケールする。",
+  "chooseWhen": [
+    {
+      "text": "Prometheus のデータモデルと PromQL を使ったまま、基盤の運用なしでコンテナを監視したい場合。",
+      "factRefs": [
+        "managed-service-for-prometheus.prometheus-compatible"
+      ]
+    },
+    {
+      "text": "EKS や自己管理の Kubernetes のコンテナのメトリクスを、規模に合わせて自動でスケールさせながら扱いたい場合。",
+      "factRefs": [
+        "managed-service-for-prometheus.supported-clusters"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "managed-service-for-prometheus.prometheus-compatible",
+      "title": "Prometheus のデータモデルと PromQL をそのまま使う",
+      "kind": "feature",
+      "text": "Amazon Managed Service for Prometheus では、オープンソースの Prometheus と同じデータモデルとクエリ言語（PromQL）を使える。PromQL でメトリクスを絞り込み、集計し、アラームを設定でき、コードの変更なしで性能の可視性を得られる。",
+      "examPoint": "Prometheus と同じデータモデルと PromQL を、基盤を管理せずに使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Managed Service for Prometheus?",
+          "url": "https://docs.aws.amazon.com/prometheus/latest/userguide/what-is-Amazon-Managed-Service-Prometheus.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "managed-service-for-prometheus.supported-clusters",
+      "title": "対象は EKS と自己管理の Kubernetes のコンテナクラスター",
+      "kind": "feature",
+      "text": "Amazon Managed Service for Prometheus は、Amazon Elastic Kubernetes Service と自己管理の Kubernetes 環境で動くコンテナクラスターで使える。コンテナのメトリクスの監視を目的にしたサービスである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Managed Service for Prometheus?",
+          "url": "https://docs.aws.amazon.com/prometheus/latest/userguide/what-is-Amazon-Managed-Service-Prometheus.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Managed Service for Prometheus?",
+      "url": "https://docs.aws.amazon.com/prometheus/latest/userguide/what-is-Amazon-Managed-Service-Prometheus.html"
+    },
+    {
+      "title": "Amazon Managed Service for Prometheus",
+      "url": "https://aws.amazon.com/prometheus/"
+    }
+  ],
+  "createdBy": "sc50",
+  "createdAt": "2026-11-22"
+}

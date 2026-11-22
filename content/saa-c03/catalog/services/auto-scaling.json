@@ -1,0 +1,85 @@
+{
+  "id": "auto-scaling",
+  "tier": 3,
+  "summary": "AWS Auto Scaling は、スケーリングプランで、関連する複数のスケーラブルなリソース（EC2 の Auto Scaling グループ、ECS、DynamoDB、Aurora、Spot Fleet）の自動スケーリングをまとめて設定するサービスである。追加料金はなく、使うリソースと CloudWatch の料金だけがかかる。",
+  "chooseWhen": [
+    {
+      "text": "EC2、ECS、DynamoDB、Aurora など複数のリソースの自動スケーリングを、まとめて設定したい場合。",
+      "factRefs": [
+        "auto-scaling.plan-supported-resources"
+      ]
+    },
+    {
+      "text": "タグや CloudFormation のスタックで束ねたリソースの組ごとに、スケーリングを設定したい場合。"
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "予測スケーリングだけが目的の場合は、プランではなく、Auto Scaling のリソースに予測スケーリングポリシーを直接設定する。",
+      "factRefs": [
+        "auto-scaling.predictive-only-set-directly"
+      ],
+      "alternatives": [
+        "ec2-auto-scaling"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "auto-scaling.plan-supported-resources",
+      "title": "スケーリングプランが対象にするリソース",
+      "kind": "feature",
+      "text": "AWS Auto Scaling のスケーリングプランは、Aurora の読み取りレプリカ数、EC2 Auto Scaling グループの希望容量、Amazon ECS の希望タスク数、DynamoDB のテーブルとグローバルセカンダリインデックスのプロビジョンド読み取り・書き込み容量、Spot Fleet のターゲット容量を増減できる。",
+      "examPoint": "EC2 のほか、ECS、DynamoDB、Aurora、Spot Fleet のスケーリングを 1 つのプランで設定できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is a scaling plan?",
+          "url": "https://docs.aws.amazon.com/autoscaling/plans/userguide/what-is-a-scaling-plan.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "auto-scaling.predictive-only-set-directly",
+      "title": "予測スケーリングだけなら直接ポリシーを設定する",
+      "kind": "constraint",
+      "text": "スケーリングプランを予測スケーリングだけに使うなら、ドキュメントは、プランではなく、Auto Scaling のリソースに予測スケーリングポリシーを直接設定することを強く推奨している。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is a scaling plan?",
+          "url": "https://docs.aws.amazon.com/autoscaling/plans/userguide/what-is-a-scaling-plan.html"
+        },
+        {
+          "title": "How scaling plans work",
+          "url": "https://docs.aws.amazon.com/autoscaling/plans/userguide/how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "ec2-auto-scaling.predictive-scaling",
+    "ec2-auto-scaling.target-tracking",
+    "dynamodb.auto-scaling",
+    "aurora.auto-scaling",
+    "ecs.service-auto-scaling"
+  ],
+  "references": [
+    {
+      "title": "What is a scaling plan?",
+      "url": "https://docs.aws.amazon.com/autoscaling/plans/userguide/what-is-a-scaling-plan.html"
+    },
+    {
+      "title": "How scaling plans work",
+      "url": "https://docs.aws.amazon.com/autoscaling/plans/userguide/how-it-works.html"
+    },
+    {
+      "title": "AWS Auto Scaling",
+      "url": "https://aws.amazon.com/autoscaling/"
+    }
+  ],
+  "createdBy": "sc50",
+  "createdAt": "2026-11-22"
+}

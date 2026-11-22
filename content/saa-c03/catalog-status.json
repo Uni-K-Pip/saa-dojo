@@ -614,6 +614,21 @@
     "checkedAt": "2026-11-15",
     "hash": "1d20e5073d2f"
   },
+  "auto-scaling": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "5f97224f0e10"
+  },
+  "auto-scaling.plan-supported-resources": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "af09d71eaee2"
+  },
+  "auto-scaling.predictive-only-set-directly": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "2f9d3a6ce2e1"
+  },
   "backup": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5449,6 +5464,21 @@
     "checkedAt": "2026-11-16",
     "hash": "09a03e8191b7"
   },
+  "health-dashboard": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "b77354608660"
+  },
+  "health-dashboard.account-specific-and-public-events": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "6c1122e01403"
+  },
+  "health-dashboard.eventbridge-automation": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "9889a5b9777b"
+  },
   "iam": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -6228,6 +6258,41 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "c4e129494d2d"
+  },
+  "managed-grafana": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "1e572056f9b9"
+  },
+  "managed-grafana.data-sources-single-dashboard": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "523b0050c89c"
+  },
+  "managed-grafana.sso-authentication": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "02d956562ec9"
+  },
+  "managed-service-for-prometheus": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "29c51683250a"
+  },
+  "managed-service-for-prometheus.prometheus-compatible": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "8bf777edb171"
+  },
+  "managed-service-for-prometheus.supported-clusters": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "8b1893a6cbe3"
+  },
+  "management-console": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "a0ebddc12dca"
   },
   "mq": {
     "status": "verified",
