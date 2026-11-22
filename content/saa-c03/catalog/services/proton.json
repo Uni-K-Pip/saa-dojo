@@ -1,0 +1,49 @@
+{
+  "id": "proton",
+  "tier": 3,
+  "summary": "サーバーレスとコンテナベースのアプリケーション向けに、インフラのコード化によるプロビジョニングとデプロイを自動化するサービス。管理者が作るバージョン付きのテンプレートを、開発者がセルフサービスで選んでデプロイする。サポートの終了日は 2026 年 10 月 7 日と案内されている。",
+  "avoidWhen": [
+    {
+      "text": "サポートの終了が案内されているため、新規には選ばない。",
+      "factRefs": [
+        "proton.end-of-support"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "proton.end-of-support",
+      "title": "サポートの終了日は 2026 年 10 月 7 日と案内されている",
+      "kind": "constraint",
+      "text": "AWS は AWS Proton の廃止を決め、サポートの終了日を 2026 年 10 月 7 日と案内している。案内によると、新規の利用者は 2025 年 10 月 7 日を過ぎるとサインアップできず、終了日のあとは Proton のコンソールとリソースにアクセスできなくなるが、デプロイ済みのインフラは残る。新規には選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Proton Service Deprecation and Migration Guide",
+          "url": "https://docs.aws.amazon.com/proton/latest/userguide/proton-end-of-support.html"
+        },
+        {
+          "title": "What is AWS Proton?",
+          "url": "https://docs.aws.amazon.com/proton/latest/userguide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "cloudformation.template-provisioning"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Proton?",
+      "url": "https://docs.aws.amazon.com/proton/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "AWS Proton Service Deprecation and Migration Guide",
+      "url": "https://docs.aws.amazon.com/proton/latest/userguide/proton-end-of-support.html"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}

@@ -1,0 +1,60 @@
+{
+  "id": "service-catalog",
+  "tier": 3,
+  "summary": "承認された IT サービス（サーバー、データベース、複数層のアプリケーションなど）のカタログを作って管理し、利用者が承認済みのものだけをセルフサービスで起動できるようにするサービス。構成の標準化とガバナンスの維持に使う。",
+  "chooseWhen": [
+    {
+      "text": "組織で承認した IT サービスのカタログを作り、利用者が承認済みのものだけを起動できるようにしたい場合。"
+    },
+    {
+      "text": "ポートフォリオを他の AWS アカウントと共有し、制約を付けて配布したい場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "service-catalog.product-cloudformation-template",
+      "title": "製品は CloudFormation テンプレートから作る",
+      "kind": "feature",
+      "text": "Service Catalog の製品は、AWS CloudFormation テンプレートをインポートして作る。テンプレートが必要なリソースとその関係、利用者が起動時に指定するパラメータを定義する。利用者が製品を起動すると、できあがる実体（プロビジョニングされた製品）は CloudFormation のスタックである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Overview of Service Catalog",
+          "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "service-catalog.launch-constraint",
+      "title": "起動制約で利用者の権限を最小限にする",
+      "kind": "feature",
+      "text": "起動制約は、利用者が製品を起動・更新・終了するときに Service Catalog が引き受ける IAM ロールを指定する。起動制約がないと、利用者は自分の IAM 認証情報で、CloudFormation、製品が使うサービス、Service Catalog への権限を持って起動する必要がある。",
+      "examPoint": "起動ロールを使うと、利用者に与える権限をその製品に必要な最小限にできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Service Catalog Launch Constraints",
+          "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "cloudformation.stack-resource-unit",
+    "control-tower.account-factory"
+  ],
+  "references": [
+    {
+      "title": "What Is Service Catalog?",
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/introduction.html"
+    },
+    {
+      "title": "Overview of Service Catalog",
+      "url": "https://docs.aws.amazon.com/servicecatalog/latest/adminguide/what-is_concepts.html"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}

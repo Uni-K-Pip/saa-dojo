@@ -309,6 +309,16 @@
     "checkedAt": "2026-11-21",
     "hash": "e1192e5bb87f"
   },
+  "artifact": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "85664ecf1e19"
+  },
+  "artifact.compliance-documents": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "73fa06b01d12"
+  },
   "athena": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -6184,6 +6194,16 @@
     "checkedAt": "2026-11-22",
     "hash": "ecb50b4a2b5e"
   },
+  "license-manager": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "f3584821a57e"
+  },
+  "license-manager.license-limits": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "c8b02aae3701"
+  },
   "macie": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -7048,6 +7068,16 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "5ce7324e4475"
+  },
+  "proton": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "06adb73292e0"
+  },
+  "proton.end-of-support": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "f5bd263c5ba7"
   },
   "quick": {
     "status": "verified",
@@ -8283,6 +8313,31 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "a5125c737e01"
+  },
+  "service-catalog": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "54aae2ce7a42"
+  },
+  "service-catalog.launch-constraint": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "dbb188509ca7"
+  },
+  "service-catalog.product-cloudformation-template": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "f3a9378b625e"
+  },
+  "service-quotas": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "0b38397d806a"
+  },
+  "service-quotas.request-increase": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "560bcd0c85af"
   },
   "shield": {
     "status": "verified",
@@ -9873,6 +9928,16 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "96ffe24fb970"
+  },
+  "well-architected-tool": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "32d788eeadea"
+  },
+  "well-architected-tool.guided-self-review": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "fcac056812c0"
   },
   "xray": {
     "status": "verified",

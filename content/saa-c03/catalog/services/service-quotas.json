@@ -1,0 +1,41 @@
+{
+  "id": "service-quotas",
+  "tier": 3,
+  "summary": "AWS サービスのクォータ（上限）を一か所で確認・管理し、引き上げを申請できるサービス。クォータはアカウント内のリソースやアクションなどの最大値で、各サービスが既定値を定めている。",
+  "chooseWhen": [
+    {
+      "text": "既定のクォータでは業務の必要を満たせず、クォータの確認や引き上げの申請を行いたい場合。",
+      "factRefs": [
+        "service-quotas.request-increase"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "service-quotas.request-increase",
+      "title": "調整可能なクォータは引き上げを申請する",
+      "kind": "feature",
+      "text": "Service Quotas では、サービスごとのクォータと、アカウントレベルで調整可能かどうかを確認できる。調整可能なクォータは、コンソール、API、AWS CLI から引き上げを申請できる。申請は Support が審査し、承認、却下、一部承認のいずれかになり、処理には時間がかかる。",
+      "examPoint": "クォータが調整可能かどうかは、コンソールの調整可能（Adjustable）の列で確認する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Service Quotas?",
+          "url": "https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "trusted-advisor.service-limit-monitoring"
+  ],
+  "references": [
+    {
+      "title": "What is Service Quotas?",
+      "url": "https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}
