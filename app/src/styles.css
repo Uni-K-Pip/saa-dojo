@@ -1417,3 +1417,5 @@ details.fact.is-target {
 .dg-hint { text-align: center; margin: 0.2rem 0 0; }
 .dg-step-text { min-height: 3.4em; margin: 0.5rem 0; }
 .dg-all-steps summary { cursor: pointer; }
+
+.course-text .btn { max-width: 100%; }

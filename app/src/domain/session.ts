@@ -13,6 +13,7 @@ export interface PracticeSession {
   id: string;
   kind: 'practice';
   mode: Exclude<AnswerMode, 'mock' | 'mockA' | 'mockB'>;
+  unitId?: string;
   title: string;
   questionIds: string[];
   index: number;

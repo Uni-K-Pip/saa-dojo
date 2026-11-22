@@ -10,6 +10,7 @@ import { activeSessions, sessionPath } from '../state/sessions';
 import { useStudy } from '../state/study';
 import { useNow } from '../state/useNow';
 import { BackupReminder } from '../components/BackupReminder';
+import { CourseNextStep } from '../components/CourseNextStep';
 
 function ResumeCard() {
   const sessions = useLiveQuery(() => activeSessions(), []);
@@ -74,6 +75,7 @@ export default function HomePage() {
         </section>
       )}
       <ResumeCard />
+      <CourseNextStep />
 
       <section className="card" aria-labelledby="today-h">
         <h2 id="today-h">今日の学習</h2>
