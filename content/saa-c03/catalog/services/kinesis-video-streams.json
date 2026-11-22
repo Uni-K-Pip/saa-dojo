@@ -1,0 +1,65 @@
+{
+  "id": "kinesis-video-streams",
+  "tier": 3,
+  "summary": "接続されたデバイスから AWS へ動画などのメディアを安全にストリーミングし、保存・再生・分析や機械学習に使うためのフルマネージドのサービス。動画以外の時系列のデータも取り込める。",
+  "chooseWhen": [
+    {
+      "text": "カメラやスマートフォンなど多数のデバイスのライブ動画を AWS に取り込み、保存・再生・分析したい場合。"
+    },
+    {
+      "text": "カメラデバイスとモバイル・Web のプレーヤーの間で、低遅延の双方向のメディア通信を行いたい場合。",
+      "factRefs": [
+        "kinesis-video-streams.webrtc-two-way"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "kinesis-video-streams.hls-dash-playback",
+      "title": "HLS・DASH による動画の再生",
+      "kind": "feature",
+      "text": "Kinesis Video Streams は、取り込んだ動画を HLS または DASH の API でライブでも録画でも再生できる。この機能はフルマネージドで、再生のためのクラウド側の基盤を自分で構築する必要がない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Kinesis Video Streams FAQs",
+          "url": "https://aws.amazon.com/kinesis/video-streams/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "kinesis-video-streams.webrtc-two-way",
+      "title": "WebRTC による低遅延の双方向ストリーミング",
+      "kind": "feature",
+      "text": "Kinesis Video Streams は、カメラ機器と WebRTC 対応のモバイル・Web のプレーヤーの間で、低遅延の双方向の音声・動画のやり取りを行う WebRTC を、フルマネージドの機能として提供する。シグナリングやメディア中継のサーバーを自分で用意する必要がない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Kinesis Video Streams FAQs",
+          "url": "https://aws.amazon.com/kinesis/video-streams/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "kinesis-data-streams.realtime-ingestion"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Kinesis Video Streams?",
+      "url": "https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/what-is-kinesis-video.html"
+    },
+    {
+      "title": "Amazon Kinesis Video Streams",
+      "url": "https://aws.amazon.com/kinesis/video-streams/"
+    },
+    {
+      "title": "Amazon Kinesis Video Streams FAQs",
+      "url": "https://aws.amazon.com/kinesis/video-streams/faqs/"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22"
+}

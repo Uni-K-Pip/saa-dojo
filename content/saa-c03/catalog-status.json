@@ -2289,6 +2289,26 @@
     "checkedAt": "2026-11-16",
     "hash": "fb43c78a3af6"
   },
+  "data-exchange": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "022397b87ff9"
+  },
+  "data-pipeline": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "358201e05c39"
+  },
+  "data-pipeline.migration-targets": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "df650f772cef"
+  },
+  "data-pipeline.no-new-customers": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "930ca07bbbb4"
+  },
   "datasync": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5744,6 +5764,11 @@
     "checkedAt": "2026-11-16",
     "hash": "7e1fbd968c1a"
   },
+  "kinesis": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "b95ba005a7c4"
+  },
   "kinesis-data-streams": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5793,6 +5818,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "e290e59108a2"
+  },
+  "kinesis-video-streams": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "dc8e2b2eaea4"
+  },
+  "kinesis-video-streams.hls-dash-playback": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "e9db300a0cf3"
+  },
+  "kinesis-video-streams.webrtc-two-way": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "721dcd63abd0"
   },
   "kms": {
     "status": "verified",
@@ -6943,6 +6983,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "5ce7324e4475"
+  },
+  "quick": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "5c6345ea8fce"
+  },
+  "quicksight": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "1bfd9c7ece0f"
+  },
+  "quicksight.continues-in-quick": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "45dbe92effb6"
   },
   "ram": {
     "status": "verified",
