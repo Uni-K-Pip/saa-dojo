@@ -29,8 +29,8 @@
     },
     {
       "id": "fc-w2c-004",
-      "front": "Amazon Quick と、旧称の Amazon QuickSight の関係は？ BI ダッシュボードで使う機能は？",
-      "back": "Amazon QuickSight が発展して Amazon Quick（途中の名称は Quick Suite）になった。BI（ダッシュボード作成・可視化・埋め込み）の機能は Amazon Quick Sight として Quick の中で続き、既存の QuickSight の API や SDK はそのまま動く。試験の「可視化」の選択肢はこのサービス。",
+      "front": "Amazon Quick（現在の公式のページでは AWS Quick）と Amazon QuickSight の関係は？ BI ダッシュボードで使う機能は？",
+      "back": "Amazon QuickSight から Amazon Quick（現在の公式のページでは AWS Quick）が発展した。QuickSight は Quick の中の機能として続き（現在の公式のページでの名前は AWS Quick Sight）、BI（ダッシュボード作成・可視化・埋め込み）の機能を担い、既存の QuickSight の API や SDK はそのまま動く。試験の「可視化」の選択肢はこのサービス。",
       "taskStatements": ["3.5"],
       "services": ["Amazon Quick"],
       "tags": ["可視化", "BI", "改称"]
@@ -46,7 +46,7 @@
     {
       "id": "fc-w2c-006",
       "front": "サーバーレスアプリを組織内や一般に公開・共有し、他の人が数クリックでデプロイできるようにしたい。",
-      "back": "AWS Serverless Application Repository。AWS SAM のテンプレートと一緒にアプリを公開し、利用者は検索して設定値を入れ、CloudFormation 経由でデプロイする。公開先は一般公開か、特定アカウントや組織に限定した非公開から選べ、Lambda コンソールからも探せる。",
+      "back": "AWS Serverless Application Repository。AWS SAM のテンプレートと一緒にアプリを公開し、利用者は検索して設定値を入れ、CloudFormation 経由でデプロイする。公開先は一般公開か、特定のアカウントまたは AWS Organizations の組織への限定共有から選べる（組織単位（OU）を指定した共有はサポートされない）。Lambda コンソールからも探せる。",
       "taskStatements": ["2.1"],
       "services": ["AWS Serverless Application Repository", "AWS Lambda", "AWS CloudFormation"],
       "tags": ["サーバーレス", "共有"]
@@ -126,7 +126,7 @@
     {
       "id": "fc-w2c-016",
       "front": "音声・テキストで対話するチャットボットを作るサービスは？ 旧バージョンの扱いは？",
-      "back": "Amazon Lex。Alexa と同じ技術で、音声認識と自然言語理解を使い、会話型のボットを構築する。注文受付やコールセンターの自動応答などに使い、Lambda でビジネスロジックを呼び出せる。Lex V1 は2025年9月に終了済みで、使うのは V2。",
+      "back": "Amazon Lex。Alexa と同じ技術で、音声認識と自然言語理解を使い、会話型のボットを構築する。注文受付やコールセンターの自動応答などに使い、Lambda でビジネスロジックを呼び出せる。今の公式のデベロッパーガイドは Amazon Lex V2 のもので、V1 から V2 への移行ガイドもある。",
       "taskStatements": ["2.1", "2.2"],
       "services": ["Amazon Lex", "AWS Lambda"],
       "tags": ["機械学習", "チャットボット"]
@@ -190,7 +190,7 @@
     {
       "id": "fc-w2c-024",
       "front": "Kubernetes のコンテナのメトリクスを、Prometheus 互換のまま、収集・保存の運用なしで扱いたい。",
-      "back": "Amazon Managed Service for Prometheus。Prometheus 互換のメトリクスの収集・保存・クエリ（PromQL）をサーバーレスで提供し、容量は自動でスケールする。EKS や ECS のコンテナ監視向きで、可視化は Amazon Managed Grafana と組み合わせる。",
+      "back": "Amazon Managed Service for Prometheus。Prometheus 互換のメトリクスの収集・保存・クエリ（PromQL）をサーバーレスで提供し、容量は自動でスケールする。コンテナのメトリクスの監視向きで、Amazon EKS や自己管理の Kubernetes のほか、Amazon ECS からも取り込める。Amazon Managed Grafana で可視化できる。",
       "taskStatements": ["2.2"],
       "services": ["Amazon Managed Service for Prometheus", "Amazon Managed Grafana"],
       "tags": ["モニタリング", "コンテナ", "Prometheus"]
@@ -238,7 +238,7 @@
     {
       "id": "fc-w2c-030",
       "front": "オンプレミスのサーバーを、アプリを改修せず（リフト＆シフト）最小のダウンタイムで EC2 へ移行したい。",
-      "back": "AWS Application Migration Service。ソースサーバーのディスクを継続的にブロックレベルで AWS へレプリケーションし、テスト起動で動作を確認してから、切り替え（カットオーバー）で本番の EC2 インスタンスを起動する。再構築が不要でダウンタイムは切り替え時のみ。",
+      "back": "AWS Application Migration Service（現在の公式のページでの名前は AWS Transform MGN）。ソースサーバーのディスクを継続的にブロックレベルで AWS へレプリケーションし、テスト起動で動作を確認してから、切り替え（カットオーバー）で本番の EC2 インスタンスを起動する。再構築が不要でダウンタイムは切り替え時のみ。",
       "taskStatements": ["3.2", "2.2"],
       "services": ["AWS Application Migration Service", "Amazon EC2"],
       "tags": ["移行", "リフト＆シフト", "変更最小"]
@@ -246,7 +246,7 @@
     {
       "id": "fc-w2c-031",
       "front": "AWS Snow Family（Snowball Edge）の現状と、大容量データ転送の代替は？",
-      "back": "Snowball Edge は2025年11月から新規顧客の受付が止まり、Snow Family の新規注文はできない（既存顧客は継続）。オンライン転送なら AWS DataSync、物理媒体なら AWS Data Transfer Terminal、エッジの計算なら AWS Outposts が案内されている。用途は出題されうるが、新規の正解にはしない。",
+      "back": "Snowball Edge は2025年11月から新規顧客の受付が止まり、Snow Family の新規注文はできない（既存顧客は継続利用できるが、商用リージョンでは 2026 年 12 月 31 日にサポートが終わる）。オンライン転送なら AWS DataSync、物理媒体なら AWS Data Transfer Terminal、エッジの計算なら AWS Outposts が案内されている。用途は出題されうるが、新規の正解にはしない。",
       "taskStatements": ["3.5", "4.1"],
       "services": ["AWS Snow Family", "AWS DataSync", "AWS Outposts"],
       "tags": ["データ移行", "新規受付停止"]
@@ -341,7 +341,7 @@
     },
     {
       "id": "fc-w2c-043",
-      "front": "サーバーの移行と災害対策。Application Migration Service と Elastic Disaster Recovery は何が違うか。",
+      "front": "サーバーの移行と災害対策。Application Migration Service（現在の公式のページでの名前は AWS Transform MGN）と Elastic Disaster Recovery は何が違うか。",
       "back": "どちらもソースサーバーを継続的にレプリケーションする仕組みだが、目的が違う。Application Migration Service は移行が目的で、切り替え後はレプリケーションを終える。Elastic Disaster Recovery は災害対策が目的で、レプリケーションを続けて被災時に復旧用の EC2 を起動し、復旧後に戻す（フェイルバック）。",
       "taskStatements": ["2.2", "3.2"],
       "services": ["AWS Application Migration Service", "AWS Elastic Disaster Recovery"],

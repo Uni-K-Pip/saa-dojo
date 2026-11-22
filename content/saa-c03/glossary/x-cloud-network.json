@@ -401,9 +401,9 @@
       "related": ["DNS", "フェイルオーバールーティング"]
     },
     {
-      "term": "Route 53 Resolver エンドポイント",
-      "en": "Route 53 Resolver endpoints",
-      "definition": "VPC とオンプレミスの間で DNS の問い合わせを転送するための入口です。オンプレミスから VPC の名前を解決するインバウンドエンドポイントと、VPC からオンプレミスの名前を解決するアウトバウンドエンドポイントがあります。",
+      "term": "Route 53 VPC Resolver エンドポイント（旧称 Route 53 Resolver エンドポイント）",
+      "en": "Route 53 VPC Resolver endpoints (formerly Route 53 Resolver endpoints)",
+      "definition": "Route 53 VPC Resolver（旧称 Route 53 Resolver）で、VPC とオンプレミスの間で DNS の問い合わせを転送するための入口です。オンプレミスから VPC の名前を解決するインバウンドエンドポイントと、VPC からオンプレミスの名前を解決するアウトバウンドエンドポイントがあります。",
       "services": ["Amazon Route 53"],
       "related": ["DNS", "ホストゾーン"]
     },

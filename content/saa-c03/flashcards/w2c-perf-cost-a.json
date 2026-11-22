@@ -417,7 +417,7 @@
     {
       "id": "fc-w2c-116",
       "front": "回線が細く、数百 TB を AWS へ移したい。旧来の定石だった Snowball Edge は今も新規に選べる？",
-      "back": "選べない。AWS Snowball Edge は 2025 年 11 月から新規顧客の受付を停止している（既存顧客は継続利用可）。オンライン転送は DataSync、物理的な持ち込みは AWS Data Transfer Terminal、エッジでの計算は AWS Outposts が代替になる。",
+      "back": "選べない。AWS Snowball Edge は 2025 年 11 月から新規顧客の受付を停止している（既存顧客は継続利用可だが、商用リージョンでは 2026 年 12 月 31 日にサポートが終わる）。オンライン転送は DataSync、物理的な持ち込みは AWS Data Transfer Terminal、エッジでの計算は AWS Outposts が代替になる。",
       "taskStatements": [
         "3.1",
         "4.1"
