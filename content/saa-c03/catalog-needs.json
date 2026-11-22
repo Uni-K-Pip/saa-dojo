@@ -2046,10 +2046,8 @@
       "side": "incorrect",
       "gap": "partial",
       "knowledge": "ElastiCache はキーを指定して値を取り出すインメモリのデータストアで、属性への部分一致・あいまい検索や集計のための検索エンジンではない。",
-      "decision": "fact",
-      "factRefs": [
-        "opensearch.full-text-search"
-      ]
+      "decision": "question",
+      "note": "誤りは、キーを指定した取得だけでは部分一致・あいまい検索・集計ができないという使い方の側にあり、サービスの機能の有無として公式の資料で直接言える否定ではない。図鑑の事実では埋めず（正解の側の全文検索は opensearch.full-text-search に書いてある）、選択肢か解説の表現の見直しとして別に追う。見直しはまだしていない（2026-11-22）。"
     },
     {
       "key": "saa-3.4-g8-009/c",
