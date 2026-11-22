@@ -1749,6 +1749,11 @@
     "checkedAt": "2026-11-20",
     "hash": "f3fc48f5af63"
   },
+  "cmp-rekognition-textract": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "cc9840aee9e4"
+  },
   "cmp-route53-global-accelerator": {
     "status": "verified",
     "checkedAt": "2026-11-20",
