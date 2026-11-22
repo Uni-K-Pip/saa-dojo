@@ -6104,6 +6104,16 @@
     "checkedAt": "2026-11-21",
     "hash": "13beb67ed5d9"
   },
+  "lex": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "c44d1c4c8f56"
+  },
+  "lex.speech-to-intent": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "ecb50b4a2b5e"
+  },
   "macie": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -7388,6 +7398,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "73b923542010"
+  },
+  "rekognition": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "0c39a334f6ed"
+  },
+  "rekognition.media-input": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "9dd60ac8cf9b"
+  },
+  "rekognition.text-in-images": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "d22f7acade30"
   },
   "route53": {
     "status": "verified",
@@ -8929,6 +8954,21 @@
     "checkedAt": "2026-11-21",
     "hash": "cd921be97718"
   },
+  "textract": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "18f30bc20419"
+  },
+  "textract.core-extraction": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "1c8eac94f0cb"
+  },
+  "textract.specialized-documents": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "beb02827430a"
+  },
   "timestream": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -9003,6 +9043,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "144fce8b4526"
+  },
+  "transcribe": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "7a0f997157e6"
+  },
+  "transcribe.audio-to-text": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "20b2f3ef0271"
+  },
+  "transcribe.modes": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "ed1442906223"
   },
   "transfer-family": {
     "status": "verified",
@@ -9163,6 +9218,16 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "009674401db0"
+  },
+  "translate": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "1701a7706771"
+  },
+  "translate.text-translation": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "7e687bf3d4f1"
   },
   "trusted-advisor": {
     "status": "verified",

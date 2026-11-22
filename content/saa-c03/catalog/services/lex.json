@@ -1,0 +1,40 @@
+{
+  "id": "lex",
+  "tier": 3,
+  "summary": "Amazon Lex（ガイドの名称は Amazon Lex V2）は、音声とテキストで会話するインターフェイスをアプリケーションに作るサービス。自動音声認識（ASR）と自然言語理解（NLU）の機能を、深層学習の専門知識なしで使える。",
+  "chooseWhen": [
+    {
+      "text": "音声やテキストで利用者と会話するチャットボットを作りたい場合。",
+      "factRefs": [
+        "lex.speech-to-intent"
+      ]
+    },
+    {
+      "text": "作ったボットを、モバイル、Web アプリ、チャットサービスに公開したい場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "lex.speech-to-intent",
+      "title": "Lex は音声・テキストから意図を理解して実行する",
+      "kind": "feature",
+      "text": "Amazon Lex V2 のボットは、入力された音声をテキストに変換し、音声やテキストの入力から利用者の意図を理解する。そのうえで、適切な業務の機能を呼び出して意図を実現する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Lex V2?",
+          "url": "https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Lex V2?",
+      "url": "https://docs.aws.amazon.com/lexv2/latest/dg/what-is.html"
+    }
+  ],
+  "createdBy": "sc48",
+  "createdAt": "2026-11-22"
+}
