@@ -44,6 +44,14 @@ const body = [
   '> **ひっかけ注意**',
   '> ルートユーザーは使わない。',
   '',
+  '> **その場の確認**',
+  '> どの権限から使いますか？',
+  '>',
+  '> - [x] 最小限の権限',
+  '> - [ ] すべての権限',
+  '>',
+  '> 業務に必要なアクセスだけを許可するためです。',
+  '',
   '## 確認問題',
   '',
   '- `saa-1.1-t-002`: 2問目',
@@ -86,6 +94,19 @@ describe('レッスン', () => {
     expect(await screen.findByRole('button', { name: '回答する' })).toBeInTheDocument();
     const sessions = await db.sessions.toArray();
     expect(sessions[0]!.questionIds).toEqual(['saa-1.1-t-002']);
+  });
+
+  it('その場の確認に答えるとレッスン ID と正誤を記録します', async () => {
+    const user = userEvent.setup();
+    renderApp('/lessons/lesson-1.1-iam');
+    await user.click(await screen.findByRole('button', { name: '最小限の権限' }));
+    await waitFor(async () => {
+      const events = (await db.events.toArray()).filter((e) => e.type === 'check-answer');
+      expect(events).toEqual([expect.objectContaining({
+        lessonId: 'lesson-1.1-iam', checkId: expect.stringMatching(/^c[0-9a-f]{8}$/), choice: 1, correct: true,
+      })]);
+    });
+    expect(screen.getByText('正解です。')).toBeVisible();
   });
 
   it('ロードマップからレッスンへ進める', async () => {

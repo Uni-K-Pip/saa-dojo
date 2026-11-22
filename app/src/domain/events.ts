@@ -73,6 +73,15 @@ export interface LessonReadEvent extends EventBase {
   lessonId: string;
 }
 
+/** 合格準備度と復習の予定には使わない（設計書 7 章、決定 L-7） */
+export interface CheckAnswerEvent extends EventBase {
+  type: 'check-answer';
+  lessonId: string;
+  checkId: string;
+  choice: number;
+  correct: boolean;
+}
+
 /** サービス図鑑のエントリを読んだ（合格準備度には使わない）。serviceId はエントリの id */
 export interface CatalogReadEvent extends EventBase {
   type: 'catalog-read';
@@ -95,6 +104,7 @@ export type AppEvent =
   | SettingEvent
   | MockResultEvent
   | LessonReadEvent
+  | CheckAnswerEvent
   | CatalogReadEvent
   | DrillEvent;
 

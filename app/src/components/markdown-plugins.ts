@@ -1,5 +1,8 @@
 // Markdown の変換プラグイン。囲み記事（`> **試験のポイント**`・`> **ひっかけ注意**`）を色付きの枠にする。
 import type { Blockquote, Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import type { Plugin } from 'unified';
+import { parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { hashString } from '../domain/rng';
 
 export const CALLOUT_KINDS: Record<string, 'tip' | 'trap'> = {
   試験のポイント: 'tip',
@@ -28,6 +31,7 @@ export function calloutOf(bq: Blockquote): { kind: 'tip' | 'trap'; title: string
 }
 
 function transform(bq: Blockquote): void {
+  if (bq.data?.hName) return;
   const c = calloutOf(bq);
   if (!c) return;
   const first = bq.children[0];
@@ -58,16 +62,85 @@ function transform(bq: Blockquote): void {
   });
 }
 
-function walk(node: Parent): void {
-  for (const child of node.children as RootContent[]) {
-    if (child.type === 'blockquote') transform(child);
-    if ('children' in child) walk(child as Parent);
+function walk(node: Parent, visit: (bq: Blockquote) => RootContent[] | void): void {
+  const children = node.children as RootContent[];
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    const after = child.type === 'blockquote' ? visit(child) : undefined;
+    if (after) {
+      children.splice(i + 1, 0, ...after);
+      i += after.length;
+      continue;
+    }
+    if ('children' in child) walk(child as Parent, visit);
   }
 }
 
 export function remarkCallouts() {
   return (tree: Root) => {
-    walk(tree);
+    walk(tree, transform);
   };
 }
+
+function plainText(node: RootContent | Root): string {
+  if (node.type === 'paragraph' || node.type === 'heading') return textOf(node.children);
+  if ('children' in node) return (node.children as RootContent[]).map(plainText).join(' ');
+  if ('value' in node) return node.value;
+  return '';
+}
+
+export const remarkInlineChecks: Plugin<[], Root> = function () {
+  return (tree: Root, file: { toString(): string }) => {
+    const markdown = file.toString();
+    const checks = new Map(parseInlineChecks(markdown).filter((c) => !c.problems.length).map((c) => [c.line, c]));
+    if (!checks.size) return;
+    const source = markdown.split(/\r\n?|\n/);
+    const parse = (value: string) => this.parse(value) as Root;
+    const blocks = (value: string) => parse(value).children.filter(
+      (node): node is Blockquote['children'][number] => node.type !== 'yaml',
+    );
+    walk(tree, (bq) => {
+      const position = bq.position;
+      const check = checks.get(position?.start.line ?? 0);
+      if (!check || !position || bq.children[0]?.type !== 'paragraph' || bq.children[0].children[0]?.type !== 'strong') return;
+      const questionBlocks = blocks(check.question);
+      const questionText = questionBlocks.map(plainText).join(' ').replace(/\s+/g, ' ').trim();
+      const question = questionBlocks.length === 1 && questionBlocks[0].type === 'paragraph'
+        ? questionBlocks[0] : { type: 'paragraph' as const, children: [{ type: 'text' as const, value: questionText }] };
+      const checkId = `c${hashString(questionText).toString(16).padStart(8, '0')}`;
+      bq.data = {
+        hName: 'section',
+        hProperties: {
+          className: ['callout', 'inline-check'], 'aria-label': 'その場の確認',
+          dataCheckId: checkId, dataCorrectChoice: check.options.findIndex(({ correct }) => correct) + 1,
+        },
+      };
+      bq.children = [
+        {
+          type: 'paragraph', data: { hProperties: { className: ['callout-title'] } },
+          children: [{ type: 'text', value: 'その場の確認' }],
+        },
+        question,
+        {
+          type: 'list', ordered: false, spread: false,
+          children: check.options.map(({ text }, i) => ({
+            type: 'listItem', spread: false, data: { hProperties: { dataCheckChoice: i + 1 } },
+            children: [{
+              type: 'paragraph',
+              children: [{ type: 'text', value: plainText(parse(text)) }],
+            }],
+          })),
+        },
+        {
+          type: 'blockquote', data: { hName: 'div', hProperties: { dataCheckReason: true } },
+          children: blocks(check.reason),
+        },
+      ];
+      // Markdown が引用に続く行を取り込んだ場合は、引用の外へ戻します。
+      const continuation = source.slice(check.line, position.end.line);
+      const firstOutside = continuation.findIndex((line) => !/^[ \t]*>/.test(line));
+      return firstOutside < 0 ? [] : blocks(continuation.slice(firstOutside).join('\n'));
+    });
+  };
+};
 
