@@ -65,9 +65,11 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 
 ### 6.1 最新性の注意（2026年11月時点）
 
-- **正解にしない**（提供終了・新規受付停止）: Amazon Kinesis Data Analytics for SQL Applications、AWS App Mesh、EC2-Classic、EC2 Auto Scaling の起動設定（Launch Configuration。新しいアカウントでは作成できないので起動テンプレートを使う）、Amazon S3 Select、Amazon S3 Object Lambda、Amazon Glacier の独立サービス（ボールトと旧 API。S3 Glacier の各ストレージクラスは引き続き使える）、AWS WAF Classic、Amazon Aurora Serverless v1、AWS CloudTrail Lake、Amazon SNS のメッセージデータ保護。
+- **正解にしない**（提供終了・新規受付停止）: Amazon Kinesis Data Analytics for SQL Applications、AWS App Mesh、EC2-Classic、EC2 Auto Scaling の起動設定（Launch Configuration。新しいアカウントでは作成できないので起動テンプレートを使う）、Amazon S3 Select、Amazon S3 Object Lambda、Amazon Glacier の独立サービス（ボールトと旧 API。S3 Glacier の各ストレージクラスは引き続き使える）、AWS WAF Classic、Amazon Aurora Serverless v1、AWS CloudTrail Lake、Amazon SNS のメッセージデータ保護、AWS Directory Service の Simple AD、Amazon FSx File Gateway、AWS Data Pipeline、AWS Proton、AWS Application Discovery Service。
 - **AWS Snowball Edge**: 2025年11月から新規顧客の受付が止まっています。用途はレッスンやフラッシュカードで扱ってよいですが、問題の正解にする場合は解説で必ずこの点に触れます。
 - **AWS Firewall Manager**: 置き換えていく別のサービスとして AWS Network Security Manager が出ています（改名ではなく別のサービスです。Firewall Manager の販売と提供の終了の日付は、2026年11月時点で発表されていません）。試験ガイドの範囲内のサービスの一覧は AWS Firewall Manager を載せているので、教材は Firewall Manager の名前のまま書き、問題の正解にしてかまいません。終了の日付が発表されたら、扱いを見直します。
+- **AWS Application Migration Service**: 今の公式のページでの名前は AWS Transform MGN（旧称 AWS Application Migration Service）です。試験ガイドの範囲内のサービスの一覧は AWS Application Migration Service の名前で載せているので、教材はこの名前のまま書き、初出に今の公式の名前を併記します。
+- **Amazon Quick と Amazon QuickSight**: 今の公式のページでの名前は AWS Quick と、Quick の中の機能の AWS Quick Sight（Amazon QuickSight から発展したもの）です。試験ガイドの範囲内のサービスの一覧は Amazon Quick の名前で載せているので、教材は台帳の名前（Amazon Quick、Amazon QuickSight）のまま書き、初出に今の公式の名前を併記します。
 - **新旧の名前を併記する**: Amazon Data Firehose（旧称 Amazon Kinesis Data Firehose）、Amazon Managed Service for Apache Flink（旧称 Amazon Kinesis Data Analytics for Apache Flink）、Aurora Serverless v2 は「Aurora serverless」に改称、Aurora Global Database の計画的切り替え（Switchover）と障害時のフェイルオーバー（Failover）の区別、EventBridge のカスタムイベントバス（従来型の classic と新しい enhanced）。
 - **既定値に依存する問題を作らない**: S3 の既定の暗号化（SSE-S3）、新しいバケットのブロックパブリックアクセスと ACL 無効化、S3 ライフサイクルで128 KB未満のオブジェクトを移行しない既定動作、Amazon Linux 2023 の IMDSv2 必須、STS のリージョンエンドポイントの扱い、RDS 延長サポートへの自動加入。
 
