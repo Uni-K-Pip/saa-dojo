@@ -44,14 +44,14 @@
       "id": "d",
       "text": "Amazon ElastiCache に商品データをすべてキャッシュして、キーによる取得で検索を高速化する。",
       "correct": false,
-      "rationale": "この選択肢のキーによる取得だけでは、商品属性に対する部分一致・あいまい検索や集計を実現できません。Amazon ElastiCache for Valkey 9.0 以降には検索機能もありますが、この選択肢では使用していません。"
+      "rationale": "Amazon ElastiCache は、キーと値のペアのキャッシュからキーを指定してデータを取り出す使い方に向いています。本問の部分一致・あいまい検索や集計には、検索・分析エンジンの OpenSearch Service が合います。Valkey 9.0 以降の検索機能は、この選択肢では使用していません。"
     }
   ],
-  "explanation": "データベースやデータストアは、データの種類とアクセスのパターンに合わせて選びます。リレーショナルデータベース（RDS、Aurora）は、構造化されたデータと、結合、トランザクションに向いています。先頭にワイルドカードを含む LIKE '%検索語%' の部分一致検索は、通常の B-tree インデックスを効率よく利用しにくく、データ量や検索パターンによっては遅くなります。\n\nAmazon OpenSearch Service は、OpenSearch（および従来の Elasticsearch OSS）を、マネージドで提供するサービスで、全文検索、あいまい検索、ファセット検索（絞り込みと集計）、ログの分析などに向いています。日本語の形態素解析には Kuromoji（kuromoji）のアナライザー、部分一致には要件に応じた n-gram などの解析設定を使い、適切なアナライザーとクエリを設定する必要があります。データを OpenSearch にインデックスして検索し、元のデータは RDS などに保持する構成が一般的です。\n\nリードレプリカは読み取りの負荷の分散で、LIKE 検索そのものの性能や検索機能は変わりません。DynamoDB の Scan とフィルター式は、大量のデータでは非効率です。Amazon ElastiCache for Valkey 9.0 以降には検索機能もありますが、キーによる取得だけでは、この要件を満たしません。",
+  "explanation": "データベースやデータストアは、データの種類とアクセスのパターンに合わせて選びます。リレーショナルデータベース（RDS、Aurora）は、構造化されたデータと、結合、トランザクションに向いています。先頭にワイルドカードを含む LIKE '%検索語%' の部分一致検索は、通常の B-tree インデックスを効率よく利用しにくく、データ量や検索パターンによっては遅くなります。\n\nAmazon OpenSearch Service は、OpenSearch（および従来の Elasticsearch OSS）を、マネージドで提供するサービスで、全文検索、あいまい検索、ファセット検索（絞り込みと集計）、ログの分析などに向いています。日本語の形態素解析には Kuromoji（kuromoji）のアナライザー、部分一致には要件に応じた n-gram などの解析設定を使い、適切なアナライザーとクエリを設定する必要があります。データを OpenSearch にインデックスして検索し、元のデータは RDS などに保持する構成が一般的です。\n\nリードレプリカは読み取りの負荷の分散で、LIKE 検索そのものの性能や検索機能は変わりません。DynamoDB の Scan とフィルター式は、大量のデータでは非効率です。Amazon ElastiCache は、キーと値のペアのキャッシュからキーを指定してデータを取り出す使い方で高速です。Valkey 9.0 以降には検索機能もありますが、キーによる取得だけを使う構成は、部分一致・あいまい検索や集計の要件に合いません。",
   "keyPoints": [
     "全文検索・あいまい検索・形態素解析・絞り込みの集計 → Amazon OpenSearch Service（アナライザーとクエリの設定が必要）",
     "先頭にワイルドカードを含む LIKE 検索は、通常のインデックスを効率よく使いにくい",
-    "DynamoDB は、キーによるアクセス向けで、Scan による全文検索には向かない。キーによる取得だけでは検索の要件を満たさない"
+    "DynamoDB は、キーによるアクセス向けで、Scan による全文検索には向かない。部分一致・あいまい検索・集計 → キーによる取得ではなく検索エンジン"
   ],
   "references": [
     {
@@ -65,6 +65,10 @@
     {
       "title": "検索の機能と制限 - Amazon ElastiCache ユーザーガイド",
       "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/search-features-limits.html"
+    },
+    {
+      "title": "ElastiCache の一般的なユースケースおよび ElastiCache がどのように役立つか - Amazon ElastiCache ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/elasticache-use-cases.html"
     }
   ],
   "lessonRefs": [],
