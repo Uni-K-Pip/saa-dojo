@@ -14,6 +14,8 @@ const MockSessionPage = lazy(() => import('./pages/MockSessionPage'));
 const MockResultPage = lazy(() => import('./pages/MockResultPage'));
 const BasicsPage = lazy(() => import('./pages/BasicsPage'));
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const CoursePage = lazy(() => import('./pages/CoursePage'));
+const UnitPage = lazy(() => import('./pages/CoursePage').then((m) => ({ default: m.UnitPage })));
 const LessonPage = lazy(() => import('./pages/LessonPage'));
 const ReviewPage = lazy(() => import('./pages/ReviewPage'));
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'));
@@ -30,6 +32,8 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const DiagramPage = lazy(() => import('./pages/DiagramPage'));
+const DiagramsPage = lazy(() => import('./pages/DiagramPage').then((m) => ({ default: m.DiagramsPage })));
 
 function Appearance() {
   const { settings } = useStudy();
@@ -61,6 +65,8 @@ export function AppRoutes() {
         <Route path="mock/result/:id" element={<MockResultPage />} />
         <Route path="basics" element={<BasicsPage />} />
         <Route path="roadmap" element={<RoadmapPage />} />
+        <Route path="course" element={<CoursePage />} />
+        <Route path="course/:unitId" element={<UnitPage />} />
         <Route path="lessons/:id" element={<LessonPage />} />
         <Route path="review" element={<ReviewPage />} />
         <Route path="flashcards" element={<FlashcardsPage />} />
@@ -76,6 +82,8 @@ export function AppRoutes() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
+        <Route path="diagrams" element={<DiagramsPage />} />
+        <Route path="diagrams/:id" element={<DiagramPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -6,6 +6,9 @@ import crypto from 'node:crypto';
 import YAML from 'yaml';
 import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
+import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
+import { CourseSchema } from '../../../scripts/lib/course.mjs';
+import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
 
 export const FORMAT = 'saa-dojo-content';
 export const FORMAT_VERSION = 1;
@@ -44,6 +47,7 @@ export function classify(rel) {
   const ext = path.posix.extname(file);
   const domainDir = /^d([1-4])$/.exec(p[1] ?? '');
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
+  if (rel === 'course.json') return { kind: 'course' };
   if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (rel === 'catalog-status.json') return { kind: 'catalog-status' };
@@ -52,6 +56,7 @@ export function classify(rel) {
     if (p[1] === 'services') return { kind: 'catalog-entry' };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison' };
   }
+  if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram' };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2])) return { kind: 'question' };
@@ -88,6 +93,7 @@ export function parseContent(files, schema) {
   const warn = (rel, msg) => warnings.push(`${rel}: ${msg}`);
   const parsed = {
     blueprint: null,
+    course: null,
     registry: null, // サービス台帳（services.json）。なければ services 欄の表記をそのまま出力する
     questions: [],
     lessons: [],
@@ -102,6 +108,8 @@ export function parseContent(files, schema) {
     catalogStatus: {},
     catalogStatusPresent: false,
     catalogNeeds: null,
+    // 図（content/saa-c03/diagrams）。スキーマに通ったものだけ
+    diagrams: [],
   };
 
   const validate = (s, value, rel) => {
@@ -179,6 +187,18 @@ export function parseContent(files, schema) {
         if (data) parsed.catalogComparisons.push({ rel, data });
         break;
       }
+      case 'course': {
+        const j = json(rel, text);
+        const data = j && validate(CourseSchema, j.value, rel);
+        if (data) parsed.course = { rel, data };
+        break;
+      }
+      case 'diagram': {
+        const j = json(rel, text);
+        const data = j && schema.DiagramSchema && validate(schema.DiagramSchema, j.value, rel);
+        if (data) parsed.diagrams.push({ rel, data });
+        break;
+      }
       case 'question': {
         const j = json(rel, text);
         const data = j && validate(schema.QuestionSchema, j.value, rel);
@@ -247,6 +267,13 @@ function crossCheck(parsed, err, warn) {
   };
   for (const m of catalog.errors) err(...splitMsg(m));
   for (const m of catalog.warnings) warn(...splitMsg(m));
+  // 図: スキーマと checkDiagram のエラーでビルドを止める（レイアウトの警告は警告のまま）
+  const diagrams = checkDiagramsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
+  for (const m of diagrams.errors) err(...splitMsg(m));
+  for (const m of diagrams.warnings) warn(...splitMsg(m));
+  const course = checkCourseForBuild(parsed, HIDDEN_STATUSES);
+  for (const m of course.errors) err(parsed.course.rel, m);
+  for (const w of course.warnings) warn(parsed.course.rel, w.message);
   const taskIds = new Set(['basics']);
   const itemIds = new Set(bp.basics.items.map((i) => i.id));
   for (const d of bp.domains) {
@@ -411,6 +438,11 @@ export function buildOutputs(parsed, schema) {
     for (const e of catalog.entries) add(`catalog:${e.id}`, `catalog/${e.id}`, e.data);
     add('catalog-compare', 'catalog-compare', catalog.comparisons);
   }
+  // 図（レイアウト済みの scene）。一覧は diagram-index、1 枚ずつは diagram:<id>
+  const diagrams = buildDiagramOutputs(parsed, serviceIndex);
+  add('diagram-index', 'diagram-index', diagrams.index);
+  for (const scene of diagrams.scenes) add(`diagram:${scene.id}`, `diagrams/${scene.id}`, scene);
+  if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions));
 
   const out = [];
   const manifestFiles = {};
@@ -450,6 +482,8 @@ export function buildOutputs(parsed, schema) {
       catalogFacts: catalog?.counts.catalogFacts ?? 0,
       comparisons: catalog?.counts.comparisons ?? 0,
       catalogFactStatus: catalog?.counts.catalogFactStatus ?? { verified: 0, pending: 0 },
+      diagrams: diagrams.scenes.length,
+      courseUnits: parsed.course?.data.stages.reduce((total, stage) => total + stage.units.length, 0) ?? 0,
     },
     files: manifestFiles,
   };

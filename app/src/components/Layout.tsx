@@ -11,6 +11,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'ホーム', icon: '⌂', group: '' },
+  { to: '/course', label: '学習コース', icon: '🧭', group: '学ぶ' },
   { to: '/basics', label: '基礎講座', icon: '🔰', group: '学ぶ' },
   { to: '/roadmap', label: 'ロードマップ', icon: '🗺', group: '学ぶ' },
   { to: '/practice', label: '演習', icon: '✎', group: '解く' },
@@ -29,7 +30,7 @@ export const NAV_ITEMS: NavItem[] = [
 
 const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/', label: 'ホーム', icon: '⌂' },
-  { to: '/roadmap', label: '学ぶ', icon: '🗺' },
+  { to: '/course', label: '学ぶ', icon: '🧭' },
   { to: '/practice', label: '演習', icon: '✎' },
   { to: '/review', label: '復習', icon: '↻' },
   { to: '/menu', label: 'メニュー', icon: '☰' },

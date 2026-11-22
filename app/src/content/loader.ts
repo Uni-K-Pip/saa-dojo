@@ -4,6 +4,8 @@ import type {
   CatalogComparison,
   CatalogEntry,
   CatalogIndex,
+  DiagramIndexEntry,
+  DiagramScene,
   DocEntry,
   FlashcardDeck,
   GlossaryEntry,
@@ -15,6 +17,7 @@ import type {
   QuestionMeta,
   ServiceEntry,
 } from './types';
+import type { Course } from './course-types';
 
 export type Fetcher = (path: string) => Promise<unknown>;
 
@@ -64,6 +67,7 @@ function loadKey<T>(key: string, fallback: T): Promise<T> {
 }
 
 export const loadBlueprint = () => loadKey<BlueprintSummary | null>('blueprint', null);
+export const loadCourse = () => loadKey<Course | null>('course', null);
 export const loadQuestionIndex = () => loadKey<QuestionMeta[]>('index', []);
 export const loadLessons = () => loadKey<LessonMeta[]>('lessons', []);
 export const loadLessonBody = (id: string) => loadKey<LessonBody | null>(`lesson:${id}`, null);
@@ -75,6 +79,9 @@ export const loadCatalogIndex = () => loadKey<CatalogIndex>('catalog-index', { s
 /** 図鑑のエントリ 1 件。エントリがない（準備中・除外）ときは null */
 export const loadCatalogEntry = (id: string) => loadKey<CatalogEntry | null>(`catalog:${id}`, null);
 export const loadComparisons = () => loadKey<CatalogComparison[]>('catalog-compare', []);
+export const loadDiagramIndex = () => loadKey<DiagramIndexEntry[]>('diagram-index', []);
+/** レイアウト済みの図 1 枚。ないときは null */
+export const loadDiagram = (id: string) => loadKey<DiagramScene | null>(`diagram:${id}`, null);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {

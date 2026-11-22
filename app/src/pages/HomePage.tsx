@@ -10,6 +10,7 @@ import { activeSessions, sessionPath } from '../state/sessions';
 import { useStudy } from '../state/study';
 import { useNow } from '../state/useNow';
 import { BackupReminder } from '../components/BackupReminder';
+import { CourseNextStep } from '../components/CourseNextStep';
 
 function ResumeCard() {
   const sessions = useLiveQuery(() => activeSessions(), []);
@@ -59,13 +60,13 @@ export default function HomePage() {
       {isNew && (
         <section className="card" aria-labelledby="start-h">
           <h2 id="start-h">はじめに</h2>
-          <p>AWS が初めてなら基礎講座から、経験があればロードマップのレッスンか演習から始めてください。</p>
+          <p>AWS が初めてなら基礎講座から、経験があれば学習コースの途中のユニットか演習から始めてください。</p>
           <div className="btn-row">
             <Link className="btn primary" to="/basics">
               基礎講座を読む
             </Link>
-            <Link className="btn" to="/roadmap">
-              ロードマップ
+            <Link className="btn" to="/course">
+              学習コース
             </Link>
             <Link className="btn" to="/settings">
               試験日を設定
@@ -74,6 +75,7 @@ export default function HomePage() {
         </section>
       )}
       <ResumeCard />
+      <CourseNextStep />
 
       <section className="card" aria-labelledby="today-h">
         <h2 id="today-h">今日の学習</h2>

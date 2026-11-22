@@ -11,7 +11,17 @@ AWS Certified Solutions Architect – Associate（SAA）に、このアプリだ
 | `app/` | PWA 本体（Vite + React + TypeScript） |
 | `content/saa-c03/` | 問題・レッスン・フラッシュカード・用語集・ガイド |
 | `scripts/` | コンテンツの検証・集計スクリプト |
-| `docs/` | アプリ仕様と問題の作成基準 |
+| `docs/` | 設計書、アプリ仕様、教材の作成基準 |
+
+## ドキュメント
+
+| 文書 | 内容 |
+|---|---|
+| `docs/learning-design.md` | 全体の設計。目標、教材の体系、学習コース、網羅と受け入れの基準、計画（未実装を含む） |
+| `docs/visual-materials-design.md` | 図解・操作型教材の設計（未実装を含む） |
+| `docs/service-catalog-design.md` | サービス図鑑の設計 |
+| `docs/content-guide.md` | 実装済みの教材の形式と書き方の規則 |
+| `docs/app-spec.md` | 実装済みのアプリの仕様 |
 
 ## ブランチ
 

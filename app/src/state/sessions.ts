@@ -15,6 +15,7 @@ export async function updateSession<T extends SessionRecord>(id: string, fn: (s:
 
 export async function createPracticeSession(opts: {
   mode: PracticeSession['mode'];
+  unitId?: string;
   title: string;
   questionIds: string[];
   concepts?: Record<string, string>;
@@ -24,6 +25,7 @@ export async function createPracticeSession(opts: {
     id: uuid(),
     kind: 'practice',
     mode: opts.mode,
+    ...(opts.unitId ? { unitId: opts.unitId } : {}),
     title: opts.title,
     questionIds: opts.questionIds,
     index: 0,
