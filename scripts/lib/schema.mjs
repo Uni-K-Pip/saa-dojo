@@ -426,3 +426,95 @@ export const CatalogNeedsSchema = z
     const keys = n.items.map((i) => i.key);
     if (!unique(keys)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'key が重複している' });
   });
+
+// ---------------------------------------------------------------- 図（docs/visual-materials-design.md の 4・5 章）
+// 構造の形だけをここで確かめる。語彙・参照・上限・ラベルの要否は scripts/lib/diagram.mjs の checkDiagram が見る。
+
+export const DIAGRAM_ID = /^dg-[a-z0-9][a-z0-9-]{1,60}$/;
+// 図の中の部品・入れ物・線の id
+const diagramItemId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,40}$/);
+const diagramSide = z.enum(['top', 'bottom', 'left', 'right']);
+
+// root の木の 1 要素。box を持てば入れ物、node を持てば部品、どちらもなく children だけなら見えない並べ枠
+const DiagramItemSchema = z.lazy(() =>
+  z
+    .object({
+      id: diagramItemId.optional(),
+      node: z.string().regex(SERVICE_ID).optional(),
+      box: z.string().regex(SERVICE_ID).optional(),
+      label: z.string().min(1).max(20).optional(),
+      dir: z.enum(['row', 'col']).optional(),
+      align: z.enum(['start', 'center', 'end']).optional(),
+      children: z.array(DiagramItemSchema).min(1).max(16).optional(),
+    })
+    .strict()
+    .superRefine((it, ctx) => {
+      const issue = (message) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
+      if (it.node !== undefined && it.box !== undefined) issue('node と box は同時に書けません');
+      if (it.node !== undefined) {
+        if (it.id === undefined) issue('部品（node）には id が要ります');
+        if (it.children !== undefined || it.dir !== undefined || it.align !== undefined) issue('部品（node）は children・dir・align を持てません');
+      } else {
+        if (it.box !== undefined && it.id === undefined) issue('入れ物（box）には id が要ります');
+        if (it.children === undefined) issue('入れ物と並べ枠には children が要ります');
+        if (it.box === undefined && it.label !== undefined) issue('見えない並べ枠は label を持てません');
+      }
+    }),
+);
+
+const DiagramRootSchema = z
+  .object({
+    dir: z.enum(['row', 'col']).optional(),
+    align: z.enum(['start', 'center', 'end']).optional(),
+    children: z.array(DiagramItemSchema).min(1).max(16),
+  })
+  .strict();
+
+const DiagramEdgeSchema = z
+  .object({
+    id: diagramItemId,
+    from: diagramItemId,
+    to: diagramItemId,
+    kind: z.enum(['request', 'data', 'control', 'blocked']).optional(),
+    label: z.string().min(1).max(16).optional(),
+    both: z.boolean().optional(),
+    fromSide: diagramSide.optional(),
+    toSide: diagramSide.optional(),
+  })
+  .strict();
+
+const DiagramStepSchema = z
+  .object({
+    text: z.string().min(20).max(200),
+    focus: z.array(diagramItemId).max(20).optional(),
+    edges: z.array(diagramItemId).max(16).optional(),
+    reveal: z.array(diagramItemId).max(30).optional(),
+    marks: z
+      .array(z.object({ id: diagramItemId, state: z.enum(['down', 'off', 'standby', 'new', 'promoted']) }).strict())
+      .max(20)
+      .optional(),
+  })
+  .strict();
+
+const diagramCommon = {
+  id: z.string().regex(DIAGRAM_ID),
+  title: z.string().min(4).max(60),
+  alt: z.string().min(40).max(600),
+  lessonRefs: z.array(z.string().regex(LESSON_ID)).max(6),
+  factRefs: z.array(z.string().regex(FACT_ID)).max(12),
+  createdBy: sessionId,
+};
+
+// 構成図（4.2）
+export const ArchitectureDiagramSchema = z
+  .object({
+    ...diagramCommon,
+    type: z.literal('architecture'),
+    root: DiagramRootSchema,
+    edges: z.array(DiagramEdgeSchema).max(40).optional(),
+    steps: z.array(DiagramStepSchema).max(20).optional(),
+  })
+  .strict();
+
+// 図（content/saa-c03/diagrams/<id>.json）。ほかの種類（decision・position・timeline・layers）は type で足す
+export const DiagramSchema = z.discriminatedUnion('type', [ArchitectureDiagramSchema]);

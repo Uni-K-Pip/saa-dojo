@@ -1,6 +1,6 @@
 # 問題・レッスンの作成基準
 
-SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード、用語集、早見表、ガイド）を作るときの基準です。形式は `scripts/lib/schema.mjs` が正で、`npm run validate` で検査します。サービス図鑑は 12 章を参照してください。例題は `content/saa-c03/questions/*/*/saa-*-ex-*.json` と `content/saa-c03/lessons/d4/lesson-4.1-s3-storage-classes.md` を参照してください。
+SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード、用語集、早見表、ガイド）を作るときの基準です。形式は `scripts/lib/schema.mjs` が正で、`npm run validate` で検査します。サービス図鑑は 12 章を参照してください。教材の体系、学習コース、網羅の基準は `docs/learning-design.md`、これから足す形式（図、実物を読む、ミニラボ、設計パターン、シミュレーター）の設計は `docs/visual-materials-design.md` にあります。どちらも未実装を含み、実装が済んだ形式からこの文書に移します。例題は `content/saa-c03/questions/*/*/saa-*-ex-*.json` と `content/saa-c03/lessons/d4/lesson-4.1-s3-storage-classes.md` を参照してください。
 
 ## 1. 出題範囲と項目 ID
 

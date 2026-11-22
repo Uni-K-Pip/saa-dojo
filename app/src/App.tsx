@@ -30,6 +30,8 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const DiagramPage = lazy(() => import('./pages/DiagramPage'));
+const DiagramsPage = lazy(() => import('./pages/DiagramPage').then((m) => ({ default: m.DiagramsPage })));
 
 function Appearance() {
   const { settings } = useStudy();
@@ -76,6 +78,8 @@ export function AppRoutes() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="menu" element={<MenuPage />} />
+        <Route path="diagrams" element={<DiagramsPage />} />
+        <Route path="diagrams/:id" element={<DiagramPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
