@@ -108,6 +108,35 @@ describe('コンテンツのビルド', () => {
     expect(manifest.files['lesson:lesson-4.1-s3-storage-classes'].path).toMatch(/^lessons\/lesson-4\.1-s3-storage-classes\.[0-9a-f]{12}\.json$/);
   });
 
+  it('学習コースを出力し、ユニット演習から保留模試と要修正の問題を除く', () => {
+    const lessonId = 'lesson-1.1-iam-basics';
+    const lessonRel = `lessons/d1/${lessonId}.md`;
+    const qs = ['practice', 'practice', 'mockA', 'mockB'].map((pool, i) =>
+      question(`saa-1.1-a-00${i + 1}`, { pool, knowledgeRefs: ['1.1-K4'] }),
+    );
+    const units = [
+      { id: 'u00', title: 'アクセス管理', items: [{ kind: 'lesson', ref: lessonId }, { kind: 'practice' }] },
+      { id: 'u01', title: '仕上げ', items: [{ kind: 'mock', mock: 'mockA' }] },
+    ];
+    const course = { stages: [{ id: 0, title: '土台', goal: '基礎を学ぶ', units }] };
+    const status = { 'saa-1.1-a-002': { status: 'needs-fix', checkedAt: '2026-11-04' } };
+    const parsed = parseContent(files(qs, [
+      { rel: lessonRel, text: read(lessonRel) },
+      { rel: 'course.json', text: JSON.stringify(course) },
+      { rel: 'review-status.json', text: JSON.stringify(status) },
+    ]), schema);
+    expect(parsed.errors).toEqual([]);
+
+    const { files: out, manifest } = buildOutputs(parsed, schema);
+    expect(manifest.counts.courseUnits).toBe(2);
+    expect(manifest.files.course.path).toMatch(/^course\.[0-9a-f]{12}\.json$/);
+    const result = JSON.parse(out.find((f) => f.rel === manifest.files.course.path).text);
+    expect(result.stages[0].units).toEqual([
+      { ...units[0], stage: 0, practiceIds: ['saa-1.1-a-001'] },
+      { ...units[1], stage: 0, practiceIds: [] },
+    ]);
+  });
+
   it('壊れたファイル・スキーマ違反・ID の重複はエラーにする', () => {
     const bad = { ...question('saa-1.1-a-002'), difficulty: 9 };
     const parsed = parseContent(

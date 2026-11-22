@@ -1,0 +1,269 @@
+{
+  "stages": [
+    {
+      "id": 0,
+      "title": "土台",
+      "goal": "AWS とネットワーク・データベース・暗号の基礎をそろえる",
+      "units": [
+        {
+          "id": "u00",
+          "title": "基礎講座",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-basics-cloud-and-aws" },
+            { "kind": "lesson", "ref": "lesson-basics-global-infrastructure" },
+            { "kind": "lesson", "ref": "lesson-basics-shared-responsibility" },
+            { "kind": "lesson", "ref": "lesson-basics-ip-subnet-routing" },
+            { "kind": "lesson", "ref": "lesson-basics-dns-http-tls" },
+            { "kind": "lesson", "ref": "lesson-basics-iam" },
+            { "kind": "lesson", "ref": "lesson-basics-encryption" },
+            { "kind": "lesson", "ref": "lesson-basics-storage-types" },
+            { "kind": "lesson", "ref": "lesson-basics-database-types" },
+            { "kind": "lesson", "ref": "lesson-basics-availability-scaling" },
+            { "kind": "lesson", "ref": "lesson-basics-decoupling-serverless" },
+            { "kind": "lesson", "ref": "lesson-basics-pricing" },
+            { "kind": "lesson", "ref": "lesson-basics-monitoring-logging" },
+            { "kind": "practice" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "中心の部品",
+      "goal": "ほとんどの構成に出てくる部品を、仕組みから理解する",
+      "units": [
+        {
+          "id": "u01",
+          "title": "アクセス管理",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-1.1-iam-basics" },
+            { "kind": "lesson", "ref": "lesson-1.1-roles-federation" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u02",
+          "title": "ネットワークの土台",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.4-vpc-design" },
+            { "kind": "lesson", "ref": "lesson-1.2-vpc-network-security" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u03",
+          "title": "コンピューティング",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.2-compute-options" },
+            { "kind": "lesson", "ref": "lesson-3.2-serverless-and-containers" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u04",
+          "title": "ストレージ",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.1-storage-types-and-services" },
+            { "kind": "lesson", "ref": "lesson-4.1-s3-storage-classes" },
+            { "kind": "doc", "ref": "cheatsheet-block-file-storage" },
+            { "kind": "doc", "ref": "cheatsheet-s3-storage-classes" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u05",
+          "title": "データベース",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.3-database-selection" },
+            { "kind": "lesson", "ref": "lesson-3.3-database-scaling" },
+            { "kind": "doc", "ref": "cheatsheet-databases" },
+            { "kind": "practice" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "つなぐ・伸ばす・守る",
+      "goal": "部品を組み合わせ、可用性・疎結合・セキュリティ・接続・分析の設計を学ぶ",
+      "units": [
+        {
+          "id": "u06",
+          "title": "高可用性とスケーリング",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-2.2-ha-basics" },
+            { "kind": "lesson", "ref": "lesson-2.1-scaling-and-acceleration" },
+            { "kind": "doc", "ref": "cheatsheet-load-balancers" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u07",
+          "title": "疎結合",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-2.1-decoupling-and-messaging" },
+            { "kind": "lesson", "ref": "lesson-3.2-scaling-and-decoupling" },
+            { "kind": "doc", "ref": "cheatsheet-messaging-streaming" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u08",
+          "title": "エッジと配信",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.4-edge-and-load-balancing" },
+            { "kind": "doc", "ref": "cheatsheet-cloudfront-global-accelerator" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u09",
+          "title": "障害に強い設計と DR",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-2.2-resilient-apps" },
+            { "kind": "lesson", "ref": "lesson-2.2-disaster-recovery" },
+            { "kind": "lesson", "ref": "lesson-1.3-backup-and-retention" },
+            { "kind": "doc", "ref": "cheatsheet-dr-strategies" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u10",
+          "title": "データの保護",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-1.3-encryption-and-keys" },
+            { "kind": "lesson", "ref": "lesson-1.3-data-governance" },
+            { "kind": "doc", "ref": "cheatsheet-encryption-secrets" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u11",
+          "title": "アプリケーションの保護",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-1.2-app-protection" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u12",
+          "title": "マルチアカウント",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-1.1-multi-account" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u13",
+          "title": "つなぐネットワーク",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-1.2-private-connectivity" },
+            { "kind": "lesson", "ref": "lesson-3.4-hybrid-and-multi-vpc" },
+            { "kind": "doc", "ref": "cheatsheet-vpc-endpoints" },
+            { "kind": "doc", "ref": "cheatsheet-hybrid-connectivity" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u14",
+          "title": "ハイブリッドストレージと移行",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.1-hybrid-storage" },
+            { "kind": "lesson", "ref": "lesson-3.5-transfer-and-transform" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u15",
+          "title": "データの取り込みと分析",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-3.5-ingestion-and-streaming" },
+            { "kind": "lesson", "ref": "lesson-3.5-data-lake-and-analytics" },
+            { "kind": "doc", "ref": "cheatsheet-messaging-streaming" },
+            { "kind": "practice" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "コストで磨く",
+      "goal": "できあがった構成を、同じ要件のまま安くする",
+      "units": [
+        {
+          "id": "u16",
+          "title": "コンピューティングのコスト",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-4.2-purchase-and-cost-tools" },
+            { "kind": "lesson", "ref": "lesson-4.2-scaling-and-compute-choice" },
+            { "kind": "doc", "ref": "cheatsheet-ec2-purchase-options" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u17",
+          "title": "データベースとストレージのコスト",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-4.3-database-selection-and-cost" },
+            { "kind": "lesson", "ref": "lesson-4.3-caching-backup-and-migration" },
+            { "kind": "practice" }
+          ]
+        },
+        {
+          "id": "u18",
+          "title": "ネットワークのコスト",
+          "items": [
+            { "kind": "lesson", "ref": "lesson-4.4-nat-endpoints-and-data-transfer" },
+            { "kind": "lesson", "ref": "lesson-4.4-connectivity-and-edge-cost" },
+            { "kind": "doc", "ref": "cheatsheet-data-transfer-costs" },
+            { "kind": "practice" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "仕上げ",
+      "goal": "判断軸と型を固め、模試で確かめる",
+      "units": [
+        {
+          "id": "u19",
+          "title": "判断軸と型",
+          "items": [
+            { "kind": "doc", "ref": "guide-exam-strategy" },
+            { "kind": "drill" },
+            { "kind": "doc", "ref": "cheatsheet-block-file-storage", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-s3-storage-classes", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-databases", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-load-balancers", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-messaging-streaming", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-cloudfront-global-accelerator", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-dr-strategies", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-encryption-secrets", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-vpc-endpoints", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-hybrid-connectivity", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-ec2-purchase-options", "note": "早見表の総ざらい" },
+            { "kind": "doc", "ref": "cheatsheet-data-transfer-costs", "note": "早見表の総ざらい" }
+          ]
+        },
+        {
+          "id": "u20",
+          "title": "模試と補強",
+          "items": [
+            { "kind": "mock", "mock": "random" },
+            { "kind": "analysis", "note": "弱い分野を演習で補強してから、保留模試へ進む" },
+            { "kind": "mock", "mock": "mockA" },
+            { "kind": "mock", "mock": "mockB", "note": "保留模試 A の結果で弱点を補強してから解く" }
+          ]
+        },
+        {
+          "id": "u21",
+          "title": "受験",
+          "items": [
+            { "kind": "doc", "ref": "guide-registration" }
+          ]
+        }
+      ]
+    }
+  ]
+}
