@@ -19,6 +19,7 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 | 早見表・ガイド | `content/saa-c03/cheatsheets/<id>.md`・`content/saa-c03/guides/<id>.md` | `cheatsheet-…`・`guide-…` |
 | 図鑑のエントリ | `content/saa-c03/catalog/services/<id>.json` | 台帳のサービス `id`（例 `s3`）。事実は `<サービスid>.<スラッグ>`（例 `s3.access-points`） |
 | 図鑑の比較 | `content/saa-c03/catalog/comparisons/<id>.json` | `cmp-<英小文字とハイフン>`（例 `cmp-config-cloudtrail`） |
+| 学習コース | `content/saa-c03/course.json`（1 ファイル） | ユニットは `u<2桁>`（例 `u01`）。15 章 |
 
 - 1問1ファイル。`createdBy` は ID の作成者IDと同じにし、連番は作成者ごとに 001 から振ります。
 - 他の作成者のファイルは編集しません。
@@ -136,3 +137,13 @@ npm ci
 npm run validate   # 形式の検査（エラーがあれば失敗）
 npm run coverage   # 網羅状況の集計
 ```
+
+## 15. 学習コース
+
+前提知識の順に教材を並べる 1 つのデータです（`content/saa-c03/course.json`）。教材そのものは持たず、今ある教材の ID を指すだけです。考え方とユニットの割り当ては `docs/learning-design.md` の 5 章と付録 A にあります。形式は `scripts/lib/course.mjs` が正です。
+
+- **形**: `stages`（ステージ 0〜4 を順に）→ `units`（`id` は `u00` から出現順に増える。`title`）→ `items`（ユニットの中の順）。ステージは `id`・`title`・`goal` を持ちます。
+- **項目の種類**（`kind`）: `lesson`（`ref` にレッスンの ID）、`doc`（`ref` に早見表かガイドの ID）、`practice`（ユニット演習）、`drill`（判断軸ドリル）、`analysis`（弱点分析）、`mock`（`mock` に `random`・`mockA`・`mockB`）。どれも短い補足 `note`（60 字まで）を付けられます。
+- **並べ方**: レッスン → 早見表 → ユニット演習の順にします。ユニット演習は、そのユニットのレッスンの `knowledgeRefs` と重なる問題（`pool` が `practice` か `basics`）から出ます。保留模試（`mockA`・`mockB`）の問題は入りません。
+- **まだない教材は書きません**: ミニラボ・設計パターン・シミュレーター・図は、教材ができたときに種類を足してから項目に加えます（存在しない ID はエラーになるため）。
+- **validate のエラー**: スキーマ違反、ステージの順の誤り、ユニットの ID の重複と順の誤り、同じユニットの中の項目の重複、存在しないレッスン・早見表・ガイド、2 つ以上のユニットに入るレッスン、どのユニットにも入らないレッスン、レッスンのないユニット演習、候補が 0 問のユニット演習。早見表とガイドは、複数のユニットに入れてかまいません（例: ステージ 4 の総ざらい）。
