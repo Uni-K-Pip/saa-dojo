@@ -1,11 +1,14 @@
 import { checkCourse, unitPracticePool } from '../../../scripts/lib/course.mjs';
 
-export function checkCourseForBuild(parsed) {
+// hiddenStatuses: 出題しない検証状態。ユニット演習の候補は、validate と同じく出題できる問題で数える
+export function checkCourseForBuild(parsed, hiddenStatuses = new Set()) {
   if (!parsed.course) return { errors: [], warnings: [] };
   return checkCourse(parsed.course.data, {
     lessons: parsed.lessons.map(({ data }) => data),
     docIds: new Set(parsed.docs.map(({ data }) => data.id)),
-    questions: parsed.questions.map(({ data }) => data),
+    questions: parsed.questions
+      .filter(({ data }) => !hiddenStatuses.has(parsed.reviewStatus?.[data.id]?.status ?? 'pending'))
+      .map(({ data }) => data),
   });
 }
 

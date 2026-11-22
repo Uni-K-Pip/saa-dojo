@@ -3,7 +3,7 @@ import { buildHistory } from './history';
 import { buildConceptSchedule, conceptGrade, dueConcepts, pickReviewQuestions, reviewableConcepts } from './review';
 import { mulberry32 } from './rng';
 import { Rating, dueAt } from './srs';
-import { answer, makeQuestion, metaOf } from '../test/fixtures';
+import { answer, event, makeQuestion, metaOf } from '../test/fixtures';
 
 const DAY = 86_400_000;
 const T0 = Date.UTC(2026, 10, 1, 3, 0, 0);
@@ -17,6 +17,16 @@ const onlyMock = makeQuestion({ id: 'saa-1.2-t-101', taskStatement: '1.2', knowl
 const index = [q1, q2, q3, mockQ, onlyMock].map(metaOf);
 
 describe('概念単位の復習スケジュール', () => {
+  it('ユニット演習（モード unit）の誤答は演習と同じく予定に入り、学習コースの記録（course-check）は入らない（決定 L-7）', () => {
+    const unit = buildConceptSchedule([answer(q1.id, false, { at: T0, mode: 'unit' })], index);
+    const practice = buildConceptSchedule([answer(q1.id, false, { at: T0, mode: 'practice' })], index);
+    expect([...unit.keys()].sort()).toEqual(['1.1-K1', '1.1-K2']);
+    expect(unit).toEqual(practice);
+    const check = event('course-check', { unitId: 'u01', itemKey: 'practice', done: true }, T1);
+    expect(buildConceptSchedule([check], index).size).toBe(0);
+    expect(buildConceptSchedule([answer(q1.id, false, { at: T0, mode: 'unit' }), check], index)).toEqual(unit);
+  });
+
   it('回答から評価を決める', () => {
     expect(conceptGrade({ correct: false, confidence: 'sure' })).toBe(Rating.Again);
     expect(conceptGrade({ correct: true, confidence: 'guess' })).toBe(Rating.Hard);

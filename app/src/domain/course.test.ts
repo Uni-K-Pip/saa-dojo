@@ -26,7 +26,7 @@ describe('学習コースの進み具合', () => {
       event('course-check', { unitId: unit.id, itemKey: docKey, done: true }),
       event('course-check', { unitId: unit.id, itemKey: 'analysis', done: true }),
       event('drill', { sessionId: 'd', correct: 0, total: 5, durationMs: 2000 }),
-      event('mock-result', { kind: 'mockA' }),
+      event('mock-result', { kind: 'mockA', total: 65, answered: 40 }),
       answer('q1', false, { mode: 'unit' }),
       answer('q2', true, { mode: 'review' }),
     ];
@@ -36,6 +36,23 @@ describe('学習コースの進み具合', () => {
       [`lesson:${lesson.ref}`, true], [docKey, true], ['practice', true], ['drill', true], ['analysis', true],
       ['mock:random', false], ['mock:mockA', true], ['mock:mockB', false],
     ]);
+  });
+
+  it('模擬試験は、65 問以上で 1 問以上答えた結果だけで済みになる（ミニ模試と未回答の提出は数えない）', () => {
+    const unit = unitOf('u00', [{ kind: 'mock', mock: 'random' }, { kind: 'mock', mock: 'mockA' }]);
+    const notCounted = [
+      event('mock-result', { kind: 'random', total: 5, answered: 5 }),
+      event('mock-result', { kind: 'mockA', total: 65, answered: 0 }),
+    ];
+    expect(unitProgress(unit, ctx(notCounted)).done).toBe(0);
+    const counted = [...notCounted, event('mock-result', { kind: 'random', total: 65, answered: 1 })];
+    expect(unitProgress(unit, ctx(counted)).items.map(({ done }) => done)).toEqual([true, false]);
+  });
+
+  it('候補が 0 問のユニット演習は済みにしない', () => {
+    const unit = unitOf('u00', [{ kind: 'practice' }], []);
+    expect(unitProgress(unit, ctx()).done).toBe(0);
+    expect(nextStep({ stages: [{ id: 0, title: '土台', goal: 'g', units: [unit] }] }, ctx())?.item).toEqual({ kind: 'practice' });
   });
 
   it('候補が 10 問より多い演習は、異なる候補 10 問に答えると済みになる', () => {

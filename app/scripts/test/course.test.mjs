@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { CourseSchema, checkCourse, courseItemKey, unitPracticePool } from '../../../scripts/lib/course.mjs';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
+import { checkCourseForBuild } from '../lib/course-build.mjs';
 
 const lesson = { kind: 'lesson', ref: 'lesson-1.1-iam-basics' };
 const doc = { kind: 'doc', ref: 'cheatsheet-databases' };
@@ -63,6 +64,20 @@ describe('学習コースのスキーマと検査', () => {
   it('レッスンがない演習と候補がない演習を報告する', () => {
     expect(errorsOf([stage(0, [unit('u00', [practice])])])).toContain('ユニット演習がありますが、レッスンがありません');
     expect(errorsOf([stage()], { ...ctx, questions: [] })).toContain('候補が 0 問');
+  });
+
+  it('ビルドの検査は、要修正・却下の問題を除いてユニット演習の候補を数える', () => {
+    const course = { rel: 'course.json', data: { stages: [stage(0, [unit('u00', [lesson, practice])])] } };
+    const parsed = (status) => ({
+      course,
+      lessons: [{ data: ctx.lessons[0] }],
+      docs: [],
+      questions: [{ data: ctx.questions[0] }],
+      reviewStatus: { q1: { status, checkedAt: '2026-11-23' } },
+    });
+    const hidden = new Set(['needs-fix', 'rejected']);
+    expect(checkCourseForBuild(parsed('verified'), hidden).errors).toEqual([]);
+    expect(checkCourseForBuild(parsed('needs-fix'), hidden).errors).toContain('u00 のユニット演習の候補が 0 問です');
   });
 
   it('指定されたミニラボがあるときだけ、ステージ 1・2 のユニットを検査する', () => {

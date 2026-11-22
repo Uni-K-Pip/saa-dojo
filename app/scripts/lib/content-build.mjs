@@ -271,7 +271,7 @@ function crossCheck(parsed, err, warn) {
   const diagrams = checkDiagramsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
   for (const m of diagrams.errors) err(...splitMsg(m));
   for (const m of diagrams.warnings) warn(...splitMsg(m));
-  const course = checkCourseForBuild(parsed);
+  const course = checkCourseForBuild(parsed, HIDDEN_STATUSES);
   for (const m of course.errors) err(parsed.course.rel, m);
   for (const w of course.warnings) warn(parsed.course.rel, w.message);
   const taskIds = new Set(['basics']);

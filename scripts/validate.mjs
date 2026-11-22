@@ -970,7 +970,8 @@ function checkCourse(content) {
   const { errors, warnings } = checkCourseData(data, {
     lessons: content.lessons.map(({ data }) => data),
     docIds: new Set(content.docs.map(({ data }) => data.id)),
-    questions: content.questions.map(({ data }) => data),
+    // ユニット演習の候補はビルドと同じく、要修正・却下の問題を除いて数える
+    questions: content.questions.filter(({ data }) => !HIDDEN_STATUSES.has(statusOf(content, data.id))).map(({ data }) => data),
   });
   for (const m of errors) report.error('course', rel, m);
   for (const w of warnings) report.warn(w.code, rel, w.message);

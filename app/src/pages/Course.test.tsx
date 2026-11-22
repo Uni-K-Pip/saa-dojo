@@ -25,7 +25,7 @@ const course: Course = { stages: [
     { id: 'u01', title: 'アクセス管理', stage: 1, items: [
       { kind: 'lesson', ref: 'lesson-1.1-iam-basics' }, { kind: 'doc', ref: 'cheatsheet-iam', note: '設計の判断を振り返ります。' },
       { kind: 'practice' }, { kind: 'drill' }, { kind: 'analysis' }, { kind: 'mock', mock: 'mockA' },
-    ], practiceIds: practice.map(({ id }) => id) },
+    ], practiceIds: [...practice.map(({ id }) => id), mock.id] }, // 保留模試の問題が紛れても、画面の経路で除かれることを確かめる
     { id: 'u02', title: '仕上げ', stage: 1, items: [{ kind: 'mock', mock: 'random' }], practiceIds: [] },
   ] },
 ] };

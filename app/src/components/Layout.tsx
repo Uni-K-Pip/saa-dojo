@@ -30,7 +30,7 @@ export const NAV_ITEMS: NavItem[] = [
 
 const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/', label: 'ホーム', icon: '⌂' },
-  { to: '/course', label: '学ぶ', icon: '🗺' },
+  { to: '/course', label: '学ぶ', icon: '🧭' },
   { to: '/practice', label: '演習', icon: '✎' },
   { to: '/review', label: '復習', icon: '↻' },
   { to: '/menu', label: 'メニュー', icon: '☰' },

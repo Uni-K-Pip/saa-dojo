@@ -60,13 +60,13 @@ export default function HomePage() {
       {isNew && (
         <section className="card" aria-labelledby="start-h">
           <h2 id="start-h">はじめに</h2>
-          <p>AWS が初めてなら基礎講座から、経験があればロードマップのレッスンか演習から始めてください。</p>
+          <p>AWS が初めてなら基礎講座から、経験があれば学習コースの途中のユニットか演習から始めてください。</p>
           <div className="btn-row">
             <Link className="btn primary" to="/basics">
               基礎講座を読む
             </Link>
-            <Link className="btn" to="/roadmap">
-              ロードマップ
+            <Link className="btn" to="/course">
+              学習コース
             </Link>
             <Link className="btn" to="/settings">
               試験日を設定

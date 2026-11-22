@@ -3,6 +3,7 @@ import type { QuestionMeta } from '../content/types';
 import { compareEvents, type AppEvent, type CourseCheckEvent, type MockKind } from './events';
 import type { History } from './history';
 import type { Rng } from './rng';
+import { FULL_MOCK_SIZE } from './mock';
 import { pickQuestions } from './selection';
 
 export const UNIT_PRACTICE_DONE = 10;
@@ -39,7 +40,8 @@ function collectCompletion(events: readonly AppEvent[]) {
         lessons.add(event.lessonId);
         break;
       case 'mock-result':
-        mocks.add(event.kind);
+        // 合格準備度が初回として数える結果（65 問以上で 1 問以上回答。mock.ts の firstAttempt）だけで済みにする
+        if (event.total >= FULL_MOCK_SIZE && event.answered > 0) mocks.add(event.kind);
         break;
       case 'drill':
         drill = true;
@@ -65,7 +67,9 @@ function progressFor(unit: CourseUnit, history: History, completion: ReturnType<
       case 'lesson':
         return completion.lessons.has(item.ref);
       case 'practice':
-        return answeredUnitPracticeCount(unit, history) >= Math.min(UNIT_PRACTICE_DONE, unit.practiceIds.length);
+        // 候補が 0 問なら済みにしない（要修正の問題を除いた結果、候補がなくなった場合）
+        return unit.practiceIds.length > 0 &&
+          answeredUnitPracticeCount(unit, history) >= Math.min(UNIT_PRACTICE_DONE, unit.practiceIds.length);
       case 'mock':
         return completion.mocks.has(item.mock);
       case 'drill':
