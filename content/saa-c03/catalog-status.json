@@ -59,6 +59,21 @@
     "checkedAt": "2026-11-14",
     "hash": "25b3d30811f7"
   },
+  "amplify": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "29353e8d6706"
+  },
+  "amplify.backend-typescript": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "ac26253663c2"
+  },
+  "amplify.hosting-git-cdn": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "71707512462c"
+  },
   "api-gateway": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -233,6 +248,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "4b5b72b0f82f"
+  },
+  "application-discovery-service": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "bc1b18a52662"
+  },
+  "application-discovery-service.closed-to-new-customers": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "15ea4bf223df"
+  },
+  "application-discovery-service.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "7e483ae76390"
   },
   "application-migration-service": {
     "status": "verified",
@@ -2558,6 +2588,21 @@
     "status": "verified",
     "checkedAt": "2026-11-20",
     "hash": "a3947d1b3695"
+  },
+  "device-farm": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "043525f7b63f"
+  },
+  "device-farm.concurrent-tests": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "8102fec997e9"
+  },
+  "device-farm.real-devices-browsers": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "e1a0dfe637a0"
   },
   "direct-connect": {
     "status": "verified",
@@ -8314,6 +8359,21 @@
     "checkedAt": "2026-11-21",
     "hash": "a5125c737e01"
   },
+  "serverless-application-repository": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "e42c44d055e6"
+  },
+  "serverless-application-repository.deploy-as-stacks": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "716bf1d331fd"
+  },
+  "serverless-application-repository.sharing-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "00f69958e08b"
+  },
   "service-catalog": {
     "status": "verified",
     "checkedAt": "2026-11-22",
@@ -9453,6 +9513,21 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "36ef2301e21d"
+  },
+  "vmware-cloud-on-aws": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "e6574a370da0"
+  },
+  "vmware-cloud-on-aws.no-longer-resold": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "0456c358ebca"
+  },
+  "vmware-cloud-on-aws.overview": {
+    "status": "verified",
+    "checkedAt": "2026-11-22",
+    "hash": "844465c4df9e"
   },
   "vpc": {
     "status": "verified",

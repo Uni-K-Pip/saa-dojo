@@ -1,0 +1,79 @@
+{
+  "id": "serverless-application-repository",
+  "tier": 3,
+  "summary": "サーバーレスアプリケーションを探し、デプロイし、公開するためのマネージドなリポジトリ。チーム、組織、個人の開発者が再利用できるアプリケーションを保存して共有できる。各アプリケーションは AWS SAM のテンプレートとともにパッケージされる。",
+  "chooseWhen": [
+    {
+      "text": "再利用できるサーバーレスアプリケーションを、チームや他のアカウント、一般に共有したい場合。",
+      "factRefs": [
+        "serverless-application-repository.sharing-scope"
+      ]
+    },
+    {
+      "text": "構築済みのサーバーレスアプリケーションを、ソースのクローンやビルドをせずにデプロイしたい場合。",
+      "factRefs": [
+        "serverless-application-repository.deploy-as-stacks"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "serverless-application-repository.sharing-scope",
+      "title": "公開者がアプリケーションを見つけてデプロイできる範囲を決める",
+      "kind": "feature",
+      "text": "リポジトリに公開するアプリケーションは、公開者が誰に見つけてデプロイさせるかを決める。同じ AWS アカウントのチームに限定する、ほかのアカウントと共有する、任意の AWS 顧客に一般公開する、のいずれかにできる。",
+      "depth": "core",
+      "services": [
+        "AWS Serverless Application Repository"
+      ],
+      "sources": [
+        {
+          "title": "FAQs - AWS Serverless Application Repository",
+          "url": "https://aws.amazon.com/serverless/serverlessrepo/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "serverless-application-repository.deploy-as-stacks",
+      "title": "アプリケーションは SAM テンプレートで定義され CloudFormation スタックとしてデプロイされる",
+      "kind": "integration",
+      "text": "各アプリケーションは、使う AWS リソースを定義する AWS SAM のテンプレートとともにパッケージされる。リポジトリからデプロイしたアプリケーションは、AWS CloudFormation のスタックとして作られ、1 つの単位として管理できる。",
+      "depth": "core",
+      "services": [
+        "AWS Serverless Application Repository",
+        "AWS CloudFormation"
+      ],
+      "sources": [
+        {
+          "title": "AWS Serverless Application Repository",
+          "url": "https://aws.amazon.com/serverless/serverlessrepo/"
+        },
+        {
+          "title": "FAQs - AWS Serverless Application Repository",
+          "url": "https://aws.amazon.com/serverless/serverlessrepo/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "cloudformation.stack-resource-unit"
+  ],
+  "references": [
+    {
+      "title": "What Is the AWS Serverless Application Repository?",
+      "url": "https://docs.aws.amazon.com/serverlessrepo/latest/devguide/what-is-serverlessrepo.html"
+    },
+    {
+      "title": "AWS Serverless Application Repository",
+      "url": "https://aws.amazon.com/serverless/serverlessrepo/"
+    },
+    {
+      "title": "FAQs - AWS Serverless Application Repository",
+      "url": "https://aws.amazon.com/serverless/serverlessrepo/faqs/"
+    }
+  ],
+  "createdBy": "sc51",
+  "createdAt": "2026-11-22"
+}
