@@ -1,8 +1,7 @@
 // 図の出力（図ごとのレイアウト済みの scene と、一覧）を組み立てる。
 // 検査とレイアウトは scripts/lib/diagram.mjs・diagram-layout.mjs に任せ、validate と同じ判定にする。
 // 設計は docs/visual-materials-design.md の 4章・12.2。
-import { checkDiagram } from '../../../scripts/lib/diagram.mjs';
-import { layoutDiagram } from '../../../scripts/lib/diagram-layout.mjs';
+import { checkDiagram, checkDiagramRefs, diagramRefIndex, layoutAnyDiagram } from '../../../scripts/lib/diagram.mjs';
 
 const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const stemOf = (rel) => rel.split('/').pop().replace(/\.json$/, '');
@@ -22,6 +21,8 @@ export function checkDiagramsForBuild(parsed, serviceIndex) {
     for (const m of found.errors) errors.push(`${rel}: ${m}`);
     for (const w of found.warnings) warnings.push(`${rel}: ${w.message}`);
   }
+  const refs = checkDiagramRefs({ texts: [...parsed.lessons, ...parsed.docs], diagrams: diagramRefIndex(parsed.diagrams ?? []) });
+  for (const { rel, message } of refs) errors.push(`${rel}: ${message}`);
   return { errors, warnings };
 }
 
@@ -32,7 +33,7 @@ export function checkDiagramsForBuild(parsed, serviceIndex) {
 export function buildDiagramOutputs(parsed, serviceIndex) {
   const scenes = [...(parsed.diagrams ?? [])]
     .sort((a, b) => cmp(a.data.id, b.data.id))
-    .map(({ data }) => layoutDiagram(data, { serviceIndex }));
-  const index = scenes.map((s) => ({ id: s.id, title: s.title, type: s.type, steps: s.steps.length, status: s.status }));
+    .map(({ data }) => layoutAnyDiagram(data, { serviceIndex }));
+  const index = scenes.map((s) => ({ id: s.id, title: s.title, type: s.type, steps: s.type === 'architecture' ? s.steps.length : 0, status: s.status }));
   return { index, scenes };
 }

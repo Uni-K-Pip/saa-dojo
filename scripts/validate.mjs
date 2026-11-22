@@ -30,7 +30,8 @@ import {
 } from './lib/schema.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
-import { checkDiagram } from './lib/diagram.mjs';
+import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
+import { parseInlineChecks } from './lib/inline-check.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -943,6 +944,8 @@ function checkCatalogModel(content) {
 // 図（scripts/lib/diagram.mjs。ビルドと同じ判定）
 function checkDiagrams(content) {
   const { report, serviceIndex } = content;
+  const refs = checkDiagramRefs({ texts: [...content.lessons, ...content.docs], diagrams: diagramRefIndex(content.diagrams) });
+  for (const { rel, message } of refs) report.error('diagram-ref', rel, message);
   if (content.diagrams.length === 0) return;
   const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
   const factIds = new Set(content.catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => f.id)));
@@ -951,6 +954,22 @@ function checkDiagrams(content) {
     for (const m of found.errors) report.error('diagram', rel, m);
     for (const w of found.warnings) report.warn(w.code, rel, w.message);
   }
+}
+
+function checkInlineChecks(content) {
+  const { report, lessons, docs } = content;
+  function check({ rel, body }) {
+    const checks = parseInlineChecks(body);
+    for (const { line, problems } of checks) {
+      for (const problem of problems) report.error('inline-check', rel, `本文 ${line} 行目: ${problem}`);
+    }
+    return checks.length;
+  }
+  for (const lesson of lessons) {
+    const count = check(lesson);
+    if (count === 1 || count === 2) report.warn('inline-check-few', lesson.rel, `その場の確認が ${count} 個あります。1 レッスンに 3〜6 個が目安です。`);
+  }
+  for (const doc of docs) check(doc);
 }
 
 function checkLongestCorrect(content) {
@@ -987,6 +1006,7 @@ export function checkContent(content) {
   checkCatalogNearDuplicates(content);
   checkCatalogModel(content);
   checkDiagrams(content);
+  checkInlineChecks(content);
   checkLongestCorrect(content);
   return content;
 }
@@ -1079,6 +1099,12 @@ const CODE_LABELS = {
   'catalog-needs': '図鑑の不足の対応が未決',
   'correct-longest': '正解が最長に偏っている',
   diagram: '図の不整合',
+  'diagram-ref': '図の参照の誤り',
+  'diagram-alt-short': '図の代替文が短い',
+  'diagram-single-result': '選択フローの結論が 1 つだけ',
+  'diagram-same-position': '位置づけ図の項目が同じ位置に重なる',
+  'inline-check': 'その場の確認の形の誤り',
+  'inline-check-few': 'その場の確認が少ない',
   'diagram-height': '図の高さが目安を超える',
   'diagram-crowded': '図の浮く要素の置き場所が足りない',
   'diagram-side': '図の線の辺の指定が使えない',

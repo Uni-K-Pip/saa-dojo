@@ -516,5 +516,77 @@ export const ArchitectureDiagramSchema = z
   })
   .strict();
 
-// 図（content/saa-c03/diagrams/<id>.json）。ほかの種類（decision・position・timeline・layers）は type で足す
-export const DiagramSchema = z.discriminatedUnion('type', [ArchitectureDiagramSchema]);
+const decisionAsk = z.object({
+  id: diagramItemId,
+  ask: z.string().min(4).max(60),
+  choices: z.array(z.object({ label: z.string().min(1).max(10), to: diagramItemId }).strict()).min(2).max(4),
+}).strict();
+
+const decisionResult = z.object({
+  id: diagramItemId,
+  result: z.string().min(1).max(24),
+  service: z.string().regex(SERVICE_ID).optional(),
+  why: z.string().min(10).max(150),
+  factRefs: z.array(factId).max(4).optional(),
+}).strict();
+
+export const DecisionDiagramSchema = z.object({
+  ...diagramCommon,
+  type: z.literal('decision'),
+  start: diagramItemId,
+  nodes: z.array(z.union([decisionAsk, decisionResult])).min(2).max(15),
+}).strict();
+
+const positionAxis = z.object({
+  label: z.string().min(1).max(14),
+  low: z.string().min(1).max(4),
+  high: z.string().min(1).max(4),
+}).strict();
+const positionRank = z.number().int().min(1).max(5);
+
+export const PositionDiagramSchema = z.object({
+  ...diagramCommon,
+  type: z.literal('position'),
+  x: positionAxis,
+  y: positionAxis.optional(),
+  items: z.array(z.object({
+    id: diagramItemId,
+    label: z.string().min(1).max(30),
+    service: z.string().regex(SERVICE_ID).optional(),
+    x: positionRank,
+    y: positionRank.optional(),
+    note: z.string().min(1).max(40).optional(),
+  }).strict()).min(2).max(10),
+}).strict();
+
+export const TimelineDiagramSchema = z.object({
+  ...diagramCommon,
+  type: z.literal('timeline'),
+  ticks: z.array(z.object({ at: z.number().finite().min(0), label: z.string().min(1).max(6) }).strict()).min(2).max(8),
+  lanes: z.array(z.object({
+    label: z.string().min(1).max(10),
+    spans: z.array(z.object({
+      from: z.number().finite(),
+      to: z.number().finite(),
+      label: z.string().min(1).max(30),
+    }).strict()).max(8).optional(),
+    marks: z.array(z.object({ at: z.number().finite(), label: z.string().min(1).max(6) }).strict()).max(8).optional(),
+  }).strict()).min(1).max(4),
+}).strict();
+
+const legendKey = z.string().regex(/^[a-z][a-z0-9-]{0,15}$/);
+export const LayersDiagramSchema = z.object({
+  ...diagramCommon,
+  type: z.literal('layers'),
+  columns: z.array(z.string().min(1).max(14)).min(1).max(4).optional(),
+  rows: z.array(z.object({
+    label: z.string().min(1).max(16),
+    cells: z.array(legendKey).min(1).max(4),
+  }).strict()).min(1).max(8),
+  legend: z.record(legendKey, z.string().min(1).max(8)),
+}).strict();
+
+// 図（content/saa-c03/diagrams/<id>.json）
+export const DiagramSchema = z.discriminatedUnion('type', [
+  ArchitectureDiagramSchema, DecisionDiagramSchema, PositionDiagramSchema, TimelineDiagramSchema, LayersDiagramSchema,
+]);

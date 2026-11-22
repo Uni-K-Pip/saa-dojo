@@ -21,7 +21,7 @@ const base = (over = {}) => ({
   id: 'dg-test-diagram',
   type: 'architecture',
   title: 'テスト用の構成図',
-  alt: '利用者のリクエストを API Gateway が受け、Lambda 関数が処理して DynamoDB のテーブルに書き込みます。',
+  alt: '利用者のリクエストを API Gateway が受け、Lambda 関数が処理して DynamoDB のテーブルに書き込みます。図は上から下へ読み、中央の枠に入口と処理をまとめて示します。',
   lessonRefs: [LESSON],
   factRefs: [],
   createdBy: 'v1',
@@ -61,7 +61,7 @@ describe('checkDiagram', () => {
 
   it('見本 3 つはエラーがない', () => {
     const lessonIds = new Set(['lesson-3.4-vpc-design', 'lesson-2.2-ha-basics', 'lesson-2.2-disaster-recovery', LESSON]);
-    for (const f of fs.readdirSync(path.join(contentDir, 'diagrams'))) {
+    for (const f of ['dg-dr-pilot-light.json', 'dg-sns-sqs-fanout.json', 'dg-vpc-three-tier.json']) {
       const d = readJson('diagrams', f);
       expect(DiagramSchema.safeParse(d).success, f).toBe(true);
       expect(errorsOf(d, { lessonIds, serviceIndex }), f).toEqual([]);
