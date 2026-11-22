@@ -1,0 +1,26 @@
+{
+  "id": "cmp-mq-sqs",
+  "title": "Amazon MQ と Amazon SQS",
+  "services": [
+    "mq",
+    "sqs"
+  ],
+  "decide": [
+    "標準のメッセージングプロトコルを使う既存のメッセージブローカーを、メッセージングのコードを書き直さずに移したいなら Amazon MQ",
+    "Apache ActiveMQ Classic や RabbitMQ のメッセージブローカーを、マネージドサービスで運用したいなら Amazon MQ",
+    "新しいアプリケーションで、ほぼ無制限のスケーラビリティとシンプルな API を生かしたいなら SQS"
+  ],
+  "docRef": "cheatsheet-messaging-streaming",
+  "sources": [
+    {
+      "title": "What is Amazon MQ? - Amazon MQ",
+      "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+    },
+    {
+      "title": "What is Amazon Simple Queue Service? - Amazon Simple Queue Service",
+      "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc45"
+}

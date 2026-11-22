@@ -1,0 +1,508 @@
+{
+  "id": "eventbridge",
+  "tier": 1,
+  "summary": "イベントを受け取り、ルールの条件に合うターゲットへ振り分けるサーバーレスのイベントバスである。AWS サービス・SaaS・自社アプリのイベントに反応でき、スケジュール実行やパイプでの連携にも使える。",
+  "chooseWhen": [
+    {
+      "text": "AWS サービスや SaaS のイベントの内容に応じて、処理を自動で起動したい",
+      "factRefs": [
+        "eventbridge.event-pattern",
+        "eventbridge.default-bus",
+        "eventbridge.guardduty-findings"
+      ]
+    },
+    {
+      "text": "1 つのイベントを、条件ごとに複数のターゲットへ振り分けたい",
+      "factRefs": [
+        "eventbridge.rule-targets",
+        "eventbridge.event-bus-routing"
+      ],
+      "alternatives": [
+        "sns"
+      ]
+    },
+    {
+      "text": "cron 式や一回限りの予定で、処理を定時に起動したい",
+      "factRefs": [
+        "eventbridge.scheduler-basics",
+        "eventbridge.scheduler-targets"
+      ]
+    },
+    {
+      "text": "過去のイベントを保存し、障害後や新機能の検証で再送したい",
+      "factRefs": [
+        "eventbridge.archive",
+        "eventbridge.replay"
+      ]
+    },
+    {
+      "text": "SQS などの 1 つの送信元から 1 つのターゲットへ、加工しながらつなぎたい",
+      "factRefs": [
+        "eventbridge.pipes",
+        "eventbridge.pipes-vs-bus"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "同じメッセージを購読者全員へ配り、メールや SMS で人にも通知したい",
+      "alternatives": [
+        "sns"
+      ],
+      "factRefs": [
+        "sns.subscriber-endpoints",
+        "sns.fanout"
+      ]
+    },
+    {
+      "text": "メッセージを溜めて、受け手が自分のペースで取り出して処理したい",
+      "alternatives": [
+        "sqs"
+      ],
+      "factRefs": [
+        "sqs.queue-decoupling"
+      ]
+    },
+    {
+      "text": "複数の処理の順番、分岐、やり直しを 1 つの流れとして管理したい",
+      "alternatives": [
+        "step-functions"
+      ],
+      "factRefs": [
+        "step-functions.orchestration"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "eventbridge.overview",
+      "title": "イベントでアプリケーションをつなぐサーバーレスのサービス",
+      "kind": "feature",
+      "text": "EventBridge は、イベントを使ってアプリケーションのコンポーネントをつなぐサーバーレスのサービスである。イベントの取り込み、フィルター、変換、配信を一貫した方法で行い、疎結合でスケーラブルなイベント駆動のアプリケーションを作れる。イベントバスとパイプの 2 つの処理方法があり、スケジュール実行には EventBridge Scheduler を使う。",
+      "examPoint": "イベントの内容で振り分ける、AWS サービスのイベントに反応する、は EventBridge。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon EventBridge?",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.event-bus-routing",
+      "title": "イベントバスは複数の送信元から複数のターゲットへ振り分ける",
+      "kind": "feature",
+      "text": "イベントバスは、AWS サービス、自社のアプリケーション、SaaS などの送信元からイベントを受け取り、バスに付けたルールで評価して、ゼロ個以上のターゲットへ届けるルーターである。多くの送信元から多くのターゲットへ振り分けるのに向き、配信前にイベントを変換することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EventBridge event bus (default and Classic)",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+        },
+        {
+          "title": "What Is Amazon EventBridge?",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.default-bus",
+      "title": "AWS サービスのイベントは既定のイベントバスに届く",
+      "kind": "feature",
+      "text": "すべてのアカウントには既定のイベントバスがあり、AWS サービスのイベントが自動的に送られる。たとえば EC2 インスタンスの状態が変わると、EC2 が既定のバスにイベントを送り、そのバスに作ったルールが評価する。ルールは特定のイベントバスに結び付き、そのバスが受け取ったイベントにだけ適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EventBridge event bus (default and Classic)",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.custom-bus-types",
+      "title": "カスタムイベントバスには Classic と新しい形式がある",
+      "kind": "feature",
+      "text": "EventBridge のイベントバスには、新しい Custom Event Bus と、ルールとターゲットを作る Custom Event Bus - Classic がある。新しい形式は、利用者が作る購読者へイベントを届け、保持期間の設定、順序つきの配信、リプレイ、JSON 以外のペイロードに対応する。新しいアプリケーションでは新しい形式から始めることが勧められ、Classic も引き続き使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is Amazon EventBridge?",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+        },
+        {
+          "title": "Amazon EventBridge event bus (default and Classic)",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "eventbridge.event-pattern",
+      "title": "イベントパターンでルールが拾うイベントを決める",
+      "kind": "feature",
+      "text": "ルールは、イベントのデータの条件（イベントパターン）に合うイベントだけをターゲットへ送る。イベントパターンは、一致させるイベントと同じ構造の JSON で、送信元（source）、イベントの種類（detail-type）、本文（detail）の値を条件にできる。パターンに合うか合わないかのどちらかで判定される。",
+      "examPoint": "イベントの内容に応じた振り分けは、ルールのイベントパターン。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EventBridge event patterns",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html"
+        },
+        {
+          "title": "Amazon EventBridge event bus (default and Classic)",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.rule-targets",
+      "title": "1 つのルールは最大 5 つのターゲットへ並行して送れる",
+      "kind": "quota",
+      "text": "1 つのイベントは複数のルールに一致でき、1 つのルールには最大 5 つのターゲットを指定できる。同じルールの複数のターゲットは並行して処理される。ルールに一致しないイベントには、EventBridge は何もしない。",
+      "examPoint": "1 つのイベントを複数のターゲットへ配れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EventBridge event bus (default and Classic)",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+        },
+        {
+          "title": "Rules in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.scheduled-rules-legacy",
+      "title": "スケジュールのルールは従来の機能で、Scheduler が推奨",
+      "kind": "constraint",
+      "text": "イベントバスのルールには、決めた間隔でターゲットへイベントを送るスケジュールのルールもあるが、従来の機能である。スケジュールでターゲットを呼び出すには、より柔軟でスケーラブルな EventBridge Scheduler の使用が推奨されている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Rules in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "eventbridge.scheduler-basics",
+      "title": "EventBridge Scheduler は定期・一回限りの実行を管理する",
+      "kind": "feature",
+      "text": "EventBridge Scheduler は、タスクの作成・実行・管理を 1 か所で行うサーバーレスのスケジューラーである。cron 式や rate 式で繰り返しを、指定の時刻で一回限りの呼び出しを設定でき、何百万ものスケジュールを扱える。インフラの用意や管理は要らない。",
+      "examPoint": "cron 式や一回限りの予定で処理を起動するなら EventBridge Scheduler。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EventBridge Scheduler?",
+          "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.scheduler-targets",
+      "title": "Scheduler のテンプレートターゲットとユニバーサルターゲット",
+      "kind": "feature",
+      "text": "Scheduler には、SQS、SNS、Lambda、EventBridge の一般的な API をすぐ設定できるテンプレートターゲットがある。ユニバーサルターゲットを使うと、270 を超える AWS サービスと 6,000 を超える API 操作を、スケジュールで呼び出せる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon EventBridge Scheduler?",
+          "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.scheduler-reliability",
+      "title": "Scheduler の柔軟な時間枠と再試行",
+      "kind": "feature",
+      "text": "Scheduler は、呼び出しの時刻を厳密にしなくてよい場合に、柔軟な時間枠で実行を分散させて信頼性を上げられる。配信は少なくとも 1 回で、失敗したタスクの再試行の回数や、失敗したトリガーを保持する最大時間を設定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon EventBridge Scheduler?",
+          "url": "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.pipes",
+      "title": "パイプは 1 つの送信元と 1 つのターゲットをつなぐ",
+      "kind": "feature",
+      "text": "EventBridge Pipes は、サポートされる送信元とターゲットを 1 対 1 でつなぐ機能である。送信元からイベントを受け、任意のフィルター、任意のエンリッチメント（拡張）を経て、ターゲットへ送る。連携のための専門知識やコードを減らせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EventBridge Pipes",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html"
+        },
+        {
+          "title": "What Is Amazon EventBridge?",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.pipes-vs-bus",
+      "title": "パイプは 1 対 1、イベントバスは多対多",
+      "kind": "feature",
+      "text": "パイプは 1 つの送信元から 1 つのターゲットへの point-to-point の連携向けで、高度な変換とエンリッチメントに対応する。イベントバスは多くの送信元から多くのターゲットへの振り分け向けである。2 つは併用でき、パイプのターゲットにイベントバスを指定して、複数のターゲットへ広げることもできる。",
+      "examPoint": "1 つの送信元（SQS など）から 1 つのターゲットへ加工してつなぐならパイプ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is Amazon EventBridge?",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+        },
+        {
+          "title": "Amazon EventBridge Pipes",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.pipes-filter-billing",
+      "title": "パイプはフィルターに一致したイベントだけが課金対象",
+      "kind": "pricing",
+      "text": "パイプにフィルターを設定すると、送信元から受け取ったイベントのうち、フィルターに一致したものだけがターゲットへ送られる。課金の対象になるのは、フィルターに一致したイベントだけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EventBridge Pipes",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.retry-policy",
+      "title": "ターゲットへの配信は既定で 24 時間・最大 185 回再試行する",
+      "kind": "quota",
+      "text": "ターゲットへの配信が再試行できるエラーで失敗すると、EventBridge は再試行する。既定では 24 時間、最大 185 回、指数バックオフとジッターつきで再試行し、ターゲットごとの再試行ポリシーで時間と回数を変えられる。再試行を使い切ったイベントは破棄される。",
+      "trap": "再試行を使い切ったイベントは、DLQ を付けていなければ失われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How EventBridge retries delivering events",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-retry-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "eventbridge.target-dlq",
+      "title": "ターゲットの DLQ は配信できなかったイベントを保存する",
+      "kind": "feature",
+      "text": "ルールのターゲットにデッドレターキュー（DLQ）を設定すると、ターゲットへ配信できなかったイベントがその SQS キューに保存される。失敗の原因を直してから、あとで処理できる。",
+      "examPoint": "配信に失敗したイベントを残すには、ターゲットに DLQ を設定する。",
+      "trap": "DLQ に入るのは配信に失敗したイベントで、再試行を使い切っても DLQ がなければイベントは失われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using dead-letter queues to process undelivered events in EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html"
+        },
+        {
+          "title": "How EventBridge retries delivering events",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-retry-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.dlq-constraints",
+      "title": "EventBridge の DLQ は標準キューで同じリージョン",
+      "kind": "constraint",
+      "text": "EventBridge の DLQ には SQS の標準キューだけが使え、FIFO キューは使えない。キューはルールを作るリージョンと同じリージョンに置く。キュー側には events.amazonaws.com に sqs:SendMessage を許可するリソースベースのポリシーが要り、コンソールで同じアカウントのキューを選ぶと自動で付く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using dead-letter queues to process undelivered events in EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.dlq-no-retry-errors",
+      "title": "権限不足や宛先の消失は再試行せず DLQ へ送る",
+      "kind": "constraint",
+      "text": "ターゲットへの権限がない、ターゲットのリソースがなくなった、アドレスが不正で見つからない、といったエラーでは、原因が解消されるまで再試行は行われない。DLQ を指定していれば、イベントは直接その DLQ へ送られる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using dead-letter queues to process undelivered events in EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.archive",
+      "title": "アーカイブはイベントパターンで選んだイベントを保存する",
+      "kind": "feature",
+      "text": "アーカイブは、イベントバスのイベントを保存して、あとで再送（リプレイ）できるようにする機能である。保存するイベントはイベントパターンで絞り、保持する日数を指定できる。既定では無期限に保存される。1 つのアーカイブは 1 つの送信元バスのイベントを受け、作成後に送信元のバスは変えられない。",
+      "examPoint": "エラーからの復旧や新機能の検証のために、過去のイベントをアーカイブから再送できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "eventbridge.replay",
+      "title": "リプレイは期間を指定して元のバスへ再送する",
+      "kind": "feature",
+      "text": "アーカイブからイベントを再送するリプレイでは、再送するイベントの期間を指定し、必要なら対象のルールも指定する。アーカイブのイベントは、送信元のイベントバスにしか再送できない。リプレイしてもイベントはアーカイブから消えず、複数回のリプレイができる。",
+      "trap": "別のバスへは再送できない。再送先は元のバスだけ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.replay-name-field",
+      "title": "リプレイされたイベントの replay-name",
+      "kind": "feature",
+      "text": "リプレイされたイベントには replay-name のフィールドが付き、ターゲットで識別できる。アーカイブの管理ルールは、このフィールドを使って、再送されたイベントが再びアーカイブされるのを防ぐ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.replay-concurrency",
+      "title": "リプレイの同時実行数",
+      "kind": "quota",
+      "text": "EventBridge のイベントのリプレイは、1 アカウント・1 リージョンで同時に実行できるのが 10 件までである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.replay-order",
+      "title": "リプレイでのイベントの順序",
+      "kind": "constraint",
+      "text": "アーカイブからリプレイされるイベントは、元のイベントが発生した順序どおりに配信されるとは限らない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Archiving and replaying events in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-archive.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.guardduty-findings",
+      "title": "GuardDuty の検出結果をルールで絞って自動対応する",
+      "kind": "integration",
+      "text": "GuardDuty は検出結果を自動的に EventBridge へイベントとして送る。既定のバスに、source が aws.guardduty のイベントを拾うルールを作り、detail の severity などの値でイベントパターンを絞り込み、Lambda 関数や SNS トピックをターゲットにすると、重大度が高い検出結果にだけ自動で対応や通知ができる。",
+      "examPoint": "検出結果への自動対応は、EventBridge のルール＋ Lambda や SNS。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Processing GuardDuty findings with Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html"
+        },
+        {
+          "title": "Amazon EventBridge event patterns",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.s3-events",
+      "title": "S3 のイベント通知を EventBridge へ送る",
+      "kind": "integration",
+      "text": "S3 は、バケットで起きたイベント（オブジェクトの作成・削除、復元、ストレージクラスの変更など）を EventBridge に送れる。EventBridge を有効にすると、イベントの種類を選ばずに、すべての種類が送られる。EventBridge のルールで、追加のターゲットへ振り分けられる。",
+      "examPoint": "S3 のイベントを多様なターゲットへ振り分けるなら、EventBridge を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using EventBridge (Amazon S3)",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.managed-rules",
+      "title": "AWS サービスが管理するルール",
+      "kind": "feature",
+      "text": "AWS サービスは、機能の実現に必要な EventBridge のルールを、利用者のアカウントに作って管理することがある。これを管理ルールと呼ぶ。強制削除もできるが、そのルールに依存する機能が止まるため、サービス側で不要と確かめてから消す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Rules in Amazon EventBridge",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "eventbridge.rule-loop-caution",
+      "title": "ルールの書き方によっては無限ループと課金が起きる",
+      "kind": "constraint",
+      "text": "ルールの作り方次第で、ルールが再帰的に起動し続ける無限ループや、想定以上の課金、スロットリングが起きえる。たとえば S3 バケットの ACL の変更を検知して ACL を戻すルールが、戻す操作で再び起動する場合である。ルールとイベントパターンは正確に書く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EventBridge event patterns",
+          "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "sqs.dlq",
+    "sns.fanout",
+    "rds.stop-instance",
+    "lambda.event-triggers"
+  ],
+  "references": [
+    {
+      "title": "What Is Amazon EventBridge?",
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html"
+    },
+    {
+      "title": "Amazon EventBridge event bus (default and Classic)",
+      "url": "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html"
+    }
+  ],
+  "createdBy": "sc11",
+  "createdAt": "2026-11-14"
+}

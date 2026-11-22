@@ -73,6 +73,12 @@ export interface LessonReadEvent extends EventBase {
   lessonId: string;
 }
 
+/** サービス図鑑のエントリを読んだ（合格準備度には使わない）。serviceId はエントリの id */
+export interface CatalogReadEvent extends EventBase {
+  type: 'catalog-read';
+  serviceId: string;
+}
+
 export interface DrillEvent extends EventBase {
   type: 'drill';
   sessionId: string;
@@ -89,6 +95,7 @@ export type AppEvent =
   | SettingEvent
   | MockResultEvent
   | LessonReadEvent
+  | CatalogReadEvent
   | DrillEvent;
 
 type DistributiveOmit<T, K extends keyof EventBase> = T extends unknown ? Omit<T, K> : never;

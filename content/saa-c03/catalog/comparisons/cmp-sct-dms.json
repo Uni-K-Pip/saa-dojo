@@ -1,0 +1,54 @@
+{
+  "id": "cmp-sct-dms",
+  "title": "AWS Schema Conversion Tool・AWS Database Migration Service",
+  "services": [
+    "sct",
+    "dms"
+  ],
+  "decide": [
+    "DMS コンソールから始める、フルマネージドのスキーマ変換なら DMS（DMS Schema Conversion）",
+    "ソフトウェアをダウンロードして、手元の環境でスキーマを変換するなら SCT",
+    "移行元の変更を継続的に移行先へ反映し続けたいなら DMS",
+    "スキーマの変換と DMS による移行を、同じツールから進めたいなら SCT"
+  ],
+  "rows": [
+    {
+      "axis": "中心の仕事",
+      "values": {
+        "sct": "既存のデータベースのスキーマを、あるデータベースエンジンから別のエンジンへ変換する",
+        "dms": "対応するソースとターゲットの間で、同じエンジンへの移行にも、異なるエンジンへの移行にも使う"
+      },
+      "factRefs": [
+        "sct.purpose",
+        "dms.engine-migrations"
+      ]
+    },
+    {
+      "axis": "スキーマ変換の始め方",
+      "values": {
+        "sct": "ソフトウェアをダウンロードして、手元の環境で評価と変換を行う",
+        "dms": "DMS コンソールから始める、フルマネージドの DMS Schema Conversion で評価と変換を行う"
+      },
+      "factRefs": [
+        "sct.vs-dms-sc",
+        "dms.schema-conversion"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Cloud Database Migration – AWS Database Migration Service (AWS DMS) Features – AWS",
+      "url": "https://aws.amazon.com/dms/features/"
+    },
+    {
+      "title": "What is AWS Database Migration Service? - AWS Database Migration Service",
+      "url": "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html"
+    },
+    {
+      "title": "What is the AWS Schema Conversion Tool? - AWS Schema Conversion Tool",
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc43"
+}

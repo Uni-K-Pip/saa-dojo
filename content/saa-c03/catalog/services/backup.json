@@ -1,0 +1,273 @@
+{
+  "id": "backup",
+  "tier": 2,
+  "summary": "AWS の複数サービスにまたがるバックアップを、一元的に管理・自動化するフルマネージドサービスである。バックアッププランで保護方針を定め、対応するリソースへ適用する。",
+  "chooseWhen": [
+    {
+      "text": "複数サービスのバックアップを共通のプランで定期実行したい場合。",
+      "factRefs": [
+        "backup.scheduled-backup-plan"
+      ]
+    },
+    {
+      "text": "バックアップのコピーを別リージョンに保存したい場合。",
+      "factRefs": [
+        "backup.cross-region-copy"
+      ]
+    },
+    {
+      "text": "同じ組織の別アカウントにバックアップをコピーしたい場合。",
+      "factRefs": [
+        "backup.cross-account-copy"
+      ]
+    },
+    {
+      "text": "保持期間中の削除を防ぎ、猶予期間後は管理者も保護用ロックを解除できないようにしたい場合。",
+      "factRefs": [
+        "backup.vault-lock-early-deletion",
+        "backup.vault-lock-compliance"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "RDS の復旧ポイントをコールドストレージへ移行することが必須の場合。",
+      "factRefs": [
+        "backup.rds-no-cold-storage"
+      ]
+    },
+    {
+      "text": "AWS Organizations の同じ組織に属さないアカウントへのクロスアカウントコピーが必要な場合。",
+      "factRefs": [
+        "backup.cross-account-copy"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "backup.scheduled-backup-plan",
+      "title": "バックアッププランで定期実行する",
+      "kind": "feature",
+      "text": "AWS Backup では、バックアッププランのルールでスナップショットバックアップの実行頻度を設定できる。複数の AWS サービスの対象リソースに、共通のバックアッププランを適用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Backup?",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+        },
+        {
+          "title": "Backup plan options and configuration",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/plan-options-and-configuration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.retention-lifecycle",
+      "title": "ルールのライフサイクルで保持期間を指定する",
+      "kind": "feature",
+      "text": "AWS Backup のバックアップルールでは、ライフサイクル設定でバックアップの保持期間を指定する。保持されているバックアップは、そのライフサイクルの終了まで復元に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backup plan options and configuration",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/plan-options-and-configuration.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.tag-based-assignment",
+      "title": "タグでバックアップ対象を指定する",
+      "kind": "feature",
+      "text": "AWS Backup のバックアッププランでは、タグに基づいてバックアップ対象のリソースを含めたり除外したりできる。タグだけでリソースを割り当てる場合も、サービスのオプトイン設定が適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Select AWS services to backup",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/assigning-resources.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.cross-region-copy",
+      "title": "バックアップを別リージョンにコピーする",
+      "kind": "feature",
+      "text": "AWS Backup は、対応するバックアップを別の AWS リージョンへコピーできる。コピーはオンデマンドで実行するほか、スケジュールされたバックアッププランの一部として自動化できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating backup copies across AWS Regions",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/cross-region-backup.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.cross-account-copy",
+      "title": "同じ組織の別アカウントにコピーする",
+      "kind": "integration",
+      "text": "AWS Backup のクロスアカウントバックアップでは、対応するバックアップを別アカウントにコピーできる。コピー元とコピー先のアカウントは、AWS Organizations の同じ組織に属している必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating backup copies across AWS accounts",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-cross-account-backup.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.vault-lock-early-deletion",
+      "title": "Vault Lock で保持期間前の削除を拒否する",
+      "kind": "feature",
+      "text": "AWS Backup Vault Lock が適用されたボールトでは、バックアップの保持期間が終わる前の復旧ポイント削除が拒否される。この削除拒否は、アカウントのルートユーザーによる操作にも適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.vault-lock-governance",
+      "title": "ガバナンスモードは権限があれば解除できる",
+      "kind": "feature",
+      "text": "AWS Backup Vault Lock のガバナンスモードでは、十分な IAM 権限を持つユーザーがボールトのロックを解除できる。指定された権限を持つ担当者に、ボールトの管理を認めるためのモードである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.vault-lock-compliance",
+      "title": "コンプライアンスモードは猶予期間後に変更不能になる",
+      "kind": "feature",
+      "text": "AWS Backup Vault Lock のコンプライアンスモードでは、猶予期間経過後、復旧ポイントを含むボールトのロックを誰も解除・変更できない。この制限はアカウントのルートユーザーや AWS にも適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.vault-policy-removable",
+      "title": "ボールトアクセスポリシーを削除する API",
+      "kind": "feature",
+      "text": "AWS Backup の DeleteBackupVaultAccessPolicy API は、バックアップボールトの権限を管理するアクセスポリシー文書を削除する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Vault access policies",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/create-a-vault-access-policy.html"
+        },
+        {
+          "title": "DeleteBackupVaultAccessPolicy",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/APIReference/API_DeleteBackupVaultAccessPolicy.html"
+        },
+        {
+          "title": "Actions, resources, and condition keys for AWS Backup",
+          "url": "https://docs.aws.amazon.com/service-authorization/latest/reference/list_backup.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.rds-no-cold-storage",
+      "title": "RDS の復旧ポイントはコールド移行の対象外",
+      "kind": "constraint",
+      "text": "AWS Backup で管理する Amazon RDS の復旧ポイントは、コールドストレージへのライフサイクル移行に対応していない。これは RDS DB インスタンスと RDS クラスターのどちらにも当てはまる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup feature availability",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-feature-availability.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "backup.vault-lock-retention-range",
+      "title": "Vault Lock で最小・最大の保持期間を設定する",
+      "kind": "feature",
+      "text": "AWS Backup Vault Lock では、ボールトの最小保持期間と最大保持期間を日数で設定できる。指定しなかった側の保持期間は強制されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "backup.vault-lock-nonconforming-job-fails",
+      "title": "保持期間に合わないジョブは失敗する",
+      "kind": "constraint",
+      "text": "Vault Lock で最小または最大の保持期間を指定したボールトでは、ライフサイクルの保持期間がその範囲に合わないバックアップジョブとコピージョブは失敗する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "backup.vault-lock-existing-recovery-points",
+      "title": "既存の復旧ポイントには保持期間の設定が適用されない",
+      "kind": "constraint",
+      "text": "Vault Lock の保持期間の設定は、ロックの設定前からボールトに保存されている復旧ポイントには適用されない。それらは以前のライフサイクルの設定に従う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "backup.vault-lock-grace-time-minimum",
+      "title": "コンプライアンスモードの猶予期間は 3 日以上",
+      "kind": "quota",
+      "text": "AWS Backup Vault Lock のコンプライアンスモードでは、ロックが変更できなくなるまでの猶予期間（ChangeableForDays）を利用者が指定し、その値は 3 日（72 時間）以上である。この猶予期間の間は、ロックの削除や設定の変更ができる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Backup Vault Lock",
+          "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Backup?",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html"
+    },
+    {
+      "title": "AWS Backup Vault Lock",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/vault-lock.html"
+    },
+    {
+      "title": "AWS Backup feature availability",
+      "url": "https://docs.aws.amazon.com/aws-backup/latest/devguide/backup-feature-availability.html"
+    }
+  ],
+  "createdBy": "cx21",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
+}

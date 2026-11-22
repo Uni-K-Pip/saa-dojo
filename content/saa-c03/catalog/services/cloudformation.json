@@ -1,0 +1,353 @@
+{
+  "id": "cloudformation",
+  "tier": 1,
+  "summary": "AWS リソースの構成をテンプレートで定義し、スタックとして作成・更新・削除するサービス。同じテンプレートから環境を繰り返し構築でき、変更セットによる更新前の確認や、ドリフト検出による構成差分の確認にも使う。",
+  "chooseWhen": [
+    {
+      "text": "インフラの構成をコードで定義し、複数の環境やリージョンで繰り返し構築したいとき。",
+      "factRefs": [
+        "cloudformation.template-provisioning",
+        "cloudformation.repeatable-infrastructure"
+      ]
+    },
+    {
+      "text": "リソースの置換や削除を含む更新の影響を、適用前に確認したいとき。",
+      "factRefs": [
+        "cloudformation.change-set-preview"
+      ]
+    },
+    {
+      "text": "管理中のリソースにスタック外で加えられた設定変更を、テンプレートと比較して調べたいとき。",
+      "factRefs": [
+        "cloudformation.drift-detection"
+      ]
+    },
+    {
+      "text": "共通のテンプレートを複数アカウント・リージョンへまとめて展開したいとき。",
+      "factRefs": [
+        "cloudformation.stacksets-multi-account"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "組織内で新たに追加される保護対象への Web ACL 適用や、未関連付けの自動修復をポリシーで管理したいとき。",
+      "factRefs": [
+        "firewall-manager.new-in-scope-resources",
+        "firewall-manager.waf-auto-remediation"
+      ],
+      "alternatives": [
+        "firewall-manager"
+      ]
+    },
+    {
+      "text": "テンプレートで値を明示していないプロパティも含め、ドリフト検出ですべての設定差分を調べたいとき。",
+      "factRefs": [
+        "cloudformation.drift-explicit-properties"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cloudformation.template-provisioning",
+      "title": "テンプレートからリソースを構築する",
+      "kind": "feature",
+      "text": "AWS CloudFormation は、YAML または JSON のテンプレートに定義した AWS リソースとそのプロパティを基に、リソースのプロビジョニングと設定を行う。インフラの構成をテキストファイルで表現できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How CloudFormation works",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stack-resource-unit",
+      "title": "関連するリソースをスタック単位で管理する",
+      "kind": "feature",
+      "text": "AWS CloudFormation のスタックは、テンプレートに定義された関連リソースをまとめて扱う管理単位である。スタックに対する作成・更新・削除の操作を通じて、一連のリソースを管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How CloudFormation works",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.repeatable-infrastructure",
+      "title": "同じテンプレートで環境を再現する",
+      "kind": "feature",
+      "text": "AWS CloudFormation は、同じテンプレートを再利用し、一貫した方法でリソースを繰り返し構築できる。複数の AWS リージョンに同じ構成のリソースを用意する場合にも利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is CloudFormation?",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.pricing-model",
+      "title": "CloudFormation の料金のかかり方",
+      "kind": "pricing",
+      "text": "AWS CloudFormation は、AWS::* と Alexa::* の名前空間のリソースプロバイダーを使う限り、CloudFormation そのものに追加料金がかからない。CloudFormation で作った EC2 インスタンスやロードバランサーなどの AWS リソースには、手動で作った場合と同じ料金がかかる。レジストリの拡張機能を使う場合は、ハンドラーオペレーションごとに課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudFormation Pricing",
+          "url": "https://aws.amazon.com/cloudformation/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudformation.template-parameters",
+      "title": "パラメータで環境ごとの値を渡す",
+      "kind": "feature",
+      "text": "AWS CloudFormation のテンプレートに Parameters セクションを定義すると、スタックの作成時や更新時に値を入力できる。同じテンプレートを、入力値を変えて異なる環境で再利用するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "CloudFormation template Parameters syntax",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.change-set-preview",
+      "title": "変更セットで更新の影響を確認する",
+      "kind": "feature",
+      "text": "AWS CloudFormation の変更セットは、提案した更新によるリソースの追加・変更・削除や置換の影響を、実行前に確認するための機能である。変更セットを作成しただけではスタックは変更されず、実行すると更新が適用される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Update CloudFormation stacks using change sets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.change-set-no-success-guarantee",
+      "title": "変更セットは更新成功の保証ではない",
+      "kind": "constraint",
+      "text": "AWS CloudFormation で変更セットを作成できても、スタックの更新成功は保証されない。カスタムリソースの処理やサービス固有の制約など、実行時の条件によって更新が失敗する場合がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Update CloudFormation stacks using change sets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-changesets.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.drift-detection",
+      "title": "スタック外の変更をドリフト検出で調べる",
+      "kind": "feature",
+      "text": "AWS CloudFormation のドリフト検出は、スタックの実際のリソース設定を、テンプレートや入力パラメータから決まる期待値と比較する。コンソールなど CloudFormation の外で行われた設定変更を特定するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Detect unmanaged configuration changes to stacks and resources with drift detection",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.drift-supported-resources",
+      "title": "ドリフト検出にはリソースタイプの対応が必要",
+      "kind": "constraint",
+      "text": "AWS CloudFormation のドリフト検出が設定を比較できるのは、ドリフト検出に対応したリソースタイプである。対応していないリソースは、リソースのドリフト状態が NOT_CHECKED として扱われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Detect unmanaged configuration changes to stacks and resources with drift detection",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.drift-explicit-properties",
+      "title": "ドリフト検出の対象プロパティは明示する",
+      "kind": "constraint",
+      "text": "AWS CloudFormation がリソースのプロパティのドリフトを判定するのは、テンプレートまたは入力パラメータで値を明示した項目である。リソース側の既定値を暗黙に使っているプロパティは、その比較の対象に含まれない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Detect unmanaged configuration changes to stacks and resources with drift detection",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-multi-account",
+      "title": "StackSets で複数アカウントへ展開する",
+      "kind": "feature",
+      "text": "AWS CloudFormation StackSets は、共通のテンプレートを使い、指定した複数の AWS アカウントとリージョンでスタックを作成・更新・削除する。複数の展開先に対するスタック操作を、一度の操作で管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing stacks across accounts and Regions with StackSets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-service-managed",
+      "title": "Organizations 向けにアクセス許可を管理する",
+      "kind": "integration",
+      "text": "AWS CloudFormation StackSets のサービスマネージド型のアクセス許可では、AWS Organizations の組織全体や指定した OU のアカウントへ展開できる。展開先で必要な IAM ロールは CloudFormation が作成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create CloudFormation StackSets with service-managed permissions",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-auto-deployment",
+      "title": "アカウントの所属変更を契機に自動展開する",
+      "kind": "feature",
+      "text": "AWS CloudFormation StackSets のサービスマネージド型で自動デプロイを有効にすると、対象組織や OU へのアカウントの追加・削除・移動を契機にスタック操作が行われる。後から追加されたアカウントにもスタックを自動展開できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable or disable automatic deployments for StackSets in AWS Organizations",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-management-excluded",
+      "title": "サービスマネージド型は管理アカウントに展開しない",
+      "kind": "constraint",
+      "text": "AWS CloudFormation StackSets のサービスマネージド型のアクセス許可では、組織の管理アカウントにスタックを展開しない。管理アカウントが対象の組織や OU に含まれていても、この扱いは変わらない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create CloudFormation StackSets with service-managed permissions",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-associate-stackset-with-org.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.deletion-policy-retain",
+      "title": "Retain でスタック削除時にリソースを残す",
+      "kind": "feature",
+      "text": "AWS CloudFormation のリソースに DeletionPolicy: Retain を指定すると、スタックを削除してもそのリソースと内容は削除されない。スタックを削除した後も、残したリソースを引き続き利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DeletionPolicy attribute",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-deletionpolicy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.nested-stack-reuse",
+      "title": "ネストされたスタックで共通構成を再利用する",
+      "kind": "feature",
+      "text": "AWS CloudFormation のネストされたスタックは、共通のリソース構成を別のテンプレートに切り出し、他のテンプレートから参照する仕組みである。共通構成を複数のテンプレートへ繰り返し記述する手間を減らせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Split a template into reusable pieces using nested stacks",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.preserve-created-resources",
+      "title": "作成失敗時に成功したリソースを保持する",
+      "kind": "feature",
+      "text": "AWS CloudFormation のスタック作成時に、正常にプロビジョニングされたリソースを保持するオプションを選べる。作成に失敗した場合も成功したリソースの状態を残し、失敗したリソースの原因調査に利用できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Choose how to handle failures when provisioning resources",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stack-failure-options.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.drift-aware-change-set",
+      "title": "ドリフト対応の変更セットで実際の構成も比較する",
+      "kind": "feature",
+      "text": "AWS CloudFormation のドリフト対応の変更セットは、対応するリソースで実際の構成・前回のデプロイ時の構成・新しいテンプレートの構成を比較する。スタック外の変更を含め、更新が実リソースへ与える影響を実行前に確認できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using drift-aware change sets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/drift-aware-change-sets.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.waf-association-template",
+      "title": "Web ACL の関連付けをテンプレートに定義する",
+      "kind": "integration",
+      "text": "AWS CloudFormation では、AWS::WAFv2::WebACLAssociation リソースを使い、指定した Web ACL と ALB などのリージョン内の保護対象との関連付けをテンプレートに定義できる。関連付ける双方の ARN を指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS::WAFv2::WebACLAssociation",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-wafv2-webaclassociation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudformation.stacksets-update-propagation",
+      "title": "StackSet の更新を展開先に反映する",
+      "kind": "feature",
+      "text": "StackSet を更新するときは、更新を適用するアカウントとリージョンを指定し、CloudFormation がその展開先のスタックへ更新を適用する。更新できる内容には、テンプレートの置換やパラメータ値の更新などがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Update CloudFormation StackSets",
+          "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-update.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "seeAlso": [
+    "firewall-manager.new-in-scope-resources",
+    "firewall-manager.waf-auto-remediation"
+  ],
+  "references": [
+    {
+      "title": "What is CloudFormation?",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "Managing stacks across accounts and Regions with StackSets",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html"
+    },
+    {
+      "title": "Detect unmanaged configuration changes to stacks and resources with drift detection",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html"
+    }
+  ],
+  "createdBy": "cx33",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-21"
+}

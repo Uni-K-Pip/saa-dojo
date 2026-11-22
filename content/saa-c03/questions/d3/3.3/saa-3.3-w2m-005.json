@@ -26,32 +26,32 @@
       "id": "a",
       "text": "Enhanced Monitoring を有効にして、DB インスタンスの OS の 1 秒間隔の CPU・メモリ・プロセスのメトリクスを確認し、負荷の高いプロセスを調べる。",
       "correct": false,
-      "rationale": "Enhanced Monitoring は、DB インスタンスの OS のメトリクスを、細かい間隔で収集します。どの SQL が負荷の原因かは分かりません。"
+      "rationale": "Enhanced Monitoring は、DB インスタンスの OS のメトリクスを、細かい間隔で収集します。Database Insights なら、DB の負荷を SQL や待機イベントで絞り込んで、原因を調べられます。"
     },
     {
       "id": "b",
       "text": "AWS CloudTrail のログを調べて、RDS のデータベースに対して実行された管理 API の呼び出しと、その実行時刻を確認する。",
       "correct": false,
-      "rationale": "CloudTrail は、RDS の管理 API の呼び出しの記録で、データベース内で実行された SQL クエリの記録ではありません。"
+      "rationale": "CloudTrail は、RDS の管理 API の呼び出しの記録です。Database Insights なら、データベース内で実行された SQL ごとの負荷や待機イベントを調べられます。"
     },
     {
       "id": "c",
       "text": "Amazon CloudWatch Database Insights を有効にして、DB Load を SQL、待機イベント、ユーザー、ホスト別に分析する。",
       "correct": true,
-      "rationale": "Database Insights は、DB の負荷（DB Load、平均アクティブセッション）を可視化し、負荷の原因になっている上位の SQL や待機イベントを特定できます。利用者がエージェントをインストールする作業は不要です。"
+      "rationale": "Database Insights は、RDS の DB インスタンスの負荷（DB Load）を可視化し、待機イベント、SQL、ホスト、ユーザーで絞り込んで原因を調べられます。Database Insights には Standard モードと Advanced モードがあり、Advanced モードは DB インスタンスの作成時や変更時の設定で有効にできます。自己管理の PostgreSQL を監視する場合は、CloudWatch エージェントを導入します。"
     },
     {
       "id": "d",
       "text": "Amazon CloudWatch の標準メトリクス（CPUUtilization や DatabaseConnections など）のグラフを、時間帯ごとに確認する。",
       "correct": false,
-      "rationale": "CPU 使用率が高い時間帯は分かりますが、原因の SQL や待機イベントは分かりません。"
+      "rationale": "CPU 使用率が高い時間帯は分かります。Database Insights なら、その時間帯の負荷を SQL や待機イベントで絞り込んで、原因を調べられます。"
     }
   ],
-  "explanation": "RDS のデータベースの性能を分析するには、目的別のツールを使い分けます。Amazon CloudWatch Database Insights は、データベースの負荷を可視化して、性能の問題の原因を特定するための機能です。従来 Performance Insights で行っていた DB の負荷の分析は、Database Insights に移行されています（Performance Insights の終了日は 2026 年 7 月 31 日）。DB の負荷（DB Load）を平均アクティブセッション（AAS）で表し、待機イベント、SQL、ユーザー、ホストなどの切り口で、どこが負荷の原因になっているかを、時間帯を指定して調べられます。この分析は Standard モードでも利用でき、利用者が DB インスタンスにエージェントをインストールする作業は不要です。\n\nEnhanced Monitoring は、DB インスタンスが動作する OS のメトリクス（プロセス、メモリ、ファイルシステムなど）を、最短 1 秒間隔で収集します。CloudWatch の標準メトリクスは、CPU や接続数などの全体の指標です。CloudTrail は API の記録です。\n\n負荷の原因になっている SQL を特定するには、Database Insights が最も適しています。",
+  "explanation": "RDS のデータベースの性能を分析するには、目的別のツールを使い分けます。Amazon CloudWatch Database Insights は、データベースの負荷を可視化して、性能の問題の原因を特定するための機能です。AWS は Performance Insights の終了日を 2026 年 7 月 31 日と発表し、Performance Insights の利用者を Database Insights に移行しています。DB の負荷（DB Load）を平均アクティブセッション（AAS）で表し、待機イベント、SQL、ユーザー、ホストなどの切り口で、どこが負荷の原因になっているかを、時間帯を指定して調べられます。この分析は Standard モードでも利用できます。Advanced モードは、データベースの作成時や変更時に有効にできます。EC2 上の自己管理の PostgreSQL を監視する場合は、CloudWatch エージェントを導入して設定します。\n\nEnhanced Monitoring は、DB インスタンスが動作する OS のメトリクス（プロセス、メモリ、ファイルシステムなど）を、最短 1 秒間隔で収集します。CloudWatch の標準メトリクスは、CPU や接続数などの全体の指標です。CloudTrail は API の記録です。\n\n負荷の原因になっている SQL を特定するには、Database Insights が最も適しています。",
   "keyPoints": [
-    "DB の負荷の原因（SQL・待機イベント）を可視化 → CloudWatch Database Insights（従来の Performance Insights の後継）",
+    "DB の負荷の原因（SQL・待機イベント）を可視化 → CloudWatch Database Insights（Performance Insights の利用者は Database Insights に移行済み）",
     "OS のメトリクスは Enhanced Monitoring、全体の指標は CloudWatch の標準メトリクス",
-    "CloudTrail は API の記録で、SQL の記録ではない"
+    "CloudTrail は API の記録。SQL ごとの負荷は Database Insights で調べられる"
   ],
   "references": [
     {
@@ -61,6 +61,10 @@
     {
       "title": "CloudWatch Database Insights - Amazon CloudWatch ユーザーガイド",
       "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html"
+    },
+    {
+      "title": "CloudWatch Database Insights の使用を開始する - Amazon CloudWatch ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights-Get-Started.html"
     }
   ],
   "lessonRefs": [],

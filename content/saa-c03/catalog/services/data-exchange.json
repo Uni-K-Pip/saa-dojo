@@ -1,0 +1,26 @@
+{
+  "id": "data-exchange",
+  "tier": 3,
+  "summary": "他の組織が提供するデータの利用権を、AWS の利用者が大規模に共有・管理するためのサービス。受け取る側は、データの付与や AWS Marketplace のデータの購読を一か所で管理し、分析や機械学習に使える。",
+  "chooseWhen": [
+    {
+      "text": "第三者が提供するデータセットを見つけて購読し、AWS のデータ分析や機械学習で使いたい場合。"
+    },
+    {
+      "text": "自社のデータを、配信や利用権を管理する基盤を作らずに、ほかの AWS の利用者へ提供したい場合。"
+    }
+  ],
+  "facts": [],
+  "references": [
+    {
+      "title": "What is AWS Data Exchange?",
+      "url": "https://docs.aws.amazon.com/data-exchange/latest/userguide/what-is.html"
+    },
+    {
+      "title": "AWS Data Exchange",
+      "url": "https://aws.amazon.com/data-exchange/"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22"
+}

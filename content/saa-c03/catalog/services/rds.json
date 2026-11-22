@@ -1,0 +1,631 @@
+{
+  "id": "rds",
+  "tier": 1,
+  "summary": "MySQL・PostgreSQL・MariaDB・Oracle・SQL Server・Db2 のリレーショナルデータベースを、バックアップ、パッチ適用、障害検知と復旧を AWS に任せて運用できるマネージドサービス。Aurora も RDS の一部だが、別のユーザーガイドで扱われる。",
+  "chooseWhen": [
+    {
+      "text": "既存のアプリケーションが使う商用・オープンソースのエンジンをそのまま、運用を AWS に任せて動かしたい",
+      "factRefs": [
+        "rds.managed-service",
+        "rds.engines"
+      ]
+    },
+    {
+      "text": "AZ の障害に備えて、同期レプリケーションと自動フェイルオーバーを備えたデータベースが必要",
+      "factRefs": [
+        "rds.multi-az-instance",
+        "rds.multi-az-failover-dns"
+      ]
+    },
+    {
+      "text": "読み取りの負荷を、読み取り専用のコピーへ分散させたい",
+      "factRefs": [
+        "rds.read-replica"
+      ]
+    },
+    {
+      "text": "開発・テスト用のデータベースを、使わない時間だけ止めて費用を抑えたい",
+      "factRefs": [
+        "rds.stop-instance"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "MySQL・PostgreSQL 互換のまま、より高いスループットと自動で拡張するストレージが要るなら Aurora を検討する",
+      "alternatives": [
+        "aurora"
+      ]
+    },
+    {
+      "text": "読み取りのスタンバイとして Multi-AZ DB インスタンス配置のスタンバイを当てにしてはいけない（読み取りに使えない）",
+      "factRefs": [
+        "rds.multi-az-standby-no-read"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "rds.managed-service",
+      "title": "運用の多くを AWS が担うマネージドサービス",
+      "kind": "feature",
+      "text": "Amazon RDS は、リレーショナルデータベースの設定・運用・スケーリングを簡単にするマネージドサービスで、バックアップ、ソフトウェアのパッチ適用、障害の自動検知と復旧を担う。EC2 上の自前運用と違い、OS のインストールやパッチ適用も AWS 側の責任になる。",
+      "examPoint": "運用オーバーヘッドを減らす要件では、EC2 上の自前 DB より RDS を選ぶ。",
+      "trap": "アプリケーションの最適化やクエリのチューニングは、RDS でも利用者の責任。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.engines",
+      "title": "利用できるデータベースエンジン",
+      "kind": "feature",
+      "text": "Amazon RDS で利用できるエンジンは、IBM Db2、MariaDB、Microsoft SQL Server、MySQL、Oracle Database、PostgreSQL。Amazon Aurora はこの一覧に含まれず、別のユーザーガイドで扱われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.storage-types",
+      "title": "ストレージの種類",
+      "kind": "feature",
+      "text": "RDS の DB インスタンスのストレージは、汎用 SSD（General Purpose）と Provisioned IOPS（PIOPS）から選ぶ。低い I/O レイテンシーと安定したスループットが要る本番の I/O 集約型には Provisioned IOPS が向く。マグネティックは非推奨で、新規には選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "rds.instance-classes",
+      "title": "DB インスタンスクラスの種類",
+      "kind": "feature",
+      "text": "DB インスタンスクラスは計算とメモリの容量を決める。種類は汎用（db.m）、メモリ最適化（db.z、db.x、db.r）、コンピューティング最適化（db.c）、バースト可能（db.t）で、要件が変わればクラスを変更してスケールアップできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.multi-az-instance",
+      "title": "Multi-AZ DB インスタンス配置",
+      "kind": "feature",
+      "text": "Multi-AZ DB インスタンス配置では、RDS が別の AZ に同期レプリケーションのスタンバイを自動で作って維持する。インスタンスの障害や AZ の障害、計画メンテナンスの影響を抑える高可用性の仕組みで、障害時はスタンバイへ自動で切り替わる。",
+      "examPoint": "AZ の障害に備えて自動で切り替える要件は Multi-AZ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-AZ DB instance deployments for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.multi-az-standby-no-read",
+      "title": "Multi-AZ DB インスタンスのスタンバイは読み取り不可",
+      "kind": "constraint",
+      "text": "Multi-AZ DB インスタンス配置は読み取りをスケールさせる仕組みではなく、スタンバイは読み取りトラフィックを処理できない。読み取り専用の処理を担わせるには、Multi-AZ DB クラスターまたはリードレプリカを使う。",
+      "examPoint": "読み取りの分散が目的なら、リードレプリカか Multi-AZ DB クラスター。",
+      "trap": "Multi-AZ にすれば読み取り性能も上がる、という誤解。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-AZ DB instance deployments for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.multi-az-failover-dns",
+      "title": "フェイルオーバーは DNS の向き先を切り替える",
+      "kind": "feature",
+      "text": "Multi-AZ DB インスタンスのフェイルオーバーでは、RDS が DB インスタンスの DNS レコードをスタンバイに向け直す。そのため、既存の接続はつなぎ直す必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Failing over a Multi-AZ DB instance for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.multi-az-failover-time",
+      "title": "フェイルオーバーにかかる時間の目安",
+      "kind": "feature",
+      "text": "Multi-AZ DB インスタンスのフェイルオーバーにかかる時間は、通常 60〜120 秒。データベースの稼働状況によって変わり、大きなトランザクションや長いリカバリがあると延びる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Failing over a Multi-AZ DB instance for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.multi-az-cluster",
+      "title": "Multi-AZ DB クラスター配置",
+      "kind": "feature",
+      "text": "Multi-AZ DB クラスターは、3 つの AZ にライター 1 台と読み取り可能なリーダー 2 台を置く、準同期の高可用性の配置。リーダーは自動フェイルオーバーの対象であり、読み取りも処理する。Multi-AZ DB インスタンス配置より書き込みレイテンシーが低い傾向がある。Aurora の DB クラスターとは別物。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-AZ DB cluster deployments for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.read-replica",
+      "title": "リードレプリカ",
+      "kind": "feature",
+      "text": "リードレプリカは DB インスタンスの読み取り専用のコピーで、更新は非同期でソースからレプリカに複製される。読み取りの多いワークロードの負荷を分散したり、レポート用のクエリを本番のインスタンスから切り離したりするために使う。",
+      "examPoint": "読み取りの負荷分散・レポートのクエリの分離はリードレプリカ。",
+      "trap": "非同期なので、レプリカのデータが少し古い場合がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with DB instance read replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.read-replica-manual-scaling",
+      "title": "リードレプリカは自動では増減しない",
+      "kind": "constraint",
+      "text": "RDS はリードレプリカの自動スケーリング（需要に応じたレプリカの自動追加・削除）をサポートしない。レプリカは手動で作成し、不要になれば手動で削除する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with DB instance read replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        },
+        {
+          "title": "Managing capacity automatically with Amazon RDS storage autoscaling",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.read-replica-cross-region",
+      "title": "別のリージョンのリードレプリカ",
+      "kind": "feature",
+      "text": "リードレプリカは、ソースの DB インスタンスとは別の AWS リージョンにも作成できる。この場合 RDS が、ソースとレプリカの間に安全な通信経路を設定する。災害対策にも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with DB instance read replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.read-replica-promotion",
+      "title": "リードレプリカの昇格",
+      "kind": "feature",
+      "text": "リードレプリカは、ソースの DB インスタンスに障害が起きたときの災害対策として、スタンドアロンの DB インスタンスに昇格できる。ソースを削除したときも、同じリージョンのレプリカは削除されずに、それぞれスタンドアロンの DB インスタンスに昇格する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with DB instance read replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.encryption-scope",
+      "title": "RDS の暗号化の対象",
+      "kind": "feature",
+      "text": "RDS の保存時の暗号化は AES-256 を使い、KMS のキーで行う。暗号化した DB インスタンスでは、ストレージ、ログ、自動バックアップ、リードレプリカ、スナップショットが暗号化される。AWS マネージドキーかカスタマーマネージドキーを選べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encrypting Amazon RDS resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.encrypt-at-creation",
+      "title": "暗号化は作成時にだけ有効にできる",
+      "kind": "constraint",
+      "text": "RDS の DB インスタンスは、作成するときにだけ暗号化を有効にできる。作成後に有効にはできず、暗号化を無効にすることもできない。暗号化されていないインスタンスの暗号化は、スナップショットを暗号化してコピーし、そこから復元して行う。",
+      "examPoint": "暗号化されていない既存の RDS は、スナップショット→暗号化コピー→復元。",
+      "trap": "既存のインスタンスの設定変更だけで暗号化できる、という誤解。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encrypting Amazon RDS resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.encrypted-replica-same-state",
+      "title": "リードレプリカの暗号化の状態はソースと同じ",
+      "kind": "constraint",
+      "text": "暗号化されていない DB インスタンスの暗号化されたリードレプリカや、暗号化された DB インスタンスの暗号化されていないリードレプリカは作れない。レプリカの暗号化の状態は、ソースと同じになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encrypting Amazon RDS resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "examPoint": "暗号化されたレプリカには暗号化されたソースが要る。暗号化されていないソースは、スナップショットの暗号化コピーから復元して暗号化されたインスタンスにする。"
+    },
+    {
+      "id": "rds.pitr",
+      "title": "ポイントインタイムリカバリ",
+      "kind": "feature",
+      "text": "RDS はバックアップの保持期間内の任意の時点に、DB インスタンスを復元できる。復元はソースを変更せず、新しい DB インスタンスとして作られる。トランザクションログは 5 分ごとに S3 へ保存され、最新の復元可能な時刻を確認できる。",
+      "examPoint": "誤操作の直前の状態に戻す要件は、ポイントインタイムリカバリ。",
+      "trap": "元のインスタンスが上書きされるのではなく、新しいインスタンスができる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restoring a DB instance to a specified time for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.snapshot-export-s3",
+      "title": "スナップショットの S3 へのエクスポート",
+      "kind": "feature",
+      "text": "DB スナップショットのデータは S3 バケットへエクスポートでき、圧縮された Apache Parquet 形式で保存される。エクスポートはバックグラウンドで動き、稼働中のデータベースの性能に影響しない。Athena や Redshift Spectrum で直接分析できる。",
+      "examPoint": "古いデータの長期保管・分析は、S3 へエクスポートして Athena で分析。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Exporting DB snapshot data to Amazon S3 for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.snapshot-export-no-restore",
+      "title": "エクスポートしたデータは RDS に直接戻せない",
+      "kind": "constraint",
+      "text": "S3 にエクスポートしたスナップショットのデータは、そのままでは新しい DB インスタンスへ復元することも、既存のインスタンスへ取り込むこともできない。使い道は Athena や Redshift Spectrum での分析で、AWS Glue で変換して DMS などで取り込む方法はある。",
+      "trap": "S3 の Parquet があればデータベースを復元できる、という誤解。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Exporting DB snapshot data to Amazon S3 for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ExportSnapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.reserved-instances",
+      "title": "リザーブド DB インスタンス",
+      "kind": "pricing",
+      "text": "リザーブド DB インスタンスは 1 年か 3 年の期間で約束する代わりにオンデマンドより安くなる課金上の割引で、物理的なインスタンスではない。割引はインスタンスタイプとリージョンに紐づく。",
+      "examPoint": "長期間、安定して動かす DB のコスト削減はリザーブド DB インスタンス。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.ri-discount-scope",
+      "title": "リザーブドの割引対象はインスタンスの時間料金だけ",
+      "kind": "pricing",
+      "text": "リザーブド DB インスタンスの割引は、オンデマンドのインスタンスの時間料金にだけ適用される。ストレージ、バックアップ、I/O の料金は割引の対象外。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.ri-no-cancel",
+      "title": "リザーブド DB インスタンスは取り消せない",
+      "kind": "constraint",
+      "text": "購入したリザーブド DB インスタンス（予約）は取り消せない。取り消せないのは予約であり、割引の対象になっている DB インスタンスそのものは削除できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.ri-payment-options",
+      "title": "リザーブド DB インスタンスの支払いオプション",
+      "kind": "pricing",
+      "text": "支払いは No Upfront、Partial Upfront、All Upfront の 3 種類。No Upfront は前払いなしで期間中の毎時間を割引料金で請求するが、1 年の予約でしか選べない。インスタンスクラスによっては、すべてのオプションを選べるとは限らない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.ri-size-flexible",
+      "title": "サイズ柔軟性のあるエンジン",
+      "kind": "pricing",
+      "text": "サイズ柔軟性のあるリザーブド DB インスタンスは、同じリージョン・同じエンジンで、インスタンスのサイズが変わっても自動で適用される。対象は Db2、MariaDB、MySQL、Oracle の BYOL、PostgreSQL で、SQL Server と Oracle のライセンス込みには適用されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.ri-size-flexible-family",
+      "title": "サイズ柔軟性はインスタンスクラスの種類の範囲内",
+      "kind": "constraint",
+      "text": "サイズ柔軟なリザーブド DB インスタンスが拡大・縮小して適用されるのは、同じインスタンスクラスの種類の中だけ。たとえば db.r6i.large の予約は db.r6i.xlarge には適用されるが、db.r6id.large や db.r7g.large には適用されない。",
+      "trap": "サイズが柔軟なら、別のファミリーにも割引が移る、という誤解。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved DB instances for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.stop-instance",
+      "title": "DB インスタンスの一時停止",
+      "kind": "feature",
+      "text": "DB インスタンスは、テストや日々の開発のために最大 7 日間続けて一時停止できる。停止中は DB インスタンスの時間料金がかからないが、プロビジョニング済みのストレージとバックアップのストレージには課金が続く。7 日たつと RDS が自動で起動する。",
+      "examPoint": "開発・テスト用 DB の費用削減は、使わない時間の停止。",
+      "trap": "停止中もストレージ料金はかかる。7 日を超えて止めたままにはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Stopping an Amazon RDS DB instance temporarily",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.stop-vs-snapshot",
+      "title": "停止と起動はスナップショットの取得・削除・復元より手軽",
+      "kind": "feature",
+      "text": "DB インスタンスの停止と起動は、スナップショットを取り、インスタンスを削除し、使うときに復元する方法より速く、効率がよい。使わない時間のインスタンス料金を減らしたい場合に、停止のほうが手順が少なくて済む。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Stopping an Amazon RDS DB instance temporarily",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.stop-limitations",
+      "title": "一時停止できない場合",
+      "kind": "constraint",
+      "text": "リードレプリカを持つ DB インスタンスと、リードレプリカ自身は停止できない。停止中の DB インスタンスは変更できない。Multi-AZ 配置の RDS for SQL Server も停止できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Stopping an Amazon RDS DB instance temporarily",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.storage-autoscaling",
+      "title": "ストレージの自動スケーリング",
+      "kind": "feature",
+      "text": "ストレージの自動スケーリングを有効にすると、空き容量が割り当て済みストレージの 10% 以下の状態が 5 分以上続いたときなどに、RDS が自動でストレージを増やす。上限は最大ストレージしきい値で決め、有効化や変更に再起動やダウンタイムは要らない。",
+      "examPoint": "予測できないデータ増加への対応は、ストレージの自動スケーリングで容量不足を避ける。",
+      "trap": "大量のデータロードでは、増加の頻度の制限により間に合わず、ストレージが満杯になることがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing capacity automatically with Amazon RDS storage autoscaling",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.storage-no-shrink",
+      "title": "割り当てたストレージは縮小できない",
+      "kind": "constraint",
+      "text": "RDS の DB インスタンスは、一度割り当てたストレージを modify-db-instance などの設定変更で減らせない。自動スケーリングでも縮小はされない。縮小するには、小さなストレージの green 環境を作るブルー/グリーンデプロイか、新しいインスタンスへのデータ移行が必要になる。",
+      "examPoint": "ストレージの縮小は設定変更では不可。新しい小さなインスタンスへ移行する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing capacity automatically with Amazon RDS storage autoscaling",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.blue-green",
+      "title": "ブルー/グリーンデプロイ",
+      "kind": "feature",
+      "text": "ブルー/グリーンデプロイは、本番（blue）のコピーとして同期されるステージング（green）環境を作り、変更を試してから切り替える機能。エンジンのバージョンアップやパラメータ変更に使い、切り替えは通常 1 分未満、データ損失なしでアプリケーションの変更も不要。RDS では MariaDB、MySQL、PostgreSQL が対象。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Overview of Amazon RDS Blue/Green Deployments",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.enhanced-monitoring",
+      "title": "拡張モニタリング（Enhanced Monitoring）",
+      "kind": "feature",
+      "text": "拡張モニタリングは、DB インスタンス上のエージェントから OS のメトリクスとプロセスの情報をリアルタイムに収集し、CloudWatch Logs に届ける。CPU 使用率は、CloudWatch がハイパーバイザーから集めるのに対し、拡張モニタリングはインスタンス上のエージェントから集めるので、どのプロセスが CPU を使っているかを見られる。",
+      "trap": "拡張モニタリングの対象は OS のメトリクスとプロセスの情報。待機イベントや SQL ステートメントで DB の負荷を調べるのは Database Insights の役割。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring OS metrics with Enhanced Monitoring",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Monitoring.OS.html"
+        },
+        {
+          "title": "Monitoring DB load with Amazon CloudWatch Database Insights on Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.database-insights",
+      "title": "データベース負荷の可視化（Database Insights）",
+      "kind": "feature",
+      "text": "CloudWatch Database Insights のダッシュボードは、既存の RDS のモニタリング機能を拡張したもので、RDS のデータベースの負荷を可視化し、待機イベント、SQL ステートメント、ホスト、ユーザーで絞り込める。負荷の原因になっているクエリを調べる用途に使う。",
+      "examPoint": "負荷の原因の SQL を特定したい要件は、Database Insights（Performance Insights）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring DB load with Amazon CloudWatch Database Insights on Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html"
+        },
+        {
+          "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.cloudtrail-api-calls",
+      "title": "CloudTrail は RDS の API 呼び出しを記録する",
+      "kind": "integration",
+      "text": "RDS のすべてのアクションは CloudTrail に記録される。記録の単位は RDS のコンソールやコードからの API 呼び出しで、誰がいつ何を要求したかが分かる。コンソールの Event history で、直近 90 日分を確認できる。",
+      "trap": "記録されるのは RDS の API 呼び出し（誰がいつ何を要求したか）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring Amazon RDS API calls in AWS CloudTrail",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/logging-using-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.proxy-integration",
+      "title": "接続の急増には RDS Proxy を前段に置く",
+      "kind": "integration",
+      "text": "予測できない接続の急増でデータベースの接続数が逼迫する場面では、RDS Proxy を DB インスタンスの前段に置いて、接続をプールして共有する。ほとんどのアプリケーションは、コードの変更なしで有効にできる。詳細は RDS Proxy のエントリで扱う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "rds.sqlserver-winauth-managed-ad",
+      "title": "SQL Server の Windows 認証は AWS Managed Microsoft AD だけ",
+      "kind": "constraint",
+      "text": "RDS for SQL Server の Windows 認証に使えるディレクトリは AWS Managed Microsoft AD だけで、RDS は AD Connector を Windows 認証に使うことをサポートしない。DB インスタンスはこのディレクトリのドメインに参加し、認証要求がそのドメインに転送される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS Managed Active Directory with RDS for SQL Server",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "rds.sqlserver-winauth-forest-trust",
+      "title": "オンプレミスの AD は信頼関係で Windows 認証に使う",
+      "kind": "feature",
+      "text": "オンプレミスや自己管理（セルフホスト）の Microsoft Active Directory で RDS for SQL Server の Windows 認証を使うには、AWS Managed Microsoft AD との間にフォレストの信頼関係を作る。信頼は一方向でも双方向でもよい。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS Managed Active Directory with RDS for SQL Server",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_SQLServerWinAuth.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "rds.database-insights-enable",
+      "title": "Database Insights の Advanced モードの有効化",
+      "kind": "feature",
+      "text": "Database Insights の Advanced モードは、DB インスタンスや Multi-AZ DB クラスターの作成時または変更時に有効にできる。既存の DB インスタンスを変更して Advanced モードを有効にしても、ダウンタイムは発生しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Turning on the Advanced mode of Database Insights for Amazon RDS",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DatabaseInsights.TurningOnAdvanced.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Relational Database Service (Amazon RDS)?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "What is Amazon Aurora?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+    }
+  ],
+  "createdBy": "sc4",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
+}

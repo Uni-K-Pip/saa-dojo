@@ -1,0 +1,67 @@
+{
+  "id": "cmp-athena-redshift-emr",
+  "title": "Amazon Athena・Amazon Redshift・Amazon EMR",
+  "services": [
+    "athena",
+    "redshift",
+    "emr"
+  ],
+  "decide": [
+    "S3 のデータに、インフラやクラスターを管理せず、対話型のアドホックな SQL クエリを実行したいなら Athena",
+    "高度に構造化されたデータに、非常に大きなテーブルどうしの結合が多いクエリを実行したいなら Redshift",
+    "多くのデータソースのデータを共通の形式にまとめて、長期間保存したいなら Redshift",
+    "Spark や Hadoop などのビッグデータ処理のフレームワークと独自のコードで、極めて大きなデータを処理したいなら EMR",
+    "クラスターの構成と、インストールするソフトウェアを、完全に制御したいなら EMR"
+  ],
+  "rows": [
+    {
+      "axis": "インフラの管理",
+      "values": {
+        "athena": "サーバーレスで、クエリ用のインフラを構築・管理しない",
+        "redshift": "プロビジョンドクラスターのほか、容量を自動調整する Serverless を選べる",
+        "emr": "EC2 のクラスターのほか、クラスター管理が不要な EMR Serverless を選べる"
+      },
+      "factRefs": [
+        "athena.serverless-query",
+        "redshift.serverless-capacity",
+        "redshift.resize-capacity",
+        "emr.distributed-processing",
+        "emr.serverless-runtime"
+      ]
+    },
+    {
+      "axis": "分析のやり方",
+      "values": {
+        "athena": "S3 のデータをロードせず、標準 SQL でアドホックに分析する",
+        "redshift": "データウェアハウスに蓄積したデータを、SQL や BI ツールで分析する",
+        "emr": "Hadoop、Spark、Hive などのフレームワークで分散処理する"
+      },
+      "factRefs": [
+        "athena.s3-sql-query",
+        "redshift.sql-analytics",
+        "emr.distributed-processing"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "athena": "スキャン量に基づく課金では、クエリがスキャンしたデータ量に応じてかかる",
+        "redshift": "プロビジョンドクラスターのオンデマンドでは、ノードタイプとノード数に応じて、時間単位でかかる",
+        "emr": "EC2 上のクラスターでは、EMR の料金が、EC2 の料金と、EBS ボリュームを付けていれば EBS の料金に追加で、秒単位（最小 1 分）でかかる"
+      },
+      "factRefs": [
+        "athena.scan-based-pricing",
+        "redshift.on-demand-nodes",
+        "emr.ec2-cluster-pricing"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "When should I use Athena? - Amazon Athena",
+      "url": "https://docs.aws.amazon.com/athena/latest/ug/when-should-i-use-ate.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc31"
+}

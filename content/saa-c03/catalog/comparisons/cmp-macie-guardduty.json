@@ -1,0 +1,61 @@
+{
+  "id": "cmp-macie-guardduty",
+  "title": "Amazon Macie と Amazon GuardDuty",
+  "services": [
+    "macie",
+    "guardduty"
+  ],
+  "decide": [
+    "S3 のオブジェクトに含まれる個人情報や認証情報などの機密データを見つけたいなら Macie",
+    "S3 バケットのセキュリティとアクセス制御を、自動で評価・監視したいなら Macie",
+    "侵害された AWS の認証情報を検出したいなら GuardDuty",
+    "EC2 インスタンスやコンテナワークロードのマルウェアを検出したいなら GuardDuty"
+  ],
+  "rows": [
+    {
+      "axis": "検出するもの",
+      "values": {
+        "macie": "機械学習とパターンマッチングで、S3 のオブジェクトに含まれる機密データを検出する",
+        "guardduty": "AWS 環境のデータソースやログを継続的に分析し、侵害された認証情報の使用など、不審で悪意のある可能性がある活動を検出する"
+      },
+      "factRefs": [
+        "macie.sensitive-data-discovery",
+        "guardduty.continuous-threat-detection"
+      ]
+    },
+    {
+      "axis": "分析するデータ",
+      "values": {
+        "macie": "S3 汎用バケットに保存された、対応するストレージクラスとファイル形式のオブジェクト",
+        "guardduty": "基盤となる脅威検出では、CloudTrail 管理イベント、EC2 の VPC フローログ、DNS クエリログを分析する"
+      },
+      "factRefs": [
+        "macie.s3-scope",
+        "guardduty.foundational-data-sources"
+      ]
+    },
+    {
+      "axis": "S3 について見つけるもの",
+      "values": {
+        "macie": "バケットが公開状態になるなど、セキュリティやプライバシーの問題の可能性を検出し、ポリシー検出結果を作成する",
+        "guardduty": "S3 Protection で S3 の CloudTrail データイベントを分析し、データ流出や破壊などの潜在的な脅威を検出する"
+      },
+      "factRefs": [
+        "macie.bucket-inventory-policy",
+        "guardduty.s3-protection"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon Macie? - Amazon Macie",
+      "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+    },
+    {
+      "title": "What is Amazon GuardDuty? - Amazon GuardDuty",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc45"
+}

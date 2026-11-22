@@ -1,0 +1,445 @@
+{
+  "id": "redshift",
+  "tier": 1,
+  "summary": "Amazon Redshift は、大量のデータを SQL で分析するフルマネージドのデータウェアハウスである。列指向ストレージと並列処理を利用し、プロビジョンドクラスターまたは容量を自動調整する Serverless で分析を実行できる。",
+  "chooseWhen": [
+    {
+      "text": "大量のデータに複雑な SQL クエリを実行し、集計や BI 分析を行いたい",
+      "factRefs": [
+        "redshift.sql-analytics",
+        "redshift.columnar-storage",
+        "redshift.parallel-query"
+      ]
+    },
+    {
+      "text": "クラスターの構成管理をせずに、変動する分析ワークロードの容量を自動調整したい",
+      "factRefs": [
+        "redshift.serverless-capacity"
+      ]
+    },
+    {
+      "text": "S3 上のデータを Redshift のテーブルにロードせずに分析したい",
+      "factRefs": [
+        "redshift.spectrum-s3"
+      ]
+    },
+    {
+      "text": "プロビジョンドクラスターを特定の時間帯だけ使い、停止時間のオンデマンド料金を抑えたい",
+      "factRefs": [
+        "redshift.pause-resume",
+        "redshift.pause-billing",
+        "redshift.scheduled-pause-resume"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "少数行の頻繁な読み書きなど、OLTP の取引処理を主な用途にしたい",
+      "factRefs": [
+        "redshift.oltp-unsuited"
+      ]
+    },
+    {
+      "text": "一時停止中もクラスターへ接続してクエリを実行したい",
+      "factRefs": [
+        "redshift.pause-unavailable"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "redshift.sql-analytics",
+      "title": "SQL による大規模データ分析",
+      "kind": "feature",
+      "text": "Amazon Redshift は、ペタバイト規模のデータを扱うフルマネージドのデータウェアハウスである。SQL ベースのツールや BI アプリケーションを使って、蓄積したデータを分析できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Redshift?",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.columnar-storage",
+      "title": "列指向ストレージ",
+      "kind": "feature",
+      "text": "Amazon Redshift はテーブルのデータを列ごとに保存する。大量の行から一部の列を読む分析クエリでは、必要な列のブロックだけを読み出すことで、ディスク I/O とメモリ使用量を抑えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Columnar storage",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_columnar_storage_disk_mem_mgmnt.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.parallel-query",
+      "title": "クエリの並列処理",
+      "kind": "feature",
+      "text": "Amazon Redshift の複数ノードのクラスターでは、リーダーノードが実行計画に基づいてコンパイルしたコードをコンピュートノードに配布し、返ってきた中間結果を最終集約する。各ノード内でもスライスが割り当てられた処理を並列に実行する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data warehouse system architecture",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_high_level_system_architecture.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.oltp-unsuited",
+      "title": "少数行の取引処理との使い分け",
+      "kind": "constraint",
+      "text": "Amazon Redshift は大規模データへの複雑な分析クエリや BI 向けに設計されている。効率的な単一行操作など、少量のデータを扱う OLTP 向けの機能の一部は省かれており、少数行を頻繁に読み書きする取引処理には適していない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift and PostgreSQL",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_redshift-and-postgres-sql.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.serverless-capacity",
+      "title": "Serverless による容量管理",
+      "kind": "feature",
+      "text": "Amazon Redshift Serverless は、データウェアハウスのリソースを自動でプロビジョニングし、分析ワークロードに応じて容量を調整する。プロビジョンドクラスターの構成管理を行わずに、データの分析を始められる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Redshift?",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.serverless-compute-billing",
+      "title": "Serverless のコンピューティング課金",
+      "kind": "pricing",
+      "text": "Amazon Redshift Serverless のコンピューティング料金は、使用した処理能力を RPU 時間として計測し、秒単位で課金する仕組みである。最低課金時間があり、処理を行わないアイドル期間のコンピューティング料金は発生しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift pricing",
+          "url": "https://aws.amazon.com/redshift/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.spectrum-s3",
+      "title": "Spectrum による S3 上のデータ分析",
+      "kind": "integration",
+      "text": "Amazon Redshift Spectrum を使うと、Amazon S3 にある構造化・半構造化データのファイルを、Redshift のテーブルへロードせずにクエリできる。S3 にデータを残したまま Redshift から分析したい場合に利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift Spectrum",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.copy-s3",
+      "title": "COPY による S3 データのロード",
+      "kind": "integration",
+      "text": "Amazon Redshift の COPY コマンドは、Amazon S3 バケット内のファイルを並列に読み取り、対象テーブルへロードする。取り込み処理には、Redshift の超並列処理（MPP）アーキテクチャが使われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Loading data from Amazon S3",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/t_Loading-data-from-S3.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.concurrency-scaling",
+      "title": "同時実行の増加に応じた追加容量",
+      "kind": "feature",
+      "text": "Amazon Redshift のコンカレンシースケーリングを WLM キューで有効にすると、そのキューの同時実行容量を超えた適格なクエリを追加クラスターへ自動で振り分ける。ダッシュボードなどの読み取りクエリも対象である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Concurrency scaling",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/concurrency-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.manual-wlm-memory",
+      "title": "手動 WLM の同時実行数とメモリ",
+      "kind": "feature",
+      "text": "Amazon Redshift の手動 WLM では、キューに割り当てたメモリをクエリスロットに均等配分する。同じメモリ割り当てのままスロット数を増やすと、各スロットのメモリが減り、中間結果のディスク書き出しによって性能が低下する場合がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Implementing manual WLM",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/cm-c-defining-query-queues.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.key-distribution",
+      "title": "結合列を使った KEY 分散",
+      "kind": "feature",
+      "text": "Amazon Redshift の KEY 分散は、指定した列の値が同じ行を同じノードのスライスに配置する。結合する両テーブルの対応する列を分散キーにすると、結合対象の行を同じ場所に置き、クエリ時のデータ再配布を減らせる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Distribution styles",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_choosing_dist_sort.html"
+        },
+        {
+          "title": "Choose the best distribution style",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-best-dist-key.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.all-distribution",
+      "title": "ALL 分散の複製コスト",
+      "kind": "feature",
+      "text": "Amazon Redshift の ALL 分散は、テーブル全体のコピーをすべてのノードに配置する。保存容量がノード数に応じて増え、ロードや更新にも時間がかかるため、更新頻度や更新量の少ないテーブルで検討する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Distribution styles",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_choosing_dist_sort.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.even-distribution",
+      "title": "列の値によらない EVEN 分散",
+      "kind": "feature",
+      "text": "Amazon Redshift の EVEN 分散は、特定の列の値にかかわらず、行をラウンドロビンで各スライスに配置する。結合列の値を使って行を同じスライスに集める KEY 分散とは異なる配置方式である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Distribution styles",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_choosing_dist_sort.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.sort-key",
+      "title": "ソートキーによる読み取りの削減",
+      "kind": "feature",
+      "text": "Amazon Redshift はソートキーに従ってデータをディスク上に並べる。範囲条件に使う列をソートキーにすると、各ブロックの最小値・最大値を使って条件に合わないブロックの読み取りを省ける。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Choose the best sort key",
+          "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-sort-key.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.pause-resume",
+      "title": "必要な時間帯だけクラスターを稼働",
+      "kind": "feature",
+      "text": "Amazon Redshift のプロビジョンドクラスターが特定の時間帯だけ必要な場合は、一時停止して後で再開できる。一時停止するときは Redshift がスナップショットを作成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pausing and resuming a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.pause-billing",
+      "title": "一時停止中の課金",
+      "kind": "pricing",
+      "text": "Amazon Redshift のプロビジョンドクラスターを一時停止すると、停止中のオンデマンドのコンピューティング料金を止められる。一時停止してもバックアップストレージの料金は発生する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift pricing",
+          "url": "https://aws.amazon.com/redshift/pricing/"
+        },
+        {
+          "title": "Amazon Redshift provisioned clusters",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.scheduled-pause-resume",
+      "title": "一時停止と再開のスケジュール",
+      "kind": "feature",
+      "text": "Amazon Redshift は、クラスターの一時停止と再開をスケジュールされたアクションとして実行できる。繰り返しのスケジュールを設定し、必要な時間帯に合わせて稼働を管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pausing and resuming a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.pause-unavailable",
+      "title": "一時停止中は接続・クエリ不可",
+      "kind": "constraint",
+      "text": "Amazon Redshift のクラスターを一時停止している間は、クラスターへの接続やクエリを利用できない。再開後にクエリを処理できるようになるまでには、クラスターのサイズに応じて数分かかる場合がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Pausing and resuming a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.resize-capacity",
+      "title": "リサイズによる容量調整",
+      "kind": "feature",
+      "text": "Amazon Redshift のクラスターは、リサイズによってノード数やノードタイプを変更できる。必要なコンピューティング容量に合わせて構成を調整する操作で、容量を増減するスケジュールも設定できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Resizing a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.on-demand-nodes",
+      "title": "稼働中のノードに応じた課金",
+      "kind": "pricing",
+      "text": "Amazon Redshift のプロビジョンドクラスターをオンデマンドで使う場合、選んだノードタイプとノード数に応じた時間単位の料金で課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift pricing",
+          "url": "https://aws.amazon.com/redshift/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.managed-storage",
+      "title": "コンピューティングとストレージの分離",
+      "kind": "feature",
+      "text": "Amazon Redshift の RA3 ノードはマネージドストレージを使い、コンピューティングとストレージを独立して拡張できる。保存容量を増やすためだけにコンピュートノードを追加する必要を抑えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Redshift provisioned clusters",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "redshift.resize-types",
+      "title": "伸縮自在なリサイズとクラシックリサイズ",
+      "kind": "feature",
+      "text": "Amazon Redshift のリサイズには、伸縮自在なリサイズとクラシックリサイズがある。伸縮自在なリサイズはノードの追加・削除とノードタイプの変更ができ、平均約 10 分で完了するため最初の選択肢として推奨されている。クラシックリサイズは時間がかかるが、ノード数の変更が非常に大きいなど、伸縮自在なリサイズの範囲に収まらない変更に使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resizing a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "redshift.resize-elastic-impact",
+      "title": "ノード数を変える伸縮自在なリサイズ中の影響",
+      "kind": "feature",
+      "text": "同じノードタイプのままノード数を変える伸縮自在なリサイズでは、メタデータの移行中にクラスターが数分間利用できなくなる。ほとんどのクエリは一時停止して接続は保たれるが、一部のクエリは中断されることがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resizing a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "redshift.resize-elastic-node-type-change",
+      "title": "ノードタイプを変える伸縮自在なリサイズ中の影響",
+      "kind": "feature",
+      "text": "伸縮自在なリサイズでノードタイプを変える場合は、新しいクラスターが作られ、完了時にエンドポイントが切り替わって、元のクラスターへの接続はすべて切断される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resizing a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "redshift.resize-classic-impact",
+      "title": "クラシックリサイズ中のクラスターへの影響",
+      "kind": "feature",
+      "text": "クラシックリサイズは、開始時に既存のクラスターを再起動し、すべての接続を閉じる。再起動には数分かかる。完了が近づくとエンドポイントが新しいクラスターへ切り替わり、元のクラスターへの接続は切断される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resizing a cluster",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/resizing-cluster.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "redshift.reserved-nodes-billing",
+      "title": "リザーブドノードは使用の有無にかかわらず課金される",
+      "kind": "pricing",
+      "text": "リザーブドノードの料金は、契約期間（1 年または 3 年）の間、予約したノードを使っているかどうかにかかわらず発生する。予約に当てはまる稼働中のクラスターがなくても、予約したノードの分を支払う。",
+      "examPoint": "リザーブドノードは継続して稼働させる前提の割引で、使わなくても予約分の支払いは続く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Reserved nodes",
+          "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/purchase-reserved-node-instance.html"
+        },
+        {
+          "title": "Amazon Redshift pricing",
+          "url": "https://aws.amazon.com/redshift/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Redshift?",
+      "url": "https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html"
+    },
+    {
+      "title": "Amazon Redshift and PostgreSQL",
+      "url": "https://docs.aws.amazon.com/redshift/latest/dg/c_redshift-and-postgres-sql.html"
+    },
+    {
+      "title": "Amazon Redshift pricing",
+      "url": "https://aws.amazon.com/redshift/pricing/"
+    }
+  ],
+  "createdBy": "cx12",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
+}

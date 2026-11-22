@@ -1,0 +1,255 @@
+{
+  "id": "mq",
+  "tier": 2,
+  "summary": "Apache ActiveMQ Classic と RabbitMQ のメッセージブローカーを、セットアップ・運用・保守まで任せられるマネージドサービス。標準のメッセージングプロトコルを使う既存のアプリケーションを、コードを書き直さずに移せる。",
+  "chooseWhen": [
+    {
+      "text": "JMS や AMQP、MQTT などの標準プロトコルを使う既存のブローカーを、コードを書き直さずに移したい",
+      "factRefs": [
+        "mq.protocols",
+        "mq.migration-endpoints"
+      ]
+    },
+    {
+      "text": "ActiveMQ や RabbitMQ のブローカーの運用の負担と費用を、AWS に任せたい",
+      "factRefs": [
+        "mq.managed-broker",
+        "mq.vs-self-managed"
+      ]
+    },
+    {
+      "text": "複数の AZ にまたがる、可用性の高いブローカーの構成にしたい",
+      "factRefs": [
+        "mq.activemq-deployment",
+        "mq.rabbitmq-cluster"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "ブローカーの機能や設定を細かく変えたい、独自のプラグインを使いたいなら、EC2 上に自分で構築する方法を検討する",
+      "factRefs": [
+        "mq.vs-self-managed"
+      ]
+    },
+    {
+      "text": "標準のプロトコルへの依存がない新規のアプリケーションには、SQS や SNS を使う",
+      "factRefs": [
+        "sqs.compare-sns-mq"
+      ],
+      "alternatives": [
+        "sqs",
+        "sns"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "mq.managed-broker",
+      "title": "ActiveMQ と RabbitMQ のマネージドなブローカー",
+      "kind": "feature",
+      "text": "Amazon MQ は、Apache ActiveMQ Classic と RabbitMQ 向けのマネージドなメッセージブローカーサービスである。メッセージブローカーのセットアップ、運用、保守を Amazon MQ が行い、ブローカーはそのサービスで動く基本の構成単位である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon MQ?",
+          "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.protocols",
+      "title": "業界標準のメッセージング API とプロトコル",
+      "kind": "feature",
+      "text": "Amazon MQ では、JMS、NMS、AMQP 0.9.1、AMQP 1.0、STOMP、MQTTv3、WebSocket といった、業界標準のメッセージング API とプロトコルを使える。",
+      "examPoint": "これらの標準プロトコルに依存する既存のアプリケーションの移行先になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.migration-endpoints",
+      "title": "移行は接続先のエンドポイントの更新が中心",
+      "kind": "feature",
+      "text": "標準ベースのメッセージブローカーから Amazon MQ へは、メッセージングのコードを書き直さずに切り替えられる。多くの場合、既存のアプリケーションの接続先を Amazon MQ のブローカーのエンドポイントに更新するだけで、メッセージの送信を始められる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.vs-self-managed",
+      "title": "EC2 上で自分で運用する場合との違い",
+      "kind": "feature",
+      "text": "Amazon MQ を使うと、ブローカーのプロビジョニング、セキュリティパッチの適用、設定、バージョンアップ、復旧といった管理作業が要らない。機能や設定を細かくカスタマイズしたい場合や、独自のプラグインを使いたい場合は、EC2 上でブローカーを直接実行する方法を検討する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.activemq-deployment",
+      "title": "ActiveMQ のブローカーは単一インスタンスかアクティブ/スタンバイ",
+      "kind": "feature",
+      "text": "Amazon MQ for ActiveMQ のブローカーには、1 つの AZ に 1 台のブローカーを置く単一インスタンスと、2 つの AZ に冗長なペアで置くアクティブ/スタンバイの構成がある。アクティブ/スタンバイでは通常、片方がアクティブで、もう片方はスタンバイである。",
+      "examPoint": "ActiveMQ のブローカーの可用性を高めたいときは、アクティブ/スタンバイを選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Deployment options for Amazon MQ for ActiveMQ brokers",
+          "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-broker-architecture.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.activemq-storage",
+      "title": "ActiveMQ のストレージは EFS か EBS",
+      "kind": "feature",
+      "text": "Amazon MQ for ActiveMQ のブローカーのストレージには、Amazon EFS を使う耐久性重視のものと、Amazon EBS を使うスループット重視のものがある。複数の AZ にまたがる高い耐久性と複製には EFS、大量のデータを扱うアプリケーションの高いスループットには EBS を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.rabbitmq-cluster",
+      "title": "RabbitMQ は 3 ノードのクラスター構成",
+      "kind": "feature",
+      "text": "Amazon MQ for RabbitMQ では、3 ノードのクラスターのデプロイを選べる。クォーラムキューは、リーダーとフォロワーのノードで複製されるキューで、各ノードが別々の AZ にあり、ノードが一時的に使えなくなっても、別の AZ の新しいリーダーでメッセージの配信を続ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        },
+        {
+          "title": "What is Amazon MQ?",
+          "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.encryption",
+      "title": "保管時と転送時のメッセージの暗号化",
+      "kind": "feature",
+      "text": "Amazon MQ は、メッセージを保管時と転送時の両方で暗号化する。ブローカーへの接続には SSL を使い、保管時の暗号化に使う KMS キーは、ブローカーの作成時に 3 つの選択肢から選べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon MQ?",
+          "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+        },
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.vpc-private-endpoint",
+      "title": "VPC 内のプライベートエンドポイントに限定できる",
+      "kind": "feature",
+      "text": "Amazon MQ のブローカーへのアクセスは、Amazon VPC 内のプライベートエンドポイントに限定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon MQ?",
+          "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.lambda-source",
+      "title": "Lambda と EventBridge Pipes の送信元にできる",
+      "kind": "integration",
+      "text": "Amazon MQ のメッセージブローカーは、AWS Lambda と Amazon EventBridge Pipes の送信元として使える。EC2、ECS、Lambda などの AWS のコンピューティングサービスで動くアプリケーションも、Amazon MQ を利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.billing-model",
+      "title": "料金はブローカーのインスタンスとストレージと通信",
+      "kind": "pricing",
+      "text": "Amazon MQ の料金は、使った分だけを支払う仕組みで、ブローカーのインスタンスの使用料、ストレージの使用料、標準のデータ転送料がかかる。ブローカーごとに、ブローカーのインスタンスとストレージをプロビジョニングする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.no-reserved-pricing",
+      "title": "リザーブドインスタンスの料金はない",
+      "kind": "constraint",
+      "text": "Amazon MQ には、リザーブドインスタンスの料金体系がない。料金は、ブローカーのインスタンス、ストレージ、データ転送の使用量に応じてかかる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "mq.rabbitmq-internode-free",
+      "title": "RabbitMQ のノード間のデータ転送は無料",
+      "kind": "pricing",
+      "text": "Amazon MQ for RabbitMQ のブローカーでは、ノード間のデータ転送の料金は追加でかからない。自分で運用するクラスターでは、RabbitMQ のノード間のデータ転送が高い費用になる場合がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon MQ FAQs | Managed Message Broker Service",
+          "url": "https://aws.amazon.com/amazon-mq/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "sqs.compare-sns-mq"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon MQ?",
+      "url": "https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/welcome.html"
+    },
+    {
+      "title": "Amazon MQ FAQs | Managed Message Broker Service",
+      "url": "https://aws.amazon.com/amazon-mq/faqs/"
+    }
+  ],
+  "createdBy": "sc37",
+  "createdAt": "2026-11-21"
+}

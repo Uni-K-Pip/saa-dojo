@@ -1,0 +1,31 @@
+{
+  "id": "cmp-s3-ebs-efs",
+  "title": "Amazon S3・Amazon EBS・Amazon EFS",
+  "services": [
+    "s3",
+    "ebs",
+    "efs"
+  ],
+  "decide": [
+    "EC2 インスタンスにつないで、ローカルのハードディスクのように使うブロックストレージなら EBS",
+    "EC2・コンテナ・Lambda などから、NFS で同じファイルデータを共有したいなら EFS",
+    "HTTP の API でオブジェクトを読み書きするオブジェクトストレージなら S3"
+  ],
+  "docRef": "cheatsheet-block-file-storage",
+  "sources": [
+    {
+      "title": "What is Amazon Elastic Block Store? - Amazon EBS",
+      "url": "https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html"
+    },
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "What is Amazon S3? - Amazon Simple Storage Service",
+      "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc25"
+}

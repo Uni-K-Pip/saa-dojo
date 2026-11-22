@@ -1,0 +1,760 @@
+{
+  "id": "aurora",
+  "tier": 1,
+  "summary": "Amazon Aurora は、MySQL と PostgreSQL に互換性のある Amazon RDS のリレーショナル DB エンジンで、複数 AZ に保存される共有ストレージと最大 15 台の読み取りレプリカ、Serverless や Global Database を備える。",
+  "chooseWhen": [
+    {
+      "text": "MySQL・PostgreSQL 互換で、高い可用性と読み取りの拡張性が要るトランザクション処理",
+      "factRefs": [
+        "aurora.cluster-volume",
+        "aurora.replica-max",
+        "aurora.replica-shared-storage"
+      ],
+      "alternatives": [
+        "rds"
+      ]
+    },
+    {
+      "text": "障害時にライターへ昇格するレプリカの順序を制御したい",
+      "factRefs": [
+        "aurora.failover-priority"
+      ]
+    },
+    {
+      "text": "誤操作を、復元せずに同じクラスターで素早く巻き戻したい（Aurora MySQL）",
+      "factRefs": [
+        "aurora.backtrack"
+      ]
+    },
+    {
+      "text": "本番データのコピーでテストや分析を、速く低コストに行いたい",
+      "factRefs": [
+        "aurora.clone"
+      ]
+    },
+    {
+      "text": "リージョン障害への備えと、複数リージョンでの低遅延の読み取りが要る",
+      "factRefs": [
+        "aurora.global-database",
+        "aurora.global-failover"
+      ]
+    },
+    {
+      "text": "負荷の変動が大きく、容量を自動で増減させたい",
+      "factRefs": [
+        "aurora.serverless"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "サーバーレスの Aurora が要件で、deprecated の Serverless v1 を考えている",
+      "factRefs": [
+        "aurora.serverless-v1-deprecated"
+      ]
+    },
+    {
+      "text": "Oracle や SQL Server などの商用エンジンをそのまま使いたい",
+      "alternatives": [
+        "rds"
+      ],
+      "factRefs": [
+        "aurora.part-of-rds"
+      ]
+    },
+    {
+      "text": "PostgreSQL 互換の Aurora で、バックトラックによる巻き戻しを前提にしている",
+      "factRefs": [
+        "aurora.backtrack-engine"
+      ]
+    },
+    {
+      "text": "暗号化していない既存のクラスターを、変更だけで暗号化済みにしたい（復元かブルー/グリーンデプロイが要る）",
+      "factRefs": [
+        "aurora.encryption-no-convert"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "aurora.part-of-rds",
+      "title": "Aurora は Amazon RDS の一部のマネージド DB",
+      "kind": "feature",
+      "text": "Amazon Aurora は MySQL と PostgreSQL に互換性のある、フルマネージドのリレーショナルデータベースエンジンで、Amazon RDS の一部として提供される。RDS のコンソール・CLI・API でプロビジョニング、パッチ適用、バックアップ、復旧、障害検出と修復を扱う。",
+      "examPoint": "MySQL・PostgreSQL 互換の高性能リレーショナル DB が要件なら Aurora が候補になる",
+      "trap": "Aurora は RDS とは別系統のサービスではなく、RDS の管理機能の上で動くエンジンの選択肢である",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Aurora?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.cluster-volume",
+      "title": "クラスターボリュームは 3 つの AZ にまたがる共有ストレージ",
+      "kind": "feature",
+      "text": "Aurora のデータは、3 つの AZ にまたがる 1 つの仮想ボリューム（クラスターボリューム）に保存され、書き込みは 6 つのストレージノードへ同期的に複製される。複製の量は DB インスタンスの数に左右されず、インスタンスを 1 つしか置かなくても同じ冗長性になる。",
+      "examPoint": "インスタンスが 1 台でもデータは複数 AZ に保持される",
+      "trap": "リーダーを増やさないとストレージが複数 AZ に複製されない、というのは誤り",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora storage",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html"
+        },
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.storage-auto-grow",
+      "title": "ストレージは自動で拡張する",
+      "kind": "feature",
+      "text": "Aurora のクラスターボリュームはデータ量の増加に合わせて自動で拡張し、エンジンのバージョンによっては最大 256 TiB まで増える。課金は実際に使った容量に対して行われる。",
+      "trap": "最大サイズはエンジンのバージョンで異なるため、固定の数値を決め手にしない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora storage",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html"
+        },
+        {
+          "title": "What is Amazon Aurora?",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.replica-max",
+      "title": "Aurora レプリカは最大 15 台",
+      "kind": "quota",
+      "text": "1 つの Aurora DB クラスターには、ライター（プライマリ）に加えて最大 15 台の読み取り専用の Aurora レプリカ（リーダーインスタンス）を作れる。Service Quotas で引き上げられるかどうかは、参照した出典には書かれていない。",
+      "examPoint": "リードレプリカを多数並べて読み取りを分散できる（Aurora は最大 15 台）",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        },
+        {
+          "title": "Replication with Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.replica-shared-storage",
+      "title": "レプリカはライターと同じボリュームを読む",
+      "kind": "feature",
+      "text": "Aurora レプリカは、ライターと同じクラスターボリュームを読むため、データをレプリカごとにコピーする必要がなく、レプリカラグは通常 100 ミリ秒よりずっと小さい。書き込みが多い時間帯はラグが大きくなることがある。",
+      "examPoint": "レプリカはクラスターボリュームを共有するので、データの複製が最小限で済みラグが小さい",
+      "trap": "Aurora レプリカもラグがゼロになるわけではなく、書き込みの量によって変わる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Replication with Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.failover-priority",
+      "title": "フェイルオーバー優先度でライターへの昇格順を決める",
+      "kind": "feature",
+      "text": "Aurora レプリカごとに、フェイルオーバー優先度（昇格ティア）を 0（最優先）から 15（最後）で割り当てると、プライマリの障害時に優先度の高いレプリカから順にライターへ昇格する。優先度はいつでも変更でき、変更してもフェイルオーバーは起きない。",
+      "examPoint": "昇格させたいレプリカを優先度 0 や 1 にして指定する",
+      "trap": "優先度を変更しても、その場でフェイルオーバーは起きない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.failover-priority-tie",
+      "title": "同じ優先度のレプリカはサイズの大きいものが昇格する",
+      "kind": "feature",
+      "text": "複数の Aurora レプリカが同じ優先度（昇格ティア）を持つ場合は、サイズが最大のレプリカが昇格する。優先度もサイズも同じなら、同じティア内の任意のレプリカが選ばれる。フェイルオーバーの試行が 5 回失敗すると、ティアは考慮されなくなる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.failover-no-replica",
+      "title": "レプリカがないとプライマリを作り直す",
+      "kind": "constraint",
+      "text": "Aurora レプリカが 1 つもない DB クラスターでは、障害時に同じ AZ でプライマリインスタンスが作り直され、復旧は通常 10 分未満かかる。レプリカの昇格のほうがはるかに速いため、可用性が要件ならレプリカを別の AZ に置く。",
+      "trap": "データが複数 AZ にあっても、レプリカがなければ書き込みの復旧は遅くなる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.failover-single-az",
+      "title": "AZ 障害には別の AZ のレプリカが必要",
+      "kind": "constraint",
+      "text": "プライマリと全レプリカが同じ AZ にある DB クラスターで、その AZ 全体が停止した場合は、自動の昇格先がない。AZ 障害に備えるには、プライマリとレプリカを複数の AZ に分けて配置する。",
+      "examPoint": "複数 AZ 構成にするには別の AZ へレプリカを追加する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.endpoint-types",
+      "title": "エンドポイントの種類",
+      "kind": "feature",
+      "text": "Aurora には、クラスターエンドポイント（常に現在のライターへ）、リーダーエンドポイント（Aurora レプリカ間で接続を分散）、カスタムエンドポイント（選んだインスタンスの集合へ）、インスタンスエンドポイント（特定のインスタンスへ）がある。",
+      "examPoint": "書き込みはクラスターエンドポイント、読み取りはリーダーエンドポイント",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora endpoint connections",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.endpoint-cluster-failover",
+      "title": "クラスターエンドポイントはフェイルオーバーに追従する",
+      "kind": "feature",
+      "text": "クラスターエンドポイントは常に現在のプライマリを指すため、フェイルオーバーでライターが替わっても接続文字列を変える必要がない。リーダーエンドポイントも利用不能なインスタンスを避けるが、インスタンスエンドポイントはそうならない。",
+      "trap": "障害時の切り替えを任せたいなら、インスタンスエンドポイントではなくクラスターエンドポイントを使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora endpoint connections",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"
+        },
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.auto-scaling",
+      "title": "Aurora Auto Scaling でレプリカ数を自動で増減する",
+      "kind": "feature",
+      "text": "Aurora Auto Scaling は、スケーリングポリシーに従って Aurora レプリカの数を自動で増減する。対象は読み取りの負荷に対するリーダーだけで、ライターの負荷には効かない。接続先にはリーダーエンドポイントを使う。",
+      "examPoint": "読み取りが急増するワークロードにはレプリカの自動増減",
+      "trap": "書き込みの増加には Aurora Auto Scaling は効かない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora Auto Scaling with Aurora Replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.pitr",
+      "title": "ポイントインタイムリストアは新しいクラスターを作る",
+      "kind": "feature",
+      "text": "Aurora のポイントインタイムリストアは、バックアップ保持期間内の任意の時点を指定して、新しい DB クラスターを作成して復元する。ログレコードは継続的に S3 へ保存され、最新の復元可能時刻は describe-db-clusters で確認できる。",
+      "examPoint": "誤操作の前の時点のデータが要るなら、時点指定の復元で別クラスターに取り出す",
+      "trap": "元のクラスターが巻き戻るわけではなく、新しいクラスター（別の識別子）が作られる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restoring a DB cluster to a specified time",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-pitr.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.backtrack",
+      "title": "バックトラックは復元せずに同じクラスターを巻き戻す",
+      "kind": "feature",
+      "text": "バックトラックは、バックアップから復元せずに、同じ DB クラスターを指定した時刻へ巻き戻す機能である。新しい DB クラスターを作らず、数分で完了し、巻き戻したあとで前後に何度でも動かして変更時点を探せる。",
+      "examPoint": "DELETE の誤実行など、直前の誤操作を素早く取り消す",
+      "trap": "バックトラックはバックアップの代わりにはならず、ポイントインタイムリストアの置き換えでもない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backtracking an Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.backtrack-engine",
+      "title": "バックトラックは Aurora MySQL のみ",
+      "kind": "constraint",
+      "text": "バックトラックを使えるのは Aurora MySQL（バージョン 2、3、8.4）だけで、Aurora PostgreSQL では使えない。リージョンにも制限があり、すべてのリージョンで使えるわけではない。",
+      "trap": "PostgreSQL 互換の Aurora で誤操作を戻すにはポイントインタイムリストアかクローンを使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backtracking an Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.backtrack-enable-at-creation",
+      "title": "バックトラックは作成時か復元時にだけ有効にできる",
+      "kind": "constraint",
+      "text": "バックトラックは、DB クラスターを作成するとき、またはスナップショットから復元するときに有効にできる。すでにあるクラスターを変更して、あとから有効にすることはできない。",
+      "trap": "誤操作が起きてから有効にしても、その前の時点には戻せない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Backtracking an Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.clone",
+      "title": "Aurora のクローンはコピーオンライトで高速に複製する",
+      "kind": "feature",
+      "text": "Aurora のクローンは、コピーオンライトのプロトコルで、元のクラスターとデータページを共有する新しい独立のクラスターをすばやく作る。変更が加わったページにだけ追加のストレージを使うため、容量の効率がよく、テスト環境や分析用に向く。",
+      "examPoint": "本番データでテストしたいとき、スナップショットの復元より速く安いクローンを使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.encryption-scope",
+      "title": "暗号化の対象はクラスター全体",
+      "kind": "feature",
+      "text": "暗号化した Aurora DB クラスターでは、すべての DB インスタンス、ログ、自動バックアップ、スナップショットが暗号化される。同じクラスター内の各インスタンスは、同じ KMS キーで暗号化された同じストレージを共有する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encrypting Amazon Aurora resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.encryption-no-convert",
+      "title": "暗号化していない既存クラスターは変更では暗号化できない",
+      "kind": "constraint",
+      "text": "暗号化されていない DB クラスターを、変更して暗号化済みに変えることはできず、暗号化されていないスナップショットをコピーして暗号化することもできない。暗号化済みにするには、KMS キーを指定して暗号化されていないスナップショットから復元するか、ブルー/グリーンデプロイで暗号化済みの green 環境を作る。2026 年 2 月 18 日以降に作る新しいクラスターは、既定で暗号化される。",
+      "trap": "スナップショットのコピー時に暗号化を指定すれば暗号化できる、というのは誤り",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Encrypting Amazon Aurora resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "aurora.encryption-key-fixed",
+      "title": "暗号化したクラスターの KMS キーは変更できない",
+      "kind": "constraint",
+      "text": "暗号化した DB クラスターで使う KMS キーは、作成後に変更できない。別のキーにしたいときは、手動スナップショットを取り、復元時に希望のキーで暗号化するか、ブルー/グリーンデプロイで別のキーの green 環境を作る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Encrypting Amazon Aurora resources",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.kms-cmk-permissions",
+      "title": "カスタマー管理キーを使う利用者に必要な KMS 権限",
+      "kind": "integration",
+      "text": "カスタマー管理キーで Aurora のリソースを作るとき、操作する利用者は、そのキーに対して kms:CreateGrant と kms:DescribeKey を呼べる権限が必要になる。権限はキーポリシー、またはキーポリシーが許す IAM ポリシーで与える。",
+      "examPoint": "暗号化した Aurora の作成や復元が KMS の権限で失敗したら、これらの権限を確認する",
+      "trap": "最小権限にするなら kms:CreateGrant を全面許可せず、kms:ViaService で AWS サービス経由に限定する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS KMS key management",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Overview.Encryption.Keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.global-database",
+      "title": "Aurora Global Database は複数リージョンへ複製する",
+      "kind": "feature",
+      "text": "Aurora Global Database は、書き込みを受けるプライマリリージョンと、読み取り専用のセカンダリリージョンで構成される。複製はデータベースエンジンではなくストレージ層が専用のインフラで行い、遅延は通常 1 秒未満である。",
+      "examPoint": "リージョン障害への備えと、世界各地での低遅延の読み取りを両立する",
+      "trap": "セカンダリへの複製は非同期で、障害時に最後の更新が失われることがある",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        },
+        {
+          "title": "Using switchover or failover in Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.global-secondary-limit",
+      "title": "セカンダリリージョンの数",
+      "kind": "quota",
+      "text": "Aurora global database は、1 つのプライマリクラスターと、別のリージョンにある最大 10 のセカンダリクラスターで構成できる。セカンダリクラスターは読み取り専用で、通常の上限 15 台より多い 16 台のリーダーを置ける。引き上げの可否は出典に書かれていない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.global-switchover",
+      "title": "計画的な切り替え（Switchover）はデータを失わない",
+      "kind": "feature",
+      "text": "Switchover は、リージョンのローテーションなどの計画的な運用で、正常な Global Database のプライマリをセカンダリリージョンへ移す操作である。セカンダリがプライマリと同期してから切り替えるため、RPO は 0 でデータを失わない。",
+      "trap": "Switchover は障害からの復旧用ではなく、正常な状態での計画的な切り替えに使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html"
+        },
+        {
+          "title": "Using switchover or failover in Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.global-failover",
+      "title": "障害時のフェイルオーバー（Failover）はデータを失う可能性がある",
+      "kind": "feature",
+      "text": "Global Database のフェイルオーバーは、プライマリリージョンの計画外の障害から復旧するための操作で、セカンダリをプライマリへ昇格させる。複製が非同期のため、RPO は 0 ではなく通常は数秒程度で、一部の更新が失われることがある。",
+      "examPoint": "リージョン障害の復旧は Failover、計画的な移動は Switchover と使い分ける",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using switchover or failover in Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.global-writer-endpoint",
+      "title": "グローバルライターエンドポイント",
+      "kind": "feature",
+      "text": "Global Database のライターエンドポイントは、常にプライマリクラスターのライターを指し、Switchover や Failover でプライマリのリージョンが替わると自動で新しいプライマリへ向き先が変わる。アプリケーションの接続文字列を変えずに済む。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Aurora endpoint connections",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"
+        },
+        {
+          "title": "Using switchover or failover in Amazon Aurora Global Database",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.serverless",
+      "title": "Aurora serverless は ACU 単位で自動スケールする",
+      "kind": "feature",
+      "text": "Aurora serverless は、最小と最大の容量の範囲で、ライターとリーダーの容量を Aurora キャパシティーユニット（ACU）単位で自動調整する。1 ACU はおよそ 2 GiB のメモリに相当し、0.5 ACU 刻みで接続や処理を止めずに増減する。",
+      "examPoint": "負荷の変動が大きい、予測しにくい、開発・テスト環境に向く",
+      "trap": "スケールするのはコンピューティング容量で、ストレージは別に自動拡張する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Aurora serverless works",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html"
+        },
+        {
+          "title": "Using Aurora serverless",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.serverless-capacity-range",
+      "title": "Aurora serverless の容量の範囲",
+      "kind": "quota",
+      "text": "容量の範囲は、エンジンとバージョンで異なる。新しいバージョンでは最小 0 ACU から、最大は Aurora MySQL が 256 ACU、Aurora PostgreSQL の新しいバージョンが 384 ACU である。この値はバージョンの時点の値で、決め手にしない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How Aurora serverless works",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.serverless-auto-pause",
+      "title": "最小容量を 0 ACU にすると自動で一時停止する",
+      "kind": "feature",
+      "text": "最小容量を 0 ACU にすると、ユーザーの接続がない状態が設定した時間（既定は 300 秒、最大 86,400 秒）続いた時点で自動で一時停止し、一時停止中はインスタンスの料金がかからない。接続があると自動で再開し、再開には通常 15 秒ほどかかる。",
+      "examPoint": "利用の少ない開発用の DB のコスト削減",
+      "trap": "一時停止中もストレージの料金はかかり、接続の開始が遅れるので遅延を許容できる用途に限る",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scaling to Zero ACUs with automatic pause and resume for Aurora serverless",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "aurora.serverless-reader-tier",
+      "title": "serverless のリーダーは昇格ティアでスケールの仕方が変わる",
+      "kind": "feature",
+      "text": "Aurora serverless のリーダーは、昇格ティアが 0 か 1 だとライターの容量に追従して最小容量がそろい、すぐにライターを引き継げる。ティア 2〜15 のリーダーはライターとは独立にスケールし、アイドル時に小さく下がれる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How Aurora serverless works",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.storage-configs",
+      "title": "Aurora Standard と I/O-Optimized の選び方",
+      "kind": "pricing",
+      "text": "ストレージ構成には、I/O のリクエストにも課金される Aurora Standard と、読み書きの I/O に追加料金がない Aurora I/O-Optimized がある。I/O の支出が Aurora の総支出の 25% 以上になるなら I/O-Optimized、25% 未満なら Standard が向く。",
+      "examPoint": "I/O 課金が大きく、費用を予測しやすくしたいなら I/O-Optimized",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora storage",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html"
+        },
+        {
+          "title": "Amazon Aurora pricing",
+          "url": "https://aws.amazon.com/rds/aurora/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.replica-cost",
+      "title": "レプリカごとにインスタンス料金がかかる",
+      "kind": "pricing",
+      "text": "Aurora レプリカを追加すると、プライマリと同様に、レプリカごとにインスタンスの料金が加わる。I/O の課金は、ストレージ構成（Standard か I/O-Optimized）で決まる。",
+      "examPoint": "読み取りの分散や可用性のためのレプリカ追加は、費用の増加と引き換えになる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Aurora pricing",
+          "url": "https://aws.amazon.com/rds/aurora/pricing/"
+        },
+        {
+          "title": "Amazon Aurora storage",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.auto-scaling-policy",
+      "title": "Aurora Auto Scaling のポリシーの要素",
+      "kind": "feature",
+      "text": "ポリシーは、ターゲット追跡の指標（平均 CPU 使用率などの定義済み指標、またはカスタム指標）と目標値、レプリカ数の最小値と最大値（0〜15）、スケールイン・スケールアウトのクールダウン（未設定時は 300 秒）で構成される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Aurora Auto Scaling with Aurora Replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.auto-scaling-replica-tier",
+      "title": "Auto Scaling が追加するレプリカの昇格優先度は 15",
+      "kind": "feature",
+      "text": "Aurora Auto Scaling が追加する Aurora レプリカの昇格優先度（昇格ティア）は 15 に設定される。ライターへ昇格する順では最後になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Aurora Auto Scaling with Aurora Replicas",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.promotion-by-priority-size",
+      "title": "昇格先はフェイルオーバー優先度とサイズで決まる",
+      "kind": "feature",
+      "text": "フェイルオーバーでライターへ昇格するレプリカは、フェイルオーバー優先度（昇格ティア）で決まる。優先度が同じ場合は、サイズが最大のレプリカが昇格する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "High availability for Amazon Aurora",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.clone-no-cross-region",
+      "title": "クローンは別のリージョンには作れない",
+      "kind": "constraint",
+      "text": "Aurora のクローンは、元の DB クラスターとは別の AWS リージョンには作れない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.clone-cow-max-15",
+      "title": "コピーオンライトのクローンは 15 個まで",
+      "kind": "quota",
+      "text": "コピーオンライトのプロトコルで作れるクローンは 15 個までで、15 個を超えたあとに作るクローンは完全なコピーになる。完全コピーはポイントインタイムリカバリのように動く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.clone-needs-instance",
+      "title": "DB インスタンスがないクラスターは複製できない",
+      "kind": "constraint",
+      "text": "DB インスタンスが 1 つもない Aurora DB クラスターはクローンできない。クローンできるのは、少なくとも 1 つの DB インスタンスがあるクラスターだけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "aurora.serverless-v1-deprecated",
+      "title": "Aurora Serverless v1 は終了日が告知され、新規には選ばない",
+      "kind": "constraint",
+      "text": "Aurora Serverless v1 は、現在の Aurora serverless とは別のアーキテクチャの非推奨のプロダクトで、終了日は 2025 年 3 月 31 日と告知された。2025 年 1 月 8 日以降は、マネジメントコンソールでも CLI でも、新しい v1 のクラスターやインスタンスを作成できない。サーバーレスの Aurora が要件のときは、新規には v1 を選ばず、現在の Aurora serverless を選ぶ。",
+      "trap": "v1 は非推奨にとどまらず終了日が告知されており、名前が似ていても現在の Aurora serverless とは別のアーキテクチャである",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Aurora serverless works",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html"
+        },
+        {
+          "title": "Document history",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/WhatsNew.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "aurora.snapshot-copy-cross-region-kms",
+      "title": "暗号化スナップショットの別リージョンへのコピーはコピー先の KMS キーを指定",
+      "kind": "constraint",
+      "text": "暗号化された Aurora DB クラスタースナップショットを別の AWS リージョンへコピーするときは、コピー先のリージョンで有効な KMS キーを指定する必要がある。リージョン固有のキーでもマルチリージョンキーでもよい。暗号化されたスナップショットのコピーは、必ず暗号化される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "DB cluster snapshot copying",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_CopySnapshot.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "aurora.clone-changes-independent",
+      "title": "ソースとクローンの変更は互いに反映されない",
+      "kind": "feature",
+      "text": "Aurora のクローンの作成後は、ソースのクラスターでの変更はクローンに反映されず、クローンでの変更もソースのクラスターに反映されない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cloning a volume for an Amazon Aurora DB cluster",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "seeAlso": [
+    "rds.managed-service",
+    "rds.multi-az-cluster",
+    "rds.pitr",
+    "rds.read-replica",
+    "rds.blue-green",
+    "rds.proxy-integration",
+    "rds.encrypt-at-creation"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Aurora?",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+    },
+    {
+      "title": "High availability for Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html"
+    }
+  ],
+  "createdBy": "sc10",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-21"
+}

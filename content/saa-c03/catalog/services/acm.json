@@ -1,0 +1,288 @@
+{
+  "id": "acm",
+  "tier": 2,
+  "summary": "SSL/TLS 証明書の発行・保管・更新を引き受けるサービスである。パブリック証明書とプライベート証明書を扱え、ロードバランサーや CloudFront などの連携サービスに証明書を設定できる。",
+  "chooseWhen": [
+    {
+      "text": "ALB や CloudFront などの連携サービスで HTTPS を終端し、証明書の運用を任せたい",
+      "factRefs": [
+        "acm.integrated-services",
+        "acm.no-extra-charge"
+      ]
+    },
+    {
+      "text": "証明書の更新作業を自動化したい（DNS 検証のパブリック証明書を使う）",
+      "factRefs": [
+        "acm.dns-validation-auto-renewal"
+      ]
+    },
+    {
+      "text": "自分が取得した外部の証明書を ACM に取り込み、連携サービスで使いたい",
+      "factRefs": [
+        "acm.imported-no-auto-renewal"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "インポートした証明書の更新まで自動化したい（自動更新の対象外なので自分で入れ替える）",
+      "factRefs": [
+        "acm.imported-no-auto-renewal"
+      ]
+    },
+    {
+      "text": "DNS を編集できず E メール検証を使うと、更新のたびにドメイン管理者の承認が要る",
+      "factRefs": [
+        "acm.email-validation-renewal",
+        "acm.email-validation-deprecation"
+      ]
+    },
+    {
+      "text": "EC2 インスタンスに ACM の証明書を直接関連づけたい（Nitro Enclaves が必要で、通常は ACME を使う）",
+      "factRefs": [
+        "acm.ec2-nitro-enclaves-acme"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "acm.email-validation-renewal",
+      "title": "E メール検証の更新には承認が要る",
+      "kind": "constraint",
+      "text": "ACM の E メール検証では、ドメインの所有確認のために、ACM が送る検証メールのリンクをドメインの管理者が選ぶ必要がある。更新も同様で、有効期限の 45 日前から通知が届き、管理者の操作が必要になる。自動では更新されない。",
+      "examPoint": "更新作業をなくしたい要件では、E メール検証ではなく DNS 検証を選ぶ。",
+      "trap": "E メール検証でも ACM が自動更新してくれると思い込む。",
+      "depth": "core",
+      "tags": [
+        "検証",
+        "更新"
+      ],
+      "sources": [
+        {
+          "title": "AWS Certificate Manager email validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/email-validation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.email-validation-deprecation",
+      "title": "E メール検証は廃止の予定",
+      "kind": "constraint",
+      "text": "ACM のドキュメントによると、2027 年を通じて、新しいパブリック証明書と更新に対する E メール検証は廃止される予定で、DNS 検証を使うよう案内されている。E メール検証は新規には選ばない。",
+      "depth": "detail",
+      "tags": [
+        "検証"
+      ],
+      "sources": [
+        {
+          "title": "AWS Certificate Manager email validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/email-validation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "acm.dns-validation-auto-renewal",
+      "title": "DNS 検証なら自動更新される",
+      "kind": "feature",
+      "text": "DNS 検証では、ACM が示す CNAME レコードを DNS に1回追加すれば、証明書が使われている間は、そのレコードが残っている限り ACM が自動で更新する。ドメインの管理者による更新のたびの承認は要らない。",
+      "examPoint": "証明書の更新の手間をなくす決め手は DNS 検証。",
+      "depth": "core",
+      "tags": [
+        "検証",
+        "更新"
+      ],
+      "sources": [
+        {
+          "title": "AWS Certificate Manager DNS validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html"
+        },
+        {
+          "title": "Managed certificate renewal in AWS Certificate Manager",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.dns-record-removal",
+      "title": "CNAME の削除で自動更新が止まる",
+      "kind": "constraint",
+      "text": "DNS 検証の自動更新は、証明書を連携サービスから外すか、検証用の CNAME レコードを削除すると止まる。更新したい証明書の CNAME レコードは、削除せずに残しておく必要がある。",
+      "depth": "detail",
+      "tags": [
+        "検証",
+        "更新"
+      ],
+      "sources": [
+        {
+          "title": "AWS Certificate Manager DNS validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.imported-no-auto-renewal",
+      "title": "インポートした証明書は自動更新されない",
+      "kind": "constraint",
+      "text": "ACM にインポートした証明書は、マネージド更新の対象外である。期限が切れる前に、利用者が新しい証明書をインポートして入れ替える必要がある。ACM が発行した証明書で、連携サービスに関連づけたものは、自動更新の対象になる。",
+      "examPoint": "更新運用をなくしたいなら、ACM で発行した証明書を使う。",
+      "trap": "インポートした証明書も ACM が更新してくれると考える。",
+      "depth": "core",
+      "tags": [
+        "更新",
+        "インポート"
+      ],
+      "sources": [
+        {
+          "title": "Managed certificate renewal in AWS Certificate Manager",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/managed-renewal.html"
+        },
+        {
+          "title": "Import certificates into AWS Certificate Manager",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.regional-resource",
+      "title": "証明書はリージョンごとのリソース",
+      "kind": "constraint",
+      "text": "ACM の証明書はリージョンのリソースである。同じドメイン名の証明書を複数のリージョンのロードバランサーで使うには、リージョンごとに証明書を要求またはインポートする必要があり、証明書をリージョン間でコピーすることはできない。",
+      "examPoint": "ALB の証明書は、ALB と同じリージョンに用意する。",
+      "depth": "core",
+      "tags": [
+        "リージョン"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS Certificate Manager?",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.cloudfront-us-east-1",
+      "title": "CloudFront 用は米国東部（バージニア北部）",
+      "kind": "constraint",
+      "text": "ACM の証明書を CloudFront で使うには、米国東部（バージニア北部）リージョンで証明書を要求またはインポートする必要がある。このリージョンの証明書は、ディストリビューションに設定された各地のロケーションに配信される。",
+      "examPoint": "CloudFront の独自ドメインの HTTPS では us-east-1 の証明書を使う。",
+      "trap": "CloudFront を使う場合も、オリジンと同じリージョンで証明書を用意すればよいと考える。",
+      "depth": "core",
+      "services": [
+        "Amazon CloudFront"
+      ],
+      "tags": [
+        "リージョン",
+        "CloudFront"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS Certificate Manager?",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+        },
+        {
+          "title": "Managed automation with integrated services",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.no-extra-charge",
+      "title": "証明書そのものの追加料金はない",
+      "kind": "pricing",
+      "text": "ACM で管理する SSL/TLS 証明書には、追加の料金はかからない。料金が発生するのは、Web サイトやアプリケーションを動かすために作成した AWS のリソースに対してだけである。最新の料金は料金のページで確認する。",
+      "depth": "core",
+      "tags": [
+        "料金"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS Certificate Manager?",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.integrated-services",
+      "title": "証明書を使える連携サービス",
+      "kind": "integration",
+      "text": "ACM の証明書は、Elastic Load Balancing、CloudFront、API Gateway（カスタムドメイン名）、Elastic Beanstalk、Amazon EKS などの AWS の連携サービスで直接使える。",
+      "depth": "core",
+      "services": [
+        "Elastic Load Balancing",
+        "Amazon CloudFront",
+        "Amazon API Gateway"
+      ],
+      "tags": [
+        "連携"
+      ],
+      "sources": [
+        {
+          "title": "Managed automation with integrated services",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.ec2-nitro-enclaves-acme",
+      "title": "EC2 への直接の関連づけは Nitro Enclaves が必要",
+      "kind": "constraint",
+      "text": "ACM が管理する証明書を EC2 インスタンスに直接関連づけるには、Nitro Enclaves が必要である。Nitro Enclaves を使わない EC2 上のパブリック証明書は、ACME プロトコルで発行と更新を自動化することが案内されている。",
+      "depth": "detail",
+      "tags": [
+        "EC2",
+        "ACME"
+      ],
+      "sources": [
+        {
+          "title": "Managed automation with integrated services",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "acm.switch-validation-method",
+      "title": "検証方法を後から DNS に切り替える",
+      "kind": "feature",
+      "text": "既存の証明書の検証方法を E メール検証から DNS 検証に切り替えるには、UpdateCertificateOptions API を使う。DNS 検証にすると、更新の自動化が見込める。",
+      "depth": "detail",
+      "tags": [
+        "検証"
+      ],
+      "sources": [
+        {
+          "title": "AWS Certificate Manager email validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/email-validation.html"
+        },
+        {
+          "title": "AWS Certificate Manager DNS validation",
+          "url": "https://docs.aws.amazon.com/acm/latest/userguide/dns-validation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Certificate Manager?",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html"
+    },
+    {
+      "title": "Managed automation with integrated services",
+      "url": "https://docs.aws.amazon.com/acm/latest/userguide/acm-services.html"
+    }
+  ],
+  "createdBy": "sc2",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-14"
+}

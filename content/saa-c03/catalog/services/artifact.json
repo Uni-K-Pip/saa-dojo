@@ -1,0 +1,57 @@
+{
+  "id": "artifact",
+  "tier": 3,
+  "summary": "AWS のセキュリティとコンプライアンスに関する文書（ISO、PCI、SOC などのレポートや認証）をオンデマンドでダウンロードでき、AWS との契約の確認・承諾・状況の追跡もできるサービス。",
+  "chooseWhen": [
+    {
+      "text": "AWS の ISO、PCI、SOC などのコンプライアンスレポートを入手し、監査人や規制当局に提出したい場合。",
+      "factRefs": [
+        "artifact.compliance-documents"
+      ]
+    },
+    {
+      "text": "AWS との契約を、アカウントや組織内の複数のアカウントについて確認・承諾したい場合。"
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "自分のリソースの設定がルールに適合しているかを評価したい場合は、AWS Config を選ぶ。",
+      "factRefs": [
+        "artifact.compliance-documents",
+        "config.rule-compliance"
+      ],
+      "alternatives": [
+        "config"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "artifact.compliance-documents",
+      "title": "AWS のコンプライアンス文書をダウンロードする",
+      "kind": "feature",
+      "text": "AWS Artifact は、AWS のセキュリティとコンプライアンスの文書（ISO や PCI の基準への準拠レポート、SOC レポートなど）をオンデマンドでダウンロードできる。これらは監査人や規制当局に提出できる。自社の安全性やコンプライアンスを示す文書は、利用者自身が用意する責任がある。",
+      "examPoint": "文書とあわせて、AWS との契約の確認、承諾、状況の追跡もできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Artifact?",
+          "url": "https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Artifact?",
+      "url": "https://docs.aws.amazon.com/artifact/latest/ug/what-is-aws-artifact.html"
+    },
+    {
+      "title": "AWS Artifact",
+      "url": "https://aws.amazon.com/artifact/"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}

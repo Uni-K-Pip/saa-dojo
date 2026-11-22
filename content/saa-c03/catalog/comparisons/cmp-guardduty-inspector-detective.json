@@ -1,0 +1,63 @@
+{
+  "id": "cmp-guardduty-inspector-detective",
+  "title": "Amazon GuardDuty・Amazon Inspector・Amazon Detective",
+  "services": [
+    "guardduty",
+    "inspector",
+    "detective"
+  ],
+  "decide": [
+    "AWS 環境の不審で悪意のある可能性がある活動を、継続的に検出したいなら GuardDuty",
+    "EC2 インスタンス、ECR のコンテナイメージ、Lambda 関数のソフトウェアの脆弱性を、継続的に検査したいなら Inspector",
+    "意図しないネットワークの露出がないかを、継続的に検査したいなら Inspector",
+    "セキュリティ上の検出結果や不審な活動の根本原因を調べたいなら Detective"
+  ],
+  "rows": [
+    {
+      "axis": "役割",
+      "values": {
+        "guardduty": "脅威の検出（不審で悪意のある可能性がある活動を見つける）",
+        "inspector": "脆弱性の検査（ソフトウェアパッケージの脆弱性と、EC2 インスタンスのネットワーク到達可能性の問題を見つける）",
+        "detective": "調査（検出結果や不審な活動の根本原因を特定する）"
+      },
+      "factRefs": [
+        "guardduty.continuous-threat-detection",
+        "inspector.ec2-package-vulnerabilities",
+        "inspector.ec2-network-reachability",
+        "inspector.lambda-standard-scanning",
+        "detective.purpose"
+      ]
+    },
+    {
+      "axis": "調べる対象",
+      "values": {
+        "guardduty": "ログなどのデータソース（基盤となる検出では、CloudTrail 管理イベント、EC2 の VPC フローログ、DNS クエリログ）",
+        "inspector": "リソース（EC2 インスタンス、ECR のコンテナイメージ、Lambda 関数とレイヤー）",
+        "detective": "ログと検出結果（CloudTrail ログ、VPC フローログ、GuardDuty に加入しているアカウントでは GuardDuty の検出結果）"
+      },
+      "factRefs": [
+        "guardduty.foundational-data-sources",
+        "inspector.ec2-package-vulnerabilities",
+        "inspector.ecr-image-package-vulnerabilities",
+        "inspector.lambda-standard-scanning",
+        "detective.core-sources"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon GuardDuty? - Amazon GuardDuty",
+      "url": "https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"
+    },
+    {
+      "title": "What is Amazon Inspector? - Amazon Inspector",
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"
+    },
+    {
+      "title": "What is Amazon Detective? - Amazon Detective",
+      "url": "https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc32"
+}

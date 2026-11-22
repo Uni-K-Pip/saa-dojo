@@ -89,7 +89,7 @@ AWS Shield Advanced は有料の DDoS 対策で、保護対象のリソースに
 
 ### 多層防御の Web アプリケーション
 
-1. CloudFront と ALB に AWS WAF のウェブ ACL を関連付け、マネージドルールグループとレートベースのルールで攻撃を入り口で止めます。大きな DDoS 攻撃に備えるなら Shield Advanced で保護します。組織の複数のアカウントに同じ WAF や Shield Advanced の設定を適用するときは、Firewall Manager を使います。
+1. CloudFront と ALB に AWS WAF のウェブ ACL を関連付け、マネージドルールグループとレートベースのルールで攻撃を入り口で止めます。大きな DDoS 攻撃に備えるなら Shield Advanced で保護します。組織の複数のアカウントに同じ WAF や Shield Advanced の設定を適用するときは、Firewall Manager を使います。なお、Firewall Manager を置き換えていくサービスとして、別のサービスの AWS Network Security Manager が登場しています。Firewall Manager で作ったポリシーは引き続き動き、試験ガイドの範囲内のサービスの一覧にも AWS Firewall Manager が載っています（2026 年 11 月時点）。
 2. 従業員向けのアプリケーションなら、ALB の認証アクションでサインインを必須にします。
 3. アプリケーションは IAM ロールで Secrets Manager からデータベースの認証情報を取得します。
 4. GuardDuty、Macie、Inspector を有効にし、検出結果を Security Hub に集めて対応の優先順位を決めます。

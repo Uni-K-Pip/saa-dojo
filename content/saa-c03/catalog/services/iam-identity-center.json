@@ -1,0 +1,187 @@
+{
+  "id": "iam-identity-center",
+  "tier": 2,
+  "summary": "従業員による AWS アカウントや業務アプリケーションへのアクセスを一元管理するサービス。既存の ID 基盤との連携や内蔵ディレクトリを使い、シングルサインオンと権限セットによるアクセスの割り当てを行う。",
+  "chooseWhen": [
+    {
+      "text": "従業員の複数 AWS アカウントへのアクセスを、権限セットで一元管理したいとき。",
+      "factRefs": [
+        "iam-identity-center.permission-set-template",
+        "iam-identity-center.provision-account-roles"
+      ]
+    },
+    {
+      "text": "既存の外部 IdP の認証情報で、従業員が AWS にサインインできるようにしたいとき。",
+      "factRefs": [
+        "iam-identity-center.external-idp-sign-in"
+      ]
+    },
+    {
+      "text": "Active Directory のユーザーやグループに、AWS へのシングルサインオンを割り当てたいとき。",
+      "factRefs": [
+        "iam-identity-center.active-directory-source"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "人が再サインインできない無人処理の、継続的な認証手段が必要なとき。",
+      "factRefs": [
+        "iam-identity-center.cli-browser-sign-in",
+        "iam-identity-center.session-reauthentication"
+      ],
+      "alternatives": [
+        "iam"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "iam-identity-center.workforce-access-portal",
+      "title": "従業員向けの共通アクセスポータル",
+      "kind": "feature",
+      "text": "IAM Identity Center の AWS アクセスポータルは、従業員が割り当てられた AWS アカウントや業務アプリケーションへ、シングルサインオンでアクセスするための共通の入口になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS IAM Identity Center FAQs",
+          "url": "https://aws.amazon.com/iam/identity-center/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.built-in-directory",
+      "title": "内蔵ディレクトリでのユーザー管理",
+      "kind": "feature",
+      "text": "IAM Identity Center では、ユーザーをサービス内で直接作成して管理できる。既存の ID プロバイダーを持たない場合も、従業員の ID を用意して利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.permission-set-template",
+      "title": "権限セットによるアカウントアクセスの割り当て",
+      "kind": "feature",
+      "text": "IAM Identity Center の権限セットは、IAM ポリシーの集合を定義するテンプレートである。組織インスタンスで、組織内の AWS アカウントに対するアクセスをユーザーやグループへ割り当てるために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Manage AWS accounts with permission sets - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+        },
+        {
+          "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.provision-account-roles",
+      "title": "権限セットから IAM ロールを作成",
+      "kind": "feature",
+      "text": "IAM Identity Center は権限セットを割り当てると、対象の各 AWS アカウントに対応する IAM ロールを作成し、権限セットで指定されたポリシーを付ける。このロールを IAM Identity Center が管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Manage AWS accounts with permission sets - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.external-idp-sign-in",
+      "title": "外部 IdP の認証情報でサインイン",
+      "kind": "integration",
+      "text": "IAM Identity Center は SAML 2.0 を使って外部の ID プロバイダーと連携できる。従業員は既存の企業の認証情報で AWS アクセスポータルにサインインし、割り当てられたアカウントやアプリケーションへアクセスする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "External identity providers - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.external-idp-provisioning",
+      "title": "外部 IdP のユーザーとグループの登録",
+      "kind": "integration",
+      "text": "IAM Identity Center で外部 IdP のユーザーやグループにアクセスを割り当てる前に、対象のユーザーとグループを IAM Identity Center にプロビジョニングする必要がある。SCIM による連携、または手動で登録できる。",
+      "trap": "SAML による認証連携だけでは、IdP のユーザーやグループを問い合わせて取得できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "External identity providers - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.active-directory-source",
+      "title": "Active Directory を ID ソースに利用",
+      "kind": "integration",
+      "text": "IAM Identity Center は AWS Directory Service を介して、自己管理の Active Directory または AWS Managed Microsoft AD を ID ソースとして接続できる。接続した AD のユーザーやグループに、AWS アカウントやアプリケーションへのアクセスを割り当てる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Microsoft AD directory - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.cli-browser-sign-in",
+      "title": "CLI のサインインはブラウザーで認証手続きをする",
+      "kind": "feature",
+      "text": "IAM Identity Center を使って AWS CLI にサインインする際は、aws sso login を実行し、ブラウザーで認証手続きを完了する。CLI がブラウザーを自動で開けない場合も、表示された案内に従って手動で認証する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configuring IAM Identity Center authentication with the AWS CLI - AWS Command Line Interface",
+          "url": "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.session-reauthentication",
+      "title": "セッション失効後は手動で再サインイン",
+      "kind": "constraint",
+      "text": "IAM Identity Center による CLI・SDK のアクセスは、ポータルのセッションが失効すると再サインインが必要になる。セッションの有効期間を延ばしても、コードを実行し続けるには、いずれ aws sso login で手動のサインインを行う必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using IAM Identity Center to authenticate AWS SDK and tools - AWS SDKs and Tools",
+          "url": "https://docs.aws.amazon.com/sdkref/latest/guide/access-sso.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "iam.roles-anywhere-trust-anchor",
+    "iam.roles-anywhere-credential-helper"
+  ],
+  "references": [
+    {
+      "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+    },
+    {
+      "title": "AWS IAM Identity Center FAQs",
+      "url": "https://aws.amazon.com/iam/identity-center/faqs/"
+    }
+  ],
+  "createdBy": "cx2",
+  "createdAt": "2026-11-16"
+}

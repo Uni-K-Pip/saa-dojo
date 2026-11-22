@@ -1,0 +1,250 @@
+{
+  "id": "cost-and-usage-report",
+  "tier": 2,
+  "summary": "AWS の最も詳細なコストと使用状況のデータを、利用者の S3 バケットへ定期的に出力する仕組みである。現在は AWS Data Exports の CUR 2.0 が新しい推奨の方法で、従来の Cost and Usage Reports はレガシーの扱いである。",
+  "chooseWhen": [
+    {
+      "text": "リソース単位や時間単位まで含む、最も詳細なコストと使用状況のデータを S3 に出力したい場合。",
+      "factRefs": [
+        "cost-and-usage-report.detailed-data",
+        "cost-and-usage-report.resource-level",
+        "cost-and-usage-report.s3-delivery"
+      ]
+    },
+    {
+      "text": "出力したデータを Athena や Redshift で SQL により分析したい場合。",
+      "factRefs": [
+        "cost-and-usage-report.athena-integration",
+        "cost-and-usage-report.redshift-integration"
+      ]
+    },
+    {
+      "text": "新しく詳細なデータを受け取る設定をするなら、Data Exports の CUR 2.0 を選ぶ。",
+      "factRefs": [
+        "cost-and-usage-report.cur2-recommended"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "コストと使用状況の推移をグラフで確認し、傾向を分析するだけなら、Cost Explorer を選ぶ。",
+      "alternatives": [
+        "cost-explorer"
+      ]
+    },
+    {
+      "text": "予算を超えそうなときに通知を受けたい場合は、AWS Budgets を選ぶ。",
+      "alternatives": [
+        "budgets"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cost-and-usage-report.detailed-data",
+      "title": "最も包括的なコストと使用状況のデータ",
+      "kind": "feature",
+      "text": "AWS Cost and Usage Reports（従来の CUR）には、利用できる中で最も包括的なコストと使用状況のデータが含まれる。請求レポートを利用者が所有する S3 バケットに公開でき、時間・日・月単位、プロダクトやプロダクトのリソース単位、利用者が定義するタグ単位で、コストの内訳を受け取れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What are AWS Cost and Usage Reports?",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "cost-and-usage-report.cur2-recommended",
+      "title": "CUR 2.0 が新しい推奨の方法",
+      "kind": "feature",
+      "text": "AWS Data Exports で作成する Cost and Usage Report 2.0（CUR 2.0）が、AWS の詳細なコストと使用状況のデータを受け取る新しい推奨の方法である。従来の Cost and Usage Reports はレガシーの扱いで、Data Exports には従来の CUR をエクスポートするレガシーのデータエクスポートがある。",
+      "trap": "従来の CUR を操作する API の操作は、Data Exports の操作とは別である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Data Exports?",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"
+        },
+        {
+          "title": "Legacy Cost and Usage Reports",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "cost-and-usage-report.data-exports-customize",
+      "title": "SQL で列と行を絞って出力する",
+      "kind": "feature",
+      "text": "AWS Data Exports では、コンソールの列の選択、または AWS CLI や SDK の SQL クエリで、必要な列を選び、行を絞り、列の名前を変えて、エクスポートの出力スキーマを制御できる。機密性のあるコストデータや、特定のリンクされたアカウントの請求も、エクスポートから外せる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS Data Exports?",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.cur2-schema",
+      "title": "CUR 2.0 のスキーマは固定である",
+      "kind": "feature",
+      "text": "CUR 2.0 の列は固定された一式であり、従来の CUR の列が、利用する AWS のサービスやコストカテゴリ、リソースタグによって月ごとに変わるのとは異なる。一部の列は、キーと値のペアを持つ 1 つの列にまとめられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cost and Usage Report (CUR) 2.0",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.resource-level",
+      "title": "リソース単位の明細にする",
+      "kind": "feature",
+      "text": "CUR 2.0 では、INCLUDE_RESOURCES の設定を有効にすると、行がリソース単位の粒度になり、line_item_resource_id 列が加わる。サービスごとの合計ではなく、使用が発生したリソースごとに行ができるため、行数とファイルサイズが大きく増えることがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cost and Usage Report (CUR) 2.0",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.time-granularity",
+      "title": "時間の粒度を選ぶ",
+      "kind": "feature",
+      "text": "CUR 2.0 では、TIME_GRANULARITY の設定で、明細の行が表す時間の粒度を HOURLY、DAILY、MONTHLY から選べる。たとえば HOURLY を選ぶと、すべての行が 1 時間の使用量を表す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cost and Usage Report (CUR) 2.0",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.s3-delivery",
+      "title": "S3 へ gzip の CSV か Parquet で届く",
+      "kind": "integration",
+      "text": "Data Exports のエクスポートは、クエリの結果を 1 つ以上の gzip の CSV ファイルか Parquet ファイルとして S3 に届ける。あわせて、エクスポートの定義の情報を持つ Manifest.json も届き、これはすべてのデータファイルの配信が終わってから届く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding export delivery",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.refresh-cadence",
+      "title": "エクスポートの更新頻度",
+      "kind": "feature",
+      "text": "Data Exports は、元のデータが更新されるたびにエクスポートを更新し、CUR 2.0 では少なくとも 1 日 1 回更新する。現在の請求期間の分は期間が終わるまで更新され、前の請求期間の分も、終了後の最初の 2 週間以内に更新されることがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding export delivery",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.overwrite-or-create-new",
+      "title": "上書きか新規作成かを選ぶ",
+      "kind": "feature",
+      "text": "エクスポートは、更新のたびに新しいファイルを作るか、既存のファイルを上書きするかを選べる。新規作成は更新のすべてを残すため S3 の保存量が増え、上書きは請求期間ごとの最新の更新だけを残すため S3 の保存量が少なくて済む。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding export delivery",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.athena-integration",
+      "title": "Athena で分析するための連携",
+      "kind": "integration",
+      "text": "CUR 2.0 のエクスポートで Athena との連携を選ぶと、必要なリソースを整えるためのファイルが S3 に届く。CloudFormation テンプレート、Athena のテーブルを手動で作る SQL ファイル、エクスポートの更新状況を確認するフォルダーである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding export delivery",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.redshift-integration",
+      "title": "Redshift へ取り込むための連携",
+      "kind": "integration",
+      "text": "CUR 2.0 のエクスポートで Amazon Redshift との連携を選ぶと、エクスポートを Redshift に取り込むための SQL コマンドを含むファイルが S3 に届く。利用者は Redshift クラスターを作り、このファイルのコマンドを実行する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding export delivery",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/dataexports-export-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.organizations-scope",
+      "title": "管理アカウントとメンバーアカウントの範囲",
+      "kind": "feature",
+      "text": "AWS Organizations の一括請求が有効なとき、管理アカウントの CUR 2.0 には、管理アカウントとすべてのメンバーアカウントのコストと使用状況のデータが含まれる。メンバーアカウントの CUR 2.0 には、そのメンバーアカウントのデータだけが含まれる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cost and Usage Report (CUR) 2.0",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cost-and-usage-report.legacy-report-limit",
+      "title": "従来の CUR は 1 アカウント 10 件まで",
+      "kind": "quota",
+      "text": "従来の Cost and Usage Reports では、1 つの AWS アカウントにつき最大 10 件のレポートを作成できる。レポートは Billing and Cost Management コンソールの、レガシーのページにある Cost and Usage Reports から作る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Creating reports",
+          "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-create.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "cost-explorer.cost-usage-visualization",
+    "athena.s3-sql-query"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Data Exports?",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html"
+    },
+    {
+      "title": "Legacy Cost and Usage Reports",
+      "url": "https://docs.aws.amazon.com/cur/latest/userguide/cur-overview.html"
+    }
+  ],
+  "createdBy": "sc38",
+  "createdAt": "2026-11-21"
+}

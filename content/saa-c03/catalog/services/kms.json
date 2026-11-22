@@ -1,0 +1,351 @@
+{
+  "id": "kms",
+  "tier": 1,
+  "summary": "データの暗号化や署名に使う暗号鍵を作成・管理するマネージドサービス。キーポリシーで鍵の利用を制御し、AWS サービスやアプリケーションの暗号化を支える。",
+  "chooseWhen": [
+    {
+      "text": "暗号鍵を使える主体をキーポリシーで自分で制御したい場合。",
+      "factRefs": [
+        "kms.customer-key-policy",
+        "kms.key-policy"
+      ]
+    },
+    {
+      "text": "暗号鍵の利用や管理操作を CloudTrail で監査したい場合。",
+      "factRefs": [
+        "kms.cloudtrail-audit"
+      ]
+    },
+    {
+      "text": "あるリージョンで暗号化したデータを、再暗号化やリージョン間 API 呼び出しなしで別リージョンで復号したい場合。",
+      "factRefs": [
+        "kms.multi-region-interoperability"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "生成したデータキーの保管や追跡まで KMS に任せたい場合。",
+      "factRefs": [
+        "kms.data-key-management"
+      ]
+    },
+    {
+      "text": "対称暗号 KMS キーを平文で取り出し、アプリケーション内で直接使いたい場合。",
+      "factRefs": [
+        "kms.symmetric-key-not-exportable"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "kms.symmetric-key-not-exportable",
+      "title": "対称暗号 KMS キーは平文で取り出せない",
+      "kind": "constraint",
+      "text": "対称暗号 KMS キーはダウンロードしてアプリケーション内で使うことができない。KMS の外でデータの暗号化に使う鍵が必要な場合は、生成したデータキーを利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Generate data keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.customer-key-policy",
+      "title": "カスタマーマネージドキーのポリシーを制御する",
+      "kind": "feature",
+      "text": "カスタマーマネージドキーは、利用者が自分の AWS アカウント内に作成して管理する KMS キーである。利用者自身がキーポリシーを設定し、その内容を管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.aws-managed-policy-fixed",
+      "title": "AWS マネージドキーのポリシーは変更できない",
+      "kind": "constraint",
+      "text": "AWS マネージドキーは、連携する AWS サービスが利用者のアカウント内に作成して管理する。利用者はそのキーポリシーを閲覧できるが、内容を変更することはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.aws-managed-cross-account",
+      "title": "AWS マネージドキーでは他アカウントへ共有できない",
+      "kind": "constraint",
+      "text": "AWS マネージドキーを使って暗号化したリソースを、別の AWS アカウントに共有することはできない。このキーの利用は、キーが存在するアカウント内のプリンシパルに限られる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.aws-owned-no-audit",
+      "title": "AWS 所有のキーの利用は利用者が監査できない",
+      "kind": "constraint",
+      "text": "AWS 所有のキーは、AWS サービスが所有・管理するアカウントに置かれる。利用者は、自分のデータの暗号化に使われていても、そのキーの活動を監査することはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.key-policy",
+      "title": "キーポリシーが鍵へのアクセスの基本になる",
+      "kind": "feature",
+      "text": "各 KMS キーには、そのキーへのアクセス制御の基本となるキーポリシーが必ず付く。キーポリシーはリソースベースのポリシーで、誰がそのキーをどのように使えるかを定める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Key policies in AWS KMS",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.iam-policy-enablement",
+      "title": "IAM ポリシーによる許可にはキーポリシー側の許可が要る",
+      "kind": "constraint",
+      "text": "KMS キーへのアクセスを IAM ポリシーで許可するには、キーポリシー側で IAM ポリシーの利用を明示的に許可する必要がある。この許可がなければ、IAM ポリシーに書いた Allow は効かない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Key policies in AWS KMS",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.cross-account-authorization",
+      "title": "別アカウントからの利用には両側の許可が必要",
+      "kind": "feature",
+      "text": "別の AWS アカウントのユーザーやロールに KMS キーを使わせるには、キー所有側のキーポリシーと、利用する側のアカウントの IAM ポリシーの両方で許可する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Allowing users in other accounts to use a KMS key",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.generate-data-key",
+      "title": "データキーの平文と暗号化済みコピーを生成する",
+      "kind": "feature",
+      "text": "GenerateDataKey は、データキーの平文コピーと、指定した対称暗号 KMS キーで暗号化したコピーを返す。平文は直ちに暗号化処理に使い、暗号化済みコピーはデータと一緒に安全に保存できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Generate data keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.envelope-encryption",
+      "title": "エンベロープ暗号化でデータキーを保護する",
+      "kind": "feature",
+      "text": "エンベロープ暗号化では、AWS サービスやアプリケーション内でデータキーを使ってデータを暗号化し、そのデータキーを KMS キーで暗号化する。データ本体を KMS に送る必要を減らせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Key Management Service FAQs",
+          "url": "https://aws.amazon.com/kms/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.data-key-management",
+      "title": "生成したデータキーの管理は KMS の外で行う",
+      "kind": "constraint",
+      "text": "AWS KMS はデータキーの生成・暗号化・復号を行うが、そのデータキーの保管・管理・追跡は行わない。生成したデータキーの利用と管理は、AWS KMS の外で行う必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Generate data keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/data-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.single-region-scope",
+      "title": "単一リージョンキーの保管と使用は作成先に限られる",
+      "kind": "constraint",
+      "text": "AWS KMS が生成した単一リージョン KMS キーの保管と使用は、そのキーを作成した AWS リージョン内に限られる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Key Management Service FAQs",
+          "url": "https://aws.amazon.com/kms/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.multi-region-interoperability",
+      "title": "関連するマルチリージョンキーで暗号文を復号できる",
+      "kind": "feature",
+      "text": "関連するマルチリージョン KMS キーは同じキー ID とキーマテリアルを共有する。あるリージョンで暗号化したデータを、再暗号化やリージョン間の KMS API 呼び出しなしで、別リージョンの関連キーで復号できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Multi-Region keys in AWS KMS",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.multi-region-independent-policy",
+      "title": "マルチリージョンキーのポリシーは個別に管理する",
+      "kind": "feature",
+      "text": "関連するマルチリージョン KMS キーでも、キーポリシーは共有・同期されない独立した属性である。プライマリキーのキーポリシーを変更しても、その変更がレプリカキーへ自動で反映されることはない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How multi-Region keys work",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/mrk-how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.single-region-no-conversion",
+      "title": "既存の単一リージョンキーはマルチリージョンに変換できない",
+      "kind": "constraint",
+      "text": "KMS キーを単一リージョンにするかマルチリージョンにするかは、キーの作成時に決める。作成済みの単一リージョン KMS キーを、あとからマルチリージョンキーへ変換することはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How multi-Region keys work",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/mrk-how-it-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.automatic-rotation-eligibility",
+      "title": "自動ローテーションの対象は KMS 生成の対称暗号キー",
+      "kind": "feature",
+      "text": "カスタマーマネージドキーで自動ローテーションを有効にできるのは、キーマテリアルを AWS KMS が生成した対称暗号キーである。キーマテリアルのオリジンは AWS_KMS となる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Rotate AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.rotation-no-reencryption",
+      "title": "キーマテリアルのローテーションは既存データを再暗号化しない",
+      "kind": "constraint",
+      "text": "既存の KMS キーのキーマテリアルをローテーションしても、そのキーで保護したデータは再暗号化されない。KMS キーが生成したデータキー自体をローテーションする処理でもない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Rotate AWS KMS keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.disable-and-reenable",
+      "title": "カスタマーマネージドキーは一時的に無効化できる",
+      "kind": "feature",
+      "text": "カスタマーマネージドキーを無効化すると、再び有効にするまで、そのキーを KMS の暗号操作に使えなくなる。削除と違って元に戻せるため、一時的にキーの使用を止める方法として使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enable and disable keys",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/enabling-keys.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.cloudtrail-audit",
+      "title": "鍵の利用と管理操作を CloudTrail で監査する",
+      "kind": "integration",
+      "text": "KMS キーの利用や管理操作の監査には AWS CloudTrail を組み合わせる。GenerateDataKey や Decrypt などの暗号操作と、CreateKey や PutKeyPolicy などの管理操作を確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Logging AWS KMS API calls with AWS CloudTrail",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/logging-using-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.cloudhsm-key-store",
+      "title": "CloudHSM キーストアで自分のクラスターを使う",
+      "kind": "integration",
+      "text": "KMS のインターフェイスや AWS サービス連携を利用しながら、自分が所有・管理する AWS CloudHSM クラスター内にキーマテリアルを置きたい場合は、AWS CloudHSM キーストアを組み合わせる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS CloudHSM key stores",
+          "url": "https://docs.aws.amazon.com/kms/latest/developerguide/keystore-cloudhsm.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kms.customer-key-storage-pricing",
+      "title": "カスタマーマネージドキーの保管はキー単位の月額課金",
+      "kind": "pricing",
+      "text": "カスタマーマネージドキーの保管には、キーごとの月額料金がかかり、時間単位で按分される。マルチリージョンキーでは、プライマリキーと各レプリカキーがそれぞれ課金の対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Key Management Service pricing",
+          "url": "https://aws.amazon.com/kms/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "aurora.kms-cmk-permissions"
+  ],
+  "references": [
+    {
+      "title": "AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    },
+    {
+      "title": "AWS Key Management Service FAQs",
+      "url": "https://aws.amazon.com/kms/faqs/"
+    }
+  ],
+  "createdBy": "cx7",
+  "createdAt": "2026-11-16"
+}

@@ -1,0 +1,72 @@
+{
+  "id": "cmp-outposts-wavelength",
+  "title": "AWS Outposts と AWS Wavelength",
+  "services": [
+    "outposts",
+    "wavelength"
+  ],
+  "decide": [
+    "オンプレミスのシステムへの低レイテンシーのアクセスが必要なら Outposts",
+    "データレジデンシーの要件があるなら Outposts",
+    "モバイル端末やエンドユーザーへの低レイテンシーが必要なら Wavelength",
+    "通信事業者（CSP）のネットワークのエッジで、AWS のコンピューティングとストレージを使いたいなら Wavelength"
+  ],
+  "rows": [
+    {
+      "axis": "置く場所",
+      "values": {
+        "outposts": "AWS のインフラストラクチャ、サービス、API、ツールを顧客の施設へ拡張する",
+        "wavelength": "標準的な AWS のコンピューティングとストレージを、通信事業者（CSP）のネットワークのエッジに展開する"
+      },
+      "factRefs": [
+        "outposts.extends-aws",
+        "wavelength.edge-compute"
+      ]
+    },
+    {
+      "axis": "低レイテンシーの相手",
+      "values": {
+        "outposts": "オンプレミスのシステムへの低レイテンシーのアクセスが必要なワークロードやデバイスが対象である",
+        "wavelength": "同じ都市圏にあり、同じ通信事業者のネットワークにあるデバイスからだけ、低レイテンシーのアクセスが得られる"
+      },
+      "factRefs": [
+        "outposts.use-cases",
+        "wavelength.latency-scope"
+      ]
+    },
+    {
+      "axis": "リージョンとの関係",
+      "values": {
+        "outposts": "リージョン内の 1 つのアベイラビリティーゾーンに紐づけられ、その AZ の拡張として扱われる",
+        "wavelength": "Wavelength Zone はリージョンに関連付けられ、リージョンの論理的な拡張として、リージョンのコントロールプレーンで管理される"
+      },
+      "factRefs": [
+        "outposts.az-extension",
+        "wavelength.zone-region"
+      ]
+    },
+    {
+      "axis": "外のネットワークとの接続",
+      "values": {
+        "outposts": "Outposts ラックでは、ローカルゲートウェイが Outpost のサブネットとオンプレミスのネットワークの間の通信を実現する",
+        "wavelength": "キャリアゲートウェイが、通信事業者のネットワークからのインバウンドの通信と、通信事業者のネットワークとインターネットへのアウトバウンドの通信を許可する"
+      },
+      "factRefs": [
+        "outposts.local-gateway",
+        "wavelength.carrier-gateway"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "On Premises Private Cloud - AWS Outposts - AWS",
+      "url": "https://aws.amazon.com/outposts/"
+    },
+    {
+      "title": "What is AWS Wavelength? - AWS Wavelength",
+      "url": "https://docs.aws.amazon.com/wavelength/latest/developerguide/what-is-wavelength.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc46"
+}

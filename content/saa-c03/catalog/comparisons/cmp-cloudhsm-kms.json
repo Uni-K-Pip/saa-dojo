@@ -1,0 +1,26 @@
+{
+  "id": "cmp-cloudhsm-kms",
+  "title": "AWS CloudHSM と AWS Key Management Service (AWS KMS)",
+  "services": [
+    "cloudhsm",
+    "kms"
+  ],
+  "decide": [
+    "シングルテナントの HSM で、鍵とアルゴリズムを完全に自分で制御したいなら AWS CloudHSM",
+    "HSM を自分で運用せずに、暗号鍵の作成と管理をマネージドサービスに任せたいなら AWS KMS",
+    "PKCS #11、JCE、CNG、KSP を使う公開鍵基盤を、変更を少なくして移行したいなら AWS CloudHSM"
+  ],
+  "docRef": "cheatsheet-encryption-secrets",
+  "sources": [
+    {
+      "title": "What is AWS CloudHSM? - AWS CloudHSM",
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+    },
+    {
+      "title": "AWS Key Management Service - AWS Key Management Service",
+      "url": "https://docs.aws.amazon.com/kms/latest/developerguide/overview.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc44"
+}

@@ -1,0 +1,310 @@
+{
+  "id": "privatelink",
+  "tier": 2,
+  "summary": "AWS PrivateLink は、VPC から他の VPC のサービスやリソースへ、インターネットを通らずプライベート IP アドレスで接続する技術。提供する側はエンドポイントサービスを作り、利用する側は VPC エンドポイントを作って接続する。",
+  "chooseWhen": [
+    {
+      "text": "他の VPC や AWS アカウントへ、自社のサービスをプライベートに提供したい",
+      "factRefs": [
+        "privatelink.provider-consumer-model",
+        "privatelink.endpoint-service-load-balancer",
+        "privatelink.permissions-acceptance"
+      ]
+    },
+    {
+      "text": "CIDR が重なるネットワークの間で、サービスだけを非公開で提供したい",
+      "factRefs": [
+        "privatelink.overlapping-cidr"
+      ]
+    },
+    {
+      "text": "プライベートサブネットから、インターネットゲートウェイや NAT を使わずにサービスへ接続したい",
+      "factRefs": [
+        "privatelink.private-connectivity"
+      ]
+    },
+    {
+      "text": "他のアカウントの VPC にあるデータベースなどのリソースへ、プライベートに接続したい",
+      "factRefs": [
+        "privatelink.resource-sharing"
+      ]
+    },
+    {
+      "text": "利用者に、既存の DNS 名のままサービスへ接続させたい",
+      "factRefs": [
+        "privatelink.service-private-dns"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "VPC どうしやオンプレミスをネットワーク全体としてつなぎたいなら、Transit Gateway などを検討する",
+      "factRefs": [
+        "privatelink.limited-reachability",
+        "transit-gateway.regional-hub"
+      ],
+      "alternatives": [
+        "transit-gateway"
+      ]
+    },
+    {
+      "text": "VPC から S3・DynamoDB へ追加料金なしで接続するだけなら、ゲートウェイエンドポイントを使う",
+      "factRefs": [
+        "vpc.gateway-endpoint-services",
+        "vpc.interface-endpoint"
+      ],
+      "alternatives": [
+        "vpc-endpoints"
+      ]
+    },
+    {
+      "text": "全プリンシパルへの許可と自動承認の組み合わせは、ロードバランサーを公開状態にするので避ける",
+      "factRefs": [
+        "privatelink.permissions-acceptance"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "privatelink.private-connectivity",
+      "title": "サービスへプライベートに接続する技術",
+      "kind": "feature",
+      "text": "AWS PrivateLink は、VPC をサービスやリソースへ、自分の VPC の中にあるかのようにプライベートに接続する、高可用でスケーラブルな技術である。プライベートサブネットからの通信に、インターネットゲートウェイ、NAT デバイス、パブリック IP アドレス、Direct Connect、Site-to-Site VPN は不要で、通信は AWS のネットワーク内にとどまる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS PrivateLink?",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
+        },
+        {
+          "title": "AWS PrivateLink concepts",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.limited-reachability",
+      "title": "到達できる範囲をサービス単位に絞れる",
+      "kind": "feature",
+      "text": "AWS PrivateLink を使うと、VPC から到達できる API エンドポイント、サイト、サービス、リソースを個別に絞って制御できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS PrivateLink?",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.provider-consumer-model",
+      "title": "プロバイダーとコンシューマーの役割",
+      "kind": "feature",
+      "text": "サービスを提供する側（プロバイダー）はリージョン内でエンドポイントサービスを作って公開し、利用する側（コンシューマー）は自分の VPC に VPC エンドポイントを作って接続する。接続はコンシューマーが開始し、プロバイダーが承認または拒否する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS PrivateLink concepts",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.endpoint-service-load-balancer",
+      "title": "エンドポイントサービスの前面のロードバランサー",
+      "kind": "constraint",
+      "text": "エンドポイントサービスを作るには、Network Load Balancer か Gateway Load Balancer のどちらかが必要で、ロードバランサーがコンシューマーからのリクエストを受けてサービスへ振り分ける。NLB の場合、コンシューマーはインターフェイスエンドポイントを、GWLB の場合は Gateway Load Balancer エンドポイントを作って接続する。",
+      "examPoint": "自社のサービスを PrivateLink で公開するときは、サービスの前に NLB（または GWLB）を置く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create a service powered by AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html"
+        },
+        {
+          "title": "Share your services through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"
+        },
+        {
+          "title": "Access virtual appliances through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.permissions-acceptance",
+      "title": "許可するプリンシパルと接続要求の承認",
+      "kind": "feature",
+      "text": "エンドポイントサービスは、既定ではコンシューマーが使えない。接続を許可する AWS プリンシパル（アカウント、ロール、ユーザー）を ARN で追加する必要がある。接続要求は自動で承認する設定にも手動で承認する設定にもでき、許可と承認の設定を組み合わせて接続できる相手を制御する。",
+      "trap": "全プリンシパル（*）に許可して全要求を自動承認すると、パブリック IP アドレスがなくてもロードバランサーは公開状態になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure an endpoint service",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/configure-endpoint-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "privatelink.overlapping-cidr",
+      "title": "CIDR が重なるネットワークの間でも使える",
+      "kind": "feature",
+      "text": "AWS の比較表では、PrivateLink は、同じ CIDR 範囲か重なる CIDR 範囲を持つネットワークどうしを接続できる方法に分類されている。SaaS などのサービスを、CIDR の重なる顧客の VPC へ提供する場面で選べる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Overview of AWS networking services for SaaS offerings",
+          "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-network-access-options/services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.permission-removal",
+      "title": "許可を外しても既存の接続は切れない",
+      "kind": "constraint",
+      "text": "エンドポイントサービスで、許可したプリンシパルの許可を外しても、すでに承認された既存のエンドポイントとの接続には影響しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configure an endpoint service",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/configure-endpoint-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.provider-azs",
+      "title": "エンドポイントサービスを提供する AZ",
+      "kind": "feature",
+      "text": "エンドポイントサービスは、プロバイダーがロードバランサーで有効にしたアベイラビリティーゾーンで使える。コンシューマーは、サービスが使える AZ にエンドポイントを作れる。低レイテンシーと高可用性のため、ロードバランサーを 2 つ以上の AZ で有効にし、各 AZ にターゲットを置くことが推奨される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Share your services through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.source-ip-proxy-protocol",
+      "title": "サービス側が受け取る送信元 IP アドレス",
+      "kind": "feature",
+      "text": "インターフェイスエンドポイント経由のリクエストでは、サービスのアプリケーションが受け取る送信元 IP アドレスは、コンシューマーのものではなくロードバランサーノードのプライベート IP アドレスになる。ロードバランサーでプロキシプロトコルを有効にすると、ヘッダーからコンシューマーのアドレスとエンドポイントの ID を取得できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Create a service powered by AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/create-endpoint-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.service-private-dns",
+      "title": "エンドポイントサービスのプライベート DNS 名",
+      "kind": "feature",
+      "text": "プロバイダーはエンドポイントサービスにプライベート DNS 名を関連付けると、コンシューマーは既存の DNS 名のままサービスへ接続できる。使うにはドメインの所有権の検証が必要で、公開ドメインの DNS サーバーに TXT レコードを追加し、検証状態が verified になってから使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Manage DNS names for VPC endpoint services",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/manage-dns-names.html"
+        },
+        {
+          "title": "Share your services through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.resource-sharing",
+      "title": "リソース設定とリソースゲートウェイでの共有",
+      "kind": "feature",
+      "text": "リソースのプロバイダーは、データベースなどの 1 つのリソース、リソースのグループ、またはネットワークセグメントを表すリソース設定を作り、共有元の VPC への入口となるリソースゲートウェイを作る。他のアカウントへ共有するときは、AWS RAM のリソース共有で接続を許可するプリンシパルを指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink concepts",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.cross-region",
+      "title": "クロスリージョンのアクセス",
+      "kind": "feature",
+      "text": "プロバイダーは、あるリージョンでホストしたサービスを、サポートするリージョンの集合に向けて公開でき、コンシューマーはエンドポイントを作るときにサービスのリージョンを選ぶ。AWS PrivateLink が管理するのは AZ 間のフェイルオーバーで、リージョン間のフェイルオーバーは管理しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Share your services through AWS PrivateLink",
+          "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/privatelink-share-your-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.cross-region-consumer-charge",
+      "title": "クロスリージョンでコンシューマーにかかる料金",
+      "kind": "pricing",
+      "text": "インターフェイスエンドポイントで別リージョンのサービスへ接続しても、アクセスのための割増はなく、通常の PrivateLink の時間料金とデータ処理料金がかかる。加えて、リージョン間のデータ転送料金が、転送の方向にかかわらず転送した量に応じてエンドポイントの所有者にかかる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink Pricing",
+          "url": "https://aws.amazon.com/privatelink/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "privatelink.cross-region-provider-charge",
+      "title": "クロスリージョンでプロバイダーにかかる料金",
+      "kind": "pricing",
+      "text": "クロスリージョンで提供するサービスのプロバイダーには、サービスにつながるインターフェイスエンドポイントが 1 つ以上あるリモートリージョンごとに、時間単位の固定料金がかかる。接続する VPC エンドポイントの数には依存せず、プロバイダーにリージョン間のデータ転送料金は追加でかからない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS PrivateLink Pricing",
+          "url": "https://aws.amazon.com/privatelink/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "vpc.interface-endpoint",
+    "vpc.interface-endpoint-targets",
+    "vpc.interface-endpoint-private-dns",
+    "vpc.interface-endpoint-central",
+    "vpc.peering-overlap",
+    "elb.gwlb-endpoint",
+    "elb.nlb-proxy-protocol-v2",
+    "transit-gateway.overlapping-cidr-routing"
+  ],
+  "references": [
+    {
+      "title": "What is AWS PrivateLink?",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
+    },
+    {
+      "title": "AWS PrivateLink concepts",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
+    },
+    {
+      "title": "AWS PrivateLink Pricing",
+      "url": "https://aws.amazon.com/privatelink/pricing/"
+    }
+  ],
+  "createdBy": "sc35",
+  "createdAt": "2026-11-21"
+}

@@ -1,0 +1,80 @@
+{
+  "id": "amplify",
+  "tier": 3,
+  "summary": "ウェブとモバイルのアプリを作るための、フロントエンド開発者向けのサービス。Git ベースのワークフローでのフロントエンドのホスティングと、データ・認証・ストレージなどのバックエンドを、フロントエンドの開発体験で用意できる。",
+  "chooseWhen": [
+    {
+      "text": "ウェブアプリを、Git ベースのワークフローと継続的デプロイでホスティングしたい場合。",
+      "factRefs": [
+        "amplify.hosting-git-cdn"
+      ]
+    },
+    {
+      "text": "データ・認証・ストレージなどのバックエンドを、フロントエンド開発者向けの形で用意したい場合。",
+      "factRefs": [
+        "amplify.backend-typescript"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "amplify.hosting-git-cdn",
+      "title": "Git ベースのワークフローで継続的デプロイし、CDN で配信する",
+      "kind": "feature",
+      "text": "Amplify Hosting は、フルスタックのサーバーレスなウェブアプリケーションを、継続的デプロイ付きの Git ベースのワークフローでホスティングする。アプリは AWS のグローバルなコンテンツ配信ネットワーク（CDN）にデプロイされ、配信には Amazon CloudFront のグローバルエッジネットワークが使われる。",
+      "depth": "core",
+      "services": [
+        "AWS Amplify",
+        "Amazon CloudFront"
+      ],
+      "sources": [
+        {
+          "title": "Welcome to AWS Amplify Hosting",
+          "url": "https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html"
+        },
+        {
+          "title": "AWS Amplify FAQs",
+          "url": "https://aws.amazon.com/amplify/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "amplify.backend-typescript",
+      "title": "アプリの要件を TypeScript で書くとバックエンドを構成する",
+      "kind": "feature",
+      "text": "データモデル、ビジネスロジック、認証ルールといったアプリの要件を TypeScript で書くと、Amplify が必要なクラウドリソースを自動で構成する。データ、認証、ストレージなどのバックエンドの機能を、フロントエンドの開発者に慣れた形で追加できる。",
+      "depth": "core",
+      "services": [
+        "AWS Amplify"
+      ],
+      "sources": [
+        {
+          "title": "Full Stack Development - Web and Mobile Apps - AWS Amplify",
+          "url": "https://aws.amazon.com/amplify/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "cognito.user-pool-directory",
+    "cloudfront.edge-caching"
+  ],
+  "references": [
+    {
+      "title": "Welcome to AWS Amplify Hosting",
+      "url": "https://docs.aws.amazon.com/amplify/latest/userguide/welcome.html"
+    },
+    {
+      "title": "Full Stack Development - Web and Mobile Apps - AWS Amplify",
+      "url": "https://aws.amazon.com/amplify/"
+    },
+    {
+      "title": "AWS Amplify FAQs",
+      "url": "https://aws.amazon.com/amplify/faqs/"
+    }
+  ],
+  "createdBy": "sc51",
+  "createdAt": "2026-11-22"
+}

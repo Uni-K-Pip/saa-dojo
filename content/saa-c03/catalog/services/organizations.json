@@ -1,0 +1,356 @@
+{
+  "id": "organizations",
+  "tier": 1,
+  "summary": "複数の AWS アカウントを組織としてまとめ、アカウントの作成や OU による分類、組織ポリシーによる統制、一括請求を集中管理するサービス。対応する AWS サービスと連携し、組織全体の管理にも利用できる。",
+  "chooseWhen": [
+    {
+      "text": "複数の AWS アカウントを作成・招待し、OU でまとめて管理したい場合。",
+      "factRefs": [
+        "organizations.create-accounts",
+        "organizations.invite-accounts",
+        "organizations.organizational-units"
+      ]
+    },
+    {
+      "text": "メンバーアカウントのプリンシパルが使える権限の上限を、SCP で共通に制御したい場合。",
+      "factRefs": [
+        "organizations.scp-permission-ceiling",
+        "organizations.scp-deny-inheritance"
+      ]
+    },
+    {
+      "text": "複数アカウントの支払いをまとめ、対象サービスの利用量合算による割引を利用したい場合。",
+      "factRefs": [
+        "organizations.consolidated-payment",
+        "organizations.combined-usage-discounts"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "IAM ユーザーやロールへ操作権限を付与する手段として、SCP だけを使いたい場合。",
+      "factRefs": [
+        "organizations.scp-permission-ceiling"
+      ],
+      "alternatives": [
+        "iam"
+      ]
+    },
+    {
+      "text": "管理アカウントのユーザーやロールが行う操作を、SCP で制限したい場合。",
+      "factRefs": [
+        "organizations.scp-management-exemption"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "organizations.create-accounts",
+      "title": "メンバーアカウントの作成",
+      "kind": "feature",
+      "text": "AWS Organizations では、管理アカウントから組織のメンバーとなる AWS アカウントを作成できる。CLI、SDK、API による作成の自動化にも対応する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a member account in an organization with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html"
+        },
+        {
+          "title": "What is AWS Organizations?",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.invite-accounts",
+      "title": "既存アカウントの招待",
+      "kind": "feature",
+      "text": "AWS Organizations の管理アカウントは、既存の AWS アカウントに組織への招待を送信できる。招待先のアカウントが承諾すると、その組織のメンバーになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing account invitations with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_invites.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.organizational-units",
+      "title": "OU によるアカウントの分類",
+      "kind": "feature",
+      "text": "組織単位（OU）は、組織内の AWS アカウントをまとめて共通の統制を適用するためのグループである。OU の中に別の OU を配置して、階層的に管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Terminology and concepts for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.single-organization-membership",
+      "title": "複数組織への同時所属は不可",
+      "kind": "constraint",
+      "text": "AWS アカウントは、複数の AWS Organizations の組織へ同時に所属できない。複数の組織から招待が届いても、同時にそれぞれのメンバーになることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing account invitations with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_invites.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-permission-ceiling",
+      "title": "SCP は権限の上限を定める",
+      "kind": "feature",
+      "text": "サービスコントロールポリシー（SCP）は、組織内の IAM ユーザーやロールが利用できる権限の上限を定める。SCP 自体は権限を付与せず、実際の許可には IAM ポリシーなどが必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-all-features-required",
+      "title": "SCP にはすべての機能が必要",
+      "kind": "constraint",
+      "text": "SCP を利用できるのは、AWS Organizations で「すべての機能」を有効にした組織である。一括請求機能だけを有効にした組織では SCP を利用できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-allow-at-every-level",
+      "title": "SCP の許可は経路の各階層で必要",
+      "kind": "feature",
+      "text": "ある操作が SCP の評価で許可されるには、組織のルートから対象アカウントまでの経路にある各 OU と対象アカウント自身を含め、すべての階層でその操作を許可する Allow が必要になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SCP evaluation",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-deny-inheritance",
+      "title": "上位の明示的拒否は下位でも有効",
+      "kind": "feature",
+      "text": "組織のルート、対象アカウントへ至る OU、対象アカウント自身のいずれかに付いた SCP が操作を明示的に拒否すると、その操作は拒否される。下位の SCP に Allow を追加しても、上位の Deny は上書きできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SCP evaluation",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-member-root",
+      "title": "メンバーのルートユーザーも制限",
+      "kind": "feature",
+      "text": "SCP は、メンバーアカウントの IAM ユーザーやロールだけでなく、メンバーアカウントのルートユーザーが行う操作にも制限を適用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-management-exemption",
+      "title": "管理アカウントは SCP の対象外",
+      "kind": "constraint",
+      "text": "SCP は、AWS Organizations の管理アカウントのユーザーやロールには適用されない。組織のルートに SCP を付けても、管理アカウントの操作をその SCP で制限できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        },
+        {
+          "title": "Terminology and concepts for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_getting-started_concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-service-linked-role-exemption",
+      "title": "サービスリンクロールは SCP の対象外",
+      "kind": "constraint",
+      "text": "SCP はサービスにリンクされたロールには適用されない。AWS サービスが組織と連携するために使うサービスリンクロールの権限を、SCP で制限することはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.scp-external-principal-exemption",
+      "title": "組織外のプリンシパルは SCP の対象外",
+      "kind": "constraint",
+      "text": "組織内のリソースへアクセスする組織外アカウントのユーザーやロールには、リソース所有アカウントの SCP は適用されない。SCP はリソースベースのポリシーを直接制限する仕組みではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Service control policies (SCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.consolidated-payment",
+      "title": "管理アカウントによる一括支払い",
+      "kind": "feature",
+      "text": "AWS Organizations の一括請求では、組織の管理アカウントがメンバーアカウントの利用料金の支払いを担う。複数の AWS アカウントの請求と支払いをまとめて管理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Consolidating billing for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.account-cost-tracking",
+      "title": "一括請求でもアカウント別に費用を確認",
+      "kind": "feature",
+      "text": "AWS Organizations で一括請求を利用していても、管理アカウントではメンバーアカウントごとの費用レポートを取得できる。組織全体の料金と、各アカウントの料金を確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Consolidating billing for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.combined-usage-discounts",
+      "title": "利用量の合算による割引",
+      "kind": "pricing",
+      "text": "AWS Organizations の一括請求では、組織内のアカウントの利用量を合算し、対象サービスのボリュームディスカウントを受けられる。アカウントを個別に請求する場合より、料金が低くなることがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Consolidating billing for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.no-additional-service-charge",
+      "title": "Organizations 自体の追加料金はない",
+      "kind": "pricing",
+      "text": "AWS Organizations 自体には追加料金がかからない。メンバーアカウントのユーザーやロールが利用する EC2 などの AWS リソースには、それぞれ通常の料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Billing and pricing for AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/pricing.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.trusted-service-access",
+      "title": "信頼されたアクセスによるサービス連携",
+      "kind": "integration",
+      "text": "組織内のアカウントで対応する AWS サービスに管理作業を代行させるには、Organizations の信頼されたアクセスを有効にする。連携サービスに、組織とそのアカウントで必要な作業を行う権限を与える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using AWS Organizations with other AWS services",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_integrate_services.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.service-delegated-administrator",
+      "title": "連携サービスの管理をメンバーへ委任",
+      "kind": "integration",
+      "text": "Organizations と連携するサービスが委任管理者に対応していれば、メンバーアカウントをそのサービスの管理者として登録できる。管理アカウントの利用を減らしながら、組織内のサービス管理を任せられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Delegated administrator for AWS services that work with Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_integrate_delegated_admin.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.resource-control-policies",
+      "title": "RCP によるリソース側の権限上限",
+      "kind": "feature",
+      "text": "リソースコントロールポリシー（RCP）は、対応サービスの組織内リソースに対する権限の上限を集中管理する。組織外のプリンシパルがメンバーアカウントのリソースへアクセスする場合も、対象リソースの RCP が評価される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resource control policies (RCPs)",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_rcps.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "organizations.all-features-migration-approval",
+      "title": "すべての機能への移行には招待済みアカウントの承認",
+      "kind": "feature",
+      "text": "一括請求のみの組織で「すべての機能」を有効にするには、招待して参加させたすべてのメンバーアカウントが変更を承認する必要がある。Organizations で作成したアカウントには、この変更の承認は求められない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Enabling all features for an organization with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_support-all-features.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "iam.global-key-principalorgid",
+    "ec2.encrypted-condition-key"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Organizations?",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html"
+    },
+    {
+      "title": "Service control policies (SCPs)",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "title": "Consolidating billing for AWS Organizations",
+      "url": "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/consolidated-billing.html"
+    }
+  ],
+  "createdBy": "cx10",
+  "createdAt": "2026-11-16"
+}

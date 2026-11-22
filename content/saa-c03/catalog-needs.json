@@ -1,0 +1,2769 @@
+{
+  "source": "input-gap 監査 2026-11-13（模試 A・B の 160 問） と、中間の監査 2026-11-17（同じ 160 問）",
+  "items": [
+    {
+      "key": "saa-1.1-w2m-001/c",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS 管理ポリシーの PowerUserAccess は IAM の操作を原則として許可しない。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.poweruseraccess-no-iam"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-001/d",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "IAM では、境界ポリシーの改変や、ロールの境界の削除・差し替え(iam:DeleteRolePermissionsBoundary など)を許可すると境界を回避できる。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.boundary-self-protection",
+        "iam.boundary-basics"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-002/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon S3 のすべてのプリンシパルを拒否するバケットポリシーは、管理者権限の IAM ユーザーでは解除できず、ルートユーザーの特権操作が必要になる。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.policy-lockout-root",
+        "iam.root-user-tasks"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-002/c",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "すべてのプリンシパルを拒否する S3 バケットポリシーは、IAM Identity Center の管理者権限でも解除できず、SCP で解除の手段にもならない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.policy-lockout-root",
+        "iam.root-user-tasks",
+        "iam.centralized-root-access"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-003/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Organizations では、条件キー aws:ResourceOrgID はリソースが属する組織を確認するもので、呼び出し元の限定には aws:PrincipalOrgID を使う。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.global-key-resourceorgid"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-003/c",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "S3 バケットポリシーで aws:PrincipalOrgID 条件を使うと、組織内のアカウントのプリンシパルだけを、アカウントの増減に追従して許可できる。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.global-key-principalorgid"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-004/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "IAM Identity Center のサインインはブラウザーでの対話的な認証が前提で、無人で動くサーバーには向かない。",
+      "decision": "fact",
+      "factRefs": [
+        "iam-identity-center.cli-browser-sign-in",
+        "iam-identity-center.session-reauthentication"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-004/d",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "IAM Roles Anywhere の認証情報ヘルパーを AWS SDK の credential_process と組み合わせると、証明書と秘密鍵から一時的な認証情報を自動取得できる。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.roles-anywhere-credential-helper"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-004/e",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "IAM Roles Anywhere は、社内の認証局を信頼アンカーに登録し、X.509 証明書で AWS 外のワークロードに IAM ロールの一時的な認証情報を渡す。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.roles-anywhere-trust-anchor"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-005/b",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon EC2 の作成時のタグ付けでは、aws:RequestTag と ec2:CreateAction 条件で RunInstances 時だけ CreateTags を許可し、作成後のタグ変更を防ぐ設計になる。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.tag-on-create-permission",
+        "ec2.create-action-condition"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-006/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "IAM 認証情報レポートは IAM ユーザーのパスワードやアクセスキーの状況を示すもので、ロールが呼び出した API は分からない。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.credential-report"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-006/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Trusted Advisor は IAM ポリシーを分析して権限を自動で絞り込む機能を持たない。",
+      "decision": "fact",
+      "factRefs": [
+        "trusted-advisor.read-only-inspection",
+        "trusted-advisor.review-and-follow-recommendations"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-007/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "RDS for SQL Server の Windows 認証は AWS Managed Microsoft AD を使い、AD Connector には対応しない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.sqlserver-winauth-managed-ad",
+        "rds.sqlserver-winauth-forest-trust"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-008/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "IAM のアカウントのパスワードポリシーには MFA を必須にする設定がなく、文字数や有効期限などしか設定できない。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.password-policy-no-mfa"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-008/b",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "IAM ポリシーで BoolIfExists と aws:MultiFactorAuthPresent を使い、MFA なしのリクエストを NotAction で例外を除いて Deny する。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.mfa-boolifexists-deny"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-008/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Bool 演算子では、長期認証情報のリクエストに aws:MultiFactorAuthPresent が含まれず条件が一致しないため、BoolIfExists が必要になる。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.mfa-key-absent-long-term"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-009/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon GuardDuty は組織連携で、委任管理者と自動有効化により全アカウントの検出結果を集約でき、自作より運用が少ない。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.organizations-admin",
+        "guardduty.auto-enable-all"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-009/c",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon GuardDuty では管理アカウントを委任管理者にする構成は推奨されず、別のセキュリティアカウントを委任管理者にする。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.separate-admin-account"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-009/d",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon GuardDuty はリージョンのサービスで、各リージョンで委任管理者の指定と組織の自動有効化(ALL)を行い、検出結果もリージョンごとに確認する。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.regional-delegated-admin",
+        "guardduty.auto-enable-all",
+        "guardduty.regional-auto-enable",
+        "guardduty.regional-findings"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-010/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS CloudTrail の組織の証跡はメンバーアカウントで変更できないが、AWS Config のレコーダーの停止は防げない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.organization-member-restriction",
+        "config.stop-customer-recorder"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-011/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Organizations の SCP は階層の途中で許可されていない操作は下位の SCP で許可しても有効にならず、上位の拒否は下位で上書きできない。",
+      "decision": "fact",
+      "factRefs": [
+        "organizations.scp-allow-at-every-level",
+        "organizations.scp-deny-inheritance"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-012/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EKS では同じノードグループの Pod がノードのインスタンスプロファイルの権限を共有するため、ノードグループ分割では Pod 単位の最小権限にならない。",
+      "decision": "fact",
+      "factRefs": [
+        "eks.node-role-sharing"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-012/d",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon EKS Pod Identity や IAM roles for service accounts (IRSA) は、サービスアカウント単位で IAM ロールを Pod に関連付ける。",
+      "decision": "fact",
+      "factRefs": [
+        "eks.pod-identity",
+        "eks.irsa"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-013/b",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "GitHub Actions は GitHub の OIDC ID プロバイダーを IAM に登録し、信頼ポリシーの aud と sub の条件でリポジトリとブランチを限定してロールを引き受けさせる。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.oidc-trust-aud-sub",
+        "iam.github-oidc-sub-condition"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-013/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS STS の GetSessionToken は IAM ユーザーの長期アクセスキーで呼び出すため、長期の認証情報が残り、リポジトリやブランチによる制限もできない。",
+      "decision": "fact",
+      "factRefs": [
+        "sts.get-session-token-long-term-keys"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-014/b",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Control Tower のプロアクティブコントロール(CloudFormation フック)は、CloudFormation 経由以外の直接変更や既存リソースの継続評価には使えない。",
+      "decision": "fact",
+      "factRefs": [
+        "control-tower.proactive-control",
+        "control-tower.proactive-hook-timing",
+        "control-tower.detective-control"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-015/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "S3 のバケット ACL では、AWS CloudTrail などのサービスプリンシパルの書き込みを特定の証跡に限定できない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.acl-grantee-limits"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-015/c",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS サービスプリンシパルに対する混乱した代理の対策では、リソースポリシーの aws:SourceArn(証跡単位)や aws:SourceAccount(アカウント単位)条件を使う。",
+      "decision": "fact",
+      "factRefs": [
+        "iam.cross-service-confused-deputy",
+        "iam.source-key-availability"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-015/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "S3 のブロックパブリックアクセスは公開アクセスを防ぐ機能で、サービスプリンシパル経由の他アカウントの証跡からの書き込みは防げない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.bpa-restrict-public-buckets",
+        "s3.block-public-access"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-016/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon SNS と Amazon SQS は VPC の外のマネージドサービスで、VPC ピアリングでは配信の接続や許可を制御できない。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.vpc-interface-endpoint"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-016/b",
+      "task": "1.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "SQS キューポリシーで sns.amazonaws.com に sqs:SendMessage を許可し、aws:SourceArn で送信元の SNS トピックを限定する。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.sns-queue-policy",
+        "sns.sqs-delivery-permission"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-016/d",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon SNS から Amazon SQS への配信は SQS のキューポリシーで許可し、SNS が IAM ロールを引き受けて送信する仕組みではない。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.sns-queue-policy",
+        "sqs.sns-fanout",
+        "sns.sqs-delivery-permission"
+      ]
+    },
+    {
+      "key": "saa-1.1-w2m-017/a",
+      "task": "1.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Lambda では、実行基盤のサーバー、OS、ランタイムの管理は AWS の責任で、利用者は関数のコードと設定を担当する。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.shared-responsibility"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-001/c",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Route 53 Resolver DNS Firewall は VPC の DNS クエリだけを制御し、IP 直接指定の通信や DNS を経由しない通信は止められない。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.dns-firewall-filtering",
+        "route53.dns-firewall-non-dns"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-001/d",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Network Firewall が TLS の SNI を見るドメインリストを持ち、ストリクト順序と既定破棄で SNI のない通信も破棄できる。",
+      "decision": "fact",
+      "factRefs": [
+        "network-firewall.https-sni-filtering",
+        "network-firewall.default-drop-established",
+        "network-firewall.strict-allowlist-no-auto-drop"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-002/b",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Firewall Manager の WAF ポリシーは新規アカウント・リソースに自動適用され、自動修復で外された Web ACL を付け直す。",
+      "decision": "fact",
+      "factRefs": [
+        "firewall-manager.new-in-scope-resources",
+        "firewall-manager.waf-auto-remediation"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-002/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFormation StackSets は Web ACL を展開できるが、新規 ALB への関連付けや外された Web ACL の付け直しを継続的に行う仕組みではない。",
+      "decision": "question",
+      "note": "StackSets の複数アカウントへの展開とアカウントの所属変更を契機とする自動デプロイは確かめられるが、新しい ALB への関連付けや外された Web ACL の付け直しを継続的に行わないという否定は確かめられないため、Firewall Manager の新規リソースへの自動適用と自動修復との対比で誤答を退ける表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-1.2-w2m-005/c",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Cognito ID プールで発行される認証済みロールの IAM ポリシーで、ユーザー ID を表すポリシー変数を使えば S3 のプレフィックスをユーザーごとに制限できる。",
+      "decision": "fact",
+      "factRefs": [
+        "cognito.identity-sub",
+        "cognito.s3-identity-prefix"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-006/c",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon GuardDuty の検出結果は EventBridge にイベントとして送られ、ルールで重大度を絞り込んで Lambda を起動し自動対応できる。",
+      "decision": "fact",
+      "factRefs": [
+        "eventbridge.guardduty-findings",
+        "eventbridge.event-pattern"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-007/c",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Direct Connect の MACsec は 10・100・400 Gbps の専用接続のみで使え、1 Gbps の接続では使えない。",
+      "decision": "fact",
+      "factRefs": [
+        "direct-connect.macsec-supported-connections"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-008/b",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon S3 のマネージドプレフィックスリストはリージョンの S3 全体の IP 範囲であり、特定バケットや他アカウントのバケットを区別できない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.managed-prefix-list",
+        "s3.managed-prefix-list-contents"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-008/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "S3 ゲートウェイエンドポイント経由のリクエストでは送信元がプライベート IP として見えず、バケットポリシーの aws:SourceIp にプライベート IP は使えない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.vpce-source-ip"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-009/c",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Application Load Balancer は HTTP(S) のみを扱い、RDS へのデータベース接続やサブネット単位のアクセスは提供できない。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.alb-layer7",
+        "elb.alb-listener-rules"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-009/d",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Client VPN は AWS Managed Microsoft AD 認証に対応し、承認ルールでグループごとにアクセスできるネットワークを制御できる。",
+      "decision": "fact",
+      "factRefs": [
+        "client-vpn.active-directory-authentication",
+        "client-vpn.group-network-authorization"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-010/a",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon ECS のタスク定義の secrets に Secrets Manager の ARN を指定すると、タスク実行ロールの権限で取得した値が環境変数として渡される。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.secrets-env-injection",
+        "ecs.task-execution-role"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-012/a",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFront のオリジンプロトコルポリシーは、CloudFront とオリジンの間の通信のプロトコルを決める設定で、オリジンへの直接アクセスを防ぐ機能ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.origin-protocol-policy"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-012/c",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon CloudFront には AWS が自動更新するオリジン向けのマネージドプレフィックスリストがあり、ALB のセキュリティグループの送信元に指定できる。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.managed-prefix-list"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-012/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "セキュリティグループの送信元に指定できるのは CIDR、プレフィックスリスト、セキュリティグループ ID などで、CloudFront ディストリビューションの ARN は指定できない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.sg-rule-sources"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-012/e",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "CloudFront のオリジンカスタムヘッダーに秘密の値を付け、ALB の HTTPS リスナールールで一致時のみ転送し、不一致は固定レスポンス 403 で拒否できる。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.alb-custom-header",
+        "cloudfront.alb-header-secret"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-013/b",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon Athena で S3 のフローログに SQL でクエリでき、action = REJECT で絞り込み srcaddr・dstport ごとに集計できる（COUNT はレコード数でパケット数ではない）。",
+      "decision": "fact",
+      "factRefs": [
+        "athena.flow-logs-query",
+        "athena.flow-log-reject-filter",
+        "athena.grouped-record-count",
+        "athena.flow-log-packet-sum"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-013/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "VPC トラフィックミラーリングは有効化後の通信パケットだけを分析用ターゲットへ送り、過去の通信は調べられない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.traffic-mirroring",
+        "vpc.traffic-mirroring-components",
+        "vpc.traffic-mirroring-target-types"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-014/c",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "GuardDuty、Inspector、Macie の検出結果は ASFF 形式で Security Hub CSPM に統合され、両方を有効にすると統合は通常自動で有効になる。",
+      "decision": "fact",
+      "factRefs": [
+        "guardduty.securityhub-asff",
+        "guardduty.securityhub-auto-integration"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-014/d",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "AWS Security Hub CSPM は Organizations の委任管理者と中央設定ポリシーを組織ルートに関連付けて、新規・既存メンバーアカウントに一貫して有効化できる。",
+      "decision": "fact",
+      "factRefs": [
+        "security-hub.cspm-delegated-administrator",
+        "security-hub.cspm-central-policy",
+        "security-hub.cspm-root-auto-enablement"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-015/b",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon Detective は、CloudTrail、VPC フローログ、GuardDuty の検出結果などを自動で関連付け、IAM ロールや IP アドレスなどの活動をグラフと時系列で可視化して、調査を助ける。",
+      "decision": "fact",
+      "factRefs": [
+        "detective.core-sources",
+        "detective.behavior-graph",
+        "detective.auto-collect"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-015/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "CloudTrail Lake は、イベントデータストアに集めたイベントを SQL で分析する機能で、関連付けや可視化は利用者が用意する。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.lake-sql-event-data-store",
+        "cloudtrail.lake-new-customer-availability"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-016/a",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "ネットワーク ACL のルールではプレフィックスリストを参照できず、CIDR を個別に指定する必要がある。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.nacl-no-prefix-list"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-016/c",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFormation StackSets で配ったスタックの内容を変えるには、スタックセットを更新して各スタックインスタンスへ配り直す操作が要る。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudformation.stacksets-update-propagation"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-016/d",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "プレフィックスリストは AWS Resource Access Manager で組織内の他アカウントに共有でき、共有先のセキュリティグループから参照できる。",
+      "decision": "fact",
+      "factRefs": [
+        "ram.prefix-list-sharing"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-016/e",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS RAM によるセキュリティグループの共有は、VPC 所有アカウントが共有 VPC のサブネットを使う参加アカウントに対して行うもので、別々の VPC には配布できない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.sharing-security-groups",
+        "vpc.sharing-basics"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-017/b",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon ECR の基本スキャンはプッシュ時などの一度のスキャンで、新しい CVE が公開されても自動で再評価されない。",
+      "decision": "fact",
+      "factRefs": [
+        "ecr.basic-scanning",
+        "ecr.scanning-types"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-017/d",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon Inspector の ECR 拡張スキャン（継続的スキャン）は、プッシュ時と新しい CVE 追加時に再スキャン期間内のイメージを再評価する。",
+      "decision": "fact",
+      "factRefs": [
+        "ecr.enhanced-scanning",
+        "ecr.enhanced-rescan-duration",
+        "inspector.ecr-monitoring-criteria"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-018/b",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon API Gateway のエッジ最適化 API は CloudFront 経由のインターネット向けエンドポイントで、IAM 認証でもインターネットから到達できる。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.edge-optimized-endpoint"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-018/c",
+      "task": "1.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway のプライベート API は API Gateway 用インターフェイス VPC エンドポイント経由でのみ呼び出せ、リソースポリシーで接続元を限定できる。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.private-endpoint",
+        "api-gateway.private-resource-policy"
+      ]
+    },
+    {
+      "key": "saa-1.2-w2m-018/d",
+      "task": "1.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway のリージョナル API は公開エンドポイントのままで、WAF の IP 制限をしても非公開にはならない（非公開にはプライベート API が必要）。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.regional-endpoint",
+        "api-gateway.private-endpoint"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-001/a",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "S3 のバケットポリシーは権限のあるユーザーが変更や削除でき、削除不可の保証にならないという性質が書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.bucket-policy",
+        "s3.object-lock-modes",
+        "s3.bucket-policy-modify-permissions"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-003/a",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon RDS では、暗号化されていない DB インスタンスから暗号化されたリードレプリカを作れず、レプリカはソースと同じ暗号化状態になるという制約が書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.encrypted-replica-same-state",
+        "rds.encrypt-at-creation"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-003/d",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon EBS の既定の暗号化は新規作成ボリュームだけが対象で、既存の RDS ストレージには影響しないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.encryption-default-new-only"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-004/a",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudTrail ログを CloudWatch Logs に配信してメトリクスフィルターとアラームを使っても、ログファイルの改ざん検証にはならないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.cloudwatch-logs-monitoring",
+        "cloudtrail.log-file-integrity",
+        "cloudtrail.validation-execution"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-004/c",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS CloudTrail Insights は API 呼び出しの異常パターンを検出する機能で、ログファイルの改ざん検証ではないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudtrail.insights-anomaly-detection",
+        "cloudtrail.log-file-integrity"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-005/b",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のスナップショットの S3 エクスポートは分析用の Parquet 形式で、RDS にそのまま復元できないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.snapshot-export-s3",
+        "rds.snapshot-export-no-restore"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-005/c",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Backup Vault Lock では最小・最大の保持期間を設定でき、条件に合わないバックアップジョブやコピージョブは失敗する。コンプライアンスモードには 3 日以上の猶予期間がある。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.vault-lock-retention-range",
+        "backup.vault-lock-nonconforming-job-fails",
+        "backup.vault-lock-grace-time-minimum",
+        "backup.vault-lock-existing-recovery-points"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-005/d",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Backup のボールトのアクセスポリシーや IAM ポリシーによる削除拒否は、権限のあるユーザーが変更でき、Vault Lock と違い改変を防げないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.vault-policy-removable",
+        "backup.vault-lock-governance",
+        "backup.vault-lock-compliance"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-006/a",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS KMS の単一リージョンのキーは、そのリージョンの障害時に復号できなくなる可能性があり、リージョン間の復号にはマルチリージョンキーが必要という点が具体的に書かれていない。",
+      "decision": "question",
+      "note": "単一リージョンキーの使用が作成したリージョンに限られることと、関連するマルチリージョンキーなら再暗号化やリージョン間の API 呼び出しなしで別リージョンで復号できることは確かめられるが、「リージョン間の復号にはマルチリージョンキーが必要」は再暗号化による方法を除いた言い過ぎなので、その条件を明記した表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-1.3-w2m-006/d",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS KMS のマルチリージョンキーは同じキー ID とキーマテリアルを持つため、再暗号化なしで別リージョンのレプリカキーで復号できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "kms.multi-region-interoperability"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-007/a",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon S3 のバケットポリシーで s3:TlsVersion 条件キーにより最低 TLS バージョンを強制できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.tls-version-condition"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-007/b",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFront のビューアープロトコルポリシーやセキュリティポリシーは CloudFront 経由の通信だけに効き、S3 エンドポイントへの直接アクセスの TLS は制御できないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.viewer-protocol-policy",
+        "cloudfront.origin-protocol-separate",
+        "s3.tls-version-condition"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-008/a",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon S3 アクセスポイントは、独自の名前とポリシーを持つバケットのエンドポイントで、チームやアプリごとにアクセスを分けて管理できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.access-points"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-010/a",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EBS の既定の暗号化はアカウントとリージョンごとの設定で、Organizations の管理アカウントで有効にしてもメンバーアカウントには及ばないことが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.encryption-default-scope"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-010/b",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "SCP で ec2:Encrypted 条件キーを使い、暗号化なしの ec2:CreateVolume と ec2:RunInstances を拒否できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.encrypted-condition-key"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-011/c",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Secrets Manager のレプリカシークレットは、プライマリのローテーションによる値の変更が自動で反映されることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "secrets-manager.replica-rotation-propagation"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-012/d",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "暗号化された Aurora のスナップショットを別リージョンへコピーするときは、コピー先リージョンの KMS キーを指定し、そのキーで再暗号化されることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.snapshot-copy-cross-region-kms"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-012/e",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Aurora が顧客管理キーを使うために利用者へ kms:CreateGrant や kms:DescribeKey の権限が必要で、コピー元とコピー先の両方のキーに要ることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.kms-cmk-permissions"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-013/a",
+      "task": "1.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon S3 バッチオペレーションは S3 インベントリを入力に大量のオブジェクトへ操作を実行でき、暗号化更新の操作で既存オブジェクトの暗号化を変更できることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.batch-operations",
+        "s3.batch-operations-manifest"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-013/c",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "S3 バケットの既定の暗号化の設定を変えても、新しくアップロードされるオブジェクトにだけ適用され、既存のオブジェクトは自動では再暗号化されない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.default-encryption-new-objects"
+      ]
+    },
+    {
+      "key": "saa-1.3-w2m-014/b",
+      "task": "1.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Certificate Manager の E メール検証では、更新のたびにドメイン管理者による承認が必要になる場合があることが書かれていない。",
+      "decision": "fact",
+      "factRefs": [
+        "acm.email-validation-renewal"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-003/a",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "CloudFront の署名付き URL は有効期限を設定でき、信頼されたキーグループで署名してビューアーのアクセスを制限する。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.signed-url",
+        "cloudfront.key-groups"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-003/c",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS WAF の IP 制限だけでは会員認証や URL の有効期限を実現できず、CloudFront の署名付き URL が必要になる。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.signed-url",
+        "cloudfront.signed-url-vs-cookies",
+        "waf.ip-set-match"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-003/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFront の地理的制限は国単位の制御であり、会員の識別や URL の有効期限は制御できない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.geo-restriction",
+        "cloudfront.geo-restriction-limits"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-004/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS WAF のレートベースのルールは短い期間のリクエスト数の制限であり、月間クォータの管理には向かない。",
+      "decision": "fact",
+      "factRefs": [
+        "waf.rate-evaluation-window",
+        "waf.rate-limit-approximation"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-004/e",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway はステージのキャッシュを有効にして、キャッシュキーと TTL で応答を保持し、バックエンドの呼び出しを減らせる。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.cache-stage",
+        "api-gateway.cache-keys",
+        "api-gateway.cache-ttl"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-008/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Classic Load Balancer には Elastic IP アドレスを割り当てられず、固定 IP の要件を満たせない。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.static-ip-support-by-type",
+        "elb.clb-previous-generation"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-009/c",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Lambda のデフォルトのコンピューティングタイプでは、基盤のインスタンスタイプなどを利用者が指定・調整できない。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.memory-cpu",
+        "lambda.managed-instances"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-009/d",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Elastic Beanstalk は、コードをアップロードするだけで EC2、ロードバランサー、Auto Scaling の環境を自動で作り、設定の調整もできる。",
+      "decision": "fact",
+      "factRefs": [
+        "elastic-beanstalk.upload-and-provision",
+        "elastic-beanstalk.load-balanced-environment"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-010/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Lambda 関数のタイムアウトは 1 回の実行の最大時間を決める設定で、同時実行数を制限する設定ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.timeout-setting",
+        "lambda.reserved-concurrency"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-010/b",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon SQS のイベントソースマッピングには最大同時実行数の設定があり、Lambda の並列度を制限できる。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.lambda-max-concurrency"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-010/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "SQS FIFO キューを Lambda が読むときの並列度はメッセージグループ数で決まり、メッセージグループ ID を増やすと並列度の上限が増える。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.lambda-fifo-concurrency"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-011/c",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Step Functions の Standard は状態遷移数、Express は実行回数・時間・メモリで課金され、ワークフローの種類は作成後に変更できない。",
+      "decision": "fact",
+      "factRefs": [
+        "step-functions.standard-pricing",
+        "step-functions.express-pricing",
+        "step-functions.workflow-type-immutable"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-013/b",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway の HTTP API は REST API より低価格・低レイテンシーで、使用量プランなどが不要なら HTTP API を選ぶ。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.http-api-lower-price",
+        "api-gateway.rest-vs-http-features"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-013/c",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway の HTTP API は Cognito ユーザープールを発行者とする JWT オーソライザーと CORS に対応する。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.http-api-jwt-authorizer",
+        "api-gateway.http-api-cors"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-013/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon API Gateway の WebSocket API は双方向の持続的な接続向けで、組み込みの JWT オーソライザーを持たない。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.websocket-api",
+        "api-gateway.websocket-authorization"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-014/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EventBridge のルールのターゲットに設定する DLQ は、配信に失敗したイベントだけを保存する。",
+      "decision": "fact",
+      "factRefs": [
+        "eventbridge.target-dlq"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-014/d",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon EventBridge のアーカイブは有効化後に受信したイベントだけを保存し、リプレイで期間を指定して元のバスへ再発行できる。",
+      "decision": "fact",
+      "factRefs": [
+        "eventbridge.archive",
+        "eventbridge.replay"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-015/c",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon API Gateway のリクエストペイロードの上限は 10 MB で、大きなファイルを受け取れない。",
+      "decision": "fact",
+      "factRefs": [
+        "api-gateway.payload-limit-10mb"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-016/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Fargate のタスクにアタッチする Amazon EBS ボリュームは 1 つのタスク専用で、複数タスクや複数 AZ では共有できない。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.ebs-volume-one-per-task",
+        "ecs.ebs-volume-deleted-with-task",
+        "ecs.ebs-volume-fargate-support",
+        "ecs.ebs-volume-fargate-no-magnetic"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-016/b",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Fargate の一時ストレージ（エフェメラルストレージ）は拡張してもタスクごとに独立し、タスク終了で消える。",
+      "decision": "fact",
+      "factRefs": [
+        "fargate.ephemeral-storage-scope",
+        "fargate.ephemeral-storage-size"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-016/c",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon EFS は AZ ごとにマウントターゲットが必要で、セキュリティグループで NFS のポート 2049 を許可する必要がある。",
+      "decision": "fact",
+      "factRefs": [
+        "efs.mount-target-endpoint",
+        "efs.same-az-mount-target",
+        "efs.nfs-ingress",
+        "efs.nfs-egress"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-016/d",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon ECS のタスク定義で EFS ボリュームを指定すると、Fargate の各タスクに EFS をマウントでき、データはタスク終了後も残る。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.efs-volume"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-018/a",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Application Load Balancer のターゲットグループのスロースタートモードは、新しいターゲットへのリクエストを徐々に増やす。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.alb-slow-start",
+        "elb.alb-slow-start-duration",
+        "elb.alb-slow-start-limits"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-018/c",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EC2 Auto Scaling のクールダウン期間は、スケーリング活動の連続を抑える待機時間であり、短くすると不安定になりうる。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.scale-cooldown"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-018/e",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "ヘルスチェックの間隔は、スロースタートや登録解除の遅延が扱う新規ターゲットへの集中や処理中リクエストの切断には影響しない。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.alb-hc-settings",
+        "elb.alb-slow-start",
+        "elb.deregistration-delay"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-019/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon CloudFront のオリジンリクエストポリシーはオリジンへ転送する値を決めるだけで、キャッシュキーは変わらない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.origin-request-policy",
+        "cloudfront.cache-policy"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-020/c",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Lambda のメモリや一時ストレージの設定は、.zip のデプロイパッケージのサイズ上限とは無関係である。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.zip-package-limit",
+        "lambda.memory-cpu",
+        "lambda.tmp-storage"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-020/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Lambda のレイヤーは最大 5 つで、関数とレイヤーを合わせた展開後サイズにも上限がある。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.layers",
+        "lambda.zip-package-limit"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-021/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Lambda が SQS を読むとき、関数が正常終了するとバッチ内の全メッセージがキューから削除される。",
+      "decision": "fact",
+      "factRefs": [
+        "sqs.lambda-batch-delete",
+        "sqs.lambda-partial-batch"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-022/a",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Transfer Family の公開エンドポイントの IP アドレスは固定ではなく、セキュリティグループで接続元を制限できない。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.public-changing-ip",
+        "transfer-family.public-no-security-groups"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-022/b",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントはセキュリティグループで接続元の IP 範囲を制限できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.vpc-source-ip-filter"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-022/d",
+      "task": "2.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon S3 は SFTP を受け付けず、SFTP で受け取るには AWS Transfer Family を使う。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.transfer-family-sftp",
+        "transfer-family.sftp-s3-storage"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-022/e",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "AWS Transfer Family の VPC ホスト型エンドポイントに Elastic IP アドレスを関連付けると、SFTP の接続先 IP を固定できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.vpc-elastic-ip"
+      ]
+    },
+    {
+      "key": "saa-2.1-w2m-024/a",
+      "task": "2.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "DynamoDB Streams はテーブルの項目の変更を、同じ項目については順序どおりに記録する。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.streams-ordering"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-002/a",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Aurora のポイントインタイムリストアは新しい DB クラスターを作成し、エンドポイントも変わる。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.pitr"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-002/b",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Aurora クローンは作成時点の状態を複製するため、誤更新後に作ると誤更新後のデータを含む。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.clone",
+        "aurora.pitr",
+        "aurora.backtrack",
+        "aurora.clone-changes-independent"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-002/c",
+      "task": "2.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Aurora のバックトラックは、復元せずに同じ DB クラスターを指定時刻へ巻き戻す機能である。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.backtrack"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-003/d",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "EC2 の詳細モニタリングは、メトリクスの間隔を 1 分に短くする機能で、インスタンスやアプリケーションのヘルスチェックではない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.monitoring-basic-detailed"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-004/c",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "DynamoDB Accelerator（DAX）は同じリージョンの DynamoDB テーブルにしかアクセスできず、リージョン間の複製機能もない。",
+      "decision": "fact",
+      "factRefs": [
+        "dax.same-region"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-005/b",
+      "task": "2.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon S3 Multi-Region Access Points は複数リージョンのバケットに対するグローバルエンドポイントを提供し、アクティブ設定で最寄りのリージョンへ送り、障害時は自動で再ルーティングする。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.multi-region-access-points",
+        "s3.mrap-failover"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-005/d",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon CloudFront のオリジングループのフェイルオーバーは GET、HEAD、OPTIONS のリクエストに限られ、POST や PUT では切り替わらない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.failover-methods"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-007/c",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon CloudFront のオリジンフェイルオーバーは GET、HEAD、OPTIONS に限られ、POST や PUT のリクエストでは切り替わらない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.failover-methods"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-008/d",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Network Load Balancer のノードの IP アドレスは有効な AZ ごとに 1 つで、Elastic IP を追加して経路を増やすことはできず、ターゲットの分散範囲も変わらない。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.nlb-static-ip",
+        "elb.cross-zone-behavior"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-009/c",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon EC2 のパーティション配置グループでは、パーティション間でラックが分離され、同一パーティション内のインスタンスはラックを共有する。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.placement-partition"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-010/c",
+      "task": "2.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon ElastiCache のグローバルデータストアは、プライマリクラスターのデータを別リージョンのセカンダリクラスターへ自動複製し、障害時にセカンダリを昇格できる。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.global-replication",
+        "elasticache.global-manual-promotion"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-011/a",
+      "task": "2.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon Aurora では、フェイルオーバー優先度（tier 0 から 15）で、障害時にライターへ昇格するリーダーの順序を制御できる。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.failover-priority",
+        "aurora.failover-priority-tie"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-011/b",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Aurora のエンドポイントの種類は接続先の指定であり、ライターに昇格するリーダーの選択には影響せず、昇格先はフェイルオーバー優先度で決まる。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.promotion-by-priority-size",
+        "aurora.failover-priority"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-012/a",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Route 53 の同じ名前のフェイルオーバーレコードはプライマリとセカンダリで 1 組であり、複数の観点は計算されたヘルスチェックで束ねる必要がある。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.failover-record-pair",
+        "route53.calculated-health-check"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-015/c",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "DynamoDB Streams で変更前のデータを戻すには、変更前イメージを記録する事前設定と自作の復旧処理が必要で、PITR より運用負荷が高い。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.streams-view-types",
+        "dynamodb.streams-retention",
+        "dynamodb.pitr"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-016/b",
+      "task": "2.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon FSx for Windows File Server の Multi-AZ デプロイは、2 つの AZ に同期複製し、障害時に自動でスタンバイへ切り替わる SMB ファイルサーバーである。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-smb",
+        "fsx.windows-multi-az-replication",
+        "fsx.windows-multi-az-failover"
+      ]
+    },
+    {
+      "key": "saa-2.2-w2m-016/c",
+      "task": "2.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon FSx for Windows File Server の Single-AZ デプロイには別 AZ のスタンバイへの自動フェイルオーバーがない。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-single-az-boundary"
+      ]
+    },
+    {
+      "key": "saa-3.1-w2m-002/a",
+      "task": "3.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "EBS スナップショットを別リージョンへコピーしても、スナップショットから作ったボリュームの初回アクセスの遅延はなくならない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.volume-initialization",
+        "ebs.fsr",
+        "ebs.snapshot-copy-region-account"
+      ]
+    },
+    {
+      "key": "saa-3.1-w2m-002/d",
+      "task": "3.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon EBS ボリュームの全ブロックを読み取って初期化する方法は、完了まで時間がかかり、作成直後から全性能を得る要件を満たさないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.manual-initialization",
+        "ebs.volume-initialization",
+        "ebs.fsr"
+      ]
+    },
+    {
+      "key": "saa-3.1-w2m-003/d",
+      "task": "3.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon S3 は小さなオブジェクトへのランダムな読み書きを高頻度で行う用途ではリクエストのレイテンシーと費用が大きくなり、向かないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.small-object-latency"
+      ]
+    },
+    {
+      "key": "saa-3.1-w2m-006/a",
+      "task": "3.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon S3 の暗号化方式を SSE-KMS に変えても、ダウンロードの接続数や並列度は変わらず、転送時間の短縮にならないこと。",
+      "decision": "question",
+      "note": "暗号化方式を SSE-KMS に変えてもダウンロードの接続数や並列度が変わらないという否定は公式の資料で確かめられないため、転送時間を縮める手段（バイト範囲を指定した並列の取得、Transfer Acceleration など）という確かめられる根拠で誤答を退ける表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-3.2-w2m-001/c",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Lambda を定期的に呼び出して維持できる実行環境は少数で、急増する同時リクエストには新しい実行環境が必要になりコールドスタートが残る。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.concurrency-scaling-rate",
+        "lambda.cold-start",
+        "lambda.provisioned-concurrency"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-001/d",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Lambda のプロビジョニングされた同時実行はエイリアスに設定でき、Application Auto Scaling のスケジュールで時間帯ごとに増減できる。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.provisioned-alias-only",
+        "lambda.provisioned-auto-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-002/a",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EC2 Auto Scaling のヘルスチェックの猶予期間は、InService 後の異常判定による置換を猶予する設定で、初期化やトラフィック開始を早めない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.health-check-grace-period",
+        "ec2-auto-scaling.grace-period-scope"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-002/c",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Auto Scaling のウォームプールでは、ライフサイクルフックで初期化の完了を待たせてからインスタンスがプールに入り、スケールアウト時にすぐ使える状態になる。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.warm-pool-lifecycle-hook",
+        "ec2-auto-scaling.warm-pool"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-003/a",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon ECS で、EC2 インスタンスの CPU 使用率では、GPU やメモリ不足で配置できないタスクを検知できず、タスクの必要容量に基づく指標が必要になる。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.capacity-provider-reservation"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-003/b",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon ECS のキャパシティプロバイダーのマネージドスケーリングが、Auto Scaling グループの台数をタスクの需要に応じて自動調整する標準機能である。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.cluster-auto-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-003/c",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon ECS のキャパシティプロバイダーに既存の Auto Scaling グループを関連付け、マネージドスケーリングを有効にして、サービスにキャパシティプロバイダー戦略を設定する。",
+      "decision": "fact",
+      "factRefs": [
+        "ecs.asg-capacity-provider",
+        "ecs.cluster-auto-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-005/a",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "EC2 の高速コンピューティングインスタンスのうち P 系は、複数の GPU を備え、機械学習のトレーニングや HPC に向く。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.accelerated-gpu-p-family"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-006/c",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Kinesis Data Streams を読む Lambda のイベントソースマッピングでは、1 つのシャードを同時に処理するバッチ数は並列化係数で決まり、予約済み同時実行数では増えない。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.kinesis-batch-per-shard",
+        "lambda.kinesis-parallelization",
+        "lambda.reserved-concurrency"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-006/d",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Lambda のイベントソースマッピングの並列化係数を上げると、Kinesis の 1 シャードを最大 10 バッチで同時処理でき、同じパーティションキーの順序も保たれる。",
+      "decision": "fact",
+      "factRefs": [
+        "lambda.kinesis-parallelization"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-007/a",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Auto Scaling のヘルスチェックの猶予期間は異常判定による置換を猶予する設定で、動的スケーリングのメトリクス集約には影響しない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.health-check-grace-period",
+        "ec2-auto-scaling.grace-period-scope",
+        "ec2-auto-scaling.default-instance-warmup"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-007/b",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Auto Scaling の終了ポリシーはスケールイン時にどのインスタンスを終了するかを選ぶ設定で、スケールアウト時の過剰な追加は防げない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.termination-policy",
+        "ec2-auto-scaling.warmup-excludes-metrics"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-007/c",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Auto Scaling のデフォルトインスタンスウォームアップ中のインスタンスのメトリクスは、動的スケーリングの集約値に含まれず、起動直後の一時的な高い値による過剰なスケールアウトを防ぐ。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2-auto-scaling.warmup-excludes-metrics",
+        "ec2-auto-scaling.default-instance-warmup"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-008/a",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EMR のノードは EMR が管理するため、EC2 Auto Scaling グループで直接管理する構成には向かず、EMR 専用のスケーリング機能を使う。",
+      "decision": "question",
+      "note": "EMR のマネージドスケーリングとカスタム自動スケーリングでコアノードとタスクノードの容量を調整することは確かめられるが、EC2 Auto Scaling グループでの直接管理に向かないという断定は確かめられないため、EMR の容量調整は EMR のスケーリング機能で行うという肯定の形に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-3.2-w2m-008/b",
+      "task": "3.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon EMR のカスタム自動スケーリングは CloudWatch メトリクスに基づくルールの設計と調整が必要で、運用の手間が大きい。",
+      "decision": "fact",
+      "factRefs": [
+        "emr.custom-automatic-scaling",
+        "emr.managed-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.2-w2m-008/c",
+      "task": "3.2",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon EMR のマネージドスケーリングは、ワークロードのメトリクスに基づきコアノードとタスクノードの容量を、指定した最小値・最大値の範囲で自動で増減する。",
+      "decision": "fact",
+      "factRefs": [
+        "emr.managed-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-001/a",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon DynamoDB のローカルセカンダリインデックスはテーブル作成時にしか作れず、テーブルと同じパーティションキーを使う必要があること。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.lsi-at-creation",
+        "dynamodb.lsi"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-001/b",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "DynamoDB Accelerator（DAX）はキャッシュにない Scan を速くせず、アクセスパターンに合う Query の代わりにならないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "dax.query-cache",
+        "dynamodb.query-vs-scan"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-001/c",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon DynamoDB の Scan のフィルター式は読み取り後に絞り込むため読み取り費用が減らず、並列 Scan は読み取り容量を大量に消費してスロットリングを招くこと。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.scan-filter",
+        "dynamodb.parallel-scan"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-001/d",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "DynamoDB の Query は既定でソートキーの昇順で結果を返し、ScanIndexForward を false にすると降順で返す。",
+      "decision": "fact",
+      "factRefs": [
+        "dynamodb.query-sort-order"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-002/a",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Redshift のプロビジョンドクラスターのリサイズは利用者が実行する操作で、実行中はクラスターの利用に影響が出ることがある。急な同時実行の増加に自動で対応する機能ではない。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.resize-types",
+        "redshift.resize-elastic-impact",
+        "redshift.resize-elastic-node-type-change",
+        "redshift.resize-classic-impact",
+        "redshift.concurrency-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-002/c",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon Redshift のコンカレンシースケーリングは、WLM キューで有効にすると待ち行列発生時に適格な読み取りクエリを追加の容量へ自動で振り分けること。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.concurrency-scaling"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-002/d",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Redshift の手動 WLM で同時実行数を上げるとクエリごとのメモリが減り、ディスクへの書き出しが増えて遅くなり、クラスターの容量は増えないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.manual-wlm-memory"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-004/b",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon Keyspaces のオンデマンドキャパシティーモードは、過去ピークの 2 倍までの急増に即応し、それを超える短時間の急増では容量不足エラーが起こり得ること。",
+      "decision": "fact",
+      "factRefs": [
+        "keyspaces.on-demand-peak-scaling",
+        "keyspaces.on-demand-rapid-growth-errors"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-005/a",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon RDS の Enhanced Monitoring は DB インスタンスの OS メトリクスを細かい間隔で収集するだけで、負荷の原因の SQL までは分からないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.enhanced-monitoring",
+        "rds.database-insights"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-005/b",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS CloudTrail は RDS の管理 API 呼び出しの記録であり、データベース内で実行された SQL クエリの記録ではないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.cloudtrail-api-calls"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-005/c",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon CloudWatch Database Insights（Performance Insights）は DB Load を SQL、待機イベント、ユーザー、ホスト別に分析でき、エージェントのインストールが不要なこと。",
+      "decision": "question",
+      "note": "DB の負荷を待機イベント・SQL・ホスト・ユーザー別に分析できることは rds.database-insights で確かめられる。エージェント不要という否定は確かめられないため、RDS では Standard モードが既定で有効で、自己管理の PostgreSQL では CloudWatch エージェントを導入する、という肯定の形に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-3.3-w2m-005/d",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon CloudWatch の標準メトリクスは CPU 使用率などの傾向は分かるが、原因の SQL や待機イベントは分からないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.database-insights"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-006/d",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon ElastiCache for Valkey/Redis OSS のクラスターモード有効の構成は、キーを複数のシャードに分散して書き込みとデータ量を水平に拡張でき、シャードの追加（再シャーディング）もできること。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.cluster-sharding",
+        "elasticache.online-resharding"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-007/a",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon Redshift の KEY 分散スタイルで結合列を分散キーにすると、同じ値の行が同じノードのスライスに置かれ、結合時の再配布が減ること。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.key-distribution"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-007/b",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Redshift の ALL 分散は全ノードにテーブルを複製するため、更新の少ない小さなテーブル向けで、巨大なファクトテーブルには不向きなこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.all-distribution"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-007/c",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Redshift で EVEN 分散のままソートキーを追加しても、結合する行が同じスライスに置かれず、結合時の再配布は減らないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.even-distribution",
+        "redshift.sort-key",
+        "redshift.key-distribution"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-008/a",
+      "task": "3.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon OpenSearch Service は全文検索に使え、部分一致、あいまい検索、日本語の形態素解析、カテゴリごとの件数の集計に対応する。",
+      "decision": "fact",
+      "factRefs": [
+        "opensearch.full-text-search",
+        "opensearch.japanese-analysis",
+        "opensearch.sql-fuzzy-matching",
+        "opensearch.sql-aggregations"
+      ]
+    },
+    {
+      "key": "saa-3.3-w2m-008/d",
+      "task": "3.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "ElastiCache はキーを指定して値を取り出すインメモリのデータストアで、属性への部分一致・あいまい検索や集計のための検索エンジンではない。",
+      "decision": "question",
+      "note": "誤りは、キーを指定した取得だけでは部分一致・あいまい検索・集計ができないという使い方の側にあり、サービスの機能の有無として公式の資料で直接言える否定ではない。図鑑の事実では埋めず（正解の側の全文検索は opensearch.full-text-search に書いてある）、選択肢か解説の表現の見直しとして別に追う。見直しはまだしていない（2026-11-22）。"
+    },
+    {
+      "key": "saa-3.4-g8-009/c",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "VPC の CIDR の先頭に 2 を足したアドレスの Amazon DNS サーバーは VPC の内部用で、VPN や Direct Connect 越しのオンプレミスからは直接使えない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.dns-not-reachable-outside"
+      ]
+    },
+    {
+      "key": "saa-3.4-g8-011/a",
+      "task": "3.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Site-to-Site VPN のアクセラレーションは、Transit Gateway にアタッチする VPN 接続でだけ使える。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.acceleration-gateway-support"
+      ]
+    },
+    {
+      "key": "saa-3.4-g8-011/b",
+      "task": "3.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "アクセラレーションを有効にした Site-to-Site VPN は AWS Global Accelerator を使い、最寄りのエッジから AWS のネットワークで届け、既存の接続には後から有効にできず新規作成が必要。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.accelerated-routing",
+        "site-to-site-vpn.acceleration-immutable"
+      ]
+    },
+    {
+      "key": "saa-3.4-g8-011/c",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "仮想プライベートゲートウェイは高速化された Site-to-Site VPN に対応せず、既存の VPN 接続のアクセラレーションは後から変更できない。",
+      "decision": "fact",
+      "factRefs": [
+        "site-to-site-vpn.acceleration-gateway-support",
+        "site-to-site-vpn.acceleration-immutable"
+      ]
+    },
+    {
+      "key": "saa-3.4-g8-012/a",
+      "task": "3.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Route 53 の位置情報ルーティングでは、デフォルトのレコードが、どの場所にも当てはまらない問い合わせと位置を特定できない問い合わせへの回答になる。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.geolocation-default-record"
+      ]
+    },
+    {
+      "key": "saa-3.4-g8-012/c",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Route 53 の位置情報ルーティングでデフォルトのレコードがないと、該当するレコードのない問い合わせに回答が返らない。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.geolocation-no-answer"
+      ]
+    },
+    {
+      "key": "saa-3.4-w2m-001/c",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon VPC IP Address Manager（IPAM）は、IP アドレスの計画・割り当て・追跡・監視を一元化する VPC の機能である。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.ipam"
+      ]
+    },
+    {
+      "key": "saa-3.4-w2m-001/d",
+      "task": "3.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon VPC の VPC 共有では、AWS RAM でサブネットを他のアカウントと共有し、所有者が VPC・ルート・オンプレミス接続を一元管理し、参加アカウントが共有サブネットにリソースを作成できる。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.sharing-basics",
+        "vpc.sharing-responsibilities"
+      ]
+    },
+    {
+      "key": "saa-3.4-w2m-003/a",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "X-Forwarded-For は HTTP のヘッダーで、HTTP を理解する Application Load Balancer が付加し、Network Load Balancer は付加しない。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.alb-xff",
+        "elb.nlb-client-ip-preservation"
+      ]
+    },
+    {
+      "key": "saa-3.4-w2m-003/c",
+      "task": "3.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Network Load Balancer のターゲットグループでプロキシプロトコル v2 を有効にすると、接続元の情報が TCP 接続の先頭のヘッダーで渡され、アプリケーションが解析してクライアント IP を取得できる。",
+      "decision": "fact",
+      "factRefs": [
+        "elb.nlb-proxy-protocol-v2"
+      ]
+    },
+    {
+      "key": "saa-3.4-w2m-004/a",
+      "task": "3.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon API Gateway の REST API は gRPC（HTTP/2 のストリーミング）に対応していない。",
+      "decision": "question",
+      "note": "API Gateway の REST API が gRPC に対応しないことは API Gateway の公式の資料で確かめられないため、gRPC を扱えるサービス（ALB のターゲットグループのプロトコルバージョン gRPC など）を示す肯定の根拠で誤答を退ける表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-3.5-w2m-003/a",
+      "task": "3.5",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon AppFlow は Salesforce から S3 へのフローで、項目のマスキングや必須項目の検証を設定だけで行えること。",
+      "decision": "fact",
+      "factRefs": [
+        "appflow.field-masking",
+        "appflow.required-field-validation"
+      ]
+    },
+    {
+      "key": "saa-3.5-w2m-003/d",
+      "task": "3.5",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS DMS のレプリケーションタスクは Salesforce をソースエンドポイントとしてサポートしていないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.source-endpoint-scope"
+      ]
+    },
+    {
+      "key": "saa-3.5-w2m-006/c",
+      "task": "3.5",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon Athena のワークグループはクエリ実行の管理単位で、列ごとのアクセス制御の機能ではなく機密列を除外できないこと。",
+      "decision": "fact",
+      "factRefs": [
+        "athena.workgroups",
+        "athena.lake-formation-query"
+      ]
+    },
+    {
+      "key": "saa-3.5-w2m-006/d",
+      "task": "3.5",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Lake Formation でクロスアカウントに列限定の SELECT 権限を付与し、共有先ではロールへの権限付与とリソースリンク作成を行って Athena で照会する手順。",
+      "decision": "fact",
+      "factRefs": [
+        "lake-formation.cross-account-column-select",
+        "lake-formation.cross-account-grant-option",
+        "lake-formation.recipient-regrant",
+        "lake-formation.athena-resource-links",
+        "lake-formation.resource-link-describe",
+        "lake-formation.resource-link-target-permissions"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-001/b",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "S3 Glacier Flexible Retrieval の取り出しには迅速・標準・大容量があり、迅速取り出しは最も速い代わりに料金が最も高い。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.glacier-retrieval-tiers"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-002/a",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Cost Explorer はバケット別の費用は示せても、非現行バージョンや不完全なマルチパートアップロードの容量内訳は示せない。",
+      "decision": "question",
+      "note": "Cost Explorer でバケット（リソース ID）単位の費用を分析できることは確かめられるが、非現行バージョンや未完了のマルチパートアップロードの容量の内訳を示せないという断定は確かめられないため、その容量を示す S3 Storage Lens の指標との対比で誤答を退ける表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.1-w2m-002/b",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Trusted Advisor の S3 ライフサイクル関連チェックは設定不備の検出であり、非現行バージョンや不完全なマルチパートアップロードの容量を可視化しない。",
+      "decision": "question",
+      "note": "Trusted Advisor の S3 のチェックがライフサイクルポリシーや未完了のマルチパートアップロードの中止ルールの有無を調べるものであることは確かめられるが、容量を可視化しないという否定の明記は確かめられないため、チェックが調べる内容（設定の有無）を根拠にした表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.1-w2m-002/c",
+      "task": "4.1",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "S3 Storage Lens は組織全体のバケットの使用状況を一覧でき、コスト最適化の指標で非現行バージョンや不完全なマルチパートアップロードの無駄を特定できる。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.storage-lens",
+        "s3.storage-lens-cost-metrics"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-002/d",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "S3 インベントリと Athena では非現行バージョンの分析はできるが、不完全なマルチパートアップロードの容量は取得できない。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.inventory",
+        "s3.inventory-size-field"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-003/b",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon FSx for Windows File Server のストレージ容量は増やせるが縮小できない。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.windows-storage-increase-only"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-003/c",
+      "task": "4.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon FSx for Windows File Server には HDD ストレージ(SSD より低料金)とデータ重複排除があり、DataSync は NTFS ACL を保ったまま移行できる。",
+      "decision": "fact",
+      "factRefs": [
+        "datasync.smb-ntfs-metadata",
+        "fsx.windows-hdd-cost",
+        "fsx.windows-deduplication"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-006/a",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon EFS のスループットモード(プロビジョニング)の設定はスループット料金に関わり、保存容量の料金は変えない。",
+      "decision": "fact",
+      "factRefs": [
+        "efs.provisioned-throughput-pricing",
+        "efs.storage-pricing"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-006/c",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "EBS マルチアタッチでデータを共有するにはクラスター対応のファイルシステムが必要で、NFS の代替にはならない。",
+      "decision": "fact",
+      "factRefs": [
+        "ebs.multi-attach-clustered-fs"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-007/b",
+      "task": "4.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon FSx for NetApp ONTAP のボリューム階層化ポリシー Auto はコールドデータを容量プールへ移すが、SSD 容量を縮小して初めて SSD 料金が下がる。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.ontap-auto-tiering",
+        "fsx.ontap-ssd-provisioned-billing",
+        "fsx.ontap-ssd-decrease-generation"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-007/c",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon FSx for NetApp ONTAP の階層化ポリシー Snapshot-only はスナップショットのデータだけを容量プールへ移し、ユーザーデータは SSD に残る。",
+      "decision": "fact",
+      "factRefs": [
+        "fsx.ontap-snapshot-only-tiering"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-008/a",
+      "task": "4.1",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Transfer Family のサーバーは停止中も削除するまで時間課金が続くため、停止しても費用削減にならない。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.endpoint-hourly-billing"
+      ]
+    },
+    {
+      "key": "saa-4.1-w2m-008/c",
+      "task": "4.1",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "AWS Transfer Family は 1 つのサーバーに複数ユーザーを作成でき、ユーザーごとのホームディレクトリと IAM ロールで S3 へのアクセスを分離できる。",
+      "decision": "fact",
+      "factRefs": [
+        "transfer-family.multiple-server-users",
+        "transfer-family.user-s3-access-role",
+        "transfer-family.user-home-directory"
+      ]
+    },
+    {
+      "key": "saa-4.2-w2m-001/c",
+      "task": "4.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "AWS Trusted Advisor の使用率の低い EC2 インスタンスのチェックは、適切なインスタンスタイプやサイズを推奨せず、メモリ使用率も判断に使わない。",
+      "decision": "question",
+      "note": "従来の低使用率の EC2 チェックの判定が CPU 使用率とネットワーク I/O であることは確かめられるが、Cost Optimization Hub の推奨を表示する現行のチェックもあるため「適切なタイプやサイズを推奨しない」は言い過ぎで、対象を従来のチェックに限った表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.2-w2m-006/a",
+      "task": "4.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Reserved Instances を Savings Plans に変換する仕組みはなく、購入済みの RI はそのまま残る。",
+      "decision": "question",
+      "note": "RI を Savings Plans に変換できないという明記は確かめられないため、RI は購入後に取り消せず変更・交換・Marketplace での販売で対応すること（ec2.ri-no-cancel）と、Savings Plans は RI と重ねて適用されないことという確かめられる事実に沿った表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.2-w2m-006/b",
+      "task": "4.2",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "購入した Reserved Instances は基本的にキャンセルして払い戻しを受けられない。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.ri-no-cancel"
+      ]
+    },
+    {
+      "key": "saa-4.2-w2m-006/d",
+      "task": "4.2",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Standard Reserved Instances は出品条件を満たせば Reserved Instance Marketplace で販売でき、手数料を差し引いた代金を受け取れる。",
+      "decision": "fact",
+      "factRefs": [
+        "ec2.ri-marketplace-standard-only"
+      ]
+    },
+    {
+      "key": "saa-4.2-w2m-008/d",
+      "task": "4.2",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon EKS のマネージドノードグループでは、ワーカーノードの OS や AMI の更新は利用者の責任で、クラスターごとの料金も別にかかる。",
+      "decision": "fact",
+      "factRefs": [
+        "eks.mng-responsibility",
+        "eks.cluster-pricing"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-001/c",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Aurora のリーダー追加はインスタンス費用を増やし、ストレージ I/O 課金を確実には減らさない。",
+      "decision": "fact",
+      "factRefs": [
+        "aurora.replica-cost"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-002/b",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のリザーブド DB インスタンスは PostgreSQL ではサイズ柔軟性があり、3 年の期間では前払いなしを選べない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.ri-size-flexible",
+        "rds.ri-payment-options"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-002/d",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のリザーブド DB インスタンスのサイズ柔軟性は同じインスタンスファミリー内に限られ、別ファミリーには適用されない。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.ri-size-flexible-family"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-003/c",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のスナップショットは Apache Parquet 形式で S3 にエクスポートでき、S3 Glacier Instant Retrieval はミリ秒で取り出せ Athena で分析できる。",
+      "decision": "fact",
+      "factRefs": [
+        "s3.glacier-instant-retrieval",
+        "s3.glacier-instant-retrieval-retrieval-fee",
+        "s3.glacier-instant-retrieval-min-duration",
+        "rds.snapshot-export-s3",
+        "athena.glacier-restored-objects"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-003/d",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS Backup の RDS の復旧ポイントは、コールドストレージへのライフサイクル移行の対象外である。",
+      "decision": "fact",
+      "factRefs": [
+        "backup.rds-no-cold-storage"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-004/c",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon RDS は DB インスタンスを一時停止でき、停止中はインスタンスの時間料金がかからず、EventBridge Scheduler で停止と起動を自動化できる。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.stop-instance",
+        "eventbridge.scheduler-targets"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-004/d",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon RDS の停止・起動は、スナップショットの取得・削除・復元より少ない手順で、使わない時間の料金を減らせる。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.stop-vs-snapshot",
+        "rds.stop-instance"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-005/b",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "ElastiCache のノードタイプを小さくしてノード数を増やしても全データがメモリに残り、データ階層化のようにアクセス頻度の偏りを使った費用削減にならない。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.memory-only-sharding",
+        "elasticache.data-tiering-lru",
+        "elasticache.data-tiering-cost"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-005/c",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon ElastiCache の R6gd ノードはデータ階層化に対応し、アクセスの少ない値をローカル SSD に自動で移してメモリ費用を下げる。",
+      "decision": "fact",
+      "factRefs": [
+        "elasticache.data-tiering-r6gd",
+        "elasticache.data-tiering-lru",
+        "elasticache.data-tiering-cost"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-005/d",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "ElastiCache の Valkey から Memcached に移してもすべてのデータがメモリに残り、クライアントの変更も必要になる。",
+      "decision": "question",
+      "note": "Memcached がデータ階層化に対応せずデータがメモリに残ることは確かめられるが、Valkey から移すと必ずクライアントの変更が要るという断定は確かめられないため、誤答の理由をデータ階層化の非対応に絞った表現に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.3-w2m-006/a",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Redshift のクラスターは一時停止と再開ができ、スナップショットの取得・削除・復元より少ない手順で使わない時間の費用を減らせる。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.pause-resume",
+        "redshift.pause-billing"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-006/b",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon Redshift のリサイズでは最小構成のノード料金が残り、一時停止ならコンピューティング料金を止められる。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.resize-capacity",
+        "redshift.on-demand-nodes",
+        "redshift.pause-billing"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-006/c",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Redshift のリザーブドノードは、使っているかどうかや一時停止にかかわらず、契約期間の料金が発生する。",
+      "decision": "fact",
+      "factRefs": [
+        "redshift.reserved-nodes-billing"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-006/d",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "Amazon Redshift は一時停止中はコンピューティング料金が止まりデータが保持され、スケジュールされたアクションで自動化でき、RA3 のストレージ料金は続く。",
+      "decision": "question",
+      "note": "一時停止でコンピューティング料金が止まること、一時停止時にスナップショットが作られること、スケジュールで自動化できることは確かめられるが、停止中に続く料金を公式の資料はバックアップストレージの料金と説明しており「RA3 のストレージ料金が続く」とは確かめられないため、その表現を見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.3-w2m-007/b",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "AWS DMS のレプリケーションインスタンスは固定サイズで、平均負荷に合わせるとピーク時に遅延が増える。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.replication-instance-resizing",
+        "dms.replication-cpu-capacity"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-007/c",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "AWS DMS Serverless は最小と最大の DCU の範囲で容量を自動調整し、レプリケーションインスタンスの見積もりを不要にする。",
+      "decision": "fact",
+      "factRefs": [
+        "dms.serverless-management",
+        "dms.serverless-autoscaling"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-008/a",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のストレージ自動スケーリングは、空き容量が少なくなると自動でストレージを拡張し、手動の容量確認を不要にする。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.storage-autoscaling"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-008/b",
+      "task": "4.3",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Amazon RDS のストレージ自動スケーリングは最大しきい値まで自動で拡張でき、小さく始めて容量不足を避けられる。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.storage-autoscaling"
+      ]
+    },
+    {
+      "key": "saa-4.3-w2m-008/d",
+      "task": "4.3",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "Amazon RDS の DB インスタンスの割り当てストレージは設定変更で縮小できず、縮小にはブルー/グリーンデプロイなどでの移行が必要になる。",
+      "decision": "fact",
+      "factRefs": [
+        "rds.storage-no-shrink"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-001/b",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "インターフェイス VPC エンドポイントを共有サービス VPC に集約し、プライベート DNS を無効にして Route 53 のプライベートホストゾーンで名前解決し Transit Gateway 経由で共有できる。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.interface-endpoint-central",
+        "vpc.interface-endpoint-private-dns"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-001/d",
+      "task": "4.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "インターフェイス VPC エンドポイントの ENI は依頼者管理で直接削除できず、AZ を減らすにはサブネットの関連付けを解除する。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.interface-endpoint-enis"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-003/d",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "IPv6 アドレスにはパブリック IPv4 アドレスのような料金がかからず、デュアルスタック化すれば IPv4 を外して費用を下げられる。",
+      "decision": "question",
+      "note": "すべてのパブリック IPv4 アドレスが課金されることは確かめられるが、IPv6 アドレスに料金がかからずデュアルスタック化で費用を下げられるという点は公式の資料で確かめられないため、パブリック IPv4 アドレスの数を減らすことで費用を下げるという確かめられる形に見直した（2026-11-20）。"
+    },
+    {
+      "key": "saa-4.4-w2m-005/b",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "CloudFront の Price Class 200 は北米・欧州・アジアの主要ロケーションを含み、南米とオセアニアを除外する。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.price-class-200"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-005/d",
+      "task": "4.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "CloudFront の Price Class 100 は米国・カナダ・欧州・イスラエルのみを対象とし、アジアを含まない。",
+      "decision": "fact",
+      "factRefs": [
+        "cloudfront.price-class-100"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-006/c",
+      "task": "4.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Route 53 Resolver のエンドポイントは ENI ごとに時間料金がかかるため、VPC ごとに作ると費用が積み上がる。",
+      "decision": "fact",
+      "factRefs": [
+        "route53.resolver-endpoint-eni-pricing"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-006/d",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "Route 53 Resolver の転送ルールは AWS RAM で共有でき、1 つのアウトバウンドエンドポイントを複数の VPC とアカウントで使える。",
+      "decision": "fact",
+      "factRefs": [
+        "ram.resolver-rule-sharing"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-007/b",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "partial",
+      "knowledge": "共有のエグレス用 VPC に NAT ゲートウェイを集約し、Transit Gateway 経由で各 VPC のインターネット向け通信を出す構成で、Transit Gateway のデータ処理料金との比較が必要になる。",
+      "decision": "lesson",
+      "note": "エグレス用 VPC の NAT ゲートウェイに Transit Gateway 経由で通信を集約する構成と、VPC ごとの NAT の時間料金と Transit Gateway のアタッチメント・データ処理料金の比較は、複数サービスにまたがる設計パターンなのでレッスンで扱う（料金の個々の事実は nat-gateway.hourly-pricing と transit-gateway.data-processing-pricing にある）。"
+    },
+    {
+      "key": "saa-4.4-w2m-008/a",
+      "task": "4.4",
+      "side": "incorrect",
+      "gap": "none",
+      "knowledge": "一部のリージョンの旧アカウントでは、同じ AZ 名がアカウントごとに異なる物理 AZ を指すため、AZ 名では同じ物理 AZ を保証できない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.az-id",
+        "ec2.az-name-mapping"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-008/b",
+      "task": "4.4",
+      "side": "correct",
+      "gap": "none",
+      "knowledge": "AZ ID はアカウント間で共通のため、AZ ID を揃えれば同じ物理 AZ にリソースを配置できる。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.az-id",
+        "ec2.az-id"
+      ]
+    },
+    {
+      "key": "saa-4.4-w2m-008/c",
+      "task": "4.4",
+      "side": "incorrect",
+      "gap": "partial",
+      "knowledge": "Transit Gateway への切り替えでは、リソースが同じ物理 AZ に配置されたかどうかを AZ ID なしでは確認できない。",
+      "decision": "fact",
+      "factRefs": [
+        "vpc.az-id",
+        "ec2.az-id"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "id": "transfer-family",
+  "tier": 2,
+  "summary": "SFTP・FTPS・FTP・AS2 などを使うファイル転送を管理するサービスである。転送用サーバー基盤を自分で運用せずに、既存のクライアントを使った Amazon S3 や Amazon EFS へのファイル転送を実現できる。",
+  "chooseWhen": [
+    {
+      "text": "既存の SFTP クライアントを使い続け、転送用サーバー基盤の運用を AWS に任せたい場合。",
+      "factRefs": [
+        "transfer-family.existing-clients"
+      ]
+    },
+    {
+      "text": "取引先から SFTP で受信したファイルを Amazon S3 に保存したい場合。",
+      "factRefs": [
+        "transfer-family.sftp-s3-storage"
+      ]
+    },
+    {
+      "text": "SFTP の接続先 IP を固定し、接続元 IP 範囲も制限する VPC ホスト型サーバーを用意したい場合。",
+      "factRefs": [
+        "transfer-family.vpc-source-ip-filter",
+        "transfer-family.vpc-elastic-ip"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "インターネットから平文の FTP でサーバーに接続する必要がある場合。",
+      "factRefs": [
+        "transfer-family.ftp-internal-only"
+      ]
+    },
+    {
+      "text": "サーバーを削除せず、停止するだけでエンドポイントの時間課金を止めたい場合。",
+      "factRefs": [
+        "transfer-family.endpoint-hourly-billing"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "transfer-family.existing-clients",
+      "title": "既存のファイル転送クライアントを継続利用",
+      "kind": "feature",
+      "text": "AWS Transfer Family では、対応する転送プロトコルを有効にしたサーバーへ、既存のファイル転送クライアントで接続できる。利用者のクライアントや設定を維持しながら、転送用サーバー基盤の運用を AWS に任せられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Transfer Family? - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.sftp-s3-storage",
+      "title": "SFTP の転送先に Amazon S3 を指定",
+      "kind": "integration",
+      "text": "AWS Transfer Family の SFTP 対応サーバーは、ストレージとして Amazon S3 を指定できる。SFTP クライアントから転送されたファイルを、指定した S3 バケットにオブジェクトとして保存する用途で組み合わせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create an SFTP-enabled server - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-server-sftp.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.public-changing-ip",
+      "title": "PUBLIC 型の IP アドレスは変更され得る",
+      "kind": "constraint",
+      "text": "AWS Transfer Family の PUBLIC 型エンドポイントには、固定 IP アドレスを関連付けられない。AWS が割り当てる IP アドレスは変更され得るため、クライアント側のファイアウォールでは IP アドレスによる許可リストの使用を避ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring an SFTP, FTPS, or FTP server endpoint - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/sftp-for-transfer-family.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.public-no-security-groups",
+      "title": "PUBLIC 型にはセキュリティグループを使えない",
+      "kind": "constraint",
+      "text": "AWS Transfer Family の PUBLIC 型エンドポイントでは、セキュリティグループを使って通信を制限できない。サーバーへの接続をセキュリティグループで制御するには、エンドポイントを VPC 内にホストする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Create an SFTP-enabled server - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/create-server-sftp.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.vpc-source-ip-filter",
+      "title": "VPC ホスト型で接続元 IP を制限",
+      "kind": "feature",
+      "text": "AWS Transfer Family の VPC ホスト型エンドポイントでは、エンドポイントに関連付けたセキュリティグループで接続元 IP アドレスを制限できる。インターネット向けに公開する構成でも、指定したクライアントの IP 範囲からの通信だけを許可できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring an SFTP, FTPS, or FTP server endpoint - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/sftp-for-transfer-family.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.vpc-elastic-ip",
+      "title": "インターネット向け VPC ホスト型の固定 IP",
+      "kind": "feature",
+      "text": "AWS Transfer Family の VPC ホスト型エンドポイントをインターネット向けに構成すると、Elastic IP アドレスを関連付けられる。SFTP クライアント側のファイアウォールで、接続先を固定 IP アドレスとして許可する用途に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring an SFTP, FTPS, or FTP server endpoint - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/sftp-for-transfer-family.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.endpoint-hourly-billing",
+      "title": "停止中もエンドポイントの時間課金は継続",
+      "kind": "pricing",
+      "text": "AWS Transfer Family のサーバーエンドポイントは、作成してプロトコルによるアクセスを設定してから削除するまで、有効なプロトコルごとに時間課金される。サーバーを停止しても、この時間課金は続く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transfer Family FAQs | Amazon Web Services",
+          "url": "https://aws.amazon.com/aws-transfer-family/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.multiple-server-users",
+      "title": "同じサーバーに複数のユーザーを登録",
+      "kind": "feature",
+      "text": "AWS Transfer Family でサービスマネージド型の認証を使う場合、同じファイル転送サーバーに複数のユーザーを追加できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with service-managed users - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/service-managed-users.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.user-s3-access-role",
+      "title": "ユーザーに対応付けた IAM ロールで S3 利用を制御",
+      "kind": "integration",
+      "text": "AWS Transfer Family でユーザーごとの S3 アクセス範囲を分けるときは、ユーザー名に対応付ける IAM ロールを使う。Transfer Family は、そのロールに基づいてアクセスできるバケットやバケット内の範囲、許可するファイル操作を決定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transfer Family FAQs | Amazon Web Services",
+          "url": "https://aws.amazon.com/aws-transfer-family/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.user-home-directory",
+      "title": "ユーザーごとのホームディレクトリを設定",
+      "kind": "feature",
+      "text": "AWS Transfer Family の S3 ユーザーには、ホームディレクトリを個別に設定できる。ここで指定したバケット内のパスが、認証に成功したクライアントを最初に配置するディレクトリになる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with service-managed users - AWS Transfer Family",
+          "url": "https://docs.aws.amazon.com/transfer/latest/userguide/service-managed-users.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "transfer-family.ftp-internal-only",
+      "title": "FTP は VPC ホスト型の内部アクセスのみ",
+      "kind": "constraint",
+      "text": "AWS Transfer Family で平文の FTP を有効にする場合は、VPC ホスト型エンドポイントの内部アクセス構成を使う。FTP のインターネット向けエンドポイントは利用できず、公開ネットワークを通る転送には SFTP や FTPS を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transfer Family FAQs | Amazon Web Services",
+          "url": "https://aws.amazon.com/aws-transfer-family/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Transfer Family? - AWS Transfer Family",
+      "url": "https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html"
+    },
+    {
+      "title": "AWS Transfer Family FAQs | Amazon Web Services",
+      "url": "https://aws.amazon.com/aws-transfer-family/faqs/"
+    }
+  ],
+  "createdBy": "cx34",
+  "createdAt": "2026-11-16"
+}

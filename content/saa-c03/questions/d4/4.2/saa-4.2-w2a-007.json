@@ -33,7 +33,7 @@
       "id": "c",
       "text": "AWS Lambda 関数としてコンテナイメージをデプロイし、EventBridge のスケジュールで毎日起動する。",
       "correct": false,
-      "rationale": "Lambda には 1 回の実行時間に最大 15 分の上限があり、約 1 時間かかる処理は完了できません。"
+      "rationale": "通常の Lambda 関数は 1 回の実行時間が最大 30 分で、約 1 時間かかる処理は完了できません。関数に割り当てられるメモリも最大 10,240 MB で、16 GiB には足りません。"
     },
     {
       "id": "d",
@@ -42,13 +42,17 @@
       "rationale": "クラスターの料金とノードの常時稼働の料金がかかり、ノードの管理も必要です。1 日に 1 時間の処理には割高で、サーバーを管理しない要件にも反します。"
     }
   ],
-  "explanation": "コンピューティングサービスは、「実行時間」と「管理の手間」で選びます。\n\n・AWS Lambda: イベント駆動で短時間の処理向け。1 回の実行は最大 15 分。実行した分だけの課金。\n・AWS Fargate: コンテナをサーバーの管理なしで実行する。実行時間に応じた課金で、Lambda の時間制限を超える処理に使える。ECS と EKS で使える。\n・Amazon EC2: インスタンスを自分で管理する。常時稼働で安定して使うなら、Savings Plans などで割引を受けられる。\n\nこの問題の処理は、1 日 1 時間のバッチで、コンテナ化されています。Fargate のタスクをスケジュールで起動すれば、使った時間分だけの料金で、サーバー管理も不要になります。",
+  "explanation": "コンピューティングサービスは、「実行時間」と「管理の手間」で選びます。\n\n・AWS Lambda: イベント駆動で短時間の処理向け。通常の関数は 1 回の実行が最大 30 分。実行した分だけの課金。\n・AWS Fargate: コンテナをサーバーの管理なしで実行する。実行時間に応じた課金で、Lambda の時間制限を超える処理に使える。ECS と EKS で使える。\n・Amazon EC2: インスタンスを自分で管理する。常時稼働で安定して使うなら、Savings Plans などで割引を受けられる。\n\nこの問題の処理は、1 日 1 時間のバッチで、コンテナ化されています。Fargate のタスクをスケジュールで起動すれば、使った時間分だけの料金で、サーバー管理も不要になります。",
   "keyPoints": [
     "コンテナのバッチをサーバー管理なしで、使った時間分だけの料金で実行 → AWS Fargate（スケジュール起動）",
-    "Lambda は 1 回の実行が最大 15 分。長時間の処理には使えない",
+    "通常の Lambda 関数は 1 回の実行が最大 30 分。長時間の処理には使えない",
     "常時使う安定した負荷なら EC2＋Savings Plans のほうが安くなることがある"
   ],
   "references": [
+    {
+      "title": "Lambda quotas - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
     {
       "title": "AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
       "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"

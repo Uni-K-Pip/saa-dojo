@@ -1,0 +1,32 @@
+{
+  "id": "cmp-cloudfront-global-accelerator",
+  "title": "Amazon CloudFront と AWS Global Accelerator",
+  "services": [
+    "cloudfront",
+    "global-accelerator"
+  ],
+  "decide": [
+    "世界中の利用者へ静的・動的な Web コンテンツをキャッシュして低遅延で届けたいなら CloudFront",
+    "S3 バケットを公開せずに、CloudFront 経由だけで配信したいなら CloudFront",
+    "ゲーム（UDP）、IoT（MQTT）、Voice over IP など、HTTP 以外の通信の性能を上げたいなら Global Accelerator",
+    "TCP・UDP の通信を、固定のエニーキャスト IP アドレスで受けたいなら Global Accelerator",
+    "DNS のキャッシュの更新を待たずに、正常なエンドポイントへ通信を切り替えたいなら Global Accelerator"
+  ],
+  "docRef": "cheatsheet-cloudfront-global-accelerator",
+  "sources": [
+    {
+      "title": "What is Amazon CloudFront? - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+    },
+    {
+      "title": "Restrict access to an AWS origin - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-origin.html"
+    },
+    {
+      "title": "AWS Global Accelerator FAQs - Amazon Web Services",
+      "url": "https://aws.amazon.com/global-accelerator/faqs/"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc23"
+}

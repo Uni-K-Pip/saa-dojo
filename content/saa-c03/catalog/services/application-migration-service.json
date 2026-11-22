@@ -1,0 +1,295 @@
+{
+  "id": "application-migration-service",
+  "tier": 2,
+  "summary": "物理・仮想・クラウドのサーバーを、アプリケーションを変更せずに最小のダウンタイムで EC2 へ移行するサービス。ブロックレベルの継続的なレプリケーション、テスト、切り替えで進める。現在は AWS Transform MGN の名前で案内されている。",
+  "chooseWhen": [
+    {
+      "text": "アプリを改修せず、サーバーを最小のダウンタイムで EC2 へ移したいとき",
+      "factRefs": [
+        "application-migration-service.overview",
+        "application-migration-service.rehost-no-changes",
+        "application-migration-service.source-support"
+      ]
+    },
+    {
+      "text": "切り替えの前に、AWS 上でテストして動作を確かめてから移したいとき",
+      "factRefs": [
+        "application-migration-service.test-instances",
+        "application-migration-service.cutover-launch"
+      ]
+    },
+    {
+      "text": "多数のサーバーを、アプリケーションやウェーブにまとめて移行したいとき",
+      "factRefs": [
+        "application-migration-service.waves"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "切り替えのあとも複製を続け、災害時の復旧に備えたいとき",
+      "factRefs": [
+        "application-migration-service.finalize-cutover",
+        "elastic-disaster-recovery.overview"
+      ],
+      "alternatives": [
+        "elastic-disaster-recovery"
+      ]
+    },
+    {
+      "text": "サーバー全体ではなく、データベースのデータだけを移したいとき",
+      "factRefs": [
+        "dms.engine-migrations"
+      ],
+      "alternatives": [
+        "dms"
+      ]
+    },
+    {
+      "text": "サーバー全体ではなく、ファイルやオブジェクトのデータだけを転送したいとき",
+      "factRefs": [
+        "datasync.overview"
+      ],
+      "alternatives": [
+        "datasync"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "application-migration-service.overview",
+      "title": "サーバーを最小のダウンタイムで AWS へ移行する",
+      "kind": "feature",
+      "text": "物理・仮想・クラウドのサーバーを、最小のダウンタイムで AWS へ移行する仕組みを自動化するサービスである。ソースサーバーのブロックレベルの継続的なレプリケーションを行い、AWS 上で起動できる形に変換する。切り替え（カットオーバー）の時間は通常、数分である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        },
+        {
+          "title": "Rehost applications to AWS - AWS Transform MGN",
+          "url": "https://aws.amazon.com/application-migration-service/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.rename",
+      "title": "現在の名前は AWS Transform MGN",
+      "kind": "feature",
+      "text": "現在の公式のページでは、このサービスは AWS Transform MGN（MGN）の名前で案内されている。製品のページは、旧称を AWS Application Migration Service と書いている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Rehost applications to AWS - AWS Transform MGN",
+          "url": "https://aws.amazon.com/application-migration-service/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.rehost-no-changes",
+      "title": "アプリケーションやサーバーを変更せずにリホストする",
+      "kind": "feature",
+      "text": "移行するアプリケーション、そのアーキテクチャ、移行するサーバーを変更せずに、幅広いアプリケーションに同じ自動化された手順を使える。ソース環境を変更せずに、ワークロードをネイティブの Amazon EC2 インスタンスへ移行できる。",
+      "examPoint": "アプリを改修しないリホストで、サーバーを EC2 へ移す場面に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transform MGN FAQs",
+          "url": "https://aws.amazon.com/application-migration-service/faqs/"
+        },
+        {
+          "title": "Rehost applications to AWS - AWS Transform MGN",
+          "url": "https://aws.amazon.com/application-migration-service/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.replication-agent",
+      "title": "AWS Replication Agent をソースサーバーに入れる",
+      "kind": "feature",
+      "text": "移行するサーバーには AWS Replication Agent をインストールして、サービスに追加する。エージェントはサーバーのボリュームを最初にブロックレベルで読み取り、そのあとは書き込みを捉えて、ブロックレベルの変更をレプリケーションサーバーへ複製する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.source-support",
+      "title": "移行元にできるインフラ",
+      "kind": "feature",
+      "text": "物理サーバー、VMware vSphere、Microsoft Hyper-V、他のクラウドプロバイダーのサーバーから、アプリケーションを AWS へ移行できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transform MGN FAQs",
+          "url": "https://aws.amazon.com/application-migration-service/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.test-instances",
+      "title": "切り替えの前にテストインスタンスで動作を確かめる",
+      "kind": "feature",
+      "text": "テストインスタンスは、ソースサーバーが AWS 上で正しく動くかを、切り替えの前に確かめるために起動するインスタンスである。テストは何度でも行え、テストのあともレプリケーションは続く。新しいテストのたびに、前のテストインスタンスは削除される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        },
+        {
+          "title": "Launching test instances",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/launching-test-servers.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.cutover-launch",
+      "title": "切り替えで最新の状態のカットオーバーインスタンスを起動する",
+      "kind": "feature",
+      "text": "切り替え（カットオーバー）で、ソースサーバーは AWS 上のカットオーバーインスタンスへ移行される。新しいカットオーバーのたびに、前のテストインスタンスが削除され、ソースサーバーの最新の状態を反映したカットオーバーインスタンスが起動する。",
+      "examPoint": "切り替えは日時を決めて行い、1 台ずつでも複数台を同時にでもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Launching cutover instances",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/launch-cutover.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.finalize-cutover",
+      "title": "切り替えの確定でレプリケーションが止まる",
+      "kind": "feature",
+      "text": "切り替え（カットオーバー）を確定（Finalize cutover）すると、データのレプリケーションが止まり、複製したデータが破棄され、レプリケーションに使った AWS のリソースが終了し、ソースサーバーから AWS Replication Agent がアンインストールされる。確定の前は、カットオーバーのあともレプリケーションは続く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        },
+        {
+          "title": "Launching cutover instances",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/launch-cutover.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.staging-area",
+      "title": "レプリケーションサーバーはステージングエリアのサブネットで動く",
+      "kind": "feature",
+      "text": "レプリケーションサーバーは、ソースサーバーと AWS の間でデータを複製する、軽量な Amazon EC2 インスタンスである。MGN がステージングエリアのサブネットで自動的に起動し、終了する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.templates",
+      "title": "レプリケーション・起動・起動後の 3 つのテンプレート",
+      "kind": "feature",
+      "text": "このサービスは、サーバーをどう複製し、どう起動し、移行後にどう設定するかを、レプリケーション、起動、起動後の 3 つの設定可能なテンプレートで制御する。テンプレートの設定は新しく追加した各サーバーに適用され、サーバーごとに上書きもできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.waves",
+      "title": "サーバーをアプリケーションとウェーブにまとめて管理する",
+      "kind": "feature",
+      "text": "大規模な移行を管理するために、サーバーをアプリケーションにまとめ、アプリケーションをウェーブにまとめられる。設定の変更や、起動・カットオーバー・アーカイブなどの操作は、サーバー、アプリケーション、ウェーブのどの単位でもまとめて行える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What Is AWS Transform MGN?",
+          "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.private-path",
+      "title": "レプリケーションの経路をプライベート接続で制御する",
+      "kind": "feature",
+      "text": "レプリケーションの経路は、VPN、AWS Direct Connect、VPC ピアリングなどのプライベート接続で制御でき、公衆インターネットを避けられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Transform MGN FAQs",
+          "url": "https://aws.amazon.com/application-migration-service/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.pricing-free-period",
+      "title": "サーバーごとに 90 日（2,160 時間）の無料期間がある",
+      "kind": "pricing",
+      "text": "サービスの利用は、移行したいソースサーバー 1 台ごとに 2,160 時間（継続して使うと 90 日）の無料期間がある。無料期間は AWS Replication Agent をインストールした時点で始まる。期間内に移行を終えないと、そのサーバーのレプリケーションを続ける間、時間あたりで課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transform MGN FAQs",
+          "url": "https://aws.amazon.com/application-migration-service/faqs/"
+        },
+        {
+          "title": "AWS Transform MGN - Pricing",
+          "url": "https://aws.amazon.com/application-migration-service/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "application-migration-service.pricing-infrastructure",
+      "title": "レプリケーション用のインフラとテスト・切り替えのインスタンスは別に課金される",
+      "kind": "pricing",
+      "text": "ソースサーバーのレプリケーション中は、無料期間中でも、データの複製のためにサービスが用意する AWS のインフラに料金がかかる。テストや切り替えのインスタンスを起動したときに用意されるコンピューティング（EC2）とストレージ（EBS）などのリソースにも料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Transform MGN - Pricing",
+          "url": "https://aws.amazon.com/application-migration-service/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "elastic-disaster-recovery.overview",
+    "dms.engine-migrations",
+    "datasync.overview"
+  ],
+  "references": [
+    {
+      "title": "What Is AWS Transform MGN?",
+      "url": "https://docs.aws.amazon.com/mgn/latest/ug/what-is-mgn.html"
+    },
+    {
+      "title": "Rehost applications to AWS - AWS Transform MGN",
+      "url": "https://aws.amazon.com/application-migration-service/"
+    }
+  ],
+  "createdBy": "sc41",
+  "createdAt": "2026-11-21"
+}

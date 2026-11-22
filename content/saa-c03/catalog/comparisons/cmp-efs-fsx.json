@@ -1,0 +1,31 @@
+{
+  "id": "cmp-efs-fsx",
+  "title": "Amazon EFS と Amazon FSx",
+  "services": [
+    "efs",
+    "fsx"
+  ],
+  "decide": [
+    "Windows の共有ファイルを SMB で使いたいなら FSx for Windows File Server",
+    "S3 バケットのオブジェクトを、ファイルとして扱って処理したいなら FSx for Lustre",
+    "機械学習や HPC など、ストレージの速度が重要な処理なら FSx for Lustre",
+    "容量や性能を事前に確保・管理せずに使える、サーバーレスの共有ファイルストレージが欲しいなら EFS"
+  ],
+  "docRef": "cheatsheet-block-file-storage",
+  "sources": [
+    {
+      "title": "What is Amazon Elastic File System? - Amazon Elastic File System",
+      "url": "https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html"
+    },
+    {
+      "title": "What is FSx for Windows File Server? - Amazon FSx for Windows File Server",
+      "url": "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+    },
+    {
+      "title": "What is Amazon FSx for Lustre? - FSx for Lustre",
+      "url": "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc25"
+}

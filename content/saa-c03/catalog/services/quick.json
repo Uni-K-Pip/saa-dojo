@@ -1,0 +1,32 @@
+{
+  "id": "quick",
+  "tier": 3,
+  "summary": "AI を使って、タスクの自動化、データの分析、Web アプリケーションの構築、調査を行うフルマネージドのサービス（現在のページでの名前は AWS Quick）。自然言語のチャットで操作し、BI の機能（Quick Sight）などを含む。",
+  "chooseWhen": [
+    {
+      "text": "自然言語のチャットで、接続したデータやアプリケーションに対する分析・自動化・調査を AI のエージェントに任せたい場合。"
+    },
+    {
+      "text": "ダッシュボードの作成やデータの可視化には、Quick の機能である Quick Sight を使いたい場合。",
+      "alternatives": [
+        "quicksight"
+      ]
+    }
+  ],
+  "facts": [],
+  "references": [
+    {
+      "title": "What is AWS Quick?",
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
+    },
+    {
+      "title": "AI Workspace - AWS Quick",
+      "url": "https://aws.amazon.com/quick/"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22",
+  "seeAlso": [
+    "quicksight.continues-in-quick"
+  ]
+}

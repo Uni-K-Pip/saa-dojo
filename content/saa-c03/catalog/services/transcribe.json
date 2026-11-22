@@ -1,0 +1,61 @@
+{
+  "id": "transcribe",
+  "tier": 3,
+  "summary": "Amazon Transcribe は、機械学習モデルで音声をテキストに変換する自動音声認識のサービス。単独の文字起こしサービスとしても、アプリケーションに音声からテキストへの機能を加える用途にも使える。",
+  "chooseWhen": [
+    {
+      "text": "音声をテキストに変換したい場合。",
+      "factRefs": [
+        "transcribe.audio-to-text"
+      ]
+    },
+    {
+      "text": "リアルタイムの音声や、S3 に置いた音声ファイルを文字起こししたい場合。",
+      "factRefs": [
+        "transcribe.modes"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "transcribe.audio-to-text",
+      "title": "Transcribe は音声をテキストに変換する",
+      "kind": "feature",
+      "text": "Amazon Transcribe は、機械学習モデルを使って音声（オーディオ）をテキストに変換する、自動音声認識のサービスである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Transcribe?",
+          "url": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "transcribe.modes",
+      "title": "リアルタイム（ストリーミング）とバッチ",
+      "kind": "feature",
+      "text": "Amazon Transcribe は、メディアをリアルタイム（ストリーミング）で文字起こしするほか、Amazon S3 のバケットにあるメディアファイルを文字起こし（バッチ）できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Transcribe?",
+          "url": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "polly.what-is",
+    "comprehend.input-formats"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Transcribe?",
+      "url": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html"
+    }
+  ],
+  "createdBy": "sc48",
+  "createdAt": "2026-11-22"
+}

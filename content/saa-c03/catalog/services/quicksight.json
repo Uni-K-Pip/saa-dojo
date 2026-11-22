@@ -1,0 +1,46 @@
+{
+  "id": "quicksight",
+  "tier": 3,
+  "summary": "データソースに接続してダッシュボードを作り、データを可視化する BI のサービス。分析をアプリケーションに埋め込める。現在は AWS Quick の機能（AWS Quick Sight）として続いている。",
+  "chooseWhen": [
+    {
+      "text": "データソースに接続し、ダッシュボードを作ってデータを可視化したい場合。"
+    },
+    {
+      "text": "インタラクティブな分析を、自分のアプリケーションやワークフローに埋め込みたい場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "quicksight.continues-in-quick",
+      "title": "Quick の機能として続き、既存の API・SDK も動く",
+      "kind": "constraint",
+      "text": "AWS Quick は Amazon QuickSight から発展したサービスで、QuickSight は、Quick の中の機能である AWS Quick Sight として続いている。従来の QuickSight の API、SDK、統合は、変更なしで動き続ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Quick?",
+          "url": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "athena.s3-sql-query",
+    "redshift.sql-analytics"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Quick?",
+      "url": "https://docs.aws.amazon.com/quick/latest/userguide/what-is.html"
+    },
+    {
+      "title": "AI-powered Business Intelligence - AWS Quick Sight",
+      "url": "https://aws.amazon.com/quicksight/"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22"
+}

@@ -1,0 +1,200 @@
+{
+  "id": "emr",
+  "tier": 2,
+  "summary": "Apache Spark や Hadoop、Hive などのフレームワークで大量のデータを処理する分析サービス。EC2 上のクラスターを構成する方法のほか、クラスター管理が不要な EMR Serverless も選べる。",
+  "chooseWhen": [
+    {
+      "text": "Spark や Hadoop、Hive を使って大量のデータを分散処理したいとき。",
+      "factRefs": [
+        "emr.distributed-processing"
+      ]
+    },
+    {
+      "text": "EMR on EC2 のクラスターに追加のソフトウェアを導入して処理環境をカスタマイズしたいとき。",
+      "factRefs": [
+        "emr.bootstrap-customization"
+      ]
+    },
+    {
+      "text": "Spark や Hive の処理を、クラスターを管理せずに EMR Serverless で実行したいとき。",
+      "factRefs": [
+        "emr.serverless-runtime"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "Presto や HBase など、YARN ベースではないアプリケーションを EMR マネージドスケーリングで自動調整したいとき。",
+      "factRefs": [
+        "emr.managed-scaling-yarn"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "emr.distributed-processing",
+      "title": "オープンソースの分析フレームワークで分散処理",
+      "kind": "feature",
+      "text": "Amazon EMR on EC2 は、クラスターのノードに Apache Hadoop、Spark、Hive などをインストールして、データを分散処理する実行環境を提供する。利用するフレームワークやアプリケーションはクラスター作成時に選択する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding how to create and work with Amazon EMR clusters",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.bootstrap-customization",
+      "title": "ブートストラップアクションで環境をカスタマイズ",
+      "kind": "feature",
+      "text": "Amazon EMR on EC2 のブートストラップアクションは、クラスターの起動時に各インスタンスで実行される。追加のアプリケーションをインストールするなど、処理に必要な環境のカスタマイズに利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding how to create and work with Amazon EMR clusters",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.managed-scaling",
+      "title": "マネージドスケーリングによる容量の自動調整",
+      "kind": "feature",
+      "text": "Amazon EMR のマネージドスケーリングは、ワークロードを示すクラスターのメトリクスを継続的に評価し、利用者が設定した容量の下限と上限の範囲でコアノードとタスクノードの容量を自動調整する。スケーリングを発動する個別のルールを利用者が定義する必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using managed scaling in Amazon EMR",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html"
+        },
+        {
+          "title": "Use Amazon EMR cluster scaling to adjust for changing workloads",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-scale-on-demand.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.custom-automatic-scaling",
+      "title": "カスタム自動スケーリングのルール管理",
+      "kind": "feature",
+      "text": "Amazon EMR のカスタム自動スケーリングでは、利用者が CloudWatch メトリクスに基づく容量調整のルールを定義・管理する。インスタンスグループごとに、メトリクスのしきい値、評価期間、クールダウン期間などを指定してスケーリングの動作を制御する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using automatic scaling with a custom policy for instance groups in Amazon EMR",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-automatic-scaling.html"
+        },
+        {
+          "title": "Use Amazon EMR cluster scaling to adjust for changing workloads",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-scale-on-demand.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.managed-scaling-yarn",
+      "title": "マネージドスケーリングの対象は YARN アプリケーション",
+      "kind": "constraint",
+      "text": "Amazon EMR のマネージドスケーリングが対象とするのは、Spark、Hadoop、Hive、Flink などの YARN アプリケーションである。Presto や HBase など、YARN ベースではないアプリケーションは対象にならない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using managed scaling in Amazon EMR",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.serverless-runtime",
+      "title": "EMR Serverless によるクラスター管理の省略",
+      "kind": "feature",
+      "text": "Amazon EMR Serverless は、Apache Spark や Apache Hive の分析アプリケーションを、利用者がクラスターを構成・運用せずに実行できる EMR のデプロイ方式である。分析フレームワークを利用しつつクラスター管理の負担を減らしたい場合に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EMR Serverless?",
+          "url": "https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/emr-serverless.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.s3-input-output",
+      "title": "S3 をデータの入出力先に利用",
+      "kind": "integration",
+      "text": "Amazon EMR では、S3 に保存したデータをクラスターの処理対象とし、処理結果を S3 に書き戻す構成を取れる。S3 に書き出した結果を、別の EMR クラスターの入力データとして利用することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EMR FAQs",
+          "url": "https://aws.amazon.com/emr/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.s3a-connector",
+      "title": "リリースによる S3 接続方式の違い",
+      "kind": "integration",
+      "text": "Amazon EMR 7.10.0 以降では、s3:// の URI で S3 にアクセスするときに Hadoop S3A ファイルシステムを使用する。7.10.0 より前のリリースでは、s3:// と s3n:// の接続に EMRFS を使用していた。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with storage and file systems with Amazon EMR",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-file-systems.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "emr.manual-resize",
+      "title": "稼働中クラスターの手動のサイズ変更",
+      "kind": "feature",
+      "text": "稼働中の Amazon EMR クラスターのコアとタスクのインスタンスグループやインスタンスフリートは、コンソール、AWS CLI、EMR API で手動でサイズを変更できる。インスタンスグループではインスタンス数を、インスタンスフリートではオンデマンドインスタンスとスポットインスタンスのターゲットユニットを変更する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Manually resize a running Amazon EMR cluster",
+          "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-manage-resize.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "emr.ec2-cluster-pricing",
+      "title": "EC2 上のクラスターの料金は EMR 料金と EC2 料金の合算",
+      "kind": "pricing",
+      "text": "Amazon EMR on EC2 のクラスターでは、EMR の料金が、基盤のサーバーである EC2 の料金と、EBS ボリュームを付けている場合は EBS の料金に追加でかかる。いずれも秒単位の課金で、最小は 1 分である。EC2 側の料金は、オンデマンド、リザーブドインスタンス、Capacity Savings Plans、スポットインスタンスなどから選べる。EMR on EKS と EMR Serverless は、課金のしかたが異なる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EMR Pricing",
+          "url": "https://aws.amazon.com/emr/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "Amazon EMR FAQs",
+      "url": "https://aws.amazon.com/emr/faqs/"
+    },
+    {
+      "title": "Understanding how to create and work with Amazon EMR clusters",
+      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview.html"
+    },
+    {
+      "title": "Use Amazon EMR cluster scaling to adjust for changing workloads",
+      "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-scale-on-demand.html"
+    }
+  ],
+  "createdBy": "cx30",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-21"
+}

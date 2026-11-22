@@ -1,0 +1,140 @@
+{
+  "id": "cost-explorer",
+  "tier": 2,
+  "summary": "AWS のコストと使用状況をグラフや表で分析するサービス。サービス別などに費用の推移を調べ、過去の利用傾向に基づいて将来のコストを予測できる。",
+  "chooseWhen": [
+    {
+      "text": "費用が増えているサービスやアカウントを、コストの内訳から調べたいとき。",
+      "factRefs": [
+        "cost-explorer.filter-group"
+      ]
+    },
+    {
+      "text": "過去と現在の利用傾向から、今後の AWS コストの見込みを把握したいとき。",
+      "factRefs": [
+        "cost-explorer.forecast"
+      ]
+    },
+    {
+      "text": "過去の利用実績に基づく RI や Savings Plans の購入推奨を確認したいとき。",
+      "factRefs": [
+        "cost-explorer.ri-recommendations",
+        "cost-explorer.savings-plans-recommendations"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "実際または予測の支出が予算のしきい値を超える際の通知を設定したいときは、AWS Budgets を選ぶ。",
+      "alternatives": [
+        "budgets"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cost-explorer.cost-usage-visualization",
+      "title": "コストと使用状況の可視化",
+      "kind": "feature",
+      "text": "AWS Cost Explorer は、AWS のコストと使用状況の時間的な推移をグラフや表で可視化し、費用や利用の傾向を分析できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Cost Explorer Features",
+          "url": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cost-explorer.filter-group",
+      "title": "絞り込みとグループ化による費用分析",
+      "kind": "feature",
+      "text": "AWS Cost Explorer は、サービスやメンバーアカウントなどの軸でコストを絞り込み、グループ化して分析できる。費用の内訳から、支出の大きいサービスやアカウントを調べる用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Cost Explorer Features",
+          "url": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cost-explorer.forecast",
+      "title": "将来のコストの予測",
+      "kind": "feature",
+      "text": "AWS Cost Explorer は、過去と現在のコストおよび使用状況の傾向に基づいて将来のコストを予測できる。今後の支出を見積もり、予算を計画するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Cost Explorer Features",
+          "url": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cost-explorer.ri-recommendations",
+      "title": "RI の購入推奨",
+      "kind": "feature",
+      "text": "AWS Cost Explorer は、過去のオンデマンド使用状況を基に、推定削減額が最大になるリザーブドインスタンス（RI）の購入を推奨する。購入推奨では、過去の使用状況が将来も続くと仮定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Accessing reservation recommendations",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ri-recommendations.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cost-explorer.savings-plans-recommendations",
+      "title": "Savings Plans の購入推奨",
+      "kind": "feature",
+      "text": "AWS Cost Explorer では、過去の AWS 使用状況に基づく Savings Plans の購入推奨を確認できる。Savings Plans によるコスト最適化を検討する際に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Getting started with Savings Plans",
+          "url": "https://docs.aws.amazon.com/savingsplans/latest/userguide/get-started.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cost-explorer.resource-daily-costs",
+      "title": "リソース単位の費用分析",
+      "kind": "feature",
+      "text": "AWS Cost Explorer で対象サービスのリソースレベルデータ（日次）を有効にすると、過去 14 日分について、リソース ID 単位で費用を分析できる。例えば、特定の S3 バケットをリソース ID で絞り込み、その支出の推移を確認できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resource-level data at daily granularity",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-resource-daily.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "s3.storage-lens",
+    "s3.storage-lens-cost-metrics"
+  ],
+  "references": [
+    {
+      "title": "Analyzing your costs and usage with AWS Cost Explorer",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+    },
+    {
+      "title": "AWS Cost Explorer Features",
+      "url": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/"
+    },
+    {
+      "title": "Managing your costs with AWS Budgets",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    }
+  ],
+  "createdBy": "cx37",
+  "createdAt": "2026-11-16"
+}

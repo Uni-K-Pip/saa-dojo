@@ -1,0 +1,45 @@
+{
+  "id": "kinesis",
+  "tier": 3,
+  "summary": "動画やデータのストリームをリアルタイムに収集・処理・分析するためのサービス群の名前。Kinesis Data Streams、Amazon Data Firehose、Kinesis Video Streams、Managed Service for Apache Flink が含まれる。",
+  "chooseWhen": [
+    {
+      "text": "継続的なデータを自分のアプリケーションで処理するなら Kinesis Data Streams、宛先へ配信するだけなら Firehose を選ぶ場合。",
+      "factRefs": [
+        "kinesis-data-streams.realtime-ingestion",
+        "firehose.managed-delivery"
+      ],
+      "alternatives": [
+        "kinesis-data-streams",
+        "firehose"
+      ]
+    },
+    {
+      "text": "カメラを備えたデバイスの動画を安全にストリーミングし、再生や分析に使いたい場合は Kinesis Video Streams を選ぶ。",
+      "alternatives": [
+        "kinesis-video-streams"
+      ]
+    }
+  ],
+  "facts": [],
+  "seeAlso": [
+    "kinesis-data-streams.realtime-ingestion",
+    "firehose.managed-delivery"
+  ],
+  "references": [
+    {
+      "title": "Amazon Kinesis",
+      "url": "https://aws.amazon.com/kinesis/"
+    },
+    {
+      "title": "What is Amazon Kinesis Data Streams?",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    },
+    {
+      "title": "What is Amazon Data Firehose?",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22"
+}

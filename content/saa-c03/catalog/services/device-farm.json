@@ -1,0 +1,71 @@
+{
+  "id": "device-farm",
+  "tier": 3,
+  "summary": "ウェブとモバイルのアプリを、多数のデスクトップブラウザーと AWS 上にホストされた実機のモバイルデバイスでテストするサービス。テスト用のインフラストラクチャを自分で用意・管理する必要がない。",
+  "chooseWhen": [
+    {
+      "text": "アプリを、AWS 上にホストされた実機のモバイルデバイスやデスクトップブラウザーでテストしたい場合。",
+      "factRefs": [
+        "device-farm.real-devices-browsers"
+      ]
+    },
+    {
+      "text": "複数のデスクトップブラウザーや実機で、テストを同時に実行してテストスイートを速く終わらせたい場合。",
+      "factRefs": [
+        "device-farm.concurrent-tests"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "device-farm.real-devices-browsers",
+      "title": "実機のモバイルデバイスとデスクトップブラウザーでテストする",
+      "kind": "feature",
+      "text": "ウェブとモバイルのアプリケーションを、多数のデスクトップブラウザーと AWS 上にホストされた実機のモバイルデバイスでテストするサービスである。テスト用のインフラストラクチャを、自分でプロビジョニングして管理する必要がない。",
+      "depth": "core",
+      "services": [
+        "AWS Device Farm"
+      ],
+      "sources": [
+        {
+          "title": "Mobile and Web Application Testing – AWS Device Farm",
+          "url": "https://aws.amazon.com/device-farm/"
+        },
+        {
+          "title": "What is AWS Device Farm?",
+          "url": "https://docs.aws.amazon.com/devicefarm/latest/developerguide/welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "device-farm.concurrent-tests",
+      "title": "複数のブラウザーや実機でテストを同時に実行する",
+      "kind": "feature",
+      "text": "複数のデスクトップブラウザーや実機で、テストを同時に実行して、テストスイートの実行を速められる。Device Farm は動画とログを生成する。",
+      "depth": "core",
+      "services": [
+        "AWS Device Farm"
+      ],
+      "sources": [
+        {
+          "title": "Mobile and Web Application Testing – AWS Device Farm",
+          "url": "https://aws.amazon.com/device-farm/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS Device Farm?",
+      "url": "https://docs.aws.amazon.com/devicefarm/latest/developerguide/welcome.html"
+    },
+    {
+      "title": "Mobile and Web Application Testing – AWS Device Farm",
+      "url": "https://aws.amazon.com/device-farm/"
+    }
+  ],
+  "createdBy": "sc51",
+  "createdAt": "2026-11-22"
+}

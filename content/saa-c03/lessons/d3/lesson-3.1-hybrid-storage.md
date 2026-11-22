@@ -68,7 +68,7 @@ Transfer Family は、**SFTP、FTPS、FTP、AS2** といったファイル転送
 
 ### Amazon FSx for NetApp ONTAP
 
-オンプレミスで NetApp ONTAP を使っている場合、**Amazon FSx for NetApp ONTAP** が移行先になります。NFS、SMB、iSCSI、NVMe で同じデータにアクセスでき、スナップショット、SnapMirror によるレプリケーション、ONTAP の CLI や REST API による管理が使えます。アクセス頻度の低いデータは低コストの階層へ自動的に移ります。
+オンプレミスで NetApp ONTAP を使っている場合、**Amazon FSx for NetApp ONTAP** が移行先になります。NFS と SMB のファイルアクセスのほか、iSCSI と NVMe/TCP のブロックアクセスにも対応し、スナップショット、SnapMirror によるレプリケーション、ONTAP の CLI や REST API による管理が使えます。アクセス頻度の低いデータは低コストの階層へ自動的に移ります。
 
 ### AWS Snowball Edge
 

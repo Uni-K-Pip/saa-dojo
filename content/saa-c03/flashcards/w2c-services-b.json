@@ -150,7 +150,7 @@
     {
       "id": "fc-w2c-064",
       "front": "オンプレミスと AWS の接続で、通信を暗号化したい。Site-to-Site VPN と Direct Connect はどう違うか。",
-      "back": "Site-to-Site VPN はインターネット上に IPsec で暗号化したトンネルを作り、短時間で安価に始められる。Direct Connect は専用線で帯域と遅延が安定するが、既定では暗号化されない。暗号化が必要なら Direct Connect 上に VPN を重ねるか、対応する専用接続で MACsec を使う。導入には数週間かかることがある。",
+      "back": "Site-to-Site VPN はインターネット上に IPsec で暗号化したトンネルを作り、短時間で安価に始められる。Direct Connect は専用線で帯域と遅延が安定するが、既定では暗号化されない。暗号化が必要なら Direct Connect 上に VPN を重ねるか、対応する専用接続で MACsec を使う。回線の手配が要るので、導入には時間がかかる。",
       "taskStatements": ["1.2", "2.2"],
       "services": ["AWS Site-to-Site VPN", "AWS Direct Connect"],
       "tags": ["ハイブリッド接続", "暗号化", "使い分け"]
@@ -358,7 +358,7 @@
     {
       "id": "fc-w2c-090",
       "front": "ElastiCache で、フェイルオーバーやデータの永続化が必要なときは Redis 系と Memcached のどちらか。",
-      "back": "Redis OSS 互換（Valkey を含む）のエンジン。レプリカとマルチ AZ の自動フェイルオーバー、永続化、豊富なデータ構造（ソート済みセットなど）に対応する。Memcached はマルチスレッドでシンプルなキャッシュに向くが、レプリケーションや永続化がなく、ノード障害でそのデータは失われる。",
+      "back": "Redis OSS 互換（Valkey を含む）のエンジン。レプリカとマルチ AZ の自動フェイルオーバー、永続化、豊富なデータ構造（ソート済みセットなど）に対応する。Memcached はマルチスレッドでシンプルなキャッシュに向くが、ノードベースではレプリケーションや永続化がなく、ノード障害でそのノードのデータは失われる。",
       "taskStatements": ["2.1", "2.2"],
       "services": ["Amazon ElastiCache"],
       "tags": ["キャッシュ", "Redis", "Memcached"]

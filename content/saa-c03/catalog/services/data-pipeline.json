@@ -1,0 +1,74 @@
+{
+  "id": "data-pipeline",
+  "tier": 3,
+  "summary": "データの移動と変換を自動化するウェブサービス。前のタスクの成功に依存するデータ駆動のワークフローを定義できる。新規の利用者には提供されておらず、保守モードにある。",
+  "chooseWhen": [
+    {
+      "text": "すでに AWS Data Pipeline を使っている既存の利用者が、そのまま運用を続ける場合。",
+      "factRefs": [
+        "data-pipeline.no-new-customers"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "データの移動や変換を自動化する仕組みを新しく作る場合は、新規には選ばない。",
+      "factRefs": [
+        "data-pipeline.no-new-customers",
+        "data-pipeline.migration-targets"
+      ],
+      "alternatives": [
+        "glue",
+        "step-functions"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "data-pipeline.no-new-customers",
+      "title": "新規の利用者には提供されず保守モード",
+      "kind": "constraint",
+      "text": "AWS Data Pipeline は新規の利用者には提供されておらず、既存の利用者は通常どおり使い続けられる。サービスは保守モードにあり、新機能やリージョンの拡大は予定されていない。新規には選ばない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Data Pipeline?",
+          "url": "https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "data-pipeline.migration-targets",
+      "title": "移行先の候補に Glue と Step Functions",
+      "kind": "constraint",
+      "text": "AWS Data Pipeline のワークロードの移行先として、公式の移行の案内は AWS Glue や AWS Step Functions などを挙げている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Migrating workloads from AWS Data Pipeline",
+          "url": "https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/migration.html"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "glue.serverless-etl",
+    "step-functions.orchestration"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Data Pipeline?",
+      "url": "https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html"
+    },
+    {
+      "title": "Migrating workloads from AWS Data Pipeline",
+      "url": "https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/migration.html"
+    }
+  ],
+  "createdBy": "sc47",
+  "createdAt": "2026-11-22"
+}

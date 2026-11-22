@@ -1,0 +1,295 @@
+{
+  "id": "firehose",
+  "tier": 2,
+  "summary": "ストリーミングデータを、S3、Redshift、OpenSearch Service などの宛先へ配信するフルマネージドのサービス。コンシューマーのコードが要らず、配信前の変換もできる。",
+  "chooseWhen": [
+    {
+      "text": "ストリームのデータを、アプリケーションを書かずに S3 や Redshift などへ配信したい",
+      "factRefs": [
+        "firehose.managed-delivery",
+        "firehose.destinations"
+      ]
+    },
+    {
+      "text": "配信前に、JSON のデータを Parquet や ORC の列指向形式へ変換して S3 に置きたい",
+      "factRefs": [
+        "firehose.format-conversion"
+      ]
+    },
+    {
+      "text": "S3 へ届けるデータを、レコード内のキーの値ごとのプレフィックスに分けたい",
+      "factRefs": [
+        "firehose.dynamic-partitioning"
+      ]
+    },
+    {
+      "text": "配信の前に、Lambda 関数でレコードを加工したい",
+      "factRefs": [
+        "firehose.lambda-transform"
+      ]
+    },
+    {
+      "text": "既存の Kinesis データストリームや MSK のデータを、保存先へ配信したい",
+      "factRefs": [
+        "firehose.kds-source",
+        "firehose.msk-source"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "独自のコードで複数のアプリケーションが読み出す、読み直すといった用途には、Kinesis Data Streams を使う",
+      "factRefs": [
+        "kinesis-data-streams.independent-consumers",
+        "kinesis-data-streams.retained-replay"
+      ],
+      "alternatives": [
+        "kinesis-data-streams"
+      ]
+    },
+    {
+      "text": "バッファへためてから配信するため、レコードを 1 件ずつ即時に処理したい用途には向かない",
+      "factRefs": [
+        "firehose.buffering"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "firehose.managed-delivery",
+      "title": "ストリーミングデータを宛先へ配信するフルマネージドのサービス",
+      "kind": "feature",
+      "text": "Amazon Data Firehose は、リアルタイムのストリーミングデータを宛先へ配信するフルマネージドのサービスである。アプリケーションを書いたりリソースを管理したりする必要はなく、データの送信元を設定すれば、指定した宛先へ自動で配信される。",
+      "examPoint": "ストリームを保存先へ届けるだけなら、コンシューマーのコードを書かずに済む。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.destinations",
+      "title": "配信先",
+      "kind": "feature",
+      "text": "Amazon Data Firehose の配信先には、Amazon S3、Amazon Redshift、Amazon OpenSearch Service、Amazon OpenSearch Serverless、Splunk、Apache Iceberg テーブル、任意の HTTP エンドポイントなどがある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.buffering",
+      "title": "バッファのサイズか時間で配信",
+      "kind": "feature",
+      "text": "Amazon Data Firehose は、受け取ったデータを一定のサイズか一定の時間までバッファにためてから、宛先へ配信する。バッファサイズは MB、バッファ間隔は秒で設定し、先に満たした条件で配信が始まる。",
+      "examPoint": "配信はバッファを経由するので、ニアリアルタイムの配信になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        },
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.s3-buffer-range",
+      "title": "S3 宛のバッファの設定範囲",
+      "kind": "quota",
+      "text": "Amazon Data Firehose の S3 宛では、バッファサイズを 1〜128 MB、バッファ間隔を 0〜900 秒で設定できる。Parquet への変換か動的パーティションを有効にすると、バッファサイズは 64〜128 MB の範囲になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.redshift-via-s3",
+      "title": "Redshift へは S3 を経由して COPY で読み込む",
+      "kind": "feature",
+      "text": "Amazon Data Firehose が Amazon Redshift へ配信するときは、データをまず S3 バケットへ配信し、そのあとで Redshift の COPY コマンドを発行して、S3 のデータを Redshift のクラスターへ読み込む。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        },
+        {
+          "title": "Understand data delivery in Amazon Data Firehose",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.lambda-transform",
+      "title": "Lambda 関数による配信前のデータ変換",
+      "kind": "integration",
+      "text": "Amazon Data Firehose には、AWS Lambda 関数を設定して、宛先へ読み込む前に元のデータを加工・変換できる。変換を有効にすると、変換前の元のデータを別の S3 バケットへバックアップすることもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        },
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.format-conversion",
+      "title": "JSON から Parquet・ORC への形式変換",
+      "kind": "feature",
+      "text": "Amazon Data Firehose は、入力データの形式を JSON から Apache Parquet または Apache ORC に変換してから S3 に保存できる。Parquet と ORC は列指向の形式で、JSON のような行指向の形式に比べて、容量を節約でき、クエリも速くなる。",
+      "trap": "JSON 以外の形式（CSV など）の入力を変換したいときは、先に Lambda で JSON に変換できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Convert input data format in Amazon Data Firehose",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.format-conversion-schema",
+      "title": "形式変換のスキーマは Glue データカタログで作る",
+      "kind": "integration",
+      "text": "Amazon Data Firehose の形式変換には、入力データの解釈に使うスキーマが要る。スキーマは AWS Glue で Glue Data Catalog に作り、Firehose はそれを参照する。同じスキーマを、分析ソフトウェアの設定にも使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Convert input data format in Amazon Data Firehose",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.dynamic-partitioning",
+      "title": "動的パーティションでキーごとの S3 プレフィックスへ配信",
+      "kind": "feature",
+      "text": "Amazon Data Firehose の動的パーティションは、ストリーミングデータをレコード内のキー（customer_id など）で継続的に分け、キーごとにまとめて、対応する S3 のプレフィックスへ配信する。分析クエリのスキャン量を減らし、性能を上げられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Partition streaming data in Amazon Data Firehose",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.kds-source",
+      "title": "Kinesis データストリームを送信元にできる",
+      "kind": "integration",
+      "text": "Amazon Data Firehose のストリームは、既存の Kinesis データストリームから自動でデータを読み取り、宛先へ読み込むように設定できる。",
+      "examPoint": "Data Streams のデータを、保存側のコードなしで S3 などへ配信したいときの構成。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Data Firehose?",
+          "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+        },
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.kds-source-no-direct-put",
+      "title": "Kinesis データストリームを送信元にすると直接の書き込みは不可",
+      "kind": "constraint",
+      "text": "Kinesis データストリームを Firehose ストリームの送信元に設定すると、Firehose の PutRecord と PutRecordBatch の操作は無効になる。データは、Kinesis Data Streams の PutRecord と PutRecords の操作で、データストリームへ追加する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.msk-source",
+      "title": "Amazon MSK を送信元にできる",
+      "kind": "integration",
+      "text": "Amazon Data Firehose のストリームには、Amazon MSK のクラスターとトピックを送信元に設定できる。設定すると、Firehose が MSK のトピックから自動でデータを読み取り、指定した S3 バケットへ読み込む。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+          "url": "https://aws.amazon.com/firehose/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.ingested-volume-billing",
+      "title": "料金は取り込んだデータ量で決まる",
+      "kind": "pricing",
+      "text": "Amazon Data Firehose の料金は、サービスに取り込んだデータの量に対して支払う仕組みで、初期費用や前払いの契約はない。基本の取り込みと配信には、配信の追加料金はなく、オプションの機能を使ったときに別の料金がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data Firehose Pricing",
+          "url": "https://aws.amazon.com/firehose/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "firehose.five-kb-increments",
+      "title": "Direct PUT と Kinesis 送信元は 5 KB 単位で課金",
+      "kind": "pricing",
+      "text": "Amazon Data Firehose の取り込みの料金は、送信元が Direct PUT または Kinesis データストリームの場合、1 GB あたりの階層型の料金で、5 KB 単位に切り上げて課金される。たとえば 3 KB のレコードは 5 KB、12 KB のレコードは 15 KB として扱われる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Data Firehose Pricing",
+          "url": "https://aws.amazon.com/firehose/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "opensearch.ingest-firehose",
+    "kinesis-data-streams.direct-s3-delivery"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Data Firehose?",
+      "url": "https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html"
+    },
+    {
+      "title": "Amazon Data Firehose FAQs - Streaming Data Pipeline",
+      "url": "https://aws.amazon.com/firehose/faqs/"
+    },
+    {
+      "title": "Data Firehose Pricing",
+      "url": "https://aws.amazon.com/firehose/pricing/"
+    }
+  ],
+  "createdBy": "sc37",
+  "createdAt": "2026-11-21"
+}

@@ -1,0 +1,275 @@
+{
+  "id": "timestream",
+  "tier": 2,
+  "summary": "時系列データ向けのマネージドデータベース。新規に選べるのは、オープンソースの InfluxDB を動かす Timestream for InfluxDB で、サーバーレスの Timestream for LiveAnalytics は 2025 年 6 月 20 日から新規の顧客に閉じている。",
+  "chooseWhen": [
+    {
+      "text": "IoT のセンサーやメトリクスの時系列データを、新規に保存して分析する",
+      "factRefs": [
+        "timestream.time-series-data",
+        "timestream.influxdb-recommended"
+      ]
+    },
+    {
+      "text": "既存の InfluxDB の API や Telegraf の資産を、マネージドで使いたい",
+      "factRefs": [
+        "timestream.influxdb-managed"
+      ]
+    },
+    {
+      "text": "取り込みとクエリの容量を、独立して増やしたい",
+      "factRefs": [
+        "timestream.influxdb3-multi-node"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "新規のシステムの時系列データベースとして、LiveAnalytics を選ぶ",
+      "factRefs": [
+        "timestream.la-closed-to-new"
+      ]
+    },
+    {
+      "text": "Multi-AZ のスタンバイで、読み取りの負荷を分散したい",
+      "factRefs": [
+        "timestream.influxdb-multi-az"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "timestream.time-series-data",
+      "title": "時系列データはタイムスタンプ付きのデータポイントの列",
+      "kind": "feature",
+      "text": "時系列データは、タイムスタンプ、1 つ以上の属性、時間とともに変わるイベントからなるデータポイントを、時間の順に記録した列である。アプリケーションの性能の把握や異常の検出に使い、IoT のセンサーの計測値やインフラの性能のメトリクスが例になる。",
+      "examPoint": "IoT のセンサーの値やインフラのメトリクスのような時系列データに向くデータベースが、Timestream である",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.la-closed-to-new",
+      "title": "LiveAnalytics は 2025 年 6 月 20 日から新規の顧客に閉じている",
+      "kind": "constraint",
+      "text": "Timestream for LiveAnalytics は、2025 年 6 月 20 日付けで、新規の顧客のアクセスが終了している。新規の構成には選ばない。",
+      "examPoint": "新規の時系列データベースには、LiveAnalytics ではなく Timestream for InfluxDB を選ぶ",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream for LiveAnalytics availability change",
+          "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/AmazonTimestreamForLiveAnalytics-availability-change.html"
+        },
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.la-existing-customers",
+      "title": "既存の顧客のワークロードと、有効な支払者アカウントへの追加",
+      "kind": "constraint",
+      "text": "新規の顧客のアクセスの終了は、LiveAnalytics で動いている顧客のワークロードには影響しない。有効な支払者アカウントでサービスを使っている既存の顧客は、その支払者アカウントの下に、新しいユーザーとリンクされたアカウントを追加し続けられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Timestream for LiveAnalytics availability change",
+          "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/AmazonTimestreamForLiveAnalytics-availability-change.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.influxdb-recommended",
+      "title": "新規の時系列のワークロードには Timestream for InfluxDB",
+      "kind": "feature",
+      "text": "新規の時系列のワークロードには、Amazon Timestream for InfluxDB を使う。LiveAnalytics の代わりに、同様の機能を持つ Timestream for InfluxDB を評価することが、新規の顧客に推奨されている。",
+      "examPoint": "新規の時系列データには、Timestream for InfluxDB が案内されている",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        },
+        {
+          "title": "Amazon Timestream for LiveAnalytics availability change",
+          "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/AmazonTimestreamForLiveAnalytics-availability-change.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.influxdb-managed",
+      "title": "オープンソースの InfluxDB をフルマネージドで動かす",
+      "kind": "feature",
+      "text": "Timestream for InfluxDB は、オープンソースの InfluxDB を AWS 上で動かす。アプリケーションが使っている InfluxDB の API、クライアントライブラリ、Telegraf のプラグインをそのまま使え、プロビジョニング、パッチ適用、バックアップ、フェイルオーバーは AWS が扱う。",
+      "examPoint": "既存の InfluxDB や Telegraf の資産を生かしたいときに向く",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.influxdb-engine-versions",
+      "title": "新規は InfluxDB 3、InfluxDB 2 は既存のワークロード向け",
+      "kind": "feature",
+      "text": "Timestream for InfluxDB は、新しいワークロードには InfluxDB 3 の Core と Enterprise をサポートし、既存の InfluxDB 2 のワークロードには InfluxDB 2 をサポートする。InfluxDB 2 は、Flux との互換性が必要な場合に使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        },
+        {
+          "title": "Time-Series Database – Amazon Timestream",
+          "url": "https://aws.amazon.com/timestream/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.influxdb3-multi-node",
+      "title": "InfluxDB 3 Enterprise は複数ノードで取り込みとクエリを独立して拡張",
+      "kind": "feature",
+      "text": "InfluxDB 3 Enterprise は複数ノードのクラスターとして動き、ワークロードの増加に合わせてノードを足して、取り込み（インジェスト）とクエリの容量を独立して増やせる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Time-Series Database – Amazon Timestream",
+          "url": "https://aws.amazon.com/timestream/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.influxdb-multi-az",
+      "title": "Multi-AZ は同期のスタンバイを持ち、読み取りには使えない",
+      "kind": "feature",
+      "text": "Timestream for InfluxDB の Multi-AZ 配置は、別のアベイラビリティーゾーンに同期レプリケーションのスタンバイを自動で用意する。障害時は、スタンバイへ自動でフェイルオーバーする。スタンバイは読み取りのトラフィックを処理できない。",
+      "trap": "Multi-AZ のスタンバイは、読み取りの負荷分散には使えない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.influxdb-pricing",
+      "title": "料金は DB インスタンスの時間、ストレージ、インターネットのデータ転送",
+      "kind": "pricing",
+      "text": "Timestream for InfluxDB の料金は、DB インスタンスの時間（インスタンスクラスごと）と、プロビジョニングしたストレージの容量（GB・月）、インターネットとのデータ転送に応じて決まる。最低料金やセットアップ料金はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.influxdb-stopped-billing",
+      "title": "停止中はストレージだけに課金される",
+      "kind": "pricing",
+      "text": "Timestream for InfluxDB の DB インスタンスを停止している間は、プロビジョニングしたストレージの料金がかかり、DB インスタンスの時間の料金はかからない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "timestream.influxdb-encryption-default",
+      "title": "保存データと転送中のデータは既定で暗号化される",
+      "kind": "feature",
+      "text": "2026 年 11 月時点で、Timestream for InfluxDB は、保存データと転送中のデータを既定で暗号化する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "timestream.la-storage-tiers",
+      "title": "LiveAnalytics のストレージはメモリストアと磁気ストア",
+      "kind": "feature",
+      "text": "新規には選べない Timestream for LiveAnalytics は、メモリストアと磁気ストアの 2 つのストレージ階層を持つ。保持ポリシーに従って、データはメモリストアから磁気ストアへ自動で移り、磁気ストアの保持期間を過ぎたデータは完全に削除される。",
+      "trap": "メモリストアは高スループットの書き込みと速い時点クエリ向けで、磁気ストアは遅れて届くデータと長期保存向けである",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Storage",
+          "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.la-serverless",
+      "title": "LiveAnalytics はサーバーレスで自動で容量を調整する",
+      "kind": "feature",
+      "text": "新規には選べない Timestream for LiveAnalytics は、サーバーレスで、容量と性能を自動で増減する。基になるインフラストラクチャを管理する必要がなく、容量をプロビジョニングする必要もない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon Timestream for LiveAnalytics?",
+          "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/what-is-timestream.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "timestream.savings-plans",
+      "title": "Database Savings Plans の対象になる",
+      "kind": "pricing",
+      "text": "Amazon Timestream の利用には Database Savings Plans を購入できる。1 年の期間で一定の利用量を確約すると、コストを下げられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Timestream FAQs – Time-Series Database",
+          "url": "https://aws.amazon.com/timestream/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "references": [
+    {
+      "title": "Amazon Timestream FAQs – Time-Series Database",
+      "url": "https://aws.amazon.com/timestream/faqs/"
+    },
+    {
+      "title": "Amazon Timestream for LiveAnalytics availability change",
+      "url": "https://docs.aws.amazon.com/timestream/latest/developerguide/AmazonTimestreamForLiveAnalytics-availability-change.html"
+    }
+  ],
+  "createdBy": "sc40",
+  "createdAt": "2026-11-21"
+}

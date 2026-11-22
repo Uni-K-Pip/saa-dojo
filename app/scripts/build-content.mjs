@@ -58,5 +58,5 @@ console.log(
   `コンテンツを書き出しました（${path.relative(process.cwd(), opts.out) || '.'}）: ` +
     `演習 ${c.questions.practice} 問 / 基礎 ${c.questions.basics} 問 / 模試A ${c.questions.mockA} 問 / 模試B ${c.questions.mockB} 問 / ` +
     `レッスン ${c.lessons + c.basicsLessons} 本 / カード ${c.flashcards} 枚 / 用語 ${c.glossary} 語 / ` +
-    `早見表 ${c.cheatsheets} / ガイド ${c.guides}（除外: 要修正 ${c.excluded['needs-fix']}・却下 ${c.excluded.rejected}）`,
+    `早見表 ${c.cheatsheets} / ガイド ${c.guides} / 図鑑 ${c.catalogEntries} 件（事実 ${c.catalogFacts}・比較 ${c.comparisons}）（除外: 要修正 ${c.excluded['needs-fix']}・却下 ${c.excluded.rejected}）`,
 );

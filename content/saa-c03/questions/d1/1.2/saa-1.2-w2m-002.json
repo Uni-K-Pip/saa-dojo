@@ -47,10 +47,10 @@
       "id": "d",
       "text": "自動デプロイを有効にした CloudFormation StackSets で、マネージドルールグループを含む Web ACL と ALB への関連付けを定義したテンプレートを全アカウントに展開し、各アカウントに共通の Web ACL を作る。",
       "correct": false,
-      "rationale": "Web ACL は展開できますが、新しく作られる ALB への関連付けや、外された ACL の付け直しを継続して行う仕組みにはなりません。"
+      "rationale": "StackSets の自動デプロイがスタックを展開する契機は、組織や OU へのアカウントの追加・削除・移動です。組織に追加された新しいリソースへのポリシーの自動適用と、Web ACL の付いていない ALB への自動修復は、Firewall Manager の機能です。"
     }
   ],
-  "explanation": "AWS Firewall Manager は、AWS Organizations と連携して、AWS WAF、AWS Shield Advanced、セキュリティグループ、AWS Network Firewall などのセキュリティルールを、複数のアカウントとリソースに一元的に適用・管理するサービスです。\n\nAWS WAF ポリシーを作成して、対象のアカウント（組織全体や特定の OU）、リソースの種類（ALB、Amazon CloudFront、Amazon API Gateway など）、Web ACL に含めるルールグループを指定します。Firewall Manager は共通のポリシーに基づいて、各アカウントに Web ACL を作成して管理します。新しいアカウントや新しいリソースが作られると、自動でポリシーが適用されます。自動修復を有効にすると、非準拠のリソース（Web ACL が付いていない、外された）に Web ACL が付け直されます。ALB のようなリージョナルリソースは、リージョンごとにポリシーを作成します。\n\nFirewall Manager の利用には、AWS Organizations のすべての機能と AWS Config の有効化が前提です。\n\n手順書を配布して各管理者に任せる方法や、通知を受けて手作業で修復する方法では、手作業が残ります。AWS Config でも適合パックに自動修復を構成できますが、この構成では通知と手作業の修復になっています。AWS CloudFormation StackSets で Web ACL の作成テンプレートを展開するだけでは、新規 ALB への継続的な関連付けや、関連付けが外れた後の修復は実現しません。",
+  "explanation": "AWS Firewall Manager は、AWS Organizations と連携して、AWS WAF、AWS Shield Advanced、セキュリティグループ、AWS Network Firewall などのセキュリティルールを、複数のアカウントとリソースに一元的に適用・管理するサービスです。\n\nAWS WAF ポリシーを作成して、対象のアカウント（組織全体や特定の OU）、リソースの種類（ALB、Amazon CloudFront、Amazon API Gateway など）、Web ACL に含めるルールグループを指定します。Firewall Manager は共通のポリシーに基づいて、各アカウントに Web ACL を作成して管理します。新しいアカウントや新しいリソースが作られると、自動でポリシーが適用されます。自動修復を有効にすると、非準拠のリソース（Web ACL が付いていない、外された）に Web ACL が付け直されます。ALB のようなリージョナルリソースは、リージョンごとにポリシーを作成します。\n\nFirewall Manager の利用には、AWS Organizations のすべての機能と AWS Config の有効化が前提です。\n\n手順書を配布して各管理者に任せる方法や、通知を受けて手作業で修復する方法では、手作業が残ります。AWS Config でも適合パックに自動修復を構成できますが、この構成では通知と手作業の修復になっています。AWS CloudFormation StackSets の自動デプロイは、組織や OU へのアカウントの追加・削除・移動を契機にスタックを展開する機能です。新しいリソースへの自動適用と、Web ACL が外れたリソースの自動修復は、Firewall Manager のポリシーが担います。",
   "keyPoints": [
     "複数アカウントの WAF・Shield・セキュリティグループの一元管理 → AWS Firewall Manager",
     "新しいアカウントとリソースへの自動適用と自動修復が強み",

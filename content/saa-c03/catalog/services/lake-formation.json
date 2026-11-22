@@ -1,0 +1,220 @@
+{
+  "id": "lake-formation",
+  "tier": 2,
+  "summary": "AWS Lake Formation は、Amazon S3 のデータレイクと AWS Glue Data Catalog のメタデータに対するアクセス権限を一元管理するサービスである。列・行・セル単位の制御や、アカウントをまたぐデータ共有に使う。",
+  "chooseWhen": [
+    {
+      "text": "データレイクの読み取り範囲を、利用者ごとに列・行・セルの単位で制御したい場合。",
+      "factRefs": [
+        "lake-formation.column-select",
+        "lake-formation.row-filter",
+        "lake-formation.cell-filter"
+      ]
+    },
+    {
+      "text": "別の AWS アカウントに、テーブルの指定した列だけを読み取り用に共有したい場合。",
+      "factRefs": [
+        "lake-formation.cross-account-column-select"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "データフィルターで、読み取り以外の操作にも行・列の制限を適用したい場合。",
+      "factRefs": [
+        "lake-formation.filters-read-only"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "lake-formation.central-permissions",
+      "title": "データレイクのアクセス権限を一元管理",
+      "kind": "feature",
+      "text": "Lake Formation は、Amazon S3 のデータレイクと AWS Glue Data Catalog のメタデータに対するアクセス権限を一元管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Lake Formation?",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.column-select",
+      "title": "SELECT 権限を列単位に限定",
+      "kind": "feature",
+      "text": "Lake Formation では、Data Catalog テーブルに SELECT 権限を付与するとき、列フィルターを指定できる。利用者が読み取れる範囲を、テーブル内の許可された列だけに限定するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Granting table permissions using the named resource method",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/granting-table-permissions.html"
+        },
+        {
+          "title": "Data filtering and cell-level security in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.row-filter",
+      "title": "列の値を条件に読み取れる行を限定",
+      "kind": "feature",
+      "text": "Lake Formation の行レベルセキュリティは、列の値を条件に、利用者が読み取れる行を限定する。Data Catalog テーブルに対するデータフィルターに行の条件式を設定して適用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data filtering and cell-level security in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.cell-filter",
+      "title": "行と列の条件を組み合わせるセル単位の制御",
+      "kind": "feature",
+      "text": "Lake Formation のセルレベルセキュリティは、行フィルターと列フィルターを組み合わせて、テーブルのセル単位で読み取りを制限する。これにより、行によって読み取れる列を変えられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data filtering and cell-level security in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.filters-read-only",
+      "title": "データフィルターの対象は読み取りのみ",
+      "kind": "constraint",
+      "text": "Lake Formation のデータフィルターは読み取り操作だけに適用される。フィルターを伴って付与できる Lake Formation 権限は SELECT に限られるため、読み取り以外の操作の範囲を絞る用途には使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data filtering and cell-level security in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.cross-account-column-select",
+      "title": "別アカウントへの列限定の読み取り共有",
+      "kind": "feature",
+      "text": "Lake Formation では、外部の AWS アカウントに対して、Data Catalog テーブルの列を限定した SELECT 権限を付与できる。テーブル全体ではなく、指定した列だけを読み取り用に共有するために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cross-account data sharing in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-permissions.html"
+        },
+        {
+          "title": "Granting table permissions using the named resource method",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/granting-table-permissions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.cross-account-grant-option",
+      "title": "外部アカウントへの共有には付与可能権限を指定",
+      "kind": "feature",
+      "text": "Lake Formation の名前付きリソース方式で、外部 AWS アカウントを付与先として権限を共有する場合は、再付与を許可する Grantable permissions オプションを含める必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cross-account data sharing using the named resource method",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-named-resource.html"
+        },
+        {
+          "title": "Granting table permissions using the named resource method",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/granting-table-permissions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.recipient-regrant",
+      "title": "共有先の管理者が利用ロールへ権限を付与",
+      "kind": "feature",
+      "text": "Lake Formation で外部アカウントから自分のアカウント宛てに共有された Data Catalog テーブルは、共有先のデータレイク管理者がアカウント内の IAM ロールなどに権限を付与して利用させる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Granting permissions on a database or table shared with your account",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/regranting-shared-resources.html"
+        },
+        {
+          "title": "Granting table permissions using the named resource method",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/granting-table-permissions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.athena-resource-links",
+      "title": "共有テーブルの Athena 照会にはリソースリンク",
+      "kind": "integration",
+      "text": "Lake Formation で別アカウントから共有されたテーブルを Amazon Athena で照会する場合、共有先アカウントにリソースリンクが必要になる。共有データベースまたはテーブルを指すリンクを作成し、そのリンク名をクエリで使用する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How resource links work in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/resource-links-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.resource-link-describe",
+      "title": "他の利用者にはリンクの DESCRIBE を付与",
+      "kind": "feature",
+      "text": "データベースで「新しいテーブルには IAM アクセス制御のみを使用」が無効な場合、Lake Formation のリソースリンクを他の利用者に使わせるには、そのリンクに少なくとも DESCRIBE 権限を付与する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Granting resource link permissions",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/granting-link-permissions.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "lake-formation.resource-link-target-permissions",
+      "title": "リソースリンクの権限は参照先に引き継がれない",
+      "kind": "constraint",
+      "text": "Lake Formation でリソースリンクに権限を付与しても、参照先のデータベースやテーブルへの権限は付与されない。リンクを通じてデータを利用させる場合も、参照先への権限を別途付与する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How resource links work in Lake Formation",
+          "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/resource-links-about.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "athena.lake-formation-query"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Lake Formation?",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/what-is-lake-formation.html"
+    },
+    {
+      "title": "Data filtering and cell-level security in Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filtering.html"
+    },
+    {
+      "title": "Cross-account data sharing in Lake Formation",
+      "url": "https://docs.aws.amazon.com/lake-formation/latest/dg/cross-account-permissions.html"
+    }
+  ],
+  "createdBy": "cx31",
+  "createdAt": "2026-11-16"
+}

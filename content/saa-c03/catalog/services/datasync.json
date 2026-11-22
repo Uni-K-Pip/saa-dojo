@@ -1,0 +1,269 @@
+{
+  "id": "datasync",
+  "tier": 2,
+  "summary": "オンプレミスや他のクラウドのストレージと、S3・EFS・FSx などの AWS のストレージとの間で、ファイルやオブジェクトのデータをネットワーク越しに安全・高速に転送するマネージドサービスである。",
+  "chooseWhen": [
+    {
+      "text": "オンプレミスの NFS・SMB などから AWS のストレージへ、大量のデータをネットワーク経由で移行したい",
+      "factRefs": [
+        "datasync.supported-locations",
+        "datasync.use-cases"
+      ]
+    },
+    {
+      "text": "SMB のファイルサーバーから FSx for Windows File Server へ、NTFS のアクセス制御リストも含めて移したい",
+      "factRefs": [
+        "datasync.smb-ntfs-metadata"
+      ]
+    },
+    {
+      "text": "定期的な転送のスケジュールと、帯域の上限を設定して運用したい",
+      "factRefs": [
+        "datasync.schedule-min-one-hour",
+        "datasync.bandwidth-limit"
+      ]
+    },
+    {
+      "text": "公衆インターネットを通らずに、VPC エンドポイント経由でデータを転送したい",
+      "factRefs": [
+        "datasync.vpc-endpoint"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "SMB から EFS や S3 へ移すとき、Windows の ACL を保ちたい（Windows 由来のメタデータは保たれない）",
+      "factRefs": [
+        "datasync.metadata-not-kept-across-types"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "datasync.overview",
+      "title": "ネットワーク越しのデータ転送サービス",
+      "kind": "feature",
+      "text": "AWS DataSync は、ファイルやオブジェクトのデータを、AWS のストレージサービスとの間、またはその間で、安全・高速に転送するマネージドサービスである。転送の管理や高性能な転送に必要なインフラの運用を自動化し、暗号化とデータの整合性の検証を備える。",
+      "examPoint": "大量データのオンライン移行を、自前のスクリプトなしで自動化するときの選択肢。",
+      "depth": "core",
+      "tags": [
+        "転送",
+        "移行"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS DataSync?",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.supported-locations",
+      "title": "対応する転送元と転送先",
+      "kind": "integration",
+      "text": "DataSync は、オンプレミスの NFS・SMB・HDFS・オブジェクトストレージ、他のクラウドのストレージ（Google Cloud Storage や Azure Blob Storage など）、AWS の S3・EFS・FSx for Windows File Server・FSx for Lustre・FSx for OpenZFS・FSx for NetApp ONTAP の間でデータを転送できる。",
+      "depth": "core",
+      "services": [
+        "Amazon S3",
+        "Amazon EFS",
+        "Amazon FSx"
+      ],
+      "tags": [
+        "転送先",
+        "ロケーション"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS DataSync?",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.use-cases",
+      "title": "主な用途",
+      "kind": "feature",
+      "text": "DataSync の主な用途は、データの移行、コールドデータの S3 Glacier Flexible Retrieval や S3 Glacier Deep Archive へのアーカイブ、S3 の各ストレージクラスや EFS・FSx へのレプリケーション、クラウド内で処理するためのデータ転送である。",
+      "depth": "core",
+      "tags": [
+        "移行",
+        "アーカイブ"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS DataSync?",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.smb-ntfs-metadata",
+      "title": "SMB 間で NTFS の ACL とメタデータを保つ",
+      "kind": "feature",
+      "text": "SMB のファイルサーバー、FSx for Windows File Server、FSx for ONTAP（SMB）の間の転送では、DataSync はタイムスタンプ、所有者の SID、標準のファイル属性、NTFS の DACL と SACL をコピーできる。DACL と SACL のコピーには、DataSync がアクセスに使う Windows ユーザーに特定の権限を与える必要があり、SMB 1.0 では SACL はコピーされない。",
+      "examPoint": "Windows のファイルサーバーから FSx for Windows File Server への移行で、ACL を保ちたいときは DataSync。",
+      "trap": "SMB 以外の宛先（EFS や S3 など）へ移すと、Windows の ACL は保たれない。",
+      "depth": "core",
+      "services": [
+        "Amazon FSx"
+      ],
+      "tags": [
+        "SMB",
+        "ACL",
+        "メタデータ"
+      ],
+      "sources": [
+        {
+          "title": "Understanding how DataSync handles file and object metadata",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.metadata-not-kept-across-types",
+      "title": "SMB から他の種類への転送で ACL は保たれない",
+      "kind": "constraint",
+      "text": "SMB のファイルサーバー、FSx for Windows File Server、FSx for ONTAP（SMB）から、EFS、S3、NFS、FSx for Lustre などの宛先へ転送すると、ACL などの Windows 由来のメタデータは保たれず、宛先には既定の POSIX メタデータが適用される。",
+      "depth": "detail",
+      "tags": [
+        "SMB",
+        "ACL",
+        "メタデータ"
+      ],
+      "sources": [
+        {
+          "title": "Understanding how DataSync handles file and object metadata",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "datasync.nfs-to-s3-metadata",
+      "title": "NFS から S3 へは POSIX のメタデータをユーザーメタデータに保つ",
+      "kind": "feature",
+      "text": "NFS や EFS などから S3 へ転送するとき、DataSync は更新・アクセスのタイムスタンプ、ユーザー ID・グループ ID、POSIX のアクセス許可を S3 のユーザーメタデータとして保存する。このメタデータは、ファイルゲートウェイの NFS 共有とも相互運用できる。",
+      "depth": "detail",
+      "tags": [
+        "NFS",
+        "S3",
+        "メタデータ"
+      ],
+      "sources": [
+        {
+          "title": "Understanding how DataSync handles file and object metadata",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.schedule-min-one-hour",
+      "title": "スケジュール実行の最短は 1 時間",
+      "kind": "quota",
+      "text": "DataSync のタスクは cron 式または rate 式でスケジュール実行でき、最短の間隔は 1 時間である。1 時間より短い間隔では実行できない。",
+      "examPoint": "定期的な同期は、タスクのスケジュールで自動化する。",
+      "depth": "detail",
+      "tags": [
+        "スケジュール"
+      ],
+      "sources": [
+        {
+          "title": "Scheduling when your AWS DataSync task runs",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/task-scheduling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.bandwidth-limit",
+      "title": "帯域の上限を設定できる",
+      "kind": "feature",
+      "text": "DataSync のタスクとその実行ごとに、ネットワーク帯域の上限（MiB/s）を設定できる。実行中または待機中のタスク実行の上限も後から変更でき、新しい上限は 60 秒以内に反映される。上限を設けない場合は、使える帯域をすべて使う設定にもできる。",
+      "examPoint": "業務の回線を圧迫せずに転送したいときは、帯域の上限を設定する。",
+      "depth": "core",
+      "tags": [
+        "帯域"
+      ],
+      "sources": [
+        {
+          "title": "Setting bandwidth limits for your AWS DataSync task",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/configure-bandwidth.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.vpc-endpoint",
+      "title": "VPC エンドポイントで公衆インターネットを通らない",
+      "kind": "feature",
+      "text": "DataSync は VPC エンドポイントに対応しており、公衆インターネットを経由せずにデータを転送できる。AWS のストレージへのアクセスには、IAM ロールなどの組み込みのセキュリティ機構を使う。",
+      "depth": "core",
+      "tags": [
+        "VPCエンドポイント",
+        "セキュリティ"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS DataSync?",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "datasync.incremental-transfer",
+      "title": "変更分だけを転送する設定",
+      "kind": "feature",
+      "text": "DataSync のタスクの転送モードで「変更されたデータだけを転送」（TransferMode が CHANGED）を選ぶと、最初の全体の転送のあと、転送元と転送先で差のあるデータとメタデータだけをコピーする。「すべてのデータを転送」（ALL）では、差を比べずに毎回すべてをコピーする。",
+      "depth": "core",
+      "tags": [
+        "差分転送"
+      ],
+      "sources": [
+        {
+          "title": "Configuring how to handle files, objects, and metadata",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/configure-metadata.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "examPoint": "定期的な同期では、変更分だけを転送する設定で転送量を減らす。"
+    },
+    {
+      "id": "datasync.object-system-metadata-changed-only",
+      "title": "オブジェクト転送でのシステムメタデータの扱い",
+      "kind": "feature",
+      "text": "S3 とオブジェクトストレージ（Azure Blob Storage を含む）の間の転送では、DataSync は最初の転送ですべてのオブジェクトのシステムメタデータをコピーする。変更分だけを転送する設定にすると、2 回目以降は、オブジェクトの内容やユーザーメタデータが変わらない限りシステムメタデータをコピーしない。",
+      "depth": "detail",
+      "tags": [
+        "差分転送",
+        "メタデータ"
+      ],
+      "sources": [
+        {
+          "title": "Understanding how DataSync handles file and object metadata",
+          "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is AWS DataSync?",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/what-is-datasync.html"
+    },
+    {
+      "title": "Understanding how DataSync handles file and object metadata",
+      "url": "https://docs.aws.amazon.com/datasync/latest/userguide/metadata-copied.html"
+    }
+  ],
+  "createdBy": "sc2",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-14"
+}

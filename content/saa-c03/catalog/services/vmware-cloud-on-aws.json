@@ -1,0 +1,70 @@
+{
+  "id": "vmware-cloud-on-aws",
+  "tier": 3,
+  "summary": "AWS のグローバルなクラウドインフラストラクチャと VMware の SDDC ソフトウェアを組み合わせた、マネージドサービス。VMware のワークロードをクラウドへ移す用途で使われる。2024 年 4 月 30 日から AWS では再販されず、Broadcom を通じて利用できる。",
+  "chooseWhen": [
+    {
+      "text": "VMware のワークロードを、AWS のクラウドインフラストラクチャへ移したい場合。",
+      "factRefs": [
+        "vmware-cloud-on-aws.overview"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "AWS から新しく購入したい場合。2024 年 4 月 30 日から AWS とそのチャネルパートナーは再販していない。",
+      "factRefs": [
+        "vmware-cloud-on-aws.no-longer-resold"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "vmware-cloud-on-aws.overview",
+      "title": "AWS のインフラと VMware の SDDC を組み合わせたマネージドサービス",
+      "kind": "feature",
+      "text": "AWS のセキュアなグローバルクラウドインフラストラクチャと VMware の SDDC ソフトウェアを組み合わせた、フルサポートのマネージドサービスである。すぐに動かせる形で提供され、VMware のワークロードをクラウドへ移す用途に向けたソリューションである。",
+      "depth": "core",
+      "services": [
+        "VMware Cloud on AWS"
+      ],
+      "sources": [
+        {
+          "title": "VMware Cloud on AWS",
+          "url": "https://aws.amazon.com/vmware/vmwarecloudonaws/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "vmware-cloud-on-aws.no-longer-resold",
+      "title": "2024 年 4 月 30 日から AWS では再販されない",
+      "kind": "constraint",
+      "text": "2024 年 4 月 30 日から、AWS とそのチャネルパートナーは VMware Cloud on AWS を再販していない。サービスは Broadcom を通じて引き続き利用できる。AWS 経由で購入した顧客は、新しい購読やアドオンサービスの購入、既存の購読の更新ができない。",
+      "examPoint": "新しく構成する場合には、AWS から購入する前提で選ばない。",
+      "depth": "core",
+      "services": [
+        "VMware Cloud on AWS"
+      ],
+      "sources": [
+        {
+          "title": "VMware Cloud on AWS",
+          "url": "https://aws.amazon.com/vmware/vmwarecloudonaws/"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "outposts.extends-aws"
+  ],
+  "references": [
+    {
+      "title": "VMware Cloud on AWS",
+      "url": "https://aws.amazon.com/vmware/vmwarecloudonaws/"
+    }
+  ],
+  "createdBy": "sc51",
+  "createdAt": "2026-11-22"
+}

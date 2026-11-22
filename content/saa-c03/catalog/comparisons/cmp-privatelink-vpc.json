@@ -1,0 +1,30 @@
+{
+  "id": "cmp-privatelink-vpc",
+  "title": "AWS PrivateLink と Amazon VPC のピアリング接続",
+  "services": [
+    "privatelink",
+    "vpc"
+  ],
+  "decide": [
+    "自分のサービスを、ほかの AWS アカウントの VPC に公開したいなら AWS PrivateLink",
+    "2 つの VPC の間で、どちらの VPC のインスタンスからも、同じネットワークにあるかのように互いに通信させたいなら VPC ピアリング接続",
+    "CIDR 範囲が同じか重なる顧客の VPC へ、SaaS などのサービスを提供したいなら AWS PrivateLink"
+  ],
+  "docRef": "cheatsheet-hybrid-connectivity",
+  "sources": [
+    {
+      "title": "What is AWS PrivateLink? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html"
+    },
+    {
+      "title": "What is VPC peering? - Amazon Virtual Private Cloud",
+      "url": "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html"
+    },
+    {
+      "title": "Overview of AWS networking services for SaaS offerings - AWS Prescriptive Guidance",
+      "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-network-access-options/services.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc44"
+}

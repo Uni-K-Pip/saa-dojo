@@ -5,6 +5,8 @@ import { loadDocs } from '../content/loader';
 import type { DocEntry } from '../content/types';
 import { excerpt, searchDocs } from '../domain/search';
 import { Markdown } from '../components/Markdown';
+import { ServiceLinkList } from '../components/ServiceLinks';
+import { useServiceLinker } from '../state/useContent';
 
 const KIND_LABELS: Record<DocEntry['kind'], string> = { cheatsheet: '早見表', guide: 'ガイド' };
 
@@ -60,6 +62,7 @@ export default function DocsPage() {
 export function DocPage() {
   const { id = '' } = useParams();
   const docs = use(loadDocs());
+  const { link } = useServiceLinker();
   const doc = docs.find((d) => d.id === id);
   if (!doc) {
     return (
@@ -78,7 +81,9 @@ export function DocPage() {
         <Link to="/docs">早見表・ガイド</Link> › {KIND_LABELS[doc.kind]}
       </p>
       <h1>{doc.title}</h1>
-      {doc.services.length > 0 && <p className="small muted">扱うサービス: {doc.services.join('、')}</p>}
+      {doc.services.length > 0 && <p className="small muted">
+          扱うサービス: <ServiceLinkList names={doc.services} link={link} />
+        </p>}
       <div className="card">
         <Markdown>{doc.body}</Markdown>
       </div>

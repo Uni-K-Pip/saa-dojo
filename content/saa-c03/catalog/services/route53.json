@@ -1,0 +1,408 @@
+{
+  "id": "route53",
+  "tier": 1,
+  "summary": "Amazon Route 53 は、高可用性と拡張性を備えた DNS サービスである。ドメイン登録、DNS 応答による接続先の選択、ヘルスチェックを提供し、VPC とオンプレミス間の名前解決にも利用できる。",
+  "chooseWhen": [
+    {
+      "text": "インターネット向け、または関連付けた VPC 向けの DNS レコードを管理したいとき。",
+      "factRefs": [
+        "route53.public-hosted-zone",
+        "route53.private-hosted-zone"
+      ]
+    },
+    {
+      "text": "利用者の地域やリージョンへのレイテンシーに応じて、DNS の応答先を選びたいとき。",
+      "factRefs": [
+        "route53.geolocation-routing",
+        "route53.latency-routing"
+      ]
+    },
+    {
+      "text": "ヘルスチェックに基づき、DNS の応答を稼働系から待機系へ切り替えたいとき。",
+      "factRefs": [
+        "route53.failover-record-pair",
+        "route53.failover-health-selection"
+      ]
+    },
+    {
+      "text": "VPC とオンプレミスの間で DNS クエリを転送したいとき。",
+      "factRefs": [
+        "route53.resolver-inbound",
+        "route53.resolver-outbound"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "DNS リゾルバーに残るキャッシュの有効期間を待たず、接続先の変更を反映する必要があるとき。",
+      "factRefs": [
+        "route53.ttl-change-delay"
+      ]
+    },
+    {
+      "text": "DNS Firewall だけで HTTPS や SSH などのアプリケーション通信自体を検査・遮断したいとき。",
+      "factRefs": [
+        "route53.dns-firewall-non-dns"
+      ],
+      "alternatives": [
+        "network-firewall"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "route53.public-hosted-zone",
+      "title": "パブリックホストゾーンで公開 DNS を管理する",
+      "kind": "feature",
+      "text": "Route 53 のパブリックホストゾーンは、インターネット上でのドメインとサブドメインの接続先を定める DNS レコードの入れ物である。ドメインに対する DNS 応答をレコードで管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with hosted zones",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.private-hosted-zone",
+      "title": "プライベートホストゾーンを VPC に関連付ける",
+      "kind": "feature",
+      "text": "Route 53 のプライベートホストゾーンは、関連付けた VPC 内でドメインとサブドメインを名前解決するためのレコードを保持する。同じプライベートホストゾーンに複数の VPC を関連付けることもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with private hosted zones",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-private.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.weighted-routing",
+      "title": "加重ルーティングで指定した割合に振り分ける",
+      "kind": "feature",
+      "text": "Route 53 の加重ルーティングは、指定した割合で複数のリソースへトラフィックを振り分けるための DNS ルーティングポリシーである。レコードの作成時にこのポリシーを選んで構成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choosing a routing policy",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.latency-routing",
+      "title": "レイテンシーに基づいてリージョンを選ぶ",
+      "kind": "feature",
+      "text": "Route 53 のレイテンシールーティングは、複数の AWS リージョンにリソースがある場合に、最も良いレイテンシーを提供するリージョンへトラフィックを向ける DNS ルーティングポリシーである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choosing a routing policy",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.geolocation-routing",
+      "title": "位置情報ルーティングで問い合わせ元の地域を使う",
+      "kind": "feature",
+      "text": "Route 53 の位置情報ルーティングは、DNS クエリの発信元の地理的位置に基づいて応答するリソースを選ぶ。地域は大陸、国、米国の州で指定でき、言語別のコンテンツ提供などに利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Geolocation routing",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.geolocation-default-record",
+      "title": "位置情報の既定レコードが未対応地域を受け持つ",
+      "kind": "feature",
+      "text": "Route 53 の位置情報ルーティングで設定するデフォルトのレコードは、地域別のレコードを用意していない場所からのクエリを受け持つ。IP アドレスから場所を特定できないクエリにも、このレコードを使用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Geolocation routing",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.geolocation-no-answer",
+      "title": "位置情報が一致せず既定レコードもないと回答なしになる",
+      "kind": "constraint",
+      "text": "Route 53 の位置情報ルーティングでは、問い合わせ元に一致する地域のレコードもデフォルトのレコードもない場合、DNS 応答は「no answer」になる。場所を特定できない問い合わせも、デフォルトがなければ同じ扱いである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Geolocation routing",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.geoproximity-routing",
+      "title": "地理的近接性のバイアスで振り分け範囲を調整する",
+      "kind": "feature",
+      "text": "Route 53 の地理的近接性ルーティングは、利用者とリソースの位置に基づき、最も近い利用可能なリソースへトラフィックを向ける。バイアスを指定すると、そのリソースに振り分ける地理的範囲を拡大または縮小できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Geoproximity routing",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.failover-record-pair",
+      "title": "フェイルオーバーレコードは主系と待機系の組で作る",
+      "kind": "feature",
+      "text": "Route 53 のフェイルオーバールーティングは、同じレコード名とレコードタイプで、プライマリとセカンダリのレコードを組にして構成する。これはアクティブ／パッシブの切り替えに使う構成である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Values specific for failover records",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-failover.html"
+        },
+        {
+          "title": "Choosing a routing policy",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.failover-health-selection",
+      "title": "主系が異常で待機系が正常なら待機系を応答する",
+      "kind": "feature",
+      "text": "Route 53 の主系と待機系のフェイルオーバーレコードにそれぞれヘルスチェックを関連付けると、主系が正常な間は主系の値を応答する。主系が異常かつ待機系が正常な場合に、待機系の値へ応答を切り替える。",
+      "trap": "両方のヘルスチェックが異常な場合は、プライマリの値を応答する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "ResourceRecordSet — Failover",
+          "url": "https://docs.aws.amazon.com/Route53/latest/APIReference/API_ResourceRecordSet.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.calculated-health-check",
+      "title": "計算されたヘルスチェックで複数の状態をまとめる",
+      "kind": "feature",
+      "text": "Route 53 の計算されたヘルスチェックは、他のヘルスチェックの正常・異常の状態を監視して、一つのヘルスチェックにまとめる。正常なリソース数が指定したしきい値を下回るかどうかに基づく監視を構成できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Types of Amazon Route 53 health checks",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.endpoint-health-check",
+      "title": "エンドポイントのヘルスチェックはインターネット経由で行う",
+      "kind": "feature",
+      "text": "Route 53 のエンドポイントを監視するヘルスチェックは、指定した IP アドレスまたはドメイン名のリソースに、インターネット経由で定期的にリクエストを送る。対象が到達可能で、利用可能かつ機能しているかを確かめる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Types of Amazon Route 53 health checks",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.cloudwatch-alarm-health",
+      "title": "CloudWatch アラームの条件をヘルスチェックに使う",
+      "kind": "integration",
+      "text": "Route 53 では、CloudWatch アラームが監視するデータストリームと、そのアラームの判定条件を使うヘルスチェックを作成できる。アラームが ALARM 状態に遷移するのを待ってから正常性を変更する仕組みではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Types of Amazon Route 53 health checks",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.ttl-change-delay",
+      "title": "TTL が長いほど DNS の変更反映に時間がかかる",
+      "kind": "constraint",
+      "text": "Route 53 のレコードの TTL は、DNS 再帰リゾルバーがその情報をキャッシュする時間である。長い TTL を設定するとリゾルバーが古い値を使い続ける期間が延びるため、接続先の IP アドレスなどを変更しても反映までに時間がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Values specific for failover records — TTL",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.alias-zone-apex",
+      "title": "エイリアスでゾーン頂点を AWS リソースへ向ける",
+      "kind": "feature",
+      "text": "Route 53 のエイリアスレコードは、ホストゾーンと同じ名前であるゾーン頂点にも作成できる。ドメイン名そのものを、対応する AWS リソースの接続先へ向けたい場合に利用できる。",
+      "trap": "通常の CNAME レコードは、ホストゾーンと同じ名前では作成できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choosing between alias and non-alias records",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.alias-load-balancer",
+      "title": "ELB を指すエイリアスは IP アドレス変更に追従する",
+      "kind": "integration",
+      "text": "Route 53 で Elastic Load Balancing のロードバランサーをエイリアスの対象にすると、ロードバランサーの IP アドレス変更を Route 53 が検出する。変更後は、新しい IP アドレスを使って DNS クエリに応答する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choosing between alias and non-alias records",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.alias-query-pricing",
+      "title": "対象の AWS リソースを指すエイリアスクエリは無料",
+      "kind": "pricing",
+      "text": "Route 53 では、ELB、CloudFront、S3 のウェブサイトエンドポイントなど、料金ページに列挙された AWS リソースへ向けるエイリアスクエリは追加料金の対象にならない。問い合わせの名前とタイプがエイリアスレコードに一致することが条件である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Route 53 pricing — Alias Queries",
+          "url": "https://aws.amazon.com/route53/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.dns-firewall-filtering",
+      "title": "DNS Firewall で Resolver を通る DNS クエリを制御する",
+      "kind": "feature",
+      "text": "Route 53 Resolver DNS Firewall は、VPC の Resolver を通る DNS クエリをドメイン名に基づいてフィルタリングする。許可またはブロックするドメインをルールグループに定義し、VPC に関連付けて適用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Resolver DNS Firewall works",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.dns-firewall-non-dns",
+      "title": "DNS Firewall は DNS 以外の通信をフィルタリングしない",
+      "kind": "constraint",
+      "text": "Route 53 Resolver DNS Firewall のフィルタリング対象は DNS トラフィックである。HTTPS、SSH、TLS、FTP など、他のアプリケーション層プロトコルの通信自体は DNS Firewall の検査対象にならない。",
+      "trap": "ドメイン名を IP アドレスに解決し、その IP アドレスを遮断する機能ではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Resolver DNS Firewall works",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-overview.html"
+        },
+        {
+          "title": "Using DNS Firewall to filter outbound DNS traffic",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.resolver-inbound",
+      "title": "インバウンドエンドポイントでオンプレミスから名前解決する",
+      "kind": "integration",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のインバウンドエンドポイントは、オンプレミスの DNS リゾルバーから VPC に DNS クエリを転送する入口である。VPN や Direct Connect で接続した環境から、AWS 側にある名前を解決する際に利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Route 53 VPC Resolver?",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.resolver-outbound",
+      "title": "アウトバウンドエンドポイントでオンプレミスへ問い合わせる",
+      "kind": "integration",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のアウトバウンドエンドポイントは、VPC からオンプレミスの DNS リゾルバーへクエリを転送するために使う。条件付き転送ルールで、オンプレミスへ問い合わせるドメイン名を指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Route 53 VPC Resolver?",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.cloudfront-target-health",
+      "title": "CloudFront を指すエイリアスでは対象の正常性評価を使えない",
+      "kind": "constraint",
+      "text": "Route 53 のエイリアスレコードの対象が CloudFront ディストリビューションの場合、Evaluate Target Health を Yes に設定できない。エイリアスを利用できる AWS リソースすべてに、この設定が使えるわけではない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Values specific for failover alias records — Evaluate target health",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-failover-alias.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "route53.resolver-endpoint-eni-pricing",
+      "title": "Resolver エンドポイントは ENI ごとに時間料金がかかる",
+      "kind": "pricing",
+      "text": "Route 53 VPC Resolver（旧称 Route 53 Resolver）のエンドポイントは、ENI ごとに時間単位の料金がかかる。IP アドレス 1 つが ENI 1 つに対応し、エンドポイントには 2 つ以上の IP アドレスが必要である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon Route 53 Pricing",
+          "url": "https://aws.amazon.com/route53/pricing/"
+        },
+        {
+          "title": "What is Route 53 VPC Resolver?",
+          "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Route 53?",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/Welcome.html"
+    },
+    {
+      "title": "Choosing a routing policy",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+    },
+    {
+      "title": "What is Route 53 VPC Resolver?",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver.html"
+    }
+  ],
+  "createdBy": "cx4",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
+}

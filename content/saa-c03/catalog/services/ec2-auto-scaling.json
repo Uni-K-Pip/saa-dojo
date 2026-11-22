@@ -1,0 +1,698 @@
+{
+  "id": "ec2-auto-scaling",
+  "tier": 1,
+  "summary": "EC2 インスタンスを Auto Scaling グループとしてまとめ、最小・最大の範囲で台数を自動で増減し、異常なインスタンスを置き換えるサービスである。複数の AZ への分散、ELB との連携、Spot との併用ができ、追加料金はかからない。",
+  "chooseWhen": [
+    {
+      "text": "需要の増減に合わせて EC2 の台数を自動で増減し、コストを抑えたい",
+      "factRefs": [
+        "ec2-auto-scaling.capacity-bounds",
+        "ec2-auto-scaling.target-tracking"
+      ]
+    },
+    {
+      "text": "異常なインスタンスを自動で置き換え、複数の AZ にまたがって可用性を保ちたい",
+      "factRefs": [
+        "ec2-auto-scaling.multi-az-balance",
+        "ec2-auto-scaling.elb-health-check-replace"
+      ]
+    },
+    {
+      "text": "負荷の増える時刻が決まっている、または繰り返すパターンがあるので先回りして増やしたい",
+      "factRefs": [
+        "ec2-auto-scaling.scheduled-scaling",
+        "ec2-auto-scaling.predictive-scaling"
+      ]
+    },
+    {
+      "text": "起動に時間がかかるアプリケーションで、スケールアウトの遅れを減らしたい",
+      "factRefs": [
+        "ec2-auto-scaling.warm-pool",
+        "ec2-auto-scaling.warm-pool-lifecycle-hook"
+      ]
+    },
+    {
+      "text": "起動前や終了前に初期化・ログの退避などのカスタム処理を挟みたい",
+      "factRefs": [
+        "ec2-auto-scaling.lifecycle-hooks"
+      ]
+    },
+    {
+      "text": "On-Demand を基本に Spot を併用し、複数のインスタンスタイプでコストを最適化したい",
+      "factRefs": [
+        "ec2-auto-scaling.mixed-instances",
+        "ec2-auto-scaling.launch-template"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "起動設定は新規に作れないアカウントがあるため、新しい設計では起動テンプレートを使う",
+      "factRefs": [
+        "ec2-auto-scaling.launch-configuration-unavailable"
+      ]
+    },
+    {
+      "text": "トラフィックの振り分けは Auto Scaling の機能ではなく、ロードバランサーが担当する",
+      "factRefs": [
+        "ec2-auto-scaling.elb-integration"
+      ],
+      "alternatives": [
+        "elb"
+      ]
+    },
+    {
+      "text": "インスタンスの終了時に Elastic IP や EBS は引き継がれないため、そのまま入れ替わる前提にしない",
+      "factRefs": [
+        "ec2-auto-scaling.eip-ebs-not-retained"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "ec2-auto-scaling.capacity-bounds",
+      "title": "最小・希望・最大の台数",
+      "kind": "feature",
+      "text": "EC2 Auto Scaling はインスタンスを Auto Scaling グループとしてまとめて扱う。最小台数を下回らず、最大台数を超えないことを保証し、希望容量を指定すればその台数を保つ。スケーリングポリシーを設定すると、最小と最大の範囲内で需要に応じて起動・終了する。",
+      "examPoint": "台数を保つ・自動で増減するには、最小・希望・最大の範囲を持つ Auto Scaling グループを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EC2 Auto Scaling?",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.multi-az-balance",
+      "title": "複数 AZ へのインスタンスの分散",
+      "kind": "feature",
+      "text": "Auto Scaling グループに複数の AZ を指定すると、グループがスケールするときに、インスタンスを AZ 間で均等に分散する。1 つの場所の障害からアプリケーションを守り、可用性と耐障害性を高める。",
+      "examPoint": "高可用性には、複数の AZ にまたがる Auto Scaling グループを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon EC2 Auto Scaling?",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.launch-template",
+      "title": "起動テンプレート",
+      "kind": "feature",
+      "text": "Auto Scaling グループは、起動テンプレートでインスタンスの設定（AMI、インスタンスタイプ、キーペア、セキュリティグループなど）を決める。起動テンプレートはバージョンを持てる。ドキュメントは、最新の機能を使うために起動テンプレートの利用を推奨している。",
+      "examPoint": "インスタンスの作り方は起動テンプレートで定義する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Auto Scaling launch templates",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.launch-configuration-unavailable",
+      "title": "起動設定は新規には選ばない",
+      "kind": "constraint",
+      "text": "起動設定（Launch Configuration）は、ドキュメントの時点で、2024 年 10 月 1 日以降に作成したアカウントではどの方法でも新規作成できない。2023 年 1 月 1 日以降の新しいインスタンスタイプも対象外で、作成後は変更もできない。新規には選ばず、起動テンプレートを使う。",
+      "trap": "混合インスタンスグループ（Spot と On-Demand の併用、複数インスタンスタイプ）は、起動設定では設定できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Auto Scaling launch configurations",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-configurations.html"
+        },
+        {
+          "title": "Auto Scaling launch templates",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "ec2-auto-scaling.mixed-instances",
+      "title": "On-Demand と Spot、複数インスタンスタイプの併用",
+      "kind": "feature",
+      "text": "1 つの Auto Scaling グループで、On-Demand インスタンスと Spot インスタンス、複数のインスタンスタイプを併用できる。この構成には起動テンプレートが必要である。Spot が中断されたときは、代替の Spot 容量を自動で要求でき、Capacity Rebalancing で中断リスクの高いものを先回りして置き換えることもできる。",
+      "examPoint": "Spot と On-Demand を併用し、Spot の割引でコストを最適化する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Auto Scaling groups with multiple instance types and purchase options",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html"
+        },
+        {
+          "title": "What is Amazon EC2 Auto Scaling?",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+        },
+        {
+          "title": "Auto Scaling launch templates",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.health-check-types",
+      "title": "ヘルスチェックの種類",
+      "kind": "feature",
+      "text": "EC2 Auto Scaling は InService のインスタンスの健全性を、EC2 のステータスチェックとスケジュールされたイベント（既定で常に有効）、ELB、VPC Lattice、EBS、カスタムのヘルスチェックで判定できる。ELB・VPC Lattice・EBS のヘルスチェックは、グループで有効にして使う。",
+      "trap": "既定では EC2 のステータスチェックだけなので、アプリケーションが応答しなくてもインスタンスは正常と扱われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "About the health checks for your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.elb-health-check-replace",
+      "title": "ELB のヘルスチェックによる置換",
+      "kind": "feature",
+      "text": "既定では、EC2 Auto Scaling は ELB のヘルスチェックの結果を無視する。グループで ELB のヘルスチェックを有効にすると、ELB が登録済みのインスタンスを Unhealthy と報告したとき、次の定期チェックで Unhealthy とし、置き換える。登録解除の遅延が有効なら、処理中の通信の完了かタイムアウトを待ってから終了する。",
+      "examPoint": "アプリケーションが応答しないインスタンスを自動で入れ替えるには、グループで ELB のヘルスチェックを有効にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "About the health checks for your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.health-replace-process",
+      "title": "異常なインスタンスの置換の進め方",
+      "kind": "feature",
+      "text": "インスタンスが running でなくなったときは、即座に Unhealthy として置換する。ステータスチェックが impaired になっても、すぐには置換せず、数分待つ。そのほかの異常なインスタンスは、グループの希望容量の 10% ずつを置換し、新しいインスタンスが最初のヘルスチェックとウォームアップを通過するのを待つ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "About the health checks for your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.health-check-grace-period",
+      "title": "ヘルスチェックの猶予期間",
+      "kind": "feature",
+      "text": "ヘルスチェックの猶予期間は、新しいインスタンスが異常と判定されても終了せず、InService のまま保つ最小の時間（秒）である。ELB のヘルスチェックは登録時から並行して動くため、初期化中のインスタンスが不必要に置換されるのを防ぐ。ドキュメントの時点の既定値は、コンソールで 300 秒、CLI・SDK で 0 秒（無効）である。",
+      "trap": "値を大きくしすぎると、ヘルスチェックによる置換の効果が弱まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set the health check grace period for an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.grace-period-scope",
+      "title": "猶予期間が決めること",
+      "kind": "feature",
+      "text": "猶予期間は、InService になったあとの異常判定による置換を猶予する設定で、インスタンスが InService になるタイミングを決めるものではない。初期化の完了を待ってから InService にしたい場合は、起動ライフサイクルフックを使う。猶予期間中でも、インスタンスが running でなくなれば即座に置換される。",
+      "trap": "猶予期間は、動的スケーリングが見るメトリクスの集計とは関係がない。集計から外すのはデフォルトのインスタンスウォームアップである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set the health check grace period for an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html"
+        },
+        {
+          "title": "Amazon EC2 Auto Scaling lifecycle hooks",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.scale-cooldown",
+      "title": "スケーリングのクールダウン",
+      "kind": "feature",
+      "text": "クールダウンは、起動または終了のあと、シンプルスケーリングポリシーによる次のスケーリング活動を待たせる時間である。前の活動の効果が見えるまで、追加の起動・終了を抑える。ドキュメントの時点の既定値は 300 秒で、ポリシーごとに上書きできる。ターゲット追跡とステップスケーリングはクールダウンを待たず、代わりにインスタンスのウォームアップを使う。",
+      "examPoint": "クールダウンはシンプルスケーリング向けの仕組みで、AWS はターゲット追跡かステップスケーリングを推奨している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scaling cooldowns for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.default-instance-warmup",
+      "title": "デフォルトのインスタンスウォームアップ",
+      "kind": "feature",
+      "text": "デフォルトのインスタンスウォームアップは、インスタンスが InService になってから、集約メトリクスにデータを提供し始めるまで待つ時間である。起動直後で、まだトラフィックを処理していないインスタンスの一時的に高い使用率が、動的スケーリングに影響するのを防ぐ。既定では有効になっておらず、ターゲット追跡とステップスケーリングの性能のため設定が推奨されている。",
+      "examPoint": "起動直後の高い使用率で過剰にスケールアウトするのを防ぐには、ウォームアップの時間を設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set the default instance warmup for an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.warmup-excludes-metrics",
+      "title": "ウォームアップ中のインスタンスの扱い",
+      "kind": "feature",
+      "text": "スケールアウトで起動したインスタンスは、InService になりウォームアップが終わるまで、グループの集約メトリクスに含まれない。ウォームアップ中は、ウォームアップ中でないインスタンスの値がしきい値を超えたときだけスケールアウトし、スケールインはウォームアップが終わるまで止まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Set the default instance warmup for an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html"
+        },
+        {
+          "title": "Amazon EC2 Auto Scaling lifecycle hooks",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+        },
+        {
+          "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.warmup-fallbacks",
+      "title": "ウォームアップを設定しない場合の既定",
+      "kind": "feature",
+      "text": "デフォルトのインスタンスウォームアップを設定しない場合、ドキュメントの時点では、ターゲット追跡とステップスケーリングはデフォルトのクールダウンを、インスタンスの更新（インスタンスリフレッシュ）はヘルスチェックの猶予期間をウォームアップの代わりに使う。予測スケーリングには既定のウォームアップがない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Set the default instance warmup for an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-default-instance-warmup.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.target-tracking",
+      "title": "ターゲット追跡スケーリング",
+      "kind": "feature",
+      "text": "ターゲット追跡スケーリングは、メトリクスと目標値（たとえば平均 CPU 使用率 50%）を決めると、その値を保つようにグループの容量を調整する。CloudWatch アラームは EC2 Auto Scaling が作成・管理するので、編集や削除をしない。複数のポリシーがあれば、どれかがスケールアウトできる状態なら増やし、すべてがスケールインできる状態のときだけ減らす。",
+      "examPoint": "需要に比例して台数を調整する場合、最初に選ぶのはターゲット追跡スケーリング。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.target-tracking-metrics",
+      "title": "ターゲット追跡で使うメトリクス",
+      "kind": "feature",
+      "text": "ターゲット追跡の定義済みメトリクスは、ASGAverageCPUUtilization、ASGAverageNetworkIn、ASGAverageNetworkOut、ALBRequestCountPerTarget などである。ロードバランサー全体の RequestCount や Latency、SQS の ApproximateNumberOfMessagesVisible は、台数に比例して変わらないため使えない。インスタンス 1 台あたりのキューの滞留数のようなカスタムメトリクスなら使える。",
+      "examPoint": "SQS の処理待ちに合わせるには、インスタンスあたりのメッセージ数をカスタムメトリクスにする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.step-vs-simple",
+      "title": "ステップスケーリングとシンプルスケーリング",
+      "kind": "feature",
+      "text": "ステップスケーリングは、CloudWatch アラームの超過の大きさに応じて、段階的に異なる増減幅を適用する。シンプルスケーリングは、1 つの調整量だけを持ち、活動の間にクールダウンを挟む。どちらも自分でアラームを作る。ドキュメントは、比例して調整できるメトリクスにはターゲット追跡を推奨している。",
+      "examPoint": "しきい値ごとに細かく増減幅を決めたいときはステップスケーリング。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Step and simple scaling policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html"
+        },
+        {
+          "title": "Scaling cooldowns for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.scheduled-scaling",
+      "title": "スケジュールされたスケーリング",
+      "kind": "feature",
+      "text": "スケジュールされたスケーリングは、予測できる負荷の変化に合わせて、指定した日時にグループの希望容量（必要なら最小・最大も）を変える。1 回だけの実行も、cron 式とタイムゾーンによる定期的な実行もできる。スケーリングポリシーと併用でき、その場合の台数はスケジュールで決めた最小・最大の範囲に収まる。",
+      "examPoint": "毎週決まった時間帯に負荷が増えると分かっている場合、スケジュールされたスケーリングで事前に台数を増やす。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scheduled scaling for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.predictive-scaling",
+      "title": "予測スケーリング",
+      "kind": "feature",
+      "text": "予測スケーリングは、過去の負荷データから日次・週次のパターンを検出して必要な容量を予測し、負荷が来る前にインスタンスを増やす。最初は予測だけを出す「予測のみ」モードで、確認後に「予測とスケール」モードに切り替える。予測に基づいてスケールインはしないため、不要になった容量の削除には動的スケーリングが要る。",
+      "examPoint": "繰り返す負荷の変動や、起動に時間のかかるアプリケーションには、予測スケーリングを検討する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How predictive scaling works",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/predictive-scaling-policy-overview.html"
+        },
+        {
+          "title": "Predictive scaling for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.predictive-scaling-data",
+      "title": "予測スケーリングに必要なデータと予測の周期",
+      "kind": "feature",
+      "text": "予測スケーリングが予測を始めるには、メトリクスに少なくとも 24 時間のデータが要る。過去最大 14 日分を分析して、次の 48 時間の容量を 1 時間ごとに予測し、予測は 6 時間ごとに最新のデータで更新される。2 週間分の履歴があると、予測がより効果的になる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How predictive scaling works",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/predictive-scaling-policy-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.predictive-with-dynamic",
+      "title": "予測スケーリングと動的スケーリングの併用",
+      "kind": "feature",
+      "text": "予測スケーリングと動的スケーリング（ターゲット追跡など）を併用すると、需要の曲線に近づけて増減できる。複数のポリシーがあると、それぞれが独立して希望容量を算出し、最大の値が希望容量になる。予測スケーリングは、すべてのインスタンスが同じ容量を持つ均質なグループを前提とする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How predictive scaling works",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/predictive-scaling-policy-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.termination-policy",
+      "title": "終了ポリシー",
+      "kind": "feature",
+      "text": "終了ポリシーは、EC2 Auto Scaling がインスタンスを終了するとき、どのインスタンスから終了するかを決める基準である。既定の終了ポリシーは、古い設定のインスタンスを優先して終了する。AZ 間の均衡を保つことが、終了ポリシーに優先する。異常と判定されたインスタンスは、終了ポリシーの評価を経ない。",
+      "examPoint": "スケールインでどのインスタンスを終了するかは、終了ポリシーで決まる。",
+      "trap": "終了ポリシーは終了する対象を選ぶだけで、スケールアウトで追加する台数の制御には使わない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure termination policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.termination-default",
+      "title": "既定の終了ポリシーの順序",
+      "kind": "feature",
+      "text": "既定の終了ポリシーは、まずインスタンス数が最も多く、保護されていないインスタンスがある AZ を選ぶ。次に、古い設定のインスタンス（起動設定、別の起動テンプレート、現在のテンプレートの最も古いバージョンの順）を探す。それでも決まらなければ、次の課金の時間に最も近いものを選び、同じなら無作為に選ぶ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configure termination policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.termination-predefined",
+      "title": "定義済みの終了ポリシー",
+      "kind": "feature",
+      "text": "定義済みの終了ポリシーには、Default、AllocationStrategy、OldestLaunchTemplate、OldestLaunchConfiguration、ClosestToNextInstanceHour、NewestInstance、OldestInstance がある。古いインスタンスタイプから新しいものへ段階的に入れ替えるときは OldestInstance、設定の更新で古いものを減らすときは OldestLaunchTemplate などを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configure termination policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.lifecycle-hooks",
+      "title": "ライフサイクルフック",
+      "kind": "feature",
+      "text": "ライフサイクルフックは、インスタンスの起動時や終了前に待機状態にして、カスタムのアクションを実行できる機能である。既定の待機は 1 時間で、アクションが終わったら complete-lifecycle-action で次へ進める。起動フックで初期化の完了を待たせ、準備ができてからロードバランサーに登録させる用途が代表的である。",
+      "examPoint": "起動前の初期化や、終了前のログの退避などを自動化するには、ライフサイクルフックを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon EC2 Auto Scaling lifecycle hooks",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.lifecycle-hook-timeouts",
+      "title": "ライフサイクルフックの待機時間と結果",
+      "kind": "feature",
+      "text": "待機時間の既定は 1 時間（ハートビートタイムアウト）で、待機の上限は 48 時間かハートビートタイムアウトの 100 倍の小さいほうである。起動では continue なら InService になり、abandon なら終了して置換される。終了では、どちらの結果でも終了し、abandon は残りのフックを止める。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EC2 Auto Scaling lifecycle hooks",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.lifecycle-notification-targets",
+      "title": "ライフサイクルの通知先",
+      "kind": "integration",
+      "text": "EC2 Auto Scaling はライフサイクルのイベントを EventBridge に送る。EventBridge のルールで Lambda や SNS、SQS などへ振り分けられる。通知先として、SNS トピック、SQS キュー、Lambda 関数を直接指定することもできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon EC2 Auto Scaling lifecycle hooks",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/lifecycle-hooks.html"
+        },
+        {
+          "title": "Use lifecycle hooks with a warm pool in Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/warm-pool-instance-lifecycle.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.warm-pool",
+      "title": "ウォームプール",
+      "kind": "feature",
+      "text": "ウォームプールは、初期化を済ませたインスタンスを Auto Scaling グループの横で待機させておく機能である。スケールアウトのとき、グループはプールからインスタンスを引き出して早く使える状態にする。起動に非常に時間がかかるアプリケーション向けで、不要なら余計なコストになる。プールが空だと、通常の起動（コールドスタート）になる。",
+      "examPoint": "起動に時間がかかるアプリケーションのスケールアウトを速めるには、ウォームプールを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Decrease latency for applications with long boot times using warm pools",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.warm-pool-lifecycle-hook",
+      "title": "ウォームプールとライフサイクルフック",
+      "kind": "feature",
+      "text": "ウォームプールでは、起動ライフサイクルフックが、初期化が終わるまでインスタンスの停止・休止と、スケールアウト時の InService を遅らせる。インスタンスは Warmed:Pending:Wait で待機し、初期化が終わって CompleteLifecycleAction が呼ばれてからプールに入る。フックがないと、初期化の途中で停止されることがある。",
+      "examPoint": "ウォームプールで初期化を完了させてからプールに入れるには、起動ライフサイクルフックで待機させる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Decrease latency for applications with long boot times using warm pools",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        },
+        {
+          "title": "Use lifecycle hooks with a warm pool in Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/warm-pool-instance-lifecycle.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.warm-pool-states",
+      "title": "ウォームプールの状態と課金",
+      "kind": "pricing",
+      "text": "ウォームプールのインスタンスは Stopped、Running、Hibernated のいずれかの状態に置ける。停止中は、EC2 インスタンスの料金はかからず、EBS ボリュームと Elastic IP アドレスにだけ料金がかかる。休止中は RAM の内容を保存する EBS も含む。Running は不要な課金につながるため推奨されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Decrease latency for applications with long boot times using warm pools",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.warm-pool-limits",
+      "title": "ウォームプールの制限",
+      "kind": "constraint",
+      "text": "ウォームプールで停止または休止できるのは、ルートデバイスが EBS のインスタンスだけで、インスタンスストアのルートは使えない。混合インスタンスグループでは、重み付けのあるグループは使えず、Spot インスタンスも使えない。プールを使い切ると、グループへ直接起動する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Decrease latency for applications with long boot times using warm pools",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.elb-integration",
+      "title": "Elastic Load Balancing との連携",
+      "kind": "integration",
+      "text": "ALB・NLB・GWLB はターゲットグループを、CLB はロードバランサー自体を、Auto Scaling グループにアタッチする。グループが起動したインスタンスは自動で登録され、終了したものは自動で登録解除される。ALBRequestCountPerTarget のメトリクスで、リクエスト数に応じたスケーリングもできる。",
+      "examPoint": "ELB と Auto Scaling を組み合わせ、インスタンスの登録と台数の増減を自動にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Elastic Load Balancing to distribute incoming application traffic in your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        },
+        {
+          "title": "Target tracking scaling policies for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.instance-refresh",
+      "title": "インスタンスリフレッシュ",
+      "kind": "feature",
+      "text": "インスタンスリフレッシュは、AMI や起動テンプレートを更新したときに、グループのインスタンスをローリングで入れ替える機能である。新しい AMI やユーザーデータの展開、インスタンスタイプの移行、起動設定から起動テンプレートへの移行などに使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use an instance refresh to update instances in an Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html"
+        },
+        {
+          "title": "What is Amazon EC2 Auto Scaling?",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.eip-ebs-not-retained",
+      "title": "置換時に引き継がれないもの",
+      "kind": "constraint",
+      "text": "インスタンスが終了されると、関連付けられていた Elastic IP アドレスは関連付けが外れ、新しいインスタンスへは自動で関連付けられない。アタッチされていた EBS ボリュームも、デタッチされるか DeleteOnTermination に従って削除される。必要な場合は、手動で関連付けるか、ライフサイクルフックによる仕組みで自動にする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "About the health checks for your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.no-extra-charge",
+      "title": "EC2 Auto Scaling の料金",
+      "kind": "pricing",
+      "text": "EC2 Auto Scaling 自体には追加料金がかからない。使った EC2 インスタンス、EBS ボリューム、CloudWatch アラームなどの AWS リソースの分だけを支払う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon EC2 Auto Scaling?",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "ec2-auto-scaling.quota-groups-per-region",
+      "title": "リージョンあたりのグループ数のクォータ",
+      "kind": "quota",
+      "text": "ドキュメントの時点の既定値では、1 リージョンあたり Auto Scaling グループは 500 個、起動設定は 200 個まで作れる。クォータは Service Quotas で確認でき、引き上げは Service Quotas または専用の上限緩和の申請で依頼する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas for Auto Scaling resources and groups",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-quotas.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "ec2-auto-scaling.quota-group-config",
+      "title": "グループあたりの構成の上限",
+      "kind": "quota",
+      "text": "ドキュメントの時点では、1 つの Auto Scaling グループに設定できるのは、スケーリングポリシー 50 個、スケジュールされたアクション 125 個、ライフサイクルフック 50 個、ELB のターゲットグループ 50 個までである。ステップスケーリングのステップ調整は 1 ポリシーあたり 20 個まで。これらの上限は変更できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas for Auto Scaling resources and groups",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-quotas.html"
+        },
+        {
+          "title": "Scheduled scaling for Amazon EC2 Auto Scaling",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    }
+  ],
+  "seeAlso": [
+    "elb.asg-integration",
+    "elb.deregistration-delay",
+    "elb.alb-slow-start"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon EC2 Auto Scaling?",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    },
+    {
+      "title": "About the health checks for your Auto Scaling group",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-checks-overview.html"
+    },
+    {
+      "title": "Auto Scaling launch templates",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-templates.html"
+    }
+  ],
+  "createdBy": "sc8",
+  "createdAt": "2026-11-14"
+}

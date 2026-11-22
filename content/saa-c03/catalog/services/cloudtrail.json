@@ -1,0 +1,361 @@
+{
+  "id": "cloudtrail",
+  "tier": 1,
+  "summary": "AWS アカウントでユーザー・ロール・AWS サービスが行った操作をイベントとして記録し、誰がいつ何をしたかを監査するサービス。管理イベントの履歴を調べたり、証跡を作って操作記録を S3 に継続保存したりできる。",
+  "chooseWhen": [
+    {
+      "text": "AWS の操作について、実行した主体・日時・対象を調べ、監査やセキュリティ調査に使いたい",
+      "factRefs": [
+        "cloudtrail.account-activity"
+      ]
+    },
+    {
+      "text": "AWS の操作記録を S3 に継続保存し、イベント履歴の保持期間を超えて残したい",
+      "factRefs": [
+        "cloudtrail.trail-s3-delivery",
+        "cloudtrail.event-history-retention"
+      ]
+    },
+    {
+      "text": "組織内のアカウントの操作を集め、メンバー側から変更できない共通の証跡で管理したい",
+      "factRefs": [
+        "cloudtrail.organization-trail",
+        "cloudtrail.organization-member-restriction"
+      ]
+    },
+    {
+      "text": "CloudTrail が配信したログファイルの変更や削除を検証したい",
+      "factRefs": [
+        "cloudtrail.log-file-integrity"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "S3 オブジェクトの読み書きを、管理イベントだけを表示するイベント履歴から調べようとしている",
+      "factRefs": [
+        "cloudtrail.event-history-event-types",
+        "cloudtrail.data-events"
+      ]
+    },
+    {
+      "text": "組織全体の操作記録を、管理アカウントのイベント履歴だけでまとめて調べたい",
+      "factRefs": [
+        "cloudtrail.event-history-account-scope"
+      ]
+    },
+    {
+      "text": "ログファイルを検証せず、整合性検証の設定を有効にするだけで検証が完了すると考えている",
+      "factRefs": [
+        "cloudtrail.validation-execution"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cloudtrail.account-activity",
+      "title": "AWS アカウントの操作を監査する",
+      "kind": "feature",
+      "text": "CloudTrail は、ユーザー・ロール・AWS サービスが行った操作をイベントとして記録する。コンソール、AWS CLI、SDK や API を通じた操作について、誰が何をいつ行い、どのリソースが対象になったかを調査できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What Is AWS CloudTrail?",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.management-events",
+      "title": "管理イベントはコントロールプレーンの記録",
+      "kind": "feature",
+      "text": "CloudTrail の管理イベントは、AWS リソースに対する管理操作を記録する。IAM ロールへのポリシーの関連付けや EC2 のサブネット作成など、コントロールプレーンの操作が対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Logging management events",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.data-events",
+      "title": "データイベントはリソース内の操作の記録",
+      "kind": "feature",
+      "text": "CloudTrail のデータイベントは、リソース上やリソース内で行われたデータプレーンの操作を記録する。S3 オブジェクトへの GetObject・PutObject や、Lambda 関数の Invoke などが対象になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Logging data events",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.event-history-retention",
+      "title": "イベント履歴の保持期間は直近 90 日",
+      "kind": "quota",
+      "text": "CloudTrail のイベント履歴で参照できる管理イベントは直近 90 日分である。それより長期の記録が必要なら、証跡またはイベントデータストアを作成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with CloudTrail event history",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.event-history-event-types",
+      "title": "イベント履歴には管理イベントだけを表示する",
+      "kind": "constraint",
+      "text": "CloudTrail のイベント履歴に表示されるのは管理イベントだけであり、データイベント、Insights イベント、ネットワークアクティビティイベントは表示されない。これらの記録を管理イベントの履歴と混同しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with CloudTrail event history",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.event-history-account-scope",
+      "title": "イベント履歴は組織全体を集約しない",
+      "kind": "constraint",
+      "text": "CloudTrail のイベント履歴は組織レベルでは集約されず、サインインした AWS アカウント自身の管理イベントだけを表示する。組織の管理アカウントにサインインしても、メンバーアカウントの操作はそのイベント履歴に集約されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with CloudTrail event history",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html"
+        },
+        {
+          "title": "Creating a trail for an organization",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.trail-s3-delivery",
+      "title": "証跡でログを S3 に継続配信する",
+      "kind": "feature",
+      "text": "CloudTrail の証跡は、選択したイベントをログファイルとして指定した S3 バケットへ継続配信するための設定である。イベント履歴の保持期間を超えて操作記録を残す用途に利用できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trail for your AWS account",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.multi-region-trail",
+      "title": "マルチリージョンの証跡で記録を集める",
+      "kind": "feature",
+      "text": "CloudTrail のマルチリージョンの証跡は、アカウントで有効なすべての AWS リージョンのイベントを記録し、指定した単一の S3 バケットへ配信する。複数リージョンの操作を共通の証跡設定で収集できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding multi-Region trails and opt-in Regions",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-multi-region-trails.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.organization-trail",
+      "title": "組織の証跡で全アカウントの操作を集める",
+      "kind": "feature",
+      "text": "CloudTrail の組織の証跡は、AWS Organizations の管理アカウントとすべてのメンバーアカウントのイベントを記録する。組織内の各アカウントの操作記録を、指定した共通の S3 バケットへ集めるために使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trail for an organization",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.organization-member-restriction",
+      "title": "メンバーは組織の証跡を変更できない",
+      "kind": "constraint",
+      "text": "CloudTrail の組織の証跡を変更できるのは、組織の管理アカウントまたは委任管理者である。それ以外のメンバーアカウントのユーザーは、証跡の削除、記録の開始・停止、記録するイベントの種類の変更などを行えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trail for an organization",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/creating-trail-organization.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.cloudwatch-logs-monitoring",
+      "title": "CloudWatch Logs と組み合わせて操作を監視する",
+      "kind": "integration",
+      "text": "CloudTrail の証跡を CloudWatch Logs に配信すると、ConsoleLogin イベントなどの特定の活動を監視できる。記録された操作をメトリクスフィルターとアラームにつなぎ、指定した活動の発生を通知する用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring CloudTrail Log Files with Amazon CloudWatch Logs",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.log-file-integrity",
+      "title": "ログファイルの変更や削除を検証する",
+      "kind": "feature",
+      "text": "CloudTrail のログファイルの整合性検証は、CloudTrail が配信した後のログファイルが変更・削除されていないかを確かめるための機能である。配信済みのログそのものの完全性を確認し、監査やフォレンジック調査に利用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Validating CloudTrail log file integrity",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.validation-execution",
+      "title": "整合性検証の有効化と検証実行は別の操作",
+      "kind": "feature",
+      "text": "CloudTrail のログファイルの整合性検証を有効にすると、S3 にダイジェストファイルが配信される。有効化だけではログファイルの検証は実行されず、AWS CLI または独自の検証ツールを使って実際に整合性を確かめる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Validating CloudTrail log file integrity",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.insights-anomaly-detection",
+      "title": "Insights は API 利用の平常時からの逸脱を検出する",
+      "kind": "feature",
+      "text": "CloudTrail Insights は、過去のイベントから API 呼び出し頻度や API エラー率の平常時の傾向を求める。現在の頻度やエラー率がその基準から逸脱した場合に、異常な活動を示す Insights イベントを生成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with CloudTrail Insights",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.management-copy-pricing",
+      "title": "管理イベントの最初のコピーの配信料金",
+      "kind": "pricing",
+      "text": "CloudTrail の証跡で S3 に配信する管理イベントは、各リージョンの最初のコピーについて CloudTrail の配信料金がかからない。管理イベントの追加コピーは課金対象であり、保存先の S3 の利用料金は別途発生する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudTrail FAQs",
+          "url": "https://aws.amazon.com/cloudtrail/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.data-events-pricing",
+      "title": "データイベントの記録は追加の課金対象",
+      "kind": "pricing",
+      "text": "CloudTrail のデータイベントの記録には追加料金がかかる。管理イベントの最初のコピーを無料で配信している証跡にデータイベントを追加しても、そのデータイベントは無料の管理イベントの配信には含まれない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudTrail FAQs",
+          "url": "https://aws.amazon.com/cloudtrail/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.athena-log-analysis",
+      "title": "S3 に保存した証跡を Athena で分析する",
+      "kind": "integration",
+      "text": "CloudTrail の証跡で S3 に保存したログは、Amazon Athena と組み合わせて検索・分析できる。証跡に収集した AWS の操作記録をクエリし、サービスの利用状況を調査する用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating a trail for your AWS account",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "cloudtrail.data-events-default",
+      "title": "データイベントは明示的に記録を設定する",
+      "kind": "feature",
+      "text": "CloudTrail の証跡は、2026-11-16 時点の既定ではデータイベントを記録しない。S3 オブジェクトへの操作などを記録するには、必要なリソースのデータイベントを証跡の記録対象として設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Logging data events",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
+        }
+      ],
+      "checkedAt": "2026-11-16",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudtrail.lake-sql-event-data-store",
+      "title": "CloudTrail Lake はイベントを SQL で分析する",
+      "kind": "feature",
+      "text": "CloudTrail Lake は、イベントデータストアに集めたイベントに対して SQL ベースのクエリを実行できる機能である。イベントデータストアは、選択した条件に基づくイベントの変更できない集まりで、クエリの対象になるイベントはその条件で決まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "cloudtrail.lake-new-customer-availability",
+      "title": "CloudTrail Lake は新規の顧客に提供されない",
+      "kind": "feature",
+      "text": "AWS CloudTrail Lake は、2026 年 5 月 31 日以降、新規の顧客には提供されない。既存の顧客は引き続き利用できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with AWS CloudTrail Lake",
+          "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html"
+        }
+      ],
+      "checkedAt": "2026-11-20",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "s3.acl-grantee-limits",
+    "iam.cross-service-confused-deputy",
+    "iam.source-key-availability",
+    "rds.cloudtrail-api-calls"
+  ],
+  "references": [
+    {
+      "title": "What Is AWS CloudTrail?",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    },
+    {
+      "title": "AWS CloudTrail FAQs",
+      "url": "https://aws.amazon.com/cloudtrail/faqs/"
+    }
+  ],
+  "createdBy": "cx6",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-20"
+}

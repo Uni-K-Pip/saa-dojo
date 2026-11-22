@@ -1,0 +1,57 @@
+{
+  "id": "rekognition",
+  "tier": 3,
+  "summary": "Amazon Rekognition は、画像と動画を分析するクラウドのサービス。物体・テキスト・不適切なコンテンツの検出や顔の比較などのコンピュータービジョンの機能を、機械学習の専門知識なしで API から使える。",
+  "chooseWhen": [
+    {
+      "text": "Amazon S3 に置いた画像や動画から、物体・テキスト・不適切なコンテンツを検出したい場合。",
+      "factRefs": [
+        "rekognition.media-input"
+      ]
+    },
+    {
+      "text": "画像内の顔を検出・分析・比較して、本人確認などに使いたい場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "rekognition.media-input",
+      "title": "Rekognition は S3 の画像・動画を分析する",
+      "kind": "feature",
+      "text": "Amazon Rekognition は、Amazon S3 に保存した画像や動画のファイルを分析するサービスである。物体、テキスト、不適切なコンテンツの検出や顔の比較などの機能を API で使え、機械学習の専門知識は要らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Rekognition?",
+          "url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "rekognition.text-in-images",
+      "title": "画像内の文字を検出する（検索やメタデータ用）",
+      "kind": "feature",
+      "text": "Rekognition のテキスト検出は、画像内の文字（印刷された文字と手書きの文字）を検出して取り出す。画像の視覚検索やメタデータの取り出しに使え、看板やバナーの文字は向きも検出して扱う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Rekognition?",
+          "url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "comprehend.input-formats"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Rekognition?",
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
+    }
+  ],
+  "createdBy": "sc48",
+  "createdAt": "2026-11-22"
+}

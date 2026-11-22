@@ -1,0 +1,193 @@
+{
+  "id": "kinesis-data-streams",
+  "tier": 2,
+  "summary": "ログやクリックストリームなどのデータを継続的に取り込み、リアルタイム処理に利用するサービスである。レコードをストリームに保持し、複数のアプリケーションが独立して読み取り、保持期間内のデータを再処理できる。",
+  "chooseWhen": [
+    {
+      "text": "ログやクリックストリームを継続的に収集し、独自のアプリケーションでリアルタイムに処理したいとき",
+      "factRefs": [
+        "kinesis-data-streams.realtime-ingestion"
+      ]
+    },
+    {
+      "text": "同じデータを複数のアプリケーションで独立して読み取り、あとから再処理したいとき",
+      "factRefs": [
+        "kinesis-data-streams.independent-consumers",
+        "kinesis-data-streams.retained-replay"
+      ]
+    },
+    {
+      "text": "予測しにくいストリームの負荷に対し、オンデマンドでシャードの容量管理を任せたいとき",
+      "factRefs": [
+        "kinesis-data-streams.on-demand-capacity"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "作業項目ごとに処理の成功・失敗を管理し、可視性タイムアウトで再配信するキューが必要なとき",
+      "alternatives": [
+        "sqs"
+      ]
+    },
+    {
+      "text": "既存のApache Kafkaアプリケーションを移行することが目的のとき",
+      "alternatives": [
+        "msk"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "kinesis-data-streams.realtime-ingestion",
+      "title": "継続的な取り込みとリアルタイム処理",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsは、ログやクリックストリームなどのレコードを継続的に取り込む。コンシューマーとなるアプリケーションがストリームから読み取り、データの到着に応じてリアルタイムに処理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Kinesis Data Streams?",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.independent-consumers",
+      "title": "複数のアプリケーションが独立して読む",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsでは、同じストリームを複数のコンシューマーアプリケーションが独立して同時に読み取れる。たとえば、リアルタイムの集計処理とアーカイブ処理を別々のアプリケーションで並行して行える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Kinesis Data Streams?",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.retained-replay",
+      "title": "保持期間内のレコードを再読み取りする",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsでは、ストリームに保持されているレコードをあとから再読み取りできる。保持期間内であれば、過去のデータを再処理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Kinesis Data Streams FAQs",
+          "url": "https://aws.amazon.com/kinesis/data-streams/faqs/"
+        },
+        {
+          "title": "Amazon Kinesis Data Streams Terminology and concepts",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "kinesis-data-streams.partition-routing",
+      "title": "パーティションキーでシャードへ振り分ける",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsは、レコードに付けられたパーティションキーを使い、書き込み先のシャードを決める。プロデューサーはレコードを書き込む際にパーティションキーを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Kinesis Data Streams Terminology and concepts",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.on-demand-capacity",
+      "title": "オンデマンドではシャードを自動管理する",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsのオンデマンドでは、必要なスループットに応じてサービスがシャードを自動で管理する。容量を事前に計画しにくい、変動が大きく予測困難なトラフィックに適している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choose the right mode to stream in",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.provisioned-shards",
+      "title": "プロビジョンドではシャード数を指定する",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsのプロビジョンドでは、利用者がストリームのシャード数を指定して容量を管理する。容量の要件を予測しやすい負荷や、シャードへのデータ分散を細かく制御したい場合に適している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Choose the right mode to stream in",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.enhanced-fan-out",
+      "title": "拡張ファンアウトで読み取り帯域を専有する",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsの拡張ファンアウトでは、コンシューマーごとにシャードの専用読み取りスループットを利用できる。同じシャードを読む他のコンシューマーと、読み取り帯域を奪い合わずにデータを受け取れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Develop enhanced fan-out consumers with dedicated throughput",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.server-side-encryption",
+      "title": "KMSキーによるサーバー側の暗号化",
+      "kind": "feature",
+      "text": "Kinesis Data Streamsは、サーバー側の暗号化によって、プロデューサーがストリームへ書き込むデータを暗号化できる。ストリームのデータを保護するための暗号化にはAWS KMSのキーを使用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Kinesis Data Streams Terminology and concepts",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "kinesis-data-streams.direct-s3-delivery",
+      "title": "オンデマンドのストリームからS3へ直接配信する",
+      "kind": "integration",
+      "text": "Kinesis Data Streamsのオンデマンドのストリームは、データ配信機能で同じリージョンのAmazon S3汎用バケットへ直接配信できる。ログのアーカイブなどに利用でき、配信用のコンシューマーアプリケーションを用意する必要はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Streaming tables and S3 delivery for Amazon Kinesis Data Streams",
+          "url": "https://docs.aws.amazon.com/streams/latest/dev/data-delivery.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "lambda.kinesis-batch-per-shard",
+    "lambda.kinesis-parallelization",
+    "lambda.reserved-concurrency"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Kinesis Data Streams?",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    },
+    {
+      "title": "Amazon Kinesis Data Streams FAQs",
+      "url": "https://aws.amazon.com/kinesis/data-streams/faqs/"
+    },
+    {
+      "title": "Streaming tables and S3 delivery for Amazon Kinesis Data Streams",
+      "url": "https://docs.aws.amazon.com/streams/latest/dev/data-delivery.html"
+    }
+  ],
+  "createdBy": "cx32",
+  "createdAt": "2026-11-16"
+}

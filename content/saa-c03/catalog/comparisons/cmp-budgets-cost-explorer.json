@@ -1,0 +1,63 @@
+{
+  "id": "cmp-budgets-cost-explorer",
+  "title": "AWS Budgets と AWS Cost Explorer",
+  "services": [
+    "budgets",
+    "cost-explorer"
+  ],
+  "decide": [
+    "予算を決め、コストがしきい値に近づいたときに通知を受けたいなら Budgets",
+    "コストが予算を超える見込みの段階で通知を受けたいなら Budgets",
+    "コストと使用状況の時間的な推移を、グラフや表で分析したいなら Cost Explorer",
+    "サービスやメンバーアカウントなどの軸で、コストを絞り込み、グループ化して分析したいなら Cost Explorer",
+    "過去と現在の傾向に基づいて、将来のコストを予測したいなら Cost Explorer"
+  ],
+  "rows": [
+    {
+      "axis": "目的",
+      "values": {
+        "budgets": "コスト予算で支出の上限を、使用量予算で使用量の上限を設定し、実績や予測がしきい値に近づいたり超えたりしたときにアラートを受け取る",
+        "cost-explorer": "コストと使用状況の時間的な推移を、グラフや表で可視化し、費用や利用の傾向を分析する"
+      },
+      "factRefs": [
+        "budgets.budget-types",
+        "cost-explorer.cost-usage-visualization"
+      ]
+    },
+    {
+      "axis": "将来の見込み",
+      "values": {
+        "budgets": "コストや使用量が予算を超える見込みのときにも、通知を設定できる",
+        "cost-explorer": "過去と現在のコストおよび使用状況の傾向に基づいて、将来のコストを予測できる"
+      },
+      "factRefs": [
+        "budgets.forecast-alerts",
+        "cost-explorer.forecast"
+      ]
+    },
+    {
+      "axis": "RI と Savings Plans の扱い",
+      "values": {
+        "budgets": "RI と Savings Plans の使用率とカバレッジの予算を作り、しきい値を下回ったときに通知を受け取れる",
+        "cost-explorer": "過去の使用状況に基づく RI と Savings Plans の購入推奨を確認できる"
+      },
+      "factRefs": [
+        "budgets.reservation-budgets",
+        "cost-explorer.ri-recommendations",
+        "cost-explorer.savings-plans-recommendations"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Managing your costs with AWS Budgets - AWS Cost Management",
+      "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "title": "Cloud Financial Management – AWS Cost Explorer - Amazon Web Services",
+      "url": "https://aws.amazon.com/aws-cost-management/aws-cost-explorer/features/"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc46"
+}

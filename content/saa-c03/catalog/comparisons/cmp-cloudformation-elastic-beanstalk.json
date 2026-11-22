@@ -1,0 +1,49 @@
+{
+  "id": "cmp-cloudformation-elastic-beanstalk",
+  "title": "AWS CloudFormation と AWS Elastic Beanstalk",
+  "services": [
+    "cloudformation",
+    "elastic-beanstalk"
+  ],
+  "decide": [
+    "使いたい AWS リソースとそのプロパティを、テンプレートに記述して構築したいなら CloudFormation",
+    "アプリケーションのソースバンドルをアップロードして、実行環境の構築を任せたいなら Elastic Beanstalk"
+  ],
+  "rows": [
+    {
+      "axis": "利用者が渡すもの",
+      "values": {
+        "cloudformation": "AWS リソースとそのプロパティを定義した、YAML または JSON のテンプレート",
+        "elastic-beanstalk": "アプリケーションのソースバンドル"
+      },
+      "factRefs": [
+        "cloudformation.template-provisioning",
+        "elastic-beanstalk.upload-and-provision"
+      ]
+    },
+    {
+      "axis": "作られるもの",
+      "values": {
+        "cloudformation": "テンプレートに定義したリソース（スタックとしてまとめて管理する）",
+        "elastic-beanstalk": "アプリケーションの実行に必要な AWS リソースを含む環境"
+      },
+      "factRefs": [
+        "cloudformation.template-provisioning",
+        "cloudformation.stack-resource-unit",
+        "elastic-beanstalk.upload-and-provision"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is CloudFormation? - AWS CloudFormation",
+      "url": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "What is AWS Elastic Beanstalk? - AWS Elastic Beanstalk",
+      "url": "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc31"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "cmp-rds-aurora-dynamodb",
+  "title": "Amazon RDS・Amazon Aurora・Amazon DynamoDB",
+  "services": [
+    "rds",
+    "aurora",
+    "dynamodb"
+  ],
+  "decide": [
+    "キーバリューやドキュメントのデータを、どの規模でも 1 桁ミリ秒で読み書きしたいなら DynamoDB",
+    "Oracle や SQL Server など、使い慣れたエンジンのリレーショナルデータベースを、運用を任せて使いたいなら RDS",
+    "MySQL・PostgreSQL と互換のまま、標準の MySQL・PostgreSQL より高いスループットが欲しいなら Aurora",
+    "選んだ複数のリージョンの、どのリージョンでも読み書きしたいなら DynamoDB（グローバルテーブル）"
+  ],
+  "docRef": "cheatsheet-databases",
+  "sources": [
+    {
+      "title": "What is Amazon DynamoDB? - Amazon DynamoDB",
+      "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html"
+    },
+    {
+      "title": "What is Amazon Relational Database Service (Amazon RDS)? - Amazon Relational Database Service",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html"
+    },
+    {
+      "title": "What is Amazon Aurora? - Amazon Aurora",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc24"
+}

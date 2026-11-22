@@ -1,0 +1,278 @@
+{
+  "id": "sts",
+  "tier": 2,
+  "summary": "有効期限の短い一時的なセキュリティ認証情報（アクセスキー・シークレットキー・セッショントークン）を発行するサービスである。IAM ロールの引き受け、フェデレーション、MFA を使った API 利用などの土台になる。",
+  "chooseWhen": [
+    {
+      "text": "ロールを引き受けて、別アカウントのリソースに一時的にアクセスしたい（AssumeRole）",
+      "factRefs": [
+        "sts.assume-role-trust-policy",
+        "sts.assume-role-external-id"
+      ]
+    },
+    {
+      "text": "SAML や OIDC の外部 ID プロバイダーのユーザーに、AWS の IAM ユーザーを作らずに一時的なアクセスを与えたい",
+      "factRefs": [
+        "sts.web-identity-saml-unsigned"
+      ]
+    },
+    {
+      "text": "長期のアクセスキーを配らず、有効期限の付いた認証情報で AWS を操作させたい",
+      "factRefs": [
+        "sts.temporary-credentials"
+      ]
+    },
+    {
+      "text": "MFA を満たした IAM ユーザーだけに、MFA で保護された API を呼び出させたい",
+      "factRefs": [
+        "sts.get-session-token-mfa"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "長期の認証情報を残したくない用途に GetSessionToken を使う（呼び出し自体に IAM ユーザーの長期のアクセスキーが要る）",
+      "factRefs": [
+        "sts.get-session-token-long-term-keys"
+      ]
+    },
+    {
+      "text": "モバイルアプリのユーザー認証と ID の管理をまとめて任せたい（Amazon Cognito が案内されている）",
+      "alternatives": [
+        "cognito"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "sts.temporary-credentials",
+      "title": "一時的な認証情報を発行する",
+      "kind": "feature",
+      "text": "AWS STS は、数分から数時間の有効期限を持つ一時的なセキュリティ認証情報を発行する。ユーザーに保存されず、要求のたびに動的に作られ、期限が切れると再利用できない。アプリケーションに長期の認証情報を埋め込んだり配ったりしなくて済み、ロールやフェデレーションの土台になる。",
+      "examPoint": "長期のアクセスキーを避けたい要件では、一時的な認証情報（ロールの引き受け）を選ぶ。",
+      "depth": "core",
+      "tags": [
+        "一時認証情報"
+      ],
+      "sources": [
+        {
+          "title": "Temporary security credentials in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.assume-role-trust-policy",
+      "title": "AssumeRole にはロールの信頼ポリシーが要る",
+      "kind": "feature",
+      "text": "AssumeRole は、ロールの一時的な認証情報を返す API である。ロールには、誰が引き受けられるかを決める信頼ポリシーと、何ができるかを決める権限ポリシーの2つがある。別アカウントのロールを引き受けるには、そのロールの信頼ポリシーが自分のアカウントを信頼し、さらに自分側の管理者が AssumeRole を許可している必要がある。",
+      "examPoint": "クロスアカウントアクセスは、相手側の信頼ポリシーと、自分側の AssumeRole の許可の両方で成り立つ。",
+      "depth": "core",
+      "tags": [
+        "AssumeRole",
+        "クロスアカウント"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.assume-role-external-id",
+      "title": "外部 ID でロールの引き受けを絞る",
+      "kind": "feature",
+      "text": "クロスアカウントロールは、通常はアカウントの全員を信頼する設定になる。外部 ID は、第三者にロールを使わせるときに、ロールの信頼ポリシーで sts:ExternalId の条件として要求する識別子で、呼び出し元は AssumeRole の ExternalId に同じ値を渡す。混乱した代理問題を防ぐために使い、秘密の値としては扱われない。",
+      "examPoint": "第三者にロールを使わせるときは、外部 ID を信頼ポリシーの条件にする。",
+      "depth": "core",
+      "tags": [
+        "AssumeRole",
+        "外部ID"
+      ],
+      "sources": [
+        {
+          "title": "Access to AWS accounts owned by third parties",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html"
+        },
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.assume-role-session-duration",
+      "title": "ロールセッションの長さの上限",
+      "kind": "quota",
+      "text": "AssumeRole の DurationSeconds は、既定が 3600 秒（1 時間）で、900 秒からロールに設定された最大セッション時間（1〜12 時間）まで指定できる。ロールの最大セッション時間を超える値を指定すると、呼び出しは失敗する。",
+      "depth": "detail",
+      "tags": [
+        "AssumeRole",
+        "セッション時間"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "sts.role-chaining-one-hour",
+      "title": "ロールの連鎖は 1 時間まで",
+      "kind": "constraint",
+      "text": "引き受けたロールの認証情報でさらに別のロールを引き受ける「ロールの連鎖」では、AWS CLI または API のロールセッションは最大 1 時間に制限される。連鎖のときに DurationSeconds に 1 時間より長い値を指定すると、呼び出しは失敗する。",
+      "depth": "detail",
+      "tags": [
+        "AssumeRole",
+        "セッション時間"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.session-policy-intersection",
+      "title": "セッションポリシーは権限を絞るだけ",
+      "kind": "feature",
+      "text": "AssumeRole では、インラインまたは管理ポリシーのセッションポリシーを渡せる。結果のセッションの権限は、ロールの ID ベースのポリシーとセッションポリシーの積集合になるため、ロールが許す範囲より多くの権限を与えることはできない。",
+      "depth": "detail",
+      "tags": [
+        "AssumeRole",
+        "セッションポリシー"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.get-session-token-long-term-keys",
+      "title": "GetSessionToken は長期のキーで呼び出す",
+      "kind": "constraint",
+      "text": "GetSessionToken は、IAM ユーザーの長期のセキュリティ認証情報（アクセスキー）を使って呼び出す。返る一時的な認証情報の権限は、呼び出した IAM ユーザーと同じになる。そのため、長期のアクセスキーを持つ IAM ユーザーが前提になり、長期の認証情報をなくす手段にはならない。",
+      "examPoint": "長期の認証情報を持たせない設計には、ロールの引き受けやフェデレーションを選ぶ。",
+      "trap": "GetSessionToken を使えば IAM ユーザーの長期のキーが不要になると考える。",
+      "depth": "core",
+      "tags": [
+        "GetSessionToken"
+      ],
+      "sources": [
+        {
+          "title": "GetSessionToken - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
+        },
+        {
+          "title": "Request temporary security credentials",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.get-session-token-mfa",
+      "title": "GetSessionToken で MFA の状態を持たせる",
+      "kind": "feature",
+      "text": "GetSessionToken は、MFA デバイスのシリアル番号とコードを渡して呼び出せる。値が正しければ、MFA 認証の状態を含む一時的な認証情報が返り、MFA を必要とする API を呼び出せる。不正なコードの場合はアクセス拒否になる。",
+      "examPoint": "IAM ユーザーが MFA 付きで API を呼び出すときに使う。",
+      "depth": "core",
+      "tags": [
+        "GetSessionToken",
+        "MFA"
+      ],
+      "sources": [
+        {
+          "title": "GetSessionToken - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.get-session-token-api-limits",
+      "title": "GetSessionToken の認証情報で呼べない API",
+      "kind": "constraint",
+      "text": "GetSessionToken が返す認証情報では、MFA の認証情報を含めない限り IAM の API を呼び出せない。また、AWS STS の API は AssumeRole と GetCallerIdentity 以外は呼び出せない。",
+      "depth": "detail",
+      "tags": [
+        "GetSessionToken"
+      ],
+      "sources": [
+        {
+          "title": "GetSessionToken - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.web-identity-saml-unsigned",
+      "title": "OIDC・SAML のフェデレーションの API",
+      "kind": "integration",
+      "text": "AssumeRoleWithWebIdentity は OIDC 互換の ID プロバイダーのトークンと、AssumeRoleWithSAML は SAML 2.0 のアサーションと引き換えに一時的な認証情報を返す。どちらも署名なしの呼び出しで、呼び出し側に AWS の認証情報は要らず、ユーザーごとの IAM ユーザーも作らなくてよい。",
+      "examPoint": "外部 ID プロバイダーのユーザーに一時的な AWS アクセスを与えるときの API。",
+      "depth": "core",
+      "tags": [
+        "フェデレーション",
+        "SAML",
+        "OIDC"
+      ],
+      "sources": [
+        {
+          "title": "Request temporary security credentials",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html"
+        },
+        {
+          "title": "Temporary security credentials in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "sts.regional-endpoints",
+      "title": "グローバルとリージョンのエンドポイント",
+      "kind": "feature",
+      "text": "AWS STS は既定でグローバルなエンドポイント（sts.amazonaws.com）を使うが、対応する他のリージョンのエンドポイントへ API を送ることもできる。近いリージョンを選ぶと遅延を減らせ、どのリージョンで発行した認証情報も世界中で使える。",
+      "depth": "detail",
+      "tags": [
+        "エンドポイント",
+        "リージョン"
+      ],
+      "sources": [
+        {
+          "title": "Temporary security credentials in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    }
+  ],
+  "references": [
+    {
+      "title": "Temporary security credentials in IAM",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp.html"
+    },
+    {
+      "title": "Request temporary security credentials",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html"
+    }
+  ],
+  "createdBy": "sc2",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-14"
+}

@@ -22,8 +22,13 @@ import {
   GlossaryFileSchema,
   ReviewStatusSchema,
   ServiceRegistrySchema,
+  CatalogEntrySchema,
+  CatalogComparisonSchema,
+  CatalogStatusSchema,
+  CatalogNeedsSchema,
 } from './lib/schema.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
+import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -50,6 +55,9 @@ const clip = (s, n = 60) => {
   return a.length > n ? `${a.slice(0, n - 1).join('')}…` : a.join('');
 };
 const pct = (n, d) => (d ? Math.round((100 * n) / d) : 0);
+// 実行日のローカル日付（YYYY-MM-DD）。図鑑の確認日の古さの判定に使う
+export const localToday = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 // ---------- 指摘の蓄積 ----------
 const label = (rel) => (rel ? `${CONTENT_ROOT}/${rel}` : CONTENT_ROOT);
@@ -91,6 +99,12 @@ function classify(rel) {
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
   if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
+  if (rel === CATALOG_STATUS_FILE) return { kind: 'catalog-status' };
+  if (rel === CATALOG_NEEDS_FILE) return { kind: 'catalog-needs' };
+  if (p[0] === 'catalog' && n === 3 && ext === '.json') {
+    if (p[1] === 'services') return { kind: 'catalog-entry', stem };
+    if (p[1] === 'comparisons') return { kind: 'catalog-comparison', stem };
+  }
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question', dirTask: 'basics', stem };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2]) && p[2][0] === domainDir[1]) {
@@ -115,6 +129,8 @@ export const LAYOUT_HELP = [
   '  lessons/d<1-4>/<id>.md   lessons/basics/<id>.md',
   '  flashcards/<デッキ>.json   glossary/<名前>.json',
   '  cheatsheets/<id>.md   guides/<id>.md',
+  '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
+  '  catalog-status.json / catalog-needs.json',
 ];
 
 // ---------- 読み込み（文字コード・JSON・front matter） ----------
@@ -270,6 +286,14 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     decks: [], // { rel, data }
     glossaries: [], // { rel, data }
     reviewStatus: { present: false, data: null },
+    // サービス図鑑: { rel, data }（スキーマに通ったものだけ）。status・needs は存在の有無と中身
+    catalog: {
+      entries: [],
+      comparisons: [],
+      status: { present: false, data: null },
+      needs: { present: false, data: null },
+      files: { entries: 0, comparisons: 0 },
+    },
     ids: new Map(), // id -> [{ type, rel }]（スキーマ不適合のファイルも含む）
     counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0 },
   };
@@ -425,6 +449,37 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         content.reviewStatus.present = true;
         const j = readJson(rel);
         if (j) content.reviewStatus.data = validateWith(ReviewStatusSchema, j.value, rel);
+        break;
+      }
+      case 'catalog-entry': {
+        content.catalog.files.entries++;
+        const j = readJson(rel);
+        if (!j) break;
+        const data = validateWith(CatalogEntrySchema, j.value, rel);
+        registerId(j.value?.id, 'catalog-entry', rel);
+        for (const f of Array.isArray(j.value?.facts) ? j.value.facts : []) registerId(f?.id, 'catalog-fact', rel);
+        if (data) content.catalog.entries.push({ rel, data });
+        break;
+      }
+      case 'catalog-comparison': {
+        content.catalog.files.comparisons++;
+        const j = readJson(rel);
+        if (!j) break;
+        const data = validateWith(CatalogComparisonSchema, j.value, rel);
+        registerId(j.value?.id, 'catalog-comparison', rel);
+        if (data) content.catalog.comparisons.push({ rel, data });
+        break;
+      }
+      case 'catalog-status': {
+        content.catalog.status.present = true;
+        const j = readJson(rel);
+        if (j) content.catalog.status.data = validateWith(CatalogStatusSchema, j.value, rel);
+        break;
+      }
+      case 'catalog-needs': {
+        content.catalog.needs.present = true;
+        const j = readJson(rel);
+        if (j) content.catalog.needs.data = validateWith(CatalogNeedsSchema, j.value, rel);
         break;
       }
       default:
@@ -813,6 +868,61 @@ export function longestCorrectStats(questions) {
   return { ...stat(singles), byCreator: [...byCreator].map(([createdBy, list]) => ({ createdBy, ...stat(list) })) };
 }
 
+// ---------- サービス図鑑 ----------
+const factText = (f) => [f.title, f.text, f.examPoint, f.trap].filter(Boolean).join('\n');
+
+function checkCatalogEntry(content, { rel, data: e }) {
+  const { report, serviceIndex } = content;
+  checkServiceNames(content, rel, e.facts.flatMap((f) => f.services ?? []), 'facts[].services');
+  if (!serviceIndex) return;
+  const hits = [];
+  for (const f of e.facts) {
+    const names = serviceIndex.outOfScopeMatchers.filter((m) => m.re.test(factText(f))).map((m) => m.name);
+    if (names.length) hits.push(`${f.id}（${names.join(', ')}）`);
+  }
+  if (hits.length) {
+    report.warn('out-of-scope-mention', rel, `事実の本文に試験範囲外のサービス名があります: ${hits.join(' / ')}`, { strong: true });
+  }
+}
+
+// 事実の本文どうし、および用語集の定義との類似を探す。findNearDuplicates は rec.data.stem を見るので、本文を stem として渡す
+function checkCatalogNearDuplicates(content) {
+  const facts = content.catalog.entries.flatMap(({ rel, data: e }) => e.facts.map((f) => ({ rel, data: { id: f.id, stem: f.text }, kind: 'fact' })));
+  if (facts.length === 0) return;
+  const defs = content.glossaries.flatMap(({ rel, data: g }) =>
+    g.entries.map((t) => ({ rel, data: { id: t.term, stem: t.definition }, kind: 'glossary' })),
+  );
+  for (const { a, b, similarity } of findNearDuplicates([...facts, ...defs])) {
+    if (a.kind === 'glossary' && b.kind === 'glossary') continue;
+    if (a.kind === 'fact' && b.kind === 'fact' && a.data.id === b.data.id) continue; // 同じ id の重複は duplicate-id で報告済み
+    const [fa, other] = a.kind === 'fact' ? [a, b] : [b, a];
+    const what = other.kind === 'fact' ? `事実 ${other.data.id}` : `用語集「${other.data.id}」の定義`;
+    content.report.warn('catalog-near-duplicate', fa.rel, `事実 ${fa.data.id} の本文が${what}と似ています（類似度 ${similarity.toFixed(2)}）`, {
+      pair: [fa.data.id, other.data.id],
+    });
+  }
+}
+
+// 図鑑の参照・状態・区分の検査（scripts/lib/catalog.mjs。ビルドと同じ判定）
+function checkCatalogModel(content) {
+  const { serviceIndex, catalog } = content;
+  if (!serviceIndex) return;
+  const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
+  const model = buildCatalogModel({ entries: catalog.entries.map((x) => ({ file: x.rel, data: x.data })), comparisons: catalog.comparisons.map((x) => ({ file: x.rel, data: x.data })), serviceIndex });
+  const found = checkCatalog(model, {
+    serviceIndex,
+    lessonIds: idsOf('lesson'),
+    docIds: idsOf('doc'),
+    questions: content.questions.map((q) => ({ file: q.rel, data: q.data })),
+    markdown: [...content.lessons, ...content.docs].map((m) => ({ file: m.rel, text: m.body })),
+    status: catalog.status.data,
+    statusFile: CATALOG_STATUS_FILE,
+    needs: catalog.needs.data ? { file: CATALOG_NEEDS_FILE, data: catalog.needs.data } : null,
+    today: localToday(),
+  });
+  for (const i of found) content.report[i.level === 'error' ? 'error' : 'warn'](i.code, i.file ?? '', i.message);
+}
+
 function checkLongestCorrect(content) {
   const s = longestCorrectStats(content.questions);
   content.longestCorrect = s;
@@ -837,12 +947,15 @@ export function checkContent(content) {
   for (const d of content.docs) checkDoc(content, d);
   for (const d of content.decks) checkDeck(content, d);
   for (const g of content.glossaries) checkGlossary(content, g);
+  for (const e of content.catalog.entries) checkCatalogEntry(content, e);
   reportServiceAliases(content);
   checkGlossaryRelated(content);
   checkDuplicateIds(content);
   checkLessonRefs(content);
   checkReviewStatus(content);
   checkNearDuplicates(content);
+  checkCatalogNearDuplicates(content);
+  checkCatalogModel(content);
   checkLongestCorrect(content);
   return content;
 }
@@ -860,10 +973,23 @@ export function summarize(content) {
     if (q.needsSourceCheck) needsSourceCheck++;
   }
   const c = content.counts;
+  const cat = content.catalog;
+  const hasCatalog = cat.files.entries + cat.files.comparisons > 0 || cat.status.present || cat.needs.present;
   return {
     ok: errors.length === 0,
     contentRoot: CONTENT_ROOT,
     counts: {
+      ...(hasCatalog
+        ? {
+            catalog: {
+              entryFiles: cat.files.entries,
+              entries: cat.entries.length,
+              facts: cat.entries.reduce((n, e) => n + e.data.facts.length, 0),
+              comparisonFiles: cat.files.comparisons,
+              comparisons: cat.comparisons.length,
+            },
+          }
+        : {}),
       questions: { files: c.questionFiles, valid: content.questions.length },
       lessons: { files: c.lessonFiles, valid: content.lessons.length },
       cheatsheets: c.cheatsheetFiles,
@@ -912,6 +1038,13 @@ const CODE_LABELS = {
   'service-alias': 'サービス名の表記ゆれ',
   'lesson-missing': '存在しない lessonRefs',
   'near-duplicate': '問題文が似ている組',
+  'catalog-ref': '図鑑の参照切れ',
+  'catalog-entry': '図鑑のエントリと台帳の不一致',
+  'catalog-tier': '図鑑の区分の目安から外れる',
+  'catalog-stale-review': '検証後に内容が変わった図鑑の項目',
+  'catalog-old-check': '図鑑の確認日が古い',
+  'catalog-near-duplicate': '図鑑の事実の本文が似ている',
+  'catalog-needs': '図鑑の不足の対応が未決',
   'correct-longest': '正解が最長に偏っている',
   'review-status-missing': 'review-status.json がない',
   'body-short': '本文が短い',
@@ -937,6 +1070,9 @@ function renderText(result, opts) {
     L.push('読み込み');
     L.push(`  問題 ${c.questions.files} 件（有効 ${c.questions.valid}） / レッスン ${c.lessons.files} 件（有効 ${c.lessons.valid}） / 早見表 ${c.cheatsheets} 件 / ガイド ${c.guides} 件`);
     L.push(`  フラッシュカード ${c.flashcardDecks.files} デッキ・${c.flashcards} 枚 / 用語集 ${c.glossaryFiles} ファイル・${c.glossaryEntries} 語`);
+    if (c.catalog) {
+      L.push(`  図鑑 エントリ ${c.catalog.entryFiles} 件（有効 ${c.catalog.entries}・事実 ${c.catalog.facts} 件） / 比較 ${c.catalog.comparisonFiles} 件（有効 ${c.catalog.comparisons}）`);
+    }
     const pools = ['basics', 'practice', 'mockA', 'mockB'].map((p) => `${p} ${s.questionsByPool[p] ?? 0}`).join(' / ');
     L.push(`  問題のプール: ${pools}`);
     const st = s.reviewStatus;

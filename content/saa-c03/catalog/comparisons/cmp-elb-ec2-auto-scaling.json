@@ -1,0 +1,57 @@
+{
+  "id": "cmp-elb-ec2-auto-scaling",
+  "title": "Elastic Load Balancing と Amazon EC2 Auto Scaling",
+  "services": [
+    "elb",
+    "ec2-auto-scaling"
+  ],
+  "decide": [
+    "受けた通信を、複数のインスタンスへ振り分けたいなら ELB",
+    "異常なインスタンスへ通信を送らないようにしたいなら ELB",
+    "需要に応じて、EC2 インスタンスの台数を自動で増減したいなら EC2 Auto Scaling",
+    "異常なインスタンスを置き換えて、希望する台数を保ちたいなら EC2 Auto Scaling",
+    "起動・終了したインスタンスを、ロードバランサーへ自動で登録・解除したいなら ELB と EC2 Auto Scaling の組み合わせ"
+  ],
+  "rows": [
+    {
+      "axis": "異常なインスタンスへの対処",
+      "values": {
+        "elb": "そのターゲットへの転送を止め、正常に戻ると再開する",
+        "ec2-auto-scaling": "異常と判定したインスタンスを置き換える"
+      },
+      "factRefs": [
+        "elb.health-check-routing",
+        "ec2-auto-scaling.health-replace-process",
+        "ec2-auto-scaling.health-check-types"
+      ]
+    },
+    {
+      "axis": "異常の判定に使うヘルスチェック",
+      "values": {
+        "elb": "ロードバランサーのヘルスチェック（ターゲットグループ単位で設定する）",
+        "ec2-auto-scaling": "既定では、EC2 のステータスチェックとスケジュールされたイベントで判定する。グループで有効にすると、ELB のヘルスチェックの結果も使う"
+      },
+      "factRefs": [
+        "elb.health-check-routing",
+        "ec2-auto-scaling.health-check-types",
+        "ec2-auto-scaling.elb-health-check-replace"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Elastic Load Balancing? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    },
+    {
+      "title": "What is Amazon EC2 Auto Scaling? - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
+    },
+    {
+      "title": "Use Elastic Load Balancing to distribute incoming application traffic in your Auto Scaling group - Amazon EC2 Auto Scaling",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc34"
+}

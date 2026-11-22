@@ -1,0 +1,72 @@
+{
+  "id": "cmp-iam-organizations",
+  "title": "AWS Identity and Access Management (IAM) のポリシーと AWS Organizations の SCP",
+  "services": [
+    "iam",
+    "organizations"
+  ],
+  "decide": [
+    "組織内の IAM ユーザーとロールが使える権限の上限を、組織でまとめて決めたいなら Organizations のサービスコントロールポリシー（SCP）",
+    "IAM ユーザーやロールに、操作の権限を与えたいなら IAM のアイデンティティベースのポリシー",
+    "IAM ユーザーやロールごとに、アイデンティティベースのポリシーで与えられる権限の上限を決めたいなら IAM の権限の境界"
+  ],
+  "rows": [
+    {
+      "axis": "ポリシーを付ける先",
+      "values": {
+        "iam": "アイデンティティベースのポリシーは、IAM ユーザー、ユーザーが属するグループ、ロールに付ける",
+        "organizations": "SCP は、組織のルート、OU、アカウントに付ける"
+      },
+      "factRefs": [
+        "iam.identity-policy-types",
+        "organizations.scp-deny-inheritance"
+      ]
+    },
+    {
+      "axis": "権限を与えるか",
+      "values": {
+        "iam": "与える（アイデンティティベースやリソースベースのポリシーが許可する）",
+        "organizations": "与えない（SCP は権限の上限を定め、実際の許可には IAM ポリシーなどが要る）"
+      },
+      "factRefs": [
+        "iam.policy-evaluation-allow-deny",
+        "organizations.scp-permission-ceiling"
+      ]
+    },
+    {
+      "axis": "上限をかける対象",
+      "values": {
+        "iam": "権限の境界を設定した IAM ユーザーまたはロール",
+        "organizations": "メンバーアカウントの IAM ユーザー、ロール、ルートユーザー"
+      },
+      "factRefs": [
+        "iam.boundary-basics",
+        "organizations.scp-member-root"
+      ]
+    },
+    {
+      "axis": "上限がかからない相手",
+      "values": {
+        "iam": "サービスにリンクされたロール（権限の境界を設定できない）",
+        "organizations": "管理アカウントのユーザーやロールと、サービスにリンクされたロール（SCP が適用されない）"
+      },
+      "factRefs": [
+        "iam.boundary-basics",
+        "organizations.scp-management-exemption",
+        "organizations.scp-service-linked-role-exemption"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Service control policies (SCPs) - AWS Organizations",
+      "url": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "title": "Policies and permissions in AWS Identity and Access Management - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc33"
+}

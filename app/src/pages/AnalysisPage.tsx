@@ -1,5 +1,5 @@
 // 弱点分析: タスク別・サービス別・判断軸別の正答率と誤答理由の内訳。行から条件付きの演習を開ける
-import { use, useMemo, useState } from 'react';
+import { use, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { loadBlueprint, loadQuestionIndex } from '../content/loader';
 import type { Qualifier } from '../content/types';
@@ -9,8 +9,23 @@ import { MISS_REASON_LABELS, QUALIFIER_LABELS } from '../domain/labels';
 import { percent } from '../domain/progress';
 import { filterToQuery, type PracticeFilter } from '../domain/selection';
 import { useStudy } from '../state/study';
+import { catalogPath, type ServiceLinker } from '../domain/catalog';
+import { useServiceLinker } from '../state/useContent';
 
-function BucketTable({ caption, rows, label, filter }: { caption: string; rows: Bucket[]; label: (k: string) => string; filter: (k: string) => Partial<PracticeFilter> | null }) {
+function BucketTable({
+  caption,
+  rows,
+  label,
+  filter,
+  extra,
+}: {
+  caption: string;
+  rows: Bucket[];
+  label: (k: string) => string;
+  filter: (k: string) => Partial<PracticeFilter> | null;
+  /** 行の末尾に足すリンク（サービス別の図鑑など） */
+  extra?: (k: string) => ReactNode;
+}) {
   return (
     <div className="table-wrap">
       <table className="data">
@@ -37,7 +52,10 @@ function BucketTable({ caption, rows, label, filter }: { caption: string; rows: 
                     <span style={{ width: `${r.rate * 100}%` }} />
                   </div>
                 </td>
-                <td>{f && <Link to={`/practice?${filterToQuery(f)}`}>演習</Link>}</td>
+                <td>
+                  {f && <Link to={`/practice?${filterToQuery(f)}`}>演習</Link>}
+                  {extra?.(r.key)}
+                </td>
               </tr>
             );
           })}
@@ -52,6 +70,7 @@ export default function AnalysisPage() {
   const blueprint = use(loadBlueprint());
   const { events, history } = useStudy();
   const [showAllServices, setShowAllServices] = useState(false);
+  const { link } = useServiceLinker();
   const a = useMemo(() => analyze(events, index, history), [events, index, history]);
   const tasks = taskIndex(blueprint);
 
@@ -100,7 +119,7 @@ export default function AnalysisPage() {
 
       <section className="card" aria-labelledby="s-h">
         <h2 id="s-h">サービス別（正答率の低い順）</h2>
-        <BucketTable caption="サービス" rows={services} label={(k) => k} filter={(k) => ({ services: [k] })} />
+        <BucketTable caption="サービス" rows={services} label={(k) => k} filter={(k) => ({ services: [k] })} extra={(k) => <CatalogLink name={k} link={link} />} />
         {a.byService.length > 15 && (
           <button type="button" className="btn small" onClick={() => setShowAllServices((v) => !v)}>
             {showAllServices ? '上位 15 件だけ表示' : `すべて表示（${a.byService.length} 件）`}
@@ -130,4 +149,17 @@ export default function AnalysisPage() {
       </section>
     </div>
   );
+}
+
+/** サービス別の行から図鑑へ。台帳にない名前には出さない */
+function CatalogLink({ name, link }: { name: string; link: ServiceLinker }) {
+  const id = link(name);
+  return id ? (
+    <>
+      {' '}
+      <Link to={catalogPath(id)} aria-label={`${name} の図鑑`}>
+        図鑑
+      </Link>
+    </>
+  ) : null;
 }

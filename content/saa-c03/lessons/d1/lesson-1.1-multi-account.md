@@ -51,7 +51,7 @@ SCP は、組織のルート、OU、アカウントにアタッチして、メ�
 |---|---|---|
 | 予防的 | SCP、IAM ポリシーの Deny | 操作そのものを止める |
 | 発見的 | AWS Config ルール、AWS Security Hub | 違反を見つけて知らせる（必要なら自動で修復する） |
-| 事前対応型 | CloudFormation フック（Control Tower の事前対応型のコントロール） | リソースを作る前にテンプレートを検査して止める |
+| 事前対応型 | CloudFormation フック（Control Tower のプロアクティブコントロール） | リソースを作る前にテンプレートを検査して止める |
 
 「違反を事後に検知するのではなく防ぐ」と書かれていたら予防的な統制、「準拠状況を把握する」なら発見的な統制を選びます。
 
@@ -66,7 +66,7 @@ SCP は、組織のルート、OU、アカウントにアタッチして、メ�
 
 ### Control Tower のランディングゾーン
 
-AWS Control Tower は、Organizations、IAM Identity Center、AWS Service Catalog などを組み合わせて、ランディングゾーンと呼ばれるマルチアカウント環境を構築します。ログを集約するログアーカイブアカウントと、セキュリティチームが使う監査アカウントが用意され、コントロール（ガードレールとも呼ばれます）で環境を統制します。予防的なコントロールは SCP や RCP、発見的なコントロールは Config ルール、事前対応型のコントロールは CloudFormation フックで実装されています。新しいアカウントは、Account Factory から承認済みの構成で作成できます。
+AWS Control Tower は、Organizations、IAM Identity Center、AWS Service Catalog などを組み合わせて、ランディングゾーンと呼ばれるマルチアカウント環境を構築します。ログを集約するログアーカイブアカウントと、セキュリティチームが使う監査アカウントが用意され、コントロール（ガードレールとも呼ばれます）で環境を統制します。予防コントロールは SCP や RCP、検出コントロールは Config ルール、プロアクティブコントロールは CloudFormation フックで実装されています。新しいアカウントは、Account Factory から承認済みの構成で作成できます。なお、ランディングゾーンのバージョン 4.0 以降では、ログアーカイブアカウントは CloudTrail administrator アカウント、監査アカウントは Config aggregator アカウントと呼ばれ、それぞれ AWS CloudTrail と AWS Config の統合を有効にしたときに用意されます。
 
 ### すべてのアカウントに同じロールを配る
 

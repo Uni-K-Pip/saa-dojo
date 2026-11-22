@@ -1,0 +1,57 @@
+{
+  "id": "textract",
+  "tier": 3,
+  "summary": "Amazon Textract は、ドキュメントのテキスト検出と分析をアプリケーションに加えるサービス。画像やスキャンした文書から、印刷された文字・手書き・フォーム・表・レイアウトの情報を、機械学習の専門知識なしで取り出せる。",
+  "chooseWhen": [
+    {
+      "text": "スキャンした文書や画像から、文字だけでなく、フォームや表の情報も取り出したい場合。",
+      "factRefs": [
+        "textract.core-extraction"
+      ]
+    },
+    {
+      "text": "請求書・領収書や身分証など、対応する種類の文書から、決まった項目の組を抽出したい場合。",
+      "factRefs": [
+        "textract.specialized-documents"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "textract.core-extraction",
+      "title": "Textract Core は文書の画像から文字・フォーム・表を取り出す",
+      "kind": "feature",
+      "text": "Amazon Textract Core は、文書の画像やスキャンから、印刷された文字、手書き、フォーム、表、レイアウトの情報を検出して取り出す。結果は、単語・行・セルなどの構成要素として返る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Textract?",
+          "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "textract.specialized-documents",
+      "title": "請求書・領収書・身分証などの専用の処理",
+      "kind": "feature",
+      "text": "Amazon Textract Core には、請求書と領収書、身分証、住宅ローンの書類のための専用の処理がある。対応する文書の種類では、結果を固定の項目の組として返す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Textract?",
+          "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Textract?",
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html"
+    }
+  ],
+  "createdBy": "sc48",
+  "createdAt": "2026-11-22"
+}

@@ -1,0 +1,90 @@
+{
+  "id": "cmp-cloudwatch-cloudtrail-config",
+  "title": "Amazon CloudWatch・AWS CloudTrail・AWS Config",
+  "services": [
+    "cloudwatch",
+    "cloudtrail",
+    "config"
+  ],
+  "decide": [
+    "だれが、いつ、どの操作を行ったかを記録・調査したいなら CloudTrail",
+    "リソースの設定の変更履歴を調べたいなら Config",
+    "リソースの設定がルールに適合しているかを評価したいなら Config",
+    "メトリクスやログで、リソースやアプリケーションの状態を監視したいなら CloudWatch",
+    "メトリクスをしきい値と比べてアラームを出したいなら CloudWatch"
+  ],
+  "rows": [
+    {
+      "axis": "記録の対象",
+      "values": {
+        "cloudwatch": "メトリクスと、システム・アプリケーション・AWS サービスのログ",
+        "cloudtrail": "ユーザー・ロール・AWS サービスが行った操作のイベント",
+        "config": "記録対象にしたリソースの設定と、その過去の設定"
+      },
+      "factRefs": [
+        "cloudwatch.metric-alarms",
+        "cloudwatch.logs-centralization",
+        "cloudtrail.account-activity",
+        "config.configuration-history",
+        "config.recording-scope"
+      ]
+    },
+    {
+      "axis": "通知のきっかけ",
+      "values": {
+        "cloudwatch": "メトリクスの値が、しきい値の条件を満たしたとき（アラームから SNS へ通知する）",
+        "cloudtrail": "特定の操作が行われたとき（証跡を CloudWatch Logs に配信し、メトリクスフィルターとアラームにつなぐ）",
+        "config": "リソースの設定が変わったとき（設定ストリームの通知先に SNS を設定する）"
+      },
+      "factRefs": [
+        "cloudwatch.metric-alarms",
+        "cloudwatch.alarm-sns",
+        "cloudtrail.cloudwatch-logs-monitoring",
+        "config.sns-change-notifications"
+      ]
+    },
+    {
+      "axis": "複数アカウントの集約",
+      "values": {
+        "cloudwatch": "クロスアカウントオブザーバビリティで、リンクしたソースアカウントのメトリクス、ロググループ、トレースなどを、モニタリングアカウントに共有する（リージョン内で、複数のアカウントにまたがって監視する）",
+        "cloudtrail": "組織の証跡で、AWS Organizations の管理アカウントとすべてのメンバーアカウントのイベントを記録し、共通の S3 バケットへ集める",
+        "config": "アグリゲーターで、複数のアカウントやリージョンから、設定データと準拠データを収集する"
+      },
+      "factRefs": [
+        "cloudwatch.cross-account-observability",
+        "cloudtrail.organization-trail",
+        "config.multi-account-aggregation"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "cloudwatch": "カスタムメトリクスと詳細モニタリングのメトリクスの数、メトリクスアラームが参照するメトリクスの数、ログの取り込み量と保存量に対してかかる（多くの AWS サービスの基本モニタリングのメトリクスは無料）",
+        "cloudtrail": "証跡では、S3 に配信する管理イベントの追加コピーと、データイベントの記録に対してかかる（管理イベントの各リージョンの最初のコピーには、CloudTrail の配信料金がかからない）",
+        "config": "記録した設定項目の数、有効な AWS Config ルールの評価の数、コンフォーマンスパックの評価の数に基づいてかかる"
+      },
+      "factRefs": [
+        "cloudwatch.pricing-units",
+        "cloudtrail.management-copy-pricing",
+        "cloudtrail.data-events-pricing",
+        "config.pricing-model"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon CloudWatch? - Amazon CloudWatch",
+      "url": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"
+    },
+    {
+      "title": "What Is AWS CloudTrail? - AWS CloudTrail",
+      "url": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    },
+    {
+      "title": "What Is AWS Config? - AWS Config",
+      "url": "https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc23"
+}

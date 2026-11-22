@@ -1,0 +1,190 @@
+{
+  "id": "firewall-manager",
+  "tier": 2,
+  "summary": "AWS Organizations 内の複数アカウントやリソースに、共通のセキュリティポリシーを適用する管理サービス。AWS WAF や Shield Advanced などの保護を一元管理し、対象範囲に応じて新規リソースにも適用する。",
+  "chooseWhen": [
+    {
+      "text": "複数アカウントの対象リソースに、共通の AWS WAF ルールグループを適用したいとき。",
+      "factRefs": [
+        "firewall-manager.waf-policy-web-acls"
+      ]
+    },
+    {
+      "text": "アカウントやリソースを追加しても、対象範囲に入れば共通の保護を自動適用したいとき。",
+      "factRefs": [
+        "firewall-manager.new-in-scope-resources"
+      ]
+    },
+    {
+      "text": "組織内の対象リソースに Shield Advanced の保護をまとめて適用したいとき。",
+      "factRefs": [
+        "firewall-manager.shield-policy"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "AWS Organizations の全機能を有効化せずに利用したいとき。",
+      "factRefs": [
+        "firewall-manager.organizations-prerequisite"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "firewall-manager.waf-policy-web-acls",
+      "title": "WAF ポリシーで共通のルールグループを適用する",
+      "kind": "feature",
+      "text": "AWS Firewall Manager の WAF ポリシーには、対象リソースを保護する AWS WAF ルールグループを指定する。Firewall Manager は、指定したルールグループとポリシー設定に従って、対象リソースの Web ACL を管理する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using AWS WAF policies with Firewall Manager",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/waf-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.policy-scope",
+      "title": "ポリシーの対象をアカウント・OU・タグで指定する",
+      "kind": "feature",
+      "text": "AWS Firewall Manager のポリシーは、組織全体または指定したアカウントや組織単位（OU）を対象にできる。リソースのタグによる包含・除外も指定でき、共通ポリシーを適用する範囲を絞り込める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using the AWS Firewall Manager policy scope",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/policy-scope.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.new-in-scope-resources",
+      "title": "対象範囲に入る新規アカウント・リソースにも適用する",
+      "kind": "feature",
+      "text": "AWS Firewall Manager は、組織に新しいアカウントやリソースが追加されると、各ポリシーの対象範囲と照合する。対象範囲に該当するものには、ポリシーの設定に従って保護を自動適用する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using the AWS Firewall Manager policy scope",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/policy-scope.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.waf-auto-remediation",
+      "title": "WAF の自動修復で未関連付けのリソースを保護する",
+      "kind": "feature",
+      "text": "AWS Firewall Manager の WAF ポリシーで自動修復を有効にすると、Web ACL が関連付けられていない対象リソースに、ポリシーに従った Web ACL を関連付ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Creating an AWS Firewall Manager policy",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/create-policy.html"
+        },
+        {
+          "title": "Web ACL management for AWS WAF policies",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/how-fms-manages-web-acls.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.audit-without-remediation",
+      "title": "自動修復せずにポリシーへの非準拠を確認できる",
+      "kind": "feature",
+      "text": "AWS Firewall Manager のポリシーでは、自動修復を行わずに、ポリシーに準拠していないアカウントやリソースを確認する運用を選べる。自動修復を有効にする前に、ポリシーによる変更の影響を確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using AWS Firewall Manager policies",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/working-with-policies.html"
+        },
+        {
+          "title": "Setting up AWS Firewall Manager AWS WAF policies",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/getting-started-fms.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.organizations-prerequisite",
+      "title": "利用には Organizations の全機能が必要",
+      "kind": "constraint",
+      "text": "AWS Firewall Manager を利用するアカウントは、ポリシーを使う AWS Organizations の組織に属している必要がある。その組織では全機能の有効化が必要で、一括請求機能だけの構成では利用できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Joining and configuring AWS Organizations for using Firewall Manager",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/join-aws-orgs.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.config-compliance-recording",
+      "title": "準拠状況の監視に AWS Config を使う",
+      "kind": "integration",
+      "text": "AWS Firewall Manager の準拠状況を監視するには、管理者アカウントを含む組織の各メンバーアカウントと、保護対象がある各リージョンで AWS Config を有効にする。保護対象リソースの構成変更は継続的に記録する必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Enabling AWS Config for using Firewall Manager",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/enable-config.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.shield-policy",
+      "title": "Shield Advanced の保護を組織内に適用する",
+      "kind": "integration",
+      "text": "AWS Firewall Manager の Shield Advanced ポリシーを使うと、組織内で指定したリソース種別に Shield Advanced の保護を適用できる。複数アカウントの保護を共通のポリシーで管理する用途に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using AWS Firewall Manager policies",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/working-with-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "firewall-manager.successor-network-security-manager",
+      "title": "置き換えていく別のサービス AWS Network Security Manager がある",
+      "kind": "feature",
+      "text": "AWS Firewall Manager には、置き換えていくサービスとして AWS Network Security Manager がある。2 つは別々のサービスで、互いに独立して並行して動く。Firewall Manager で作った既存のファイアウォールとポリシーは、利用者が終了させないかぎり動き続ける。Network Security Manager のポリシーの対象範囲に、Firewall Manager のポリシーがすでに扱うリソースが入ると、修復では Network Security Manager が優先される。Firewall Manager は、いずれ販売を終え、その後に稼働を終えるとされている。",
+      "examPoint": "SAA-C03 の試験ガイドの範囲内のサービスの一覧（網羅的ではなく、変わることがある）には、AWS Firewall Manager が載っている（2026 年 11 月 20 日に確認）",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Network Security Manager and AWS Firewall Manager",
+          "url": "https://docs.aws.amazon.com/network-security-manager/latest/devguide/firewall-manager.html"
+        },
+        {
+          "title": "In-Scope AWS Services",
+          "url": "https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-20",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "waf.firewall-manager-integration"
+  ],
+  "references": [
+    {
+      "title": "AWS Firewall Manager",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html"
+    },
+    {
+      "title": "AWS Firewall Manager FAQs",
+      "url": "https://aws.amazon.com/firewall-manager/faqs/"
+    }
+  ],
+  "createdBy": "cx27",
+  "createdAt": "2026-11-16"
+}

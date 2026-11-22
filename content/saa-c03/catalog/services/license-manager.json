@@ -1,0 +1,40 @@
+{
+  "id": "license-manager",
+  "tier": 3,
+  "summary": "Microsoft、SAP、Oracle、IBM などのソフトウェアライセンスを、組織内の複数のリージョンとアカウントにわたって管理し、ライセンスの遵守状況の可視化とレポートを提供するサービス。ライセンスの超過と違反のリスクを減らす。",
+  "chooseWhen": [
+    {
+      "text": "手持ちのソフトウェアライセンスを持ち込み（BYOL）、使用数を追跡して上限を超える利用を防ぎたい場合。",
+      "factRefs": [
+        "license-manager.license-limits"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "license-manager.license-limits",
+      "title": "ルールでライセンスの消費に上限を設ける",
+      "kind": "feature",
+      "text": "License Manager は、仮想コア（vCPU）、物理コア、ソケット、マシンの数に基づいてライセンスされるソフトウェアの使用を追跡できる。管理者はライセンスの消費にルールに基づくハード制限またはソフト制限を設定でき、その制限に基づいて、条件に違反するサーバーの使用を起きる前に止める手助けをする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS License Manager?",
+          "url": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-manager.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "ec2.dedicated-hosts"
+  ],
+  "references": [
+    {
+      "title": "What is AWS License Manager?",
+      "url": "https://docs.aws.amazon.com/license-manager/latest/userguide/license-manager.html"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}

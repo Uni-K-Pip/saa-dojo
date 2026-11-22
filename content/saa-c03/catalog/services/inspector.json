@@ -1,0 +1,166 @@
+{
+  "id": "inspector",
+  "tier": 2,
+  "summary": "AWS ワークロードを自動検出し、ソフトウェアの脆弱性を継続的に評価する脆弱性管理サービス。EC2 インスタンス、ECR のコンテナイメージ、Lambda 関数を対象とし、EC2 の意図しないネットワークへの露出も検出する。",
+  "chooseWhen": [
+    {
+      "text": "EC2 インスタンスのソフトウェアパッケージにある脆弱性を調べたい",
+      "factRefs": [
+        "inspector.ec2-package-vulnerabilities"
+      ]
+    },
+    {
+      "text": "EC2 インスタンスのネットワーク到達可能性に関する問題を見つけたい",
+      "factRefs": [
+        "inspector.ec2-network-reachability"
+      ]
+    },
+    {
+      "text": "ECR のイメージを、新しい脆弱性に応じて継続的に評価したい",
+      "factRefs": [
+        "ecr.enhanced-scanning",
+        "inspector.ecr-monitoring-criteria"
+      ]
+    },
+    {
+      "text": "Lambda 関数やレイヤーの依存パッケージにある脆弱性を調べたい",
+      "factRefs": [
+        "inspector.lambda-standard-scanning"
+      ]
+    },
+    {
+      "text": "組織内の複数アカウントの Inspector 検出結果をまとめて確認したい",
+      "factRefs": [
+        "inspector.organizations-findings"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "S3 オブジェクトの内容を調べて機密データを検出することが目的なら Macie を使う",
+      "alternatives": [
+        "macie"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "inspector.ec2-package-vulnerabilities",
+      "title": "EC2 のパッケージ脆弱性を検出する",
+      "kind": "feature",
+      "text": "Amazon Inspector の EC2 スキャンは、インスタンスから取得したメタデータをセキュリティアドバイザリのルールと照合し、ソフトウェアパッケージの脆弱性を検出する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scanning Amazon EC2 instances with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "inspector.ec2-network-reachability",
+      "title": "EC2 のネットワーク到達可能性を評価する",
+      "kind": "feature",
+      "text": "Amazon Inspector は EC2 インスタンスのネットワーク到達可能性をスキャンし、問題を検出結果として報告する。ソフトウェアパッケージの脆弱性スキャンとは別の評価である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scanning Amazon EC2 instances with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ec2.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "inspector.lambda-standard-scanning",
+      "title": "Lambda 標準スキャンは依存パッケージを調べる",
+      "kind": "feature",
+      "text": "Amazon Inspector の Lambda 標準スキャンは、Lambda 関数とレイヤーに含まれるアプリケーションの依存関係を調べ、パッケージの脆弱性を検出する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scanning AWS Lambda functions with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-lambda.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "inspector.findings-remediation-guidance",
+      "title": "検出結果に修復の推奨事項を示す",
+      "kind": "feature",
+      "text": "Amazon Inspector が作成する検出結果には、脆弱性の詳細、影響を受けるリソース、修復の推奨事項が含まれる。利用者はこれらを確認して、検出された問題への対処を検討できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Inspector?",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "inspector.organizations-findings",
+      "title": "委任管理者が組織の検出結果をまとめて確認する",
+      "kind": "integration",
+      "text": "Amazon Inspector を AWS Organizations と連携すると、Inspector の委任管理者アカウントから、組織内のメンバーアカウントの検出結果をまとめて確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Inspector?",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "inspector.ecr-image-package-vulnerabilities",
+      "title": "ECR のコンテナイメージのパッケージ脆弱性を検出する",
+      "kind": "feature",
+      "text": "Amazon Inspector は、Amazon ECR に保存されたコンテナイメージをソフトウェアの脆弱性についてスキャンし、パッケージ脆弱性の検出結果を作成する。拡張スキャンでは、オペレーティングシステムとプログラミング言語のパッケージの脆弱性を、レジストリのレベルでスキャンする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Scanning Amazon Elastic Container Registry container images with Amazon Inspector",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "inspector.ecr-monitoring-criteria",
+      "title": "ECR イメージの監視終了はプッシュ日と最終使用日で判定する",
+      "kind": "feature",
+      "text": "Amazon Inspector の ECR 継続的スキャンを最終使用日基準で設定した場合、設定した期間内にイメージのプッシュも実行中コンテナでの使用もなくなると、そのイメージの監視を停止する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Configuring the Amazon ECR re-scan duration",
+          "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning_resources_configure_duration_setting_ecr.html"
+        }
+      ],
+      "checkedAt": "2026-11-16"
+    }
+  ],
+  "seeAlso": [
+    "ecr.enhanced-scanning"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Inspector?",
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"
+    },
+    {
+      "title": "Scanning Amazon Elastic Container Registry container images with Amazon Inspector",
+      "url": "https://docs.aws.amazon.com/inspector/latest/user/scanning-ecr.html"
+    },
+    {
+      "title": "What is Amazon Macie?",
+      "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+    }
+  ],
+  "createdBy": "cx25",
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-21"
+}

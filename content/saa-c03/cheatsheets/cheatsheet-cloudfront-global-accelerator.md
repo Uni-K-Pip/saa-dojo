@@ -31,11 +31,11 @@ createdBy: x
 |---|---|---|
 | キャッシュ | する（静的なコンテンツに強い。動的なコンテンツの配信も速くできる） | しない（毎回エンドポイントまで届ける） |
 | プロトコル | HTTP・HTTPS（WebSocket を含む） | TCP・UDP |
-| 入口 | ディストリビューションのドメイン名（DNS） | 固定の IP アドレス 2 つ（エニーキャスト） |
+| 入口 | 通常は、ディストリビューションのドメイン名（DNS）。申請して承認されれば、Anycast 静的 IP アドレスも使える（価格クラスは、すべてのエッジロケーションにする） | 固定の IP アドレス 2 つ（エニーキャスト） |
 | 送り先 | オリジン（Amazon S3、ALB、EC2、オンプレミスを含む任意の HTTP サーバー） | エンドポイント（ALB、NLB、EC2 インスタンス、Elastic IP アドレス） |
 | 障害時の切り替え | オリジンフェイルオーバー（オリジングループ） | ヘルスチェックで、正常なエンドポイントやリージョンへすぐ切り替える |
 | セキュリティ | AWS WAF、AWS Shield、署名付き URL・署名付き Cookie、地域による制限、オリジンアクセスコントロール（OAC） | AWS Shield。エンドポイントの手前で通信を受ける |
-| 向いている用途 | Web サイト、画像・動画の配信、API の高速化 | ゲーム、IoT、音声通話（UDP）、固定 IP が必要な通信、複数リージョンへの素早いフェイルオーバー |
+| 向いている用途 | Web サイト、画像・動画の配信、API の高速化 | ゲーム、IoT、音声通話（UDP）、固定 IP が必要な通信（HTTP 以外も含む）、複数リージョンへの素早いフェイルオーバー |
 
 ## 選び方
 
@@ -50,7 +50,7 @@ createdBy: x
 | リージョンへの振り分けを DNS で決めたい（レイテンシー、地域） | Amazon Route 53 のルーティングポリシー |
 
 > **試験のポイント**
-> 「キャッシュ」「静的コンテンツ」「エッジでの配信」とあれば CloudFront、「固定 IP アドレス」「TCP・UDP」「非 HTTP」「すぐにフェイルオーバー」とあれば Global Accelerator です。
+> 「キャッシュ」「静的コンテンツ」「エッジでの配信」とあれば CloudFront、「TCP・UDP」「非 HTTP」「すぐにフェイルオーバー」とあれば Global Accelerator です。「固定 IP アドレス」は、まず Global Accelerator を考え、通信が HTTP・HTTPS かどうかと、キャッシュが要るかもあわせて確かめます。
 
 > **試験のポイント**
 > CloudFront で S3 のコンテンツを配信するときは、OAC を使い、バケットポリシーで CloudFront からのアクセスだけを許します。利用者が S3 の URL に直接アクセスするのを防げます。
@@ -64,10 +64,14 @@ createdBy: x
 > Route 53 のフェイルオーバーは DNS で切り替えるため、利用者側の DNS のキャッシュ（TTL）が切れるまで古い送り先に通信が向かうことがあります。IP アドレスを変えずに切り替えたいなら Global Accelerator です。
 
 > **ひっかけ注意**
+> CloudFront でも、申請して承認されれば、許可リストに登録するための、アカウント専用の [Anycast 静的 IP アドレス](#/services/cloudfront?f=anycast-static-ip)を使えます（ディストリビューションの価格クラスを、すべてのエッジロケーションにする必要があります）。「固定 IP アドレス」という言葉だけで、Global Accelerator と決めないようにします。
+
+> **ひっかけ注意**
 > CloudFront で独自のドメイン名の HTTPS を使うとき、AWS Certificate Manager（ACM）の証明書は米国東部（バージニア北部）リージョンで発行したものを使います。
 
 ## 出典
 
 - [Amazon CloudFront デベロッパーガイド](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
+- [Amazon CloudFront デベロッパーガイド（Anycast 静的 IP の申請）](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html)
 - [AWS Global Accelerator デベロッパーガイド](https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html)
 - [AWS Global Accelerator のよくある質問](https://aws.amazon.com/global-accelerator/faqs/)

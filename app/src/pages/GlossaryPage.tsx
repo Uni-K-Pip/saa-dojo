@@ -3,11 +3,14 @@ import { use, useDeferredValue, useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { loadGlossary } from '../content/loader';
 import { searchGlossary } from '../domain/search';
+import { ServiceLink } from '../components/ServiceLinks';
+import { useServiceLinker } from '../state/useContent';
 
 const LIMIT = 200;
 
 export default function GlossaryPage() {
   const entries = use(loadGlossary());
+  const { link } = useServiceLinker();
   const [params, setParams] = useSearchParams();
   const query = params.get('q') ?? '';
   const deferred = useDeferredValue(query);
@@ -42,9 +45,7 @@ export default function GlossaryPage() {
                 {(e.services.length > 0 || e.related.length > 0) && (
                   <span className="meta-row" style={{ marginTop: 4 }}>
                     {e.services.map((s) => (
-                      <span key={s} className="badge info">
-                        {s}
-                      </span>
+                      <ServiceLink key={s} name={s} link={link} className="badge info" />
                     ))}
                     {e.related.map((r) => (
                       <button key={r} type="button" className="link-button small" onClick={() => setQuery(r)}>

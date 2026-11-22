@@ -1,0 +1,43 @@
+{
+  "id": "translate",
+  "tier": 3,
+  "summary": "Amazon Translate は、高度な機械学習で、高品質の翻訳をオンデマンドで提供するテキスト翻訳のサービス。構造化されていないテキスト文書の翻訳や、複数の言語で動くアプリケーションの構築に使える。",
+  "chooseWhen": [
+    {
+      "text": "テキスト文書を別の言語に翻訳したい場合。",
+      "factRefs": [
+        "translate.text-translation"
+      ]
+    },
+    {
+      "text": "Transcribe や Polly と組み合わせて、字幕や音声を多くの言語で提供したい場合。"
+    }
+  ],
+  "facts": [
+    {
+      "id": "translate.text-translation",
+      "title": "Translate はテキストを翻訳する",
+      "kind": "feature",
+      "text": "Amazon Translate は、機械学習を使って、構造化されていないテキスト文書を翻訳するサービスである。複数の言語で動くアプリケーションを作るのにも使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Translate?",
+          "url": "https://docs.aws.amazon.com/translate/latest/dg/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "comprehend.input-formats"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Translate?",
+      "url": "https://docs.aws.amazon.com/translate/latest/dg/what-is.html"
+    }
+  ],
+  "createdBy": "sc48",
+  "createdAt": "2026-11-22"
+}

@@ -1,0 +1,290 @@
+{
+  "id": "shield",
+  "tier": 2,
+  "summary": "DDoS 攻撃から AWS のリソースを守るマネージドな脅威対策サービス。Shield Standard はすべての利用者に自動で無料で提供され、有料の Shield Advanced は保護の拡張、専門チームの支援、コスト保護を加える。",
+  "chooseWhen": [
+    {
+      "text": "追加料金なしで、一般的なネットワーク層とトランスポート層の DDoS 攻撃から自動で守りたい",
+      "factRefs": [
+        "shield.standard-free",
+        "shield.standard-edge-resources"
+      ]
+    },
+    {
+      "text": "DDoS 攻撃の最中に、専門の対応チーム（SRT）に支援してもらいたい",
+      "factRefs": [
+        "shield.srt-support",
+        "shield.srt-support-plan"
+      ]
+    },
+    {
+      "text": "DDoS 攻撃による AWS の料金の急増に備えて、コスト保護を受けたい",
+      "factRefs": [
+        "shield.cost-protection"
+      ]
+    },
+    {
+      "text": "CloudFront、Route 53、Global Accelerator、Elastic IP アドレス、ロードバランサーを拡張して保護したい",
+      "factRefs": [
+        "shield.protected-resources"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "HTTP リクエストを検査するルールで、アプリケーション層の攻撃を防ぎたい（Shield Advanced も AWS WAF のルールを使う）",
+      "factRefs": [
+        "shield.waf-integration"
+      ],
+      "alternatives": [
+        "waf"
+      ]
+    },
+    {
+      "text": "複数のアカウントの Shield Advanced の保護を、ポリシーで一括して適用したい",
+      "factRefs": [
+        "firewall-manager.shield-policy"
+      ],
+      "alternatives": [
+        "firewall-manager"
+      ]
+    },
+    {
+      "text": "Shield Advanced の保護を、リソースを指定せずに自動で適用したい",
+      "factRefs": [
+        "shield.explicit-protection"
+      ]
+    },
+    {
+      "text": "ビジネスまたはエンタープライズのサポートプランなしで、SRT の支援を受けたい",
+      "factRefs": [
+        "shield.srt-support-plan"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "shield.standard-free",
+      "title": "Shield Standard はすべての利用者に自動・無料",
+      "kind": "feature",
+      "text": "Shield Standard は、すべての AWS 利用者に自動で、追加料金なしで提供される。ウェブサイトやアプリケーションを狙う、最も一般的で頻発するネットワーク層とトランスポート層の DDoS 攻撃から守る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Standard overview",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.standard-edge-resources",
+      "title": "Route 53・CloudFront・Global Accelerator は包括的な保護を受ける",
+      "kind": "feature",
+      "text": "Shield Standard はすべての AWS 利用者を守るが、Route 53 のホストゾーン、CloudFront ディストリビューション、Global Accelerator の標準アクセラレーターは、既知のすべてのネットワーク層とトランスポート層の攻撃に対する、包括的な可用性の保護を受ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Standard overview",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-standard-summary.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.attack-classes",
+      "title": "Shield が検出する攻撃のクラス",
+      "kind": "feature",
+      "text": "Shield が検出する攻撃は、ネットワークのボリューム型（レイヤー 3）、ネットワークのプロトコル型（レイヤー 4。TCP SYN フラッドなど）、アプリケーション層（レイヤー 7。Web リクエストのフラッドなど）に分類される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS Shield and Shield Advanced work",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.explicit-protection",
+      "title": "保護は指定したリソースにだけ有効になる",
+      "kind": "constraint",
+      "text": "Shield Advanced の保護は、Shield Advanced で明示的に指定したリソースか、AWS Firewall Manager の Shield Advanced ポリシーで保護するリソースにだけ有効になる。Shield Advanced は、リソースを自動では保護しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "List of AWS resources that AWS Shield Advanced protects",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.protected-resources",
+      "title": "Shield Advanced で保護できるリソース",
+      "kind": "feature",
+      "text": "Shield Advanced で保護できるのは、CloudFront ディストリビューション、Route 53 のホストゾーン、Global Accelerator の標準アクセラレーター、EC2 の Elastic IP アドレス、Application Load Balancer、Classic Load Balancer である。EC2 インスタンスと Network Load Balancer は、Elastic IP アドレスとの関連付けを通して保護する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "List of AWS resources that AWS Shield Advanced protects",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-protected-resources.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.srt-support",
+      "title": "Shield Response Team（SRT）の支援を受けられる",
+      "kind": "feature",
+      "text": "Shield Advanced の利用者は、アプリケーションの可用性に影響する DDoS 攻撃の最中に、Shield Response Team（SRT）にいつでも連絡して支援を受けられる。SRT と一緒に、リソース向けのカスタムの緩和策を作成・管理することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.srt-support-plan",
+      "title": "SRT の利用にはビジネスまたはエンタープライズのサポートが必要",
+      "kind": "constraint",
+      "text": "SRT のサービスを利用するには、Shield Advanced のサブスクリプションに加えて、ビジネスサポートプランまたはエンタープライズサポートプランに加入している必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.cost-protection",
+      "title": "DDoS による料金の急増にコスト保護がある",
+      "kind": "feature",
+      "text": "Shield Advanced は、保護対象のリソースへの DDoS 攻撃で生じうる AWS の料金の急増に対して、ある程度のコスト保護を提供する。Shield Advanced のデータ転送アウトの使用料の急増も対象になりうる。コスト保護は、Shield Advanced のサービスクレジットの形で提供される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        },
+        {
+          "title": "AWS Shield Advanced DDoS Protection Pricing",
+          "url": "https://aws.amazon.com/shield/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.advanced-pricing",
+      "title": "Shield Advanced は 1 年の契約と月額料金",
+      "kind": "pricing",
+      "text": "Shield Advanced は有料のサブスクリプションで、1 年間の利用の約束が必要になる。月額料金に加えて、CloudFront、ELB、EC2、Global Accelerator からのデータ転送アウトに基づく使用料がかかる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced DDoS Protection Pricing",
+          "url": "https://aws.amazon.com/shield/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.l7am-superseded",
+      "title": "L7 自動緩和は Anti-DDoS マネージドルールグループに置き換わる",
+      "kind": "constraint",
+      "text": "2026 年 3 月 26 日以降は、AWS WAF の Anti-DDoS マネージドルールグループが、HTTP リクエストのフラッド攻撃に対する既定の対策になり、Shield Advanced の Layer 7 自動緩和（L7AM）機能に取って代わる。既存の Shield Advanced の利用者は従来の方式も使えるが、AWS は Anti-DDoS マネージドルールグループへの移行を勧めている。",
+      "recheck": "end-of-life",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Automating application layer DDoS mitigation with Shield Advanced",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-automatic-app-layer-response.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.waf-integration",
+      "title": "アプリケーション層の保護に AWS WAF を使う",
+      "kind": "integration",
+      "text": "Shield Advanced は、アプリケーション層の保護の一部として、AWS WAF のウェブ ACL、ルール、ルールグループを使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.waf-fees-included",
+      "title": "サブスクリプションが含む AWS WAF の料金",
+      "kind": "pricing",
+      "text": "Shield Advanced のサブスクリプションは、保護するリソースに使う AWS WAF の標準的な料金（保護パック（ウェブ ACL）ごと、ルールごと、リクエスト検査の基本料金。1,500 WCU とデフォルトの本文サイズまで）を含む。Bot Control や CAPTCHA ルールアクションなどの、非標準の料金は含まない。",
+      "recheck": "default-value",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        },
+        {
+          "title": "AWS Shield Advanced overview",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.proactive-engagement",
+      "title": "プロアクティブエンゲージメントで SRT が連絡してくる",
+      "kind": "feature",
+      "text": "プロアクティブエンゲージメントでは、保護対象のリソースに関連付けた Route 53 のヘルスチェックが、Shield Advanced の検出したイベント中に異常になると、SRT が直接連絡してくる。ヘルスベース検出を有効にしたリソースだけで使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "shield.health-based-detection",
+      "title": "ヘルスチェックで検出と緩和を助ける",
+      "kind": "feature",
+      "text": "Shield Advanced で Route 53 のヘルスチェックを使うと、イベントの検出と緩和に役立つ。誤検知を防ぎ、保護対象のリソースが異常なときの検出と緩和を速くできる。Route 53 のホストゾーン以外のすべてのリソースタイプで使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Shield Advanced capabilities and options",
+          "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary-capabilities.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "firewall-manager.shield-policy",
+    "waf.anti-ddos-managed-rules",
+    "waf.firewall-manager-integration"
+  ],
+  "references": [
+    {
+      "title": "How AWS Shield and Shield Advanced work",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html"
+    },
+    {
+      "title": "AWS Shield Advanced overview",
+      "url": "https://docs.aws.amazon.com/waf/latest/developerguide/ddos-advanced-summary.html"
+    }
+  ],
+  "createdBy": "sc39",
+  "createdAt": "2026-11-21"
+}

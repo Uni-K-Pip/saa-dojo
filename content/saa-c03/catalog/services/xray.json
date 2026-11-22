@@ -1,0 +1,263 @@
+{
+  "id": "xray",
+  "tier": 2,
+  "summary": "アプリケーションが処理するリクエストのデータを集め、トレースとトレースマップで、呼び出しの経路にある遅延やエラーの原因を調べる分散トレースのサービス。SDK とデーモンはメンテナンスモードで、OpenTelemetry への移行が推奨されている。",
+  "chooseWhen": [
+    {
+      "text": "リクエストの経路をたどり、遅延やエラーの原因になっている下流のサービスを探したいとき",
+      "factRefs": [
+        "xray.overview",
+        "xray.trace-map"
+      ]
+    },
+    {
+      "text": "Lambda や API Gateway など、X-Ray と連携するサービスのリクエストを追跡したいとき",
+      "factRefs": [
+        "xray.lambda-integration",
+        "xray.api-gateway-integration"
+      ]
+    },
+    {
+      "text": "サービス間の依存を示すマップで、問題のある接続を見つけたいとき",
+      "factRefs": [
+        "xray.trace-map",
+        "xray.segments-traces"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "CPU 使用率などのメトリクスの監視とアラームが目的のとき",
+      "factRefs": [
+        "cloudwatch.metric-alarms"
+      ],
+      "alternatives": [
+        "cloudwatch"
+      ]
+    },
+    {
+      "text": "誰がいつどの API を呼んだかの監査記録が目的のとき",
+      "factRefs": [
+        "cloudtrail.account-activity"
+      ],
+      "alternatives": [
+        "cloudtrail"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "xray.overview",
+      "title": "アプリケーションが処理するリクエストのデータを集める",
+      "kind": "feature",
+      "text": "AWS X-Ray は、アプリケーションが処理するリクエストのデータを集め、そのデータを表示・絞り込み・分析して、問題や最適化の機会を見つけるためのツールを提供するサービスである。追跡したリクエストについて、下流の AWS リソース、マイクロサービス、データベース、Web API への呼び出しの詳細も確認できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS X-Ray?",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.segments-traces",
+      "title": "セグメントをトレースにまとめ、サービスグラフを作る",
+      "kind": "feature",
+      "text": "X-Ray は、サービスからのデータをセグメントとして受け取り、共通のリクエストを持つセグメントをトレースにまとめる。トレースを処理して、アプリケーションを視覚的に表すサービスグラフを生成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS X-Ray concepts",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.trace-map",
+      "title": "トレースマップでボトルネックやエラーの場所を探す",
+      "kind": "feature",
+      "text": "X-Ray はトレースのデータから、クライアント、フロントエンドのサービス、そのサービスが呼び出すバックエンドのサービスを示すトレースマップを生成する。エラーが起きているサービス、レイテンシーの高い接続、失敗したリクエストのトレースを見つけ、ボトルネックやレイテンシーの急増などの問題の特定に使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS X-Ray?",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+        },
+        {
+          "title": "Using the X-Ray trace map",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-servicemap.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.daemon",
+      "title": "SDK は X-Ray デーモンへ送り、デーモンがまとめて X-Ray へ送る",
+      "kind": "feature",
+      "text": "クライアントの SDK は、トレースデータを X-Ray へ直接送らずに、UDP のトラフィックを待ち受けるデーモンのプロセスへ JSON のセグメントドキュメントを送る。X-Ray デーモンはセグメントをキューにためて、バッチで X-Ray へアップロードする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS X-Ray?",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.sdk-daemon-maintenance",
+      "title": "SDK とデーモンはメンテナンスモード",
+      "kind": "constraint",
+      "text": "X-Ray の SDK とデーモンは、サポートの時期の表で 2026 年 2 月 25 日からメンテナンスモードとされ、終了日は示されていない。メンテナンスモードでは、リリースはセキュリティの問題への対応に限られ、新しい機能の追加はない。AWS は、アプリケーションの計装を OpenTelemetry へ移行し、トレースを X-Ray へ送ることを推奨している。",
+      "trap": "メンテナンスモードに入るのは X-Ray の SDK とデーモンで、AWS は OpenTelemetry の計装から X-Ray へトレースを送ることを勧めている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "X-Ray SDK and Daemon Support timeline",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-daemon-timeline.html"
+        },
+        {
+          "title": "Instrumenting your application for AWS X-Ray",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-instrumenting-your-app.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "xray.lambda-integration",
+      "title": "Lambda は能動と受動の計装に対応する",
+      "kind": "integration",
+      "text": "AWS Lambda は、受信リクエストの能動的な計装と受動的な計装に、すべてのランタイムで対応する。Lambda はトレースマップに、Lambda サービスと関数の 2 つのノードを追加する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Integrating AWS X-Ray with other AWS services",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.api-gateway-integration",
+      "title": "API Gateway はサンプリングルールで記録するリクエストを決める",
+      "kind": "integration",
+      "text": "Amazon API Gateway は、能動的な計装と受動的な計装に対応する。API Gateway はサンプリングルールを使って記録するリクエストを決め、サービスマップにゲートウェイのステージのノードを追加する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Integrating AWS X-Ray with other AWS services",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-services.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.annotations-metadata",
+      "title": "アノテーションはインデックスされ、メタデータはされない",
+      "kind": "feature",
+      "text": "アノテーションは、フィルター式で使えるようにインデックスされるキーと値のペアで、コンソールでトレースをグループ化したり、GetTraceSummaries API で絞り込んだりするデータの記録に使う。メタデータは任意の型の値を持てるが、インデックスされず、トレースの検索に使わないデータの保存に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS X-Ray concepts",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.sampling-default",
+      "title": "SDK の既定のサンプリングは毎秒 1 件と、追加の 5%",
+      "kind": "feature",
+      "text": "X-Ray SDK は、既定では毎秒の最初のリクエストと、追加のリクエストの 5% を記録する。この既定のサンプリングレートは、使い始めたときの課金を避けるため控えめに設定されている。既定のルールの変更と、追加のルールの設定ができる（2026 年 11 月時点の既定値）。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS X-Ray concepts",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "xray.retention-30-days",
+      "title": "トレースとサービスグラフのデータは 30 日間保持される",
+      "kind": "quota",
+      "text": "トレースのデータとサービスグラフのデータは、30 日間保持される。この保持期間は、Service Quotas では調整できない値として示されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS X-Ray concepts",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"
+        },
+        {
+          "title": "AWS X-Ray endpoints and quotas",
+          "url": "https://docs.aws.amazon.com/general/latest/gr/xray.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.pricing-traces",
+      "title": "課金は保存されるトレースの数に基づき、サンプリングで調整できる",
+      "kind": "pricing",
+      "text": "X-Ray で保存されるトレースの課金は、アプリケーションが受けるリクエストや API 呼び出しの数に基づく。サンプリングレートを選べるので、リクエストまたは API 呼び出しの率にサンプリングレートを掛けて、記録されるトレースの費用を見積もれる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon CloudWatch Pricing",
+          "url": "https://aws.amazon.com/cloudwatch/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "xray.trace-map-merged",
+      "title": "サービスマップと ServiceLens のマップはトレースマップに統合された",
+      "kind": "feature",
+      "text": "X-Ray のサービスマップと CloudWatch の ServiceLens のマップは、Amazon CloudWatch コンソールの X-Ray トレースマップに統合されている。CloudWatch コンソールの左のナビゲーションで、X-Ray traces の下の Trace Map を選んで開く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using the X-Ray trace map",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-servicemap.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "xray.application-signals",
+      "title": "CloudWatch の Application Signals から X-Ray のトレースへ掘り下げる",
+      "kind": "integration",
+      "text": "CloudWatch には Application Signals があり、アプリケーションのサービス、クライアント、Synthetics のカナリア、サービス間の依存を検出して監視できる。サービスの一覧やマップを見て、サービスレベル目標（SLO）に基づくヘルスメトリクスを確かめ、関連する X-Ray のトレースへ掘り下げられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using the X-Ray trace map",
+          "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-console-servicemap.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "cloudwatch.cross-account-observability"
+  ],
+  "references": [
+    {
+      "title": "What is AWS X-Ray?",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+    },
+    {
+      "title": "AWS X-Ray concepts",
+      "url": "https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html"
+    }
+  ],
+  "createdBy": "sc41",
+  "createdAt": "2026-11-21"
+}

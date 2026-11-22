@@ -1,0 +1,65 @@
+{
+  "id": "cmp-route53-global-accelerator",
+  "title": "Amazon Route 53 と AWS Global Accelerator",
+  "services": [
+    "route53",
+    "global-accelerator"
+  ],
+  "decide": [
+    "アプリケーションの固定の入り口として、静的な IP アドレスが必要なら Global Accelerator",
+    "クライアント側の IP アドレスのキャッシュに左右されずに、転送先を切り替えたいなら Global Accelerator",
+    "利用者のいる国や地域ごとに、応答するリソースを決めたいなら Route 53（位置情報ルーティング）"
+  ],
+  "rows": [
+    {
+      "axis": "振り分けの仕組み",
+      "values": {
+        "route53": "DNS クエリへの応答で、ルーティングポリシーに従って接続先を選ぶ",
+        "global-accelerator": "最寄りのエッジロケーションで通信を受け、AWS のグローバルネットワーク経由でエンドポイントへ転送する"
+      },
+      "factRefs": [
+        "route53.latency-routing",
+        "route53.geolocation-routing",
+        "global-accelerator.global-network"
+      ]
+    },
+    {
+      "axis": "クライアントの接続先",
+      "values": {
+        "route53": "ドメインの DNS レコードが定める接続先",
+        "global-accelerator": "固定の入り口になる、静的なエニーキャスト IP アドレス"
+      },
+      "factRefs": [
+        "route53.public-hosted-zone",
+        "global-accelerator.fixed-anycast-entry"
+      ]
+    },
+    {
+      "axis": "接続先を変えたときの反映",
+      "values": {
+        "route53": "TTL が長いと、リゾルバーが古い値を使い続け、反映に時間がかかる",
+        "global-accelerator": "クライアントや DNS リゾルバーの IP アドレスのキャッシュ更新に依存しない"
+      },
+      "factRefs": [
+        "route53.ttl-change-delay",
+        "global-accelerator.dns-independent-failover"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "How AWS Global Accelerator works - AWS Global Accelerator",
+      "url": "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+    },
+    {
+      "title": "AWS Global Accelerator FAQs - Amazon Web Services",
+      "url": "https://aws.amazon.com/global-accelerator/faqs/"
+    },
+    {
+      "title": "Choosing a routing policy - Amazon Route 53",
+      "url": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
+    }
+  ],
+  "checkedAt": "2026-11-20",
+  "createdBy": "sc29"
+}

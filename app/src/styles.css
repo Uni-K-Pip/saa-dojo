@@ -1002,3 +1002,147 @@ dl.glossary dd {
   gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
+
+/* ---------- サービス図鑑 ---------- */
+.chips-scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.chips-scroll .chip {
+  flex: none;
+  white-space: nowrap;
+}
+
+.fact-hits {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+}
+
+.fact-group h3 {
+  margin: 16px 0 6px;
+  font-size: 1rem;
+}
+
+details.fact {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  margin: 6px 0;
+  background: var(--surface);
+  scroll-margin-top: 72px;
+}
+
+details.fact > summary {
+  cursor: pointer;
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+details.fact.is-target {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.fact-ref {
+  display: block;
+  font-weight: 400;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.compare-table th,
+.compare-table td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.compare-table thead th {
+  background: var(--surface-2);
+}
+
+.compare-axis,
+.compare-facts {
+  display: block;
+}
+
+/* 幅 600px 未満: 観点ごとに見出しを置き、その下にサービスごとの値を縦に並べる。根拠の事実へのリンクは、値の後ろに回す */
+@media (max-width: 599px) {
+  .compare-table,
+  .compare-table tbody,
+  .compare-table tr,
+  .compare-table th,
+  .compare-table td {
+    display: block;
+  }
+
+  .compare-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .compare-table tr {
+    margin: 0 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* 行の見出しのセルは箱を作らず、中の「観点」と「根拠の事実」を、値のセルと同じ並びに置く */
+  .compare-table tbody tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .compare-table tbody th {
+    display: contents;
+  }
+
+  .compare-axis {
+    order: 0;
+    padding: 8px 10px;
+    background: var(--surface-2);
+    font-weight: 700;
+  }
+
+  .compare-table td {
+    order: 1;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .compare-table td::before,
+  .compare-facts::before {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .compare-table td::before {
+    content: attr(data-label);
+  }
+
+  .compare-facts {
+    order: 2;
+    padding: 8px 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .compare-facts::before {
+    content: '根拠の事実';
+  }
+}

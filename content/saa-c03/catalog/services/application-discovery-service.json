@@ -1,0 +1,74 @@
+{
+  "id": "application-discovery-service",
+  "tier": 3,
+  "summary": "オンプレミスのサーバーとデータベースの使用状況と構成のデータを集めて、AWS クラウドへの移行の計画に役立てるサービス。2025 年 11 月 7 日から新規の利用者は受け付けておらず、公式のページは似た機能を持つ AWS Transform を案内している。",
+  "chooseWhen": [
+    {
+      "text": "移行の前に、オンプレミスのサーバーとデータベースの使用状況と構成のデータを集めたい場合。",
+      "factRefs": [
+        "application-discovery-service.overview"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "新しく使い始めたい場合。新規の利用者を受け付けておらず、AWS Transform が案内されている。",
+      "factRefs": [
+        "application-discovery-service.closed-to-new-customers"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "application-discovery-service.overview",
+      "title": "移行の計画のためにオンプレミスのデータを集める",
+      "kind": "feature",
+      "text": "オンプレミスのサーバーとデータベースの使用状況と構成のデータを集めて、AWS クラウドへの移行の計画に役立てるサービスである。収集には、エージェントを使わない方法、エージェントを使う方法、ファイルのインポートの 3 通りがある。",
+      "depth": "core",
+      "services": [
+        "AWS Application Discovery Service"
+      ],
+      "sources": [
+        {
+          "title": "What is AWS Application Discovery Service?",
+          "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "application-discovery-service.closed-to-new-customers",
+      "title": "2025 年 11 月 7 日から新規の利用者を受け付けていない",
+      "kind": "constraint",
+      "text": "2025 年 11 月 7 日から、新規の利用者を受け付けていない。既存の利用者は、進行中の探索プロジェクトのためにこれまでどおり使い続けられる。公式のページは、似た機能を持つ代わりとして AWS Transform を案内している。",
+      "examPoint": "新しく構成する場合には選ばない。",
+      "depth": "core",
+      "services": [
+        "AWS Application Discovery Service"
+      ],
+      "sources": [
+        {
+          "title": "AWS Application Discovery Service availability change",
+          "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html"
+        }
+      ],
+      "checkedAt": "2026-11-22",
+      "recheck": "end-of-life"
+    }
+  ],
+  "seeAlso": [
+    "application-migration-service.overview"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Application Discovery Service?",
+      "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/what-is-appdiscovery.html"
+    },
+    {
+      "title": "AWS Application Discovery Service availability change",
+      "url": "https://docs.aws.amazon.com/application-discovery/latest/userguide/application-discovery-service-availability-change.html"
+    }
+  ],
+  "createdBy": "sc51",
+  "createdAt": "2026-11-22"
+}

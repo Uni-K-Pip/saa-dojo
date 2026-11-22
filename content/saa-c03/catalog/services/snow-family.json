@@ -1,0 +1,256 @@
+{
+  "id": "snow-family",
+  "tier": 2,
+  "summary": "AWS Snow Family は、ストレージとコンピューティングを備えた堅牢な物理デバイスを配送し、オフラインで大容量のデータを AWS へ運んだり、エッジで処理したりするサービス。このエントリは AWS Snowball Edge を扱う。新規の利用者には提供されておらず、商用リージョンでは 2026 年 12 月 31 日にサポートが終了する。",
+  "chooseWhen": [
+    {
+      "text": "既存の利用者が、高速なオンライン転送を使えない帯域の環境から、数十テラバイト以上のデータを物理デバイスで運ぶ",
+      "factRefs": [
+        "snow-family.large-transfer-low-bandwidth",
+        "snow-family.job-types"
+      ]
+    },
+    {
+      "text": "既存の利用者が、接続が限られた場所で、デバイス上の EC2 や Lambda を使ってデータをローカルで処理する",
+      "factRefs": [
+        "snow-family.local-compute"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "新しい設計で Snowball Edge を選ばない。新規の利用者には提供されていない。オンライン転送は DataSync を使う",
+      "factRefs": [
+        "snow-family.snowball-edge-not-for-new",
+        "snow-family.end-of-support"
+      ],
+      "alternatives": [
+        "datasync"
+      ]
+    },
+    {
+      "text": "エッジのコンピューティングが要る新しい設計では、Snowball Edge ではなく Outposts を検討する",
+      "factRefs": [
+        "snow-family.snowball-edge-not-for-new"
+      ],
+      "alternatives": [
+        "outposts"
+      ]
+    },
+    {
+      "text": "AWS リージョン間のデータ移行には使えない。S3 クロスリージョンレプリケーションを使う",
+      "factRefs": [
+        "snow-family.same-region-only"
+      ],
+      "alternatives": [
+        "s3"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "snow-family.snowball-edge-not-for-new",
+      "title": "Snowball Edge は新規の利用者に提供されていない",
+      "kind": "constraint",
+      "text": "AWS Snowball Edge は新規の利用者には提供されておらず、2025 年 11 月 7 日からデバイスは販売が終了している。新規の利用者には、オンライン転送には AWS DataSync、物理的な転送には AWS Data Transfer Terminal またはパートナーのソリューション、エッジのコンピューティングには AWS Outposts が案内されている。新規には選ばない。",
+      "examPoint": "物理的な転送の案内は Data Transfer Terminal かパートナーのソリューション、エッジのコンピューティングの案内は Outposts。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Snowball Edge?",
+          "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
+        },
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "snow-family.end-of-support",
+      "title": "Snowball デバイスのサポートは 2026 年 12 月 31 日に終了",
+      "kind": "constraint",
+      "text": "AWS は 2026 年 12 月 31 日に、すべての AWS 商用リージョンで AWS Snowball デバイス（Snowball Edge の Storage Optimized と Compute Optimized の両方）のサポートを終了する。この日以降は AWS Snow コンソールと Snowball のリソースにアクセスできなくなる。GovCloud と ADC リージョンで、現在有効な Snow ジョブがあるお客様は、この変更の影響を受けない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball",
+          "url": "https://aws.amazon.com/snowball/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "snow-family.device-configurations",
+      "title": "Snowball Edge のデバイスの構成",
+      "kind": "feature",
+      "text": "Snowball Edge のデバイスの構成は 2 つある。Storage Optimized 210 TB は使える容量が 210 TB で、データ転送向け。Compute Optimized（AMD EPYC Gen2）は、最大 104 vCPU、416 GB のメモリ、コンピューティングインスタンス用の 28 TB の専用 NVMe SSD を持つ。どちらも新規の利用者には提供されていない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball Edge device hardware information",
+          "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/device-differences.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "snow-family.large-transfer-low-bandwidth",
+      "title": "帯域がないときの大容量データの転送",
+      "kind": "feature",
+      "text": "Snowball Edge は、DataSync のような高速なオンライン転送サービスを使える帯域がないときの、大規模なデータ転送や移行の手段である。Storage Optimized は、数十テラバイトからペタバイトのデータを AWS へ安全かつ速く転送する用途に向く。ただし新規の利用者には提供されていない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "snow-family.job-types",
+      "title": "Snowball Edge のジョブの 3 種類",
+      "kind": "feature",
+      "text": "Snowball Edge のジョブは 3 種類ある。インポートは、ローカルのデータを 1 台のデバイス（210 TB まで）にコピーして返送し、S3 へ取り込む。エクスポートは、S3 のデータを任意の台数のデバイスにコピーして運ぶ。ローカルのコンピューティングとストレージのジョブは、S3 へのインポートを伴わない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Understanding Snowball Edge jobs",
+          "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/jobs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.transfer-flow",
+      "title": "オフライン転送の流れ",
+      "kind": "feature",
+      "text": "ジョブを S3 バケットを指定して作成すると、AWS がデバイスを用意して配送する。届いたデバイスを LAN につなぎ、AWS OpsHub でロックを解除して、データの転送やインスタンスの起動を行う。返送してリージョンに着くと、オンボードのバケットのデータが S3 バケットへ移され、検証される。そのあと、デバイスのデータは安全に消去される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball",
+          "url": "https://aws.amazon.com/snowball/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.local-compute",
+      "title": "デバイス上でのローカルのコンピューティング",
+      "kind": "feature",
+      "text": "Snowball Edge は、オンボードのストレージとコンピューティングを備える。接続がほとんどない環境でも、デバイス上で Amazon EC2 の AMI を実行し、AWS Lambda のコードをデプロイして、データをローカルで処理できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball",
+          "url": "https://aws.amazon.com/snowball/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.same-region-only",
+      "title": "リージョン間の移行には使えない",
+      "kind": "constraint",
+      "text": "Snowball Edge は、指定した AWS リージョンへ、またはそこから大量のデータを運ぶためのもので、リージョン間のデータ転送には使えない。デバイスは S3 バケットのあるリージョンで要求して使う。EU のリージョンのインポートやエクスポートに使ったデバイスは、EU の他の国でも使える。",
+      "examPoint": "リージョン間の転送には、S3 クロスリージョンレプリケーションが案内されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.encryption",
+      "title": "データの暗号化",
+      "kind": "feature",
+      "text": "Snowball Edge は、すべてのデータを 256 ビットの暗号化で保護する。暗号化の鍵は AWS KMS で管理し、鍵はデバイスに保存されない。デバイスの接続を外して AWS へ返却すると、メモリはすべて消去される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.cluster",
+      "title": "デバイスのクラスター",
+      "kind": "feature",
+      "text": "ローカルのコンピューティングとストレージのジョブでは、Snowball Edge のデバイスをクラスターにできる。3〜16 台のデバイスにまたがってデータの耐久性を得られ、ローカルのストレージ容量を必要に応じて増減できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Snowball Edge?",
+          "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
+        },
+        {
+          "title": "Understanding Snowball Edge jobs",
+          "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/jobs.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.data-interfaces",
+      "title": "デバイスへのデータの書き込み方法",
+      "kind": "feature",
+      "text": "デバイスを接続して有効化したあと、ローカルのデータは、デバイス上の S3 互換のエンドポイントか NFS のファイルインターフェイスを通じてデバイスへ転送できる。Snowball クライアントでコピーすることもできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "snow-family.job-duration-limit",
+      "title": "ジョブは準備から 360 日以内に完了",
+      "kind": "constraint",
+      "text": "セキュリティ上の理由で、Snowball Edge のデバイスを使うジョブは、準備から 360 日以内に完了する必要がある。360 日を過ぎるとデバイスはロックされ、アクセスできなくなり、返却が必要になる。360 日より長く使うには AWS Support に連絡する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS Snowball FAQs",
+          "url": "https://aws.amazon.com/snowball/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "datasync.overview",
+    "datasync.use-cases",
+    "direct-connect.private-network",
+    "transfer-family.existing-clients"
+  ],
+  "references": [
+    {
+      "title": "What is Snowball Edge?",
+      "url": "https://docs.aws.amazon.com/snowball/latest/developer-guide/whatisedge.html"
+    },
+    {
+      "title": "AWS Snowball",
+      "url": "https://aws.amazon.com/snowball/"
+    },
+    {
+      "title": "AWS Snowball FAQs",
+      "url": "https://aws.amazon.com/snowball/faqs/"
+    }
+  ],
+  "createdBy": "sc36",
+  "createdAt": "2026-11-21"
+}

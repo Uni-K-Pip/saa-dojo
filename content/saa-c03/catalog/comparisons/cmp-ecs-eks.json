@@ -1,0 +1,75 @@
+{
+  "id": "cmp-ecs-eks",
+  "title": "Amazon ECS と Amazon EKS",
+  "services": [
+    "ecs",
+    "eks"
+  ],
+  "decide": [
+    "運用の負担がより小さい、AWS ネイティブのオーケストレーターを使いたいなら ECS",
+    "Kubernetes 対応のアプリケーションを、作り直さずに動かしたいなら EKS",
+    "標準の Kubernetes API によって、ほかのクラウドやオンプレミスの環境との間の移植性を確保したいなら EKS"
+  ],
+  "rows": [
+    {
+      "axis": "アプリケーションの定義",
+      "values": {
+        "ecs": "タスク定義とサービス（タスク定義が設計図で、サービスが、指定した数だけ動かし続ける）",
+        "eks": "Kubernetes の Pod と、Deployment などのワークロードリソース（YAML のマニフェストで定義して適用すると、指定した数の Pod が保たれる）"
+      },
+      "factRefs": [
+        "ecs.task-definition",
+        "eks.pod-and-deployment"
+      ]
+    },
+    {
+      "axis": "コンテナの実行基盤",
+      "values": {
+        "ecs": "Fargate、EC2、ECS Managed Instances、オンプレミスの外部インスタンス（ECS Anywhere）",
+        "eks": "Fargate、EC2 のノード（マネージドノードグループ、EKS Auto Mode）、自社のデータセンター（EKS Anywhere、EKS Hybrid Nodes）"
+      },
+      "factRefs": [
+        "ecs.capacity-options",
+        "eks.mng-automation",
+        "eks.auto-mode",
+        "eks.fargate-pod-isolation",
+        "eks.hybrid-and-anywhere"
+      ]
+    },
+    {
+      "axis": "アプリケーションに IAM ロールの権限を渡す単位",
+      "values": {
+        "ecs": "タスクの単位（タスクロール。タスクごとに認証情報が渡される）",
+        "eks": "Kubernetes のサービスアカウントの単位（EKS Pod Identity か IRSA。そのサービスアカウントを使う Pod だけに、ロールの権限が渡る）"
+      },
+      "factRefs": [
+        "ecs.task-role",
+        "eks.pod-identity",
+        "eks.irsa"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "ecs": "オーケストレーション自体に追加料金はかからず、Fargate や EC2 など、基盤のリソースの料金がかかる（ECS Managed Instances では EC2 の料金に加えてインスタンスごとの管理料金、ECS Anywhere ではオンプレミスの登録インスタンスごとの固定料金がかかる）",
+        "eks": "クラスター単位の料金がかかり、ワーカーノードとして使う EC2 インスタンスや EBS ボリューム、パブリック IPv4 アドレスなどの AWS リソースの料金が別にかかる（EKS Auto Mode や EKS Hybrid Nodes には、それぞれ別の料金体系がある）"
+      },
+      "factRefs": [
+        "ecs.pricing-no-orchestration-charge",
+        "eks.cluster-pricing"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon EKS? - Amazon EKS",
+      "url": "https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html"
+    },
+    {
+      "title": "Choosing an AWS container service - AWS Decision Guides",
+      "url": "https://docs.aws.amazon.com/decision-guides/latest/decision-guides/choosing-aws-container-service.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc30"
+}

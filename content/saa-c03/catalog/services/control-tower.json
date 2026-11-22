@@ -1,0 +1,590 @@
+{
+  "id": "control-tower",
+  "tier": 2,
+  "summary": "AWS Organizations や IAM Identity Center などを組み合わせ、ベストプラクティスに沿ったマルチアカウント環境（ランディングゾーン）を構築して統制するサービス。コントロールによる継続的な統制と、Account Factory によるアカウントの払い出しを提供する。",
+  "chooseWhen": [
+    {
+      "text": "ベストプラクティスに沿ったマルチアカウント環境を用意し、ガバナンスを続けたいとき",
+      "factRefs": [
+        "control-tower.landing-zone",
+        "control-tower.orchestrated-services"
+      ]
+    },
+    {
+      "text": "新しいアカウントを承認済みの構成で払い出したいとき",
+      "factRefs": [
+        "control-tower.account-factory"
+      ]
+    },
+    {
+      "text": "既存の OU やアカウントに、コントロールによる統制を広げたいとき",
+      "factRefs": [
+        "control-tower.register-ou",
+        "control-tower.enroll-existing-account"
+      ]
+    },
+    {
+      "text": "リソースの作成前、作成後の設定、操作そのものに、種類の違うコントロールで統制をかけたいとき",
+      "factRefs": [
+        "control-tower.preventive-control",
+        "control-tower.detective-control",
+        "control-tower.proactive-control"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "CloudFormation を経由しない直接の操作に、プロアクティブコントロールの効果を期待するとき",
+      "factRefs": [
+        "control-tower.proactive-hook-timing"
+      ]
+    },
+    {
+      "text": "管理アカウントの管理者やルートユーザーの操作を、コントロールで制限したいとき",
+      "factRefs": [
+        "control-tower.management-account-exception"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "control-tower.landing-zone",
+      "title": "ランディングゾーン",
+      "kind": "feature",
+      "text": "AWS Control Tower のランディングゾーンは、セキュリティとコンプライアンスのベストプラクティスに基づいた、Well-Architected なマルチアカウント環境である。規制の対象にしたい OU、アカウント、ユーザー、リソースをまとめて保持する、企業全体の入れ物になる。",
+      "examPoint": "マルチアカウント環境の構築とガバナンスを、ベストプラクティスに沿って用意する用途に使う。",
+      "depth": "core",
+      "tags": [
+        "ランディングゾーン"
+      ],
+      "sources": [
+        {
+          "title": "What Is AWS Control Tower? - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.orchestrated-services",
+      "title": "オーケストレーションする AWS サービス",
+      "kind": "integration",
+      "text": "AWS Control Tower は、AWS Organizations、AWS Service Catalog、AWS IAM Identity Center などの機能をオーケストレーションしてランディングゾーンを構築する。リソースはユーザーに代わって設定・管理される。AWS Organizations の機能を拡張する位置づけである。",
+      "depth": "detail",
+      "tags": [
+        "連携"
+      ],
+      "sources": [
+        {
+          "title": "What Is AWS Control Tower? - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.control-kinds",
+      "title": "コントロールの種類と呼び名",
+      "kind": "feature",
+      "text": "AWS Control Tower のコントロールは、環境全体に継続的なガバナンスを与える高レベルのルールで、1 つのコントロールは 1 つのルールを実施する。種類は予防（preventive）、検出（detective）、プロアクティブ（proactive）の 3 つで、以前はガードレールと呼ばれていた。",
+      "depth": "detail",
+      "tags": [
+        "コントロール"
+      ],
+      "sources": [
+        {
+          "title": "How controls work - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+        },
+        {
+          "title": "About controls in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.preventive-control",
+      "title": "予防コントロール",
+      "kind": "feature",
+      "text": "予防コントロールは、アクションの実行そのものを防ぐ。禁止された操作を試みると拒否され、CloudTrail に記録される。AWS Control Tower では、予防コントロールはサービスコントロールポリシー（SCP）とリソースコントロールポリシー（RCP）で実装される。",
+      "examPoint": "禁止したい操作を拒否したいときは、予防コントロール（SCP や RCP で実装）を使う。",
+      "depth": "core",
+      "tags": [
+        "コントロール",
+        "SCP"
+      ],
+      "sources": [
+        {
+          "title": "How controls work - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.detective-control",
+      "title": "検出コントロール",
+      "kind": "feature",
+      "text": "検出コントロールは、特定のイベントが起きたときにそれを検出し、そのアクションを CloudTrail に記録する。AWS Control Tower では、検出コントロールは AWS Config ルールで実装される。たとえば、EC2 にアタッチされた未暗号化の EBS ボリュームを検出する。",
+      "examPoint": "設定の違反を検出したいときは、検出コントロール（AWS Config ルールで実装）を使う。",
+      "depth": "core",
+      "tags": [
+        "コントロール",
+        "Config"
+      ],
+      "sources": [
+        {
+          "title": "How controls work - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.proactive-control",
+      "title": "プロアクティブコントロール",
+      "kind": "feature",
+      "text": "プロアクティブコントロールは、リソースがアカウントにプロビジョニングされる前に、会社のポリシーに準拠するかを確認する。準拠しないリソースはプロビジョニングされない。CloudFormation テンプレートでデプロイされるリソースを監視し、CloudFormation フックで実装される。",
+      "examPoint": "デプロイ前にリソースの準拠を確かめたいときは、プロアクティブコントロール（CloudFormation フックで実装）を使う。",
+      "depth": "core",
+      "tags": [
+        "コントロール",
+        "フック"
+      ],
+      "sources": [
+        {
+          "title": "How controls work - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+        },
+        {
+          "title": "Proactive controls - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/proactive-controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.proactive-hook-timing",
+      "title": "プロアクティブコントロールが働く契機",
+      "kind": "constraint",
+      "text": "プロアクティブコントロールは、CloudFormation のスタック操作でリソースが作成・更新されるときに、preCreate と preUpdate のフックハンドラとして働く。コンソール、API、SDK、ほかの IaC ツールから直接サービスへ出されたリクエストには、影響しない場合がある。",
+      "examPoint": "プロアクティブコントロールは、CloudFormation のスタック操作でリソースが作成・更新されるときに働く。直接のリクエストには影響しない場合がある。",
+      "trap": "CloudFormation の外からの直接の変更にも、フックが働くとは限らない。",
+      "depth": "core",
+      "tags": [
+        "コントロール",
+        "フック"
+      ],
+      "sources": [
+        {
+          "title": "Proactive controls - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/proactive-controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.guidance-categories",
+      "title": "コントロールのガイダンス区分",
+      "kind": "feature",
+      "text": "コントロールには、必須（mandatory）、強く推奨（strongly recommended）、選択的（elective）の 3 つのガイダンス区分がある。強く推奨と選択的のコントロールは、コンソールや API からいつでも変更できる。必須のコントロールは常に適用され、変更できない。",
+      "examPoint": "必須のコントロールは常に適用される。強く推奨・選択的は、あとから有効・無効を変えられる。",
+      "depth": "core",
+      "tags": [
+        "コントロール"
+      ],
+      "sources": [
+        {
+          "title": "How controls work - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+        },
+        {
+          "title": "What Is AWS Control Tower? - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.control-ou-scope",
+      "title": "コントロールの適用単位",
+      "kind": "feature",
+      "text": "コントロールは OU 全体に適用され、その OU に属するすべての AWS アカウントが影響を受ける。ランディングゾーン内のどのアカウントで作業するときも、そのアカウントの OU を統制するコントロールの対象になる。",
+      "depth": "core",
+      "tags": [
+        "コントロール",
+        "OU"
+      ],
+      "sources": [
+        {
+          "title": "About controls in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.management-account-exception",
+      "title": "管理アカウントのコントロールの例外",
+      "kind": "constraint",
+      "text": "管理アカウントのルートユーザーと管理者は、コントロールが本来は拒否する作業を行える。管理アカウントが使えない状態になるのを防ぐための、意図的な例外である。管理アカウントでの操作は、ログアーカイブアカウントのログに引き続き記録される。",
+      "depth": "detail",
+      "tags": [
+        "管理アカウント"
+      ],
+      "sources": [
+        {
+          "title": "About controls in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/controls.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.account-factory",
+      "title": "Account Factory",
+      "kind": "feature",
+      "text": "Account Factory は、承認済みのアカウント構成で新しいアカウントの払い出しを標準化する、設定可能なアカウントテンプレートである。AWS Service Catalog のプロビジョニング済み製品の上に作られ、アカウントの作成と登録を行い、コントロールの適用も自動化する。",
+      "examPoint": "新しいアカウントを標準構成で量産する用途には Account Factory を使う。",
+      "depth": "core",
+      "tags": [
+        "Account Factory"
+      ],
+      "sources": [
+        {
+          "title": "What Is AWS Control Tower? - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.account-creation-flow",
+      "title": "アカウント作成の流れ",
+      "kind": "feature",
+      "text": "アカウントの作成要求は、Account Factory のページ、Service Catalog のコンソール、ProvisionProduct API のいずれかから出せる。Service Catalog から呼ばれた AWS Control Tower が、最初に AWS Organizations の CreateAccount API を呼び、そのあとブループリントとコントロールを適用する。",
+      "depth": "detail",
+      "tags": [
+        "Account Factory"
+      ],
+      "sources": [
+        {
+          "title": "About AWS accounts in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.enroll-existing-account",
+      "title": "既存アカウントの登録（エンロール）",
+      "kind": "feature",
+      "text": "既存の AWS アカウントは、AWS Control Tower が統制する OU へ登録（エンロール）して、統制の対象にできる。対象になるのは、同じ AWS Organizations の組織内の、未登録の OU にあるアカウントである。登録時は、ベースラインの適用、OU への配置、必須コントロールの適用、AWS Config の有効化が行われる。",
+      "depth": "core",
+      "tags": [
+        "エンロール"
+      ],
+      "sources": [
+        {
+          "title": "About enrolling existing accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/enroll-account.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.enroll-audit-log-limit",
+      "title": "監査・ログアーカイブへの既存アカウントの割り当て",
+      "kind": "constraint",
+      "text": "既存の AWS アカウントを監査アカウントやログアーカイブアカウントとして登録できるのは、最初のランディングゾーンのセットアップ時だけである。セットアップ後の登録（エンロール）では、既存のアカウントをこれらの役割にはできない。",
+      "depth": "detail",
+      "tags": [
+        "エンロール"
+      ],
+      "sources": [
+        {
+          "title": "About enrolling existing accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/enroll-account.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.enroll-vpc-handling",
+      "title": "アカウントの払い出しと登録での VPC の扱い",
+      "kind": "feature",
+      "text": "新しいアカウントを Account Factory で作成すると、既定の動作で AWS のデフォルト VPC を削除し、新しい VPC を作成する。既存のアカウントを登録するときは、新しい VPC を作らず、既存の VPC やデフォルト VPC も削除しない。",
+      "depth": "detail",
+      "tags": [
+        "VPC",
+        "エンロール"
+      ],
+      "sources": [
+        {
+          "title": "About enrolling existing accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/enroll-account.html"
+        }
+      ],
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
+    },
+    {
+      "id": "control-tower.register-ou",
+      "title": "既存の OU の登録",
+      "kind": "feature",
+      "text": "AWS Organizations で作った既存の OU は、ランディングゾーンに登録して AWS Control Tower の統制下に置ける。登録すると、その OU のアカウントはランディングゾーンにエンロールされ、OU に適用されるコントロールの対象になり、必須コントロールが有効になる。",
+      "examPoint": "OU 単位でまとめて既存アカウントを統制下に置くときは、OU を登録する。",
+      "depth": "core",
+      "tags": [
+        "OU",
+        "エンロール"
+      ],
+      "sources": [
+        {
+          "title": "Register an existing organizational unit with AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/importing-existing.html"
+        },
+        {
+          "title": "Manage Accounts Through AWS Organizations - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/organizations.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.register-ou-account-limit",
+      "title": "OU の登録で扱えるアカウント数",
+      "kind": "quota",
+      "text": "既存の OU を AWS Control Tower に登録できるのは、含まれるアカウントが 1,000 までの OU である。1,000 を超えるアカウントを含む OU は、AWS Control Tower に登録できない。",
+      "depth": "detail",
+      "tags": [
+        "OU",
+        "クォータ"
+      ],
+      "sources": [
+        {
+          "title": "Register an existing organizational unit with AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/importing-existing.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.drift-detection",
+      "title": "ドリフトの検出",
+      "kind": "feature",
+      "text": "AWS Control Tower はドリフトを自動で検出する。ドリフトは、ランディングゾーンの統制の状態が、コントロールで決めた準拠の状態から変わることである。アカウントが OU 間で移動された場合や組織から外された場合、SCP の更新や OU からの切り離しなどが、検出される。",
+      "examPoint": "ランディングゾーンの統制からの逸脱は、ドリフトとして検出され、管理者が解消する。",
+      "depth": "core",
+      "tags": [
+        "ドリフト"
+      ],
+      "sources": [
+        {
+          "title": "Detect and resolve drift in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/drift.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.drift-policy-scan",
+      "title": "管理するポリシーの日次スキャン",
+      "kind": "feature",
+      "text": "AWS Control Tower は、管理している SCP、RCP、宣言型ポリシーを毎日スキャンし、対応するコントロールが正しく適用され、ドリフトしていないかを確認する。ドリフトが見つかると通知される。1 つのドリフトの問題につき、通知は 1 回である。",
+      "depth": "detail",
+      "tags": [
+        "ドリフト"
+      ],
+      "sources": [
+        {
+          "title": "Detect and resolve drift in AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/drift.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.pricing-model",
+      "title": "料金の仕組み",
+      "kind": "pricing",
+      "text": "AWS Control Tower の利用に追加料金はない。課金されるのは、AWS Control Tower が設定する AWS Service Catalog、AWS CloudTrail、AWS Config、Amazon CloudWatch などの基盤サービスの利用分で、使用量に応じる。",
+      "examPoint": "Control Tower 自体は無料で、構成されるサービスの利用料金が発生する。",
+      "depth": "core",
+      "tags": [
+        "料金"
+      ],
+      "sources": [
+        {
+          "title": "AWS Control Tower pricing",
+          "url": "https://aws.amazon.com/controltower/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.security-ou-shared-accounts",
+      "title": "Security OU と共有アカウント",
+      "kind": "feature",
+      "text": "ランディングゾーンのバージョン 3.3 以前では、Security OU にログアーカイブアカウントと監査アカウントがあり、これらは共有アカウントと呼ばれる。バージョン 4.0 では Security OU は必須ではなくなり、組織構造を自分で定義できる。",
+      "depth": "detail",
+      "tags": [
+        "共有アカウント",
+        "OU"
+      ],
+      "sources": [
+        {
+          "title": "How AWS Control Tower works - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-control-tower-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.service-integration-accounts",
+      "title": "サービス統合アカウントの呼び方",
+      "kind": "feature",
+      "text": "AWS Control Tower は、管理アカウントのほかに、Config aggregator アカウントと CloudTrail administrator アカウントの 2 つの特別なアカウントを使い、この 2 つを総称してサービス統合アカウントと呼ぶ。ランディングゾーンのバージョン 4.0 より前の共有アカウントに当たり、以前の名前は Config aggregator アカウントが監査アカウント、CloudTrail administrator アカウントがログアーカイブアカウントである。",
+      "depth": "detail",
+      "tags": [
+        "共有アカウント",
+        "サービス統合アカウント"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.service-integration-setup",
+      "title": "サービス統合アカウントのセットアップ契機",
+      "kind": "feature",
+      "text": "CloudTrail administrator アカウントは、AWS CloudTrail の集中ログ統合を有効にしたときに AWS Control Tower がセットアップする。Config aggregator アカウントは、AWS Config のサービス統合を有効にしたときにセットアップされる。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.service-integration-log-buckets",
+      "title": "ログの保存先の分離",
+      "kind": "feature",
+      "text": "CloudTrail administrator アカウントの中央の S3 バケットは、全アカウントのログファイルを保管する。ランディングゾーンのバージョン 4.0 より前は、このバケットに CloudTrail と AWS Config の両方のログが入ったが、バージョン 4.0 以降は CloudTrail のログだけが入り、AWS Config のログは Config aggregator アカウントの専用バケットに保存される。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ログ"
+      ],
+      "sources": [
+        {
+          "title": "Service integration accounts - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.optional-service-integrations",
+      "title": "有効にするサービス統合の選択",
+      "kind": "feature",
+      "text": "ランディングゾーンのバージョン 4.0 では、AWS Config、AWS CloudTrail、Security Roles、AWS Backup の各サービス統合を、有効にするものを選べる。統合を無効にすると、その統合に固有の AWS Control Tower のリソースが、管理対象アカウントとサービス統合アカウントから削除される。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ランディングゾーン"
+      ],
+      "sources": [
+        {
+          "title": "January 2025 - December 2025 - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/2025-all.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.config-integration-dependency",
+      "title": "AWS Config 統合を無効にするときの依存",
+      "kind": "constraint",
+      "text": "ランディングゾーンのバージョン 4.0 で AWS Config の統合を無効にするには、Security Roles、IAM Identity Center、AWS Backup の統合も無効にする必要がある。",
+      "depth": "detail",
+      "tags": [
+        "サービス統合アカウント",
+        "ランディングゾーン"
+      ],
+      "sources": [
+        {
+          "title": "January 2025 - December 2025 - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/2025-all.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "control-tower.identity-center-directory",
+      "title": "IAM Identity Center のディレクトリ",
+      "kind": "integration",
+      "text": "AWS Control Tower の既定の構成でランディングゾーンを作ると、IAM Identity Center にクラウドネイティブのディレクトリが、事前設定のグループとシングルサインオンのアクセスとともに作成される。ID プロバイダーを自分で管理する構成も選べる。",
+      "depth": "detail",
+      "tags": [
+        "IAM Identity Center"
+      ],
+      "sources": [
+        {
+          "title": "How AWS Control Tower works - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-control-tower-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
+    },
+    {
+      "id": "control-tower.stacksets-deployment",
+      "title": "StackSets によるリソース展開",
+      "kind": "integration",
+      "text": "AWS Control Tower は、既定で CloudFormation StackSets を使ってアカウントにリソースを設定する。アカウントとリージョンごとに、1 つのスタックセットインスタンスを展開する。",
+      "depth": "detail",
+      "tags": [
+        "StackSets"
+      ],
+      "sources": [
+        {
+          "title": "How AWS Control Tower works - AWS Control Tower",
+          "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-control-tower-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-20",
+      "recheck": "default-value"
+    }
+  ],
+  "seeAlso": [
+    "organizations.scp-permission-ceiling",
+    "organizations.resource-control-policies",
+    "organizations.scp-management-exemption",
+    "config.rule-compliance",
+    "iam-identity-center.permission-set-template"
+  ],
+  "references": [
+    {
+      "title": "What Is AWS Control Tower? - AWS Control Tower",
+      "url": "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html"
+    },
+    {
+      "title": "How controls work - AWS Control Tower",
+      "url": "https://docs.aws.amazon.com/controltower/latest/userguide/how-controls-work.html"
+    }
+  ],
+  "createdBy": "sc22",
+  "createdAt": "2026-11-20",
+  "updatedAt": "2026-11-20"
+}

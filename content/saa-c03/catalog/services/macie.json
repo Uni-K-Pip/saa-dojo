@@ -1,0 +1,302 @@
+{
+  "id": "macie",
+  "tier": 2,
+  "summary": "Amazon S3 のデータを対象に、機械学習とパターンマッチングで個人情報や認証情報などの機密データを検出し、S3 バケットのセキュリティとアクセス制御も評価・監視するデータセキュリティサービス。",
+  "chooseWhen": [
+    {
+      "text": "S3 にある個人情報・認証情報・金融情報などの機密データを、機械学習とパターンマッチングで見つけたい",
+      "factRefs": [
+        "macie.sensitive-data-discovery",
+        "macie.managed-data-identifiers"
+      ]
+    },
+    {
+      "text": "S3 全体の機密データの所在を継続的に広く把握し、気になるバケットは検出ジョブで深く調べたい",
+      "factRefs": [
+        "macie.automated-discovery",
+        "macie.discovery-jobs"
+      ]
+    },
+    {
+      "text": "S3 バケットが公開状態になるなど、セキュリティやアクセス制御の問題を検出したい",
+      "factRefs": [
+        "macie.bucket-inventory-policy"
+      ]
+    },
+    {
+      "text": "検出結果を EventBridge で通知や自動対応につなげ、組織の複数アカウントをまとめて管理したい",
+      "factRefs": [
+        "macie.eventbridge-findings",
+        "macie.organizations"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "S3 以外のデータストアを直接スキャンしたい（S3 に移したデータだけが分析の対象になる）",
+      "factRefs": [
+        "macie.s3-scope"
+      ]
+    },
+    {
+      "text": "SSE-C やクライアント側暗号化で暗号化したオブジェクトの中身を分析したい",
+      "factRefs": [
+        "macie.unsupported-encryption"
+      ]
+    },
+    {
+      "text": "S3 Glacier Deep Archive や S3 Express One Zone のオブジェクトを分析したい",
+      "factRefs": [
+        "macie.unsupported-storage-classes"
+      ]
+    },
+    {
+      "text": "AWS 環境の不審な活動や、侵害された認証情報の使用などの脅威を検出したい",
+      "factRefs": [
+        "guardduty.continuous-threat-detection"
+      ],
+      "alternatives": [
+        "guardduty"
+      ]
+    },
+    {
+      "text": "EC2 インスタンスなどのソフトウェアの脆弱性をスキャンしたい",
+      "factRefs": [
+        "inspector.ec2-package-vulnerabilities"
+      ],
+      "alternatives": [
+        "inspector"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "macie.sensitive-data-discovery",
+      "title": "S3 の機密データを検出して報告する",
+      "kind": "feature",
+      "text": "Macie は、機械学習とパターンマッチングを使って、Amazon S3 のオブジェクトに含まれる機密データを検出するデータセキュリティサービスである。S3 オブジェクトの中に機密データを検出すると、その内容を知らせる検出結果（finding）を作成する。",
+      "examPoint": "S3 にある機密データの検出と報告を担うサービスが Macie である。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.s3-scope",
+      "title": "分析できるのは S3 汎用バケットのオブジェクト",
+      "kind": "constraint",
+      "text": "Macie が機密データを分析できるのは、S3 汎用バケットに保存された、対応するストレージクラスとファイル形式のオブジェクトである。ほかの場所に保存しているデータは、一時的または恒久的に S3 へ移せば、Macie で分析できる。",
+      "examPoint": "RDS や Aurora のスナップショットを Parquet 形式で S3 へエクスポートしたり、DynamoDB のテーブルを S3 へエクスポートしたりすれば、Macie の分析対象にできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Supported storage classes and formats",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.managed-data-identifiers",
+      "title": "管理データ識別子は組み込みの検出基準",
+      "kind": "feature",
+      "text": "管理データ識別子は、機械学習やパターンマッチングを組み合わせた Macie 組み込みの検出基準である。多くの国と地域について、認証情報、金融情報、個人の健康情報（PHI）や個人を特定できる情報（PII）といった機密データの種類を検出できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using managed data identifiers",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/managed-data-identifiers.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.custom-data-identifiers",
+      "title": "カスタムデータ識別子で独自のパターンを検出する",
+      "kind": "feature",
+      "text": "カスタムデータ識別子は、利用者が定義する検出基準である。一致させるテキストのパターンを正規表現で指定し、必要に応じて文字列と近接ルールで結果を絞り込む。独自のデータや知的財産などを検出するために、管理データ識別子を補って使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.automated-discovery",
+      "title": "自動機密データ検出は S3 全体を広く把握する",
+      "kind": "feature",
+      "text": "自動機密データ検出は、S3 バケットの一覧を継続的に評価し、サンプリングの手法で代表的なオブジェクトを選んで分析する。S3 全体のどこに機密データがありそうかを、広く把握するための仕組みである。",
+      "examPoint": "S3 全体の広い可視化は自動機密データ検出、対象を絞った深い分析は機密データ検出ジョブで行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Performing automated sensitive data discovery",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-asdd.html"
+        },
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.discovery-jobs",
+      "title": "機密データ検出ジョブは範囲を指定した深い分析",
+      "kind": "feature",
+      "text": "機密データ検出ジョブでは、分析する S3 バケット、サンプリングの深さ、S3 オブジェクトの属性に基づくカスタム条件を、利用者が指定する。1 回だけ実行するオンデマンドの分析にも、定期的に繰り返す分析にもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.bucket-inventory-policy",
+      "title": "バケットの一覧を作り、設定の問題をポリシー検出結果にする",
+      "kind": "feature",
+      "text": "Macie を有効にすると、S3 汎用バケットの一覧を自動的に作成して維持し、バケットのセキュリティとアクセス制御を評価・監視する。バケットが公開状態になるなど、セキュリティやプライバシーの問題の可能性を検出すると、ポリシー検出結果を作成する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.eventbridge-findings",
+      "title": "検出結果は EventBridge へ自動で発行される",
+      "kind": "integration",
+      "text": "Macie は、ポリシー検出結果と機密データの検出結果を、Amazon EventBridge のイベントとして自動的に発行する。EventBridge から Lambda 関数や SNS トピックなどへ送り、検出結果をほぼリアルタイムで監視・処理できる。",
+      "examPoint": "検出結果への通知や自動対応は、EventBridge のイベントを起点に組める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Monitoring and processing Macie findings",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/findings-monitor.html"
+        },
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.organizations",
+      "title": "Organizations の委任管理者が組織の Macie を管理する",
+      "kind": "integration",
+      "text": "Macie を AWS Organizations と統合するには、組織の委任された Macie 管理者アカウントを指定する。管理者は組織内のほかのアカウントで Macie を有効にしてメンバーアカウントに加え、その設定やリソースを管理し、メンバーが所有する S3 バケットの機密データを検出できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing multiple Macie accounts with AWS Organizations",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/accounts-mgmt-ao.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.kms-customer-key",
+      "title": "カスタマー管理の KMS キーは Macie に許可が要る",
+      "kind": "constraint",
+      "text": "カスタマー管理の KMS キーで暗号化された S3 オブジェクト（SSE-KMS・DSSE-KMS）は、そのキーの使用を Macie に許可した場合にだけ、Macie が復号して分析できる。許可がないと、Macie はそのオブジェクトのメタデータを保存・報告するだけになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Analyzing encrypted Amazon S3 objects",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-encryption-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.unsupported-encryption",
+      "title": "SSE-C とクライアント側暗号化のオブジェクトは復号できない",
+      "kind": "constraint",
+      "text": "お客様が用意したキーによるサーバー側暗号化（SSE-C）で暗号化されたオブジェクトと、クライアント側暗号化で暗号化されたオブジェクトは、Macie が復号できない。Macie はこれらのオブジェクトについて、メタデータを保存・報告するだけである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Analyzing encrypted Amazon S3 objects",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-encryption-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.pricing-dimensions",
+      "title": "料金は 3 つの軸で決まる",
+      "kind": "pricing",
+      "text": "Macie の料金は、バケットの一覧作成と監視のために評価する S3 バケットの数、自動機密データ検出のために監視する S3 オブジェクトの数、自動検出と対象を絞った検出で検査したデータ量の、3 つの軸で決まる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon Macie pricing",
+          "url": "https://aws.amazon.com/macie/pricing/"
+        },
+        {
+          "title": "What is Amazon Macie?",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.policy-finding-after-enable",
+      "title": "ポリシー検出結果は有効化後の変更だけが対象",
+      "kind": "constraint",
+      "text": "ポリシー検出結果が作られるのは、Macie を有効にしたあとに起きた変更に対してだけである。有効にした時点ですでにブロックパブリックアクセスが無効だったバケットは、その状態が続いていても、この種の検出結果は作られない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Types of Macie findings",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/findings-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "macie.unsupported-storage-classes",
+      "title": "分析されないストレージクラスがある",
+      "kind": "constraint",
+      "text": "Macie は、対応するストレージクラスのオブジェクトだけを分析する。S3 Glacier Deep Archive や S3 Express One Zone など、対応しないストレージクラスのオブジェクトと、S3 ディレクトリバケットのオブジェクトは分析しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Supported storage classes and formats",
+          "url": "https://docs.aws.amazon.com/macie/latest/user/discovery-supported-storage.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "security-hub.cspm-service-findings",
+    "guardduty.s3-protection"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon Macie?",
+      "url": "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+    },
+    {
+      "title": "Types of Macie findings",
+      "url": "https://docs.aws.amazon.com/macie/latest/user/findings-types.html"
+    }
+  ],
+  "createdBy": "sc39",
+  "createdAt": "2026-11-21"
+}

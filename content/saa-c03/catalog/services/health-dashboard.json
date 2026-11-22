@@ -1,0 +1,84 @@
+{
+  "id": "health-dashboard",
+  "tier": 3,
+  "summary": "AWS Health は、AWS のサービスやリソースの状態に関するイベント（サービスの障害、予定された変更、アカウントの通知）を知らせるサービスで、そのコンソールが AWS Health Dashboard である。設定は不要で、すべての利用者が追加料金なしで使える。",
+  "chooseWhen": [
+    {
+      "text": "AWS 側の障害や予定された変更が、自分のアカウントのリソースに影響するかを確認したい場合。",
+      "factRefs": [
+        "health-dashboard.account-specific-and-public-events"
+      ]
+    },
+    {
+      "text": "AWS Organizations 内の複数のアカウントの Health イベントを、1 つの画面にまとめて確認したい場合。"
+    },
+    {
+      "text": "AWS Health のイベントを受けて、通知や処理の起動を自動化したい場合。",
+      "factRefs": [
+        "health-dashboard.eventbridge-automation"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "AWS 環境をベストプラクティスに照らして診断したい場合は、Health Dashboard ではなく Trusted Advisor を使う。",
+      "factRefs": [
+        "trusted-advisor.best-practice-checks"
+      ],
+      "alternatives": [
+        "trusted-advisor"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "health-dashboard.account-specific-and-public-events",
+      "title": "アカウント固有のイベントと公開イベント",
+      "kind": "feature",
+      "text": "AWS Health のイベントには 2 種類ある。アカウント固有のイベントは、自分の AWS アカウントや組織内のアカウントに関わるもので、使っているリージョンの EC2 インスタンスタイプの問題などについて、影響を受けるリソースの名前が示される。公開イベントは、特定のアカウントに固有でない、報告されたサービスのイベントで、そのサービスを使っていなくても情報が示される。",
+      "examPoint": "自分のアカウントに影響するイベントは、アカウント固有のイベントとして確認する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Concepts for AWS Health",
+          "url": "https://docs.aws.amazon.com/health/latest/ug/aws-health-concepts-and-terms.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "health-dashboard.eventbridge-automation",
+      "title": "EventBridge のルールで Health イベントへの対応を自動化する",
+      "kind": "integration",
+      "text": "アカウントが AWS Health のイベントを受け取ったあとの処理は、Amazon EventBridge のルールで自動化できる。計画されたライフサイクルのイベントのメッセージをすべてチャットに送るような一般的な処理も、IT サービス管理ツールのワークフローを起動するような個別の処理もできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Concepts for AWS Health",
+          "url": "https://docs.aws.amazon.com/health/latest/ug/aws-health-concepts-and-terms.html"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "eventbridge.event-pattern",
+    "eventbridge.rule-targets"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Health?",
+      "url": "https://docs.aws.amazon.com/health/latest/ug/what-is-aws-health.html"
+    },
+    {
+      "title": "Concepts for AWS Health",
+      "url": "https://docs.aws.amazon.com/health/latest/ug/aws-health-concepts-and-terms.html"
+    },
+    {
+      "title": "AWS Health",
+      "url": "https://aws.amazon.com/premiumsupport/technology/aws-health/"
+    }
+  ],
+  "createdBy": "sc50",
+  "createdAt": "2026-11-22"
+}

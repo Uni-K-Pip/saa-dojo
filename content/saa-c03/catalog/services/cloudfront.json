@@ -1,0 +1,704 @@
+{
+  "id": "cloudfront",
+  "tier": 1,
+  "summary": "世界各地のエッジロケーションにコンテンツをキャッシュして配信する CDN である。静的・動的な Web コンテンツをビューアーの近くから返し、遅延とオリジンの負荷を下げる。署名付き URL や地理的制限など配信の制御も備える。",
+  "chooseWhen": [
+    {
+      "text": "世界中の利用者へ静的・動的コンテンツを低遅延で届け、オリジンの負荷も下げたい",
+      "factRefs": [
+        "cloudfront.edge-caching",
+        "cloudfront.origin-types"
+      ]
+    },
+    {
+      "text": "S3 バケットを非公開のまま、CloudFront 経由でだけ配信したい",
+      "factRefs": [
+        "cloudfront.oac-s3"
+      ]
+    },
+    {
+      "text": "会員などの特定の利用者だけに、有効期限付きでコンテンツを配信したい",
+      "factRefs": [
+        "cloudfront.signed-url",
+        "cloudfront.signed-url-vs-cookies"
+      ]
+    },
+    {
+      "text": "オリジンの障害時に別のオリジンへ自動で切り替えたい（読み取り系のリクエスト）",
+      "factRefs": [
+        "cloudfront.origin-failover",
+        "cloudfront.failover-methods"
+      ]
+    },
+    {
+      "text": "特定の国からのアクセスだけを許可または拒否したい",
+      "factRefs": [
+        "cloudfront.geo-restriction"
+      ]
+    },
+    {
+      "text": "データ転送料金を抑えたい（AWS のオリジンから CloudFront への転送は無料）",
+      "factRefs": [
+        "cloudfront.origin-transfer-free",
+        "cloudfront.price-classes"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "会員の識別や URL の有効期限を、国単位の地理的制限だけで実現することはできない",
+      "factRefs": [
+        "cloudfront.geo-restriction-limits"
+      ]
+    },
+    {
+      "text": "S3 の静的ウェブサイトエンドポイントを OAC で保護することはできない",
+      "factRefs": [
+        "cloudfront.s3-website-no-oac"
+      ]
+    },
+    {
+      "text": "POST や PUT のリクエストはオリジングループのフェイルオーバーの対象にならない",
+      "factRefs": [
+        "cloudfront.failover-methods"
+      ]
+    },
+    {
+      "text": "Web 攻撃の遮断は AWS WAF の機能で、CloudFront にはウェブ ACL を関連付けて使う",
+      "alternatives": [
+        "waf"
+      ],
+      "factRefs": [
+        "cloudfront.waf-integration"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cloudfront.edge-caching",
+      "title": "エッジロケーションでのキャッシュ配信",
+      "kind": "feature",
+      "text": "CloudFront は静的・動的な Web コンテンツを、世界各地のエッジロケーションに置いたコピーから配信する。リクエストは遅延の最も小さいエッジロケーションへ導かれ、キャッシュになければオリジンから取得する。AWS のバックボーンネットワークを使い、遅延と可用性を改善する。",
+      "examPoint": "「世界中の利用者」「キャッシュ」「オリジンの負荷を下げる」が出たら CloudFront を想起する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon CloudFront? - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-types",
+      "title": "オリジンに指定できるもの",
+      "kind": "feature",
+      "text": "オリジンは、CloudFront が元のコンテンツを取得するサーバーである。Amazon S3 バケット、EC2 上や自社管理の HTTP サーバー（カスタムオリジン）などを指定できる。Elastic Load Balancing や API Gateway も AWS のオリジンとして使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon CloudFront? - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.default-ttl",
+      "title": "キャッシュの既定の保持期間",
+      "kind": "feature",
+      "text": "オリジンが保持期間を示すヘッダーを付けない場合、ドキュメントの時点の既定値では、オブジェクトはエッジロケーションに 24 時間保持される。最小の有効期限は 0 秒で、最大の有効期限の上限はない。期間はオリジンのヘッダーなどで調整できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon CloudFront? - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudfront.origin-transfer-free",
+      "title": "AWS オリジンから CloudFront への転送は無料",
+      "kind": "pricing",
+      "text": "S3、Elastic Load Balancing、API Gateway など AWS のオリジンから CloudFront へのデータ転送は無料である。AWS のオリジンを使う場合に課金されるのは、CloudFront からビューアーへ送り出すデータ転送と、HTTP・HTTPS のリクエストである。",
+      "examPoint": "世界中への配信コストを下げる設計で、CloudFront が選ばれる理由の一つになる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon CloudFront? - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+        },
+        {
+          "title": "Amazon CloudFront Pay-as-you-go pricing",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.price-classes",
+      "title": "価格クラスで配信対象のロケーションを絞る",
+      "kind": "pricing",
+      "text": "価格クラスは、料金の高いエッジロケーションを配信対象から外して配信料金を下げる設定である。既定ではすべてのエッジロケーションから配信する。対象を絞ると、ビューアーによっては近いロケーションから配信されず、性能に影響する場合がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Distribution settings - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesGeneral.html"
+        },
+        {
+          "title": "Amazon CloudFront Pay-as-you-go pricing",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudfront.price-class-200",
+      "title": "Price Class 200 の対象範囲",
+      "kind": "feature",
+      "text": "Price Class 200 は、米国・メキシコ・カナダ、欧州・イスラエル・トルコ、南アフリカ・ケニア・ナイジェリア・エジプトと中東、日本、香港・インドネシア・フィリピン・シンガポール・韓国・台湾・タイ・マレーシア・ベトナム、インドのロケーションを対象にする。南米と、オーストラリア・ニュージーランドは含まれない。",
+      "trap": "「アジアを含む」だけで Price Class 100 と混同しない。100 はアジアを含まない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon CloudFront Pay-as-you-go pricing",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.price-class-100",
+      "title": "Price Class 100 の対象範囲",
+      "kind": "feature",
+      "text": "Price Class 100 は、米国・メキシコ・カナダと、欧州・イスラエル・トルコのロケーションだけを対象にする。日本を含むアジア、南米、オセアニア、南アフリカなどのアフリカの一部、中東は含まれず、これらの地域のビューアーは、すべてのロケーションから配信する場合より遅延が大きくなる場合がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon CloudFront Pay-as-you-go pricing",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.managed-prefix-list",
+      "title": "CloudFront のマネージドプレフィックスリスト",
+      "kind": "integration",
+      "text": "CloudFront は、オリジンへ接続する CloudFront のサーバーの IP アドレス範囲をまとめたマネージドプレフィックスリスト（com.amazonaws.global.cloudfront.origin-facing、IPv6 は別名のリスト）を提供する。AWS 上のオリジンのセキュリティグループで許可すると、CloudFront 以外からの通信を防げる。範囲は CloudFront が最新に保つ。",
+      "examPoint": "ALB や EC2 の送信元を CloudFront に限定しつつ、IP 範囲の自前管理をなくす手段として問われる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Locations and IP address ranges of CloudFront edge servers - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.alb-custom-header",
+      "title": "オリジンカスタムヘッダーで ALB へのアクセスを CloudFront に限る",
+      "kind": "integration",
+      "text": "インターネット向けの ALB を CloudFront 経由に限るには、CloudFront がオリジンへのリクエストにカスタム HTTP ヘッダーを付け、ALB のリスナールールでそのヘッダーに一致したリクエストだけをターゲットへ転送する。既定のルールは固定レスポンス 403 を返すようにして、それ以外を拒否する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict access to Application Load Balancers - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.alb-header-secret",
+      "title": "カスタムヘッダーの名前と値は秘密にする",
+      "kind": "constraint",
+      "text": "カスタムヘッダーで ALB を保護する方式は、ヘッダーの名前と値が秘密であることが前提になる。漏れると他のクライアントが同じヘッダーを付けて ALB に直接アクセスできる。推測されにくい値を使い、オリジンとの通信を HTTPS のみにし、定期的に入れ替えることが推奨される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Restrict access to Application Load Balancers - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.vpc-origins",
+      "title": "VPC オリジンでプライベートサブネットのリソースを配信",
+      "kind": "feature",
+      "text": "VPC オリジンを使うと、プライベートサブネットにある ALB、NLB、EC2 インスタンスを、パブリックに公開せずに CloudFront のオリジンにできる。CloudFront からの通信は VPC へのプライベートで安全な接続を通り、CloudFront が唯一の入り口になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict access with VPC origins - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.vpc-origins-restrictions",
+      "title": "VPC オリジンの制約",
+      "kind": "constraint",
+      "text": "VPC オリジンには、Gateway Load Balancer や TLS リスナーを持つ NLB は指定できない。gRPC、Lambda@Edge のオリジンリクエスト・オリジンレスポンストリガーも非対応である。オリジンにはセキュリティグループが必要で、CloudFront のプレフィックスリストなどで許可する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Restrict access with VPC origins - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.oac-s3",
+      "title": "オリジンアクセスコントロール（OAC）で S3 を保護",
+      "kind": "feature",
+      "text": "OAC は、CloudFront が S3 オリジンへ署名付き（認証済み）のリクエストを送る仕組みである。S3 のバケットポリシーで CloudFront のサービスプリンシパルを許可し、条件で特定のディストリビューションに限定すると、バケットを公開せずに CloudFront 経由のアクセスだけを許可できる。SSE-KMS のオブジェクトや PUT・DELETE にも対応する。",
+      "examPoint": "S3 を非公開にして CloudFront からのみ配信する標準の方法は OAC。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.oai-legacy",
+      "title": "OAI は旧方式で、新規には OAC を使う",
+      "kind": "constraint",
+      "text": "オリジンアクセスアイデンティティ（OAI）は S3 オリジンへのアクセスを制限する旧方式で、現在は OAC の利用が推奨される。新規には OAC を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.oai-no-sse-kms",
+      "title": "OAI は SSE-KMS のオブジェクトに対応しない",
+      "kind": "constraint",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-16",
+      "text": "OAI は、SSE-KMS で暗号化した S3 のオブジェクトへのアクセスに対応しないか、回避策が要る。OAC はこの場面に対応する。"
+    },
+    {
+      "id": "cloudfront.s3-website-no-oac",
+      "title": "S3 のウェブサイトエンドポイントでは OAC を使えない",
+      "kind": "constraint",
+      "text": "S3 バケットをウェブサイトエンドポイントとして構成している場合、CloudFront ではカスタムオリジンとして設定する必要があり、OAC（や OAI）は使えない。OAC を使うには、ウェブサイトエンドポイントではない通常の S3 バケットをオリジンにする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict access to an Amazon S3 origin - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.signed-url",
+      "title": "署名付き URL で配信を制限する",
+      "kind": "feature",
+      "text": "CloudFront の署名付き URL は、有効期限などのポリシーを含む URL で、個々のファイルへのアクセスを制限する。信頼されたキーグループの公開鍵で検証され、署名はアプリケーション側が秘密鍵で行う。期限を過ぎた URL や署名が不正な URL は拒否される。",
+      "examPoint": "会員だけに期限付きで配信する要件は署名付き URL（または署名付き Cookie）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use signed URLs - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html"
+        },
+        {
+          "title": "Specify signers that can create signed URLs and signed cookies - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.signed-url-policies",
+      "title": "署名付き URL の既定ポリシーとカスタムポリシー",
+      "kind": "feature",
+      "text": "署名付き URL のポリシーには、既定ポリシー（canned policy）とカスタムポリシーがある。どちらでも終了日時を指定できる。開始日時の指定、許可する IP アドレスの範囲、ワイルドカードによる複数ファイルでの再利用ができるのはカスタムポリシーだけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use signed URLs - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-urls.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.signed-url-vs-cookies",
+      "title": "署名付き URL と署名付き Cookie の使い分け",
+      "kind": "feature",
+      "text": "個々のファイルへのアクセスを制限したい場合や、Cookie に対応しないクライアントでは署名付き URL を使う。複数の制限付きファイル（HLS 動画の全ファイルや会員エリア全体）へのアクセスを与えたい場合や、現在の URL を変えたくない場合は署名付き Cookie を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Decide to use signed URLs or signed cookies - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-choosing-signed-urls-cookies.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.key-groups",
+      "title": "署名者には信頼されたキーグループを使う",
+      "kind": "feature",
+      "text": "署名付き URL・Cookie の署名者は、信頼されたキーグループ（推奨）か、CloudFront キーペアを持つ AWS アカウントで指定する。キーグループなら root ユーザーが不要で、API による鍵のローテーションの自動化や IAM による権限制御もできる。既定では 1 つのキャッシュビヘイビアに関連付けられるキーグループは最大 4 つ、1 つのキーグループに最大 5 つの公開鍵を設定できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Specify signers that can create signed URLs and signed cookies - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html"
+        },
+        {
+          "title": "Quotas - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudfront.signer-behavior-scope",
+      "title": "署名者はキャッシュビヘイビアに追加して有効になる",
+      "kind": "feature",
+      "text": "署名者をキャッシュビヘイビアに追加すると、そのビヘイビアに一致するファイルへのアクセスに署名付き URL・Cookie が必須になる。署名のないリクエストは拒否される。ビヘイビアごとに設定できるが、パスパターンの順序は最初に一致したものが使われるため注意する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Specify signers that can create signed URLs and signed cookies - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.geo-restriction",
+      "title": "地理的制限（国単位の許可・拒否）",
+      "kind": "feature",
+      "text": "CloudFront の地理的制限は、許可リストにある国のユーザーだけにアクセスを許す、または拒否リストにある国のユーザーを拒否する機能である。ユーザーの国はサードパーティのデータベースで判定する。拒否されたリクエストには HTTP 403 が返る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict the geographic distribution of your content - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.geo-restriction-limits",
+      "title": "地理的制限の限界",
+      "kind": "constraint",
+      "text": "CloudFront の地理的制限は国単位で、ディストリビューション全体に一律に適用される。一部のファイルだけ、または国より細かい単位で制限したい場合は、サードパーティの位置情報サービスを組み合わせ、有効期限を指定できる署名付き URL の利用が推奨される。",
+      "trap": "地理的制限は国単位の許可・拒否の機能で、期限の指定は署名付き URL で行う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Restrict the geographic distribution of your content - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.cache-policy",
+      "title": "キャッシュポリシーでキャッシュキーと TTL を決める",
+      "kind": "feature",
+      "text": "キャッシュポリシーは、キャッシュキーに含める HTTP ヘッダー、Cookie、クエリ文字列と、TTL の設定を決める。キャッシュキーに含める値を減らすほどキャッシュヒット率が上がり、オリジンの負荷と遅延が減る。ポリシーはキャッシュビヘイビアに関連付ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control the cache key with a policy - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-request-policy",
+      "title": "オリジンリクエストポリシーはキャッシュキーを変えない",
+      "kind": "feature",
+      "text": "オリジンリクエストポリシーは、オリジンへのリクエストに含めるクエリ文字列、ヘッダー、Cookie を決める。キャッシュキーを決めるキャッシュポリシーとは別で、キャッシュキーに含めない値をオリジンに渡してもヒット率を保てる。キャッシュキーに含めた値は自動でオリジンにも送られる。",
+      "examPoint": "オリジンに値を渡すだけならオリジンリクエストポリシー、キャッシュを分けるならキャッシュポリシー。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Control origin requests with a policy - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-failover",
+      "title": "オリジングループによるオリジンフェイルオーバー",
+      "kind": "feature",
+      "text": "オリジングループは、プライマリとセカンダリの 2 つのオリジンで構成する。プライマリが利用できない、または設定したステータスコード（400、403、404、416、429、500、502、503、504 から選ぶ）を返すと、CloudFront がセカンダリへ自動で切り替える。グループはキャッシュビヘイビアに設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Optimize high availability with CloudFront origin failover - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.failover-methods",
+      "title": "フェイルオーバーは GET・HEAD・OPTIONS だけ",
+      "kind": "constraint",
+      "text": "CloudFront のオリジンフェイルオーバーは、ビューアーのリクエストの HTTP メソッドが GET、HEAD、OPTIONS のときだけ働く。POST や PUT などのメソッドではセカンダリに切り替わらない。OPTIONS については、キャッシュビヘイビアのキャッシュ対象メソッドに含める必要がある。",
+      "trap": "書き込み系のリクエストも自動で別オリジンに切り替わると誤解しやすい。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Optimize high availability with CloudFront origin failover - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.failover-timeouts",
+      "title": "フェイルオーバーまでの時間の既定値",
+      "kind": "feature",
+      "text": "ドキュメントの時点の既定値では、CloudFront はプライマリへの接続を最大 30 秒（10 秒の接続試行を 3 回）試してからセカンダリへ切り替える。接続のタイムアウトを 1〜10 秒、試行回数を 1〜3 回に変えると、切り替えを速められる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Optimize high availability with CloudFront origin failover - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudfront.regional-edge-cache",
+      "title": "リージョナルエッジキャッシュ",
+      "kind": "feature",
+      "text": "エッジロケーションとオリジンの間には、中間のキャッシュ層としてリージョナルエッジキャッシュがある。エッジロケーションにキャッシュがない場合にまずここへ問い合わせ、近くのリージョンのビューアーからのオリジンへのリクエストをまとめる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon CloudFront Origin Shield - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-shield",
+      "title": "Origin Shield でオリジンへのリクエストを集約",
+      "kind": "feature",
+      "text": "Origin Shield は、すべてのキャッシュ層とオリジンの間に置く追加のキャッシュ層である。同じオブジェクトに対するオリジンへのリクエストを集約し、キャッシュヒット率を高めてオリジンの負荷を下げる。利用には追加料金がかかり、オリジンへの遅延が最も小さいリージョンを選んで有効にする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Use Amazon CloudFront Origin Shield - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.invalidation",
+      "title": "無効化とバージョン付きファイル名",
+      "kind": "feature",
+      "text": "有効期限前にエッジのキャッシュからファイルを取り除くには、無効化（invalidation）を使う。次のリクエストで CloudFront がオリジンから最新を取得する。頻繁に更新するなら、ファイル名にバージョンを付ける方法が推奨される。ユーザー側のキャッシュにも影響されず、無効化の料金もかからない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Invalidate files to remove content - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.invalidation-pricing",
+      "title": "無効化の料金の仕組み",
+      "kind": "pricing",
+      "text": "無効化のパスは、料金ページの時点で月に最初の 1,000 パスまで無料で、それを超えるとパスごとに課金される。バージョン付きファイル名は無効化の料金がかからないため、頻繁な更新ではそちらが安い。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon CloudFront Pay-as-you-go pricing",
+          "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+        },
+        {
+          "title": "Invalidate files to remove content - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.functions",
+      "title": "CloudFront Functions",
+      "kind": "feature",
+      "text": "CloudFront Functions は、エッジで動く軽量な JavaScript 関数で、ビューアーリクエストとビューアーレスポンスのイベントだけに対応する。実行時間はミリ秒未満で、ネットワークやファイルシステムへのアクセス、リクエストボディの参照はできない。ヘッダー操作、URL のリダイレクトや書き換え、簡単なトークン検証に向く。",
+      "examPoint": "リクエストごとの軽量な書き換えは CloudFront Functions。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Differences between CloudFront Functions and Lambda@Edge - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.lambda-edge",
+      "title": "Lambda@Edge",
+      "kind": "feature",
+      "text": "Lambda@Edge は、Node.js と Python の関数を CloudFront のイベントで実行する。ビューアーとオリジンの両方（リクエスト・レスポンスの 4 種類）のイベントに対応し、ネットワークアクセス、ファイルシステム、リクエストボディの参照ができる。数ミリ秒以上かかる処理やサードパーティのライブラリが必要な処理に向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Differences between CloudFront Functions and Lambda@Edge - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.viewer-protocol-policy",
+      "title": "ビューアープロトコルポリシー",
+      "kind": "feature",
+      "text": "ビューアープロトコルポリシーは、キャッシュビヘイビアごとに、ビューアーと CloudFront の間で HTTPS を要求するかを決める。HTTP と HTTPS の両方を許可する、HTTP を HTTPS にリダイレクトする、HTTPS のみ許可するの選択肢があり、HTTPS のみでは HTTP のリクエストに 403 が返る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Require HTTPS for communication between viewers and CloudFront - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-protocol-separate",
+      "title": "オリジンとの HTTPS はビューアー側の設定と別",
+      "kind": "constraint",
+      "text": "ビューアープロトコルポリシーが制御するのは、ビューアーと CloudFront の間の通信である。CloudFront とオリジンの間を暗号化するには、常に HTTPS を使うよう別に設定する必要がある。CloudFront は、ビューアーとオリジンのプロトコルが一致しなくてもオブジェクトを返す。",
+      "trap": "ビューアー側を HTTPS のみにしても、オリジンまで暗号化されるとは限らない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Require HTTPS for communication between viewers and CloudFront - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-viewers-to-cloudfront.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.security-policy",
+      "title": "セキュリティポリシーで最小の TLS バージョンを決める",
+      "kind": "feature",
+      "text": "セキュリティポリシーは、ビューアーとの HTTPS 接続で CloudFront が使う最小の SSL/TLS プロトコルと暗号スイートを決める。選べるポリシーは、証明書の種類（既定の CloudFront 証明書かカスタム証明書か）と、SNI か専用 IP かの設定によって決まる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Distribution settings - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesGeneral.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.waf-integration",
+      "title": "AWS WAF のウェブ ACL を関連付けられる",
+      "kind": "integration",
+      "text": "CloudFront のディストリビューションには AWS WAF のウェブ ACL を関連付けられる。リクエストがオリジンのサーバーに届く前にブロックできる。ルールの内容は WAF の機能であり、CloudFront 側では関連付けを設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Distribution settings - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesGeneral.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.quota-distributions",
+      "title": "ディストリビューション数の上限",
+      "kind": "quota",
+      "text": "1 つの AWS アカウントで作成できるディストリビューション数の既定値は 500 である。引き上げは Service Quotas、または Service Quotas にない場合は AWS サポートのケースで申請できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "cloudfront.anycast-static-ip",
+      "title": "Anycast 静的 IP を申請して使える",
+      "kind": "feature",
+      "text": "CloudFront では、AWS アカウント専用の Anycast 静的 IP アドレスを CloudFront に申請して使える。ネットワーク事業者への許可リスト登録や、送信側ファイアウォールでの通信制御に使える。利用するにはディストリビューションの価格クラスを、すべてのエッジロケーションにする必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Request Anycast static IPs to use for allowlisting - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/request-static-ips.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "cloudfront.origin-protocol-policy",
+      "title": "オリジンプロトコルポリシー",
+      "kind": "feature",
+      "text": "オリジンプロトコルポリシーは、CloudFront がオリジンからオブジェクトを取得するときに使うプロトコルを決める設定で、カスタムオリジンに適用される。HTTP のみは HTTP だけ、HTTPS のみは HTTPS だけを使い、ビューアーに合わせる（Match viewer）は、ビューアーのリクエストのプロトコルに応じて HTTP か HTTPS を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Origin settings - Amazon CloudFront",
+          "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesOrigin.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "seeAlso": [
+    "acm.cloudfront-us-east-1"
+  ],
+  "references": [
+    {
+      "title": "What is Amazon CloudFront? - Amazon CloudFront",
+      "url": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
+    },
+    {
+      "title": "Amazon CloudFront Pay-as-you-go pricing",
+      "url": "https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/"
+    }
+  ],
+  "createdBy": "sc6",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-20"
+}

@@ -42,3 +42,16 @@ test('5問のミニ模試を解いて見直し画面を開く', async ({ page })
   await expect(page.getByRole('heading', { name: '見直し', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: '提出する' })).toBeVisible();
 });
+
+test('ナビからサービス図鑑を開き、S3 を検索して詳細を見る', async ({ page }) => {
+  await page.goto('./#/');
+  await page.getByRole('link', { name: 'メニュー' }).click();
+  await page.getByRole('link', { name: 'サービス図鑑' }).click();
+  await expect(page.getByRole('heading', { name: 'サービス図鑑', level: 1 })).toBeVisible();
+
+  await page.getByRole('searchbox', { name: 'サービスを検索' }).fill('S3');
+  await page.getByRole('link', { name: 'Amazon S3', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Amazon S3', level: 1 })).toBeVisible();
+  // 図鑑の解説がなくても、演習への入口は出る
+  await expect(page.getByRole('link', { name: 'このサービスの問題を演習する' })).toBeVisible();
+});

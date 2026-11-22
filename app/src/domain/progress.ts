@@ -14,6 +14,17 @@ export function lessonReadMap(events: readonly AppEvent[]): Map<string, number> 
   return m;
 }
 
+/** 図鑑のエントリ id → 最後に「読んだ」を記録した時刻 */
+export function catalogReadMap(events: readonly AppEvent[]): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const e of events) {
+    if (e.type !== 'catalog-read') continue;
+    const prev = m.get(e.serviceId);
+    if (prev === undefined || e.at > prev) m.set(e.serviceId, e.at);
+  }
+  return m;
+}
+
 export interface Progress {
   total: number;
   /** 1回以上回答した問題 */

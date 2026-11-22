@@ -1,0 +1,283 @@
+{
+  "id": "cloudhsm",
+  "tier": 2,
+  "summary": "AWS クラウド上で、利用者だけが使うシングルテナントのハードウェアセキュリティモジュール（HSM）を、クラスターとして提供するサービス。鍵とユーザーは利用者が管理し、AWS は鍵にアクセスできない。",
+  "chooseWhen": [
+    {
+      "text": "専用（シングルテナント）の HSM で、鍵とそのユーザーを自分で完全に管理する必要がある",
+      "factRefs": [
+        "cloudhsm.dedicated-hsm",
+        "cloudhsm.aws-no-access"
+      ]
+    },
+    {
+      "text": "PKCS #11、JCE、CNG、KSP を使う既存の暗号ワークロードを、少ない変更で AWS へ移したい",
+      "factRefs": [
+        "cloudhsm.standard-apis"
+      ]
+    },
+    {
+      "text": "自分の CloudHSM クラスターに鍵を置いたまま、KMS を通して AWS サービスから使いたい",
+      "factRefs": [
+        "kms.cloudhsm-key-store"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "鍵の作成と管理だけを任せたく、HSM の運用や利用者の管理までは担いたくない",
+      "factRefs": [
+        "cloudhsm.aws-no-access"
+      ],
+      "alternatives": [
+        "kms"
+      ]
+    },
+    {
+      "text": "認証情報を失ったときに、AWS に鍵を復旧してほしい",
+      "factRefs": [
+        "cloudhsm.no-key-recovery"
+      ]
+    },
+    {
+      "text": "VPC を使わずにクラスターを作りたい",
+      "factRefs": [
+        "cloudhsm.vpc-required"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "cloudhsm.dedicated-hsm",
+      "title": "専用のシングルテナントの HSM を利用者が制御する",
+      "kind": "feature",
+      "text": "AWS CloudHSM では、AWS クラウド上にある、可用性の高い HSM を、利用者が完全に制御できる。HSM は汎用で、1 つの利用者だけがアクセスできるシングルテナントである。",
+      "examPoint": "専用（シングルテナント）の HSM が要件なら、AWS CloudHSM が候補になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS CloudHSM?",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+        },
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.fips-modes",
+      "title": "クラスターは FIPS モードと非 FIPS モードから選ぶ",
+      "kind": "feature",
+      "text": "CloudHSM のクラスターには FIPS モードと非 FIPS モードがある。FIPS モードでは、FIPS 検証済みの鍵とアルゴリズムだけが使える。非 FIPS モードでは、FIPS の承認にかかわらず、CloudHSM が対応するすべての鍵とアルゴリズムが使える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS CloudHSM?",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.aws-no-access",
+      "title": "データプレーンは AWS から見えず、利用者の責任が重い",
+      "kind": "feature",
+      "text": "CloudHSM のデータプレーンはエンドツーエンドで暗号化され、AWS から見えない。そのため、HSM のユーザーは IAM ロールとは別に利用者自身が管理し、マネージドな AWS サービスを使う場合より利用者の責任が重くなる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS CloudHSM?",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.no-key-recovery",
+      "title": "認証情報を失っても AWS は鍵を復旧できない",
+      "kind": "constraint",
+      "text": "AWS は利用者の鍵や認証情報にアクセスできないため、HSM の認証情報を失った場合に、AWS が鍵を復旧することはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.cluster-sync",
+      "title": "クラスターは HSM の集まりで同期が保たれる",
+      "kind": "feature",
+      "text": "CloudHSM のクラスターは、AWS CloudHSM が同期を保つ個々の HSM の集まりである。クラスター内の 1 台の HSM で行った操作は、ほかの HSM にも自動で反映される。HSM は、リージョン内の異なるアベイラビリティーゾーンに置ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM clusters",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.high-availability",
+      "title": "2 つの AZ に 2 台以上の HSM で高可用性になる",
+      "kind": "feature",
+      "text": "クラスターに、2 つのアベイラビリティーゾーンにまたがる HSM が 2 台以上あると、高可用性は自動で得られ、追加の設定は要らない。クラスター内の HSM が故障すると、自動で置き換えられる。",
+      "examPoint": "本番のワークロードでは、AWS は 2 つの異なる AZ に少なくとも 2 台の HSM を置くことを強く推奨している。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.single-hsm-key-loss",
+      "title": "HSM が 1 台だけだと鍵を失う可能性がある",
+      "kind": "constraint",
+      "text": "クラスターの HSM が 1 台だけの場合、直近の日次バックアップのあとに作成した鍵を失う可能性がある。HSM が 2 台以上（できれば別々の AZ）のクラスターなら、1 台が故障しても鍵は失われない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.standard-apis",
+      "title": "標準の暗号 API で使える",
+      "kind": "integration",
+      "text": "独自のアプリケーションは、PKCS #11、Java JCE、OpenSSL Dynamic Engine、Microsoft の KSP/CNG といった、CloudHSM が対応する標準の API で CloudHSM を使える。",
+      "examPoint": "PKCS #11、JCE、CNG、KSP を使う公開鍵基盤は、アプリケーションの変更が少なくて済む形で CloudHSM へ移行できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        },
+        {
+          "title": "What is AWS CloudHSM?",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.vpc-required",
+      "title": "クラスターは VPC の中に作る",
+      "kind": "constraint",
+      "text": "AWS CloudHSM は、ほかの利用者から分離するために、Amazon VPC の中に作る必要がある。クラスターの各 HSM は、VPC 内のネットワークリソースとして現れる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.pricing-hourly",
+      "title": "料金は HSM 1 台ごとの時間課金",
+      "kind": "pricing",
+      "text": "CloudHSM の料金は、クラスターに作成した HSM 1 台ごとの時間課金である。HSM が 1 台もないクラスターと、暗号化されたバックアップの自動保管は課金されない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        },
+        {
+          "title": "AWS CloudHSM pricing",
+          "url": "https://aws.amazon.com/cloudhsm/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.fips-validation",
+      "title": "FIPS モードの HSM は FIPS 140 レベル 3 の検証を受ける",
+      "kind": "feature",
+      "text": "標準に準拠したシングルテナントの HSM は、FIPS モードのクラスターでは、FIPS 140-2 レベル 3 または FIPS 140-3 レベル 3 の検証を受けている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is AWS CloudHSM?",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.hsm1-end-of-support",
+      "title": "hsm1.medium は新しいクラスターに使えない",
+      "kind": "constraint",
+      "text": "CloudHSM の HSM のタイプには hsm1.medium と hsm2m.medium がある。hsm1.medium はサポート終了に向かっており、このタイプでは新しいクラスターを作成できない。",
+      "recheck": "end-of-life",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS CloudHSM clusters",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/clusters.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.hsm-quota",
+      "title": "クラスターの HSM は 1〜28 台で、既定の上限は 6 台",
+      "kind": "quota",
+      "text": "1 つのクラスターには 1 台から 28 台の HSM を置ける。AWS アカウントとリージョンあたりの既定の上限は 6 台で、アカウントのサービス上限として、引き上げを申請できる。",
+      "recheck": "default-value",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS CloudHSM clusters",
+          "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/clusters.html"
+        },
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "cloudhsm.daily-backups",
+      "title": "暗号化されたバックアップを毎日自動で取る",
+      "kind": "feature",
+      "text": "AWS は CloudHSM クラスターの暗号化されたバックアップを毎日自動で取る。HSM の追加や削除などのクラスターのライフサイクルのイベントでも、追加のバックアップを取る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS CloudHSM FAQs",
+          "url": "https://aws.amazon.com/cloudhsm/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "kms.cloudhsm-key-store"
+  ],
+  "references": [
+    {
+      "title": "What is AWS CloudHSM?",
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/introduction.html"
+    },
+    {
+      "title": "AWS CloudHSM clusters",
+      "url": "https://docs.aws.amazon.com/cloudhsm/latest/userguide/clusters.html"
+    }
+  ],
+  "createdBy": "sc39",
+  "createdAt": "2026-11-21"
+}

@@ -1,0 +1,69 @@
+{
+  "id": "cmp-api-gateway-elb",
+  "title": "Amazon API Gateway と Elastic Load Balancing",
+  "services": [
+    "api-gateway",
+    "elb"
+  ],
+  "decide": [
+    "API の作成・公開・保守・監視・保護を、まとめて任せたいなら API Gateway",
+    "REST API で、API キーと使用量プランを使って、API の利用者ごとにリクエスト数を制限したいなら API Gateway",
+    "受けた通信を、EC2 インスタンスやコンテナなどの複数のターゲットへ分散したいなら ELB"
+  ],
+  "rows": [
+    {
+      "axis": "扱う通信",
+      "values": {
+        "api-gateway": "API へのリクエスト（REST API は同期のリクエスト／レスポンス、WebSocket API は接続を保った双方向の通信）",
+        "elb": "ALB は第 7 層の HTTP・HTTPS、NLB は第 4 層の TCP・UDP・TLS など、GWLB は第 3 層の通信"
+      },
+      "factRefs": [
+        "api-gateway.rest-api-overview",
+        "api-gateway.websocket-api",
+        "elb.alb-layer7",
+        "elb.nlb-layer4",
+        "elb.gwlb-transparent-gateway"
+      ]
+    },
+    {
+      "axis": "転送・統合の先",
+      "values": {
+        "api-gateway": "Lambda 関数、HTTP エンドポイント（REST API は、ほかの AWS サービスとも統合する）",
+        "elb": "ターゲットグループに登録したターゲット（ターゲットタイプは、ALB では instance、ip、lambda、NLB では instance、ip、alb のいずれか）"
+      },
+      "factRefs": [
+        "api-gateway.rest-api-overview",
+        "api-gateway.lambda-integration",
+        "elb.alb-target-types",
+        "elb.nlb-target-types"
+      ]
+    },
+    {
+      "axis": "料金のかかり方",
+      "values": {
+        "api-gateway": "HTTP API と REST API では、受け取った API コールの数と、外へ転送したデータの量に対してかかる（プライベート API には、外へのデータ転送の料金がかからないが、AWS PrivateLink の料金がかかる）",
+        "elb": "ALB・NLB・GWLB では、ロードバランサーが動いている時間と、キャパシティーユニット（LCU・NLCU・GLCU）の使用量に対してかかる"
+      },
+      "factRefs": [
+        "api-gateway.billing-units",
+        "elb.pricing-billing-units"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon API Gateway? - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html"
+    },
+    {
+      "title": "Usage plans and API keys for REST APIs in API Gateway - Amazon API Gateway",
+      "url": "https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+    },
+    {
+      "title": "What is Elastic Load Balancing? - Elastic Load Balancing",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc34"
+}

@@ -35,6 +35,8 @@ export interface Question {
   keyPoints: string[];
   references: Reference[];
   lessonRefs: string[];
+  /** 図鑑の事実への参照（任意） */
+  factRefs?: string[];
   pool: Pool;
   needsSourceCheck: boolean;
   createdBy: string;
@@ -179,6 +181,11 @@ export interface Manifest {
     guides: number;
     /** サービス台帳の件数（古いデータにはない） */
     services?: number;
+    /** サービス図鑑（古いデータにはない） */
+    catalogEntries?: number;
+    catalogFacts?: number;
+    comparisons?: number;
+    catalogFactStatus?: { verified: number; pending: number };
   };
   files: Record<string, ManifestFile>;
 }
@@ -196,4 +203,115 @@ export interface ServiceEntry {
   short?: string;
   /** 独立した図鑑のエントリを作らず、このサービスのエントリの中で扱う */
   hostedBy?: string;
+}
+
+// ---------- サービス図鑑（app/scripts/lib/catalog-build.mjs の出力） ----------
+
+export type CatalogStatus = 'verified' | 'pending';
+export type CatalogTier = 1 | 2 | 3;
+export type CatalogFactKind = 'feature' | 'constraint' | 'quota' | 'pricing' | 'integration';
+export type CatalogFactDepth = 'core' | 'detail';
+
+/** 一覧用: 事実の見出しだけ（本文は含まない） */
+export interface CatalogIndexFact {
+  id: string;
+  title: string;
+  kind: CatalogFactKind;
+  depth: CatalogFactDepth;
+  tags: string[];
+  status: CatalogStatus;
+}
+
+/** 一覧用の 1 行（台帳の全サービス。hostedBy の子は親の children に入り、行にはならない） */
+export interface CatalogIndexService {
+  id: string;
+  name: string;
+  short?: string;
+  aliases: string[];
+  category: string;
+  children: { id: string; name: string; aliases: string[] }[];
+  /** エントリがあるときだけ */
+  tier?: CatalogTier;
+  summary?: string;
+  status?: CatalogStatus;
+  facts: CatalogIndexFact[];
+  /** このサービスを keyServices に挙げるタスクと、このサービスの演習問題のタスク */
+  tasks: string[];
+  related: { lessons: string[]; docs: string[]; glossary: number; flashcards: number; questions: number };
+  /** このサービスを含む比較の id */
+  comparisons: string[];
+}
+
+export interface CatalogIndexComparison {
+  id: string;
+  title: string;
+  services: string[];
+  status: CatalogStatus;
+}
+
+export interface CatalogIndex {
+  services: CatalogIndexService[];
+  comparisons: CatalogIndexComparison[];
+}
+
+export interface CatalogFact {
+  id: string;
+  title: string;
+  kind: CatalogFactKind;
+  text: string;
+  examPoint?: string;
+  trap?: string;
+  depth: CatalogFactDepth;
+  services?: string[];
+  tags?: string[];
+  sources: Reference[];
+  checkedAt: string;
+  status: CatalogStatus;
+}
+
+export interface CatalogPoint {
+  text: string;
+  factRefs?: string[];
+  /** 台帳のサービス id */
+  alternatives?: string[];
+}
+
+export interface CatalogSeeAlso {
+  id: string;
+  title: string;
+  entryId: string;
+  entryName: string;
+}
+
+/** 図鑑のエントリ 1 件（catalog/<id>.json） */
+export interface CatalogEntry {
+  id: string;
+  tier: CatalogTier;
+  status: CatalogStatus;
+  summary: string;
+  chooseWhen?: CatalogPoint[];
+  avoidWhen?: CatalogPoint[];
+  facts: CatalogFact[];
+  seeAlso: CatalogSeeAlso[];
+  lessonRefs?: string[];
+  docRefs?: string[];
+  references: Reference[];
+  createdBy: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CatalogComparison {
+  id: string;
+  title: string;
+  /** 台帳のサービス id（2〜3 個） */
+  services: string[];
+  status: CatalogStatus;
+  decide: string[];
+  rows?: { axis: string; values: Record<string, string>; factRefs?: string[] }[];
+  /** rows の代わりに、同じ組を扱う早見表の id */
+  docRef?: string;
+  sources: Reference[];
+  checkedAt: string;
+  createdBy: string;
 }

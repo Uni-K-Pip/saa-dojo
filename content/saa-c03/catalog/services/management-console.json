@@ -1,0 +1,30 @@
+{
+  "id": "management-console",
+  "tier": 3,
+  "summary": "AWS Management Console は、AWS の個別のサービスのコンソールすべてへの集中したアクセスを提供する、ウェブベースのアプリケーションである。サービスの検索、通知の確認、アカウントと請求情報へのアクセス、コンソールの設定のカスタマイズができる。",
+  "chooseWhen": [
+    {
+      "text": "AWS の各サービスを、ブラウザーの画面から操作したい場合。"
+    },
+    {
+      "text": "サービスの検索、通知の確認、アカウントと請求情報へのアクセスを、1 つの入口で行いたい場合。"
+    }
+  ],
+  "facts": [],
+  "seeAlso": [
+    "cli.console-parity",
+    "iam.access-method-human-workload"
+  ],
+  "references": [
+    {
+      "title": "What is the AWS Management Console?",
+      "url": "https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/what-is.html"
+    },
+    {
+      "title": "AWS Management Console",
+      "url": "https://aws.amazon.com/console/"
+    }
+  ],
+  "createdBy": "sc50",
+  "createdAt": "2026-11-22"
+}

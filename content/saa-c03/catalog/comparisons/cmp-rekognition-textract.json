@@ -1,0 +1,51 @@
+{
+  "id": "cmp-rekognition-textract",
+  "title": "Amazon Rekognition と Amazon Textract",
+  "services": [
+    "rekognition",
+    "textract"
+  ],
+  "decide": [
+    "スキャンした文書から、フォームや表の情報を取り出したいなら Textract",
+    "請求書・領収書や身分証から、決まった項目の組を取り出したいなら Textract の専用の処理",
+    "画像や動画の中の物体を検出したいなら Rekognition",
+    "画像の中の顔を比較したいなら Rekognition"
+  ],
+  "rows": [
+    {
+      "axis": "分析する対象",
+      "values": {
+        "rekognition": "S3 に保存した画像や動画のファイル。物体・テキスト・不適切なコンテンツの検出や顔の比較ができる",
+        "textract": "文書の画像やスキャン。印刷された文字・手書き・フォーム・表・レイアウトの情報を検出して取り出す"
+      },
+      "factRefs": [
+        "rekognition.media-input",
+        "textract.core-extraction"
+      ]
+    },
+    {
+      "axis": "文字を取り出した結果",
+      "values": {
+        "rekognition": "画像内の文字を検出して取り出し、視覚検索やメタデータの取り出しに使う",
+        "textract": "単語・行・セルなどの構成要素として返る。対応する文書の種類では、固定の項目の組として返る"
+      },
+      "factRefs": [
+        "rekognition.text-in-images",
+        "textract.core-extraction",
+        "textract.specialized-documents"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "What is Amazon Textract? - Amazon Textract",
+      "url": "https://docs.aws.amazon.com/textract/latest/dg/what-is.html"
+    },
+    {
+      "title": "What is Amazon Rekognition? - Amazon Rekognition",
+      "url": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
+    }
+  ],
+  "checkedAt": "2026-11-22",
+  "createdBy": "sc52"
+}

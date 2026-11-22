@@ -194,7 +194,7 @@
     {
       "id": "fc-w2c-147",
       "front": "ElastiCache の Memcached と Valkey/Redis OSS の選び分けは？",
-      "back": "Memcached はシンプルなマルチスレッドの分散キャッシュ（永続化・レプリケーションなし）。Valkey/Redis OSS は豊富なデータ構造、レプリケーション、Multi-AZ の自動フェイルオーバー、永続化に対応する。耐障害性やデータ構造が必要なら Valkey/Redis OSS。",
+      "back": "Memcached はシンプルなマルチスレッドの分散キャッシュ（ノードベースでは永続化・レプリケーションなし）。Valkey/Redis OSS は豊富なデータ構造、レプリケーション、Multi-AZ の自動フェイルオーバー、永続化に対応する。耐障害性やデータ構造が必要なら Valkey/Redis OSS。",
       "taskStatements": [
         "3.3",
         "2.1"
@@ -281,7 +281,7 @@
     {
       "id": "fc-w2c-152",
       "front": "Oracle から Aurora PostgreSQL のように異なるエンジンへ移すとき、スキーマはどうする？",
-      "back": "AWS Schema Conversion Tool（SCT）でスキーマとコードを変換し、データの移行は DMS で行う。変換できない部分は手作業で直す。商用エンジンからの移行は、ライセンス費用の削減が目的になりやすい。",
+      "back": "AWS Schema Conversion Tool（SCT）か DMS Schema Conversion でスキーマとコードを変換し、データの移行は DMS で行う。変換できない部分は手作業で直す。商用エンジンからの移行は、ライセンス費用の削減が目的になりやすい。",
       "taskStatements": [
         "4.3",
         "3.3"
@@ -418,7 +418,7 @@
     {
       "id": "fc-w2c-160",
       "front": "Direct Connect の通信を暗号化したい。または VPN の速度が足りない。どうする？",
-      "back": "Direct Connect は既定では暗号化されない。VPN over Direct Connect（パブリック VIF で IPsec）で暗号化するか、対応する接続で MACsec を使う。VPN は 1 トンネル最大 1.25 Gbps なので、Transit Gateway の ECMP で複数トンネルを束ねて帯域を増やす。",
+      "back": "Direct Connect は既定では暗号化されない。VPN over Direct Connect（パブリック VIF で IPsec）で暗号化するか、対応する接続で MACsec を使う。VPN は標準で 1 トンネル最大 1.25 Gbps（Transit Gateway などにつなぐ大帯域トンネルでは最大 5 Gbps）なので、Transit Gateway の ECMP で複数トンネルを束ねて帯域を増やす方法もある。",
       "taskStatements": [
         "3.4"
       ],
@@ -775,7 +775,7 @@
     {
       "id": "fc-w2c-180",
       "front": "プロジェクトや部署ごとにコストを分けて見たい。タグを付けたのにコストの画面に出ない。なぜ？",
-      "back": "コスト配分タグは、請求コンソールで有効化しないとコストデータに表示されない。付けただけでは足りず、有効化後に表示されるまで最大 24 時間かかり、有効化前の期間には遡って反映されない。Organizations では管理アカウントで有効化する。",
+      "back": "コスト配分タグは、請求コンソールで有効化しないとコストデータに表示されない。付けただけでは足りず、有効化後に表示されるまで最大 24 時間かかり、有効化前の期間には自動では遡らないが、管理アカウントがバックフィルを依頼すると最大 12 か月まで、タグが付いていた期間に限り遡れる。Organizations では管理アカウントで有効化する。",
       "taskStatements": [
         "4.1",
         "4.2"

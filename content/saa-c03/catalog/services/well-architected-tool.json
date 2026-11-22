@@ -1,0 +1,48 @@
+{
+  "id": "well-architected-tool",
+  "tier": 3,
+  "summary": "AWS Well-Architected フレームワークに沿って、アーキテクチャを一貫した手順でレビューし測定するサービス。判断の記録、改善点の特定、ワークロード・レンズ・マイルストーンによる進捗の追跡ができる。",
+  "chooseWhen": [
+    {
+      "text": "ワークロードを AWS のベストプラクティスに照らして質問に答える形でレビューし、改善計画を得たい場合。",
+      "factRefs": [
+        "well-architected-tool.guided-self-review"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "well-architected-tool.guided-self-review",
+      "title": "回答に基づくガイド付きの自己レビュー",
+      "kind": "feature",
+      "text": "Well-Architected Tool は、AWS Well-Architected フレームワークに沿って、ワークロードを手動でガイドに従ってレビューするサービスである。各柱の質問に答えると、ツールが回答を評価し、優先度を付けた問題の一覧を含む改善計画を示す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is AWS Well-Architected?",
+          "url": "https://docs.aws.amazon.com/wellarchitected/latest/userguide/well-architected.html"
+        },
+        {
+          "title": "AWS Well-Architected Tool FAQs",
+          "url": "https://aws.amazon.com/well-architected-tool/faqs/"
+        }
+      ],
+      "checkedAt": "2026-11-22"
+    }
+  ],
+  "seeAlso": [
+    "trusted-advisor.best-practice-checks"
+  ],
+  "references": [
+    {
+      "title": "What is AWS Well-Architected?",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/userguide/well-architected.html"
+    },
+    {
+      "title": "AWS Well-Architected Tool FAQs",
+      "url": "https://aws.amazon.com/well-architected-tool/faqs/"
+    }
+  ],
+  "createdBy": "sc49",
+  "createdAt": "2026-11-22"
+}

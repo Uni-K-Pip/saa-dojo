@@ -1,0 +1,279 @@
+{
+  "id": "sct",
+  "tier": 2,
+  "summary": "データベースのスキーマを、異なるデータベースエンジンへの移行に合わせて変換するスタンドアロンのアプリケーション。変換の複雑さを見積もる評価レポートを作り、AWS DMS と組み合わせてデータの移行につなげる。",
+  "chooseWhen": [
+    {
+      "text": "異なるデータベースエンジンへ移行するために、スキーマを変換したいとき",
+      "factRefs": [
+        "sct.purpose",
+        "sct.targets"
+      ]
+    },
+    {
+      "text": "変換の複雑さと手作業になる範囲を、移行の前に見積もりたいとき",
+      "factRefs": [
+        "sct.assessment-report"
+      ]
+    },
+    {
+      "text": "スキーマの変換に続けて、AWS DMS のタスクまでつなげたいとき",
+      "factRefs": [
+        "sct.dms-integration"
+      ],
+      "alternatives": [
+        "dms"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "MySQL から Aurora MySQL への移行のように、SCT なしでスキーマとデータを移せるとき",
+      "factRefs": [
+        "sct.mysql-to-aurora-without-sct"
+      ],
+      "alternatives": [
+        "aurora"
+      ]
+    },
+    {
+      "text": "データそのものの移行や継続的な複製が主な目的のとき",
+      "factRefs": [
+        "dms.full-load",
+        "dms.ongoing-cdc"
+      ],
+      "alternatives": [
+        "dms"
+      ]
+    },
+    {
+      "text": "インストール不要のフルマネージドな変換を使いたいとき",
+      "factRefs": [
+        "sct.vs-dms-sc",
+        "dms.schema-conversion"
+      ],
+      "alternatives": [
+        "dms"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "sct.purpose",
+      "title": "スキーマをあるデータベースエンジンから別のエンジンへ変換する",
+      "kind": "feature",
+      "text": "AWS SCT は、既存のデータベースのスキーマを、あるデータベースエンジンから別のエンジンへ変換するツールである。リレーショナルの OLTP のスキーマにも、データウェアハウスのスキーマにも使える。",
+      "examPoint": "Oracle や Microsoft SQL Server などから Aurora PostgreSQL のように、異なるエンジンへ移行するときのスキーマ変換に使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.targets",
+      "title": "変換後のスキーマの行き先",
+      "kind": "feature",
+      "text": "変換後のスキーマは、Amazon RDS（MySQL、MariaDB、Oracle、SQL Server、PostgreSQL）、Amazon Aurora の DB クラスター、Amazon Redshift のクラスターに適している。Amazon EC2 上のデータベースにも使え、データとして Amazon S3 のバケットに保存することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.assessment-report",
+      "title": "評価レポートで変換の複雑さと工数を見積もる",
+      "kind": "feature",
+      "text": "SCT は、スキーマ変換の複雑さを見積もる評価レポートを生成する。自動では変換できないスキーマへの対応項目をまとめ、同等のコードを手で書くのに必要な工数の見積もりも含む。レポートはアプリで見るほか、CSV か PDF で書き出せる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Using the assessment report in the AWS Schema Conversion Tool",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_AssessmentReport.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.dms-integration",
+      "title": "AWS DMS のエンドポイントとタスクを SCT から作る",
+      "kind": "integration",
+      "text": "AWS SCT から AWS DMS のエンドポイントとタスクを作成でき、そのタスクの実行と監視も SCT から行える。スキーマの変換と DMS による移行を、同じツールからつなげられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.vs-dms-sc",
+      "title": "DMS Schema Conversion との使い分け",
+      "kind": "feature",
+      "text": "AWS DMS にはスキーマ変換の方法が 2 つある。DMS コンソールから始める、フルマネージドの DMS Schema Conversion と、SCT のソフトウェアをダウンロードして、手元の環境で同様の評価と変換を行う方法である。",
+      "examPoint": "インストールの不要なフルマネージドの変換なら DMS Schema Conversion、手元のアプリで行うなら SCT。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cloud Database Migration – AWS Database Migration Service (AWS DMS) Features",
+          "url": "https://aws.amazon.com/dms/features/"
+        },
+        {
+          "title": "Converting database schemas using DMS Schema Conversion",
+          "url": "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.standalone-app",
+      "title": "SCT はインストールして使うスタンドアロンのアプリ",
+      "kind": "feature",
+      "text": "AWS SCT は、プロジェクトベースのユーザーインターフェースを持つスタンドアロンのアプリケーションで、コマンドラインツールとしても使える。Microsoft Windows、Fedora Linux、Ubuntu Linux で使え、64 ビットの OS だけに対応する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Installing and Configuring AWS Schema Conversion Tool",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Installing.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.unconvertible-guidance",
+      "title": "自動で変換できない部分は手引きが示される",
+      "kind": "feature",
+      "text": "ソースのデータベースのスキーマを自動では変換できない場合、AWS SCT は、ターゲットの Amazon RDS データベースに同等のスキーマを作る方法の手引きを示す。直接の変換ができないときは、取れる対応の一覧が示される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        },
+        {
+          "title": "Converting database schemas in AWS Schema Conversion Tool",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Converting.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.extension-pack",
+      "title": "拡張パックで変換できない機能をエミュレートする",
+      "kind": "feature",
+      "text": "データベースの機能が、同等の Amazon RDS や Amazon Redshift の機能に変換できない場合がある。SCT の拡張パックのウィザードで、AWS Lambda 関数と Python ライブラリーをインストールし、変換できない機能をエミュレートする手助けにできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        },
+        {
+          "title": "Using extension packs with AWS Schema Conversion Tool",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_ExtensionPack.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.application-sql",
+      "title": "アプリケーションコードの SQL を変換する",
+      "kind": "feature",
+      "text": "AWS SCT は、C++、C#、Java などのアプリケーションコードに含まれる SQL を変換できる。変換した SQL コードは、表示、分析、編集、保存ができる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.same-engine-cost",
+      "title": "同じエンジンの RDS へのコピーでコストとライセンスを分析する",
+      "kind": "feature",
+      "text": "既存のオンプレミスのデータベースのスキーマを、同じエンジンで動く Amazon RDS の DB インスタンスにコピーできる。この機能で、クラウドへの移行によるコスト削減の見込みと、ライセンスの種類の変更を分析できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.redshift-keys",
+      "title": "既存の Redshift のソートキーと分散キーを推奨する",
+      "kind": "feature",
+      "text": "AWS SCT は、既存の Amazon Redshift データベースを最適化するために、ソートキーと分散キーを推奨する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.dw-extraction-agent",
+      "title": "データウェアハウスのデータを抽出するエージェント",
+      "kind": "feature",
+      "text": "AWS SCT のエージェントは、オンプレミスのデータウェアハウスからデータを抽出してアップロードし、そのあと Amazon Redshift にコピーできる。エージェントを並列に使うと移行を速められる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Migrating data from on-premises data warehouse to Amazon Redshift with AWS Schema Conversion Tool",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/agents.html"
+        },
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "sct.mysql-to-aurora-without-sct",
+      "title": "MySQL から Aurora MySQL へは SCT なしで移行できる",
+      "kind": "feature",
+      "text": "MySQL から Amazon Aurora MySQL の DB クラスターへの移行では、AWS SCT を使わなくても、スキーマとデータを移行できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is the AWS Schema Conversion Tool?",
+          "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "dms.schema-conversion",
+    "redshift.sort-key",
+    "redshift.key-distribution"
+  ],
+  "references": [
+    {
+      "title": "What is the AWS Schema Conversion Tool?",
+      "url": "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    },
+    {
+      "title": "Cloud Database Migration – AWS Database Migration Service (AWS DMS) Features",
+      "url": "https://aws.amazon.com/dms/features/"
+    }
+  ],
+  "createdBy": "sc41",
+  "createdAt": "2026-11-21"
+}

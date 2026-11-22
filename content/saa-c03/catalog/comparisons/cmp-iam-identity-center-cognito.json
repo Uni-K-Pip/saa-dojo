@@ -1,0 +1,72 @@
+{
+  "id": "cmp-iam-identity-center-cognito",
+  "title": "AWS Identity and Access Management (IAM)・AWS IAM Identity Center・Amazon Cognito",
+  "services": [
+    "iam",
+    "iam-identity-center",
+    "cognito"
+  ],
+  "decide": [
+    "従業員の、複数の AWS アカウントやアプリケーションへのアクセスを、まとめて管理したいなら IAM Identity Center",
+    "Web・モバイルアプリの利用者の登録とサインインを組み込みたいなら Cognito（ユーザープール）",
+    "アプリの利用者に、一時的で権限を限定した AWS 認証情報を渡したいなら Cognito（ID プール）",
+    "アプリケーションやバックエンド処理などのワークロードに、一時的な認証情報で AWS へアクセスさせたいなら IAM（ロール）"
+  ],
+  "rows": [
+    {
+      "axis": "アクセスする主体",
+      "values": {
+        "iam": "ワークロードと人のユーザー（ベストプラクティスでは、ワークロードは IAM ロールの一時的な認証情報を使い、人のユーザーは ID プロバイダーとのフェデレーションでロールを引き受ける）",
+        "iam-identity-center": "従業員（AWS アクセスポータルから、割り当てられた AWS アカウントや業務アプリケーションへ、シングルサインオンでアクセスする）",
+        "cognito": "Web・モバイルアプリの利用者（ユーザープールが、登録とサインインを受け持つ）"
+      },
+      "factRefs": [
+        "iam.access-method-human-workload",
+        "iam-identity-center.workforce-access-portal",
+        "cognito.user-pool-directory"
+      ]
+    },
+    {
+      "axis": "AWS の権限のしくみ",
+      "values": {
+        "iam": "ロールを引き受けると、一時的な認証情報が得られる",
+        "iam-identity-center": "権限セットを割り当てると、対象の各アカウントに、権限セットのポリシーを付けた IAM ロールが作られる",
+        "cognito": "ID プールが、信頼する IdP の認証結果を、一時的で権限を限定した AWS 認証情報に交換する"
+      },
+      "factRefs": [
+        "iam.role-trust-and-permissions",
+        "iam-identity-center.provision-account-roles",
+        "cognito.identity-pool-credentials"
+      ]
+    },
+    {
+      "axis": "外部 IdP との連携",
+      "values": {
+        "iam": "SAML 2.0 や OpenID Connect に対応した外部 ID プロバイダーで認証された外部ユーザーが、ロールを引き受ける",
+        "iam-identity-center": "SAML 2.0 で外部 IdP と連携し、既存の企業の認証情報でサインインする",
+        "cognito": "ユーザープールが、SAML・OIDC・ソーシャル IdP のサインインを仲介する"
+      },
+      "factRefs": [
+        "iam.role-assumers",
+        "iam-identity-center.external-idp-sign-in",
+        "cognito.user-pool-federation"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "title": "Security best practices in IAM - AWS Identity and Access Management",
+      "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+    },
+    {
+      "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+      "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+    },
+    {
+      "title": "What is Amazon Cognito? - Amazon Cognito",
+      "url": "https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html"
+    }
+  ],
+  "checkedAt": "2026-11-21",
+  "createdBy": "sc33"
+}

@@ -1,0 +1,250 @@
+{
+  "id": "opensearch",
+  "tier": 2,
+  "summary": "OpenSearch クラスター（ドメイン）をマネージドで提供する検索・分析サービス。全文検索、ログ分析、リアルタイムのアプリケーション監視、クリックストリーム分析に使い、OpenSearch Dashboards で可視化する。",
+  "chooseWhen": [
+    {
+      "text": "アプリのデータを全文検索したい（検索エンジンが要る）",
+      "factRefs": [
+        "opensearch.full-text-search",
+        "opensearch.japanese-analysis"
+      ]
+    },
+    {
+      "text": "ログを取り込んで検索・分析し、ダッシュボードで見たい",
+      "factRefs": [
+        "opensearch.use-cases",
+        "opensearch.dashboards",
+        "opensearch.ingest-firehose",
+        "opensearch.ingest-cloudwatch-logs"
+      ]
+    },
+    {
+      "text": "検索クラスターを自分で運用せず、障害ノードの交換や拡張を任せたい",
+      "factRefs": [
+        "opensearch.managed-domain"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "キーを指定して値を取り出す高速なキャッシュが目的（キャッシュ用途）",
+      "alternatives": [
+        "elasticache"
+      ]
+    },
+    {
+      "text": "S3 上のデータを SQL で都度クエリするだけでよい（常時稼働のクラスターは不要）",
+      "alternatives": [
+        "athena"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "opensearch.use-cases",
+      "title": "検索とログ分析のエンジン",
+      "kind": "feature",
+      "text": "OpenSearch は、ログ分析、リアルタイムのアプリケーション監視、クリックストリーム分析などに使うオープンソースの検索・分析エンジンである。Amazon OpenSearch Service はこのエンジンのクラスターを AWS 上で提供する。",
+      "examPoint": "ログの検索・分析の基盤として名前が挙がる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon OpenSearch Service?",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.managed-domain",
+      "title": "ドメインはマネージドなクラスター",
+      "kind": "feature",
+      "text": "OpenSearch Service のドメインは OpenSearch クラスターと同じ意味で、指定したインスタンスタイプ・台数・ストレージで構成される。サービスがリソースを用意して起動し、故障したノードを自動で検出して置き換える。拡張は API 1 回かコンソール操作で行える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon OpenSearch Service?",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.full-text-search",
+      "title": "全文検索を提供する",
+      "kind": "feature",
+      "text": "OpenSearch Service は、データベースの検索を超えるリアルタイムのドキュメント検索を提供する。検索エンジンの OpenSearch は、全文検索、キーワード検索、自然言語検索、同義語、複数の言語に対応する。",
+      "examPoint": "全文検索や、データベースの検索を超えるドキュメント検索（キーワード検索、同義語、複数言語）が要件なら、このサービスを考える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon OpenSearch Service features",
+          "url": "https://aws.amazon.com/opensearch-service/features/"
+        },
+        {
+          "title": "What is OpenSearch?",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.sql-fuzzy-matching",
+      "title": "SQL でファジーマッチングなどの検索ができる",
+      "kind": "feature",
+      "text": "OpenSearch の SQL では、ファジーマッチング、ブースト、フレーズマッチングなどの検索ができる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is OpenSearch? - Amazon Web Services",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.sql-aggregations",
+      "title": "SQL で集計できる",
+      "kind": "feature",
+      "text": "OpenSearch の SQL では、集計、group by、where 句を使って、インデックスのデータを調べられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is OpenSearch? - Amazon Web Services",
+          "url": "https://aws.amazon.com/what-is/opensearch/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.japanese-analysis",
+      "title": "日本語の形態素解析（kuromoji）",
+      "kind": "feature",
+      "text": "日本語の形態素解析を行う kuromoji の分析プラグインは、OpenSearch 1.0 以降のドメインに含まれている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Plugins by engine version in Amazon OpenSearch Service",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.sudachi-plugin",
+      "title": "日本語向けの任意プラグイン（Sudachi）",
+      "kind": "feature",
+      "text": "Sudachi の分析プラグインは、日本語向けに推奨される任意のプラグインである。コンソールか AWS CLI でドメインに関連付けて使い、OpenSearch 1.3 以降で利用できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Plugins by engine version in Amazon OpenSearch Service",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.dashboards",
+      "title": "OpenSearch Dashboards で可視化",
+      "kind": "feature",
+      "text": "OpenSearch Service は、OpenSearch Dashboards による可視化の機能を備える。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is Amazon OpenSearch Service?",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+        },
+        {
+          "title": "Amazon OpenSearch Service features",
+          "url": "https://aws.amazon.com/opensearch-service/features/"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.multi-az",
+      "title": "マルチ AZ 構成と Standby",
+      "kind": "feature",
+      "text": "同じリージョンの 2 つまたは 3 つのアベイラビリティーゾーンにノードを配置できる（マルチ AZ）。本番では、3 つの AZ に配置し 1 つを待機にする Multi-AZ with Standby が推奨され、可用性は 99.99% とされる。Standby なしは 99.9% である。",
+      "examPoint": "OpenSearch の可用性を上げるにはノードを複数 AZ に置く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configuring a multi-AZ domain in Amazon OpenSearch Service",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.ingest-firehose",
+      "title": "Amazon Data Firehose から取り込む",
+      "kind": "integration",
+      "text": "Amazon Data Firehose は OpenSearch Service を配信先にできる。取り込み前に Lambda で変換することもできる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Loading streaming data from Amazon Data Firehose",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/integrations-fh.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.ingest-cloudwatch-logs",
+      "title": "CloudWatch Logs から取り込む",
+      "kind": "integration",
+      "text": "CloudWatch Logs のサブスクリプションを使うと、ログのデータをストリームとして OpenSearch Service のドメインへ送り、検索・分析できる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Loading streaming data from Amazon CloudWatch",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/integrations-cloudwatch.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.ultrawarm",
+      "title": "UltraWarm は読み取り専用の低コスト層",
+      "kind": "feature",
+      "text": "UltraWarm は、S3 を使って読み取り専用のデータを低コストで保存する層である。書き込まなくなったログのような変更されないデータに向く。ウォームのインデックスは検索できるが、個々のドキュメントの追加・更新・削除はできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "UltraWarm storage for Amazon OpenSearch Service",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "opensearch.security",
+      "title": "アクセス制御と暗号化",
+      "kind": "feature",
+      "text": "IAM によるアクセス制御、VPC とセキュリティグループとの連携、保管時の暗号化とノード間の暗号化に対応する。OpenSearch Dashboards の認証には Amazon Cognito、HTTP ベーシック、SAML を使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon OpenSearch Service?",
+          "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "references": [
+    {
+      "title": "What is Amazon OpenSearch Service?",
+      "url": "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+    },
+    {
+      "title": "Amazon OpenSearch Service features",
+      "url": "https://aws.amazon.com/opensearch-service/features/"
+    }
+  ],
+  "createdBy": "sc21",
+  "createdAt": "2026-11-20"
+}

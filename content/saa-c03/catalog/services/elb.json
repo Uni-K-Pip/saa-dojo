@@ -1,0 +1,889 @@
+{
+  "id": "elb",
+  "tier": 1,
+  "summary": "受け取った通信を複数のターゲットへ分散し、ヘルスチェックで正常なものだけに転送するサービスである。ALB（L7）、NLB（L4）、GWLB（L3）と前世代の CLB があり、通信量に応じてロードバランサー自体もスケールする。",
+  "chooseWhen": [
+    {
+      "text": "パスやホスト名、ヘッダーに応じて、HTTP・HTTPS のリクエストを振り分けたい（ALB）",
+      "factRefs": [
+        "elb.alb-layer7",
+        "elb.alb-listener-rules",
+        "elb.alb-condition-types"
+      ]
+    },
+    {
+      "text": "TCP・UDP の通信を高スループットで処理したい、または固定 IP が要る（NLB）",
+      "factRefs": [
+        "elb.nlb-layer4",
+        "elb.static-ip-support-by-type",
+        "elb.nlb-static-ip"
+      ]
+    },
+    {
+      "text": "ファイアウォールなどの仮想アプライアンスを経路に挟み、スケールさせたい（GWLB）",
+      "factRefs": [
+        "elb.gwlb-transparent-gateway",
+        "elb.gwlb-endpoint"
+      ]
+    },
+    {
+      "text": "複数の AZ のインスタンスへ分散し、異常なインスタンスを自動で外したい",
+      "factRefs": [
+        "elb.health-check-routing",
+        "elb.asg-integration",
+        "elb.alb-min-two-azs"
+      ]
+    },
+    {
+      "text": "HTTPS の暗号化・復号をロードバランサーに任せ、証明書を ACM で管理したい",
+      "factRefs": [
+        "elb.alb-https-termination"
+      ],
+      "alternatives": [
+        "acm"
+      ]
+    },
+    {
+      "text": "新しいターゲットへの集中や、ターゲット切り離し時の処理中リクエストの切断を避けたい",
+      "factRefs": [
+        "elb.alb-slow-start",
+        "elb.deregistration-delay"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "ALB に Elastic IP を割り当てて固定 IP にすることはできない。固定 IP が要るなら NLB を選ぶ",
+      "factRefs": [
+        "elb.static-ip-support-by-type"
+      ]
+    },
+    {
+      "text": "CLB は前世代のため、新しい設計では選ばず ALB・NLB へ移行する",
+      "factRefs": [
+        "elb.clb-previous-generation"
+      ]
+    },
+    {
+      "text": "Web 攻撃の検査は ELB の機能ではなく、AWS WAF を ALB に関連付けて行う",
+      "factRefs": [
+        "elb.waf-integration"
+      ],
+      "alternatives": [
+        "waf"
+      ]
+    },
+    {
+      "text": "台数の増減そのものは ELB の機能ではなく、Auto Scaling グループが担当する",
+      "factRefs": [
+        "elb.asg-integration"
+      ],
+      "alternatives": [
+        "ec2-auto-scaling"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "elb.alb-layer7",
+      "title": "ALB はレイヤー 7 で動く",
+      "kind": "feature",
+      "text": "Application Load Balancer（ALB）は OSI 参照モデルの第 7 層（アプリケーション層）で動く。リクエストの内容に基づいてリスナールールを評価し、ルールの行き先のターゲットグループからターゲットを選ぶ。リスナーのプロトコルは HTTP と HTTPS である。",
+      "examPoint": "パスやホスト名、ヘッダーで振り分けたい Web アプリケーションには ALB を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is an Application Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+        },
+        {
+          "title": "Listeners for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.nlb-layer4",
+      "title": "NLB はレイヤー 4 で動く",
+      "kind": "feature",
+      "text": "Network Load Balancer（NLB）は OSI 参照モデルの第 4 層（トランスポート層）で動き、毎秒数百万のリクエストを処理できる。リスナーのプロトコルには TCP、UDP、TLS などを使える。HTTP の中身ではなく接続単位で転送する。",
+      "examPoint": "TCP・UDP の独自プロトコル、高スループット、固定 IP が要る場合は NLB を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is a Network Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+        },
+        {
+          "title": "Listeners for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.gwlb-transparent-gateway",
+      "title": "GWLB は仮想アプライアンスを透過的に挟む",
+      "kind": "feature",
+      "text": "Gateway Load Balancer（GWLB）は第 3 層（ネットワーク層）で動く。ファイアウォールや侵入検知・防御、パケット検査などの仮想アプライアンスを、すべてのトラフィックの単一の出入口（透過的なネットワークゲートウェイ）として配置し、需要に合わせてスケールさせる。",
+      "examPoint": "サードパーティの仮想アプライアンスを経路に挟んで冗長化・スケールさせるなら GWLB を選ぶ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is a Gateway Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.clb-previous-generation",
+      "title": "CLB は前世代のロードバランサー",
+      "kind": "constraint",
+      "text": "Classic Load Balancer（CLB）は Elastic Load Balancing の前世代のロードバランサーであり、現行世代（ALB・NLB・GWLB）への移行が推奨されている。TCP や SSL のリスナーを持つ点が ALB との違いとして残る。",
+      "trap": "CLB は前世代で、現行世代への移行が推奨されている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is a Classic Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html"
+        },
+        {
+          "title": "What is Elastic Load Balancing?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "end-of-life"
+    },
+    {
+      "id": "elb.static-ip-support-by-type",
+      "title": "固定 IP・Elastic IP に対応するのは NLB",
+      "kind": "constraint",
+      "text": "機能比較表では、静的 IP と Elastic IP の割り当てに対応するのは NLB だけで、ALB、GWLB、CLB は対応していない。固定 IP を要件にするときは NLB を選ぶ。",
+      "examPoint": "「固定 IP」「許可リストに登録する IP」は NLB の決め手になる。",
+      "trap": "ALB や CLB に Elastic IP を割り当てることはできない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Elastic Load Balancing features",
+          "url": "https://aws.amazon.com/elasticloadbalancing/features/"
+        },
+        {
+          "title": "What is a Network Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.node-per-az",
+      "title": "AZ を有効にするとノードが作られる",
+      "kind": "feature",
+      "text": "ロードバランサーの AZ を有効にすると、その AZ にロードバランサーノードが作られる。ターゲットを登録しても、その AZ を有効にしていなければトラフィックは届かない。有効にした AZ ごとに、少なくとも 1 つのターゲットを登録するのが望ましい。",
+      "trap": "ターゲットを置いただけでは足りず、その AZ（サブネット）をロードバランサーで有効にする必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-min-two-azs",
+      "title": "ALB は 2 つ以上の AZ を有効にする",
+      "kind": "constraint",
+      "text": "ALB では、2 つ以上の AZ を有効にすることが必須である。サブネットは、それぞれ別の AZ のものを選ぶ。NLB と GWLB は複数の AZ を推奨とされるが、ALB のような必須要件ではない。",
+      "examPoint": "ALB を作る時点で、異なる 2 つ以上の AZ のサブネットを指定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        },
+        {
+          "title": "Application Load Balancers - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-subnet-capacity",
+      "title": "ALB のサブネットの空き IP アドレス",
+      "kind": "constraint",
+      "text": "ALB が適切にスケールするには、各 AZ のサブネットが /27 以上のビットマスクの CIDR ブロックと、8 個以上の空き IP アドレスを持つ必要がある。空きが足りないとスケールの試みが止まり、5xx エラーやタイムアウトにつながることがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Application Load Balancers - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.cross-zone-behavior",
+      "title": "クロスゾーン負荷分散の動作",
+      "kind": "feature",
+      "text": "有効にすると、各ロードバランサーノードは有効なすべての AZ の登録済みターゲットへ分散する。無効にすると、各ノードは自分の AZ のターゲットにだけ分散する。無効のとき、AZ ごとのターゲット数に差があると、少ない AZ のターゲットに負荷が偏る。",
+      "examPoint": "AZ ごとのターゲット数が違うときの負荷の偏りは、クロスゾーン負荷分散で均す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.cross-zone-defaults",
+      "title": "クロスゾーン負荷分散の既定値",
+      "kind": "feature",
+      "text": "ドキュメントの時点の既定値では、ALB のロードバランサーレベルは常に有効で、ターゲットグループ単位でだけ無効にできる。NLB と GWLB は既定で無効で、作成後にいつでも変更できる。CLB は API・CLI で作ると無効、コンソールで作ると選択済みになる。",
+      "trap": "既定値はロードバランサーの種類や作成方法で異なるため、設定を確認する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.nlb-cross-zone-charge",
+      "title": "NLB でのクロスゾーン負荷分散の課金",
+      "kind": "pricing",
+      "text": "NLB でクロスゾーン負荷分散を有効にすると、EC2 のデータ転送料金がかかる。料金の金額ではなく、AZ をまたぐ転送に課金が発生する仕組みである。無効のままなら、ノードは自分の AZ のターゲットだけに送る。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html"
+        },
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.scheme",
+      "title": "インターネット向きと内部向き",
+      "kind": "feature",
+      "text": "ロードバランサーは作成時に、インターネット向き（internet-facing）か内部向き（internal）かを選ぶ。インターネット向きのノードはパブリック IP を持つ。内部向きのノードはプライベート IP だけで、VPC にアクセスできるクライアントからのリクエストだけを処理する。",
+      "examPoint": "多層構成では、Web 層をインターネット向き、アプリケーション層を内部向きのロードバランサーにする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.targets-private-ip",
+      "title": "ターゲットにはパブリック IP が不要",
+      "kind": "feature",
+      "text": "インターネット向きでも内部向きでも、ロードバランサーはターゲットへプライベート IP アドレスで転送する。そのため、ターゲットがロードバランサーからのリクエストを受けるのに、パブリック IP アドレスは要らない。",
+      "trap": "ターゲットをパブリックサブネットに置いたり、パブリック IP を付けたりする必要はない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.health-check-routing",
+      "title": "ヘルスチェックで異常なターゲットを外す",
+      "kind": "feature",
+      "text": "ロードバランサーはターゲットの状態を監視し、正常なターゲットにだけ転送する。異常を検出するとそのターゲットへの転送を止め、再び正常になると転送を再開する。ヘルスチェックはターゲットグループ単位で設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        },
+        {
+          "title": "What is an Application Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-fail-open",
+      "title": "全ターゲットが異常のときの動作",
+      "kind": "feature",
+      "text": "ターゲットグループの登録済みターゲットがすべて異常な場合、ALB は正常かどうかにかかわらず、すべてのターゲットへリクエストを送る（フェイルオープン）。有効なすべての AZ で同時にすべてが失敗したときも同様である。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Health checks for Application Load Balancer target groups",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-hc-settings",
+      "title": "ALB のヘルスチェックの設定項目",
+      "kind": "feature",
+      "text": "ALB はヘルスチェックの間隔ごとに各ターゲットへ GET リクエストを送り、連続した失敗がしきい値を超えると外し、連続した成功がしきい値を超えると戻す。ドキュメントの時点の既定値は、間隔 30 秒、タイムアウト 5 秒、正常 5 回、異常 2 回である。",
+      "trap": "ヘルスチェックの間隔は異常の判定に関わる設定で、新規ターゲットへの集中やスロースタート、登録解除の遅延を制御するものではない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Health checks for Application Load Balancer target groups",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.alb-slow-start",
+      "title": "スロースタートモード",
+      "kind": "feature",
+      "text": "ターゲットグループのスロースタートモードを有効にすると、新しく登録したターゲットが正常と判定されたあと、設定した期間にわたって、そのターゲットへのリクエストの割合を直線的に増やす。期間が終わるか異常になるとモードを抜け、以降は通常の割合を受ける。",
+      "examPoint": "起動直後に処理が重いターゲットへ、リクエストが一度に集中するのを避けるには、スロースタートを使う。",
+      "trap": "登録解除の遅延は処理中のリクエストを待つ機能で、新規ターゲットへの集中を和らげるものではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        },
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-slow-start-duration",
+      "title": "スロースタートの期間",
+      "kind": "feature",
+      "text": "スロースタートの期間は、ターゲットグループの属性 slow_start.duration_seconds で設定し、30〜900 秒の範囲である。既定の 0 秒は無効を表す。この期間が経過するか、ターゲットが異常になると、ターゲットはスロースタートモードを抜ける。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        },
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.alb-slow-start-limits",
+      "title": "スロースタートと併用できないアルゴリズム",
+      "kind": "constraint",
+      "text": "スロースタートモードは、最小未処理リクエスト数と重み付きランダムのルーティングアルゴリズムとは併用できない。ラウンドロビン（既定）のターゲットグループで使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        },
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.deregistration-delay",
+      "title": "登録解除の遅延",
+      "kind": "feature",
+      "text": "ターゲットの登録を解除すると、新しいリクエストの送信が止まり、ターゲットは draining 状態になる。処理中のリクエストが終わるまで待つ時間が登録解除の遅延で、ALB の既定は 300 秒（0〜3600 秒）。待機が終わると unused になる。",
+      "examPoint": "ターゲットを外すときに処理中のリクエストを切断したくない場合は、登録解除の遅延を設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        },
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.alb-routing-algorithms",
+      "title": "ALB のルーティングアルゴリズム",
+      "kind": "feature",
+      "text": "ターゲットグループ単位で、ラウンドロビン（既定）、最小未処理リクエスト数、重み付きランダムを選べる。最小未処理リクエスト数は、リクエストの重さやターゲットの処理能力にばらつきがある場合に向く。スティッキーセッションを有効にした場合、初回の選択にだけ使われる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.alb-listener-rules",
+      "title": "リスナーとルール",
+      "kind": "feature",
+      "text": "ALB のリスナーはプロトコル（HTTP・HTTPS）とポートでリクエストを待ち受け、ルールで転送先を決める。ルールは優先度、条件、アクションからなり、優先度の順に評価される。リスナーには必ずデフォルトルールがあり、削除できず、最後に評価される。",
+      "examPoint": "リスナーのルールで、パスやホスト名ごとにターゲットグループを分ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Listeners for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
+        },
+        {
+          "title": "What is an Application Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-condition-types",
+      "title": "リスナールールの条件の種類",
+      "kind": "feature",
+      "text": "ALB のルールの条件には、host-header（ホスト名）、path-pattern（パス）、http-header、http-request-method、query-string、source-ip の 6 種類がある。",
+      "trap": "source-ip の条件は、X-Forwarded-For ヘッダーのアドレスには一致しない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Condition types for listener rules - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-action-types",
+      "title": "リスナールールのアクションの種類",
+      "kind": "feature",
+      "text": "ALB のルールのアクションには、forward、redirect、fixed-response、authenticate-cognito、authenticate-oidc、jwt-validation がある。ルールには転送系（forward、redirect、fixed-response）のうち 1 つだけを入れ、最後に実行する。認証は HTTPS リスナーで使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Action types for listener rules - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-weighted-target-groups",
+      "title": "重み付きターゲットグループ",
+      "kind": "feature",
+      "text": "forward アクションに複数のターゲットグループを指定する場合、それぞれに 0〜999 の重みを付ける。リクエストは重みの比率で分配される。重み付きの forward アクションでスティッキーセッションを保つには、アクションのターゲットグループスティッキネスを有効にする。",
+      "examPoint": "複数のターゲットグループに重みを付けると、その比率でリクエストが分配される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Action types for listener rules - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-action-types.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-target-types",
+      "title": "ALB のターゲットタイプ",
+      "kind": "feature",
+      "text": "ALB のターゲットグループのターゲットタイプは、instance、ip、lambda のいずれかで、作成後に変更できない。ip では VPC のサブネットや RFC 1918・RFC 6598 のアドレスを指定でき、ピアリングした VPC やオンプレミスのリソースも登録できる。パブリックなアドレスは指定できない。",
+      "examPoint": "ALB は Lambda 関数をターゲットにできる。",
+      "trap": "ターゲットタイプは作成後に変えられない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-https-termination",
+      "title": "ALB での HTTPS の終端",
+      "kind": "feature",
+      "text": "HTTPS リスナーを使うと、暗号化と復号の処理をロードバランサーに任せられる。HTTPS リスナーには少なくとも 1 つの SSL サーバー証明書を設定する。ドキュメントは、証明書を AWS Certificate Manager（ACM）で作ることを推奨している。",
+      "examPoint": "ELB に ACM の証明書を関連付けて TLS を終端する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Listeners for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
+        },
+        {
+          "title": "SSL certificates for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/https-listener-certificates.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.nlb-tls-vs-tcp",
+      "title": "NLB の TLS リスナーと TCP リスナー",
+      "kind": "feature",
+      "text": "NLB の TLS リスナーは、サーバー証明書でフロントエンドの接続を終端し、復号してからターゲットへ送る。ターゲット側で復号したい場合は、ポート 443 の TCP リスナーを使う。TCP リスナーは暗号化されたままのトラフィックをそのまま渡す。",
+      "trap": "TLS をターゲットまで通したいなら、TLS リスナーではなく TCP リスナーにする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Listeners for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.nlb-static-ip",
+      "title": "NLB の AZ ごとの静的 IP と Elastic IP",
+      "kind": "feature",
+      "text": "NLB は有効にした AZ ごとにネットワークインターフェイスを作り、そのノードが静的 IP アドレスを 1 つ得る。インターネット向きの NLB では、サブネットごとに Elastic IP アドレスを 1 つ関連付けられる。DNS 名は、これらのノードの IP アドレスに解決される。",
+      "examPoint": "固定 IP や、IP の許可リストへの登録が要件なら NLB。",
+      "trap": "Elastic IP は NLB 全体に 1 つではなく、有効にしたサブネット（AZ）ごとに 1 つ関連付ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        },
+        {
+          "title": "What is a Network Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.nlb-client-ip-preservation",
+      "title": "NLB のクライアント IP の保持",
+      "kind": "feature",
+      "text": "NLB は、クライアントの送信元 IP アドレスを保ったままターゲットへ転送できる。ドキュメントの時点の既定値では、instance タイプは有効、ip タイプの TCP・TLS は無効である。無効のときターゲットが見る送信元は NLB のプライベート IP になる。",
+      "examPoint": "NLB の先のアプリケーションがクライアント IP を知るには、IP の保持かプロキシプロトコル v2 を使う。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.nlb-proxy-protocol-v2",
+      "title": "NLB のプロキシプロトコル v2",
+      "kind": "feature",
+      "text": "ターゲットグループでプロキシプロトコル v2 を有効にすると、NLB は接続元と接続先の情報をプロキシプロトコルのヘッダーとして TCP データの先頭に付ける。アプリケーションがヘッダーを解析できる必要があり、解析できないとヘルスチェックも失敗しうる。",
+      "examPoint": "クライアント IP の保持を使えない構成（VPC エンドポイントサービス経由など）では、プロキシプロトコルでクライアントの情報を渡す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.alb-xff",
+      "title": "ALB の X-Forwarded-For ヘッダー",
+      "kind": "feature",
+      "text": "HTTP を扱う ALB は、リクエストに X-Forwarded-For、X-Forwarded-Proto、X-Forwarded-Port を付け、クライアントの IP アドレスなどをターゲットへ伝える。X-Forwarded-For の扱いは append（既定）、preserve、remove から選べる。",
+      "examPoint": "ALB の先のアプリケーションがクライアント IP を知る方法は X-Forwarded-For ヘッダー。",
+      "trap": "X-Forwarded-For は HTTP のヘッダーなので、HTTP を理解しない TCP のロードバランサー向きの方法ではない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "HTTP headers and Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html"
+        },
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.sticky-alb",
+      "title": "ALB のスティッキーセッション",
+      "kind": "feature",
+      "text": "ALB のスティッキーセッションは、同じ利用者のリクエストを同じターゲットへ送り続ける機能で、ターゲットグループ単位で有効にする。クライアントが Cookie に対応している必要がある。期間ベース（AWSALB）とアプリケーションベースの Cookie を選べ、期間は 1 秒〜7 日である。",
+      "trap": "ターゲットグループのクロスゾーン負荷分散を無効にしている場合は使えない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Edit target group attributes for your Application Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.asg-integration",
+      "title": "Auto Scaling グループとの連携",
+      "kind": "integration",
+      "text": "ALB・NLB・GWLB のターゲットグループ、または CLB を Auto Scaling グループにアタッチすると、グループが起動したインスタンスは自動で登録され、終了したインスタンスは自動で登録解除される。ELB のヘルスチェックを有効にすると、異常なインスタンスを置き換えられる。",
+      "examPoint": "ELB と Auto Scaling を組み合わせて、台数の増減と異常なインスタンスの置換を自動にする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Use Elastic Load Balancing to distribute incoming application traffic in your Auto Scaling group",
+          "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-load-balancer.html"
+        },
+        {
+          "title": "What is an Application Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.waf-integration",
+      "title": "ALB と AWS WAF の連携",
+      "kind": "integration",
+      "text": "ALB には AWS WAF のウェブ ACL を関連付けられ、ルールに基づいてリクエストを許可またはブロックできる。Web 攻撃の検査は ALB 自体の機能ではなく、AWS WAF が担当する。",
+      "examPoint": "ALB の手前での SQL インジェクションなどの検査は、AWS WAF を ALB に関連付ける。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is an Application Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.gwlb-endpoint",
+      "title": "GWLB エンドポイント",
+      "kind": "integration",
+      "text": "GWLB は GWLB エンドポイント（VPC エンドポイント）を使い、VPC をまたいでトラフィックをやり取りする。アプリケーションのサブネットのルートテーブルで、GWLB エンドポイントを次ホップにする。エンドポイントとアプリケーションサーバーは、別のサブネットに置く。",
+      "examPoint": "検査用のアプライアンスへ通信を回すには、ルートテーブルの次ホップを GWLB エンドポイントにする。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "What is a Gateway Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.gwlb-geneve-flow",
+      "title": "GWLB と GENEVE",
+      "kind": "feature",
+      "text": "GWLB は、すべてのポートのすべての IP パケットを受け、リスナーのルールで指定されたターゲットグループへ転送する。GWLB と登録された仮想アプライアンスは、GENEVE プロトコルのポート 6081 でアプリケーションのトラフィックをやり取りする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is a Gateway Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.gwlb-flow-stickiness",
+      "title": "GWLB のフロースティッキネス",
+      "kind": "feature",
+      "text": "GWLB は、同じフローを同じアプライアンスへ送り続けるフロースティッキネスを保つ。判定には 5 タプル（既定）、3 タプル、2 タプルのいずれかを使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is a Gateway Load Balancer?",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+        },
+        {
+          "title": "How Elastic Load Balancing works - Elastic Load Balancing",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.nlb-security-groups",
+      "title": "NLB のセキュリティグループ",
+      "kind": "constraint",
+      "text": "NLB へのセキュリティグループの関連付けは、作成時にだけ行える。作成時にセキュリティグループを関連付けなかった NLB には、あとから関連付けられない。関連付けた場合は、あとからセキュリティグループを変更できる。",
+      "trap": "NLB へのセキュリティグループの関連付けは、作成後に新しく追加することはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Update the security groups for your Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-security-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-14"
+    },
+    {
+      "id": "elb.pricing-billing-units",
+      "title": "ロードバランサーの料金の課金単位",
+      "kind": "pricing",
+      "text": "ALB・NLB・GWLB は、ロードバランサーが動いている時間（1 時間に満たない分は 1 時間分）と、キャパシティーユニットの使用量（1 分あたり）に対して課金される。キャパシティーユニットは ALB が LCU、NLB が NLCU、GWLB が GLCU である。CLB は、動いている時間（1 時間に満たない分は 1 時間分）と、ロードバランサーを通して転送したデータの量（GB 単位）に対して課金される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Elastic Load Balancing pricing",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elb.quota-load-balancers",
+      "title": "ロードバランサー数のクォータ",
+      "kind": "quota",
+      "text": "ドキュメントの時点の既定値では、ALB と NLB はそれぞれ 1 リージョンあたり 50 個まで作れる。この値は Service Quotas で引き上げを申請できる。ターゲットグループは ALB と NLB で合わせて 1 リージョンあたり 3,000 個が既定で、これも引き上げられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Quotas for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-limits.html"
+        },
+        {
+          "title": "Quotas for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-limits.html"
+        }
+      ],
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
+    },
+    {
+      "id": "elb.alb-grpc",
+      "title": "ALB の gRPC プロトコルバージョン",
+      "kind": "feature",
+      "text": "ALB のターゲットグループは、プロトコルバージョンに gRPC を指定できる。ALB は gRPC のリクエストを解析し、パッケージ、サービス、メソッドに基づいて gRPC の呼び出しを適切なターゲットグループへ振り分ける。単項、クライアント側ストリーミング、サーバー側ストリーミング、双方向ストリーミングに対応する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.alb-grpc-listener-https",
+      "title": "gRPC のターゲットグループのリスナーは HTTPS",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループでは、リスナーのプロトコルとして対応しているのは HTTPS だけである。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.alb-grpc-target-types",
+      "title": "gRPC のターゲットグループのターゲットタイプ",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループで対応しているターゲットタイプは instance と ip だけで、Lambda 関数はターゲットにできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "elb.nlb-target-types",
+      "title": "NLB のターゲットタイプ",
+      "kind": "feature",
+      "text": "NLB のターゲットグループのターゲットタイプは、instance、ip、alb のいずれかで、作成後に変更できない。instance はインスタンス ID、ip は IP アドレスでターゲットを指定し、alb は Application Load Balancer をターゲットにする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elb.nlb-alb-target",
+      "title": "ALB を NLB のターゲットにする",
+      "kind": "feature",
+      "text": "ターゲットタイプが alb のターゲットグループには、単一の ALB をターゲットとして登録でき、ALB に届いたあとは ALB が振り分けを担う。NLB の固定 IP や AWS PrivateLink（エンドポイントサービス）と、ALB のレイヤー 7 のリクエストに基づくルーティングを組み合わせられる。",
+      "examPoint": "固定 IP や PrivateLink と、リクエストの内容に基づく振り分けの両方が要るなら、ALB を NLB のターゲットにする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Network Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html"
+        },
+        {
+          "title": "Use an Application Load Balancer as a target of a Network Load Balancer",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/application-load-balancer-target.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "elb.alb-grpc-health-check",
+      "title": "gRPC のターゲットグループのヘルスチェック",
+      "kind": "constraint",
+      "text": "gRPC のプロトコルバージョンを使うターゲットグループでは、ヘルスチェックに /package.service/method の形式のカスタムメソッドと、成功とみなす gRPC のステータスコードを指定する必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-20"
+    }
+  ],
+  "seeAlso": [
+    "acm.integrated-services",
+    "cloudfront.alb-custom-header"
+  ],
+  "references": [
+    {
+      "title": "What is Elastic Load Balancing?",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html"
+    },
+    {
+      "title": "What is an Application Load Balancer?",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"
+    },
+    {
+      "title": "What is a Network Load Balancer?",
+      "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+    }
+  ],
+  "createdBy": "sc8",
+  "createdAt": "2026-11-14",
+  "updatedAt": "2026-11-21"
+}

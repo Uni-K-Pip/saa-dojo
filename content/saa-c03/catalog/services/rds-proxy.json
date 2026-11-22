@@ -1,0 +1,332 @@
+{
+  "id": "rds-proxy",
+  "tier": 2,
+  "summary": "アプリケーションと RDS・Aurora のデータベースの間に置くフルマネージドのデータベースプロキシ。接続をプールして使い回し、接続の急増から DB を守り、フェイルオーバー中もアプリケーションの接続を保つ。IAM 認証と Secrets Manager で認証情報も扱える。",
+  "chooseWhen": [
+    {
+      "text": "Lambda など多数のクライアントの接続で、DB の接続数が逼迫する",
+      "factRefs": [
+        "rds-proxy.pool-multiplexing",
+        "rds-proxy.lambda-pooling"
+      ]
+    },
+    {
+      "text": "フェイルオーバー中も、アプリケーションの接続を保って切り替えたい",
+      "factRefs": [
+        "rds-proxy.failover-keep-connections",
+        "rds-proxy.failover-no-dns"
+      ]
+    },
+    {
+      "text": "DB を移行せずに、クライアントの接続に IAM 認証を強制したい",
+      "factRefs": [
+        "rds-proxy.iam-standard",
+        "rds-proxy.iam-end-to-end"
+      ]
+    },
+    {
+      "text": "Aurora の読み取りを、接続のプールを使いながらリーダーへ分散したい",
+      "factRefs": [
+        "rds-proxy.aurora-reader-endpoint"
+      ]
+    }
+  ],
+  "avoidWhen": [
+    {
+      "text": "VPC の外のネットワークへ、プロキシを直接公開したい",
+      "factRefs": [
+        "rds-proxy.same-vpc-private"
+      ]
+    },
+    {
+      "text": "リードレプリカを対象にしてプロキシを作りたい",
+      "factRefs": [
+        "rds-proxy.writer-only-target"
+      ]
+    },
+    {
+      "text": "セッションの状態を頻繁に変えるアプリケーションで、接続の使い回しを期待したい",
+      "factRefs": [
+        "rds-proxy.pinning"
+      ]
+    },
+    {
+      "text": "対応エンジンの一覧にないデータベースで使いたい",
+      "factRefs": [
+        "rds-proxy.supported-engines"
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "rds-proxy.pool-multiplexing",
+      "title": "接続を使い回す単位はトランザクション",
+      "kind": "feature",
+      "text": "RDS Proxy は接続プールを持ち、既定ではトランザクションごとに DB への接続を使い回す（マルチプレクシング）。クライアントからは多数の接続を受け付けつつ、DB への接続は少数にとどめるので、DB のメモリと CPU の負担と「too many connections」エラーを減らせる。",
+      "examPoint": "「too many connections」エラーが出る DB は、RDS Proxy を前段に置く候補になる",
+      "trap": "接続を使い回す単位は、セッションではなく既定ではトランザクションである",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        },
+        {
+          "title": "Planning where to use RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "rds-proxy.pinning",
+      "title": "セッション状態を変えると接続が固定される",
+      "kind": "feature",
+      "text": "セッションの状態を変える要求（変数や設定の変更など）を検出すると、RDS Proxy はそのクライアント接続を特定の DB 接続に固定する（ピン留め）。固定された DB 接続は、セッションが終わるまで他のクライアントが再利用できず、接続を使い回す効果が下がる。",
+      "examPoint": "ほとんどの接続がピン留めされるなら、アプリケーションやワークロードの側で原因を減らす",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Avoiding pinning an RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-pinning.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.failover-keep-connections",
+      "title": "フェイルオーバー中もアプリの接続を保つ",
+      "kind": "feature",
+      "text": "Multi-AZ の DB インスタンスでフェイルオーバーが起きると、RDS Proxy はアイドル状態のアプリケーションの接続を切らずにスタンバイの DB に接続する。接続を自前でプールするアプリケーションでは、ほとんどの接続が維持され、取り消されるのはトランザクションや SQL 文の実行中の接続だけである。",
+      "examPoint": "フェイルオーバー中も、アプリケーションの接続を保ったまま新しい DB へ振り向けられる",
+      "trap": "実行中のトランザクションは再試行が必要になる場合がある",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        },
+        {
+          "title": "Highly Available Database Proxy – Amazon RDS Proxy",
+          "url": "https://aws.amazon.com/rds/proxy/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.failover-no-dns",
+      "title": "フェイルオーバーで DNS の遅れを受けない",
+      "kind": "feature",
+      "text": "RDS Proxy 経由の接続は、フェイルオーバー時の DNS の伝播の遅れとローカルの DNS キャッシュの影響を受けない。DNS のキャッシュを迂回するので、Amazon RDS の Multi-AZ DB インスタンスでは、フェイルオーバーにかかる時間を最大 66% 短縮できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        },
+        {
+          "title": "Planning where to use RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.iam-standard",
+      "title": "標準の IAM 認証は Secrets Manager と組み合わせる",
+      "kind": "feature",
+      "text": "標準の IAM 認証では、クライアントは IAM でプロキシに認証し、プロキシは Secrets Manager に保存した認証情報で DB に認証する。DB がネイティブのパスワード認証でも、プロキシへの接続に IAM 認証を強制できる。",
+      "examPoint": "DB インスタンス自体を移行せずに、アプリケーションに強い認証を強制できる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.iam-end-to-end",
+      "title": "エンドツーエンドの IAM 認証は Secrets Manager が不要",
+      "kind": "feature",
+      "text": "エンドツーエンドの IAM 認証は、アプリケーションからプロキシ経由で DB まで IAM 認証を強制する。プロキシの既定の認証方式に IAM を指定し、プロキシに関連付けた IAM ロールに rds-db:connect の権限を与える。個々の DB ユーザーを Secrets Manager のシークレットで登録する必要がない。",
+      "trap": "標準の IAM 認証ではプロキシが DB へ認証するために Secrets Manager の資格情報を使う",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.same-vpc-private",
+      "title": "プロキシは DB と同じ VPC に置き、公開できない",
+      "kind": "constraint",
+      "text": "RDS Proxy は DB と同じ VPC に置く必要があり、パブリックにアクセス可能にはできない（DB 自体はパブリックでもよい）。VPC の外のホストは、必要なネットワークの要件を整えない限り、プロキシに接続できない。",
+      "trap": "DB がパブリックでも、プロキシは公開できない",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.writer-only-target",
+      "title": "RDS では書き込み側の DB インスタンスだけを対象にする",
+      "kind": "constraint",
+      "text": "レプリケーション構成の RDS DB インスタンスでは、プロキシを関連付けられるのはライターの DB インスタンスだけで、リードレプリカには関連付けられない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        },
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.single-target-instance",
+      "title": "1 つのプロキシの対象は 1 つの DB インスタンス",
+      "kind": "constraint",
+      "text": "1 つのプロキシが関連付けられる対象の DB インスタンスは 1 つだけである。一方、同じ DB インスタンスに複数のプロキシを関連付けることはできる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        },
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.aurora-reader-endpoint",
+      "title": "Aurora の読み取りは読み取り専用エンドポイントで分散",
+      "kind": "feature",
+      "text": "Aurora クラスターで使うとき、プロキシの既定のエンドポイントは読み書き用で、すべてのリクエストをライターに送る。読み取りを分散するには、プロキシに読み取り専用のエンドポイントを追加し、リーダーインスタンスに振り分ける。",
+      "examPoint": "Aurora のリーダーへの読み取りの分散は、プロキシの読み取り専用エンドポイントで行う",
+      "trap": "プロキシの対象が Aurora クラスターではなく RDS インスタンスだと、読み取り専用エンドポイントへのリクエストは失敗する",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with Amazon RDS Proxy endpoints",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.cross-vpc-endpoint",
+      "title": "別の VPC からはクロス VPC エンドポイントで接続",
+      "kind": "feature",
+      "text": "プロキシのエンドポイントは、プロキシの VPC とは別の VPC に関連付けて作成できる。このクロス VPC エンドポイントにより、別の VPC にある EC2 インスタンスなどが、プロキシ経由でデータベースに接続できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Working with Amazon RDS Proxy endpoints",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy-endpoints.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.proxies-quota",
+      "title": "プロキシは 1 アカウント 20 個が既定の上限",
+      "kind": "quota",
+      "text": "2026 年 11 月時点の既定では、1 つの AWS アカウントで作成できるプロキシは 20 個までである。上限は、Service Quotas の Amazon RDS の Proxies から引き上げを申請できる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21",
+      "recheck": "default-value"
+    },
+    {
+      "id": "rds-proxy.pricing-capacity",
+      "title": "料金は DB のキャパシティ（vCPU・ACU）で決まる",
+      "kind": "pricing",
+      "text": "RDS Proxy の料金は、基になる DB のキャパシティで決まる。プロビジョニングされたインスタンスでは vCPU あたりの時間単位、Aurora Serverless では DB が消費した ACU あたりの時間単位で課金される。",
+      "trap": "料金は、クライアントの接続数ではなく DB の vCPU（または ACU）に応じる",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Amazon RDS Proxy Pricing",
+          "url": "https://aws.amazon.com/rds/proxy/pricing/"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.lambda-pooling",
+      "title": "Lambda の短い接続にはプロキシが向く",
+      "kind": "integration",
+      "text": "Lambda 関数は短い DB 接続を頻繁に作るので、RDS Proxy の接続プールの恩恵を受けやすい。Lambda からプロキシを使うときは、接続の設定先をプロキシのエンドポイントに変える。",
+      "examPoint": "Lambda から DB への接続が急増するなら、RDS Proxy を前段に置く",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Planning where to use RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-planning.html"
+        },
+        {
+          "title": "RDS Proxy concepts and terminology",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "rds-proxy.supported-engines",
+      "title": "対応エンジンは Aurora と RDS の 6 種",
+      "kind": "feature",
+      "text": "RDS Proxy が使えるエンジンは、Aurora PostgreSQL、Aurora MySQL、RDS for PostgreSQL、RDS for MySQL、RDS for MariaDB、RDS for SQL Server である。エンジンのバージョンとリージョンごとに、利用できるかが異なる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Highly Available Database Proxy – Amazon RDS Proxy",
+          "url": "https://aws.amazon.com/rds/proxy/"
+        },
+        {
+          "title": "Amazon RDS Proxy",
+          "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+        }
+      ],
+      "checkedAt": "2026-11-21"
+    }
+  ],
+  "seeAlso": [
+    "rds.proxy-integration",
+    "rds.multi-az-failover-dns",
+    "aurora.endpoint-types",
+    "lambda.vpc-access"
+  ],
+  "references": [
+    {
+      "title": "Amazon RDS Proxy",
+      "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"
+    },
+    {
+      "title": "Highly Available Database Proxy – Amazon RDS Proxy",
+      "url": "https://aws.amazon.com/rds/proxy/"
+    }
+  ],
+  "createdBy": "sc40",
+  "createdAt": "2026-11-21"
+}
