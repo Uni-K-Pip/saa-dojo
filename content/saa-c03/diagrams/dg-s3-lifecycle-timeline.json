@@ -1,0 +1,65 @@
+{
+  "id": "dg-s3-lifecycle-timeline",
+  "type": "timeline",
+  "title": "S3 ライフサイクルの流れ",
+  "alt": "アプリケーションのログを S3 ライフサイクルルールで管理する例を、作成からの時間の順に並べた図です。作成から 30 日までは S3 Standard に置きます。30 日後に S3 Glacier Instant Retrieval へ移行し、1 年後に S3 Glacier Deep Archive へ移行します。7 年後に有効期限のアクションで削除します。目盛りは等間隔で、時間の長さの比ではありません。",
+  "lessonRefs": [
+    "lesson-4.1-s3-storage-classes"
+  ],
+  "factRefs": [],
+  "createdBy": "v2",
+  "ticks": [
+    {
+      "at": 0,
+      "label": "作成"
+    },
+    {
+      "at": 1,
+      "label": "30日後"
+    },
+    {
+      "at": 2,
+      "label": "1年後"
+    },
+    {
+      "at": 3,
+      "label": "7年後"
+    }
+  ],
+  "lanes": [
+    {
+      "label": "ログ",
+      "spans": [
+        {
+          "from": 0,
+          "to": 1,
+          "label": "S3 Standard"
+        },
+        {
+          "from": 1,
+          "to": 2,
+          "label": "S3 Glacier Instant Retrieval"
+        },
+        {
+          "from": 2,
+          "to": 3,
+          "label": "S3 Glacier Deep Archive"
+        }
+      ],
+      "marks": [
+        {
+          "at": 1,
+          "label": "移行"
+        },
+        {
+          "at": 2,
+          "label": "移行"
+        },
+        {
+          "at": 3,
+          "label": "削除"
+        }
+      ]
+    }
+  ]
+}

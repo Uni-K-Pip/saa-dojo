@@ -1,0 +1,18 @@
+{
+  "id": "dg-s3-classes-position",
+  "type": "position",
+  "title": "S3 ストレージクラスの位置づけ",
+  "alt": "S3 の主なストレージクラスを、取り出しの速さ（横軸）と最低保存期間（縦軸）の 2 つの軸に置いた図です。位置は順位で、比率ではありません。S3 Standard、S3 Standard-IA、S3 Glacier Instant Retrieval は、どれもミリ秒で取り出せるので右端に並び、最低保存期間は Standard がなし、Standard-IA が 30 日、Glacier Instant Retrieval が 90 日の順に長くなります。S3 Glacier Flexible Retrieval は事前に復元が必要で数分から数時間かかり、最低保存期間は 90 日です。S3 Glacier Deep Archive は復元に最も時間がかかり、最低保存期間も 180 日と最も長いので、左上に置かれます。",
+  "lessonRefs": ["lesson-4.1-s3-storage-classes"],
+  "factRefs": [],
+  "createdBy": "v2",
+  "x": { "label": "取り出しの速さ", "low": "遅い", "high": "速い" },
+  "y": { "label": "最低保存期間", "low": "短い", "high": "長い" },
+  "items": [
+    { "id": "standard", "label": "S3 Standard", "service": "s3", "x": 5, "y": 1, "note": "頻繁に読むデータ。最低保存期間なし" },
+    { "id": "standard-ia", "label": "S3 Standard-IA", "service": "s3", "x": 5, "y": 2, "note": "月 1 回程度読む。30 日" },
+    { "id": "glacier-ir", "label": "S3 Glacier Instant Retrieval", "service": "s3", "x": 5, "y": 3, "note": "四半期に 1 回程度。ミリ秒で読める。90 日" },
+    { "id": "glacier-fr", "label": "S3 Glacier Flexible Retrieval", "service": "s3", "x": 3, "y": 3, "note": "復元が必要。数分〜数時間待てる。90 日" },
+    { "id": "deep-archive", "label": "S3 Glacier Deep Archive", "service": "s3", "x": 1, "y": 4, "note": "復元は 12〜48 時間以内。180 日" }
+  ]
+}

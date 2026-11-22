@@ -1,0 +1,132 @@
+{
+  "id": "dg-storage-choice",
+  "type": "decision",
+  "title": "ストレージの選び方",
+  "alt": "ブロック、ファイル、オブジェクトのストレージを、質問に答えて選ぶ図です。最初に、OS からディスクとして使うかを聞きます。使うなら、消えてもよい一時データを最速で扱う場合はインスタンスストア、そうでなければ Amazon EBS です。使わないなら、フォルダーとファイルの階層（ファイルシステム）として使うかを聞きます。使わないなら、API でオブジェクトとして読み書きする Amazon S3 です。使うなら、Windows（SMB）は FSx for Windows File Server、S3 のデータを HPC や機械学習で高速に処理するなら FSx for Lustre、それ以外の Linux のファイル共有は Amazon EFS です。",
+  "lessonRefs": [
+    "lesson-3.1-storage-types-and-services",
+    "lesson-basics-storage-types"
+  ],
+  "factRefs": [],
+  "createdBy": "v2",
+  "start": "q-disk",
+  "nodes": [
+    {
+      "id": "q-disk",
+      "ask": "OS からディスクとして使いますか。",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "q-temp"
+        },
+        {
+          "label": "いいえ",
+          "to": "q-share"
+        }
+      ]
+    },
+    {
+      "id": "q-temp",
+      "ask": "消えてもよい一時データを、最速で扱いますか。",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-instance"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-ebs"
+        }
+      ]
+    },
+    {
+      "id": "r-instance",
+      "result": "インスタンスストア",
+      "why": "物理サーバーに直接付いたディスクで、とても速い一時的な領域です。停止・終了で消えるので、消えてもよいデータに使います。"
+    },
+    {
+      "id": "r-ebs",
+      "result": "Amazon EBS",
+      "service": "ebs",
+      "why": "EC2 の起動ディスクや 1 台のサーバーのデータベースに向くブロックストレージです。インスタンスを停止してもデータは残ります。"
+    },
+    {
+      "id": "q-share",
+      "ask": "フォルダーとファイルの階層（ファイルシステム）として使いますか。",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "q-windows"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-s3"
+        }
+      ]
+    },
+    {
+      "id": "r-s3",
+      "result": "Amazon S3",
+      "service": "s3",
+      "why": "API でオブジェクト単位に読み書きするストレージです。容量を気にせず使え、大量のデータの保存や配信に向きます。",
+      "factRefs": [
+        "s3.object-storage-model"
+      ]
+    },
+    {
+      "id": "q-windows",
+      "ask": "Windows のサーバーから、共有フォルダー（SMB）として使いますか。",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-fsxw"
+        },
+        {
+          "label": "いいえ",
+          "to": "q-hpc"
+        }
+      ]
+    },
+    {
+      "id": "r-fsxw",
+      "result": "FSx for Windows",
+      "service": "fsx",
+      "why": "Windows のファイル共有（SMB）には FSx for Windows File Server を使います。EFS は Windows では使えません。",
+      "factRefs": [
+        "fsx.windows-smb"
+      ]
+    },
+    {
+      "id": "q-hpc",
+      "ask": "S3 のデータを HPC や機械学習で高速に処理しますか。",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-lustre"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-efs"
+        }
+      ]
+    },
+    {
+      "id": "r-lustre",
+      "result": "FSx for Lustre",
+      "service": "fsx",
+      "why": "HPC や機械学習など速度重視の処理に向きます。S3 バケットとリンクして、オブジェクトをファイルとして処理できます。",
+      "factRefs": [
+        "fsx.lustre-s3-repository"
+      ]
+    },
+    {
+      "id": "r-efs",
+      "result": "Amazon EFS",
+      "service": "efs",
+      "why": "Linux 向けの共有ファイルシステムです。容量が自動で増減し、リージョン型なら複数の AZ のサーバーから使えます。",
+      "factRefs": [
+        "efs.elastic-capacity"
+      ]
+    }
+  ]
+}
