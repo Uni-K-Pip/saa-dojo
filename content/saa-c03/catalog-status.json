@@ -6337,7 +6337,7 @@
   "managed-grafana.sso-authentication": {
     "status": "verified",
     "checkedAt": "2026-11-22",
-    "hash": "02d956562ec9"
+    "hash": "b057835639e6"
   },
   "managed-service-for-prometheus": {
     "status": "verified",

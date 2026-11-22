@@ -18,10 +18,14 @@
       "id": "managed-grafana.sso-authentication",
       "title": "認証は SAML 2.0 の IdP か IAM Identity Center",
       "kind": "constraint",
-      "text": "Amazon Managed Grafana のユーザーの認証と認可には、SAML 2.0 に対応する ID プロバイダー（IdP）か、AWS IAM Identity Center を連携させる。ワークスペース内で権限を割り当てるのに、IAM ユーザーとロールは使えない。",
+      "text": "Amazon Managed Grafana のワークスペースのユーザーは、IAM ではなく、SAML 2.0 に対応する ID プロバイダー（IdP）か AWS IAM Identity Center（どちらか一方、または両方）によるシングルサインオンで認証される。ワークスペース内で権限を割り当てるのに、IAM ユーザーとロールは使えない。",
       "examPoint": "ワークスペースへのサインインは、SAML 2.0 の IdP か IAM Identity Center で行う。",
       "depth": "core",
       "sources": [
+        {
+          "title": "Authenticate users in Amazon Managed Grafana workspaces",
+          "url": "https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html"
+        },
         {
           "title": "What is Amazon Managed Grafana?",
           "url": "https://docs.aws.amazon.com/grafana/latest/userguide/what-is-Amazon-Managed-Service-Grafana.html"
