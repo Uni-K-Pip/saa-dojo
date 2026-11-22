@@ -19,6 +19,7 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 | 早見表・ガイド | `content/saa-c03/cheatsheets/<id>.md`・`content/saa-c03/guides/<id>.md` | `cheatsheet-…`・`guide-…` |
 | 図鑑のエントリ | `content/saa-c03/catalog/services/<id>.json` | 台帳のサービス `id`（例 `s3`）。事実は `<サービスid>.<スラッグ>`（例 `s3.access-points`） |
 | 図鑑の比較 | `content/saa-c03/catalog/comparisons/<id>.json` | `cmp-<英小文字とハイフン>`（例 `cmp-config-cloudtrail`） |
+| 学習コース | `content/saa-c03/course.json`（1 ファイル） | ユニットは `u<2桁>`（例 `u01`）。15 章 |
 
 - 1問1ファイル。`createdBy` は ID の作成者IDと同じにし、連番は作成者ごとに 001 から振ります。
 - 他の作成者のファイルは編集しません。
@@ -65,9 +66,11 @@ SAA Dojo のコンテンツ（問題、レッスン、フラッシュカード�
 
 ### 6.1 最新性の注意（2026年11月時点）
 
-- **正解にしない**（提供終了・新規受付停止）: Amazon Kinesis Data Analytics for SQL Applications、AWS App Mesh、EC2-Classic、EC2 Auto Scaling の起動設定（Launch Configuration。新しいアカウントでは作成できないので起動テンプレートを使う）、Amazon S3 Select、Amazon S3 Object Lambda、Amazon Glacier の独立サービス（ボールトと旧 API。S3 Glacier の各ストレージクラスは引き続き使える）、AWS WAF Classic、Amazon Aurora Serverless v1、AWS CloudTrail Lake、Amazon SNS のメッセージデータ保護。
+- **正解にしない**（提供終了・新規受付停止）: Amazon Kinesis Data Analytics for SQL Applications、AWS App Mesh、EC2-Classic、EC2 Auto Scaling の起動設定（Launch Configuration。新しいアカウントでは作成できないので起動テンプレートを使う）、Amazon S3 Select、Amazon S3 Object Lambda、Amazon Glacier の独立サービス（ボールトと旧 API。S3 Glacier の各ストレージクラスは引き続き使える）、AWS WAF Classic、Amazon Aurora Serverless v1、AWS CloudTrail Lake、Amazon SNS のメッセージデータ保護、AWS Directory Service の Simple AD、Amazon FSx File Gateway、AWS Data Pipeline、AWS Proton、AWS Application Discovery Service。
 - **AWS Snowball Edge**: 2025年11月から新規顧客の受付が止まっています。用途はレッスンやフラッシュカードで扱ってよいですが、問題の正解にする場合は解説で必ずこの点に触れます。
 - **AWS Firewall Manager**: 置き換えていく別のサービスとして AWS Network Security Manager が出ています（改名ではなく別のサービスです。Firewall Manager の販売と提供の終了の日付は、2026年11月時点で発表されていません）。試験ガイドの範囲内のサービスの一覧は AWS Firewall Manager を載せているので、教材は Firewall Manager の名前のまま書き、問題の正解にしてかまいません。終了の日付が発表されたら、扱いを見直します。
+- **AWS Application Migration Service**: 今の公式のページでの名前は AWS Transform MGN（旧称 AWS Application Migration Service）です。試験ガイドの範囲内のサービスの一覧は AWS Application Migration Service の名前で載せているので、教材はこの名前のまま書き、初出に今の公式の名前を併記します。
+- **Amazon Quick と Amazon QuickSight**: 今の公式のページでの名前は AWS Quick と、Quick の中の機能の AWS Quick Sight（Amazon QuickSight から発展したもの）です。試験ガイドの範囲内のサービスの一覧は Amazon Quick の名前で載せているので、教材は台帳の名前（Amazon Quick、Amazon QuickSight）のまま書き、初出に今の公式の名前を併記します。
 - **新旧の名前を併記する**: Amazon Data Firehose（旧称 Amazon Kinesis Data Firehose）、Amazon Managed Service for Apache Flink（旧称 Amazon Kinesis Data Analytics for Apache Flink）、Aurora Serverless v2 は「Aurora serverless」に改称、Aurora Global Database の計画的切り替え（Switchover）と障害時のフェイルオーバー（Failover）の区別、EventBridge のカスタムイベントバス（従来型の classic と新しい enhanced）。
 - **既定値に依存する問題を作らない**: S3 の既定の暗号化（SSE-S3）、新しいバケットのブロックパブリックアクセスと ACL 無効化、S3 ライフサイクルで128 KB未満のオブジェクトを移行しない既定動作、Amazon Linux 2023 の IMDSv2 必須、STS のリージョンエンドポイントの扱い、RDS 延長サポートへの自動加入。
 
@@ -136,6 +139,16 @@ npm ci
 npm run validate   # 形式の検査（エラーがあれば失敗）
 npm run coverage   # 網羅状況の集計
 ```
+
+## 15. 学習コース
+
+前提知識の順に教材を並べる 1 つのデータです（`content/saa-c03/course.json`）。教材そのものは持たず、今ある教材の ID を指すだけです。考え方とユニットの割り当ては `docs/learning-design.md` の 5 章と付録 A にあります。形式は `scripts/lib/course.mjs` が正です。
+
+- **形**: `stages`（ステージ 0〜4 を順に）→ `units`（`id` は `u00` から出現順に増える。`title`）→ `items`（ユニットの中の順）。ステージは `id`・`title`・`goal` を持ちます。
+- **項目の種類**（`kind`）: `lesson`（`ref` にレッスンの ID）、`doc`（`ref` に早見表かガイドの ID）、`practice`（ユニット演習）、`drill`（判断軸ドリル）、`analysis`（弱点分析）、`mock`（`mock` に `random`・`mockA`・`mockB`）。どれも短い補足 `note`（60 字まで）を付けられます。
+- **並べ方**: レッスン → 早見表 → ユニット演習の順にします。ユニット演習は、そのユニットのレッスンの `knowledgeRefs` と重なる問題（`pool` が `practice` か `basics`）から出ます。保留模試（`mockA`・`mockB`）の問題は入りません。
+- **まだない教材は書きません**: ミニラボ・設計パターン・シミュレーター・図は、教材ができたときに種類を足してから項目に加えます（存在しない ID はエラーになるため）。
+- **validate のエラー**: スキーマ違反、ステージの順の誤り、ユニットの ID の重複と順の誤り、同じユニットの中の項目の重複、存在しないレッスン・早見表・ガイド、2 つ以上のユニットに入るレッスン、どのユニットにも入らないレッスン、レッスンのないユニット演習、候補が 0 問のユニット演習（要修正・却下の問題を除いて数える）。早見表とガイドは、複数のユニットに入れてかまいません（例: ステージ 4 の総ざらい）。
 
 ## 16. 図
 

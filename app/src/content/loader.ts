@@ -17,6 +17,7 @@ import type {
   QuestionMeta,
   ServiceEntry,
 } from './types';
+import type { Course } from './course-types';
 
 export type Fetcher = (path: string) => Promise<unknown>;
 
@@ -66,6 +67,7 @@ function loadKey<T>(key: string, fallback: T): Promise<T> {
 }
 
 export const loadBlueprint = () => loadKey<BlueprintSummary | null>('blueprint', null);
+export const loadCourse = () => loadKey<Course | null>('course', null);
 export const loadQuestionIndex = () => loadKey<QuestionMeta[]>('index', []);
 export const loadLessons = () => loadKey<LessonMeta[]>('lessons', []);
 export const loadLessonBody = (id: string) => loadKey<LessonBody | null>(`lesson:${id}`, null);

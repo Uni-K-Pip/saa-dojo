@@ -2,7 +2,7 @@
 
 export type Confidence = 'sure' | 'maybe' | 'guess';
 export type MissReason = 'knowledge' | 'misread' | 'two-choice' | 'timeout';
-export type AnswerMode = 'practice' | 'basics' | 'review' | 'lesson' | 'mock' | 'mockA' | 'mockB';
+export type AnswerMode = 'practice' | 'basics' | 'review' | 'lesson' | 'mock' | 'mockA' | 'mockB' | 'unit';
 export type MockKind = 'random' | 'mockA' | 'mockB';
 export type FlashcardRating = 1 | 2 | 3 | 4;
 
@@ -96,6 +96,13 @@ export interface DrillEvent extends EventBase {
   durationMs: number;
 }
 
+export interface CourseCheckEvent extends EventBase {
+  type: 'course-check';
+  unitId: string;
+  itemKey: string;
+  done: boolean;
+}
+
 export type AppEvent =
   | AnswerEvent
   | MissReasonEvent
@@ -106,6 +113,7 @@ export type AppEvent =
   | LessonReadEvent
   | CheckAnswerEvent
   | CatalogReadEvent
+  | CourseCheckEvent
   | DrillEvent;
 
 type DistributiveOmit<T, K extends keyof EventBase> = T extends unknown ? Omit<T, K> : never;

@@ -32,6 +32,7 @@ import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
 import { parseInlineChecks } from './lib/inline-check.mjs';
+import { CourseSchema, checkCourse as checkCourseData } from './lib/course.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -100,6 +101,7 @@ function classify(rel) {
   const domainDir = /^d([1-4])$/.exec(p[1] ?? '');
 
   if (rel === 'blueprint.json') return { kind: 'blueprint' };
+  if (rel === 'course.json') return { kind: 'course' };
   if (rel === 'services.json') return { kind: 'registry' };
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (rel === CATALOG_STATUS_FILE) return { kind: 'catalog-status' };
@@ -129,6 +131,7 @@ function classify(rel) {
 export const LAYOUT_HELP = [
   '許可する配置（content/saa-c03 からの相対パス）:',
   '  blueprint.json / services.json / review-status.json',
+  '  course.json',
   '  questions/d<1-4>/<タスク>/<id>.json   questions/basics/<id>.json',
   '  lessons/d<1-4>/<id>.md   lessons/basics/<id>.md',
   '  flashcards/<デッキ>.json   glossary/<名前>.json',
@@ -281,6 +284,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     report,
     issues: report.issues,
     blueprint: null,
+    course: null,
     bpIndex: null,
     serviceIndex: null,
     registry: { present: false, data: null }, // サービス台帳（services.json）
@@ -449,6 +453,12 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         if (!j) break;
         const data = validateWith(GlossaryFileSchema, j.value, rel);
         if (data) content.glossaries.push({ rel, data });
+        break;
+      }
+      case 'course': {
+        const j = readJson(rel);
+        const data = j && validateWith(CourseSchema, j.value, rel);
+        if (data) content.course = { rel, data };
         break;
       }
       case 'diagram': {
@@ -972,6 +982,20 @@ function checkInlineChecks(content) {
   for (const doc of docs) check(doc);
 }
 
+function checkCourse(content) {
+  if (!content.course) return;
+  const { rel, data } = content.course;
+  const { report } = content;
+  const { errors, warnings } = checkCourseData(data, {
+    lessons: content.lessons.map(({ data }) => data),
+    docIds: new Set(content.docs.map(({ data }) => data.id)),
+    // ユニット演習の候補はビルドと同じく、要修正・却下の問題を除いて数える
+    questions: content.questions.filter(({ data }) => !HIDDEN_STATUSES.has(statusOf(content, data.id))).map(({ data }) => data),
+  });
+  for (const m of errors) report.error('course', rel, m);
+  for (const w of warnings) report.warn(w.code, rel, w.message);
+}
+
 function checkLongestCorrect(content) {
   const s = longestCorrectStats(content.questions);
   content.longestCorrect = s;
@@ -1007,6 +1031,7 @@ export function checkContent(content) {
   checkCatalogModel(content);
   checkDiagrams(content);
   checkInlineChecks(content);
+  checkCourse(content);
   checkLongestCorrect(content);
   return content;
 }
@@ -1105,6 +1130,8 @@ const CODE_LABELS = {
   'diagram-same-position': '位置づけ図の項目が同じ位置に重なる',
   'inline-check': 'その場の確認の形の誤り',
   'inline-check-few': 'その場の確認が少ない',
+  course: '学習コースの不整合',
+  'course-no-lab': 'ミニラボのないユニット',
   'diagram-height': '図の高さが目安を超える',
   'diagram-crowded': '図の浮く要素の置き場所が足りない',
   'diagram-side': '図の線の辺の指定が使えない',

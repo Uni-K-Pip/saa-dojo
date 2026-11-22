@@ -27,7 +27,7 @@
       "id": "a",
       "text": "EC2 の Auto Scaling グループを直接作成して、EMR のコアノードとして管理する。",
       "correct": false,
-      "rationale": "EMR クラスターの EC2 インスタンスの数は、EMR のマネージドスケーリング、カスタム自動スケーリング、または手動のサイズ変更で調整します。EMR のマネージドスケーリングなら、ルールの設計なしに自動で増減させられます。"
+      "rationale": "EC2 Auto Scaling グループは、指定したスケーリングポリシーでインスタンスを増減させます。EMR クラスターの EC2 インスタンスの数は、EMR のマネージドスケーリング、カスタム自動スケーリング、または手動のサイズ変更で調整します。EMR のマネージドスケーリングなら、ルールの設計なしに自動で増減させられます。"
     },
     {
       "id": "b",
@@ -62,6 +62,10 @@
     {
       "title": "Amazon EMR のクラスターのスケーリング - Amazon EMR 管理ガイド",
       "url": "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-scale-on-demand.html"
+    },
+    {
+      "title": "Amazon EC2 Auto Scaling とは - Amazon EC2 Auto Scaling ユーザーガイド",
+      "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html"
     }
   ],
   "lessonRefs": [],

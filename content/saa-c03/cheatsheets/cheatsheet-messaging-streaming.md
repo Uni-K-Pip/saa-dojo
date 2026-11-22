@@ -53,7 +53,7 @@ SQS のメッセージは最大 1 MiB です。可視性タイムアウト（受
 | AWS のサービスや SaaS のイベントを、内容で振り分けたい | EventBridge のルール |
 | 決まった時刻や間隔で処理を起動したい | EventBridge Scheduler（EventBridge のスケジュール） |
 | 大量のデータをリアルタイムに、複数のアプリケーションで読みたい。読み直したい | Kinesis Data Streams |
-| ストリームのデータを、コードを書かずに S3 や Redshift に保存したい | Amazon Data Firehose |
+| ストリームのデータを、コードを書かずに Redshift や OpenSearch Service などへ配信したい（配信前の変換やバッファリングも使いたい） | Amazon Data Firehose |
 | JMS や AMQP、MQTT を使う既存のアプリケーションを、変更を少なく移したい | Amazon MQ |
 | Apache Kafka を使い続けたい | Amazon MSK |
 | 複数の手順を順番に実行し、失敗時の再試行や分岐を管理したい | AWS Step Functions |
@@ -65,7 +65,7 @@ SQS のメッセージは最大 1 MiB です。可視性タイムアウト（受
 > 「1 つのメッセージを複数の処理に届け、それぞれが自分のペースで処理する」は、SNS と SQS を組み合わせたファンアウトです。SNS だけでは、受信側が止まっている間のメッセージを確実にはためておけません（再試行は有限で、尽きると、デッドレターキューがなければ破棄されます）。
 
 > **試験のポイント**
-> 「リアルタイム」「複数の受信側」「読み直し」なら Kinesis Data Streams、「ほぼリアルタイムで S3 などに保存」「運用負荷を最小に」なら Amazon Data Firehose です。Firehose はデータをいったんバッファにためてから届けるため、ミリ秒単位の処理には向きません。
+> 「リアルタイム」「複数の受信側」「読み直し」なら Kinesis Data Streams、「ほぼリアルタイムで S3 などに保存」「運用負荷を最小に」なら Amazon Data Firehose です。Firehose はデータをいったんバッファにためてから届けるため、ミリ秒単位の処理には向きません。なお、オンデマンドモードの Kinesis Data Streams には、コンシューマーを用意せずに、同じリージョンの S3 汎用バケットなどへ直接配信する機能もあるため、「コードを書かずに S3 へ」だけでは Firehose に決まりません。
 
 ## ひっかけ注意
 

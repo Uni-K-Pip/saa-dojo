@@ -48,7 +48,7 @@ createdBy: w2a
 | ゲートウェイ | 見え方 | 保存先 |
 |---|---|---|
 | S3 File Gateway | NFS／SMB の共有 | S3 のオブジェクト |
-| FSx File Gateway | SMB の共有 | Amazon FSx for Windows File Server |
+| FSx File Gateway（新しいお客様は利用できません。既存の利用者は使えます） | SMB の共有 | Amazon FSx for Windows File Server |
 | ボリュームゲートウェイ | iSCSI のブロック | S3 上のボリューム（スナップショットは EBS スナップショット） |
 | テープゲートウェイ | 仮想テープライブラリー | S3、S3 Glacier |
 

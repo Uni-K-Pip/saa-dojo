@@ -64,7 +64,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 |---|---|---|
 | AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。権限セットでアカウントごとの権限を一元管理する |
 | IAM の SAML・OIDC フェデレーション | 従業員、ワークロード | アカウントごとに ID プロバイダーを登録し、ロールを引き受けさせる |
-| AWS Directory Service | Active Directory を使う組織 | AWS Managed Microsoft AD、AD Connector、Simple AD を提供する |
+| AWS Directory Service | Active Directory を使う組織 | AWS Managed Microsoft AD、AD Connector、Simple AD を提供する（Simple AD は新しいお客様は利用できません） |
 | Amazon Cognito | 自社アプリの利用者（顧客） | ユーザープールでサインアップ・サインイン、ID プールで AWS の一時的な認証情報を発行する |
 
 ### Directory Service の 3 つの選択肢
@@ -73,7 +73,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 |---|---|---|
 | AD Connector | オンプレミスの AD へのリクエストを中継するゲートウェイ。ディレクトリの情報をクラウドにキャッシュしない | 既存の AD の認証情報をそのまま使い、AWS にディレクトリを置きたくない |
 | AWS Managed Microsoft AD | AWS が運用する Microsoft Active Directory。オンプレミスの AD と信頼関係を結べる | AWS 上で AD 自体が必要、AD に依存するワークロードを動かす |
-| Simple AD | Samba 4 ベースの小規模向けのディレクトリ | 基本的な AD の機能だけで足りる小規模な環境。IAM Identity Center の ID ソースにはできない |
+| Simple AD | Samba 4 ベースの小規模向けのディレクトリ | 基本的な AD の機能だけで足りる小規模な環境。IAM Identity Center の ID ソースにはできない。新しいお客様は利用できず（既存の利用者は使えます）、AWS は代わりに AWS Managed Microsoft AD や AD Connector を案内しています |
 
 ## 設計パターン
 

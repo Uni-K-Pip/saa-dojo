@@ -28,6 +28,22 @@ function mockResult(kind: 'mockA' | 'mockB', correct: number, total: number, at?
 const r = (events: AppEvent[], index = makeIndex()) => computeReadiness(events, index, buildHistory(events), bp);
 
 describe('合格準備度', () => {
+  it('ユニット演習（モード unit）の回答は演習と同じく数え、学習コースの記録（course-check）は使わない（決定 L-7）', () => {
+    const index = makeIndex();
+    const asMode = (mode: 'practice' | 'unit') =>
+      index.filter((m) => m.pool === 'practice').map((q) => answer(q.id, Number(q.id.slice(-3)) % 5 !== 0, { mode, at: 1000 + Number(q.id.slice(-3)) }));
+    const practice = r(asMode('practice'), index);
+    const unit = r(asMode('unit'), index);
+    expect(unit.conditions).toEqual(practice.conditions);
+    expect(unit.conditions.find((x) => x.id === 'domains')!.achieved).toBe(true);
+    const checks = [
+      event('course-check', { unitId: 'u01', itemKey: 'practice', done: true }),
+      event('course-check', { unitId: 'u20', itemKey: 'mock:mockA', done: true }),
+    ];
+    expect(r([...asMode('unit'), ...checks], index).conditions).toEqual(unit.conditions);
+    expect(r(checks, index).achievedCount).toBe(0);
+  });
+
   it('何もしていなければどの条件も未達', () => {
     const res = r([]);
     expect(res.achievedCount).toBe(0);
