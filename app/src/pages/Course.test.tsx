@@ -74,7 +74,7 @@ describe('学習コースとユニット', () => {
   it.each([10, 15])('%i 問のユニット演習を始めるとセッションに進む', async (count) => {
     const user = userEvent.setup();
     renderApp('/course/u01');
-    const name = count === 10 ? 'ユニット演習を始める（10 問）' : '15 問';
+    const name = count === 10 ? 'ユニット演習を始める（10 問）' : '15 問で始める';
     await user.click(await screen.findByRole('button', { name }));
     expect(await screen.findByRole('heading', { name: 'ユニット演習: U01 アクセス管理' })).toBeInTheDocument();
     expect(screen.getByText(`1 / ${count} 問`)).toBeInTheDocument();

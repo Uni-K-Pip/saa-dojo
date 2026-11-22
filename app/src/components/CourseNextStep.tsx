@@ -36,7 +36,7 @@ export function courseItemDetails(
   }
 }
 
-function NextStepCard() {
+function NextStepCard({ showCourseLink }: { showCourseLink: boolean }) {
   const study = useStudy();
   const course = use(loadCourse());
   if (!course) return null;
@@ -54,12 +54,12 @@ function NextStepCard() {
       ) : <p>コースの項目はすべて済みです。</p>}
       <div className="btn-row">
         {details && <Link className="btn primary" to={details.to}>{details.action}</Link>}
-        <Link className="btn" to="/course">コースを見る</Link>
+        {showCourseLink && <Link className="btn" to="/course">コースを見る</Link>}
       </div>
     </section>
   );
 }
 
-export function CourseNextStep() {
-  return <Suspense fallback={null}><NextStepCard /></Suspense>;
+export function CourseNextStep({ showCourseLink = true }: { showCourseLink?: boolean }) {
+  return <Suspense fallback={null}><NextStepCard showCourseLink={showCourseLink} /></Suspense>;
 }

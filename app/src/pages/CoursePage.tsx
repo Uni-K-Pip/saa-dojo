@@ -23,7 +23,7 @@ export default function CoursePage() {
       <p className="muted">
         前提知識の順に学べます。知っているユニットは飛ばせます。試験ガイドの順で見るには<Link to="/roadmap">ロードマップ</Link>を開いてください。
       </p>
-      <CourseNextStep />
+      <CourseNextStep showCourseLink={false} />
       {!progress && <p className="notice">学習コースはまだありません。</p>}
       {progress?.stages.map(({ stage, units }) => (
         <section key={stage.id} className="card" aria-labelledby={`course-stage-${stage.id}`}>
@@ -121,7 +121,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
                         ユニット演習を始める（{Math.min(PRACTICE_COUNT, candidates)} 問）
                       </button>
                       {candidates >= LONG_PRACTICE_COUNT && (
-                        <button className="btn" type="button" disabled={busy} onClick={() => void startPractice(LONG_PRACTICE_COUNT)}>15 問</button>
+                        <button className="btn" type="button" disabled={busy} onClick={() => void startPractice(LONG_PRACTICE_COUNT)}>{LONG_PRACTICE_COUNT} 問で始める</button>
                       )}
                     </div>
                   )}
