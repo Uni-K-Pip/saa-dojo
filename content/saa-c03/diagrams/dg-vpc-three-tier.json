@@ -1,0 +1,129 @@
+{
+  "id": "dg-vpc-three-tier",
+  "type": "architecture",
+  "title": "3 層の VPC（2 つの AZ）",
+  "alt": "VPC の中に 2 つの AZ があり、それぞれにパブリック、プライベート、分離の 3 つのサブネットがあります。パブリックサブネットには ALB と NAT ゲートウェイ、プライベートサブネットにはアプリケーションのサーバー、分離されたサブネットにはデータベースがあります。利用者のリクエストはインターネットゲートウェイから ALB に入り、アプリケーション、データベースのプライマリへ進みます。アプリケーションから外へ出る通信は、同じ AZ の NAT ゲートウェイとインターネットゲートウェイを通ります。データベースは、プライマリから別の AZ のスタンバイへ同期で複製します。",
+  "lessonRefs": ["lesson-3.4-vpc-design", "lesson-2.2-ha-basics"],
+  "factRefs": [],
+  "createdBy": "v1",
+  "root": {
+    "dir": "col",
+    "children": [
+      { "id": "internet", "node": "internet", "label": "インターネット" },
+      { "id": "igw", "node": "igw", "label": "出入り口" },
+      {
+        "id": "vpc",
+        "box": "vpc",
+        "label": "VPC 10.0.0.0/16",
+        "dir": "row",
+        "children": [
+          {
+            "id": "az-a",
+            "box": "az",
+            "label": "AZ-a",
+            "dir": "col",
+            "children": [
+              {
+                "id": "pub-a",
+                "box": "subnet-public",
+                "label": "パブリック",
+                "dir": "row",
+                "children": [
+                  { "id": "nat-a", "node": "nat-gateway", "label": "外へ出る" },
+                  { "id": "alb-a", "node": "elb", "label": "ALB" }
+                ]
+              },
+              {
+                "id": "pri-a",
+                "box": "subnet-private",
+                "label": "プライベート",
+                "align": "end",
+                "children": [{ "id": "app-a", "node": "ec2", "label": "アプリ" }]
+              },
+              {
+                "id": "iso-a",
+                "box": "subnet-isolated",
+                "label": "分離",
+                "align": "end",
+                "children": [{ "id": "db-a", "node": "rds", "label": "プライマリ" }]
+              }
+            ]
+          },
+          {
+            "id": "az-c",
+            "box": "az",
+            "label": "AZ-c",
+            "dir": "col",
+            "children": [
+              {
+                "id": "pub-c",
+                "box": "subnet-public",
+                "label": "パブリック",
+                "dir": "row",
+                "children": [
+                  { "id": "alb-c", "node": "elb", "label": "ALB" },
+                  { "id": "nat-c", "node": "nat-gateway", "label": "外へ出る" }
+                ]
+              },
+              {
+                "id": "pri-c",
+                "box": "subnet-private",
+                "label": "プライベート",
+                "align": "start",
+                "children": [{ "id": "app-c", "node": "ec2", "label": "アプリ" }]
+              },
+              {
+                "id": "iso-c",
+                "box": "subnet-isolated",
+                "label": "分離",
+                "align": "start",
+                "children": [{ "id": "db-c", "node": "rds", "label": "スタンバイ" }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    { "id": "e1", "from": "internet", "to": "igw", "both": true },
+    { "id": "e2", "from": "igw", "to": "alb-a" },
+    { "id": "e3", "from": "igw", "to": "alb-c" },
+    { "id": "e4", "from": "alb-a", "to": "app-a" },
+    { "id": "e5", "from": "alb-c", "to": "app-c" },
+    { "id": "e6", "from": "app-a", "to": "db-a" },
+    { "id": "e7", "from": "app-c", "to": "db-a" },
+    { "id": "e8", "from": "app-a", "to": "nat-a", "fromSide": "left", "toSide": "bottom" },
+    { "id": "e9", "from": "app-c", "to": "nat-c", "fromSide": "right", "toSide": "bottom" },
+    { "id": "e10", "from": "nat-a", "to": "igw" },
+    { "id": "e11", "from": "nat-c", "to": "igw" },
+    { "id": "e12", "from": "db-a", "to": "db-c", "kind": "data", "label": "同期" }
+  ],
+  "steps": [
+    {
+      "text": "利用者のリクエストは、インターネットゲートウェイから VPC に入り、パブリックサブネットの ALB に届きます。",
+      "focus": ["internet", "igw", "alb-a", "alb-c"],
+      "edges": ["e1", "e2", "e3"]
+    },
+    {
+      "text": "ALB は、プライベートサブネットのアプリケーションサーバーへリクエストを振り分けます。",
+      "focus": ["alb-a", "alb-c", "app-a", "app-c"],
+      "edges": ["e4", "e5"]
+    },
+    {
+      "text": "アプリケーションサーバーは、分離されたサブネットにあるデータベースのプライマリを読み書きします。",
+      "focus": ["app-a", "app-c", "db-a"],
+      "edges": ["e6", "e7"]
+    },
+    {
+      "text": "アプリケーションサーバーが外へ出る通信は、同じ AZ の NAT ゲートウェイとインターネットゲートウェイを通ります。外から接続を始めることはできません。",
+      "focus": ["app-a", "app-c", "nat-a", "nat-c", "igw", "internet"],
+      "edges": ["e8", "e9", "e10", "e11", "e1"]
+    },
+    {
+      "text": "データベースは、プライマリから別の AZ のスタンバイへ同期で複製します。",
+      "focus": ["db-a", "db-c"],
+      "edges": ["e12"]
+    }
+  ]
+}

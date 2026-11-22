@@ -1,0 +1,83 @@
+{
+  "id": "dg-sns-sqs-fanout",
+  "type": "architecture",
+  "title": "SNS と SQS のファンアウト",
+  "alt": "注文のシステムが、注文の情報を SNS のトピックに発行します。在庫、配送、分析の 3 つのシステムは、それぞれ自分用の SQS キューでトピックを購読し、自分のキューからメッセージを取り出して処理します。1 つのシステムが止まっても、メッセージはそのキューに残り、ほかのシステムは処理を続けます。",
+  "lessonRefs": ["lesson-2.1-decoupling-and-messaging"],
+  "factRefs": [],
+  "createdBy": "v1",
+  "root": {
+    "dir": "row",
+    "children": [
+      { "id": "order", "node": "generic", "label": "注文" },
+      { "id": "topic", "node": "sns", "label": "トピック" },
+      {
+        "dir": "col",
+        "children": [
+          {
+            "id": "g-stock",
+            "box": "group",
+            "label": "在庫",
+            "dir": "row",
+            "children": [
+              { "id": "q-stock", "node": "sqs", "label": "キュー" },
+              { "id": "c-stock", "node": "generic", "label": "処理" }
+            ]
+          },
+          {
+            "id": "g-ship",
+            "box": "group",
+            "label": "配送",
+            "dir": "row",
+            "children": [
+              { "id": "q-ship", "node": "sqs", "label": "キュー" },
+              { "id": "c-ship", "node": "generic", "label": "処理" }
+            ]
+          },
+          {
+            "id": "g-stats",
+            "box": "group",
+            "label": "分析",
+            "dir": "row",
+            "children": [
+              { "id": "q-stats", "node": "sqs", "label": "キュー" },
+              { "id": "c-stats", "node": "generic", "label": "処理" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    { "id": "e1", "from": "order", "to": "topic", "label": "発行" },
+    { "id": "e2", "from": "topic", "to": "q-stock" },
+    { "id": "e3", "from": "topic", "to": "q-ship" },
+    { "id": "e4", "from": "topic", "to": "q-stats" },
+    { "id": "e5", "from": "q-stock", "to": "c-stock" },
+    { "id": "e6", "from": "q-ship", "to": "c-ship" },
+    { "id": "e7", "from": "q-stats", "to": "c-stats" }
+  ],
+  "steps": [
+    {
+      "text": "注文のシステムは、注文の情報を SNS のトピックに 1 回だけ発行します。",
+      "focus": ["order", "topic"],
+      "edges": ["e1"]
+    },
+    {
+      "text": "トピックは、購読している 3 つの SQS キューすべてに同じメッセージを配ります。",
+      "focus": ["topic", "q-stock", "q-ship", "q-stats"],
+      "edges": ["e2", "e3", "e4"]
+    },
+    {
+      "text": "在庫、配送、分析の各システムは、自分のキューからメッセージを取り出して処理します。",
+      "focus": ["g-stock", "g-ship", "g-stats"],
+      "edges": ["e5", "e6", "e7"]
+    },
+    {
+      "text": "配送のシステムが止まっても、メッセージは配送のキューに残ります。在庫と分析は処理を続け、発行する側は何も変えません。",
+      "focus": ["q-ship", "c-ship", "g-stock", "g-stats"],
+      "edges": ["e5", "e7"],
+      "marks": [{ "id": "c-ship", "state": "down" }]
+    }
+  ]
+}

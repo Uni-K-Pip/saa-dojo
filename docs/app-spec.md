@@ -1,6 +1,6 @@
 # アプリ仕様（SAA Dojo PWA）
 
-`app/` に置く独立した npm パッケージです（ルートの package.json はコンテンツ用ツールだけを持つ）。コンテンツの形式は `scripts/lib/schema.mjs` と `docs/content-guide.md` を参照してください。
+`app/` に置く独立した npm パッケージです（ルートの package.json はコンテンツ用ツールだけを持つ）。コンテンツの形式は `scripts/lib/schema.mjs` と `docs/content-guide.md` を参照してください。この文書は実装済みの仕様です。これから足す画面（学習コース、ミニラボ、設計パターン、シミュレーター、図の表示）の設計は `docs/learning-design.md` と `docs/visual-materials-design.md` にあり、実装が済んだものからこの文書に移します。
 
 ## 1. 技術構成
 

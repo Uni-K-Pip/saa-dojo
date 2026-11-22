@@ -26,9 +26,11 @@ import {
   CatalogComparisonSchema,
   CatalogStatusSchema,
   CatalogNeedsSchema,
+  DiagramSchema,
 } from './lib/schema.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
+import { checkDiagram } from './lib/diagram.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -105,6 +107,7 @@ function classify(rel) {
     if (p[1] === 'services') return { kind: 'catalog-entry', stem };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison', stem };
   }
+  if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram', stem };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question', dirTask: 'basics', stem };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2]) && p[2][0] === domainDir[1]) {
@@ -131,6 +134,7 @@ export const LAYOUT_HELP = [
   '  cheatsheets/<id>.md   guides/<id>.md',
   '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
   '  catalog-status.json / catalog-needs.json',
+  '  diagrams/<dg-…>.json',
 ];
 
 // ---------- 読み込み（文字コード・JSON・front matter） ----------
@@ -285,6 +289,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     docs: [], // { rel, data, body, docKind }
     decks: [], // { rel, data }
     glossaries: [], // { rel, data }
+    diagrams: [], // { rel, data }（スキーマに通ったものだけ）
     reviewStatus: { present: false, data: null },
     // サービス図鑑: { rel, data }（スキーマに通ったものだけ）。status・needs は存在の有無と中身
     catalog: {
@@ -295,7 +300,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
       files: { entries: 0, comparisons: 0 },
     },
     ids: new Map(), // id -> [{ type, rel }]（スキーマ不適合のファイルも含む）
-    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0 },
+    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0, diagramFiles: 0 },
   };
 
   if (!fs.existsSync(contentDir) || !fs.statSync(contentDir).isDirectory()) {
@@ -443,6 +448,18 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         if (!j) break;
         const data = validateWith(GlossaryFileSchema, j.value, rel);
         if (data) content.glossaries.push({ rel, data });
+        break;
+      }
+      case 'diagram': {
+        content.counts.diagramFiles++;
+        const j = readJson(rel);
+        if (!j) break;
+        const data = validateWith(DiagramSchema, j.value, rel);
+        registerId(j.value?.id, 'diagram', rel);
+        if (typeof j.value?.id === 'string' && j.value.id !== cls.stem) {
+          report.error('path-mismatch', rel, `ファイル名と id が違います（ファイル名: ${cls.stem}.json、id: ${j.value.id}）`);
+        }
+        if (data) content.diagrams.push({ rel, data });
         break;
       }
       case 'review-status': {
@@ -923,6 +940,19 @@ function checkCatalogModel(content) {
   for (const i of found) content.report[i.level === 'error' ? 'error' : 'warn'](i.code, i.file ?? '', i.message);
 }
 
+// 図（scripts/lib/diagram.mjs。ビルドと同じ判定）
+function checkDiagrams(content) {
+  const { report, serviceIndex } = content;
+  if (content.diagrams.length === 0) return;
+  const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
+  const factIds = new Set(content.catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => f.id)));
+  for (const { rel, data } of content.diagrams) {
+    const found = checkDiagram(data, { lessonIds: idsOf('lesson'), factIds, serviceIndex });
+    for (const m of found.errors) report.error('diagram', rel, m);
+    for (const w of found.warnings) report.warn(w.code, rel, w.message);
+  }
+}
+
 function checkLongestCorrect(content) {
   const s = longestCorrectStats(content.questions);
   content.longestCorrect = s;
@@ -956,6 +986,7 @@ export function checkContent(content) {
   checkNearDuplicates(content);
   checkCatalogNearDuplicates(content);
   checkCatalogModel(content);
+  checkDiagrams(content);
   checkLongestCorrect(content);
   return content;
 }
@@ -998,6 +1029,7 @@ export function summarize(content) {
       flashcards: content.decks.reduce((n, d) => n + d.data.cards.length, 0),
       glossaryFiles: c.glossaryFiles,
       glossaryEntries: content.glossaries.reduce((n, g) => n + g.data.entries.length, 0),
+      diagrams: { files: c.diagramFiles, valid: content.diagrams.length },
     },
     stats: {
       questionsByPool,
@@ -1046,6 +1078,12 @@ const CODE_LABELS = {
   'catalog-near-duplicate': '図鑑の事実の本文が似ている',
   'catalog-needs': '図鑑の不足の対応が未決',
   'correct-longest': '正解が最長に偏っている',
+  diagram: '図の不整合',
+  'diagram-height': '図の高さが目安を超える',
+  'diagram-crowded': '図の浮く要素の置き場所が足りない',
+  'diagram-side': '図の線の辺の指定が使えない',
+  'diagram-label': '図の部品の文字があふれる',
+  'diagram-overlap': '図の線が部品の上を通る',
   'review-status-missing': 'review-status.json がない',
   'body-short': '本文が短い',
   'glossary-duplicate': '用語の重複',
@@ -1070,6 +1108,7 @@ function renderText(result, opts) {
     L.push('読み込み');
     L.push(`  問題 ${c.questions.files} 件（有効 ${c.questions.valid}） / レッスン ${c.lessons.files} 件（有効 ${c.lessons.valid}） / 早見表 ${c.cheatsheets} 件 / ガイド ${c.guides} 件`);
     L.push(`  フラッシュカード ${c.flashcardDecks.files} デッキ・${c.flashcards} 枚 / 用語集 ${c.glossaryFiles} ファイル・${c.glossaryEntries} 語`);
+    if (c.diagrams.files > 0) L.push(`  図 ${c.diagrams.files} 件（有効 ${c.diagrams.valid}）`);
     if (c.catalog) {
       L.push(`  図鑑 エントリ ${c.catalog.entryFiles} 件（有効 ${c.catalog.entries}・事実 ${c.catalog.facts} 件） / 比較 ${c.catalog.comparisonFiles} 件（有効 ${c.catalog.comparisons}）`);
     }
