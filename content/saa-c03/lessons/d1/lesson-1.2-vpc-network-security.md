@@ -70,6 +70,7 @@ VPC の中の通信は、セキュリティグループとネットワーク ACL
 | IPv6 で外向きの通信だけを許可する | Egress-Only インターネットゲートウェイ |
 | VPC の出入りの通信を、ドメイン名のリストや侵入防止（IPS）のルールで検査する | AWS Network Firewall |
 | サーバーに SSH の受信ポートを開けずに管理用の接続をする | AWS Systems Manager Session Manager |
+
 ## 設計パターン
 
 ### 3 層構成とセキュリティグループの連鎖
