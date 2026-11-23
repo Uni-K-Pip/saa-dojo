@@ -7,16 +7,18 @@
   --dg-c-cell-dark-edge: var(--dg-c-cell-dark);
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --dg-c-cell-light-edge: var(--dg-c-cell-light);
     --dg-c-cell-dark-edge: var(--dg-c-cell-mid);
   }
 }
 
-:root[data-theme='dark'] {
-  --dg-c-cell-light-edge: var(--dg-c-cell-light);
-  --dg-c-cell-dark-edge: var(--dg-c-cell-mid);
+@media screen {
+  :root[data-theme='dark'] {
+    --dg-c-cell-light-edge: var(--dg-c-cell-light);
+    --dg-c-cell-dark-edge: var(--dg-c-cell-mid);
+  }
 }
 
 .dg-c-text { fill: var(--dg-text); }

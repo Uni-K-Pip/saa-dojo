@@ -422,7 +422,9 @@ it('前の行に文が続く画像の行と、閉じ忘れた markdown のフェ
   ]);
   const spaced = md(sheetRel, '前の文です。\n\n![図](#/diagrams/dg-test-architecture)');
   expect(issues({ [sheetRel]: spaced }).filter(({ code }) => code === 'material-ref-continued')).toEqual([]);
-  const fence = md(sheetRel, `\`\`\`markdown\n## 例\n\n${check}\n\`\`\``);
+  const example = md(sheetRel, `\`\`\`markdown\n## 例\n\n${check}\n\`\`\``);
+  expect(issues({ [sheetRel]: example }).filter(({ code }) => code === 'markdown-fence')).toEqual([]);
+  const fence = md(sheetRel, `\`\`\`markdown\n> 例\n\n## 次の節\n\n${check}\n\n\`\`\`markdown\n別の例\n\`\`\``);
   expect(issues({ [sheetRel]: fence }).filter(({ code }) => code === 'markdown-fence')).toEqual([
     expect.objectContaining({ level: 'warning' }),
   ]);
