@@ -8,6 +8,7 @@ import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
 import { buildArtifactOutputs, checkArtifactsForBuild } from './artifact-build.mjs';
+import { buildSimOutputs, checkSimsForBuild } from './sim-build.mjs';
 import { checkMaterialsForBuild, excludedRefWarnings } from './material-build.mjs';
 import { crosscheckMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
@@ -62,6 +63,7 @@ export function classify(rel) {
   }
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram' };
   if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact' };
+  if (p[0] === 'sims' && n === 3 && ext === '.json') return { kind: 'sim', sim: p[1] };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2])) return { kind: 'question' };
@@ -120,8 +122,9 @@ export function parseContent(files, schema) {
     materialStatusPresent: false,
     // 実物（content/saa-c03/artifacts）。スキーマに通ったものだけ
     artifacts: [],
+    sims: [],
     // 区分ごとのファイル名（スキーマに通らなかったものを含む。検証状態の記録の検査で使う）
-    materialStems: { diagrams: new Set(), artifacts: new Set() },
+    materialStems: { diagrams: new Set(), artifacts: new Set(), sims: new Set() },
   };
 
   const validate = (s, value, rel) => {
@@ -212,6 +215,12 @@ export function parseContent(files, schema) {
         if (data) parsed.course = { rel, data };
         break;
       }
+      case 'sim': {
+        parsed.materialStems.sims.add(path.posix.basename(rel, '.json'));
+        const j = json(rel, text);
+        if (j) parsed.sims.push({ rel, sim: cls.sim, data: j.value });
+        break;
+      }
       case 'artifact': {
         parsed.materialStems.artifacts.add(path.posix.basename(rel, '.json'));
         const j = json(rel, text);
@@ -280,6 +289,12 @@ function crossCheck(parsed, err, warn) {
   for (const d of parsed.decks) {
     claim(`deck:${d.data.deck}`, d.rel);
     for (const c of d.data.cards) claim(c.id, d.rel);
+  }
+
+  for (const { rel, data } of parsed.sims) if (typeof data?.id === 'string') claim(data.id, rel);
+  parsed.checkedSims = checkSimsForBuild(parsed);
+  for (const { level, rel, message } of parsed.checkedSims.issues) {
+    (level === 'error' ? err : warn)(rel, message);
   }
 
   const bp = parsed.blueprint;
@@ -486,6 +501,9 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const artifacts = buildArtifactOutputs(parsed, { includeUnverified });
   add('artifact-index', 'artifact-index', artifacts.index);
   for (const item of artifacts.items) add(`artifact:${item.id}`, `artifacts/${item.id}`, item);
+  const sims = buildSimOutputs(parsed, { includeUnverified });
+  add('sim-index', 'sim-index', sims.index);
+  for (const item of sims.items) add(`sim:${item.id}`, `sims/${item.id}`, item);
   if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions));
 
   const out = [];
@@ -530,6 +548,8 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       diagramsExcluded: diagrams.excluded,
       artifacts: artifacts.items.length,
       artifactsExcluded: artifacts.excluded,
+      sims: sims.items.length,
+      simsExcluded: sims.excluded,
       courseUnits: parsed.course?.data.stages.reduce((total, stage) => total + stage.units.length, 0) ?? 0,
     },
     files: manifestFiles,

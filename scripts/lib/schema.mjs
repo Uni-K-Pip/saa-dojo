@@ -649,6 +649,75 @@ export const ArtifactSchema = z
   })
   .strict();
 
+// シミュレーターのシナリオ（docs/sims-design.md の 3 章）
+export const SIM_SCENARIO_ID = /^sim-[a-z0-9]+-[a-z0-9][a-z0-9-]*$/;
+const simToggleId = z.string().regex(/^[a-z0-9][a-z0-9-]*$/);
+const simText = (min, max) => z.string().min(min).max(max);
+const simExpect = z.record(z.string(), z.unknown());
+const simInlineText = (min, max) => simText(min, max).refine(
+  (text) => !/\n[ \t]*\n/.test(text) &&
+    !/^(?: {4}|\t| {0,3}(?:#{1,6}(?:\s|$)|>|\x60{3,}|~{3,}|[-+*]\s|\d{1,9}[.)]\s))/m.test(text) &&
+    !/^ {0,3}(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,}|=+)$/m.test(text),
+  { message: '本文はインラインの Markdown で書いてください' },
+);
+const simExplain = simInlineText(20, 400);
+
+export const SimScenarioSchema = z.object({
+  id: z.string().regex(SIM_SCENARIO_ID),
+  title: simText(4, 60),
+  intro: simInlineText(20, 300),
+  predict: z.object({
+    text: simInlineText(10, 120),
+    key: z.string().min(1),
+    choices: z.array(z.object({
+      text: simText(1, 40),
+      value: z.union([z.string(), z.number().finite(), z.boolean()]),
+    }).strict()).min(2).max(4),
+  }).strict(),
+  config: z.unknown(),
+  toggles: z.array(z.object({
+    id: simToggleId,
+    label: simText(2, 30),
+    set: z.record(z.string(), z.unknown()),
+  }).strict()).min(1).max(4),
+  expect: z.object({ initial: simExpect, toggles: z.record(simToggleId, simExpect) }).strict(),
+  explain: z.object({ initial: simExplain, toggles: z.record(simToggleId, simExplain) }).strict(),
+  factRefs: z.array(z.string().regex(FACT_ID)),
+  lessonRefs: z.array(z.string().regex(LESSON_ID)),
+  createdBy: z.string().min(1),
+}).strict().refine((data) => data.factRefs.length + data.lessonRefs.length > 0, {
+  message: 'factRefs と lessonRefs を合わせて 1 つ以上指定してください',
+});
+
+const cidrInput = z.string();
+export const SIM_CONFIG_SCHEMAS = {
+  cidr: z.discriminatedUnion('op', [
+    z.object({
+      op: z.literal('size'), cidr: cidrInput, role: z.enum(['vpc', 'subnet']),
+      purpose: z.literal('alb').optional(), inUse: z.number().int().min(0).optional(),
+    }).strict(),
+    z.object({
+      op: z.literal('overlap'), a: cidrInput, b: cidrInput, context: z.enum(['peering', 'subnets']),
+    }).strict(),
+    z.object({
+      op: z.literal('split'), vpc: cidrInput, azs: z.number().int().min(1).max(4),
+      tiers: z.array(z.object({
+        name: z.string().min(1).max(12).refine((name) => name.trim().length > 0),
+        kind: z.enum(['public', 'private', 'isolated']),
+      }).strict()).min(1).max(3),
+      prefix: z.number().int().min(0).max(32),
+    }).strict(),
+  ]).superRefine((config, ctx) => {
+    if (config.op !== 'size') return;
+    if (config.purpose && config.role !== 'subnet') ctx.addIssue({
+      code: 'custom', path: ['purpose'], message: 'ALB の条件はサブネットで指定してください',
+    });
+    if (config.inUse !== undefined && config.purpose !== 'alb') ctx.addIssue({
+      code: 'custom', path: ['inUse'], message: '使用中の数は ALB の条件を確かめるときに指定してください',
+    });
+  }),
+};
+
 // 教材の検証状態（content/saa-c03/material-status.json）。種類ごとの区分 → 教材の id → 記録。
 // 今の区分は diagrams（図）と artifacts（実物）。区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
 // hash は検証した時点の内容のハッシュ（scripts/lib/material-status.mjs の materialHash）
@@ -663,5 +732,6 @@ export const MaterialStatusSchema = z
   .object({
     diagrams: z.record(z.string().regex(DIAGRAM_ID, { message: '図の id ではない' }), MaterialStatusRecordSchema).optional(),
     artifacts: z.record(z.string().regex(ARTIFACT_ID, { message: '実物の id ではない' }), MaterialStatusRecordSchema).optional(),
+    sims: z.record(z.string().regex(SIM_SCENARIO_ID, { message: 'シナリオの id ではない' }), MaterialStatusRecordSchema).optional(),
   })
   .strict();

@@ -1,0 +1,31 @@
+.sim {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sim h1[tabindex], .sim h2[tabindex] { scroll-margin-block-start: 4rem; }
+.sim .card h2,
+.sim .card h3 { margin-block-start: 0; }
+.sim .card h3:not(:first-child) { margin-block-start: 1rem; }
+.sim .btn { min-width: 0; min-height: 44px; white-space: normal; }
+.sim .badge, .sim small { font-size: max(12px, 0.78rem); }
+.sim summary { cursor: pointer; min-height: 44px; padding-block: 0.55rem; }
+
+.sim-settings { margin-block: 0.75rem; }
+.sim-settings > div { padding-block: 0.3rem; border-bottom: 1px solid var(--border); }
+.sim-settings dt, .sim-settings dd { display: inline; }
+.sim-settings dt { font-weight: 600; }
+.sim-settings dt::after { content: ': '; }
+.sim-settings dd { margin: 0; }
+
+.sim-toggles { display: flex; flex-direction: column; gap: 0.4rem; }
+.sim .btn[aria-pressed='true'] { background: var(--primary-soft); border-color: var(--primary); }
+.sim-comparison { display: grid; gap: 0.75rem; margin-block: 0.8rem; }
+.sim-comparison > section { min-width: 0; padding: 0.65rem; border: 1px solid var(--border); border-radius: var(--radius); }
+
+@media (min-width: 600px) {
+  .sim .inline-check > ul, .sim-toggles { display: flex; flex-flow: row wrap; }
+  .sim .inline-check > ul > li { flex: 1 1 12rem; min-width: 0; }
+  .sim .inline-check-option { height: 100%; }
+  .sim-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "sim-cidr-peering-overlap",
+  "title": "2 つの VPC をピアリングでつなげるか",
+  "intro": "自分のチームの VPC は 10.0.0.0/16、別のチームの VPC は 10.0.128.0/17 です。VPC ピアリングでつなぎたいと考えています。",
+  "predict": {
+    "text": "この 2 つの VPC の間にピアリング接続を作れますか。",
+    "key": "peering",
+    "choices": [
+      {
+        "text": "作れる",
+        "value": "can"
+      },
+      {
+        "text": "作れない",
+        "value": "cannot"
+      },
+      {
+        "text": "作れるが、重なる範囲の通信だけ届かない",
+        "value": "can-except-overlap"
+      }
+    ]
+  },
+  "config": {
+    "op": "overlap",
+    "context": "peering",
+    "a": "10.0.0.0/16",
+    "b": "10.0.128.0/17"
+  },
+  "toggles": [
+    {
+      "id": "peer-disjoint",
+      "label": "相手を 10.1.0.0/16 にする",
+      "set": {
+        "b": "10.1.0.0/16"
+      }
+    },
+    {
+      "id": "peer-same",
+      "label": "相手を 10.0.0.0/16 にする",
+      "set": {
+        "b": "10.0.0.0/16"
+      }
+    },
+    {
+      "id": "own-adjacent",
+      "label": "自分を 10.0.0.0/17 にする",
+      "set": {
+        "a": "10.0.0.0/17"
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "relation": "a-contains-b",
+      "sharedCount": 32768,
+      "peering": "cannot"
+    },
+    "toggles": {
+      "peer-disjoint": {
+        "relation": "disjoint",
+        "peering": "can"
+      },
+      "peer-same": {
+        "relation": "same",
+        "peering": "cannot"
+      },
+      "own-adjacent": {
+        "relation": "disjoint",
+        "peering": "can"
+      }
+    }
+  },
+  "explain": {
+    "initial": "自分の VPC の範囲が相手の範囲をすべて含んでいます。重なるアドレスは {{out:sharedCount}} 個です。{{rule:peering-overlap}}。",
+    "toggles": {
+      "peer-disjoint": "重なるアドレスは {{out:sharedCount}} 個です。CIDR が重ならないため、範囲の条件を満たします。",
+      "peer-same": "両方の範囲が一致し、{{out:sharedCount}} 個のアドレスが重なります。{{rule:peering-overlap}}。",
+      "own-adjacent": "範囲は隣り合っています。重なるアドレスは {{out:sharedCount}} 個なので、ピアリングの範囲の条件を満たします。"
+    }
+  },
+  "factRefs": [
+    "vpc.peering-overlap"
+  ],
+  "lessonRefs": [
+    "lesson-3.4-hybrid-and-multi-vpc",
+    "lesson-3.4-vpc-design",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "claude"
+}

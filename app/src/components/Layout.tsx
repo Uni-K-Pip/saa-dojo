@@ -1,6 +1,7 @@
-import { Suspense, type ReactNode } from 'react';
+import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { ErrorBoundary } from './ErrorBoundary';
+import { loadSimIndex } from '../content/loader';
 
 export interface NavItem {
   to: string;
@@ -28,6 +29,13 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/about', label: 'このアプリについて', icon: 'ℹ', group: 'その他' },
 ];
 
+export const SIM_NAV_ITEM: NavItem = { to: '/sims', label: 'シミュレーター', icon: '▦', group: '学ぶ' };
+
+export function menuItems(hasSims: boolean): NavItem[] {
+  if (!hasSims) return NAV_ITEMS;
+  return NAV_ITEMS.flatMap((item) => item.to === '/roadmap' ? [item, SIM_NAV_ITEM] : [item]);
+}
+
 const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/', label: 'ホーム', icon: '⌂' },
   { to: '/course', label: '学ぶ', icon: '🧭' },
@@ -36,10 +44,10 @@ const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/menu', label: 'メニュー', icon: '☰' },
 ];
 
-function SideNav() {
+function SideNav({ hasSims }: { hasSims: boolean }) {
   let lastGroup = '';
   const items: ReactNode[] = [];
-  for (const item of NAV_ITEMS) {
+  for (const item of menuItems(hasSims)) {
     if (item.group && item.group !== lastGroup) {
       items.push(
         <li key={`g-${item.group}`} className="nav-group" aria-hidden="true">
@@ -65,6 +73,22 @@ function SideNav() {
 
 export function Layout({ toast }: { toast?: ReactNode }) {
   const location = useLocation();
+  const [hasSims, setHasSims] = useState(false);
+  // 出すシナリオがあるときだけ、横のナビにシミュレーターを出す。一覧のデータは最初の描画のあとに読む（初期表示を待たせない）
+  useEffect(() => {
+    let alive = true;
+    const timer = setTimeout(() => {
+      loadSimIndex()
+        .then((list) => {
+          if (alive && list.some(({ scenarios }) => scenarios.length > 0)) setHasSims(true);
+        })
+        .catch(() => {});
+    }, 0);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, []);
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -81,7 +105,7 @@ export function Layout({ toast }: { toast?: ReactNode }) {
         </NavLink>
       </header>
       <div className="app-body">
-        <SideNav />
+        <SideNav hasSims={hasSims} />
         <main id="main" className="main" tabIndex={-1}>
           <ErrorBoundary resetKey={location.pathname}>
             <Suspense
@@ -91,7 +115,7 @@ export function Layout({ toast }: { toast?: ReactNode }) {
                 </div>
               }
             >
-              <Outlet />
+              <Outlet context={setHasSims} />
             </Suspense>
           </ErrorBoundary>
           <footer className="app-footer">

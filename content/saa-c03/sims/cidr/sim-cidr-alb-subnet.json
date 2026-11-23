@@ -1,0 +1,92 @@
+{
+  "id": "sim-cidr-alb-subnet",
+  "title": "ALB がスケールするための空きは足りているか",
+  "intro": "ALB を置くパブリックサブネットは 10.0.1.0/27 です。ほかのリソースがすでに 20 個のアドレスを使っています。",
+  "predict": {
+    "text": "このサブネットは、ALB が適切にスケールするための条件を満たしますか。",
+    "key": "albIssue",
+    "choices": [
+      {
+        "text": "満たす",
+        "value": "none"
+      },
+      {
+        "text": "範囲が小さいので満たさない",
+        "value": "prefix"
+      },
+      {
+        "text": "空きのアドレスが少ないので満たさない",
+        "value": "free"
+      }
+    ]
+  },
+  "config": {
+    "op": "size",
+    "role": "subnet",
+    "purpose": "alb",
+    "cidr": "10.0.1.0/27",
+    "inUse": 20
+  },
+  "toggles": [
+    {
+      "id": "use-19",
+      "label": "使用中を 19 にする",
+      "set": {
+        "inUse": 19
+      }
+    },
+    {
+      "id": "use-10",
+      "label": "使用中を 10 にする",
+      "set": {
+        "inUse": 10
+      }
+    },
+    {
+      "id": "prefix-26",
+      "label": "/26 にする",
+      "set": {
+        "cidr": "10.0.1.0/26"
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "usable": 27,
+      "free": 7,
+      "albIssue": "free"
+    },
+    "toggles": {
+      "use-19": {
+        "free": 8,
+        "albIssue": "none"
+      },
+      "use-10": {
+        "free": 17,
+        "albIssue": "none"
+      },
+      "prefix-26": {
+        "usable": 59,
+        "free": 39,
+        "albIssue": "none"
+      }
+    }
+  },
+  "explain": {
+    "initial": "ALB が適切にスケールするための条件は {{rule:alb-subnet}} です。使える {{out:usable}} 個のうち、空きは {{out:free}} 個です。空きが足りないと、スケールの試みが止まり、5xx エラーやタイムアウトにつながることがあります。",
+    "toggles": {
+      "use-19": "空きが {{out:free}} 個になりました。範囲と空きの数が、ALB が適切にスケールするための条件（{{rule:alb-subnet}}）を満たします。",
+      "use-10": "使用中の数を減らすと、空きは {{out:free}} 個になります。範囲と空きの数が、ALB が適切にスケールするための条件を満たします。",
+      "prefix-26": "範囲を広げると、使えるアドレスは {{out:usable}} 個です。使用中の数は同じなので、空きは {{out:free}} 個に増えます。ALB が適切にスケールするための条件を満たします。"
+    }
+  },
+  "factRefs": [
+    "elb.alb-subnet-capacity",
+    "vpc.subnet-reserved-ips",
+    "vpc.cidr-size"
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "claude"
+}

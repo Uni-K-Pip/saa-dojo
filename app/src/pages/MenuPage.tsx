@@ -1,8 +1,14 @@
-import { Link } from 'react-router';
-import { NAV_ITEMS } from '../components/Layout';
+import { use, useEffect } from 'react';
+import { Link, useOutletContext } from 'react-router';
+import { menuItems } from '../components/Layout';
+import { loadSimIndex } from '../content/loader';
 
 export default function MenuPage() {
-  const groups = [...new Set(NAV_ITEMS.map((i) => i.group))];
+  const setHasSims = useOutletContext<((visible: boolean) => void) | null>();
+  const hasSims = use(loadSimIndex()).some(({ scenarios }) => scenarios.length > 0);
+  const items = menuItems(hasSims);
+  const groups = [...new Set(items.map((i) => i.group))];
+  useEffect(() => setHasSims?.(hasSims), [hasSims, setHasSims]);
   return (
     <div>
       <h1>メニュー</h1>
@@ -10,7 +16,7 @@ export default function MenuPage() {
         <section key={g || 'top'} className="card">
           {g && <h2 style={{ marginTop: 0 }}>{g}</h2>}
           <ul className="list">
-            {NAV_ITEMS.filter((i) => i.group === g).map((i) => (
+            {items.filter((i) => i.group === g).map((i) => (
               <li key={i.to}>
                 <Link to={i.to}>
                   <span aria-hidden="true">{i.icon} </span>

@@ -13,6 +13,7 @@ export const MATERIAL_STATUS_FILE = 'material-status.json';
 export const MATERIAL_SECTIONS = {
   diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'] },
   artifacts: { label: '実物', kind: 'artifact', omit: ['createdBy'] },
+  sims: { label: 'シナリオ', kind: 'sim', omit: ['createdBy'], skipUnreferenced: true },
 };
 const SECTION_OF_KIND = Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([s, c]) => [c.kind, s]));
 
@@ -104,6 +105,7 @@ export function checkMaterialStatus({ statusFile, materials, presentIds = {}, te
       if (materialEffectiveStatus(statusFile, section, id, d.data).stale) stale.push(`${conf.label} ${id}`);
     }
     statuses[section] = materialStatuses(statusFile, section, items);
+    if (conf.skipUnreferenced) continue;
     for (const { rel, data } of items) {
       if (statuses[section].get(data.id).status === 'verified' && !referenced.has(`${conf.kind}:${data.id}`)) {
         issues.push({ level: 'warning', code: `${conf.kind}-unreferenced`, rel, message: `検証済みの${conf.label} ${data.id} を、レッスン・早見表・ガイドの本文のどこからも参照していません` });

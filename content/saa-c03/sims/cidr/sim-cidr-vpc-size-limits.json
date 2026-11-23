@@ -1,0 +1,87 @@
+{
+  "id": "sim-cidr-vpc-size-limits",
+  "title": "どこまで大きな VPC を作れるか",
+  "intro": "将来の拡張に備えて、できるだけ大きな VPC を作りたいと考えています。最初の候補は 10.0.0.0/12 です。",
+  "predict": {
+    "text": "この CIDR で VPC を作れますか。",
+    "key": "sizeIssue",
+    "choices": [
+      {
+        "text": "作れる",
+        "value": "none"
+      },
+      {
+        "text": "作れない（大きすぎる）",
+        "value": "too-large"
+      },
+      {
+        "text": "作れない（小さすぎる）",
+        "value": "too-small"
+      }
+    ]
+  },
+  "config": {
+    "op": "size",
+    "role": "vpc",
+    "cidr": "10.0.0.0/12"
+  },
+  "toggles": [
+    {
+      "id": "prefix-16",
+      "label": "/16 にする",
+      "set": {
+        "cidr": "10.0.0.0/16"
+      }
+    },
+    {
+      "id": "prefix-28",
+      "label": "/28 にする",
+      "set": {
+        "cidr": "10.0.0.0/28"
+      }
+    },
+    {
+      "id": "prefix-29",
+      "label": "/29 にする",
+      "set": {
+        "cidr": "10.0.0.0/29"
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "allowed": false,
+      "sizeIssue": "too-large"
+    },
+    "toggles": {
+      "prefix-16": {
+        "allowed": true,
+        "total": 65536
+      },
+      "prefix-28": {
+        "allowed": true,
+        "total": 16
+      },
+      "prefix-29": {
+        "sizeIssue": "too-small"
+      }
+    }
+  },
+  "explain": {
+    "initial": "VPC の IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定は範囲が大きすぎます。作った VPC の CIDR の大きさは変えられません。アドレスが足りなくなったら、セカンダリ CIDR を追加できます。",
+    "toggles": {
+      "prefix-16": "VPC の IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定は最も大きい範囲で、アドレスは全部で {{out:total}} 個です。",
+      "prefix-28": "VPC の IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定は最も小さい範囲で、アドレスは全部で {{out:total}} 個です。",
+      "prefix-29": "VPC の IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定の範囲は小さすぎるので、VPC を作れません。"
+    }
+  },
+  "factRefs": [
+    "vpc.cidr-size",
+    "vpc.cidr-secondary"
+  ],
+  "lessonRefs": [
+    "lesson-3.4-vpc-design",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "claude"
+}

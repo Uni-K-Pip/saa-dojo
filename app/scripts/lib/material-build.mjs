@@ -5,7 +5,7 @@ import { MATERIAL_STATUS_FILE, checkMaterialStatus, excludedRefMessage, isShown 
 const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs];
 const run = (parsed) => checkMaterialStatus({
   statusFile: parsed.materialStatus,
-  materials: { diagrams: parsed.diagrams ?? [], artifacts: parsed.artifacts ?? [] },
+  materials: { diagrams: parsed.diagrams ?? [], artifacts: parsed.artifacts ?? [], sims: parsed.checkedSims?.items ?? [] },
   presentIds: parsed.materialStems,
   texts: textsOf(parsed),
   file: MATERIAL_STATUS_FILE,

@@ -157,7 +157,7 @@
 
 | 規則 | 今の裏づけ | 足りないもの |
 |---|---|---|
-| `within-vpc`（サブネットは VPC の範囲の中から取る） | レッスン `lesson-basics-ip-subnet-routing`（「サブネット: VPC のアドレス範囲を小さく分けたもの」） | 図鑑の事実（公式の資料では Subnet CIDR blocks の節）。レッスンの裏づけでよいかの確認 |
+| `within-vpc`（サブネットは VPC の範囲の中から取る） | レッスン `lesson-basics-ip-subnet-routing`（「サブネット: VPC のアドレス範囲を小さく分けたもの」） | 図鑑の事実（公式の資料では Subnet CIDR blocks の節）。レッスンで裏づけ、事実は図鑑の手順で後から足す候補にする |
 | `address-math`・`overlap-math`（アドレスの数と範囲の計算、2 つの CIDR の関係） | レッスン `lesson-basics-ip-subnet-routing`（CIDR 表記）、`lesson-3.4-vpc-design`（重複させない） | AWS の事実ではなく IPv4 の計算の性質。図鑑の事実にしない案。エンジンの単体テストで確かめる |
 
 ## 8. シナリオの一覧（5 件。未検証で作る）
