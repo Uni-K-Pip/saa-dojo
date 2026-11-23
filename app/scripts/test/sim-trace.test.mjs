@@ -265,7 +265,7 @@ describe('行きと戻りの段', () => {
   });
 
   it('規則は実行した段に対応し、表の順で重複なく含まれます', () => {
-    expect(Object.keys(RULES)).toHaveLength(24);
+    expect(Object.keys(RULES)).toHaveLength(26);
     expect(trace(clientToAlb).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless',
       'nacl-default', 'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'address-match', 'trace-order']);
     expect(trace(appToUpdate, (config) => { config.securityGroups['sg-app'].outbound = []; }).rules)
@@ -273,6 +273,24 @@ describe('行きと戻りの段', () => {
     expect(trace(appToUpdate).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless', 'nacl-default',
       'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'nat-outbound', 'nat-route-igw', 'nat-eip',
       'nat-no-sg', 'address-match', 'trace-order']);
+    // 段の並びに含まれる AWS の動きは、その動きが効いた実行で、受け持つ規則が入る
+    const internetStopped = trace(clientToAlb, (config) => setAcl(config, 'pub', { inbound: [] }));
+    expect(internetStopped.output).toMatchObject({ stop: 'forward-nacl-in' });
+    expect(internetStopped.rules).toContain('route-table');
+    const ephemeral = trace(clientToAlb, (config) => setAcl(config, 'pub', {
+      inbound: [aclRule(100, 'allow', ANY, range(443))], outbound: [aclRule(100, 'allow', ANY, range(1024, 65535))],
+    }));
+    expect(ephemeral.output.delivered).toBe(true);
+    expect(ephemeral.rules).toContain('nacl-final-deny');
+    const s3ViaNat = trace({ from: 'app', to: 's3', s3Endpoint: false });
+    expect(s3ViaNat.output.routeTarget).toBe('nat');
+    expect(s3ViaNat.rules).toContain('s3-public-endpoint');
+    expect(trace({ from: 'app', to: 's3' }).rules).not.toContain('s3-public-endpoint');
+    const prefixList = trace({ from: 'app', to: 's3' }, (config) => {
+      config.securityGroups['sg-app'].outbound = [sgRule('pl-s3', range(443))];
+    });
+    expect(prefixList.output.delivered).toBe(true);
+    expect(prefixList.rules).toContain('sg-prefix-list');
     expect(SIMULATORS.map(({ id }) => id)).toEqual(['cidr', 'trace']);
     expect(SIMULATORS[1].engine.OUTPUT_KEYS).toBe(OUTPUT_KEYS);
   });

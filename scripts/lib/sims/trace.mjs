@@ -101,6 +101,14 @@ export const RULES = {
     label: 'エンドポイントの経路の優先', text: '0.0.0.0/0 がほかへ向いていても、S3 宛ての通信にはエンドポイントの経路が優先されます',
     factRef: 'vpc-endpoints.gateway-route-precedence', evidence: ['エンドポイントの経路が優先される'],
   },
+  's3-public-endpoint': {
+    label: 'エンドポイントを使わない S3 への通信', text: 'エンドポイントに関連付けのないルートテーブルのサブネットの部品は、エンドポイントではなく公開のサービスエンドポイントを使います',
+    factRef: 'vpc-endpoints.gateway-route-association', evidence: ['公開のサービスエンドポイントを使う'],
+  },
+  'sg-prefix-list': {
+    label: 'セキュリティグループとプレフィックスリスト', text: 'セキュリティグループのルールの宛先には、プレフィックスリストの ID を指定できます',
+    factRef: 'vpc.sg-rule-sources', evidence: ['プレフィックスリストの ID'],
+  },
   'vpce-sg-nacl': {
     label: 'エンドポイントを通る通信の許可', text: 'ゲートウェイエンドポイントを使っても、セキュリティグループとネットワーク ACL が S3 との通信を許可している必要があります',
     factRef: 'vpc-endpoints.gateway-sg-nacl', evidence: ['セキュリティグループとサブネットのネットワーク ACL は、S3 や DynamoDB との通信を許可している必要'],
@@ -385,7 +393,11 @@ export function run(config) {
         use('sg-reference');
         return peer.sg === rule.sg;
       }
-      return rule.peer === S3 ? isS3(peer) : cidrMatches(rule.block, rule.peer, peer);
+      if (rule.peer === S3) {
+        use('sg-prefix-list');
+        return isS3(peer);
+      }
+      return cidrMatches(rule.block, rule.peer, peer);
     });
     if (match < 0) return stage(gate, host.id, 'rule', {}, 'sg-no-match');
     return stage(gate, host.id, 'rule', { rule: `${dir}-${match + 1}` });
@@ -402,6 +414,8 @@ export function run(config) {
       return stage(gate, host.subnet, 'rule');
     }
     use('nacl-order');
+    // 応答は、クライアントが選んだエフェメラルポート宛て（カスタムの ACL では、その許可が要る）
+    if (phase === 'return') use('nacl-final-deny');
     const peer = dir === 'inbound' ? source : destination;
     const match = rules[dir].find((rule) => {
       use('address-match');
@@ -461,7 +475,13 @@ export function run(config) {
   const arrive = (at) => stage('arrive', at, 'route');
 
   function forward() {
-    if (!isHost(from)) return igw(to, false) && enter(to) && arrive(to.id);
+    // ルートテーブルはサブネットから出る通信の行き先を決めるので、入ってくる通信の段には route がない
+    if (!isHost(from)) {
+      if (!igw(to, false)) return false;
+      use('route-table');
+      return enter(to) && arrive(to.id);
+    }
+    if (isS3(to) && !viaEndpoint) use('s3-public-endpoint');
     if (!leave(from)) return false;
     if (isHost(to)) return enter(to) && arrive(to.id);
     if (viaEndpoint) return vpce() && arrive(to.id);
