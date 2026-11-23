@@ -1,11 +1,13 @@
 import { use, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { CourseNextStep, courseItemDetails, unitTitle } from '../components/CourseNextStep';
+import { LessonRereadBadge } from '../components/LessonReread';
 import { MaterialBadges } from '../components/MaterialReading';
 import type { CourseUnit } from '../content/course-types';
 import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
 import { answeredUnitPracticeCount, courseProgress, pickUnitPractice, unitPracticeCandidates, unitProgress } from '../domain/course';
+import { lessonRereadCounts } from '../domain/lesson-reread';
 import { randomRng } from '../domain/rng';
 import { createPracticeSession } from '../state/sessions';
 import { useStudy } from '../state/study';
@@ -54,6 +56,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
   const [error, setError] = useState('');
   const hasKind = (kind: CourseUnit['items'][number]['kind']) => unit.items.some((item) => item.kind === kind);
   const lessons = hasKind('lesson') ? use(loadLessons()) : [];
+  const reread = lessonRereadCounts(study.events, lessons);
   const docs = hasKind('doc') ? use(loadDocs()) : [];
   const labs = hasKind('lab') ? use(loadLabIndex()) : [];
   const patterns = hasKind('pattern') ? use(loadPatternIndex()) : [];
@@ -101,6 +104,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
                 <span className="badge">{details.label}</span>
                 {details.status && <MaterialBadges status={details.status} />}
                 {done && <span className="badge ok">済み</span>}
+                {item.kind === 'lesson' && <LessonRereadBadge count={reread.get(item.ref)} />}
               </div>
               {item.kind !== 'practice' && (
                 <div>

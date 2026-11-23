@@ -2,11 +2,13 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import { parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
-import { materialKindOf } from '../../../scripts/lib/diagram-refs.mjs';
-import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { artifactRefOf, diagramRefOf, materialKindOf } from '../../../scripts/lib/diagram-refs.mjs';
+import { inlineCheckId, isInlineCheckBlockquote, isInlineCheckHeading, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { headingsInSection, parseSections } from '../../../scripts/lib/lab-pattern.mjs';
+import { calloutBodyChildren, calloutOf } from '../../src/components/markdown-callouts.mjs';
 
 const unclosedFences = new WeakSet();
+const fencedCode = new WeakSet();
 const parser = unified().use(remarkParse).use(remarkGfm).use(function trackCodeFences() {
   // remark の解析で確定した開き・閉じの記号列を拾う。字下げや引用の中でも同じ判定になる。
   const data = this.data();
@@ -14,15 +16,16 @@ const parser = unified().use(remarkParse).use(remarkGfm).use(function trackCodeF
     enter: {
       codeFencedFenceSequence() {
         const node = this.stack.findLast(({ type }) => type === 'code');
+        fencedCode.add(node);
         if (!unclosedFences.delete(node)) unclosedFences.add(node);
       },
     },
   });
 });
 
-function walk(node, visit, inQuote = false, parent = undefined) {
-  if (visit(node, inQuote, parent) === false) return;
-  for (const child of node.children ?? []) walk(child, visit, inQuote || node.type === 'blockquote', node);
+function walk(node, visit, inQuote = false, parent = undefined, grandparent = undefined) {
+  if (visit(node, inQuote, parent, grandparent) === false) return;
+  for (const child of node.children ?? []) walk(child, visit, inQuote || node.type === 'blockquote', node, parent);
 }
 
 function textOf(node) {
@@ -60,6 +63,12 @@ function inspectInlineChecks(markdown, tree) {
   const differences = checks.flatMap(({ followingCallout }) => followingCallout ? [followingCallout] : []);
   walk(tree, (node, inQuote, parent) => {
     const line = node.position.start.line;
+    if (fencedCode.has(node)) {
+      // フェンスの中の見出しはコードの検査で扱います。
+      for (const checkLine of pending.keys()) {
+        if (checkLine > line && checkLine <= node.position.end.line) pending.delete(checkLine);
+      }
+    }
     if (node.type === 'blockquote') {
       const check = pending.get(line);
       if (check && isInlineCheckBlockquote(node, check)) {
@@ -94,43 +103,66 @@ function inspectInlineChecks(markdown, tree) {
   return { converted, differences };
 }
 
+function imageParagraphs(tree) {
+  const paragraphs = new Set();
+  walk(tree, (node, _inQuote, parent, grandparent) => {
+    if (node.type !== 'paragraph') return;
+    if (parent?.type === 'listItem') {
+      // 表示では、詰まったリストの項目から段落タグを外し、タスクの先頭段落にはチェック欄を足します。
+      const loose = grandparent.spread || grandparent.children.some((item) => item.spread ?? item.children.length > 1);
+      if (!loose || (typeof parent.checked === 'boolean' && parent.children[0] === node)) return;
+    }
+    const phrasing = parent?.type === 'blockquote' && parent.children[0] === node && calloutOf(parent)
+      ? calloutBodyChildren(node) : node.children;
+    const children = phrasing.filter(({ type }) => type !== 'html');
+    if (children.length === 1 && children[0].type === 'image') paragraphs.add(children[0]);
+  });
+  return paragraphs;
+}
+
 function diagramRefDifferences(markdown, tree, converted) {
   const checked = parseMaterialRefs(markdown, { withLine: true });
   const hasReference = checked.some(({ reference }) => reference);
   const pending = new Map();
-  for (const { href, line, reference } of checked) {
+  for (const ref of checked) {
+    const { href, reference } = ref;
     if (reference) continue;
     if (!pending.has(href)) pending.set(href, []);
-    pending.get(href).push(line);
+    pending.get(href).push(ref);
   }
   const differences = [];
   const definitions = new Map();
   const displayed = [];
-  function collect(node, line) {
+  function collect(node, line, paragraphs) {
     if (node.type === 'definition') {
       const id = node.identifier.toUpperCase();
       // 表示と同じく、同じ名前の定義は先に現れたものを使います。
       if (!definitions.has(id)) definitions.set(id, node.url);
     } else if (['image', 'link', 'imageReference', 'linkReference'].includes(node.type)) {
-      displayed.push({ node, line });
+      displayed.push({ node, line, block: paragraphs.has(node) });
     }
+  }
+  const paragraphs = imageParagraphs(tree);
+  function collectFrom(fragment, lineOf) {
+    const fragmentParagraphs = imageParagraphs(fragment);
+    walk(fragment, (part) => collect(part, lineOf(part.position.start.line), fragmentParagraphs));
   }
   walk(tree, (node) => {
     const check = converted.get(node);
     if (!check) {
-      collect(node, node.position.start.line);
+      collect(node, node.position.start.line, paragraphs);
       return;
     }
     const question = parser.parse(check.question);
     if (question.children.length === 1 && question.children[0].type === 'paragraph') {
-      walk(question, (part) => collect(part, check.questionLine + part.position.start.line - 1));
+      collectFrom(question, (line) => check.questionLine + line - 1);
     } else if (hasVisual(question)) {
       differences.push({ line: check.questionLine, message: '問いに図・実物・画像と、図や実物へのリンクは書けません。' });
     }
     if (check.options.some(({ text }) => hasVisual(parser.parse(text)))) {
       differences.push({ line: check.line, message: '選択肢に図・実物・画像と、図や実物へのリンクは書けません。' });
     }
-    walk(parser.parse(check.reason), (part) => collect(part, check.reasonLines[part.position.start.line - 1]));
+    collectFrom(parser.parse(check.reason), (line) => check.reasonLines[line - 1]);
     return false;
   });
 
@@ -143,49 +175,83 @@ function diagramRefDifferences(markdown, tree, converted) {
         `\`![キャプション](#/${dir}/<id>)\` の形で、コードの外に書いてください。`,
     });
   };
-  for (const { node, line } of displayed) {
+  const compareBlock = (ref, { block, line }) => {
+    if (ref.block === block || !ref.image || !(diagramRefOf(ref.href) || artifactRefOf(ref.href))) return;
+    const name = ref.kind === 'artifact' ? '実物' : '図';
+    differences.push({
+      line,
+      message: ref.block
+        ? `${name}の参照を、検査は画像だけの行と読みましたが、表示ではリンクになります。前後に空行を入れて、画像だけの段落にしてください。`
+        : `${name}の参照を、表示は画像だけの段落と読みましたが、検査では画像だけの行になっていません。画像だけの行にしてください。`,
+    });
+  };
+  for (const { node, line, block } of displayed) {
     if (node.type === 'imageReference' || node.type === 'linkReference') {
       const href = definitions.get(node.identifier.toUpperCase());
       if (!hasReference && href && materialKindOf(href) !== null) report(href, line);
     } else if ((node.type === 'image' || node.type === 'link') && materialKindOf(node.url) !== null) {
       const validated = pending.get(node.url);
-      const sameLine = validated?.indexOf(line) ?? -1;
-      if (sameLine >= 0) validated.splice(sameLine, 1);
-      else unmatched.push({ href: node.url, line });
+      const image = node.type === 'image';
+      const sameLine = validated?.findIndex((ref) => ref.line === line && ref.image === image) ?? -1;
+      if (sameLine >= 0) compareBlock(validated.splice(sameLine, 1)[0], { block, line });
+      else unmatched.push({ href: node.url, image, block, line });
     }
   }
   // 行の一致を先に使い、残りは href の出現回数で照合します。
-  for (const { href, line } of unmatched) {
+  for (const match of unmatched) {
+    const { href, image, block, line } = match;
     const validated = pending.get(href);
-    if (validated?.length) validated.shift();
+    const sameBlock = validated?.findIndex((ref) => ref.image === image && ref.block === block) ?? -1;
+    const sameImage = sameBlock >= 0 ? sameBlock : validated?.findIndex((ref) => ref.image === image) ?? -1;
+    if (sameImage >= 0) compareBlock(validated.splice(sameImage, 1)[0], match);
     else report(href, line);
   }
-  for (const [href, lines] of pending) {
-    for (const line of lines) report(href, line);
+  for (const [href, refs] of pending) {
+    for (const { line } of refs) report(href, line);
   }
   return differences;
 }
 
-function unclosedFenceErrors(markdown, tree) {
-  const lastLine = markdown.split(/\r\n?|\n/).findLastIndex((line) => /[^ \t]/.test(line)) + 1;
+function codeFenceErrors(markdown, tree) {
+  const source = markdown.split(/\r\n?|\n/);
+  const lastLine = source.findLastIndex((line) => /[^ \t]/.test(line)) + 1;
   const errors = [];
   walk(tree, (node) => {
+    if (!fencedCode.has(node)) return;
     if (unclosedFences.has(node) && node.position.end.line >= lastLine) {
       errors.push({
         line: node.position.start.line,
         message: 'コードフェンスが閉じていません。開きと同じ記号で、同じ数以上の行で閉じてください。',
       });
+      return;
     }
+    if (node.lang === 'markdown' || node.lang === 'md') return;
+    node.value.split('\n').forEach((code, index) => {
+      const line = node.position.start.line + index + 1;
+      if (isInlineCheckHeading(code) || isInlineCheckHeading(source[line - 1])) {
+        errors.push({
+          line,
+          message: 'その場の確認の見出しがコードの中にあります。手前のコードフェンスを閉じ忘れていないか確かめてください（記法の例として載せるなら ```markdown で囲みます）。',
+        });
+      }
+    });
   });
   return errors;
 }
 
-/** 本文を行単位の検査と表示で読み、判定が異なる箇所を本文の行番号で返します。 */
-export function crosscheckMarkdown(markdown) {
+/** 本文を行単位の検査と表示で読み、判定が異なる箇所と表示する確認の ID を返します。 */
+export function inspectMarkdown(markdown) {
   const tree = parser.runSync(parser.parse(markdown));
   const { converted, differences } = inspectInlineChecks(markdown, tree);
-  return [...differences, ...diagramRefDifferences(markdown, tree, converted), ...unclosedFenceErrors(markdown, tree)]
-    .sort((a, b) => a.line - b.line);
+  return {
+    differences: [...differences, ...diagramRefDifferences(markdown, tree, converted), ...codeFenceErrors(markdown, tree)]
+      .sort((a, b) => a.line - b.line),
+    checkIds: [...converted.values()].map(({ questionKey }) => inlineCheckId(questionKey)),
+  };
+}
+
+export function crosscheckMarkdown(markdown) {
+  return inspectMarkdown(markdown).differences;
 }
 
 /** 固定の見出しとミニラボの手順を、表示と同じ解析で確かめます。 */

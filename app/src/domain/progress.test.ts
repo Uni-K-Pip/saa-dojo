@@ -12,6 +12,7 @@ const lesson = (id: string, taskStatement: string): LessonMeta => ({
   services: [],
   estimatedMinutes: 10,
   questionIds: [],
+  checkIds: [],
 });
 const lessons = [lesson('lesson-2.2-ha-basics', '2.2'), lesson('lesson-2.2-dr', '2.2'), lesson('lesson-2.1-decoupling', '2.1')];
 
