@@ -1,0 +1,80 @@
+:root {
+  --dg-c-cell-light: #e8f1fb;
+  --dg-c-cell-mid: #667482;
+  --dg-c-cell-dark: #101317;
+  --dg-c-cell-white: #ffffff;
+  --dg-c-cell-light-edge: var(--dg-c-cell-mid);
+  --dg-c-cell-dark-edge: var(--dg-c-cell-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --dg-c-cell-light-edge: var(--dg-c-cell-light);
+    --dg-c-cell-dark-edge: var(--dg-c-cell-mid);
+  }
+}
+
+:root[data-theme='dark'] {
+  --dg-c-cell-light-edge: var(--dg-c-cell-light);
+  --dg-c-cell-dark-edge: var(--dg-c-cell-mid);
+}
+
+.dg-c-text { fill: var(--dg-text); }
+.dg-c-muted, .dg-c-head { fill: var(--dg-muted); }
+.dg-c-frame, .dg-c-grid {
+  fill: none;
+  stroke: var(--dg-box-line);
+  stroke-width: 1;
+}
+.dg-c-ask, .dg-c-result, .dg-c-span-a, .dg-c-span-b {
+  stroke: var(--dg-box-line);
+  stroke-width: 1;
+}
+.dg-c-ask { fill: var(--dg-node-bg); }
+.dg-c-result, .dg-c-span-b { fill: var(--dg-sub-pri-fill); }
+.dg-c-span-a { fill: var(--dg-sub-pub-fill); }
+.dg-c-band, .dg-c-marker { fill: var(--dg-cat); }
+.dg-c-label-bg { fill: var(--dg-bg); }
+.dg-c-chip, .dg-c-mark { fill: var(--dg-badge-bg); }
+.dg-c-chip-text, .dg-c-mark-text, .dg-c-marker-text { fill: var(--dg-badge-text); }
+.dg-c-link polyline, .dg-c-mark-line {
+  fill: none;
+  stroke: var(--dg-line);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.dg-svg .is-dim { opacity: 0.35; }
+
+.dg-c-cell-1 { fill: var(--dg-c-cell-light); stroke: var(--dg-c-cell-light-edge); }
+.dg-c-cell-2 { fill: var(--dg-c-cell-mid); }
+.dg-c-cell-3 { fill: var(--dg-c-cell-dark); stroke: var(--dg-c-cell-dark-edge); }
+.dg-c-cell-text { fill: var(--dg-c-cell-white); }
+.dg-c-cell-1 + .dg-c-cell-text { fill: var(--dg-c-cell-dark); }
+
+.dg-follow { margin-block: 0.75rem; }
+.dg-follow ul { margin-block: 0.5rem; }
+.dg-follow p { margin-block: 0.5rem; }
+
+.dg-position-legend {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.dg-position-legend li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-block: 0.25rem;
+}
+
+.dg-position-number {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: var(--dg-cat);
+  color: var(--dg-badge-text);
+  font-size: 0.875rem;
+  font-weight: 700;
+}

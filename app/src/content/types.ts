@@ -347,7 +347,7 @@ export interface DiagramRect {
 export interface DiagramIndexEntry {
   id: string;
   title: string;
-  type: 'architecture';
+  type: AnyDiagramScene['type'];
   /** 段階の数 */
   steps: number;
   status: DiagramStatus;
@@ -425,3 +425,56 @@ export interface DiagramScene {
   steps: DiagramStep[];
   status: DiagramStatus;
 }
+
+type ShapeBase = { cls: string; owner?: string };
+export type DiagramShape = ShapeBase & (
+  | ({ t: 'rect'; rx?: number } & DiagramRect)
+  | { t: 'line'; points: DiagramPoint[]; arrow?: boolean }
+  | { t: 'circle'; cx: number; cy: number; r: number }
+  | { t: 'text'; x: number; y: number; lines: string[]; size: 10 | 11; bold?: boolean; anchor: 'start' | 'middle' | 'end' }
+);
+
+interface ChartScene {
+  id: string;
+  title: string;
+  alt: string;
+  width: number;
+  height: number;
+  status: DiagramStatus;
+  shapes: DiagramShape[];
+}
+
+export interface DecisionFlowNode {
+  id: string;
+  kind: 'ask' | 'result';
+  number: number | null;
+  text: string;
+  why: string | null;
+  service: string | null;
+  serviceName: string | null;
+  choices: { label: string; to: string }[];
+}
+
+export interface DecisionScene extends ChartScene {
+  type: 'decision';
+  start: string;
+  flow: DecisionFlowNode[];
+}
+
+export interface PositionScene extends ChartScene {
+  type: 'position';
+  oneAxis: boolean;
+  legend: { n: number; id: string; label: string; note: string | null; service: string | null; category: DiagramCategory }[];
+}
+
+export interface TimelineScene extends ChartScene {
+  type: 'timeline';
+}
+
+export interface LayersScene extends ChartScene {
+  type: 'layers';
+  legend: { key: string; label: string; n: number }[];
+  columns: string[];
+}
+
+export type AnyDiagramScene = DiagramScene | DecisionScene | PositionScene | TimelineScene | LayersScene;

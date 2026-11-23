@@ -40,6 +40,7 @@
     {
       "id": "lake-formation",
       "name": "AWS Lake Formation",
+      "short": "LakeFormation",
       "aliases": [],
       "category": "分析"
     },
@@ -107,6 +108,7 @@
     {
       "id": "step-functions",
       "name": "AWS Step Functions",
+      "short": "StepFunctions",
       "aliases": [],
       "category": "アプリケーション統合"
     },
@@ -369,6 +371,7 @@
     {
       "id": "cloudformation",
       "name": "AWS CloudFormation",
+      "short": "CFn",
       "aliases": [],
       "category": "管理とガバナンス"
     },
@@ -521,7 +524,8 @@
     {
       "id": "direct-connect",
       "name": "AWS Direct Connect",
-      "aliases": [],
+      "short": "DirectConnect",
+      "aliases": ["DX"],
       "category": "ネットワーキングとコンテンツ配信"
     },
     {
@@ -775,6 +779,7 @@
     {
       "id": "service-quotas",
       "name": "Service Quotas",
+      "short": "Quotas",
       "aliases": [],
       "category": "関連機能（試験ガイドの例示に登場）"
     },

@@ -100,6 +100,7 @@ function LessonView({ lesson, lessons }: { lesson: LessonMeta; lessons: LessonMe
       <div className="card">
         {body ? (
           <Markdown
+            onCheckAnswer={(answer) => void appendEvent({ type: 'check-answer', lessonId: lesson.id, ...answer })}
             renderQuestionRef={(qid) =>
               quizSet.has(qid) ? (
                 <button type="button" className="link-button" onClick={() => void start([qid], `確認問題: ${lesson.title}`)} disabled={busy}>

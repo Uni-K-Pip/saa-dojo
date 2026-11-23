@@ -5,7 +5,7 @@ import type {
   CatalogEntry,
   CatalogIndex,
   DiagramIndexEntry,
-  DiagramScene,
+  AnyDiagramScene,
   DocEntry,
   FlashcardDeck,
   GlossaryEntry,
@@ -81,7 +81,7 @@ export const loadCatalogEntry = (id: string) => loadKey<CatalogEntry | null>(`ca
 export const loadComparisons = () => loadKey<CatalogComparison[]>('catalog-compare', []);
 export const loadDiagramIndex = () => loadKey<DiagramIndexEntry[]>('diagram-index', []);
 /** レイアウト済みの図 1 枚。ないときは null */
-export const loadDiagram = (id: string) => loadKey<DiagramScene | null>(`diagram:${id}`, null);
+export const loadDiagram = (id: string) => loadKey<AnyDiagramScene | null>(`diagram:${id}`, null);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {

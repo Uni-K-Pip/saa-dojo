@@ -1,7 +1,9 @@
 // 図の語彙と検査（docs/visual-materials-design.md の 2章・4章・11.3）。
 // validate.mjs とアプリのビルド（app/scripts/lib/diagram-build.mjs）が共有する。依存パッケージなし。
 // 構造の形はスキーマ（schema.mjs の DiagramSchema）で確かめたあとに、ここで意味を確かめる。
-import { DESIGN_WIDTH, layoutDiagramReport, textWidth } from './diagram-layout.mjs';
+import { DESIGN_WIDTH, layoutDiagram, layoutDiagramReport, textWidth } from './diagram-layout.mjs';
+import { checkKindDiagram, layoutKindDiagram, shapeBounds } from './diagram-kinds.mjs';
+import { diagramRefOf } from './diagram-refs.mjs';
 
 // ---------------------------------------------------------------- 語彙
 
@@ -220,17 +222,32 @@ export function checkDiagram(diagram, ctx = {}) {
   const warn = (code, message) => warnings.push({ code, message });
   const { lessonIds, factIds, serviceIndex } = ctx;
 
-  if (diagram.type !== 'architecture') {
-    err(`type ${diagram.type} の図はまだ扱えません`);
-    return { errors, warnings };
-  }
-
   // 裏づけ
   const lessonRefs = diagram.lessonRefs ?? [];
   const factRefs = diagram.factRefs ?? [];
   if (lessonRefs.length + factRefs.length === 0) err('裏づけ（lessonRefs・factRefs）が 1 つもありません');
   if (lessonIds) for (const id of lessonRefs) if (!lessonIds.has(id)) err(`lessonRefs: レッスン ${id} がありません`);
   if (factIds) for (const id of factRefs) if (!factIds.has(id)) err(`factRefs: 図鑑の事実 ${id} がありません`);
+  const altLength = chars(diagram.alt);
+  if (altLength < 80) warn('diagram-alt-short', `代替文が ${altLength} 字です（目安 80 字以上）。置き場所とつながりを文章で書いてください。`);
+
+  if (diagram.type !== 'architecture') {
+    const checked = checkKindDiagram(diagram, ctx);
+    errors.push(...checked.errors);
+    warnings.push(...checked.warnings);
+    if (errors.length === 0) {
+      const { scene, warnings: layoutWarnings } = layoutKindDiagram(diagram, { serviceIndex });
+      const { left, right } = shapeBounds(scene);
+      if (left < 0 || right > DESIGN_WIDTH) {
+        err(`図の中身が幅 ${DESIGN_WIDTH} をはみ出しています（左端 ${left}、右端 ${right}）。`);
+      }
+      if (diagram.type !== 'decision' && scene.height > DIAGRAM_LIMITS.height) {
+        warn('diagram-height', `レイアウトした高さが ${scene.height} あります（目安 ${DIAGRAM_LIMITS.height} 以下）。図を分けてください。`);
+      }
+      warnings.push(...layoutWarnings);
+    }
+    return { errors, warnings };
+  }
 
   // 木
   const items = new Map(); // id -> { type, item }
@@ -332,7 +349,7 @@ export function checkDiagram(diagram, ctx = {}) {
   // レイアウトしてからの検査
   const { scene, warnings: layoutWarnings } = layoutDiagramReport(diagram, { serviceIndex });
   if (scene.width > DESIGN_WIDTH) {
-    err(`レイアウトした幅が ${scene.width} あります（上限 ${DESIGN_WIDTH}。超えると幅 360px の画面で文字が 11px 未満になります）。横に並べた行を列に替えるか、ラベルを短くしてください`);
+    err(wideDiagramMessage(scene.width));
   }
   if (scene.height > DIAGRAM_LIMITS.height) {
     warn('diagram-height', `レイアウトした高さが ${scene.height} あります（目安 ${DIAGRAM_LIMITS.height} 以下）。段階の説明が画面の外に出るので、図を分けるか、列を行に替えてください`);
@@ -347,6 +364,93 @@ export function checkDiagram(diagram, ctx = {}) {
     warn('diagram-overlap', `線 ${hit.edge} が端点でない部品 ${hit.node} の上を通ります`);
   }
   return { errors, warnings };
+}
+
+function wideDiagramMessage(width) {
+  return `レイアウトした幅が ${width} あります（上限 ${DESIGN_WIDTH}。超えると幅 360px の画面で文字が 11px 未満になります）。横に並べた行を列に替えるか、ラベルを短くしてください`;
+}
+
+export function layoutAnyDiagram(diagram, opts) {
+  return diagram.type === 'architecture' ? layoutDiagram(diagram, opts) : layoutKindDiagram(diagram, opts).scene;
+}
+
+export function diagramRefIndex(items) {
+  return new Map(items.map(({ data }) => [
+    data.id, { type: data.type, steps: data.type === 'architecture' ? (data.steps?.length ?? 0) : 0 },
+  ]));
+}
+
+function withoutDiagramCode(markdown) {
+  let fence;
+  let listDepth = 0;
+  const listIndents = [0];
+  const text = markdown.split(/\r\n?|\n/).map((line) => {
+    const quote = /^(?: {0,3}>[ \t]?)+/.exec(line)?.[0] ?? '';
+    const quoteMarks = quote.match(/ {0,3}>[ \t]?/g) ?? [];
+    const depth = quoteMarks.length;
+    const content = line.slice(quote.length);
+    if (fence) {
+      const code = line.slice(quoteMarks.slice(0, fence.depth).join('').length);
+      if (depth >= fence.depth && (!code.trim() || /^ */.exec(code)[0].length >= fence.indent)) {
+        const end = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(code.slice(fence.indent))?.[1];
+        if (end && end[0] === fence.mark[0] && end.length >= fence.mark.length) fence = undefined;
+        return '';
+      }
+      fence = undefined;
+    }
+
+    if (depth !== listDepth) {
+      listDepth = depth;
+      listIndents.length = 1;
+    }
+    if (!content.trim()) return line;
+    // リスト内では項目の本文の字下げを起点にフェンスを読みます。
+    const indent = /^ */.exec(content)[0].length;
+    while (listIndents.at(-1) > indent) listIndents.pop();
+    const list = /^ {0,3}(?:[-+*]|\d{1,9}[.)]) {1,4}(?=\S)/.exec(content.slice(listIndents.at(-1)));
+    if (list) listIndents.push(listIndents.at(-1) + list[0].length);
+    const start = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(content.slice(listIndents.at(-1)));
+    if (start && (start[1][0] === '~' || !start[2].includes('`'))) {
+      fence = { mark: start[1], depth, indent: listIndents.at(-1) };
+    }
+    return fence ? '' : line;
+  }).join('\n');
+  // 空行をまたがず、同じ数のバッククォートで閉じたコードを検査から除きます。
+  return text.split(/(\n[ \t]*\n)/).map((block) =>
+    block.replace(/(?<![\\`])(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)/g, (span) => span.replace(/[^\n]+/g, '\0')),
+  ).join('');
+}
+
+export function parseDiagramRefs(markdown, { withLine = false } = {}) {
+  const text = withoutDiagramCode(markdown);
+  const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/diagrams\/[^<>\s]*)>|(#\/diagrams\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
+  const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/diagrams\/[^>\s]*)/gm;
+  const location = (index) => withLine ? { line: text.slice(0, index).split('\n').length } : {};
+  const refs = Array.from(text.matchAll(inline), (match) => {
+    const href = match[1] ?? match[2];
+    return { href, ...diagramRefOf(href), ...location(match.index) };
+  });
+  for (const match of text.matchAll(definitions)) {
+    refs.push({ href: match[1], reference: true, ...location(match.index) });
+  }
+  return refs;
+}
+
+export function checkDiagramRefs({ texts, diagrams }) {
+  const errors = [];
+  for (const { rel, body } of texts) {
+    for (const { href, id, step, reference } of parseDiagramRefs(body)) {
+      const target = diagrams.get(id);
+      const maxStep = target?.type === 'architecture' ? target.steps : 0;
+      let message;
+      if (reference) message = '図の参照は参照形式では書けません。`![キャプション](#/diagrams/<id>)` の形で書いてください。';
+      else if (!id) message = `図の参照の形が違います（${href}）。`;
+      else if (!target) message = `参照先の図 ${id} がありません。`;
+      else if (step !== undefined && step > maxStep) message = `図 ${id} の step=${step} が段階の数（${maxStep}）を超えています。`;
+      if (message) errors.push({ rel, message });
+    }
+  }
+  return errors;
 }
 
 /** 線の区間が、端点でない部品の矩形を通るものを挙げる */
