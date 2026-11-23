@@ -193,7 +193,8 @@ describe('コンテンツのビルド', () => {
     // 2 回目も同じ出力先に書ける（前回の出力を消してから書く）
     execFileSync(process.execPath, [path.join(appDir, 'scripts/build-content.mjs'), '--out', out, '--quiet'], { stdio: 'pipe' });
     fs.rmSync(dir, { recursive: true, force: true });
-  });
+    // 実際の教材を 2 回書き出すので、CI では既定の 5 秒を超えることがある
+  }, 30_000);
 });
 
 // ---------- サービス図鑑 ----------
