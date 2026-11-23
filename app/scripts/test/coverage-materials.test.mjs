@@ -49,6 +49,21 @@ describe('レッスンごとの図・実物・その場の確認', () => {
     expect(rows[2]).toMatchObject({ diagrams: 1, verifiedDiagrams: 1, checks: 3 });
   });
 
+  it('段落の途中の画像・文が続く画像は、リンクになるので数えない', () => {
+    const body = ['本文の途中に ![図](#/diagrams/dg-aaa) を置きます。', '', '前の行', '![図](#/diagrams/dg-bbb)', '', '![物](#/artifacts/ar-aaa) の後ろに文', ''].join('\n');
+    const [r] = lessonMaterialRows([lesson('lesson-1.1-m', body)], { diagrams, artifacts });
+    expect(r).toMatchObject({ diagrams: 0, artifacts: 0 });
+    const quoted = ['> **ポイント**', '>', '> ![引用の中の図](#/diagrams/dg-aaa)', ''].join('\n');
+    const [ok] = lessonMaterialRows([lesson('lesson-1.1-n', quoted)], { diagrams, artifacts });
+    expect(ok.diagrams).toBe(1);
+  });
+
+  it('理由のすぐ後に囲み記事が続く確認は、表示されないので数えない', () => {
+    const body = check('問い', ['', '> **試験のポイント**', '> 続き', ''].join('\n'));
+    const [r] = lessonMaterialRows([lesson('lesson-1.1-o', body)], { diagrams, artifacts });
+    expect(r.checks).toBe(0);
+  });
+
   it('形の違うその場の確認は数えない', () => {
     const [bad] = lessonMaterialRows([lesson('lesson-1.1-d', '> **その場の確認**\n> 選択肢のない問い\n')], { diagrams, artifacts });
     expect(bad.checks).toBe(0);
@@ -58,6 +73,7 @@ describe('レッスンごとの図・実物・その場の確認', () => {
     const s = summarizeLessonMaterials(rows);
     expect(s.lessons).toBe(3);
     expect(s.diagramRefs).toBe(3);
+    expect(s.figures).toEqual({ few: ['lesson-1.1-c'], inRange: 1, many: [] });
     expect(s.withoutDiagram).toEqual(['lesson-1.1-b']);
     expect(s.withoutVerifiedDiagram).toEqual(['lesson-1.1-b']);
     expect(s.checks).toMatchObject({ total: 5, withChecks: 2, none: ['lesson-1.1-b'], few: ['lesson-1.1-a'], inRange: 1, many: [] });
@@ -158,6 +174,52 @@ describe('網羅の一覧ごとの対応', () => {
   });
 });
 
+describe('網羅の一覧: 未検証の教材と出題対象外の問題', () => {
+  const lists = {
+    comparisons: [{ id: 'pair-01', name: 'a', group: 'g', comparisonRefs: ['cmp-b'], questionRefs: ['q1', 'q2'] }],
+    patterns: [
+      { id: 'dp-01', name: 'p', group: 'g', tasks: ['1.1'], material: 'pattern-p', questionRefs: ['q1', 'q2'] },
+      { id: 'dp-02', name: 'q', group: 'g', tasks: ['1.1'], material: 'pattern-q', questionRefs: ['q1', 'q2'] },
+    ],
+    pitfalls: [
+      { id: 'pit-01', name: 'x', simRefs: ['sim-a-b'] },
+      { id: 'pit-02', name: 'y', simRefs: ['sim-a-c'], labRefs: ['lab-ok'] },
+      { id: 'pit-03', name: 'z', questionRefs: ['q-hidden'] },
+    ],
+  };
+  const ctx = {
+    catalogComparisonIds: new Set(['cmp-b']),
+    questionIds: new Set(['q1', 'q2']), // q-hidden は出題対象外
+    labIds: new Set(['lab-ok']),
+    patternIds: new Set(['pattern-p', 'pattern-q']),
+    simIds: new Set(['sim-a-b', 'sim-a-c']),
+    statuses: {
+      patterns: new Map([['pattern-p', { status: 'verified' }], ['pattern-q', { status: 'pending' }]]),
+      labs: new Map([['lab-ok', { status: 'verified' }]]),
+      sims: new Map([['sim-a-b', { status: 'pending' }], ['sim-a-c', { status: 'verified' }]]),
+    },
+  };
+  const r = listCoverage(lists, ctx);
+
+  it('未検証の設計パターンでは満たさない', () => {
+    expect(r.patterns).toMatchObject({ withMaterial: 1, onlyUnverified: 1, met: 1 });
+    expect(r.patterns.rows[1]).toMatchObject({ materials: 0, unverified: 1, met: false });
+  });
+  it('未検証のシナリオだけでは満たさず、別に数える', () => {
+    expect(r.pitfalls.rows[0]).toMatchObject({ materials: 0, unverified: 1, met: false });
+    expect(r.pitfalls.rows[1]).toMatchObject({ materials: 2, unverified: 0, met: true });
+    expect(r.pitfalls).toMatchObject({ withMaterial: 1, onlyUnverified: 1, met: 1 });
+  });
+  it('出題対象外の問題を questionRefs に書いても数えない', () => {
+    expect(r.pitfalls.rows[2]).toMatchObject({ questions: 0, met: false });
+  });
+  it('図鑑の比較が公開されないもの（ctx から除いたもの）は数えない', () => {
+    const hidden = listCoverage(lists, { ...ctx, catalogComparisonIds: new Set() });
+    expect(hidden.comparisons.rows[0]).toMatchObject({ materials: 0, met: false });
+    expect(r.comparisons.rows[0].met).toBe(true);
+  });
+});
+
 describe('図鑑の core の事実の到達', () => {
   const facts = [
     { id: 's3.a', tier: 1, depth: 'core' },
@@ -177,6 +239,13 @@ describe('図鑑の core の事実の到達', () => {
     expect(r.recall.tier1).toEqual({ total: 2, reached: 0, percent: 0 });
     expect(r.withOtherRefs.all.reached).toBe(3);
     expect(r.linkedFacts).toBe(1);
+  });
+  it('hostedBy のサービスへのリンクは、親のエントリの事実として数える', () => {
+    const entryOf = (id) => ({ 'ec2-spot': 'ec2' })[id] ?? id;
+    const f = [{ id: 'ec2.spot-interruption', tier: 1, depth: 'core' }];
+    const text = ['[スポット](#/services/ec2-spot?f=spot-interruption)'];
+    expect(coreFactReach(f, { texts: text, entryOf }).reach.all.reached).toBe(1);
+    expect(coreFactReach(f, { texts: text }).reach.all.reached).toBe(0);
   });
   it('core がなければ割合は null', () => {
     expect(coreFactReach([], {}).reach.tier1).toEqual({ total: 0, reached: 0, percent: null });

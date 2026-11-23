@@ -12,11 +12,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
 import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
-import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, recheckLimit } from './lib/catalog.mjs';
+import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, entryIdFor, recheckLimit } from './lib/catalog.mjs';
 import { MATERIAL_SECTIONS, checkMaterialStatus } from './lib/material-status.mjs';
 import { checkSimFiles, simContext } from './lib/sim.mjs';
 import {
   CHECKS_PER_LESSON,
+  FIGURES_PER_LESSON,
   MIN_QUESTIONS_PER_ITEM,
   artifactKindCounts,
   cheatsheetFigureRows,
@@ -253,7 +254,8 @@ export function computeMaterialCoverage(content) {
   const listsCoverage = lists
     ? listCoverage(lists, {
         cheatsheetIds: new Set(cheatsheets.map((d) => d.data.id)),
-        catalogComparisonIds: idsOf('catalog-comparison'),
+        // 図鑑の比較は、要修正・却下だけがどのビルドにも出ない（未検証は札つきで出る）
+        catalogComparisonIds: new Set(catalog.comparisons.map(({ data }) => data.id).filter((id) => !HIDDEN_STATUSES.has(effectiveStatus(catalog.status.data ?? {}, id, 'comparison', catalog.comparisons.find((c) => c.data.id === id).data).status))),
         questionIds,
         labIds: idsOf('lab'),
         patternIds: idsOf('pattern'),
@@ -266,8 +268,9 @@ export function computeMaterialCoverage(content) {
   const shown = (section, items) => items.filter(({ data }) => statuses[section].get(data.id).status === 'verified');
   const facts = catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => ({ id: f.id, tier: e.tier, depth: f.depth })));
   const reach = coreFactReach(facts, {
-    texts: [...content.lessons, ...content.docs, ...shown('labs', content.labs), ...shown('patterns', content.patterns)].map((x) => x.body),
+    texts: [...content.lessons, ...cheatsheets, ...shown('labs', content.labs), ...shown('patterns', content.patterns)].map((x) => x.body),
     questionFactRefs: content.questions.filter(({ data }) => questionIds.has(data.id)).flatMap(({ data }) => data.factRefs ?? []),
+    entryOf: (id) => entryIdFor(content.serviceIndex, id),
     extraRefs: [
       ...content.diagrams.flatMap(({ data }) => data.factRefs ?? []),
       ...content.artifacts.flatMap(({ data }) => data.factRefs ?? []),
@@ -741,6 +744,9 @@ function renderMaterialsMarkdown(m, { full, push }) {
     '',
   );
   push(`- 図のないレッスン（${L.withoutDiagram.length} 本）: ${clipped(L.withoutDiagram)}`);
+  push(
+    `- 図の枚数（目安は ${FIGURES_PER_LESSON[0]}〜${FIGURES_PER_LESSON[1]} 枚）: 1 枚だけ ${L.figures.few.length} 本 / 目安内 ${L.figures.inRange} 本 / ${FIGURES_PER_LESSON[1] + 1} 枚以上 ${L.figures.many.length} 本`,
+  );
   push(`- 検証済みの図のないレッスン（公開のビルドで図が出ない）: ${L.withoutVerifiedDiagram.length} 本`);
   push(
     `- その場の確認: 計 ${L.checks.total} 個。ある ${L.checks.withChecks} 本 / ない ${L.checks.none.length} 本 / 目安（${lo}〜${hi} 個）に満たない ${L.checks.few.length} 本 / 目安内 ${L.checks.inRange} 本 / 超える ${L.checks.many.length} 本`,
@@ -805,14 +811,15 @@ function renderMaterialsMarkdown(m, { full, push }) {
     push(
       `一覧（coverage-lists.json。学習設計書の付録 B〜D）の項目ごとに、対応する教材を数えます。比較の組は早見表か図鑑の比較が 1 つ以上と演習問題が ${MIN_QUESTIONS_PER_ITEM} 問以上、` +
         `設計パターンは設計パターンの教材と演習問題が ${MIN_QUESTIONS_PER_ITEM} 問以上、つまずきの型はミニラボ・シナリオ・問題のどれかが 1 つ以上で満たします。` +
-        '演習問題は、一覧の questionRefs に書いたものだけを数えます。',
+        '数えるのは、公開のビルドに出る教材（検証済みのミニラボ・設計パターン・シナリオ。早見表。要修正・却下を除く図鑑の比較）だけで、未検証の教材は「未検証の教材だけ」の列に別に出します。' +
+        '演習問題は、一覧の questionRefs に書いた、出題対象の問題だけを数えます。',
       '',
     );
     push(
       table(
-        ['一覧', '項目', '教材あり', `演習 ${MIN_QUESTIONS_PER_ITEM} 問以上`, '満たす', '不足'],
-        Object.values(m.lists).map((x) => [x.label, x.total, x.withMaterial, x.withQuestions, x.met, x.total - x.met]),
-        'lrrrrr',
+        ['一覧', '項目', '教材あり（検証済み）', '未検証の教材だけ', `演習 ${MIN_QUESTIONS_PER_ITEM} 問以上`, '満たす', '不足'],
+        Object.values(m.lists).map((x) => [x.label, x.total, x.withMaterial, x.onlyUnverified, x.withQuestions, x.met, x.total - x.met]),
+        'lrrrrrr',
       ),
       '',
     );
@@ -820,7 +827,7 @@ function renderMaterialsMarkdown(m, { full, push }) {
       const unmet = x.rows.filter((r) => !r.met);
       const shown = full ? unmet : unmet.slice(0, MAX_LISTED);
       push(`### ${x.label}（不足 ${unmet.length} 件）`, '');
-      for (const r of shown) push(`- ${r.id} ${r.name}（教材 ${r.materials}、問題 ${r.questions}）`);
+      for (const r of shown) push(`- ${r.id} ${r.name}（教材 ${r.materials}${r.unverified ? `、未検証 ${r.unverified}` : ''}、問題 ${r.questions}）`);
       if (shown.length < unmet.length) push(`- …ほか ${unmet.length - shown.length} 件（--full で全件表示）`);
       if (unmet.length) push('');
     }
@@ -830,7 +837,7 @@ function renderMaterialsMarkdown(m, { full, push }) {
   const f = m.facts;
   const pctOf = (s) => (s.percent === null ? '-' : `${s.reached} / ${s.total}（${s.percent}%）`);
   push(
-    '到達は、レッスン・早見表・ガイド・公開される（検証済みの）ミニラボと設計パターンの本文の図鑑へのリンク（`?f=` つき）か、出題対象の問題の factRefs から指される core の事実の割合です。' +
+    '到達は、レッスン・早見表・公開される（検証済みの）ミニラボと設計パターンの本文の図鑑へのリンク（`?f=` つき）か、出題対象の問題の factRefs から指される core の事実の割合です。' +
       '想起は、問題の factRefs で問われる割合です。暗記カードは事実を指す欄がないため、どちらにも含めていません（カードの分だけ低く出ます）。',
     '',
   );
@@ -841,12 +848,12 @@ function renderMaterialsMarkdown(m, { full, push }) {
         ['到達（区分 1 の core）', pctOf(f.reach.tier1), `${f.targets.reachTier1}%`],
         ['到達（全体の core）', pctOf(f.reach.all), `${f.targets.reachAll}%`],
         ['想起（区分 1 の core。問題のみ）', pctOf(f.recall.tier1), `${f.targets.recallTier1}%`],
-        ['参考: 到達に図・実物・シナリオの factRefs も加える（全体）', pctOf(f.withOtherRefs.all), '-'],
       ],
       'lrr',
     ),
     '',
   );
+  push(`注: 参考として、図・実物・シナリオの factRefs も加えると、全体の core の到達は ${pctOf(f.withOtherRefs.all)} です（目標の定義には入れていません）。`, '');
 
   push('## 教材の検証状態（material-status.json）', '');
   push('記録がない、または記録のあとに内容が変わったものは、未検証（pending）に数えます。', '');

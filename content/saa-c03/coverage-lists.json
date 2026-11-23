@@ -1,7 +1,7 @@
 {
   "comparisons": [
     {"id":"pair-01","name":"IAM のユーザー・ロール・リソースベースのポリシー","group":"セキュリティ"},
-    {"id":"pair-02","name":"IAM ポリシー・SCP・許可の境界","group":"セキュリティ"},
+    {"id":"pair-02","name":"IAM ポリシー・SCP・許可の境界","group":"セキュリティ","comparisonRefs":["cmp-iam-organizations"]},
     {"id":"pair-03","name":"IAM Identity Center と Cognito、Cognito のユーザープールと ID プール","group":"セキュリティ","comparisonRefs":["cmp-iam-identity-center-cognito"]},
     {"id":"pair-04","name":"セキュリティグループとネットワーク ACL","group":"セキュリティ"},
     {"id":"pair-05","name":"WAF・Shield・Network Firewall・Firewall Manager","group":"セキュリティ","comparisonRefs":["cmp-waf-network-firewall","cmp-shield-waf"]},
