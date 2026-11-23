@@ -165,12 +165,12 @@ describe('シミュレーターの画面', () => {
 
     await user.click(controls.getByRole('button', { name: '重なり' }));
     expect(controls.getByText('範囲 A が範囲 B を含みます。')).toBeVisible();
-    // 作れない大きさの範囲は「条件を満たす」と出さない
+    // 作れない大きさの範囲は「重なりを理由に作れなくなることはありません」と出さない
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 A' }), { target: { value: '10.0.0.0/8' } });
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 B' }), { target: { value: '11.0.0.0/8' } });
     expect(controls.getByText(/範囲 A は大きすぎる、範囲 B は大きすぎる/)).toBeVisible();
     expect(controls.getByText('VPC ピアリング：この大きさの VPC は作れません。')).toBeVisible();
-    expect(controls.queryByText(/条件を満たします/)).toBeNull();
+    expect(controls.queryByText(/重なりを理由に作れなくなることはありません/)).toBeNull();
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 A' }), { target: { value: '10.0.0.0/16' } });
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 B' }), { target: { value: '10.1.0.0/16' } });
     expect(controls.getByText('VPC ピアリング：重なりを理由に作れなくなることはありません。')).toBeVisible();

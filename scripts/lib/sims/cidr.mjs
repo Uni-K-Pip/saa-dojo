@@ -105,7 +105,7 @@ function sizeIssue(prefix) {
   return 'none';
 }
 
-const reservedUses = ['ネットワークアドレス', 'VPC ルーター', 'DNS サーバー', '将来用'];
+const reservedUses = ['ネットワークアドレス', 'VPC ルーター', 'AWS が予約', '将来用'];
 const reservedCount = () => RULES.reserved.value.head + RULES.reserved.value.tail;
 
 function size(config, block) {

@@ -93,7 +93,7 @@ describe('大きさ', () => {
       output: { usable: 11, reserved: [
         { address: '10.0.0.0', use: 'ネットワークアドレス' },
         { address: '10.0.0.1', use: 'VPC ルーター' },
-        { address: '10.0.0.2', use: 'DNS サーバー' },
+        { address: '10.0.0.2', use: 'AWS が予約' },
         { address: '10.0.0.3', use: '将来用' },
         { address: '10.0.0.15', use: 'ブロードキャスト用' },
       ] },

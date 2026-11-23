@@ -9836,8 +9836,8 @@
   },
   "vpc.subnet-reserved-ips": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "ce3c84024415"
+    "checkedAt": "2026-11-23",
+    "hash": "92bf3afa80f9"
   },
   "vpc.subnet-types": {
     "status": "verified",
