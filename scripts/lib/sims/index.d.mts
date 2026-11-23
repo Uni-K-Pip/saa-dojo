@@ -1,3 +1,5 @@
-import type { Engine } from './cidr.mjs';
+import type { Engine as CidrEngine } from './cidr.mjs';
 
-export const SIMULATORS: { id: string; name: string; description: string; engine: Engine }[];
+export const SIMULATORS: ({ name: string; description: string } & (
+  { id: 'cidr'; engine: CidrEngine } | { id: 'trace'; engine: typeof import('./trace.mjs') }
+))[];

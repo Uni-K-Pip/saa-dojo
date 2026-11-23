@@ -721,6 +721,55 @@ export const SIM_CONFIG_SCHEMAS = {
       code: 'custom', path: ['inUse'], message: '使用中の数は ALB の条件を確かめるときに指定してください',
     });
   }),
+  trace: (() => {
+    const id = z.string().min(1);
+    const label = z.string().min(1);
+    const port = z.number().int().min(1).max(65535);
+    const ports = z.union([
+      z.literal('all'),
+      z.object({ from: port, to: port }).strict().refine(({ from, to }) => from <= to, {
+        message: 'ポートの範囲は小さい番号から指定してください。',
+      }),
+    ]);
+    const table = (value) => z.record(id, value).refine((entries) => {
+      const count = Object.keys(entries).length;
+      return count >= 1 && count <= 4;
+    }, { message: '項目を 1〜4 個指定してください。' });
+    const aclRules = z.array(z.object({
+      rule: z.number().int().min(1).max(32766), action: z.enum(['allow', 'deny']), ports, cidr: z.string(),
+    }).strict()).max(6).refine((rules) => unique(rules.map(({ rule }) => rule)), {
+      message: '同じ向きのネットワーク ACL のルール番号を重複させないでください。',
+    });
+    const sgRule = z.object({ ports, peer: z.string() }).strict();
+    const host = { id, label, subnet: id, ip: z.string() };
+    return z.object({
+      op: z.literal('trace'),
+      vpc: z.object({ cidr: z.string(), igw: z.boolean() }).strict(),
+      subnets: z.array(z.object({ id, label: label.max(12), cidr: z.string(), routeTable: id, nacl: id }).strict()).min(1).max(4),
+      routeTables: table(z.array(z.object({
+        dest: z.string(), target: z.union([z.literal('igw'), z.literal('vpce-s3'), z.string().startsWith('nat:').min(5)]),
+      }).strict()).max(5)),
+      nacls: table(z.union([z.literal('default'), z.object({ inbound: aclRules, outbound: aclRules }).strict()])),
+      securityGroups: table(z.object({
+        inbound: z.array(sgRule.refine(({ peer }) => peer !== 'pl-s3', {
+          message: 'S3 のプレフィックスリストはアウトバウンドに指定してください。',
+        })).max(6),
+        outbound: z.array(sgRule).max(6).optional(),
+      }).strict()),
+      hosts: z.array(z.discriminatedUnion('kind', [
+        ...['instance', 'alb', 'rds'].map((kind) => z.object({ ...host, kind: z.literal(kind), sg: id }).strict()),
+        z.object({ ...host, kind: z.literal('nat-gateway'), sg: z.undefined().optional() }).strict(),
+      ])).min(1).max(6),
+      publicIps: z.record(id, z.string()),
+      externals: z.array(z.discriminatedUnion('kind', [
+        z.object({ id, label, kind: z.literal('internet'), ip: z.string() }).strict(),
+        z.object({ id, label, kind: z.literal('s3'), ip: z.undefined().optional() }).strict(),
+      ])).max(3).refine((externals) => externals.filter(({ kind }) => kind === 's3').length <= 1, {
+        message: 'S3 は 1 つまで指定できます。',
+      }),
+      flow: z.object({ from: id, to: id, port, clientPort: port.min(1024) }).strict(),
+    }).strict();
+  })(),
 };
 // ミニラボ・設計パターン（Markdown の front matter）
 export const LAB_ID = /^lab-[a-z0-9][a-z0-9-]{1,60}$/;
