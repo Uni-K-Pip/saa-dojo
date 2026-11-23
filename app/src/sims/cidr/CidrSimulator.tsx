@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { run, type Config } from '../../../../scripts/lib/sims/cidr.mjs';
+import { NOT_COVERED_LINKS, run, type Config } from '../../../../scripts/lib/sims/cidr.mjs';
 import type { SimIndexEntry, SimScenario } from '../../content/types';
 import { SimFlow } from '../SimFlow';
 import { CidrResult, cidrSettings, summarizeCidr } from './CidrResult';
@@ -10,11 +10,14 @@ export { CidrExplore } from './CidrExplore';
 export function CidrLimitations({ lines }: { lines: string[] }) {
   return (
     <ul>
-      {lines.map((line, index) => (
-        <li key={line}>
-          {line}{index === 2 && <> <Link to="/lessons/lesson-basics-ip-subnet-routing">プライベート IP アドレスの範囲</Link></>}
-        </li>
-      ))}
+      {lines.map((line) => {
+        const link = Object.hasOwn(NOT_COVERED_LINKS, line) ? NOT_COVERED_LINKS[line] : undefined;
+        return (
+          <li key={line}>
+            {line}{link && <> <Link to={`/lessons/${link.lessonRef}`}>{link.label}</Link></>}
+          </li>
+        );
+      })}
     </ul>
   );
 }

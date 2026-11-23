@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NOT_COVERED, run, type SplitConfig } from '../../../scripts/lib/sims/cidr.mjs';
+import { CidrResult } from '../sims/cidr/CidrResult';
 import type { SimIndexEntry, SimScenario } from '../content/types';
 import { appendEvent, getAllEvents, mergeEvents } from '../db/repo';
 import { makeBackup, parseBackup } from '../domain/backup';
@@ -31,7 +33,7 @@ const scenario: SimScenario = {
 
 const entry: SimIndexEntry = {
   id: 'cidr', name: 'CIDR とサブネット', description: 'アドレスの数を確かめます。',
-  notCovered: ['IPv6 の CIDR とサブネットは扱いません。', 'セカンダリ CIDR の追加は扱いません。', '範囲の用途は確かめません。'],
+  notCovered: [...NOT_COVERED],
   scenarios: [{ id, title: scenario.title, status: scenario.status }],
 };
 
@@ -163,6 +165,15 @@ describe('シミュレーターの画面', () => {
 
     await user.click(controls.getByRole('button', { name: '重なり' }));
     expect(controls.getByText('範囲 A が範囲 B を含みます。')).toBeVisible();
+    // 作れない大きさの範囲は「条件を満たす」と出さない
+    fireEvent.change(controls.getByRole('textbox', { name: '範囲 A' }), { target: { value: '10.0.0.0/8' } });
+    fireEvent.change(controls.getByRole('textbox', { name: '範囲 B' }), { target: { value: '11.0.0.0/8' } });
+    expect(controls.getByText(/範囲 A は大きすぎる、範囲 B は大きすぎる/)).toBeVisible();
+    expect(controls.getByText('VPC ピアリング：この大きさの VPC は作れません。')).toBeVisible();
+    expect(controls.queryByText(/条件を満たします/)).toBeNull();
+    fireEvent.change(controls.getByRole('textbox', { name: '範囲 A' }), { target: { value: '10.0.0.0/16' } });
+    fireEvent.change(controls.getByRole('textbox', { name: '範囲 B' }), { target: { value: '10.1.0.0/16' } });
+    expect(controls.getByText('VPC ピアリング：重なりの条件を満たします。')).toBeVisible();
     await user.click(controls.getByRole('button', { name: '分割' }));
     expect(controls.getByText('サブネットが全部は入りません。')).toBeVisible();
     expect(await getAllEvents()).toEqual([]);
@@ -191,6 +202,24 @@ describe('シミュレーターの画面', () => {
       await new Promise((resolve) => setTimeout(resolve, 20));
       expect(nav.queryByRole('link', { name: /シミュレーター/ })).toBeNull();
     }
+  });
+
+  it('分割の結果: 層の語を重ねず、「入らない」は数が足りないときだけ出す', () => {
+    const show = (config: SplitConfig) => {
+      const result = run(config);
+      if (!result.ok) throw new Error(result.error.message);
+      return render(<CidrResult config={config} output={result.output} />);
+    };
+    const tiers = [{ name: 'パブリック', kind: 'public' as const }, { name: 'アプリ', kind: 'private' as const }];
+    const notEnough = show({ op: 'split', vpc: '10.0.0.0/24', azs: 2, tiers, prefix: 25 });
+    const items = notEnough.getAllByRole('listitem').map(({ textContent }) => textContent);
+    expect(items).toEqual([expect.stringContaining('AZ 1 ／ パブリック使える'), expect.stringContaining('AZ 2 ／ パブリック使える')]);
+    expect(notEnough.container.textContent).not.toContain('パブリック（パブリック）');
+    expect(notEnough.getByText('入らない：2 個のサブネット')).toBeVisible();
+    notEnough.unmount();
+    const tooLarge = show({ op: 'split', vpc: '10.0.0.0/8', azs: 2, tiers, prefix: 24 });
+    expect(tooLarge.getByText('VPC を作れない大きさです。')).toBeVisible();
+    expect(tooLarge.queryByText(/入らない/)).toBeNull();
   });
 
   it('書き出し・読み込み・同期で実行記録が残り、問題の履歴には入らない', async () => {

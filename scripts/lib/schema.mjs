@@ -685,7 +685,7 @@ export const SimScenarioSchema = z.object({
   explain: z.object({ initial: simExplain, toggles: z.record(simToggleId, simExplain) }).strict(),
   factRefs: z.array(z.string().regex(FACT_ID)),
   lessonRefs: z.array(z.string().regex(LESSON_ID)),
-  createdBy: z.string().min(1),
+  createdBy: sessionId,
 }).strict().refine((data) => data.factRefs.length + data.lessonRefs.length > 0, {
   message: 'factRefs と lessonRefs を合わせて 1 つ以上指定してください',
 });

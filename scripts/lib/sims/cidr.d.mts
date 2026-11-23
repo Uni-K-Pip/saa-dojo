@@ -11,7 +11,8 @@ export type SizeOutput = {
 };
 export type OverlapOutput = {
   relation: 'disjoint' | 'same' | 'a-contains-b' | 'b-contains-a'; overlaps: boolean; sharedCount: number;
-  peering?: 'can' | 'cannot'; subnets?: 'can' | 'cannot';
+  sizeIssueA: 'none' | 'too-large' | 'too-small'; sizeIssueB: 'none' | 'too-large' | 'too-small';
+  peering?: 'can' | 'cannot' | 'size'; subnets?: 'can' | 'cannot' | 'size';
 };
 export type SplitOutput = {
   issue: 'none' | 'vpc-size' | 'subnet-size' | 'subnet-larger' | 'not-enough'; fits: boolean;
@@ -22,6 +23,8 @@ export type Output = SizeOutput | OverlapOutput | SplitOutput;
 export type OutputKeyKind = 'number' | 'address' | 'enum' | 'boolean' | 'array';
 export type Rule = { label: string; text: string } & ({ factRef: string; evidence: string[] } | { lessonRef: string });
 export type Engine = {
+  DESCRIPTION: string;
+  NOT_COVERED_LINKS: Record<string, { lessonRef: string; label: string }>;
   RULES: Record<string, Rule>;
   NOT_COVERED: string[];
   OUTPUT_KEYS: Record<string, Record<string, OutputKeyKind>>;
@@ -37,6 +40,8 @@ export const RULES: Record<string, Rule> & {
   'alb-subnet': Rule & { value: { maxPrefix: number; minFree: number } };
 };
 export const NOT_COVERED: string[];
+export const DESCRIPTION: string;
+export const NOT_COVERED_LINKS: Record<string, { lessonRef: string; label: string }>;
 export const OUTPUT_KEYS: Record<Config['op'], Record<string, OutputKeyKind>>;
 export function formatIpv4(address: number): string;
 export function parseCidr(cidr: unknown): { ok: true; prefix: number; start: number; end: number; total: number } | Failure;

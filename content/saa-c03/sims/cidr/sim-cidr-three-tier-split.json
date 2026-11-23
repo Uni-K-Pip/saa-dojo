@@ -101,11 +101,12 @@
   "factRefs": [
     "vpc.regional-subnet-az",
     "vpc.cidr-size",
-    "vpc.subnet-reserved-ips"
+    "vpc.subnet-reserved-ips",
+    "vpc.subnet-cidr-subset"
   ],
   "lessonRefs": [
     "lesson-3.4-vpc-design",
     "lesson-basics-ip-subnet-routing"
   ],
-  "createdBy": "claude"
+  "createdBy": "v4"
 }

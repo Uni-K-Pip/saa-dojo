@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import * as cidr from '../../../scripts/lib/sims/cidr.mjs';
 import { catalogHash } from '../../../scripts/lib/catalog.mjs';
 import { materialHash } from '../../../scripts/lib/material-status.mjs';
-import { checkSimRules, checkSimScenario, resolveSimText, simContext, simHashSubject } from '../../../scripts/lib/sim.mjs';
+import { checkSimFiles, checkSimRules, checkSimScenario, resolveSimText, simContext, simHashSubject } from '../../../scripts/lib/sim.mjs';
 
 const read = (rel) => JSON.parse(fs.readFileSync(new URL(`../../../content/saa-c03/${rel}`, import.meta.url), 'utf8'));
 const scenario = () => read('sims/cidr/sim-cidr-reserved-addresses.json');
@@ -152,7 +152,33 @@ describe('差し込み', () => {
   });
 });
 
+describe('差し込まない欄', () => {
+  it('題・選択肢・toggle の名前に差し込みを書くとエラーにする', () => {
+    const value = scenario();
+    value.title = '予約の数 {{rule:reserved}}';
+    value.predict.choices[0].text = '{{out:usable}} 個';
+    value.toggles[0].label = '{{rule:size-range}} にする';
+    const codes = issuesOf(value).filter(({ code }) => code === 'sim-insert').map(({ message }) => message);
+    expect(codes).toEqual([
+      expect.stringContaining('title'),
+      expect.stringContaining('predict.choices.0.text'),
+      expect.stringContaining(`toggles.${value.toggles[0].id}.label`),
+    ]);
+  });
+});
+
 describe('規則の表', () => {
+  it('規則の表のエラーは、シナリオではなくエンジンのファイルに付ける', () => {
+    const noElb = { sim: 'cidr', ...simContext({ lessons, catalogEntries: catalogEntries.slice(1), catalogStatus }) };
+    const { issues } = checkSimFiles([{ rel: 'content/saa-c03/sims/cidr/sim-cidr-reserved-addresses.json', sim: 'cidr', data: scenario() }], noElb);
+    const ruleIssue = issues.find(({ message }) => message.includes('alb-subnet'));
+    expect(ruleIssue).toMatchObject({ code: 'sim-rule-fact', rel: 'scripts/lib/sims/cidr.mjs' });
+  });
+
+  it('扱わないことのリンクは、今ある文にだけ付ける', () => {
+    for (const line of Object.keys(cidr.NOT_COVERED_LINKS)) expect(cidr.NOT_COVERED).toContain(line);
+  });
+
   it('すべての規則の裏づけと扱わないことを検査できる', () => {
     expect(Object.keys(cidr.RULES)).toHaveLength(9);
     expect(checkSimRules(cidr, ctx)).toEqual([]);
@@ -203,6 +229,7 @@ describe('検証ハッシュ', () => {
     const RULES = { ...cidr.RULES, reserved: { ...cidr.RULES.reserved, text: '規則の文を変更します' } };
     expect(hash(scenario(), { ...cidr, RULES })).not.toBe(hash());
     expect(hash(scenario(), { ...cidr, NOT_COVERED: [...cidr.NOT_COVERED].reverse() })).not.toBe(hash());
+    expect(hash(scenario(), { ...cidr, DESCRIPTION: 'シミュレーターの説明を変えます。' })).not.toBe(hash());
   });
 
   it('結果が同じエンジンの作り直しや未使用の規則ではハッシュが変わらない', () => {

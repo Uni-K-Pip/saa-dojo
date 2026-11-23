@@ -1,6 +1,9 @@
 // IPv4 の CIDR とサブネットの計算。
 const BASICS = 'lesson-basics-ip-subnet-routing';
 
+// シミュレーターの説明（一覧と画面の冒頭に出る。シナリオのハッシュに入る）
+export const DESCRIPTION = 'プレフィックス長を変えて、アドレスの数、予約されるアドレス、範囲の重なりを確かめます。';
+
 export const RULES = {
   'address-math': {
     label: 'アドレスの数と範囲', text: 'プレフィックス長が 1 増えるとアドレスの数は半分になります', lessonRef: BASICS,
@@ -19,7 +22,8 @@ export const RULES = {
     factRef: 'vpc.cidr-size', evidence: ['重ねられない'],
   },
   'within-vpc': {
-    label: 'サブネットの範囲', text: 'サブネットは VPC のアドレス範囲の中から取ります', lessonRef: BASICS,
+    label: 'サブネットの範囲', text: 'サブネットは VPC のアドレス範囲の中から取ります',
+    factRef: 'vpc.subnet-cidr-subset', evidence: ['VPC の CIDR ブロックの一部（サブセット）'],
   },
   'subnet-one-az': {
     label: 'サブネットの AZ', text: 'サブネットは 1 つの AZ に収まります',
@@ -41,19 +45,26 @@ export const RULES = {
 
 export const NOT_COVERED = [
   'IPv6 の CIDR とサブネットは扱いません。',
-  'セカンダリ CIDR の追加と、追加できる範囲の制限は扱いません。',
+  'セカンダリ CIDR を足したあとの計算と、足せる範囲の制限は扱いません。',
   'その範囲を VPC に使えるか（プライベートアドレスの範囲かなど）は確かめません。',
   'サブネットの種類はルートで決まります。ここでは層の名前として扱うだけです。',
   'VPC とサブネットの数の上限は扱いません。',
   '使っているアドレスの数は、入力した値だけで数えます。',
 ];
 
+// 扱わないことの文に付けるレッスンへのリンク（文そのものを鍵にする。文を変えたら鍵も合わせる）
+export const NOT_COVERED_LINKS = {
+  'その範囲を VPC に使えるか（プライベートアドレスの範囲かなど）は確かめません。': { lessonRef: BASICS, label: 'プライベート IP アドレスの範囲' },
+};
+
 export const OUTPUT_KEYS = {
   size: {
     network: 'address', first: 'address', last: 'address', total: 'number', allowed: 'boolean',
     sizeIssue: 'enum', reserved: 'array', usable: 'number', free: 'number', albIssue: 'enum',
   },
-  overlap: { relation: 'enum', overlaps: 'boolean', sharedCount: 'number', peering: 'enum', subnets: 'enum' },
+  overlap: {
+    relation: 'enum', overlaps: 'boolean', sharedCount: 'number', sizeIssueA: 'enum', sizeIssueB: 'enum', peering: 'enum', subnets: 'enum',
+  },
   split: { issue: 'enum', fits: 'boolean', needed: 'number', available: 'number', remaining: 'number', subnets: 'array', usableTotal: 'number' },
 };
 
@@ -71,7 +82,8 @@ const formatError = () => error('format', '10.0.0.0/16 のように書いてく�
 export function parseCidr(cidr) {
   if (typeof cidr !== 'string') return formatError();
   if (cidr.includes(':')) return error('ipv6', NOT_COVERED[0]);
-  const match = /^(\d{1,3}(?:\.\d{1,3}){3})\/(\d{1,2})$/.exec(cidr);
+  // 先頭に 0 を付けた数（010 など）は 8 進数とも読めるので受け付けない
+  const match = /^((?:0|[1-9]\d{0,2})(?:\.(?:0|[1-9]\d{0,2})){3})\/(0|[1-9]\d?)$/.exec(cidr);
   if (!match || match[0] !== cidr) return formatError();
   const octets = match[1].split('.').map(Number);
   const prefix = Number(match[2]);
@@ -130,10 +142,14 @@ function overlap(config, a, b) {
   if (overlaps) {
     relation = a.start === b.start && a.end === b.end ? 'same' : a.total > b.total ? 'a-contains-b' : 'b-contains-a';
   }
-  const output = { relation, overlaps, sharedCount, [config.context]: overlaps ? 'cannot' : 'can' };
+  // 作れない大きさの範囲は、重なりの有無より先にそれを伝える
+  const sizeIssueA = sizeIssue(a.prefix);
+  const sizeIssueB = sizeIssue(b.prefix);
+  const verdict = sizeIssueA !== 'none' || sizeIssueB !== 'none' ? 'size' : overlaps ? 'cannot' : 'can';
+  const output = { relation, overlaps, sharedCount, sizeIssueA, sizeIssueB, [config.context]: verdict };
   return {
     ok: true, output,
-    rules: ['address-math', 'overlap-math', config.context === 'peering' ? 'peering-overlap' : 'no-overlap-in-vpc'],
+    rules: ['address-math', 'size-range', 'overlap-math', config.context === 'peering' ? 'peering-overlap' : 'no-overlap-in-vpc'],
   };
 }
 

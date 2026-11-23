@@ -16,6 +16,13 @@ const RELATION_LABEL: Record<OverlapOutput['relation'], string> = {
   'b-contains-a': '範囲 B が範囲 A を含みます',
 };
 
+const SIZE_ISSUE_LABEL = { 'too-large': '大きすぎる', 'too-small': '小さすぎる' } as const;
+
+/** 層の表示。名前が種類の語と同じなら 1 回だけ出す */
+export function tierText(name: string, kind: TierKind) {
+  return name === TIER_LABEL[kind] ? name : `${name}（${TIER_LABEL[kind]}）`;
+}
+
 const SPLIT_LABEL: Record<SplitOutput['issue'], string> = {
   none: 'すべてのサブネットが入ります',
   'vpc-size': 'VPC を作れない大きさです',
@@ -30,7 +37,10 @@ function sizeCounts(output: SizeOutput) {
 
 export function summarizeCidr(output: Output): string {
   if ('allowed' in output) return output.allowed ? sizeCounts(output) : `作れない大きさです。全部 ${number(output.total)} 個。`;
-  if ('relation' in output) return `${RELATION_LABEL[output.relation]}。重なりは ${number(output.sharedCount)} 個。`;
+  if ('relation' in output) {
+    const size = output.sizeIssueA !== 'none' || output.sizeIssueB !== 'none' ? '作れない大きさの範囲があります。' : '';
+    return `${size}${RELATION_LABEL[output.relation]}。重なりは ${number(output.sharedCount)} 個。`;
+  }
   return `${SPLIT_LABEL[output.issue]}。必要 ${number(output.needed)} 個、VPC の範囲 ${number(output.available)} 個。`;
 }
 
@@ -56,7 +66,7 @@ export function cidrSettings(config: Config): SettingRow[] {
   return [
     { key: 'vpc', label: 'VPC の CIDR', value: config.vpc },
     { key: 'azs', label: 'AZ の数', value: String(config.azs) },
-    { key: 'tiers', label: '層', value: config.tiers.map(({ name, kind }) => `${name}（${TIER_LABEL[kind]}）`).join('、') },
+    { key: 'tiers', label: '層', value: config.tiers.map(({ name, kind }) => tierText(name, kind)).join('、') },
     { key: 'prefix', label: 'サブネットのプレフィックス長', value: `/${config.prefix}` },
   ];
 }
@@ -77,7 +87,7 @@ function SizeResult({ output }: { output: SizeOutput }) {
         <span className="cidr-space" />
         {reserved?.slice(headCount).map(({ address }, index) => <span className="cidr-reserved" key={address}>予約 {headCount + index + 1}</span>)}
       </div>
-      {!allowed && <p><strong>作れない大きさ</strong>（{sizeIssue === 'too-large' ? '大きすぎる' : '小さすぎる'}。範囲は {RULES['size-range'].text}）</p>}
+      {!allowed && sizeIssue !== 'none' && <p><strong>作れない大きさ</strong>（{SIZE_ISSUE_LABEL[sizeIssue]}。範囲は {RULES['size-range'].text}）</p>}
       <p>{sizeCounts(output)}</p>
       {reserved && (
         <ol className="cidr-reservation-list">
@@ -112,6 +122,9 @@ function OverlapResult({ config, output }: { config: OverlapConfig; output: Over
     left: `${Math.min(percent(startAt - start), 100 - Math.max(3, percent(count)))}%`,
   });
   const sharedStart = Math.max(a.start, b.start);
+  const verdict = config.context === 'peering' ? output.peering : output.subnets;
+  const sizeIssues = ([['A', output.sizeIssueA], ['B', output.sizeIssueB]] as const)
+    .flatMap(([label, issue]) => issue === 'none' ? [] : [`範囲 ${label} は${SIZE_ISSUE_LABEL[issue]}`]);
   return (
     <div>
       <ScaleLabels start={formatIpv4(start)} end={formatIpv4(end)} />
@@ -131,9 +144,14 @@ function OverlapResult({ config, output }: { config: OverlapConfig; output: Over
       <p><strong>{RELATION_LABEL[output.relation]}。</strong><br />
         重なり：{number(output.sharedCount)} 個{output.overlaps && '（斜線）'}
       </p>
-      <p>{config.context === 'peering'
-        ? `VPC ピアリング：${output.peering === 'can' ? '範囲の条件を満たします' : '接続を作れません'}。`
-        : `同じ VPC のサブネット：${output.subnets === 'can' ? '範囲の条件を満たします' : 'この範囲では作れません'}。`}</p>
+      {verdict === 'size' && (
+        <p><strong>作れない大きさ</strong>（{sizeIssues.join('、')}。範囲は {RULES['size-range'].text}）</p>
+      )}
+      <p>{CONTEXT_LABEL[config.context]}：{{
+        size: config.context === 'peering' ? 'この大きさの VPC は作れません' : 'この大きさのサブネットは作れません',
+        can: '重なりの条件を満たします',
+        cannot: config.context === 'peering' ? '接続を作れません' : 'この範囲では作れません',
+      }[verdict ?? 'can']}。</p>
     </div>
   );
 }
@@ -158,13 +176,13 @@ function SplitResult({ config, output }: { config: SplitConfig; output: SplitOut
         ))}
         {unused > 0 && <div className="cidr-split-unused" style={{ flexGrow: unused }} />}
       </div>
-      {!output.fits && <p className="cidr-no-fit">入らない：{count - subnets.length} 個のサブネット</p>}
+      {output.issue === 'not-enough' && <p className="cidr-no-fit">入らない：{count - subnets.length} 個のサブネット</p>}
       {remaining !== undefined && <p>残り {number(remaining)} 個 ／ 全サブネットで使える {number(usableTotal ?? 0)} 個</p>}
       {subnets.length > 0 && (
         <ol className="cidr-subnet-list">
           {subnets.map(({ cidr, az, tier, usable }, index) => (
             <li key={cidr}><strong>{cidr}</strong><br />
-              AZ {az} ／ {tier}（{TIER_LABEL[config.tiers[Math.floor(index / config.azs)]!.kind]}）<br />
+              AZ {az} ／ {tierText(tier, config.tiers[Math.floor(index / config.azs)]!.kind)}<br />
               使えるアドレス：{number(usable)} 個
             </li>
           ))}

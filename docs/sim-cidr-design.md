@@ -29,14 +29,14 @@
 | `size-range` | VPC とサブネットの IPv4 CIDR の大きさは /16 から /28 まで。範囲の外は作れない | 事実 `vpc.cidr-size` | `/16`、`/28` |
 | `reserved` | サブネットでは、先頭の 4 つと最後の 1 つのアドレスを AWS が予約する（先頭から順に、ネットワークアドレス、VPC ルーター、DNS サーバー、将来用。最後はブロードキャスト用）。使えるアドレスの数は、全体から 5 を引いた数 | 事実 `vpc.subnet-reserved-ips` | `先頭の 4 つと最後の 1 つ`、`5 つ` |
 | `no-overlap-in-vpc` | 同じ VPC のサブネットどうしの CIDR は重ねられない | 事実 `vpc.cidr-size` | `重ねられない` |
-| `within-vpc` | サブネットの CIDR は、VPC の CIDR の範囲の中から取る | レッスン `lesson-basics-ip-subnet-routing`（VPC とサブネットの節）。図鑑に事実がない（7 章） | — |
+| `within-vpc` | サブネットの CIDR は、VPC の CIDR の範囲の中から取る | 事実 `vpc.subnet-cidr-subset` | `VPC の CIDR ブロックの一部（サブセット）` |
 | `subnet-one-az` | サブネットは 1 つの AZ に収まる。複数の AZ に置くには、AZ ごとにサブネットを作る | 事実 `vpc.regional-subnet-az` | `1 つのアベイラビリティーゾーン` |
 | `overlap-math` | 2 つの CIDR は、「同じ」「片方がもう片方を含む」「離れている」のどれかになる（一部だけ重なることはない）。同じか含むときに重なる | レッスン `lesson-3.4-vpc-design`（重複させない）。計算の性質で、図鑑に事実はない（7 章） | — |
 | `peering-overlap` | CIDR が一致または重複する VPC どうしでは、VPC ピアリング接続を作れない | 事実 `vpc.peering-overlap` | `一致または重複` |
-| `alb-subnet` | ALB が適切にスケールするには、AZ ごとのサブネットが /27 か、それより大きい範囲（/26 など）で、空きのアドレスが 8 個以上要る | 事実 `elb.alb-subnet-capacity` | `/27`、`8 個以上` |
+| `alb-subnet` | ALB が適切にスケールするには、AZ ごとのサブネットが /27 か、それより大きい範囲で、空きのアドレスが 8 個以上要る | 事実 `elb.alb-subnet-capacity` | `/27`、`8 個以上` |
 
 - 規則の数値（16、28、4 と 1、27、8）は、`RULES` の `value` にだけ書きます。計算の関数は `RULES.<id>.value` を読みます。シナリオの文は `{{rule:size-range}}` のように差し込みます。
-- `alb-subnet` の「/27 以上のビットマスク」（事実の文）は、「/27 か、それより大きい範囲」と読みます（プレフィックス長が 27 以下）。公式の資料の原文（at least a /27 bitmask、例 10.0.0.0/27）と合っています。シナリオの文と画面では、取り違えないよう「/27 か、それより大きい範囲（/26 など）」と書きます。
+- `alb-subnet` の「/27 以上のビットマスク」（事実の文）は、「/27 か、それより大きい範囲」と読みます（プレフィックス長が 27 以下）。公式の資料の原文（at least a /27 bitmask、例 10.0.0.0/27）と合っています。シナリオの文と画面でも「/27 か、それより大きい範囲」と書きます（規則の `text` と画面の語をそろえる）。
 - `alb-subnet` は、事実の本文のとおり「ALB が適切にスケールするための条件」です。予想の問い、選択肢、`albIssue` の画面の文は「スケールするための条件を満たすか」の形にし、「置けない」「作れない」とは書きません（`size-range` の「作れない」とは別の強さ）。
 
 ## 4. 操作ごとの入力と出力
@@ -49,7 +49,7 @@
 
 | エラー | 条件 | 画面の文（自由に試す） |
 |---|---|---|
-| `format` | 形が違う（数が 4 つでない、0〜255 の外、`/` がない、プレフィックス長が 0〜32 の外） | 「10.0.0.0/16 のように書いてください」 |
+| `format` | 形が違う（数が 4 つでない、0〜255 の外、`/` がない、プレフィックス長が 0〜32 の外、先頭に 0 を付けた数（`010` や `/08`。8 進数とも読めるため）） | 「10.0.0.0/16 のように書いてください」 |
 | `ipv6` | `:` を含む | 扱わないこと（6 章）の IPv6 の文 |
 | `not-network` | アドレスが、そのプレフィックス長のネットワークアドレスでない（例 10.0.0.5/24） | 「このプレフィックス長の先頭のアドレスは 10.0.0.0 です」と、直した値を入れるボタン |
 
@@ -99,8 +99,11 @@
 | `relation` | `disjoint`・`same`・`a-contains-b`・`b-contains-a` | 2 つの範囲の関係 | `address-math`、`overlap-math` |
 | `overlaps` | 真偽 | `relation` が `disjoint` 以外 | `overlap-math` |
 | `sharedCount` | 数 | 重なるアドレスの数（重ならなければ 0） | `overlap-math` |
-| `peering` | `can`・`cannot` | `context: "peering"` のときだけ | `peering-overlap` |
-| `subnets` | `can`・`cannot` | `context: "subnets"` のときだけ | `no-overlap-in-vpc` |
+| `sizeIssueA`・`sizeIssueB` | `none`・`too-large`・`too-small` | それぞれの範囲が作れる大きさか（大きさの操作の `sizeIssue` と同じ判定） | `size-range` |
+| `peering` | `can`・`cannot`・`size` | `context: "peering"` のときだけ。どちらかが作れない大きさなら `size`、そうでなければ重なるとき `cannot` | `size-range`、`peering-overlap` |
+| `subnets` | `can`・`cannot`・`size` | `context: "subnets"` のときだけ。決め方は `peering` と同じ | `size-range`、`no-overlap-in-vpc` |
+
+作れない大きさの範囲（/8 の VPC など）を「条件を満たす」と見せないため、重なりの操作でも大きさを見ます。画面は、作れない大きさのときは「作れない大きさ（範囲 A は大きすぎる。範囲は /16〜/28）」と「この大きさの VPC は作れません」を出し、重なりの関係と数は、そのうえで出します。作れる大きさで重ならないときの語は「重なりの条件を満たします」です。
 
 画面: 2 本の帯を同じ目盛りの上に縦に重ねて描き、重なる部分に斜線と「重なり」の文字を付けます。目盛りは 2 つの範囲を合わせた範囲の最初と最後です（広さが大きく違うときは、狭いほうの帯を最小の幅で描き、「実際の幅より広く描いています」と添える）。
 
@@ -143,21 +146,20 @@
 ## 6. 画面に出す「扱わないこと」の文（`NOT_COVERED`）
 
 1. IPv6 の CIDR とサブネットは扱いません。
-2. セカンダリ CIDR の追加と、追加できる範囲の制限は扱いません。
+2. セカンダリ CIDR を足したあとの計算と、足せる範囲の制限は扱いません。
 3. その範囲を VPC に使えるか（プライベートアドレスの範囲かなど）は確かめません。
 4. サブネットの種類はルートで決まります。ここでは層の名前として扱うだけです。
 5. VPC とサブネットの数の上限は扱いません。
 6. 使っているアドレスの数は、入力した値だけで数えます。
 
-自由に試すで IPv6 を入れたときは 1 の文を出します。3 の文には、レッスン `lesson-basics-ip-subnet-routing`（プライベート IP アドレスの範囲）へのリンクを添えます。
+自由に試すで IPv6 を入れたときは 1 の文を出します。3 の文には、レッスン `lesson-basics-ip-subnet-routing`（プライベート IP アドレスの範囲）へのリンクを添えます。リンクはエンジンの `NOT_COVERED_LINKS` に、文そのものを鍵にして持ちます（文の並びを変えても、別の文に付かない）。
 
 ## 7. 図鑑に事実のない規則
 
-数値を持つ規則は、すべて図鑑の検証済みの事実で裏づけられます。数値を持たない次の 2 つは、図鑑に事実がありません。図鑑には足さず、レッスンで裏づける案にしています。
+数値を持つ規則は、すべて図鑑の検証済みの事実で裏づけられます。数値を持たない次の規則は、図鑑に事実がありません。図鑑には足さず、レッスンで裏づける案にしています（`within-vpc` は、図鑑に事実 `vpc.subnet-cidr-subset` が入ったので、その事実で裏づけます）。
 
 | 規則 | 今の裏づけ | 足りないもの |
 |---|---|---|
-| `within-vpc`（サブネットは VPC の範囲の中から取る） | レッスン `lesson-basics-ip-subnet-routing`（「サブネット: VPC のアドレス範囲を小さく分けたもの」） | 図鑑の事実（公式の資料では Subnet CIDR blocks の節）。レッスンで裏づけ、事実は図鑑の手順で後から足す候補にする |
 | `address-math`・`overlap-math`（アドレスの数と範囲の計算、2 つの CIDR の関係） | レッスン `lesson-basics-ip-subnet-routing`（CIDR 表記）、`lesson-3.4-vpc-design`（重複させない） | AWS の事実ではなく IPv4 の計算の性質。図鑑の事実にしない案。エンジンの単体テストで確かめる |
 
 ## 8. シナリオの一覧（5 件。未検証で作る）
@@ -189,8 +191,8 @@
 - 予想: 「ピアリング接続を作れるか」（`peering`。作れる ／ 作れない ／ 作れるが、重なる範囲の通信だけ届かない）。答えは「作れない」。3 つめの選択肢は、どの設定でも出ない値（よくある誤解）。
 - 最初の設定: `{ op: overlap, context: peering, a: 10.0.0.0/16, b: 10.0.128.0/17 }`（`relation` `a-contains-b`、`sharedCount` 32,768）
 - 変えられる設定: `相手を 10.1.0.0/16 にする`（`disjoint`、`can`）、`相手を 10.0.0.0/16 にする`（`same`、`cannot`）、`自分を 10.0.0.0/17 にする`（`disjoint`、`can`。隣り合うが重ならない）
-- 裏づけ: 事実 `vpc.peering-overlap`。レッスン `lesson-3.4-hybrid-and-multi-vpc`、`lesson-3.4-vpc-design`
-- 使う規則: `address-math`、`overlap-math`、`peering-overlap`
+- 裏づけ: 事実 `vpc.peering-overlap`、`vpc.cidr-size`。レッスン `lesson-3.4-hybrid-and-multi-vpc`、`lesson-3.4-vpc-design`
+- 使う規則: `address-math`、`size-range`、`overlap-math`、`peering-overlap`
 
 ### 8.4 `sim-cidr-three-tier-split`: 2 つの AZ と 3 つの層に分けられるか
 
@@ -199,7 +201,7 @@
 - 最初の設定: `{ op: split, vpc: 10.0.0.0/24, azs: 2, tiers: [パブリック public, アプリ private, データ isolated], prefix: 26 }`
 - 変えられる設定: `サブネットを /27 にする`（`fits` 真、`remaining` 64）、`VPC を /23 にする`（`fits` 真、`remaining` 128）、`層を 2 つにする`（`fits` 真、`remaining` 0）
 - 理由で触れること: 層ごとに AZ の数だけサブネットが要る（サブネットは 1 つの AZ に収まるため）
-- 裏づけ: 事実 `vpc.regional-subnet-az`、`vpc.cidr-size`、`vpc.subnet-reserved-ips`。レッスン `lesson-3.4-vpc-design`、`lesson-basics-ip-subnet-routing`
+- 裏づけ: 事実 `vpc.regional-subnet-az`、`vpc.cidr-size`、`vpc.subnet-reserved-ips`、`vpc.subnet-cidr-subset`。レッスン `lesson-3.4-vpc-design`、`lesson-basics-ip-subnet-routing`
 - 使う規則: `address-math`、`size-range`、`within-vpc`、`no-overlap-in-vpc`、`subnet-one-az`、`reserved`
 
 ### 8.5 `sim-cidr-alb-subnet`: ALB がスケールするための空きは足りているか
@@ -220,16 +222,17 @@
 - 分割: ちょうど入る、1 つ足りない、サブネットが VPC より大きい、VPC とサブネットの大きさが範囲の外、割り当てのアドレスの順と重なりがないこと、AZ が 1 と 4
 - 規則の表: 計算の関数が規則の値を表から読むこと（値を変えると結果が変わる）、実行の結果の `rules` が使った規則と合うこと
 
-「自由に試す」の結果を守るのはエンジンの単体テストだけなので、境界の値に加えて、範囲を全部なめる性質のテストを置きます（乱数は使わない。決まった並びの入力を全部回す）。
+「自由に試す」の結果を守るのはエンジンの単体テストだけなので、境界の値に加えて、範囲を広くなめる性質のテストを置きます。テストの中に、実装とは別の書き方（BigInt とビットマスク）で正解を出す参照の計算を持ち、エンジンの結果そのものと突き合わせます（乱数は使わない。決まった並びの入力を全部回す）。
 
-- 大きさ: /0〜/32 の全部で `total` = 2 の (32 − n) 乗、`last` − `first` + 1 = `total`。/16〜/28 の全部で `allowed` が真、`usable` = `total` − 予約の数、予約のアドレスが範囲の先頭 4 つと最後の 1 つ。その外の全部で `allowed` が偽で、`sizeIssue` の向きが合う
-- 重なり: 決まった CIDR の組（10.0.0.0/8 から /28 までの、隣り合う・含む・同じ・離れた組を並べたもの）の全部で、a と b を入れ替えると `overlaps`・`sharedCount` が同じで、`relation` の向きだけが入れ替わる。`relation` が `disjoint` のときだけ `sharedCount` が 0
-- 分割: VPC /16〜/28、AZ 1〜4、層 1〜3、サブネットのプレフィックス長 /16〜/28 の全部の組で、`fits` のとき、サブネットが互いに重ならず、どれも VPC に収まり、`needed` + `remaining` = `available`、サブネットの数 = AZ の数 × 層の数。`fits` が偽のとき、`issue` が `none` でない
+- 大きさ: 先頭のアドレス 14 通り（0.0.0.0、0 でない先頭、255.255.255.255 の近くの端を含む）× /0〜/32 の全部で、範囲の最初と最後、個数、`allowed`・`sizeIssue`、予約の 5 つのアドレスと使える数を比べる。ネットワークアドレスでない入力は `not-network` と直した CIDR を比べる
+- 重なり: 先頭と大きさを組み合わせた約 100 の範囲の全部の組で、`relation`・`overlaps`・`sharedCount`、`sizeIssueA`・`sizeIssueB`、`peering`・`subnets` の判定を比べる
+- 分割: VPC の先頭 4 通り × VPC /14〜/30 × サブネット /12〜/31 × AZ 1〜4 × 層 1〜3 の全部の組で、`issue`（5 種類）、`fits`、`needed`・`available`・`remaining`・`usableTotal`、サブネットの並びを比べる（収まるのに `not-enough` を返す誤りも見つかる）
+- 入力: 先頭に 0 を付けた数（`010.0.0.0/16`、`10.0.0.0/08`）は形のエラー
 
 ## 10. 決めたこと（設計者の案。利用者は未確認）
 
 - 操作は 3 つ（大きさ、重なり、分割）。分割はどのサブネットも同じ大きさにし、自動で割り当てる（手でサブネットを並べる操作は作らない。幅 360px での入力が重いため）。
 - ネットワークアドレスでない入力は直さずに入力のエラーにする（4.0）。
 - ALB の条件を大きさの操作に入れ、シナリオを 1 件作る（設計書 10.2 の行にはないが、`elb.alb-subnet-capacity` が予約の数と結びつく試験の論点のため）。
-- 数値のない計算の規則は、図鑑の事実ではなくレッスンで裏づける（7 章）。`within-vpc` の事実は、図鑑の手順で後から足す候補にする（この実装では図鑑を変えない）。
+- 数値のない計算の規則は、図鑑の事実ではなくレッスンで裏づける（7 章）。`within-vpc` は、図鑑に事実 `vpc.subnet-cidr-subset` が入ったので、その事実で裏づける。
 - 事実 `elb.alb-subnet-capacity` の「/27 以上のビットマスク」の言い回しは、図鑑では変えず、見直しの候補にする。

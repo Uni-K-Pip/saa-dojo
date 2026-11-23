@@ -115,6 +115,15 @@ function scenarioTexts(scenario, engine, runs, keys, factHref) {
     issues.push(...result.issues.map((issue) => ({ ...issue, message: `${label}: ${issue.message}` })));
     return result.text;
   };
+  // 差し込みを展開しない欄に {{…}} があれば、そのまま画面に出てしまうので止める
+  const plain = [
+    ['title', scenario.title],
+    ...scenario.predict.choices.map(({ text }, i) => [`predict.choices.${i}.text`, text]),
+    ...scenario.toggles.map(({ id, label }) => [`toggles.${id}.label`, label]),
+  ];
+  for (const [label, text] of plain) {
+    if (text.includes('{{')) issues.push(error('sim-insert', `${label}: この欄には差し込みを書けません`));
+  }
   const texts = {
     intro: resolve(scenario.intro, 'intro'),
     predict: { ...scenario.predict, text: resolve(scenario.predict.text, 'predict.text') },
@@ -224,7 +233,7 @@ export function simHashSubject({ createdBy, ...scenario }, engine, runs) {
     for (const [, id] of String(text ?? '').matchAll(/\{\{rule:([a-zA-Z0-9-]+)\}\}/g)) if (Object.hasOwn(engine.RULES, id)) used.add(id);
   }
   const rules = Object.fromEntries([...used].map((id) => [id, engine.RULES[id]]));
-  return { ...scenario, engine: { runs: results, rules, notCovered: engine.NOT_COVERED } };
+  return { ...scenario, engine: { description: engine.DESCRIPTION, runs: results, rules, notCovered: engine.NOT_COVERED } };
 }
 
 // 検証状態に渡すデータは、シナリオと全実行の結果を合わせたものです。
@@ -247,7 +256,8 @@ export function checkSimFiles(files, ctx) {
     const { engine } = simulator;
     if (!checked.has(sim)) {
       checked.add(sim);
-      add(checkSimRules(engine, ctx));
+      // 規則の表はエンジンの側にあるので、エンジンのファイルに付ける
+      issues.push(...checkSimRules(engine, ctx).map((issue) => ({ ...issue, rel: `scripts/lib/sims/${sim}.mjs` })));
     }
     const found = checkSimScenario(data, { ...ctx, sim, engine });
     add(found.issues);
