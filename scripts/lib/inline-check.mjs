@@ -14,8 +14,16 @@ export const CALLOUT_KINDS = {
   ひっかけ注意: 'trap',
 };
 
+// コードスパンの外にある HTML のコメントとタグを除きます（表示では、これらの中の記号は強調になりません）。
+const stripHtml = (text) => text.replace(/(`+)[\s\S]*?\1|<!--[\s\S]*?-->|<\/?[A-Za-z][A-Za-z\d-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, (match, ticks) => (ticks ? match : ''));
+// 取り消し線は、同じ本数（1〜2 本）の ~ で対になるものだけを外します。対にならない ~ は文字のままです。
+const stripStrike = (text) => text.replace(/(?<!~)(~{1,2})(?!~)(?=\S)(.*?)(?<!~)\1(?!~)/g, '$2');
+
 function isCalloutHeading(line) {
-  const strong = /^([*_])\1(?=\S)(.*?\S)\1\1(?!\1)/.exec(line.trim());
+  // 行の先頭が強調の記号でなければ、見出しではありません（先頭の HTML のあとの強調は、表示でも見出しになりません）。
+  const trimmed = line.trim();
+  if (!/^([*_])\1/.test(trimmed)) return false;
+  const strong = /^([*_])\1(?=\S)(.*?\S)\1\1(?!\1)/.exec(stripHtml(trimmed));
   if (!strong) return false;
   const [, marker, body] = strong;
   // 両端に同じ記号が奇数個余る場合は、強調が太字の外側に来ます。
@@ -24,17 +32,13 @@ function isCalloutHeading(line) {
   if (leading?.[0] === marker && trailing?.[0] === marker && leading.length % 2 && trailing.length % 2) return false;
   // 表示は、見出しの中のリンク・取り消し線（~ が 1〜2 本）・HTML（タグとコメント）の中身の文字も見出しとして読みます。
   // 記号の偶奇は、リンク先や属性を除いたあとの文字で見ます。
-  const plain = body
-    .replace(/!?\[((?:\\.|[^\[\]\\]|\[(?:\\.|[^\[\]\\])*\])*)\]\((?:\\.|[^()\\]|\((?:\\.|[^()\\])*\))*\)/g, '$1')
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<\/?[A-Za-z][\w:-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, '')
-    .replace(/~+/g, '')
+  const plain = stripStrike(body
+    .replace(/!?\[((?:\\.|[^\[\]\\]|\[(?:\\.|[^\[\]\\])*\])*)\]\((?:\\.|[^()\\]|\((?:\\.|[^()\\])*\))*\)/g, '$1'))
     // バックスラッシュのエスケープも文字として読みます（強調の記号 * _ ` は、そのままにして数えます）。
     .replace(/\\([!-/:-@[\]^{-~])/g, (match, char) => ('*_`'.includes(char) ? match : char));
   if (['*', '_', '`'].some((symbol) => plain.split(symbol).length % 2 === 0)) return false;
-  // 文字参照（&#12398; など）は、normalizeInlineCheckQuestion と同じ処理で文字にします。
-  const text = plain.replace(/&(amp|lt|gt|quot|#\d+|#[xX][\da-fA-F]+);/g, decodeCharacterReference);
-  const title = text.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
+  // 強調の記号を除いてから、文字参照（&#12398; など）を文字にします（文字参照の * などは強調ではなく文字です）。
+  const title = plain.replace(/[*_`]/g, '').replace(/&(amp|lt|gt|quot|#\d+|#[xX][\da-fA-F]+);/g, decodeCharacterReference).trim().replace(/[：:]$/, '');
   return Object.hasOwn(CALLOUT_KINDS, title);
 }
 
@@ -149,30 +153,47 @@ export function parseInlineChecks(markdown) {
 }
 
 /**
- * `markdown`・`md` のフェンスの中に、見出し（`#`）より後ろのその場の確認の見出しがあるものの行を返します。
+ * `markdown`・`md` のフェンスの中に、次のどちらかの形でその場の確認の見出しがあるものの行を返します。
+ * - 見出し（`#`）が 2 つ以上ある、または確認のあとに見出しがあって、その後ろにまた確認の見出しがある。
+ * - 中に、同じ記号で同じ数以上の、情報文字列つきの開きの行（後ろのコードブロックの開き）がある。
  * フェンスの閉じ忘れで、そのあとの本文ごと記法の例になっている疑いがあります（フェンスの中は確認として読みません）。
+ * 見出しが 1 つだけの例（`# 題` と確認）は、正当な記法の例として警告しません。
  */
 export function suspectMarkdownFences(markdown) {
   const lines = markdown.split(/\r\n?|\n/);
   const found = [];
   let fence = null;
+  const finish = () => {
+    // 閉じ忘れたフェンスは、後ろのコードブロックの開きを飲み込み、その閉じで閉じることが多い
+    if (fence?.example && !fence.reported && fence.swallowedOpen && fence.firstCheck) found.push({ line: fence.line, checkLine: fence.firstCheck });
+    fence = null;
+  };
   for (let i = 0; i < lines.length; i++) {
     const f = FENCE.exec(lines[i]);
-    if (f && (fence === null || f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length && !lines[i].slice(f[0].length).trim())) {
+    const closes = f && fence !== null && f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length && !lines[i].slice(f[0].length).trim();
+    if (f && (fence === null || closes)) {
       if (fence === null) {
         const info = lines[i].slice(f[0].length).trim().split(/\s+/)[0].toLowerCase();
-        fence = { marker: f[1], example: info === 'markdown' || info === 'md', line: i + 1, heading: false, reported: false };
+        fence = { marker: f[1], example: info === 'markdown' || info === 'md', line: i + 1, headings: 0, headingAfterCheck: false, firstCheck: 0, swallowedOpen: false, reported: false };
       } else {
-        fence = null;
+        finish();
       }
       continue;
     }
     if (!fence?.example) continue;
-    if (/^ {0,3}#{1,6}(?:[ \t]|$)/.test(lines[i])) fence.heading = true;
-    else if (fence.heading && !fence.reported && HEAD.test(lines[i])) {
-      fence.reported = true;
-      found.push({ line: fence.line, checkLine: i + 1 });
+    if (f && f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length) fence.swallowedOpen = true;
+    if (/^ {0,3}#{1,6}(?:[ \t]|$)/.test(lines[i])) {
+      fence.headings++;
+      if (fence.firstCheck) fence.headingAfterCheck = true;
+    } else if (HEAD.test(lines[i])) {
+      // 見出しが 1 つだけの例は、正当な記法の例です。
+      if (!fence.reported && (fence.headingAfterCheck || fence.headings >= 2)) {
+        fence.reported = true;
+        found.push({ line: fence.line, checkLine: i + 1 });
+      }
+      fence.firstCheck ||= i + 1;
     }
   }
+  finish();
   return found;
 }
