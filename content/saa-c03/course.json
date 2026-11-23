@@ -167,6 +167,7 @@
             { "kind": "lesson", "ref": "lesson-3.4-hybrid-and-multi-vpc" },
             { "kind": "doc", "ref": "cheatsheet-vpc-endpoints" },
             { "kind": "doc", "ref": "cheatsheet-hybrid-connectivity" },
+            { "kind": "sim", "ref": "sim-cidr-peering-overlap" },
             { "kind": "practice" }
           ]
         },
