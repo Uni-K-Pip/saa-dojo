@@ -2,13 +2,15 @@
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { CourseSchema, checkCourse, courseItemKey, unitPracticePool } from '../../../scripts/lib/course.mjs';
+import { CourseSchema, checkCourse, courseItemKey, courseMaterialContext, unitPracticePool } from '../../../scripts/lib/course.mjs';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
-import { checkCourseForBuild } from '../lib/course-build.mjs';
+import { buildCourseOutput, checkCourseForBuild } from '../lib/course-build.mjs';
 
 const lesson = { kind: 'lesson', ref: 'lesson-1.1-iam-basics' };
 const doc = { kind: 'doc', ref: 'cheatsheet-databases' };
 const practice = { kind: 'practice' };
+const pattern = { kind: 'pattern', ref: 'pattern-test' };
+const sim = { kind: 'sim', ref: 'sim-cidr-test' };
 const unit = (id = 'u00', items = [lesson, doc, practice]) => ({ id, title: 'アクセス管理', items });
 const stage = (id = 0, units = [unit()]) => ({ id, title: '土台', goal: '基礎を学ぶ', units });
 const ctx = {
@@ -133,5 +135,60 @@ describe('学習コースのスキーマと検査', () => {
       expect(ids.length, u.id).toBeGreaterThan(0);
       expect(ids.filter((id) => heldOut.has(id)), u.id).toEqual([]);
     }
+  });
+});
+
+describe('学習コースのシミュレーター', () => {
+  const courseWith = (items) => ({ stages: [stage(0, [unit('u00', items)])] });
+  const simFiles = [{ data: { id: sim.ref } }];
+
+  it('シナリオ ID と注記を受け付け、シミュレーターの ID は拒む', () => {
+    const withNote = { ...sim, note: '予想してから実行します。' };
+    expect(CourseSchema.parse(courseWith([withNote]))).toEqual(courseWith([withNote]));
+    expect(CourseSchema.safeParse(courseWith([{ ...sim, ref: 'cidr' }])).success).toBe(false);
+    expect(courseItemKey(sim)).toBe(`sim:${sim.ref}`);
+  });
+
+  it('存在しないシナリオ ID はエラーにする', () => {
+    const missing = { kind: 'sim', ref: 'sim-cidr-missing' };
+    const context = { ...ctx, ...courseMaterialContext({ sims: simFiles }) };
+    expect(checkCourse(courseWith([lesson, sim, missing]), context)).toEqual({
+      errors: [`u00 のシミュレーター ${missing.ref} が見つかりません`], warnings: [],
+    });
+  });
+
+  it('同じシナリオを複数ユニットで参照でき、未検証なら各ユニットで警告する', () => {
+    const course = { stages: [stage(0, [unit('u00', [lesson, sim]), unit('u01', [sim])])] };
+    const context = { ...ctx, ...courseMaterialContext({ sims: simFiles }, {
+      sims: new Map([[sim.ref, { status: 'pending' }]]),
+    }) };
+    expect(checkCourse(course, context)).toEqual({
+      errors: [],
+      warnings: ['u00', 'u01'].map((id) => ({
+        code: 'course-material-unverified',
+        message: `${id} がシミュレーター ${sim.ref}（未検証）を指しています。本番のビルドではユニットの画面に出しません`,
+      })),
+    });
+  });
+
+  it.each([
+    [[pattern, sim, practice], []],
+    [[sim, pattern, practice], ['シミュレーターを設計パターンのあとに置いてください']],
+    [[pattern, practice, sim], ['ユニット演習をシミュレーターのあとに置いてください']],
+  ])('設計パターン・シミュレーター・ユニット演習の順を検査する（%j）', (items, messages) => {
+    const context = { ...ctx, ...courseMaterialContext({ patterns: [{ data: { id: pattern.ref } }], sims: simFiles }) };
+    expect(checkCourse(courseWith([lesson, ...items]), context)).toEqual({
+      errors: [], warnings: messages.map((message) => ({ code: 'course-item-order', message: `u00 では${message}` })),
+    });
+  });
+
+  it('ビルドは simIds に含まれる項目を元の順で残す', () => {
+    const other = { kind: 'sim', ref: 'sim-cidr-other' };
+    const parsed = {
+      course: { data: courseWith([lesson, sim, other, practice]) },
+      lessons: ctx.lessons.map((data) => ({ data })),
+    };
+    const built = buildCourseOutput(parsed, ctx.questions, { simIds: new Set([other.ref]) });
+    expect(built.stages[0].units[0]).toMatchObject({ items: [lesson, other, practice], practiceIds: ['q1'] });
   });
 });

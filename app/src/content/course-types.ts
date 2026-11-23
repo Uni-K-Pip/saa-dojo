@@ -5,6 +5,7 @@ export type CourseItem = { note?: string } & (
   | { kind: 'doc'; ref: string }
   | { kind: 'lab'; ref: string }
   | { kind: 'pattern'; ref: string }
+  | { kind: 'sim'; ref: string }
   | { kind: 'practice' }
   | { kind: 'drill' }
   | { kind: 'analysis' }

@@ -1,21 +1,19 @@
 // 用語集（検索つき）
 import { use, useDeferredValue, useMemo } from 'react';
-import { useSearchParams } from 'react-router';
 import { loadGlossary } from '../content/loader';
 import { searchGlossary } from '../domain/search';
 import { ServiceLink } from '../components/ServiceLinks';
 import { useServiceLinker } from '../state/useContent';
+import { useSearchText } from '../state/useSearchText';
 
 const LIMIT = 200;
 
 export default function GlossaryPage() {
   const entries = use(loadGlossary());
   const { link } = useServiceLinker();
-  const [params, setParams] = useSearchParams();
-  const query = params.get('q') ?? '';
+  const { text: query, setText: setQuery } = useSearchText();
   const deferred = useDeferredValue(query);
   const hits = useMemo(() => searchGlossary(entries, deferred), [entries, deferred]);
-  const setQuery = (q: string) => setParams(q ? { q } : {}, { replace: true });
 
   return (
     <div>

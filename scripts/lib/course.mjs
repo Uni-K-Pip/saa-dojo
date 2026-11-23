@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DOC_ID, LAB_ID, LESSON_ID, PATTERN_ID } from './schema.mjs';
+import { DOC_ID, LAB_ID, LESSON_ID, PATTERN_ID, SIM_SCENARIO_ID } from './schema.mjs';
 import { STATUS_LABELS } from './material-status.mjs';
 
 // ミニラボの量産が始まったら true にする。
@@ -20,6 +20,7 @@ const itemSchemas = [
   item('mock', { mock: z.enum(['random', 'mockA', 'mockB']) }),
   item('lab', { ref: z.string().regex(LAB_ID) }),
   item('pattern', { ref: z.string().regex(PATTERN_ID) }),
+  item('sim', { ref: z.string().regex(SIM_SCENARIO_ID) }),
 ];
 export const COURSE_ITEM_KINDS = itemSchemas.map((schema) => schema.shape.kind.value);
 
@@ -44,6 +45,7 @@ export function courseItemKey(item) {
     case 'doc':
     case 'lab':
     case 'pattern':
+    case 'sim':
       return `${item.kind}:${item.ref}`;
     case 'mock':
       return `mock:${item.mock}`;
@@ -61,14 +63,17 @@ export function unitPracticePool(unit, { lessons, questions }) {
     .sort();
 }
 
-const ORDERED_ITEMS = ['lesson', 'lab', 'doc', 'pattern', 'practice'];
-const ITEM_LABELS = { lesson: 'レッスン', lab: 'ミニラボ', doc: '早見表・ガイド', pattern: '設計パターン', practice: 'ユニット演習' };
+const ORDERED_ITEMS = ['lesson', 'lab', 'doc', 'pattern', 'sim', 'practice'];
+const ITEM_LABELS = {
+  lesson: 'レッスン', lab: 'ミニラボ', doc: '早見表・ガイド', pattern: '設計パターン', sim: 'シミュレーター', practice: 'ユニット演習',
+};
 
-export function courseMaterialContext({ labs = [], patterns = [] }, materialStatuses) {
+export function courseMaterialContext({ labs = [], patterns = [], sims = [] }, materialStatuses) {
   const labUnits = new Map(labs.map(({ data }) => [data.id, data.unit]));
   return {
     labIds: new Set(labUnits.keys()),
     patternIds: new Set(patterns.map(({ data }) => data.id)),
+    simIds: new Set(sims.flatMap(({ data }) => typeof data?.id === 'string' ? [data.id] : [])),
     labUnits,
     materialStatuses,
   };
@@ -79,6 +84,7 @@ export function checkCourse(course, ctx) {
   const warnings = [];
   const unitIds = new Set();
   const lessonIds = new Set(ctx.lessons.map(({ id }) => id));
+  const materialIds = { lab: ctx.labIds, pattern: ctx.patternIds, sim: ctx.simIds };
   const lessonUnits = new Map();
   let previousUnitId = '';
 
@@ -109,13 +115,12 @@ export function checkCourse(course, ctx) {
         if (item.kind === 'doc' && !ctx.docIds.has(item.ref)) {
           errors.push(`${unit.id} の早見表・ガイド ${item.ref} が見つかりません`);
         }
-        if (item.kind === 'lab' || item.kind === 'pattern') {
-          const isLab = item.kind === 'lab';
-          const ids = isLab ? ctx.labIds : ctx.patternIds;
+        if (item.kind === 'lab' || item.kind === 'pattern' || item.kind === 'sim') {
+          const ids = materialIds[item.kind];
           const label = ITEM_LABELS[item.kind];
           if (!ids?.has(item.ref)) errors.push(`${unit.id} の${label} ${item.ref} が見つかりません`);
           else {
-            const status = ctx.materialStatuses?.[isLab ? 'labs' : 'patterns']?.get(item.ref)?.status;
+            const status = ctx.materialStatuses?.[`${item.kind}s`]?.get(item.ref)?.status;
             if (status && status !== 'verified') {
               const build = status === 'pending' ? '本番のビルドでは' : 'どのビルドでも';
               warnings.push({
@@ -123,7 +128,7 @@ export function checkCourse(course, ctx) {
                 message: `${unit.id} が${label} ${item.ref}（${STATUS_LABELS[status]}）を指しています。${build}ユニットの画面に出しません`,
               });
             }
-            const labUnit = isLab ? ctx.labUnits?.get(item.ref) : undefined;
+            const labUnit = item.kind === 'lab' ? ctx.labUnits?.get(item.ref) : undefined;
             if (labUnit && labUnit !== unit.id) {
               warnings.push({ code: 'course-lab-unit', message: `${unit.id} のミニラボ ${item.ref} は ${labUnit} の教材です` });
             }

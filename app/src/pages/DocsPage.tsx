@@ -1,6 +1,7 @@
 // 早見表・ガイドの一覧（検索つき）と本文
 import { use, useDeferredValue, useMemo } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useParams } from 'react-router';
+import { useSearchText } from '../state/useSearchText';
 import { loadDocs } from '../content/loader';
 import type { DocEntry } from '../content/types';
 import { excerpt, searchDocs } from '../domain/search';
@@ -12,8 +13,7 @@ const KIND_LABELS: Record<DocEntry['kind'], string> = { cheatsheet: '早見表',
 
 export default function DocsPage() {
   const docs = use(loadDocs());
-  const [params, setParams] = useSearchParams();
-  const query = params.get('q') ?? '';
+  const { text: query, setText: setQuery } = useSearchText();
   const deferred = useDeferredValue(query);
   const hits = useMemo(() => searchDocs(docs, deferred), [docs, deferred]);
 
@@ -26,7 +26,7 @@ export default function DocsPage() {
           <input
             type="search"
             value={query}
-            onChange={(e) => setParams(e.target.value ? { q: e.target.value } : {}, { replace: true })}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="例: VPC エンドポイント、Glacier"
             autoComplete="off"
           />

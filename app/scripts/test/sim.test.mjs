@@ -205,8 +205,18 @@ describe('規則の表', () => {
     const lessonIds = new Set();
     expect(checkSimRules(cidr, { ...ctx, lessonIds })).toContainEqual(expect.objectContaining({ code: 'sim-rule-ref' }));
     for (const NOT_COVERED of [[], ['短文'], ['あ'.repeat(81)], Array(7).fill('ここで扱わないことの説明です。')]) {
-      expect(checkSimRules({ ...cidr, NOT_COVERED }, ctx)).toMatchObject([{ code: 'sim', level: 'error' }]);
+      // 文の数と字数だけを見るため、リンクは外す（鍵の検査は下のテスト）
+      expect(checkSimRules({ ...cidr, NOT_COVERED, NOT_COVERED_LINKS: {} }, ctx)).toMatchObject([{ code: 'sim', level: 'error' }]);
     }
+  });
+
+  it('扱わないことのリンクの鍵が文にあり、リンク先のレッスンがあることを検査する', () => {
+    expect(checkSimRules(cidr, ctx)).toEqual([]);
+    const [line, link] = Object.entries(cidr.NOT_COVERED_LINKS)[0];
+    const moved = { ...cidr, NOT_COVERED_LINKS: { [`${line}（変えた文）`]: link } };
+    expect(checkSimRules(moved, ctx)).toMatchObject([{ code: 'sim-rule-ref', message: expect.stringContaining('NOT_COVERED にありません') }]);
+    const noLesson = { ...cidr, NOT_COVERED_LINKS: { [line]: { ...link, lessonRef: 'lesson-no-such' } } };
+    expect(checkSimRules(noLesson, ctx)).toMatchObject([{ code: 'sim-rule-ref', message: expect.stringContaining('lesson-no-such') }]);
   });
 });
 
@@ -230,6 +240,8 @@ describe('検証ハッシュ', () => {
     expect(hash(scenario(), { ...cidr, RULES })).not.toBe(hash());
     expect(hash(scenario(), { ...cidr, NOT_COVERED: [...cidr.NOT_COVERED].reverse() })).not.toBe(hash());
     expect(hash(scenario(), { ...cidr, DESCRIPTION: 'シミュレーターの説明を変えます。' })).not.toBe(hash());
+    const links = Object.fromEntries(Object.entries(cidr.NOT_COVERED_LINKS).map(([line, link]) => [line, { ...link, label: '別のリンクの文字' }]));
+    expect(hash(scenario(), { ...cidr, NOT_COVERED_LINKS: links })).not.toBe(hash());
   });
 
   it('結果が同じエンジンの作り直しや未使用の規則ではハッシュが変わらない', () => {

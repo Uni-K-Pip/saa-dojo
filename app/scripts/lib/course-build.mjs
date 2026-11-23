@@ -14,7 +14,7 @@ export function checkCourseForBuild(parsed, hiddenStatuses = new Set(), material
   });
 }
 
-export function buildCourseOutput(parsed, questions, { labIds = new Set(), patternIds = new Set() } = {}) {
+export function buildCourseOutput(parsed, questions, { labIds = new Set(), patternIds = new Set(), simIds = new Set() } = {}) {
   const lessons = parsed.lessons.map(({ data }) => data);
   return {
     stages: parsed.course.data.stages.map((stage) => ({
@@ -24,6 +24,7 @@ export function buildCourseOutput(parsed, questions, { labIds = new Set(), patte
         items: unit.items.filter((item) => {
           if (item.kind === 'lab') return labIds.has(item.ref);
           if (item.kind === 'pattern') return patternIds.has(item.ref);
+          if (item.kind === 'sim') return simIds.has(item.ref);
           return true;
         }),
         stage: stage.id,
