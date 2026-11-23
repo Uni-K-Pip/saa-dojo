@@ -30,7 +30,7 @@
 :root[data-font='large'] { font-size: 18px; }
 :root[data-font='xlarge'] { font-size: 20px; }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
     --bg: #101317;
@@ -56,28 +56,30 @@
   }
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #101317;
-  --surface: #191d23;
-  --surface-2: #232830;
-  --text: #e9ecf0;
-  --muted: #aeb6c2;
-  --border: #3a414c;
-  --primary: #79b3ff;
-  --primary-hover: #a3caff;
-  --on-primary: #0b1a2c;
-  --primary-soft: #1c2b3f;
-  --ok: #7fd99a;
-  --ok-bg: #16301f;
-  --ng: #ff9b92;
-  --ng-bg: #3a1a18;
-  --warn: #ffd27a;
-  --warn-bg: #3a2c0d;
-  --tip: #8fc1ff;
-  --tip-bg: #172638;
-  --focus: #ffb14d;
-  --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+@media screen {
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --bg: #101317;
+    --surface: #191d23;
+    --surface-2: #232830;
+    --text: #e9ecf0;
+    --muted: #aeb6c2;
+    --border: #3a414c;
+    --primary: #79b3ff;
+    --primary-hover: #a3caff;
+    --on-primary: #0b1a2c;
+    --primary-soft: #1c2b3f;
+    --ok: #7fd99a;
+    --ok-bg: #16301f;
+    --ng: #ff9b92;
+    --ng-bg: #3a1a18;
+    --warn: #ffd27a;
+    --warn-bg: #3a2c0d;
+    --tip: #8fc1ff;
+    --tip-bg: #172638;
+    --focus: #ffb14d;
+    --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  }
 }
 
 *,
@@ -1186,7 +1188,7 @@ details.fact.is-target {
   --dg-cat-other: #5a6673;
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --dg-bg: #191d23;
     --dg-text: #e9ecf0;
@@ -1226,42 +1228,44 @@ details.fact.is-target {
   }
 }
 
-:root[data-theme='dark'] {
-  --dg-bg: #191d23;
-  --dg-text: #e9ecf0;
-  --dg-muted: #b3bdc7;
-  --dg-line: #d5dbe2;
-  --dg-emph: #79b3ff;
-  --dg-node-bg: #1f242b;
-  --dg-box-line: #8a96a3;
-  --dg-az-line: #7d8894;
-  --dg-sub-pub-fill: #15291c;
-  --dg-sub-pub-line: #5fb882;
-  --dg-sub-pub-text: #7fcf9e;
-  --dg-sub-pri-fill: #142236;
-  --dg-sub-pri-line: #6fa3e0;
-  --dg-sub-pri-text: #8db7f0;
-  --dg-sub-iso-fill: #22262c;
-  --dg-sub-iso-line: #8a96a3;
-  --dg-sub-iso-text: #b3bdc7;
-  --dg-onprem-fill: #23272d;
-  --dg-badge-bg: #e9ecf0;
-  --dg-badge-text: #101317;
-  --dg-ng: #ff9b92;
-  --dg-ok: #7fd99a;
-  --dg-promoted: #79b3ff;
-  --dg-off: #aab3bd;
-  --dg-cat-compute: #f0a56e;
-  --dg-cat-container: #e2c15a;
-  --dg-cat-storage: #7fcf9e;
-  --dg-cat-database: #8db7f0;
-  --dg-cat-network: #b9a4f0;
-  --dg-cat-security: #f09aa2;
-  --dg-cat-integration: #ee9bcf;
-  --dg-cat-analytics: #74cfe0;
-  --dg-cat-management: #b3bdc7;
-  --dg-cat-migration: #6fd3c5;
-  --dg-cat-other: #aab3bd;
+@media screen {
+  :root[data-theme='dark'] {
+    --dg-bg: #191d23;
+    --dg-text: #e9ecf0;
+    --dg-muted: #b3bdc7;
+    --dg-line: #d5dbe2;
+    --dg-emph: #79b3ff;
+    --dg-node-bg: #1f242b;
+    --dg-box-line: #8a96a3;
+    --dg-az-line: #7d8894;
+    --dg-sub-pub-fill: #15291c;
+    --dg-sub-pub-line: #5fb882;
+    --dg-sub-pub-text: #7fcf9e;
+    --dg-sub-pri-fill: #142236;
+    --dg-sub-pri-line: #6fa3e0;
+    --dg-sub-pri-text: #8db7f0;
+    --dg-sub-iso-fill: #22262c;
+    --dg-sub-iso-line: #8a96a3;
+    --dg-sub-iso-text: #b3bdc7;
+    --dg-onprem-fill: #23272d;
+    --dg-badge-bg: #e9ecf0;
+    --dg-badge-text: #101317;
+    --dg-ng: #ff9b92;
+    --dg-ok: #7fd99a;
+    --dg-promoted: #79b3ff;
+    --dg-off: #aab3bd;
+    --dg-cat-compute: #f0a56e;
+    --dg-cat-container: #e2c15a;
+    --dg-cat-storage: #7fcf9e;
+    --dg-cat-database: #8db7f0;
+    --dg-cat-network: #b9a4f0;
+    --dg-cat-security: #f09aa2;
+    --dg-cat-integration: #ee9bcf;
+    --dg-cat-analytics: #74cfe0;
+    --dg-cat-management: #b3bdc7;
+    --dg-cat-migration: #6fd3c5;
+    --dg-cat-other: #aab3bd;
+  }
 }
 
 .dg {
@@ -1426,3 +1430,46 @@ details.fact.is-target {
 .dg-all-steps summary { cursor: pointer; }
 
 .course-text .btn { max-width: 100%; }
+
+/* ---------- 印刷 ----------
+   暗い配色の値は @media screen の中にだけあるので、紙には明るい配色（白地に黒い字）で出る。
+   ここでは、紙に要らない帯と操作を隠し、図・表・囲み記事がページの途中で切れにくくする */
+@media print {
+  body { background: #ffffff; color: #000000; line-height: 1.55; }
+
+  .app-header,
+  .bottom-nav,
+  .side-nav,
+  .toast,
+  .sticky-actions,
+  .skip-link,
+  .dg-expand,
+  .dg-controls { display: none !important; }
+
+  .app,
+  .app-body { display: block; min-height: 0; }
+
+  .main { max-width: none; padding: 0; }
+
+  a { color: inherit; }
+
+  .callout,
+  .inline-check,
+  .card,
+  .table-wrap,
+  .ar-table,
+  .compare-table,
+  .flashcard,
+  .dg-frame,
+  .dg-follow,
+  figure,
+  pre,
+  table,
+  tr,
+  svg { break-inside: avoid; }
+
+  /* 表は横にスクロールさせず、紙の幅に収める */
+  .table-wrap { overflow: visible; }
+
+  h1, h2, h3, h4 { break-after: avoid; }
+}

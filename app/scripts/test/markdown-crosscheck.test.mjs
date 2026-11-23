@@ -144,6 +144,22 @@ it.each([
   expect(crosscheckMarkdown(markdown)).toEqual([]);
 });
 
+it.each([
+  '**試験&#42;のポイント**', '**試験の~ポイント**', '**試験の`<!-- c -->`ポイント**', '**~~試験のポイント~**',
+])('表示で囲み記事にならない見出し %s は、理由に続けて書けます', (title) => {
+  expect(calloutOf(parser.parse(`> ${title}`).children[0])).toBeNull();
+  const markdown = `${check}\n> ${title}`;
+  expect(parseInlineChecks(markdown)[0].followingCallout).toBeUndefined();
+  expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it('コメントの中の ** があっても、表示で囲み記事になる見出しは報告します', () => {
+  const title = '**試験のポイント<!-- **x** -->**';
+  expect(calloutOf(parser.parse(`> ${title}`).children[0])).not.toBeNull();
+  const markdown = `${check}\n> ${title}\n> 注意点です。`;
+  expect(parseInlineChecks(markdown)[0].followingCallout).toEqual({ line: 8, message: 'その場の確認と次の引用（囲み記事）は、空行で分けてください。' });
+});
+
 it.each(['*試験のポイント*', '***試験のポイント***', '**試験の*ポイント**', '**大切な理由**'])('囲み記事にならない強調 %s は理由に続けて書けます', (title) => {
   expect(calloutOf(parser.parse(`> ${title}`).children[0])).toBeNull();
   const markdown = `${check}\n> ${title}`;
@@ -322,4 +338,8 @@ it('閉じ忘れた markdown のフェンスの中の確認を、見出しのあ
   // 記法の例だけ（見出しなし）、markdown 以外のフェンス、閉じたあとの確認は警告しない
   expect(suspectMarkdownFences(`\`\`\`markdown\n${example}\n\`\`\`\n\n## 次の節\n\n${example}\n`)).toEqual([]);
   expect(suspectMarkdownFences(`\`\`\`text\n## 見出し\n${example}\n\`\`\`\n`)).toEqual([]);
+  // 見出しが 1 つだけの正当な記法の例は警告しない
+  expect(suspectMarkdownFences(`\`\`\`markdown\n## 節\n\n${example}\n\`\`\`\n`)).toEqual([]);
+  // 見出しが 2 つ以上ある形は、次の節まで例に入っている疑いがある
+  expect(suspectMarkdownFences(`\`\`\`markdown\n# 章\n## 節\n\n${example}\n\`\`\`\n`)).toEqual([{ line: 1, checkLine: 5 }]);
 });
