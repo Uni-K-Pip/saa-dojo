@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { BADGE_R, DESIGN_WIDTH, boxLabelRect, layoutDiagram, layoutDiagramReport, textWidth } from '../../../scripts/lib/diagram-layout.mjs';
+import {
+  BADGE_R, DESIGN_WIDTH, arrowRects, boxLabelRect, layoutDiagram, layoutDiagramReport, nodeTextRects, sceneCollisions, textWidth,
+} from '../../../scripts/lib/diagram-layout.mjs';
 import { shortNameOf, categoryKeyOf } from '../../../scripts/lib/diagram.mjs';
 import { buildServiceIndex } from '../../../scripts/lib/service-registry.mjs';
 
@@ -93,7 +95,7 @@ describe.each(SAMPLES)('%s', (id) => {
   it('線のラベル・札・番号・部品・入れ物のラベルの矩形が互いに交わらない（1px までは許す）', () => {
     const items = [
       ...scene.nodes.map((n) => ({ what: `部品 ${n.id}`, owner: n.id, r: n })),
-      ...scene.boxes.map((b) => ({ what: `入れ物のラベル ${b.id}`, owner: b.id, r: boxLabelRect(b) })),
+      ...scene.boxes.map((b) => ({ what: `入れ物のラベル ${b.id}`, owner: b.id, r: b.labelBox })),
       ...scene.edges.filter((e) => e.labelBox).map((e) => ({ what: `線のラベル ${e.id}`, owner: e.id, r: e.labelBox })),
       ...[...scene.boxes, ...scene.nodes].filter((x) => x.tag).map((x) => ({ what: `札 ${x.id}`, owner: x.id, r: x.tag })),
       ...scene.steps.map((st, i) => ({ what: `番号 ${i + 1}`, owner: null, r: { x: st.badgeAt[0] - BADGE_R, y: st.badgeAt[1] - BADGE_R, w: 2 * BADGE_R, h: 2 * BADGE_R } })),
@@ -167,7 +169,7 @@ describe('浮く要素の決め方', () => {
       const [x1, x2, y1, y2] = [Math.min(p[0], q[0]), Math.max(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[1], q[1])];
       const dx = Math.max(x1 - b[0], 0, b[0] - x2);
       const dy = Math.max(y1 - b[1], 0, b[1] - y2);
-      return Math.hypot(dx, dy) < 10;
+      return Math.hypot(dx, dy) < 15; // 短い線では、矢じりの横（線から 14）に置く
     });
     expect(near(scene.steps[2].badgeAt, e('e5'))).toBe(true);
     expect(near(scene.steps[3].badgeAt, e('e7'))).toBe(true);
@@ -196,7 +198,7 @@ describe('浮く要素の決め方', () => {
     expect(b.tag).not.toBeNull();
     expect(b.tag.y).toBeLessThan(b.y);
     expect(b.tag.y + b.tag.h).toBeGreaterThan(b.y);
-    const label = boxLabelRect(b);
+    const label = b.labelBox;
     expect(b.tag.x).toBeGreaterThanOrEqual(label.x + label.w);
     expect(b.tag.x + b.tag.w).toBeLessThanOrEqual(b.x + b.w);
     // 部品の札（standby・new）は 1 つの矩形に固定
@@ -249,6 +251,167 @@ describe('浮く要素の決め方', () => {
     const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
     expect(warnings.map((w) => w.code)).toEqual(['diagram-side']);
     expect(scene.edges[0].points).toHaveLength(2);
+  });
+});
+
+// ---------------------------------------------------------------- 重なり（入れ物のラベル、札、線のラベル、番号）
+
+const segRect = ([p, q]) => ({ x: Math.min(p[0], q[0]) - 0.75, y: Math.min(p[1], q[1]) - 0.75, w: Math.abs(p[0] - q[0]) + 1.5, h: Math.abs(p[1] - q[1]) + 1.5 });
+const segs = (e) => e.points.slice(1).map((p, i) => [e.points[i], p]);
+const grow = (r, d) => ({ x: r.x - d, y: r.y - d, w: r.w + 2 * d, h: r.h + 2 * d });
+const cross = (a, b, tol = 0) => Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) > tol && Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) > tol;
+const badgeBox = ([x, y]) => ({ x: x - BADGE_R, y: y - BADGE_R, w: 2 * BADGE_R, h: 2 * BADGE_R });
+const borderLines = (b) => [
+  { x: b.x - 1, y: b.y - 1, w: b.w + 2, h: 2 }, { x: b.x - 1, y: b.y + b.h - 1, w: b.w + 2, h: 2 },
+  { x: b.x - 1, y: b.y - 1, w: 2, h: b.h + 2 }, { x: b.x + b.w - 1, y: b.y - 1, w: 2, h: b.h + 2 },
+];
+
+describe.each(SAMPLES)('%s の重なり', (id) => {
+  const scene = layout(id);
+
+  it('線と矢じりが、入れ物のラベルを横切らず、2 より近くを通らない', () => {
+    for (const b of scene.boxes) {
+      const near = grow(b.labelBox, 2);
+      for (const e of scene.edges) {
+        for (const sg of segs(e)) expect(cross(near, segRect(sg)), `${e.id} と ${b.id} のラベル`).toBe(false);
+        for (const a of arrowRects(e)) expect(cross(near, a), `${e.id} の矢じりと ${b.id} のラベル`).toBe(false);
+      }
+      // ラベルは自分の入れ物の帯の中
+      expect(contains({ x: b.x, y: b.y, w: b.w, h: 15 }, b.labelBox), b.id).toBe(true);
+    }
+  });
+
+  it('状態の札が、どの部品の文字（自分の部品の 2 行目を含む）にも重ならない', () => {
+    for (const x of [...scene.boxes, ...scene.nodes].filter((y) => y.tag)) {
+      for (const n of scene.nodes) for (const t of nodeTextRects(n)) expect(cross(x.tag, t, 1), `${x.id} の札と ${n.id} の文字`).toBe(false);
+    }
+  });
+
+  it('線のラベルを、入れ物の枠が横切らない', () => {
+    for (const e of scene.edges.filter((x) => x.labelBox)) {
+      for (const b of scene.boxes) for (const l of borderLines(b)) expect(cross(e.labelBox, l), `${e.id} のラベルと ${b.id} の枠`).toBe(false);
+    }
+  });
+
+  it('段階の番号が、どの線の矢じりとも重ならない', () => {
+    scene.steps.forEach((st, i) => {
+      for (const e of scene.edges) for (const a of arrowRects(e)) expect(cross(badgeBox(st.badgeAt), grow(a, -1), 1), `番号 ${i + 1} と ${e.id} の矢じり`).toBe(false);
+    });
+  });
+
+  it('重なりの検査（sceneCollisions）の警告がない', () => {
+    expect(sceneCollisions(scene)).toEqual([]);
+  });
+});
+
+describe('重なりの検査（sceneCollisions）', () => {
+  const fixtureDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'diagram-scenes-before');
+  const before = (id) => JSON.parse(fs.readFileSync(path.join(fixtureDir, `${id}.json`), 'utf8'));
+  const found = (id) => sceneCollisions(before(id)).map((w) => `${w.code} ${w.message}`);
+
+  // 直す前のレイアウトで見本を描いた scene で、検証で指摘された重なりを見つける
+  it('3 層の VPC: 線が入れ物のラベルを横切る、線のラベルを AZ の枠が横切る、短い線の番号が矢じりに重なる', () => {
+    const w = found('dg-vpc-three-tier');
+    expect(w).toContain('diagram-overlap 線 e10 が、入れ物 pub-a のラベル「パブリック」を横切るか、すぐそばを通ります');
+    expect(w).toContain('diagram-overlap 線 e10 が、入れ物 vpc のラベル「VPC 10.0.0.0/16」を横切るか、すぐそばを通ります');
+    expect(w).toContain('diagram-overlap 線 e5 が、入れ物 pri-c のラベル「プライベート」を横切るか、すぐそばを通ります');
+    expect(w).toContain('diagram-crowded 線 e12 のラベル「同期」を、入れ物 az-a の枠が横切るか、枠に近すぎます');
+    expect(w).toContain('diagram-crowded 段階 1 の番号が、線 e1 の矢じりに重なります');
+  });
+
+  it('パイロットライト: 線がリージョンのラベルを横切る、札が部品の 2 行目に重なる、線のラベルを枠が横切る', () => {
+    const w = found('dg-dr-pilot-light');
+    expect(w).toContain('diagram-overlap 線 e2 が、入れ物 region-p のラベル「本番のリージョン」を横切るか、すぐそばを通ります');
+    expect(w).toContain('diagram-crowded app-d の状態の札が、部品 app-d の文字に重なります');
+    expect(w).toContain('diagram-crowded db-d の状態の札が、部品 db-d の文字に重なります');
+    expect(w).toContain('diagram-crowded 線 e4 のラベル「常に複製」を、入れ物 region-p の枠が横切るか、枠に近すぎます');
+  });
+
+  it('ファンアウト: 短い線の番号が矢じりに重なる', () => {
+    expect(found('dg-sns-sqs-fanout')).toEqual([
+      'diagram-crowded 段階 3 の番号が、線 e5 の矢じりに重なります',
+      'diagram-crowded 段階 4 の番号が、線 e7 の矢じりに重なります',
+    ]);
+  });
+
+  it('レイアウトの警告にも同じものが入る（validate はこの警告を出す）', () => {
+    const d = {
+      ...sample('dg-sns-sqs-fanout'),
+      root: { dir: 'col', children: [{ id: 'u', node: 'actor' }, { id: 'r', box: 'region', label: 'とても長い名前のリージョン', children: [{ id: 'a', node: 'ec2' }] }] },
+      edges: [{ id: 'e1', from: 'u', to: 'a' }],
+      steps: [],
+    };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    // まっすぐな線は動かさず、ラベルの横にも空きがないので、直せない重なりとして警告する
+    expect(scene.edges[0].points).toHaveLength(2);
+    expect(warnings).toContainEqual({ code: 'diagram-overlap', message: '線 e1 が、入れ物 r のラベル「とても長い名前のリージョン」を横切るか、すぐそばを通ります' });
+  });
+
+  it('線が入れ物の枠に沿って走ると diagram-overlap', () => {
+    const scene = {
+      boxes: [{ id: 'b', kind: 'group', label: 'まとまり', x: 0, y: 0, w: 100, h: 60, labelBox: { x: 4, y: 1, w: 44, h: 13 }, tag: null }],
+      nodes: [],
+      edges: [{ id: 'e1', kind: 'request', both: false, points: [[100.5, 20], [100.5, 58]], labelBox: null }],
+      steps: [],
+    };
+    expect(sceneCollisions(scene).map((w) => w.message)).toContain('線 e1 が、入れ物の枠に沿って走ります');
+  });
+});
+
+describe('重なりを避ける配置（境界の小さな図）', () => {
+  const base = sample('dg-sns-sqs-fanout');
+
+  it('隣どうしの入れ物の中の部品を結ぶラベルつきの線: 入れ物の間を広げ、ラベルは枠と枠の間に置く', () => {
+    const box = (id, n) => ({ id, box: 'region', label: id === 'r1' ? '東' : '西', children: [{ id: n, node: 'rds' }] });
+    const d = { ...base, root: { dir: 'row', children: [box('r1', 'a'), box('r2', 'b')] }, edges: [{ id: 'e1', from: 'a', to: 'b', kind: 'data', label: '常に複製' }], steps: [] };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    expect(warnings).toEqual([]);
+    const [r1, r2] = scene.boxes;
+    const lb = scene.edges[0].labelBox;
+    expect(r2.x - (r1.x + r1.w)).toBeGreaterThanOrEqual(textWidth('常に複製', 10) + 14);
+    expect(lb.x).toBeGreaterThan(r1.x + r1.w);
+    expect(lb.x + lb.w).toBeLessThan(r2.x);
+  });
+
+  it('入れ物のラベルを線が横切るときは、ラベルを帯の中で線の右へずらす', () => {
+    const d = {
+      ...base,
+      root: { dir: 'col', children: [{ id: 'u', node: 'actor' }, { id: 'g', box: 'group', label: 'とても長いラベル', dir: 'row', children: [{ id: 'a', node: 'ec2' }, { id: 'b', node: 'ec2' }] }] },
+      edges: [{ id: 'e1', from: 'u', to: 'a' }],
+      steps: [],
+    };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    expect(warnings).toEqual([]);
+    const g = scene.boxes[0];
+    const x = scene.edges[0].points.at(-1)[0];
+    expect(x).toBeGreaterThan(g.x + 6 + 2); // 左上の既定の位置なら、線がラベルを横切る
+    expect(x).toBeLessThan(g.x + 6 + textWidth('とても長いラベル', 10));
+    expect(g.labelBox.x).toBeGreaterThan(x);
+  });
+
+  it('2 行目の長い部品の札は、2 行目に重ならない位置を選ぶ', () => {
+    const d = {
+      ...base,
+      root: { dir: 'col', children: [{ id: 'g', box: 'group', label: 'とても長い名前のまとまり', children: [{ id: 'a', node: 'ec2', label: 'アプリサーバー' }] }, { id: 'c', node: 's3' }] },
+      edges: [{ id: 'e1', from: 'a', to: 'c' }],
+      steps: [{ text: '部品が待機していることを示す段階の説明の文です。', focus: ['a'], edges: ['e1'], marks: [{ id: 'a', state: 'standby' }] }],
+    };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    expect(warnings).toEqual([]);
+    const a = scene.nodes.find((n) => n.id === 'a');
+    for (const t of nodeTextRects(a)) expect(cross(a.tag, t, 1)).toBe(false);
+  });
+
+  it('隣どうしをつなぐ短い両向きの線: 番号は矢じりの横に置く', () => {
+    const d = {
+      ...base,
+      root: { dir: 'col', children: [{ id: 'a', node: 'internet' }, { id: 'b', node: 'igw' }] },
+      edges: [{ id: 'e1', from: 'a', to: 'b', both: true }],
+      steps: [{ text: '短い線の段階の番号の置き場所を確かめる説明です。', focus: ['a', 'b'], edges: ['e1'] }],
+    };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    expect(warnings).toEqual([]);
+    for (const a of arrowRects(scene.edges[0])) expect(cross(badgeBox(scene.steps[0].badgeAt), grow(a, -1), 1)).toBe(false);
   });
 });
 

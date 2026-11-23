@@ -34,7 +34,10 @@
 .dg-c-result, .dg-c-span-b { fill: var(--dg-sub-pri-fill); }
 .dg-c-span-a { fill: var(--dg-sub-pub-fill); }
 .dg-c-band, .dg-c-marker { fill: var(--dg-cat); }
-.dg-c-label-bg { fill: var(--dg-bg); }
+/* 位置づけ図の項目名: 背面の矩形は文字の見積もりの幅（英字は広めに見積もる）なので、塗ると文字の外の格子まで消える。
+   矩形は塗らず、文字を背景の色で縁取って、文字の形の分だけ格子を隠す */
+.dg-c-label-bg { fill: none; }
+.dg-c-label-bg + .dg-c-text { paint-order: stroke; stroke: var(--dg-bg); stroke-width: 4px; stroke-linejoin: round; }
 .dg-c-chip, .dg-c-mark { fill: var(--dg-badge-bg); }
 .dg-c-chip-text, .dg-c-mark-text, .dg-c-marker-text { fill: var(--dg-badge-text); }
 .dg-c-link polyline, .dg-c-mark-line {
