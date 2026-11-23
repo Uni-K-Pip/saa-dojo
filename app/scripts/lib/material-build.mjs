@@ -6,7 +6,7 @@ import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
 const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)];
 const run = (parsed) => checkMaterialStatus({
   statusFile: parsed.materialStatus,
-  materials: parsed,
+  materials: { ...parsed, sims: parsed.checkedSims?.items ?? [] },
   presentIds: parsed.materialStems,
   texts: textsOf(parsed),
   file: MATERIAL_STATUS_FILE,

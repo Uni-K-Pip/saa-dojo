@@ -35,6 +35,9 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const DiagramPage = lazy(() => import('./pages/DiagramPage'));
 const DiagramsPage = lazy(() => import('./pages/DiagramPage').then((m) => ({ default: m.DiagramsPage })));
 const ArtifactPage = lazy(() => import('./pages/ArtifactPage'));
+const SimsPage = lazy(() => import('./pages/SimsPage'));
+const SimulatorPage = lazy(() => import('./pages/SimsPage').then((m) => ({ default: m.SimulatorPage })));
+const SimScenarioPage = lazy(() => import('./pages/SimsPage').then((m) => ({ default: m.SimScenarioPage })));
 const ArtifactsPage = lazy(() => import('./pages/ArtifactPage').then((m) => ({ default: m.ArtifactsPage })));
 const LabPage = lazy(() => import('./pages/LabPage'));
 const LabsPage = lazy(() => import('./pages/LabPage').then((m) => ({ default: m.LabsPage })));
@@ -92,6 +95,9 @@ export function AppRoutes() {
         <Route path="diagrams/:id" element={<DiagramPage />} />
         <Route path="artifacts" element={<ArtifactsPage />} />
         <Route path="artifacts/:id" element={<ArtifactPage />} />
+        <Route path="sims" element={<SimsPage />} />
+        <Route path="sims/:sim" element={<SimulatorPage />} />
+        <Route path="sims/:sim/:id" element={<SimScenarioPage />} />
         <Route path="labs" element={<LabsPage />} />
         <Route path="labs/:id" element={<LabPage />} />
         <Route path="patterns" element={<PatternsPage />} />

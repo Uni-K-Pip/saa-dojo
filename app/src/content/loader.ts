@@ -21,6 +21,8 @@ import type {
   Question,
   QuestionMeta,
   ServiceEntry,
+  SimIndexEntry,
+  SimScenario,
 } from './types';
 import type { Course } from './course-types';
 
@@ -90,6 +92,8 @@ export const loadDiagram = (id: string) => loadKey<AnyDiagramScene | null>(`diag
 export const loadArtifactIndex = () => loadKey<ArtifactIndexEntry[]>('artifact-index', []);
 /** 実物 1 件（表示用に整えたもの）。ないとき（出力から除かれたときを含む）は null */
 export const loadArtifact = (id: string) => loadKey<ArtifactData | null>(`artifact:${id}`, null);
+export const loadSimIndex = () => loadKey<SimIndexEntry[]>('sim-index', []);
+export const loadSim = (id: string) => loadKey<SimScenario | null>(`sim:${id}`, null);
 export const loadLabIndex = () => loadKey<LabMeta[]>('lab-index', []);
 export const loadLab = (id: string) => loadKey<MaterialBody | null>(`lab:${id}`, null);
 export const loadPatternIndex = () => loadKey<PatternMeta[]>('pattern-index', []);
