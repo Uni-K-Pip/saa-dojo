@@ -6,14 +6,30 @@ import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib
 
 const parser = unified().use(remarkParse).use(remarkGfm);
 
-function walk(node, visit, inQuote = false) {
-  if (visit(node, inQuote) === false) return;
-  for (const child of node.children ?? []) walk(child, visit, inQuote || node.type === 'blockquote');
+function walk(node, visit, inQuote = false, parent = undefined) {
+  if (visit(node, inQuote, parent) === false) return;
+  for (const child of node.children ?? []) walk(child, visit, inQuote || node.type === 'blockquote', node);
 }
 
 function textOf(node) {
   if (node.type === 'text' || node.type === 'inlineCode') return node.value;
   return (node.children ?? []).map(textOf).join('');
+}
+
+const isCheckTitle = (node) => textOf(node).trim().replace(/[：:]$/, '').trimEnd() === 'その場の確認';
+
+/** 強調より前の、同じ親の中身が空白と記号だけ（文字も数字もない）なら、段落の先頭とみなします。 */
+function leadsParent(node, parent) {
+  const before = parent?.children.slice(0, parent.children.indexOf(node)) ?? [];
+  return !/[\p{L}\p{N}]/u.test(before.map(textOf).join(''));
+}
+
+/** 「その場の確認」の見出しに見えるもの: 見出し（`###` など）と、段落の先頭の強調 */
+function looksLikeCheckTitle(node, parent) {
+  if (node.type === 'heading') return isCheckTitle(node);
+  const emphasis = (n) => n?.type === 'strong' || n?.type === 'emphasis';
+  // `***…***` のような入れ子は、いちばん外側の強調で段落の先頭かを見ます。
+  return emphasis(node) && !emphasis(parent) && isCheckTitle(node) && leadsParent(node, parent);
 }
 
 function hasVisual(node) {
@@ -27,7 +43,7 @@ function inspectInlineChecks(markdown, tree) {
   const converted = new Map();
   const headings = new Set();
   const differences = [];
-  walk(tree, (node, inQuote) => {
+  walk(tree, (node, inQuote, parent) => {
     const line = node.position.start.line;
     if (node.type === 'blockquote') {
       const check = pending.get(line);
@@ -48,9 +64,7 @@ function inspectInlineChecks(markdown, tree) {
         message: '確認として表示されない引用の中にタスクリストがあります（正解の印がそのまま見えます）。その場の確認の書き方を直してください。',
       });
     }
-    if (node.type === 'strong' && textOf(node).trim().replace(/[：:]$/, '').trimEnd() === 'その場の確認') {
-      headings.add(line);
-    }
+    if (looksLikeCheckTitle(node, parent)) headings.add(line);
   });
   for (const line of headings) differences.push({
     line,

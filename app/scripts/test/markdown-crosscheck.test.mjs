@@ -46,8 +46,13 @@ it.each([
   ]);
 });
 
+it('全角空白で区切った引用は、前置きと同じ段落になるのでタスクリストの行で止めます', () => {
+  expect(crosscheckMarkdown(`> 前置きです。\n　\n${check}`)).toEqual([
+    { line: 6, message: taskMessage }, { line: 7, message: taskMessage },
+  ]);
+});
+
 it.each([
-  ['全角空白で区切った引用', `> 前置きです。\n　\n${check}`, 3, 6],
   ['全角コロン付きの見出し', check.replace('確認**', '確認：**'), 1, 4],
   ['見出しと問いを同じ行に書いた確認', check.replace('**\n> 問い', '** 問い'), 1, 3],
   ['フェンスに見える行の直後の確認', '```a`b\n' + check, 2, 5],
@@ -61,11 +66,31 @@ it.each([
   ]);
 });
 
-it('確認の外では引用内のタスクリストと本文の強調見出しだけを報告します', () => {
-  const markdown = '- [x] 引用の外\n\n> - [ ] 引用の中\n> - [x] 引用の中\n\n文中の **その場の確認&#32;:** です。';
+it('確認の外では引用内のタスクリストと段落の先頭の強調見出しだけを報告します', () => {
+  const markdown = '- [x] 引用の外\n\n> - [ ] 引用の中\n> - [x] 引用の中\n\n**その場の確認&#32;:** は読みながら答えます。';
   expect(crosscheckMarkdown(markdown)).toEqual([
     { line: 3, message: taskMessage }, { line: 4, message: taskMessage }, { line: 6, message: headingMessage },
   ]);
+});
+
+it.each([
+  ['引用なしの ### 見出しとタスクリスト', '### その場の確認\n問いですか？\n\n- [ ] いいえ\n- [x] はい\n\n理由です。', [1]],
+  ['引用の中の ### 見出し', '> ### その場の確認\n> 問いですか？\n>\n> - [ ] いいえ\n> - [x] はい\n>\n> 理由です。', [1, 4, 5]],
+  ['* の強調', '> *その場の確認*\n> 問いですか？\n>\n> - [ ] いいえ\n> - [x] はい\n>\n> 理由です。', [1, 4, 5]],
+  ['文の頭の強調', '**その場の確認** は、読みながら答える小問です。', [1]],
+  ['全角の ＞ のあとの強調', '＞ **その場の確認**\n＞ 問いですか？', [1]],
+])('確認の外の見出しに見えるもの（%s）を報告します', (_label, markdown, lines) => {
+  const headings = crosscheckMarkdown(markdown).filter(({ message }) => message === headingMessage).map(({ line }) => line);
+  expect(headings).toEqual([lines[0]]);
+  expect(crosscheckMarkdown(markdown).map(({ line }) => line)).toEqual(lines);
+});
+
+it.each([
+  ['本文の **その場の確認** は、読みながら答える小問です。'],
+  ['> 本文の ***その場の確認*** は、読みながら答える小問です。'],
+  ['- 項目の __その場の確認__ は選択肢から答えます。'],
+])('文の途中で「その場の確認」を強調した説明は報告しません（%s）', (markdown) => {
+  expect(crosscheckMarkdown(markdown)).toEqual([]);
 });
 
 it.each([
