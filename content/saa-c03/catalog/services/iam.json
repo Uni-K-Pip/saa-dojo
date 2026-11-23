@@ -368,7 +368,7 @@
       "id": "iam.principal-wildcard-orgid",
       "title": "Principal の \"*\" と aws:PrincipalOrgID で組織に限る書き方",
       "kind": "feature",
-      "text": "リソースベースのポリシーで Principal に \"*\"（すべてのプリンシパル）を指定し、Condition で aws:PrincipalOrgID を組織 ID と StringEquals で比べると、許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる。Allow で \"*\" を使うのは公開・匿名アクセスを意図するときだけにし、そうでなければ Condition で絞ることが勧められている。",
+      "text": "リソースベースのポリシーで Principal に \"*\"（すべてのプリンシパル）を指定し、Condition で aws:PrincipalOrgID を組織 ID と StringEquals で比べると、許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる。一方で、公開・匿名アクセスを意図しないなら、Allow の Principal に \"*\" を使わず、意図するプリンシパル・サービス・アカウントを Principal に指定したうえで、Condition でさらに絞ることが強く勧められている。",
       "depth": "core",
       "sources": [
         {

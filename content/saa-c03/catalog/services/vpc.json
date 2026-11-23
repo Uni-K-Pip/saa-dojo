@@ -123,7 +123,7 @@
       "id": "vpc.subnet-cidr-subset",
       "title": "サブネットの CIDR と VPC の CIDR の関係",
       "kind": "constraint",
-      "text": "サブネットの CIDR ブロックは、VPC の CIDR ブロックと同じにする（VPC にサブネットを 1 つだけ作る場合）か、VPC の CIDR ブロックの一部（サブセット）にする（VPC に複数のサブネットを作る場合）。",
+      "text": "サブネットの CIDR ブロックは、VPC の CIDR ブロックと同じにできる（VPC にサブネットを 1 つだけ作る場合）か、VPC の CIDR ブロックの一部（サブセット）にできる（VPC に複数のサブネットを作る場合）。",
       "depth": "core",
       "sources": [
         {

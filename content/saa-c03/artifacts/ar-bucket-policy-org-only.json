@@ -20,7 +20,7 @@
     ]
   },
   "notes": [
-    { "path": "Statement[0].Principal", "text": "Principal は、このバケットにアクセスできる相手を書く欄です。ここでは相手を個別に挙げず、下の Condition で絞っています。" },
+    { "path": "Statement[0].Principal", "text": "Principal は相手を書く欄で、ここでは \"*\"（すべて）にして Condition で組織に絞っています。公開・匿名アクセスを意図しないなら、\"*\" でなく意図するプリンシパルを指定して絞ることが強く勧められています。" },
     { "path": "Statement[0].Action", "text": "許可する操作は、オブジェクトの読み取り（s3:GetObject）だけです。" },
     { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、組織 o-exampleorgid に属するときだけ許可します。アカウントを個別に並べずに済み、組織のアカウントが増減しても書き直しません。" }
   ],
