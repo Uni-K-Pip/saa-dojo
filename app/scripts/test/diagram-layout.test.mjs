@@ -293,6 +293,12 @@ describe.each(SAMPLES)('%s の重なり', (id) => {
     }
   });
 
+  it('段階の番号が、入れ物の枠に乗らない', () => {
+    scene.steps.forEach((st, i) => {
+      for (const b of scene.boxes) for (const l of borderLines(b)) expect(cross(badgeBox(st.badgeAt), l), `番号 ${i + 1} と ${b.id} の枠`).toBe(false);
+    });
+  });
+
   it('段階の番号が、どの線の矢じりとも重ならない', () => {
     scene.steps.forEach((st, i) => {
       for (const e of scene.edges) for (const a of arrowRects(e)) expect(cross(badgeBox(st.badgeAt), grow(a, -1), 1), `番号 ${i + 1} と ${e.id} の矢じり`).toBe(false);
@@ -356,10 +362,67 @@ describe('重なりの検査（sceneCollisions）', () => {
     };
     expect(sceneCollisions(scene).map((w) => w.message)).toContain('線 e1 が、入れ物の枠に沿って走ります');
   });
+
+  // 札は段階 1 以降のその段階の印だけ、番号は全体の段階では全部、段階 k では k だけが出る（アプリの stepView）
+  const tagScene = (marksAt) => ({
+    boxes: [],
+    nodes: [
+      { id: 'a', x: 0, y: 60, w: 56, h: 42, label: null, parent: null, tag: { x: 30, y: 33, w: 30, h: 14 } },
+      { id: 'b', x: 120, y: 60, w: 56, h: 42, label: null, parent: null, tag: { x: 50, y: 33, w: 30, h: 14 } },
+    ],
+    edges: [],
+    steps: [
+      { reveal: [], marks: marksAt === 1 ? [{ id: 'a', state: 'standby' }] : [], badgeAt: [100, 10] },
+      { reveal: [], marks: [{ id: 'b', state: 'new' }, ...(marksAt === 2 ? [{ id: 'a', state: 'standby' }] : [])], badgeAt: [40, 40] },
+    ],
+  });
+
+  it('同時に出ない札と番号・札どうしは、重なりにしない', () => {
+    // 札 a は段階 1 だけ、番号 2 と札 b は段階 2 だけ
+    expect(sceneCollisions(tagScene(1))).toEqual([]);
+  });
+
+  it('同じ段階に出る札と番号・札どうしの重なりは、diagram-crowded', () => {
+    const w = sceneCollisions(tagScene(2)).map((x) => x.message);
+    expect(w).toContain('a の状態の札が、段階 2 の番号に重なります');
+    expect(w).toContain('a の状態の札が、b の札に重なります');
+  });
+
+  it('まだ出ていない要素とは、札の重なりを調べない', () => {
+    const s = tagScene(2);
+    // 札 b に重なる札 a を、段階 2 では隠す（段階 3 で出る）。札 a の印も段階 2 にあるが、部品が見えない
+    s.steps[1].badgeAt = [150, 10];
+    s.steps.push({ reveal: ['a'], marks: [], badgeAt: null });
+    expect(sceneCollisions(s).map((x) => x.message).filter((m) => m.includes('b の札'))).toEqual([]);
+  });
+
+  it('番号が入れ物の枠に乗ると diagram-crowded', () => {
+    const scene = {
+      boxes: [{ id: 'g', kind: 'group', label: null, x: 0, y: 0, w: 100, h: 60, parent: null, tag: null }],
+      nodes: [],
+      edges: [],
+      steps: [{ reveal: [], marks: [], badgeAt: [100, 30] }, { reveal: [], marks: [], badgeAt: [50, 30] }],
+    };
+    expect(sceneCollisions(scene).map((w) => w.message)).toEqual(['段階 1 の番号が、入れ物 g の枠に乗ります']);
+  });
 });
 
 describe('重なりを避ける配置（境界の小さな図）', () => {
   const base = sample('dg-sns-sqs-fanout');
+
+  it('置き場所のない線のラベルの diagram-crowded は 1 件だけ（重なりの検査の同じ要素の警告をまとめる）', () => {
+    const box = (id, nid) => ({ id, box: 'region', label: id, children: [{ id: nid, node: 'ec2' }] });
+    const d = {
+      ...base,
+      root: { dir: 'row', children: [box('r1', 'a'), box('r2', 'b'), box('r3', 'c'), box('r4', 'x')] },
+      edges: [{ id: 'e2', from: 'a', to: 'x', label: 'とても長い線のラベルの文字' }],
+      steps: [],
+    };
+    const { scene, warnings } = layoutDiagramReport(d, { serviceIndex });
+    expect(warnings.filter((w) => w.message.startsWith('線 e2 のラベル'))).toHaveLength(1);
+    // 重なりの検査だけを回すと、同じラベルについて複数出る
+    expect(sceneCollisions(scene).filter((w) => w.message.startsWith('線 e2 のラベル')).length).toBeGreaterThan(1);
+  });
 
   it('隣どうしの入れ物の中の部品を結ぶラベルつきの線: 入れ物の間を広げ、ラベルは枠と枠の間に置く', () => {
     const box = (id, n) => ({ id, box: 'region', label: id === 'r1' ? '東' : '西', children: [{ id: n, node: 'rds' }] });

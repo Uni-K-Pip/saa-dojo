@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { DiagramScene } from '../content/types';
 import { Diagram, stepView } from './Diagram';
+// @ts-ignore レイアウトのモジュールは JavaScript で、型の宣言がない
+import { arrowRects, nodeTextRects } from '../../../scripts/lib/diagram-layout.mjs';
 
 // レイアウト済みの小さな図（scripts/lib/diagram-layout.mjs の出力と同じ形）
 const scene: DiagramScene = {
@@ -190,5 +192,35 @@ describe('Diagram', () => {
     expect(kids.indexOf('dg-down-x')).toBeGreaterThan(-1);
     expect(kids.indexOf('dg-down-x')).toBeLessThan(kids.indexOf('dg-node-short'));
     expect(kids.indexOf('dg-down-x')).toBeLessThan(kids.indexOf('dg-node-label'));
+  });
+
+  // レイアウトが重なりを避けるのに使う矩形（矢じり・部品の文字）が、描く位置と合っていること
+  it('矢じりの形は、レイアウトの arrowRects の矩形と同じ', () => {
+    const both: DiagramScene = { ...scene, edges: [{ ...scene.edges[0], both: true }, scene.edges[1]] };
+    const { container } = render(<Diagram scene={both} />);
+    for (const e of both.edges) {
+      const polys = [...container.querySelectorAll(`[data-edge-id="${e.id}"] polygon.dg-arrow`)];
+      const boxes = polys.map((p) => {
+        const pts = p.getAttribute('points')!.trim().split(/\s+/).map((s) => s.split(',').map(Number));
+        const xs = pts.map((q) => q[0]);
+        const ys = pts.map((q) => q[1]);
+        return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+      });
+      const want = arrowRects(e) as { x: number; y: number; w: number; h: number }[];
+      expect(boxes).toHaveLength(want.length);
+      boxes.forEach((b, i) => {
+        for (const k of ['x', 'y', 'w', 'h'] as const) expect(b[k]).toBeCloseTo(want[i][k], 1);
+      });
+    }
+  });
+
+  it('部品の文字の位置は、レイアウトの nodeTextRects の矩形と同じ（文字の基準線は矩形の上から 9）', () => {
+    const { container } = render(<Diagram scene={scene} />);
+    for (const n of scene.nodes) {
+      const g = container.querySelector(`[data-id="${n.id}"]`)!;
+      const ys = [g.querySelector('.dg-node-short'), g.querySelector('.dg-node-label')].filter(Boolean).map((t) => Number(t!.getAttribute('y')));
+      const rects = nodeTextRects(n) as { y: number }[];
+      expect(ys).toEqual(rects.map((r) => r.y + 9));
+    }
   });
 });

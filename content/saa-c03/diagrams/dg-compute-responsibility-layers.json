@@ -10,7 +10,7 @@
   "rows": [
     { "label": "施設・ハードウェア", "cells": ["aws", "aws", "aws"] },
     { "label": "OS の更新", "cells": ["user", "aws", "aws"] },
-    { "label": "DB などのソフト更新", "cells": ["user", "aws", "aws"] },
+    { "label": "DB などのソフト更新", "cells": ["user", "aws", "aws"], "note": "EC2 は自分で入れたもの。RDS は適用の時間帯を選べる" },
     { "label": "アプリのコード", "cells": ["user", "user", "user"] },
     { "label": "通信の許可", "cells": ["user", "user", "user"] },
     { "label": "データ・アクセス権限", "cells": ["user", "user", "user"] }

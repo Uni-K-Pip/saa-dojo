@@ -1045,6 +1045,8 @@ function checkMaterialStatusFile(content, sims) {
     materials: { ...content, sims },
     presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems, sims: content.simStems },
     texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)],
+    // 図のハッシュの対象（レイアウトの結果）は、ビルドと同じ台帳で組み立てる（ビルドは台帳がないとき null）
+    ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
   });
   for (const i of issues) report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
   for (const ref of unverifiedRefs) report.warn(`${ref.kind}-ref-unverified`, ref.rel, unverifiedRefMessage(ref));

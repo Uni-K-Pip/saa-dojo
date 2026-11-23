@@ -292,6 +292,35 @@ describe('層の図', () => {
     expect(sceneOf(d).columns).toEqual([]);
     expect(sceneOf(d).shapes.filter(({ cls }) => cls === 'dg-c-cell-text')).toHaveLength(2);
   });
+
+  it('行の注記は、その行のすぐ下に「※」を付けて 1 行で描き、次の行を下げます', () => {
+    const plain = sceneOf(layers());
+    const d = layers();
+    d.rows[0].note = '関数では実行環境を AWS が用意します';
+    expect(errorsOf(d)).toBe('');
+    const scene = sceneOf(d);
+    const notes = scene.shapes.filter(({ cls }) => cls === 'dg-c-muted');
+    expect(notes).toHaveLength(1);
+    expect(notes[0].lines).toEqual(['※ 関数では実行環境を AWS が用意します']);
+    expect(scene.height).toBe(plain.height + 16);
+    // 注記は 1 行目のセルの下、2 行目のセルの上
+    const cells = scene.shapes.filter(({ cls }) => cls.startsWith('dg-c-cell-') && cls !== 'dg-c-cell-text');
+    expect(notes[0].y).toBeGreaterThan(cells[0].y + cells[0].h);
+    expect(notes[0].y).toBeLessThan(cells[2].y);
+    expect(shapeBounds(scene).right).toBeLessThanOrEqual(DESIGN_WIDTH);
+  });
+
+  it('行の注記は 30 字まで、1 行に収まる幅まで', () => {
+    const d = layers();
+    d.rows[0].note = 'あ'.repeat(30);
+    expect(DiagramSchema.safeParse(d).success).toBe(true);
+    expect(errorsOf(d)).toBe('');
+    // 31 字はスキーマで止まる。幅の検査は、文字の幅の見積もりが変わったときの備え
+    d.rows[0].note = 'あ'.repeat(31);
+    expect(DiagramSchema.safeParse(d).success).toBe(false);
+    // 「※ 」は 13 として数える（全角 31 字で 13 + 310）
+    expect(errorsOf(d)).toContain('rows[0]（アプリ）.note: 注記が 1 行に収まりません（幅 323、上限 316）');
+  });
 });
 
 it('サービス台帳の短い名前がすべて幅 104 の部品に収まります', () => {

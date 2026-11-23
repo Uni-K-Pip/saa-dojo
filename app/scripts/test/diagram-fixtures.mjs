@@ -1,3 +1,14 @@
+import fs from 'node:fs';
+import { diagramHashSubject } from '../../../scripts/lib/diagram.mjs';
+import { materialHash } from '../../../scripts/lib/material-status.mjs';
+import { buildServiceIndex } from '../../../scripts/lib/service-registry.mjs';
+
+const readRepo = (rel) => JSON.parse(fs.readFileSync(new URL(`../../../content/saa-c03/${rel}`, import.meta.url), 'utf8'));
+/** 実際の台帳（テストの写しも同じ blueprint.json・services.json を置く） */
+export const repoServiceIndex = buildServiceIndex(readRepo('blueprint.json'), readRepo('services.json'));
+/** 図の検証状態のハッシュ（validate・ビルドと同じく、データとレイアウトの結果から作る） */
+export const diagramHash = (d, serviceIndex = repoServiceIndex) => materialHash('diagrams', diagramHashSubject(d, { serviceIndex }));
+
 export const lessonId = 'lesson-4.1-s3-storage-classes';
 const common = {
   title: '検査用の図',
