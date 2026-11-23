@@ -1444,7 +1444,9 @@ details.fact.is-target {
   .sticky-actions,
   .skip-link,
   .dg-expand,
-  .dg-controls { display: none !important; }
+  .dg-controls,
+  .dg-hint,
+  .dg-dialog { display: none !important; }
 
   .app,
   .app-body { display: block; min-height: 0; }
@@ -1453,22 +1455,19 @@ details.fact.is-target {
 
   a { color: inherit; }
 
+  /* ページの途中で切れにくくするのは、紙 1 枚より短いものだけにする。
+     本文の全体が入る .card や、長い表・コードに付けると、次のページの頭へ送られて前のページが空になる */
   .callout,
   .inline-check,
-  .card,
-  .table-wrap,
-  .ar-table,
-  .compare-table,
   .flashcard,
   .dg-frame,
   .dg-follow,
   figure,
-  pre,
-  table,
-  tr,
-  svg { break-inside: avoid; }
+  svg,
+  tr { break-inside: avoid; }
 
-  /* 表は横にスクロールさせず、紙の幅に収める */
+  /* 表は、ページをまたぐときに見出しの行をくり返す。横にスクロールさせず、紙の幅に収める */
+  thead { display: table-header-group; }
   .table-wrap { overflow: visible; }
 
   h1, h2, h3, h4 { break-after: avoid; }

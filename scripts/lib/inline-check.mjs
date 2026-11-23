@@ -15,12 +15,15 @@ export const CALLOUT_KINDS = {
 };
 
 // コードスパンの外にある HTML のコメントとタグを除きます（表示では、これらの中の記号は強調になりません）。
-const stripHtml = (text) => text.replace(/(`+)[\s\S]*?\1|<!--[\s\S]*?-->|<\/?[A-Za-z][\w:-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, (match, ticks) => (ticks ? match : ''));
+const stripHtml = (text) => text.replace(/(`+)[\s\S]*?\1|<!--[\s\S]*?-->|<\/?[A-Za-z][A-Za-z\d-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, (match, ticks) => (ticks ? match : ''));
 // 取り消し線は、同じ本数（1〜2 本）の ~ で対になるものだけを外します。対にならない ~ は文字のままです。
 const stripStrike = (text) => text.replace(/(?<!~)(~{1,2})(?!~)(?=\S)(.*?)(?<!~)\1(?!~)/g, '$2');
 
 function isCalloutHeading(line) {
-  const strong = /^([*_])\1(?=\S)(.*?\S)\1\1(?!\1)/.exec(stripHtml(line.trim()));
+  // 行の先頭が強調の記号でなければ、見出しではありません（先頭の HTML のあとの強調は、表示でも見出しになりません）。
+  const trimmed = line.trim();
+  if (!/^([*_])\1/.test(trimmed)) return false;
+  const strong = /^([*_])\1(?=\S)(.*?\S)\1\1(?!\1)/.exec(stripHtml(trimmed));
   if (!strong) return false;
   const [, marker, body] = strong;
   // 両端に同じ記号が奇数個余る場合は、強調が太字の外側に来ます。
@@ -150,37 +153,47 @@ export function parseInlineChecks(markdown) {
 }
 
 /**
- * `markdown`・`md` のフェンスの中に、見出し（`#`）が 2 つ以上あるか、確認のあとに見出しがあって、その後ろにその場の確認の見出しがあるものの行を返します。
+ * `markdown`・`md` のフェンスの中に、次のどちらかの形でその場の確認の見出しがあるものの行を返します。
+ * - 見出し（`#`）が 2 つ以上ある、または確認のあとに見出しがあって、その後ろにまた確認の見出しがある。
+ * - 中に、同じ記号で同じ数以上の、情報文字列つきの開きの行（後ろのコードブロックの開き）がある。
  * フェンスの閉じ忘れで、そのあとの本文ごと記法の例になっている疑いがあります（フェンスの中は確認として読みません）。
+ * 見出しが 1 つだけの例（`# 題` と確認）は、正当な記法の例として警告しません。
  */
 export function suspectMarkdownFences(markdown) {
   const lines = markdown.split(/\r\n?|\n/);
   const found = [];
   let fence = null;
+  const finish = () => {
+    // 閉じ忘れたフェンスは、後ろのコードブロックの開きを飲み込み、その閉じで閉じることが多い
+    if (fence?.example && !fence.reported && fence.swallowedOpen && fence.firstCheck) found.push({ line: fence.line, checkLine: fence.firstCheck });
+    fence = null;
+  };
   for (let i = 0; i < lines.length; i++) {
     const f = FENCE.exec(lines[i]);
-    if (f && (fence === null || f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length && !lines[i].slice(f[0].length).trim())) {
+    const closes = f && fence !== null && f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length && !lines[i].slice(f[0].length).trim();
+    if (f && (fence === null || closes)) {
       if (fence === null) {
         const info = lines[i].slice(f[0].length).trim().split(/\s+/)[0].toLowerCase();
-        fence = { marker: f[1], example: info === 'markdown' || info === 'md', line: i + 1, headings: 0, headingAfterCheck: false, checkSeen: false, reported: false };
+        fence = { marker: f[1], example: info === 'markdown' || info === 'md', line: i + 1, headings: 0, headingAfterCheck: false, firstCheck: 0, swallowedOpen: false, reported: false };
       } else {
-        fence = null;
+        finish();
       }
       continue;
     }
     if (!fence?.example) continue;
+    if (f && f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length) fence.swallowedOpen = true;
     if (/^ {0,3}#{1,6}(?:[ \t]|$)/.test(lines[i])) {
       fence.headings++;
-      if (fence.checkSeen) fence.headingAfterCheck = true;
+      if (fence.firstCheck) fence.headingAfterCheck = true;
     } else if (HEAD.test(lines[i])) {
-      // 見出しが 1 つだけの例（`# 題` と確認）は、正当な記法の例です。
-      // 確認のあとに見出しがあってまた確認が来る形と、見出しが 2 つ以上ある形は、次の節まで例に入っている疑いがあります。
+      // 見出しが 1 つだけの例は、正当な記法の例です。
       if (!fence.reported && (fence.headingAfterCheck || fence.headings >= 2)) {
         fence.reported = true;
         found.push({ line: fence.line, checkLine: i + 1 });
       }
-      fence.checkSeen = true;
+      fence.firstCheck ||= i + 1;
     }
   }
+  finish();
   return found;
 }

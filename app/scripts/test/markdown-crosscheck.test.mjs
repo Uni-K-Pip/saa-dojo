@@ -146,6 +146,8 @@ it.each([
 
 it.each([
   '**試験&#42;のポイント**', '**試験の~ポイント**', '**試験の`<!-- c -->`ポイント**', '**~~試験のポイント~**',
+  '<!-- x -->**試験のポイント**', '<b>**試験のポイント**</b>',
+  '**試験の<x_y>ポイント**', '**試験の<a:b>ポイント**', '**試験の<ab:cd>ポイント**',
 ])('表示で囲み記事にならない見出し %s は、理由に続けて書けます', (title) => {
   expect(calloutOf(parser.parse(`> ${title}`).children[0])).toBeNull();
   const markdown = `${check}\n> ${title}`;
@@ -340,6 +342,13 @@ it('閉じ忘れた markdown のフェンスの中の確認を、見出しのあ
   expect(suspectMarkdownFences(`\`\`\`text\n## 見出し\n${example}\n\`\`\`\n`)).toEqual([]);
   // 見出しが 1 つだけの正当な記法の例は警告しない
   expect(suspectMarkdownFences(`\`\`\`markdown\n## 節\n\n${example}\n\`\`\`\n`)).toEqual([]);
+  // 閉じ忘れて、後ろのコードブロックの開きを飲み込み、その閉じで閉じる形（見出しがなくても、見出しのあとでも）
+  const later = '```markdown\n別の例\n```';
+  expect(suspectMarkdownFences(`\`\`\`markdown\n> 例\n\n## 次の節\n\n${example}\n\n${later}\n`)).toEqual([{ line: 1, checkLine: 6 }]);
+  expect(suspectMarkdownFences(`\`\`\`markdown\n## 例\n${example}\n\n${later}\n`)).toEqual([{ line: 1, checkLine: 3 }]);
+  expect(suspectMarkdownFences(`\`\`\`markdown\n> 例\n\n${example}\n\n${later}\n`)).toEqual([{ line: 1, checkLine: 4 }]);
+  // 見出し 1 つと確認 2 つの正当な例は警告しない
+  expect(suspectMarkdownFences(`\`\`\`markdown\n## 節\n${example}\n\n${example}\n\`\`\`\n`)).toEqual([]);
   // 見出しが 2 つ以上ある形は、次の節まで例に入っている疑いがある
   expect(suspectMarkdownFences(`\`\`\`markdown\n# 章\n## 節\n\n${example}\n\`\`\`\n`)).toEqual([{ line: 1, checkLine: 5 }]);
 });
