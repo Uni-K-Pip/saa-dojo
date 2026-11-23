@@ -22,6 +22,8 @@
             { "kind": "lesson", "ref": "lesson-basics-decoupling-serverless" },
             { "kind": "lesson", "ref": "lesson-basics-pricing" },
             { "kind": "lesson", "ref": "lesson-basics-monitoring-logging" },
+            { "kind": "sim", "ref": "sim-cidr-reserved-addresses" },
+            { "kind": "sim", "ref": "sim-cidr-alb-subnet" },
             { "kind": "practice" }
           ]
         }
@@ -47,6 +49,8 @@
           "items": [
             { "kind": "lesson", "ref": "lesson-3.4-vpc-design" },
             { "kind": "lesson", "ref": "lesson-1.2-vpc-network-security" },
+            { "kind": "sim", "ref": "sim-cidr-vpc-size-limits" },
+            { "kind": "sim", "ref": "sim-cidr-three-tier-split" },
             { "kind": "practice" }
           ]
         },
@@ -104,6 +108,7 @@
             { "kind": "lesson", "ref": "lesson-2.1-decoupling-and-messaging" },
             { "kind": "lesson", "ref": "lesson-3.2-scaling-and-decoupling" },
             { "kind": "doc", "ref": "cheatsheet-messaging-streaming" },
+            { "kind": "pattern", "ref": "pattern-sns-sqs-fanout" },
             { "kind": "practice" }
           ]
         },

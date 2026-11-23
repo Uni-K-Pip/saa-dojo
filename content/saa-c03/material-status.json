@@ -79,5 +79,12 @@
       "checkedAt": "2026-11-23",
       "hash": "c384b840a82b"
     }
+  },
+  "patterns": {
+    "pattern-sns-sqs-fanout": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "a74b4488cf68"
+    }
   }
 }
