@@ -74,10 +74,10 @@
     }
   },
   "explain": {
-    "initial": "サブネットのアドレスは全部で {{out:total}} 個です。AWS が {{rule:reserved}} を予約するため、割り当てられるのは残りの {{out:usable}} 個です。",
+    "initial": "サブネットのアドレスは全部で {{out:total}} 個です。AWS が{{rule:reserved}}を予約するため、割り当てられるのは残りの {{out:usable}} 個です。",
     "toggles": {
-      "prefix-27": "範囲を広げると、全部で {{out:total}} 個になります。AWS は {{rule:reserved}} を予約するため、残りの {{out:usable}} 個を割り当てられます。",
-      "prefix-24": "範囲をさらに広げると、全部で {{out:total}} 個になります。AWS は {{rule:reserved}} を予約するため、残りの {{out:usable}} 個を割り当てられます。",
+      "prefix-27": "範囲を広げると、全部で {{out:total}} 個になります。AWS は{{rule:reserved}}を予約するため、残りの {{out:usable}} 個を割り当てられます。",
+      "prefix-24": "範囲をさらに広げると、全部で {{out:total}} 個になります。AWS は{{rule:reserved}}を予約するため、残りの {{out:usable}} 個を割り当てられます。",
       "prefix-29": "サブネットの IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定の範囲は小さすぎるので、サブネットを作れません。"
     }
   },

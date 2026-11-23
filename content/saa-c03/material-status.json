@@ -45,7 +45,7 @@
     "ar-bucket-policy-org-only": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "ad9dc3dc17d1"
+      "hash": "049ce520b364"
     },
     "ar-dns-records-alias-apex": {
       "status": "verified",
@@ -62,7 +62,7 @@
     "sim-cidr-alb-subnet": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "ae5df9bed8fb"
+      "hash": "28111139a654"
     },
     "sim-cidr-reserved-addresses": {
       "status": "verified",
@@ -91,7 +91,7 @@
     "pattern-sns-sqs-fanout": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "a74b4488cf68"
+      "hash": "f91a25e87d30"
     }
   }
 }
