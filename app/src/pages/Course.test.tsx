@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Course } from '../content/course-types';
-import type { DocEntry, LessonMeta } from '../content/types';
+import type { DocEntry, LessonMeta, SimIndexEntry, SimScenarioMeta } from '../content/types';
 import { db } from '../db/db';
 import { answer, event, makeContentFiles, makeQuestion } from '../test/fixtures';
 import { renderApp, resetDb, useFakeContent } from '../test/render';
@@ -134,5 +134,56 @@ describe('学習コースとユニット', () => {
     renderApp('/course/u99');
     expect(await screen.findByRole('heading', { name: 'ユニットが見つかりません' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '学習コースへ' })).toHaveAttribute('href', '/course');
+  });
+});
+
+describe('学習コースのシミュレーター', () => {
+  const scenario: SimScenarioMeta = { id: 'sim-cidr-subnet-test', title: 'サブネットの大きさを予想する', status: 'pending' };
+  const simulator: SimIndexEntry = {
+    id: 'cidr', name: 'CIDR とサブネット', description: 'アドレスの数を確かめます。', notCovered: [], scenarios: [scenario],
+  };
+  const note = '設定を変える前に結果を予想します。';
+  const simCourse: Course = { stages: [{ id: 0, title: '土台', goal: '仕組みを学びます。', units: [
+    { id: 'u00', title: 'ネットワーク', stage: 0, practiceIds: [], items: [{ kind: 'sim', ref: scenario.id, note }] },
+  ] }] };
+  const to = `/sims/${simulator.id}/${scenario.id}`;
+
+  beforeEach(async () => {
+    await resetDb();
+    useFakeContent(makeContentFiles([], { course: simCourse, 'sim-index': [simulator] }));
+  });
+
+  it.each([['initial', true], ['prefix-27', false]])('ユニットに題とリンクを出し、実行 %s の済みを判定する', async (run, done) => {
+    await db.events.bulkAdd([
+      event('sim-run', { sim: simulator.id, scenarioId: 'sim-cidr-other', run: 'initial' }),
+      event('sim-run', { sim: simulator.id, scenarioId: scenario.id, run, correct: false }),
+    ]);
+    renderApp('/course/u00');
+    const link = await screen.findByRole('link', { name: scenario.title });
+    expect(link).toHaveAttribute('href', to);
+    const row = within(link.closest('li')!);
+    expect(row.getByText('シミュレーター')).toHaveClass('badge');
+    expect(row.getByText('未検証')).toHaveClass('badge', 'pending');
+    expect(row.getByText(note)).toBeInTheDocument();
+    if (done) expect(row.getByText('済み')).toHaveClass('badge', 'ok');
+    else expect(row.queryByText('済み')).not.toBeInTheDocument();
+  });
+
+  it('ホームの「次にやること」に未了のシナリオを出す', async () => {
+    renderApp('/');
+    const card = within(await screen.findByRole('region', { name: '次にやること' }));
+    expect(card.getByText(scenario.title)).toBeInTheDocument();
+    expect(card.getByRole('link', { name: 'シミュレーターへ' })).toHaveAttribute('href', to);
+  });
+
+  it('索引にないシナリオは ID で表示し、詳細画面で見つからないことを案内する', async () => {
+    useFakeContent(makeContentFiles([], { course: simCourse, 'sim-index': [] }));
+    const user = userEvent.setup();
+    renderApp('/course/u00');
+    const link = await screen.findByRole('link', { name: scenario.id });
+    expect(link).toHaveAttribute('href', to);
+    await act(async () => { await user.click(link); });
+    expect(await screen.findByRole('heading', { name: '見つかりません' })).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(scenario.id))).toBeInTheDocument();
   });
 });

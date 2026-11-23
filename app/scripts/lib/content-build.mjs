@@ -536,6 +536,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions, {
     labIds: new Set(labs.index.map(({ id }) => id)),
     patternIds: new Set(patterns.index.map(({ id }) => id)),
+    simIds: new Set(sims.index.flatMap(({ scenarios }) => scenarios.map(({ id }) => id))),
   }));
 
   const out = [];

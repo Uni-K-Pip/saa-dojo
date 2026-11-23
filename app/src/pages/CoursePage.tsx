@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { CourseNextStep, courseItemDetails, unitTitle } from '../components/CourseNextStep';
 import { MaterialBadges } from '../components/MaterialReading';
 import type { CourseUnit } from '../content/course-types';
-import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex } from '../content/loader';
+import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex, loadSimIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
 import { answeredUnitPracticeCount, courseProgress, pickUnitPractice, unitPracticeCandidates, unitProgress } from '../domain/course';
 import { randomRng } from '../domain/rng';
@@ -57,6 +57,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
   const docs = hasKind('doc') ? use(loadDocs()) : [];
   const labs = hasKind('lab') ? use(loadLabIndex()) : [];
   const patterns = hasKind('pattern') ? use(loadPatternIndex()) : [];
+  const sims = hasKind('sim') ? use(loadSimIndex()) : [];
   const index = hasKind('practice') ? use(loadQuestionIndex()) : [];
   const { items } = unitProgress(unit, study);
   const candidates = unitPracticeCandidates(unit, index).length;
@@ -93,7 +94,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
       {error && <p className="notice warn" role="alert">{error}</p>}
       <ol className="list" role="list">
         {items.map(({ item, key, done }) => {
-          const details = courseItemDetails(item, unit.id, lessons, docs, labs, patterns);
+          const details = courseItemDetails(item, unit.id, lessons, docs, labs, patterns, sims);
           const manual = item.kind === 'doc' || item.kind === 'analysis';
           return (
             <li key={key}>

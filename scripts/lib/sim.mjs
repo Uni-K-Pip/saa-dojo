@@ -23,6 +23,11 @@ export function simContext({ lessons, catalogEntries, catalogStatus }) {
 
 export function checkSimRules(engine, ctx) {
   const issues = [];
+  // 扱わないことのリンク: 鍵が今の文にあり、リンク先のレッスンがあること
+  for (const [line, link] of Object.entries(engine.NOT_COVERED_LINKS ?? {})) {
+    if (!engine.NOT_COVERED.includes(line)) issues.push(error('sim-rule-ref', `扱わないことのリンクの鍵「${line}」が NOT_COVERED にありません`));
+    if (!ctx.lessonIds.has(link.lessonRef)) issues.push(error('sim-rule-ref', `扱わないことのリンク先のレッスン ${link.lessonRef} がありません`));
+  }
   for (const [id, rule] of Object.entries(engine.RULES)) {
     if (rule.factRef) {
       const fact = ctx.facts.get(rule.factRef);
@@ -233,7 +238,7 @@ export function simHashSubject({ createdBy, ...scenario }, engine, runs) {
     for (const [, id] of String(text ?? '').matchAll(/\{\{rule:([a-zA-Z0-9-]+)\}\}/g)) if (Object.hasOwn(engine.RULES, id)) used.add(id);
   }
   const rules = Object.fromEntries([...used].map((id) => [id, engine.RULES[id]]));
-  return { ...scenario, engine: { description: engine.DESCRIPTION, runs: results, rules, notCovered: engine.NOT_COVERED } };
+  return { ...scenario, engine: { description: engine.DESCRIPTION, runs: results, rules, notCovered: engine.NOT_COVERED, notCoveredLinks: engine.NOT_COVERED_LINKS ?? {} } };
 }
 
 // 検証状態に渡すデータは、シナリオと全実行の結果を合わせたものです。

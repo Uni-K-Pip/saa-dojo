@@ -1,8 +1,8 @@
 import { Suspense, use } from 'react';
 import { Link } from 'react-router';
 import type { CourseItem, CourseUnit } from '../content/course-types';
-import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex } from '../content/loader';
-import type { DocEntry, LabMeta, LessonMeta, PatternMeta } from '../content/types';
+import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadSimIndex } from '../content/loader';
+import type { DocEntry, LabMeta, LessonMeta, PatternMeta, SimIndexEntry } from '../content/types';
 import { nextStep } from '../domain/course';
 import { useStudy } from '../state/study';
 
@@ -14,7 +14,7 @@ export function unitTitle(unit: CourseUnit): string {
 
 export function courseItemDetails(
   item: CourseItem, unitId: string, lessons: LessonMeta[], docs: DocEntry[],
-  labs: LabMeta[] = [], patterns: PatternMeta[] = [],
+  labs: LabMeta[] = [], patterns: PatternMeta[] = [], sims: SimIndexEntry[] = [],
 ): { label: string; title: string; to: string; action: string; minutes?: number; status?: LabMeta['status'] } {
   switch (item.kind) {
     case 'lesson': {
@@ -33,6 +33,16 @@ export function courseItemDetails(
     case 'pattern': {
       const pattern = patterns.find((p) => p.id === item.ref);
       return { label: '設計パターン', title: pattern?.title ?? item.ref, to: `/patterns/${item.ref}`, action: '設計パターンを読む', status: pattern?.status };
+    }
+    case 'sim': {
+      const entry = sims.find(({ scenarios }) => scenarios.some(({ id }) => id === item.ref));
+      const scenario = entry?.scenarios.find(({ id }) => id === item.ref);
+      // 索引になくても、シナリオ ID の接頭辞を使って詳細画面の「見つかりません」へ案内する。
+      const simId = entry?.id ?? item.ref.split('-')[1];
+      return {
+        label: 'シミュレーター', title: scenario?.title ?? item.ref, to: `/sims/${simId}/${item.ref}`,
+        action: 'シミュレーターへ', status: scenario?.status,
+      };
     }
     case 'practice':
       return { label: 'ユニット演習', title: 'ユニット演習', to: `/course/${unitId}`, action: 'ユニット演習へ' };
@@ -55,7 +65,8 @@ function NextStepCard({ showCourseLink }: { showCourseLink: boolean }) {
   const docs = next?.item.kind === 'doc' ? use(loadDocs()) : [];
   const labs = next?.item.kind === 'lab' ? use(loadLabIndex()) : [];
   const patterns = next?.item.kind === 'pattern' ? use(loadPatternIndex()) : [];
-  const details = next && courseItemDetails(next.item, next.unit.id, lessons, docs, labs, patterns);
+  const sims = next?.item.kind === 'sim' ? use(loadSimIndex()) : [];
+  const details = next && courseItemDetails(next.item, next.unit.id, lessons, docs, labs, patterns, sims);
 
   return (
     <section className="card course-text" aria-labelledby="course-next-h">

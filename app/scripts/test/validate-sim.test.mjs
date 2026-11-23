@@ -121,16 +121,27 @@ describe('validate とコンテンツのビルド', () => {
   });
 
   it('既定では出さず、includeUnverified では展開済みの未検証シナリオを出す', () => {
-    const { build, output } = fixture();
+    const { write, issues, build, output } = fixture();
+    const lessons = [...lessonIds].map((ref) => ({ kind: 'lesson', ref }));
+    const simItem = { kind: 'sim', ref: id };
+    write('course.json', { stages: [{ id: 0, title: '土台', goal: '基礎を学ぶ', units: [
+      { id: 'u00', title: 'ネットワーク', items: [...lessons, simItem] },
+    ] }] });
+    expect(issues().filter(({ file }) => file.endsWith('/course.json'))).toEqual([
+      expect.objectContaining({ level: 'warning', code: 'course-material-unverified', message: expect.stringContaining(id) }),
+    ]);
+
     const normal = build();
     expect(normal.ok).toBe(true);
     expect(normal.manifest.counts).toMatchObject({ sims: 0, simsExcluded: { pending: 5 } });
     expect(output(normal.manifest, 'sim-index')).toEqual([]);
+    expect(output(normal.manifest, 'course').stages[0].units[0].items).toEqual(lessons);
     expect(normal.manifest.files).not.toHaveProperty(`sim:${id}`);
 
     const dev = build(true);
     expect(dev.ok).toBe(true);
     expect(dev.manifest.counts).toMatchObject({ sims: 5, simsExcluded: { pending: 0 } });
+    expect(output(dev.manifest, 'course').stages[0].units[0].items).toEqual([...lessons, simItem]);
     const [entry] = output(dev.manifest, 'sim-index');
     expect(entry.id).toBe('cidr');
     expect(entry.scenarios.map(({ id }) => id)).toEqual([...entry.scenarios.map(({ id }) => id)].sort());
