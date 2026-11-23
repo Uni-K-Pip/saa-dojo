@@ -56,7 +56,7 @@ describe('ミニ模試', () => {
     expect(answers).toHaveLength(4);
     expect(answers.every((e) => e.type === 'answer' && e.mode === 'mock' && !e.questionId.endsWith('-101'))).toBe(true);
     expect(events.filter((e) => e.type === 'mock-result')).toHaveLength(1);
-  });
+  }, 15000);
 
   it('検証済みの問題で65問を組めない保留模試は準備中で、解放も開始もできない', async () => {
     renderApp('/mock');

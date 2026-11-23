@@ -95,4 +95,36 @@ describe('useSearchText', () => {
     });
     await waitFor(() => expect(search()).toBe('?tier=11'));
   });
+
+  it('打つ → 外から別の検索語へ移る → 移った先でまた打つ → 戻る、で入力を URL に合わせる', async () => {
+    const input = renderSearch(['/s?q=one']);
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+
+    act(() => { void navigate('/s?q=link'); });
+    await waitFor(() => expect(input.value).toBe('link'));
+
+    fireEvent.change(input, { target: { value: 'linky' } });
+    await waitFor(() => expect(search()).toBe('?q=linky'));
+
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+    await waitFor(() => expect(input.value).toBe('onex'));
+  });
+
+  it('戻ったあとに打っても、URL のほかの部分が古い値に戻らない', async () => {
+    const input = renderSearch(['/s?q=one&tier=1']);
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex&tier=1'));
+
+    act(() => { void navigate('/s?q=link&tier=2'); });
+    await waitFor(() => expect(input.value).toBe('link'));
+    fireEvent.change(input, { target: { value: 'linky' } });
+    await waitFor(() => expect(search()).toBe('?q=linky&tier=2'));
+
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=onex&tier=1'));
+    fireEvent.change(input, { target: { value: 'z' } });
+    await waitFor(() => expect(search()).toBe('?q=z&tier=1'));
+  });
 });

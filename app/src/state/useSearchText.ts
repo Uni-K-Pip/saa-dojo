@@ -4,7 +4,7 @@
 // transition の確定より先に次の文字が来たときに、その間の文字が消える。
 // 戻る・進む、`?q=` つきのリンクなど、外から URL が変わったときは、入力を URL に合わせる。
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation, useNavigationType, useSearchParams } from 'react-router';
 
 type Mark = { token: string; seq: number };
 const MARK = 'searchText';
@@ -26,6 +26,7 @@ export type SearchParamUpdate = SearchParamChanges | ((current: URLSearchParams)
 export function useSearchText(key = 'q') {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
+  const navigationType = useNavigationType();
   const fromUrl = params.get(key) ?? '';
   const [text, setTextState] = useState(fromUrl);
   // この画面が書いた位置の更新には印（token と連番）を付け、外からの変更と見分ける
@@ -37,8 +38,9 @@ export function useSearchText(key = 'q') {
 
   useEffect(() => {
     const mark = markOf(location.state);
-    if (mark?.token === token.current && mark.seq < seq.current) {
-      // 自分が書いた更新のうち、最新より前のもの（途中の値）。入力はもっと新しいので、そのままにする
+    if (navigationType !== 'POP' && mark?.token === token.current && mark.seq < seq.current) {
+      // 自分の書き込み（replace）で届いた位置のうち、最新より前のもの（途中の値）。入力はもっと新しいので、そのままにする。
+      // 戻る・進む（POP）で届いた位置は、印があっても常に URL に合わせる
       return;
     }
     pending.current = params;
