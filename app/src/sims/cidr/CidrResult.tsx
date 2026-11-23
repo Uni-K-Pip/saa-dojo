@@ -149,7 +149,7 @@ function OverlapResult({ config, output }: { config: OverlapConfig; output: Over
       )}
       <p>{CONTEXT_LABEL[config.context]}：{{
         size: config.context === 'peering' ? 'この大きさの VPC は作れません' : 'この大きさのサブネットは作れません',
-        can: '重なりの条件を満たします',
+        can: '重なりを理由に作れなくなることはありません',
         cannot: config.context === 'peering' ? '接続を作れません' : 'この範囲では作れません',
       }[verdict ?? 'can']}。</p>
     </div>

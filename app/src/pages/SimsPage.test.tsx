@@ -173,7 +173,7 @@ describe('シミュレーターの画面', () => {
     expect(controls.queryByText(/条件を満たします/)).toBeNull();
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 A' }), { target: { value: '10.0.0.0/16' } });
     fireEvent.change(controls.getByRole('textbox', { name: '範囲 B' }), { target: { value: '10.1.0.0/16' } });
-    expect(controls.getByText('VPC ピアリング：重なりの条件を満たします。')).toBeVisible();
+    expect(controls.getByText('VPC ピアリング：重なりを理由に作れなくなることはありません。')).toBeVisible();
     await user.click(controls.getByRole('button', { name: '分割' }));
     expect(controls.getByText('サブネットが全部は入りません。')).toBeVisible();
     expect(await getAllEvents()).toEqual([]);
