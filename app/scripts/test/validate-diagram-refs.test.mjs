@@ -181,15 +181,74 @@ it.each([false, true])('有効な図が 0 枚でも本文の参照を検査し�
 });
 
 it('その場の確認の行番号、複数行の問いと理由、選択肢を読み取ります', () => {
-  const source = `# 題\r\n\r\n ${check.replace('？', '？\n> 条件を考えましょう。')}\n> 補足です。\n>\n引用の外です。`;
-  expect(parseInlineChecks(source)).toEqual([{
+  const quote = `${check.replace('？', '？\n> 条件を考えましょう。')}\n> 補足です。\n>`;
+  const source = `# 題\r\n\r\n${quote.replace(/^/gm, ' ')}\n引用の外です。`;
+  expect(parseInlineChecks(source)).toMatchObject([{
     line: 3,
+    endLine: 12,
     question: '保存できますか？\n条件を考えましょう。',
     questionKey: '保存できますか？ 条件を考えましょう。',
     options: [{ text: 'できません', correct: false }, { text: 'できます', correct: true }],
     reason: '保存する仕組みを備えているからです。\n補足です。',
     problems: [],
   }]);
+});
+
+it.each([
+  ['選択肢から', 3],
+  ['理由だけ', 6],
+])('リスト内の確認で%s字下げを忘れると validate が報告します', (_label, indented) => {
+  const lines = check.split('\n');
+  const source = ['- 項目', '', ...lines.slice(0, indented).map((line) => `  ${line}`), ...lines.slice(indented)].join('\n');
+  const problem = '確認の行の字下げを見出しの行とそろえてください。';
+  expect(parseInlineChecks(source)).toMatchObject([{ line: 3, endLine: 9, problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) })).toEqual([
+    expect.objectContaining({ level: 'error', code: 'inline-check', message: expect.stringContaining(problem) }),
+  ]);
+});
+
+it('全角空白だけの行を引用を分ける空行として扱いません', () => {
+  const source = `> 前置きです。\n　\n${check}`;
+  const problem = 'その場の確認は、前の引用と空行で分けてください。';
+  expect(parseInlineChecks(source)).toMatchObject([{ line: 3, problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) })).toEqual([
+    expect.objectContaining({ level: 'error', code: 'inline-check', message: expect.stringContaining(problem) }),
+  ]);
+});
+
+it.each([
+  '> **その場の確認：**',
+  '> **その場の確認:**',
+  '> **その場の確認** 問いですか？',
+  '> **その場の確認：** 問いですか？',
+  '> **その場の確認**：問いですか？',
+])('見出しにコロンや続きがあると validate が報告します（%#）', (heading) => {
+  const source = check.replace('> **その場の確認**', heading);
+  const problem = '見出しは `> **その場の確認**` だけの行にしてください。';
+  expect(parseInlineChecks(source)).toMatchObject([{ line: 1, problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) })).toEqual([
+    expect.objectContaining({ level: 'error', code: 'inline-check', message: expect.stringContaining(problem) }),
+  ]);
+});
+
+it('引用のあるコードフェンスの直後に書いた確認を validate が通します', () => {
+  const source = '```text\n> 例です。\n> **その場の確認：**\n```\n' + check;
+  expect(parseInlineChecks(source)).toMatchObject([{ line: 5, problems: [] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) })).toEqual([]);
+});
+
+it.each([
+  ['選択肢', check.replace('[X] できます', '[X] ![図](#/diagrams/dg-test-layers)')],
+  ['選択肢', check.replace('[X] できます', '[X] ![画像](example.png)')],
+  ['選択肢', check.replace('[X] できます', '[X] [図](<#/diagrams/dg-test-layers>)')],
+  ['問い', check.replace('保存できますか？', '保存できますか？\n>\n> ![図](#/diagrams/dg-test-layers)')],
+  ['問い', check.replace('保存できますか？', '# [図](#/diagrams/dg-test-layers)について')],
+])('文字だけで表示する%sに画像や図へのリンクを書くと validate が報告します（%#）', (part, source) => {
+  const problem = `${part}に図や画像、図へのリンクは書けません。`;
+  expect(parseInlineChecks(source)).toMatchObject([{ problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source), ...Object.fromEntries([layers()].map(diagramFile)) })).toEqual([
+    expect.objectContaining({ level: 'error', code: 'inline-check', message: expect.stringContaining(problem) }),
+  ]);
 });
 
 it.each([
@@ -287,6 +346,25 @@ it('問いの画像・タグ・文字参照・強調を正規化し、語中の�
     ' __![保存](https://example.com/storage)__ <b title="a > b">先</b> \n' +
     ' `snake_case` &amp; &lt;値&gt; &quot;例&quot; &#39; &#65; &#x1F4BE; は ~~同じ~~ ですか？ ',
   )).toBe('保存 先 snake_case & <値> "例" \' A 💾 は 同じ ですか？');
+});
+
+it.each([
+  ['<b>太字</b>ですか', '太字ですか'],
+  ['<span title="a > b">x</span>', 'x'],
+  ["<a href='x'>リンク</a>", 'リンク'],
+  ['<br/>', ''],
+  ['<br />', ''],
+  ['<img src=x />', ''],
+  ['<a\nhref="x">y</a>', 'y'],
+  ['a < b', 'a < b'],
+  ['<3', '<3'],
+  ['<a', '<a'],
+])('問いのタグと不等号の正規化は従来どおりです（%#）', (question, expected) => {
+  expect(normalizeInlineCheckQuestion(question)).toBe(expected);
+});
+
+it('閉じていないタグのあとに空白が 64,000 字続いても問いを正規化できます', () => {
+  expect(normalizeInlineCheckQuestion('<a' + ' '.repeat(64000))).toBe('<a');
 });
 
 it('4 種類の図がビルドの索引と個別の出力に現れます', () => {

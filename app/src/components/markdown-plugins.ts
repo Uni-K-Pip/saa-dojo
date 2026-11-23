@@ -102,7 +102,7 @@ export const remarkInlineChecks: Plugin<[], Root> = function () {
     walk(tree, (bq) => {
       const position = bq.position;
       const check = checks.get(position?.start.line ?? 0);
-      if (!check || !position || !isInlineCheckBlockquote(bq, check.line)) return;
+      if (!check || !position || !isInlineCheckBlockquote(bq, check)) return;
       const questionBlocks = blocks(check.question);
       const questionText = questionBlocks.map(plainText).join(' ').replace(/\s+/g, ' ').trim();
       const question = questionBlocks.length === 1 && questionBlocks[0].type === 'paragraph'
@@ -137,7 +137,7 @@ export const remarkInlineChecks: Plugin<[], Root> = function () {
         },
       ];
       // Markdown が引用に続く行を取り込んだ場合は、引用の外へ戻します。
-      const continuation = source.slice(check.line, position.end.line);
+      const continuation = source.slice(check.endLine, position.end.line);
       const firstOutside = continuation.findIndex((line) => !/^[ \t]*>/.test(line));
       return firstOutside < 0 ? [] : blocks(continuation.slice(firstOutside).join('\n'));
     });
