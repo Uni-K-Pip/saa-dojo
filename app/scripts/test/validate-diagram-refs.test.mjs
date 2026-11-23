@@ -5,11 +5,10 @@ import path from 'node:path';
 import { afterEach, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
 import { parseDiagramRefs } from '../../../scripts/lib/diagram.mjs';
-import { materialHash } from '../../../scripts/lib/material-status.mjs';
 import { normalizeInlineCheckQuestion, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
 import { buildContent } from '../lib/content-build.mjs';
-import { architecture, decision, layers, lessonId, position, timeline } from './diagram-fixtures.mjs';
+import { architecture, decision, diagramHash, layers, lessonId, position, timeline } from './diagram-fixtures.mjs';
 
 const repoContent = new URL('../../../content/saa-c03/', import.meta.url);
 const read = (rel) => fs.readFileSync(new URL(rel, repoContent), 'utf8');
@@ -89,7 +88,7 @@ function fixture(files = {}) {
 const diagramFile = (d) => [`diagrams/${d.id}.json`, d];
 // 図を検証済みとして記録した material-status.json（未検証の図への参照の警告を出さないため）
 const verifiedFile = (...ds) => ['material-status.json', {
-  diagrams: Object.fromEntries(ds.map((d) => [d.id, { status: 'verified', checkedAt: '2026-11-23', hash: materialHash('diagrams', d) }])),
+  diagrams: Object.fromEntries(ds.map((d) => [d.id, { status: 'verified', checkedAt: '2026-11-23', hash: diagramHash(d) }])),
 }];
 const issues = (files) => checkContent(loadContent({ root: fixture(files).root })).issues;
 

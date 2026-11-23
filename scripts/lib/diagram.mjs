@@ -374,6 +374,31 @@ export function layoutAnyDiagram(diagram, opts) {
   return diagram.type === 'architecture' ? layoutDiagram(diagram, opts) : layoutKindDiagram(diagram, opts).scene;
 }
 
+// 座標などの数を 0.01 に丸める（環境で末尾の桁が違っても、同じハッシュにするため）。-0 は 0 にする
+export const roundForHash = (v) => {
+  if (typeof v === 'number') return Number.isFinite(v) ? Math.round(v * 100) / 100 + 0 : v;
+  if (Array.isArray(v)) return v.map(roundForHash);
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, roundForHash(x)]));
+  return v;
+};
+
+/**
+ * 図 1 枚の、検証状態のハッシュの対象（material-status.mjs の materialHash に渡すもの）。
+ * 図のデータ（createdBy を除く）に、レイアウトの結果（scene。数は 0.01 に丸める）を足したもの。
+ * レイアウトを変えて形が変わった図は、ハッシュが変わって未検証に戻る。
+ * validate・アプリのビルド・検証の記録の道具は、どれもこの関数で組み立てる。serviceIndex はビルドと同じもの（台帳がなければ null）。
+ * レイアウトできない図（検査のエラーがある図）は、scene の代わりに { error: true } を入れる。
+ */
+export function diagramHashSubject({ createdBy, ...diagram }, { serviceIndex = null } = {}) {
+  let scene;
+  try {
+    scene = roundForHash(layoutAnyDiagram(diagram, { serviceIndex }));
+  } catch {
+    scene = { error: true };
+  }
+  return { ...diagram, scene };
+}
+
 export function diagramRefIndex(items) {
   return new Map(items.map(({ data }) => [
     data.id, { type: data.type, steps: data.type === 'architecture' ? (data.steps?.length ?? 0) : 0 },

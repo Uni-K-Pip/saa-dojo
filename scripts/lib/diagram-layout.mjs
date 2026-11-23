@@ -776,19 +776,36 @@ function placeFloats(scene, diagram, warn) {
     const far = [];
     for (const [a, b] of segmentsByLength(e.points)) {
       const vert = a[0] === b[0];
-      for (const t of [0.5, 0.3, 0.7]) {
+      // 区間を入れ物の枠で区切った区間の中央も試す（枠と枠の間に置けるように）
+      const at = vert ? a[0] : a[1];
+      const lo = vert ? Math.min(a[1], b[1]) : Math.min(a[0], b[0]);
+      const len = vert ? Math.abs(b[1] - a[1]) : Math.abs(b[0] - a[0]);
+      const cuts = [];
+      for (const bx of scene.boxes) {
+        const across = vert ? at > bx.x && at < bx.x + bx.w : at > bx.y && at < bx.y + bx.h;
+        if (!across) continue;
+        for (const s of vert ? [bx.y, bx.y + bx.h] : [bx.x, bx.x + bx.w]) if (s > lo + 0.5 && s < lo + len - 0.5) cuts.push(s);
+      }
+      const marks = [lo, ...cuts.sort((p, q) => p - q), lo + len];
+      const from = vert ? a[1] : a[0];
+      const dir = (vert ? b[1] : b[0]) - from;
+      const parts = dir !== 0 && cuts.length ? marks.slice(1).map((v, k) => ((marks[k] + v) / 2 - from) / dir) : [];
+      for (const t of [0.5, 0.3, 0.7, ...parts]) {
         const m = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
         const sides = vert ? [[BADGE_OFFSET, 0], [-BADGE_OFFSET, 0]] : [[0, -BADGE_OFFSET], [0, BADGE_OFFSET]];
         const ok = tips.every((p) => Math.hypot(p[0] - m[0], p[1] - m[1]) >= BADGE_TIP_GAP);
         for (const [dx, dy] of sides) (ok ? near : far).push({ rect: centered(m[0] + dx, m[1] + dy, 2 * BADGE_R, 2 * BADGE_R), own: e.id });
       }
-      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-      const sides = vert ? [[BADGE_OFFSET_FAR, 0], [-BADGE_OFFSET_FAR, 0]] : [[0, -BADGE_OFFSET_FAR], [0, BADGE_OFFSET_FAR]];
-      for (const [dx, dy] of sides) beside.push({ rect: centered(m[0] + dx, m[1] + dy, 2 * BADGE_R, 2 * BADGE_R), own: e.id });
+      for (const t of [0.5, ...parts]) {
+        const m = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+        const sides = vert ? [[BADGE_OFFSET_FAR, 0], [-BADGE_OFFSET_FAR, 0]] : [[0, -BADGE_OFFSET_FAR], [0, BADGE_OFFSET_FAR]];
+        for (const [dx, dy] of sides) beside.push({ rect: centered(m[0] + dx, m[1] + dy, 2 * BADGE_R, 2 * BADGE_R), own: e.id });
+      }
     }
     return [...near, ...beside, ...far];
   };
   const shapeById = new Map([...scene.boxes, ...scene.nodes].map((x) => [x.id, x]));
+  const badgeBorders = borders.map((r) => inflate(r, 1));
   return steps.map((s, i) => {
     const ids = (s.edges ?? []).filter((id) => edgesById.has(id));
     const firstId = ids.find((id) => !used.has(id)) ?? ids[0];
@@ -806,12 +823,16 @@ function placeFloats(scene, diagram, warn) {
           [f.x + f.w - inset, f.y + f.h - inset], [f.x + f.w, f.y + f.h],
           [f.x + inset, f.y + f.h - inset], [f.x, f.y + f.h],
           [f.x + inset, f.y + inset], [f.x, f.y],
+          // 枠に乗らない、角の外側（上 → 右 → 下 → 左）
+          [f.x + f.w - inset, f.y - BADGE_R - 2], [f.x + f.w + BADGE_R + 2, f.y + inset],
+          [f.x + f.w - inset, f.y + f.h + BADGE_R + 2], [f.x - BADGE_R - 2, f.y + inset],
         ];
         cands = pts.map(([x, y]) => ({ rect: centered(x, y, 2 * BADGE_R, 2 * BADGE_R), own: null }));
       }
     }
     if (cands.length === 0) return null;
-    const pick = chooseSpot(cands, [...hardFor(), ...arrows], linesOf(null), bounds);
+    // 入れ物の枠は「mid」: 枠に乗らない候補を、ほかの線を避ける候補より先に採る（重なりを 1 まで許すので、枠を 1 太らせる）
+    const pick = chooseSpot(cands, [...hardFor(), ...arrows], linesOf(null), bounds, badgeBorders);
     if (!pick.ok) warn('diagram-crowded', `段階 ${i + 1} の番号を置く場所が空いていません。その段階の線を長くするか、まわりの部品の間を広げてください`);
     if (pick.cand.own) used.add(pick.cand.own);
     placed.push(pick.cand.rect);
@@ -864,7 +885,7 @@ function routeScore(scene, routes, boxTags) {
   for (const r of routes) through += alongBorders(r.points, scene.boxes);
   let cross = 0;
   for (let i = 0; i < routes.length; i++) for (let j = i + 1; j < routes.length; j++) cross += crossings(routes[i].points, routes[j].points);
-  return { failed, value: failed.length * 1000 + through * 1000 + cross };
+  return { failed, through, cross, value: failed.length * 1000 + through * 1000 + cross };
 }
 
 /**
@@ -922,7 +943,9 @@ function avoidBoxLabels(diagram, scene, rects, warn) {
       t(o);
       const rs = routeEdges(diagram, scene, rects, quiet, o);
       const sc = routeScore(scene, rs, boxTags);
-      if (sc.failed.length < score.failed.length && sc.value < score.value && (!best || sc.value < best.sc.value)) best = { o, rs, sc };
+      // ラベルを置けない入れ物が減り、部品の上・枠に沿う線と交差のどちらも増えない案だけを採る
+      const better = sc.failed.length < score.failed.length && sc.through <= score.through && sc.cross <= score.cross;
+      if (better && (!best || sc.value < best.sc.value)) best = { o, rs, sc };
     }
     if (!best) break;
     ov.sides = best.o.sides;
@@ -1129,15 +1152,29 @@ export function layoutDiagramReport(diagram, { serviceIndex = null } = {}) {
   for (const s of scene.steps) if (s.badgeAt) s.badgeAt = pt(s.badgeAt);
   // できあがった scene で、題・札・線のラベル・番号の重なりを確かめる（配置の規則の取りこぼしも拾う）
   for (const w of sceneCollisions(scene)) warn(w.code, w.message);
-  return { scene, warnings };
+  return { scene, warnings: oneWarningPerFloat(warnings) };
+}
+
+// 浮く要素（線のラベル・状態の札・段階の番号）1 つについての diagram-crowded は、最初の 1 件だけを残す
+// （置き場所がないと、重なりの検査でも同じ要素が何件も出るので、直す人には最初の理由だけを見せる）
+const floatOf = (m) => m.match(/^(?:部品 |入れ物 )?(線 \S+ のラベル|\S+ の状態の札|段階 \d+ の番号)/)?.[1] ?? null;
+function oneWarningPerFloat(warnings) {
+  const seen = new Set();
+  return warnings.filter((w) => {
+    const f = w.code === 'diagram-crowded' ? floatOf(w.message) : null;
+    if (!f) return true;
+    if (seen.has(f)) return false;
+    seen.add(f);
+    return true;
+  });
 }
 
 /**
  * レイアウトした scene の、読みにくくなる重なりを返す（{ code, message } の配列。validate の警告になる）。
- * 段階ごとの表示を考えず、全部の札・番号が同時に出たとして調べる（位置は段階で動かさないので、これで足りる）。
+ * 札と番号は、段階ごとに、実際に同時に見えるものどうしだけを調べる（sceneViews）。線と札の交わりは調べない。
  * - diagram-overlap: 線か矢じりが、入れ物のラベルを横切るか、2 より近くを通る。線が入れ物の枠に沿って走る
  * - diagram-crowded: 状態の札が部品の文字やほかのラベルに重なる。線のラベルを入れ物の枠が横切るか、枠に 1 より近い。
- *   線のラベルか段階の番号が矢じりに重なる。番号が部品やラベルに重なる
+ *   線のラベルか段階の番号が矢じりに重なる。番号が部品やラベルに重なる、入れ物の枠に乗る
  */
 export function sceneCollisions(scene) {
   const out = [];
@@ -1164,39 +1201,72 @@ export function sceneCollisions(scene) {
     if (alongBorders(e.points, scene.boxes) > 0) add('diagram-overlap', `線 ${e.id} が、入れ物の枠に沿って走ります`);
   }
 
-  // 2. 状態の札
-  const texts = scene.nodes.flatMap((n) => nodeTextRects(n).map((r) => ({ what: `部品 ${n.id} の文字`, r })));
-  const others = [
-    ...scene.boxes.filter((b) => b.label).map((b) => ({ what: `入れ物 ${b.id} のラベル`, r: labelOf(b) })),
-    ...scene.edges.filter((e) => e.labelBox).map((e) => ({ what: `線 ${e.id} のラベル`, r: e.labelBox })),
-    ...scene.steps.map((s, i) => (s.badgeAt ? { what: `段階 ${i + 1} の番号`, r: badgeRect(s.badgeAt) } : null)).filter(Boolean),
-  ];
-  const tagged = [...scene.boxes, ...scene.nodes].filter((x) => x.tag);
-  for (const x of tagged) {
-    for (const o of [...texts, ...others, ...tagged.filter((y) => y !== x).map((y) => ({ what: `${y.id} の札`, r: y.tag }))]) {
-      if (intersects(x.tag, o.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `${x.id} の状態の札が、${o.what}に重なります`);
-    }
-  }
-
-  // 3. 線のラベル
+  // 2. 線のラベル（全体の段階で全部が見える）
+  const allTexts = scene.nodes.flatMap((n) => nodeTextRects(n).map((r) => ({ id: n.id, what: `部品 ${n.id} の文字`, r })));
   for (const e of scene.edges) {
     if (!e.labelBox) continue;
     for (const b of scene.boxes) {
       if (borderRects(b).some((r) => intersects(e.labelBox, inflate(r, -0.5)))) add('diagram-crowded', `線 ${e.id} のラベル「${e.label}」を、入れ物 ${b.id} の枠が横切るか、枠に近すぎます`);
     }
     for (const a of softArrows) if (intersects(e.labelBox, a.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `線 ${e.id} のラベル「${e.label}」が、線 ${a.id} の矢じりに重なります`);
-    for (const t of texts) if (intersects(e.labelBox, t.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `線 ${e.id} のラベル「${e.label}」が、${t.what}に重なります`);
+    for (const t of allTexts) if (intersects(e.labelBox, t.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `線 ${e.id} のラベル「${e.label}」が、${t.what}に重なります`);
   }
 
-  // 4. 段階の番号
-  scene.steps.forEach((s, i) => {
-    if (!s.badgeAt) return;
-    const r = badgeRect(s.badgeAt);
-    for (const a of softArrows) if (intersects(r, a.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、線 ${a.id} の矢じりに重なります`);
-    for (const n of scene.nodes) if (intersects(r, n, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、部品 ${n.id} に重なります`);
-    for (const o of others) if (o.r !== r && !o.what.startsWith(`段階 ${i + 1} `) && intersects(r, o.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、${o.what}に重なります`);
-  });
+  // 3. 状態の札と段階の番号。段階ごとに、実際に同時に見えるものだけを調べる（札は段階 1 以降のその段階の印だけ、
+  //    番号は全体の段階では全部、段階 k では k だけ。まだ出ていない要素は見えない）
+  const boxBorders = scene.boxes.map((b) => ({ id: b.id, rs: borderRects(b).map((r) => inflate(r, -0.5)) }));
+  for (const v of sceneViews(scene)) {
+    const vis = (id) => !v.hidden.has(id);
+    const texts = allTexts.filter((t) => vis(t.id));
+    const badges = v.badges.map((i) => ({ i, what: `段階 ${i + 1} の番号`, r: badgeRect(scene.steps[i].badgeAt) }));
+    const others = [
+      ...scene.boxes.filter((b) => b.label && vis(b.id)).map((b) => ({ what: `入れ物 ${b.id} のラベル`, r: labelOf(b) })),
+      ...scene.edges.filter((e) => e.labelBox && vis(e.id)).map((e) => ({ what: `線 ${e.id} のラベル`, r: e.labelBox })),
+      ...badges,
+    ];
+    const tagged = [...scene.boxes, ...scene.nodes].filter((x) => x.tag && v.marks.has(x.id) && vis(x.id));
+    for (const x of tagged) {
+      for (const o of [...texts, ...others, ...tagged.filter((y) => y !== x).map((y) => ({ what: `${y.id} の札`, r: y.tag }))]) {
+        if (intersects(x.tag, o.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `${x.id} の状態の札が、${o.what}に重なります`);
+      }
+    }
+    const arrows = softArrows.filter((a) => vis(a.id));
+    for (const { i, r } of badges) {
+      for (const a of arrows) if (intersects(r, a.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、線 ${a.id} の矢じりに重なります`);
+      for (const n of scene.nodes) if (vis(n.id) && intersects(r, n, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、部品 ${n.id} に重なります`);
+      for (const o of others) if (o.r !== r && intersects(r, o.r, OVERLAP_TOLERANCE)) add('diagram-crowded', `段階 ${i + 1} の番号が、${o.what}に重なります`);
+      for (const b of boxBorders) if (vis(b.id) && b.rs.some((br) => intersects(r, br))) add('diagram-crowded', `段階 ${i + 1} の番号が、入れ物 ${b.id} の枠に乗ります`);
+    }
+  }
   return out;
+}
+
+/**
+ * 段階ごとの見え方（アプリの stepView と同じ規則）。全体の段階（0）は、全部が見え、札はなく、番号は全部。
+ * 段階 k（1 から）は、k より後の reveal の要素とその中身・つながる線を隠し、札はその段階の印だけ、番号は k だけ。
+ * 戻り値: [{ hidden: Set<id>, marks: Set<id>, badges: [段階の添え字] }]
+ */
+function sceneViews(scene) {
+  const steps = scene.steps ?? [];
+  const withBadge = (is) => is.filter((i) => steps[i]?.badgeAt);
+  const views = [{ hidden: new Set(), marks: new Set(), badges: withBadge(steps.map((_, i) => i)) }];
+  const parent = new Map([...scene.boxes, ...scene.nodes].map((x) => [x.id, x.parent ?? null]));
+  const ancestors = (id) => {
+    const up = [];
+    for (let p = parent.get(id) ?? null; p; p = parent.get(p) ?? null) up.push(p);
+    return up;
+  };
+  const revealAt = new Map();
+  steps.forEach((s, i) => {
+    for (const id of s.reveal ?? []) if (!revealAt.has(id)) revealAt.set(id, i + 1);
+  });
+  steps.forEach((s, i) => {
+    const hidden = new Set([...revealAt].filter(([, at]) => at > i + 1).map(([id]) => id));
+    for (const id of parent.keys()) if (ancestors(id).some((a) => hidden.has(a))) hidden.add(id);
+    for (const e of scene.edges) if (hidden.has(e.from) || hidden.has(e.to)) hidden.add(e.id);
+    views.push({ hidden, marks: new Set((s.marks ?? []).map((m) => m.id)), badges: withBadge([i]) });
+  });
+  return views;
 }
 
 /** 構成図をレイアウトして、アプリが描く scene を返す（数値は小数 1 桁まで。形は layoutDiagramReport を参照） */

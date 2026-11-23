@@ -39,7 +39,7 @@ export function checkDiagramsForBuild(parsed, serviceIndex) {
  */
 export function buildDiagramOutputs(parsed, serviceIndex, { includeUnverified = false } = {}) {
   const diagrams = parsed.diagrams ?? [];
-  const { shown, excluded } = selectMaterials(diagramStatuses(parsed.materialStatus, diagrams), diagrams, includeUnverified);
+  const { shown, excluded } = selectMaterials(diagramStatuses(parsed.materialStatus, diagrams, { serviceIndex }), diagrams, includeUnverified);
   const scenes = shown.map(({ data, status }) => ({ ...layoutAnyDiagram(data, { serviceIndex }), status }));
   const index = scenes.map((s) => ({ id: s.id, title: s.title, type: s.type, steps: s.type === 'architecture' ? s.steps.length : 0, status: s.status }));
   return { index, scenes, excluded };

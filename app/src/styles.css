@@ -1294,7 +1294,8 @@ details.fact.is-target {
 .dg-node,
 .dg-edge,
 .dg-box-label,
-.dg-edge-label {
+.dg-edge-label,
+.dg-edge-label text {
   transition: opacity 0.2s ease;
 }
 
@@ -1307,7 +1308,8 @@ details.fact.is-target {
   .dg-node,
   .dg-edge,
   .dg-box-label,
-  .dg-edge-label {
+  .dg-edge-label,
+  .dg-edge-label text {
     transition: none;
   }
 }
