@@ -41,7 +41,8 @@ const ALL_BODY = ['document', 'columns', 'rows', 'lines'];
  * キーは `.` と `[` `]` を含まない文字列（`aws:PrincipalOrgID` のようなコロンは使える）。
  */
 export function parseJsonPath(path) {
-  if (!/^[^.[\]]+(?:\[\d+\])*(?:\.[^.[\]]+(?:\[\d+\])*)*$/.test(path)) return null;
+  // 配列の番号は 0 か、0 で始まらない数字（[01] は形の違い）
+  if (!/^[^.[\]]+(?:\[(?:0|[1-9]\d*)\])*(?:\.[^.[\]]+(?:\[(?:0|[1-9]\d*)\])*)*$/.test(path)) return null;
   const tokens = [];
   for (const part of path.split('.')) {
     const m = /^([^[]+)((?:\[\d+\])*)$/.exec(part);
@@ -51,7 +52,10 @@ export function parseJsonPath(path) {
   return tokens;
 }
 
-const pathKey = (tokens) => tokens.map((t, i) => (typeof t === 'number' ? `[${t}]` : i === 0 ? t : `.${t}`)).join('');
+/**
+ * 範囲の表の鍵。たどるキーと番号の並びから作る（`a.b` というキーと、a の中の b が同じ鍵にならない）。
+ */
+export const rangeKey = (tokens) => JSON.stringify(tokens);
 
 /** 場所が document の中にあるか */
 export function resolveJsonPath(document, tokens) {
@@ -69,8 +73,8 @@ export function resolveJsonPath(document, tokens) {
 }
 
 /**
- * JSON を 2 字下げで整形した行と、場所（pathKey）ごとの行の範囲。
- * 戻り値: { lines: [{ indent, text }], ranges: Map<pathKey, [start, end]>（0 始まり）, depth }
+ * JSON を 2 字下げで整形した行と、場所（rangeKey）ごとの行の範囲。
+ * 戻り値: { lines: [{ indent, text }], ranges: Map<rangeKey, [start, end]>（0 始まり）, depth }
  */
 export function jsonLines(document) {
   const lines = [];
@@ -91,7 +95,7 @@ export function jsonLines(document) {
       });
       lines.push({ indent, text: `${isArr ? ']' : '}'}${tail}` });
     }
-    if (tokens.length) ranges.set(pathKey(tokens), [start, lines.length - 1]);
+    if (tokens.length) ranges.set(rangeKey(tokens), [start, lines.length - 1]);
   }
   emit(document, 0, '', false, []);
   return { lines, ranges, depth };
@@ -100,6 +104,17 @@ export function jsonLines(document) {
 // ---------------------------------------------------------------- 検査
 
 const has = (obj, k) => obj[k] !== undefined;
+
+/** document の中（入れ子を含む）の、数字だけのキー */
+function numericKeys(value, out = []) {
+  if (Array.isArray(value)) for (const v of value) numericKeys(v, out);
+  else if (value && typeof value === 'object')
+    for (const [k, v] of Object.entries(value)) {
+      if (/^\d+$/.test(k)) out.push(k);
+      numericKeys(v, out);
+    }
+  return out;
+}
 
 /**
  * 実物の検査。戻り値: { errors: [文字列], warnings: [{ code, message }] }
@@ -123,6 +138,19 @@ export function checkArtifact(a, ctx = {}) {
     json = jsonLines(a.document);
     if (json.lines.length > ARTIFACT_LIMITS.jsonLines) errors.push(`document を整形すると ${json.lines.length} 行あります（上限 ${ARTIFACT_LIMITS.jsonLines}。幅 360px で読める長さに分けてください）`);
     if (json.depth > ARTIFACT_LIMITS.jsonDepth) errors.push(`document の入れ子が ${json.depth} 段あります（上限 ${ARTIFACT_LIMITS.jsonDepth}）`);
+    json.lines.forEach((l, i) => {
+      const chars = l.indent * 2 + l.text.length;
+      if (chars > ARTIFACT_LIMITS.jsonLineChars) errors.push(`document を整形した ${i + 1} 行目が、字下げを含めて ${chars} 字あります（上限 ${ARTIFACT_LIMITS.jsonLineChars}）`);
+    });
+    const numeric = numericKeys(a.document);
+    if (numeric.length) errors.push(`document に数字だけのキーがあります（${numeric.join(', ')}）。読み込むと並びが変わり、書いた順に表示できません`);
+  }
+  if (a.format === 'text' && a.lines) {
+    a.lines.forEach((l, i) => {
+      if (l.includes('\t')) errors.push(`lines の ${i + 1} 行目にタブがあります（字下げは半角の空白で書きます）`);
+      const indent = /^ */.exec(l)[0].length;
+      if (indent > ARTIFACT_LIMITS.textIndent) errors.push(`lines の ${i + 1} 行目の字下げが ${indent} 字あります（上限 ${ARTIFACT_LIMITS.textIndent}）`);
+    });
   }
   if (a.format === 'table' && a.columns && a.rows) {
     a.rows.forEach((r, i) => {
@@ -160,7 +188,7 @@ export function checkArtifactRefs({ texts, artifactIds }) {
       if (kind !== 'artifact') continue;
       let message;
       if (reference) message = '実物の参照は参照形式では書けません。`![キャプション](#/artifacts/<id>)` の形で書いてください。';
-      else if (!id) message = `実物の参照の形が違います（${href}）。実物には ?step などは付けられません。`;
+      else if (!id) message = `実物の参照の形が違います（${href}）。\`#/artifacts/\` のあとには、\`ar-\` で始まる実物の id（英小文字・数字・ハイフン）だけを書きます。?step などは付けられません。`;
       else if (!artifactIds.has(id)) message = `参照先の実物 ${id} がありません。`;
       if (message) errors.push({ rel, message });
     }
@@ -192,7 +220,7 @@ export function renderArtifact(a, status) {
     // indent は字下げの字数（表示は 1 字 = 1ch。折り返した行も同じ字下げにそろえる）
     out.lines = lines.map((l) => ({ indent: l.indent * 2, text: l.text, marks: [], starts: [] }));
     a.notes.forEach((n, i) => {
-      const [s, e] = ranges.get(pathKey(parseJsonPath(n.path)));
+      const [s, e] = ranges.get(rangeKey(parseJsonPath(n.path)));
       for (let k = s; k <= e; k++) mark(out.lines[k], i + 1, k === s);
     });
   } else if (a.format === 'text') {
@@ -200,9 +228,10 @@ export function renderArtifact(a, status) {
       const indent = /^ */.exec(text)[0].length;
       return { indent, text: text.slice(indent), marks: [], starts: [] };
     });
+    // 飛び飛びの行は、連続した塊ごとに先頭の行へ番号を付ける
     a.notes.forEach((n, i) => {
-      const first = Math.min(...n.lines);
-      for (const l of n.lines) mark(out.lines[l - 1], i + 1, l === first);
+      const set = new Set(n.lines);
+      for (const l of n.lines) mark(out.lines[l - 1], i + 1, !set.has(l - 1));
     });
   } else {
     out.columns = a.columns;
