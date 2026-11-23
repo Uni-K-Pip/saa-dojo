@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
-import { parseDiagramRefs } from '../../../scripts/lib/diagram.mjs';
+import { parseDiagramRefs, parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
 import { normalizeInlineCheckQuestion, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
 import { buildContent } from '../lib/content-build.mjs';
@@ -426,4 +426,36 @@ it('前の行に文が続く画像の行と、閉じ忘れた markdown のフェ
   expect(issues({ [sheetRel]: fence }).filter(({ code }) => code === 'markdown-fence')).toEqual([
     expect.objectContaining({ level: 'warning' }),
   ]);
+});
+
+const image = '![図](#/diagrams/dg-test-architecture)';
+const continuedOf = (source) => Boolean(parseMaterialRefs(source, { withLine: true }).find((ref) => ref.image)?.continued);
+
+it.each([
+  ['文', '前の文です。'],
+  ['インライン HTML で始まる文', '<b>太字</b>の文です。'],
+  ['autolink で始まる文', '<https://example.com> を見ます。'],
+  ['リスト項目', '- 項目'],
+  ['強制改行', '前の文です。\\'],
+])('前の行が%sのとき、画像の行を前の文の続きとして警告する', (_label, before) => {
+  expect(continuedOf(`${before}\n${image}`)).toBe(true);
+});
+
+it.each([
+  ['空行', '前の文です。\n'],
+  ['見出し', '## 見出し'],
+  ['setext の下線', '題\n==='],
+  ['参照の定義', '[a]: https://example.com'],
+  ['4 字下げのコード', '    code'],
+  ['HTML のコメント', '<!-- c -->'],
+  ['HTML のブロック', '<div>'],
+  ['フェンスの閉じ', '```'],
+])('前の行が%sのとき、画像の行を警告しない', (_label, before) => {
+  expect(continuedOf(`${before}\n${image}`)).toBe(false);
+});
+
+it('画像の行の引用の印が前の行より多いときは警告しない', () => {
+  expect(continuedOf(`前の文です。\n> ${image}`)).toBe(false);
+  expect(continuedOf(`> 前の文です。\n> ${image}`)).toBe(true);
+  expect(continuedOf(`> 前の文です。\n${image}`)).toBe(true);
 });

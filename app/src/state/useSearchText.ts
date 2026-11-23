@@ -38,9 +38,9 @@ export function useSearchText(key = 'q') {
 
   useEffect(() => {
     const mark = markOf(location.state);
-    if (navigationType !== 'POP' && mark?.token === token.current && mark.seq < seq.current) {
+    if (navigationType === 'REPLACE' && mark?.token === token.current && mark.seq < seq.current) {
       // 自分の書き込み（replace）で届いた位置のうち、最新より前のもの（途中の値）。入力はもっと新しいので、そのままにする。
-      // 戻る・進む（POP）で届いた位置は、印があっても常に URL に合わせる
+      // 戻る・進む（POP）と外からの移動（PUSH）で届いた位置は、印があっても常に URL に合わせる
       return;
     }
     pending.current = params;

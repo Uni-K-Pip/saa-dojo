@@ -127,4 +127,45 @@ describe('useSearchText', () => {
     fireEvent.change(input, { target: { value: 'z' } });
     await waitFor(() => expect(search()).toBe('?q=z&tier=1'));
   });
+
+  it('確定した検索語のあと、空の検索語へ外から移って打ち、戻ると、確定した検索語に戻る', async () => {
+    const input = renderSearch(['/s']);
+    fireEvent.change(input, { target: { value: 'vpc' } });
+    await waitFor(() => expect(search()).toBe('?q=vpc'));
+    act(() => { void navigate('/s'); });
+    await waitFor(() => expect(input.value).toBe(''));
+    fireEvent.change(input, { target: { value: 'nat' } });
+    await waitFor(() => expect(search()).toBe('?q=nat'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=vpc'));
+    await waitFor(() => expect(input.value).toBe('vpc'));
+  });
+
+  it('戻った先で打ってから進むと、進んだ先の検索語に合わせる', async () => {
+    const input = renderSearch(['/s?q=one', '/s?q=two']);
+    fireEvent.change(input, { target: { value: 'twox' } });
+    await waitFor(() => expect(search()).toBe('?q=twox'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(input.value).toBe('one'));
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+    act(() => { void navigate(1); });
+    await waitFor(() => expect(search()).toBe('?q=twox'));
+    await waitFor(() => expect(input.value).toBe('twox'));
+  });
+
+  it('区分を関数の形で更新したあと外から移って戻ると、戻った先の URL に重ねて更新する', async () => {
+    const input = renderSearch(['/s?q=a']);
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=a&tier=1'));
+    act(() => { void navigate('/s?q=b'); });
+    await waitFor(() => expect(input.value).toBe('b'));
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=b&tier=1'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=a&tier=1'));
+    await waitFor(() => expect(input.value).toBe('a'));
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=a&tier=11'));
+  });
 });

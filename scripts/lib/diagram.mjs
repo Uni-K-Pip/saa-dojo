@@ -446,6 +446,23 @@ function withoutDiagramCode(markdown) {
   ).join('');
 }
 
+const QUOTE_PREFIX = /^(?: {0,3}>[ \t]?)+/;
+const HTML_BLOCK_START = /^<(?:!--|\?|![A-Z]|\/?(?:address|article|aside|blockquote|body|center|details|dialog|dir|div|dl|dd|dt|fieldset|figcaption|figure|footer|form|h[1-6]|header|hr|html|iframe|li|main|nav|ol|p|pre|script|section|style|summary|table|tbody|td|th|thead|tr|ul)(?=[ \t>/]|$))/i;
+
+/**
+ * 画像だけの行の前の行が、段落の文として続くか（続くと表示では 1 つの段落になり、画像はリンクになる）を、行単位で近似します。
+ * 引用の印が増える行、見出し・フェンス・水平線・setext の下線・参照の定義・4 字下げのコード・HTML のブロックの後ろは続きません。
+ */
+function continuesParagraph(previous, current) {
+  const depth = (text) => (text.match(QUOTE_PREFIX)?.[0].split('>').length ?? 1) - 1;
+  if (depth(current) > depth(previous)) return false;
+  const body = previous.replace(QUOTE_PREFIX, '');
+  const before = body.trim();
+  if (before === '' || /^(?: {4}|\t)/.test(body)) return false;
+  return !/^(?:#{1,6}(?:[ \t]|$)|`{3,}|~{3,}|=+$|(?:-[ \t]*){3,}$|(?:\*[ \t]*){3,}$|(?:_[ \t]*){3,}$|\[[^\]]+\]:[ \t]*\S)/.test(before)
+    && !HTML_BLOCK_START.test(before);
+}
+
 /**
  * 本文の図と実物の参照（#/diagrams/<id>、#/artifacts/<id>）を、コードの外から行単位の近似で拾います。
  * 戻り値: [{ kind: 'diagram' | 'artifact', href, id?, step?, image?, block?, reference?, nestedImageLine?, line? }]
@@ -469,8 +486,7 @@ export function parseMaterialRefs(markdown, { withLine = false } = {}) {
     const content = lines[line - 1].replace(/^(?: {0,3}>[ \t]?)+/, '').trim();
     const block = image && content === match[0].trim();
     // 画像だけの行でも、前の行に文が続くと、表示では 1 つの段落になり、画像はリンクになります（ビルドが止めます）。
-    const before = line > 1 ? lines[line - 2].replace(/^(?: {0,3}>[ \t]?)+/, '').trim() : '';
-    const continued = block && before !== '' && !/^(?:#{1,6}(?:[ \t]|$)|`{3,}|~{3,}|<|(?:-[ \t]*){3,}$|(?:\*[ \t]*){3,}$|(?:_[ \t]*){3,}$)/.test(before);
+    const continued = block && line > 1 && continuesParagraph(lines[line - 2], lines[line - 1]);
     const ref = { kind, href, ...refOf(kind, href), image, block, ...(continued ? { continued } : {}), ...(withLine ? { line } : {}) };
     refs.push(ref);
     return ref;

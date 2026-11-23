@@ -47,14 +47,14 @@ it.each(pages)('%s で候補に札を付け、候補だけに絞り込める', a
   expect(screen.queryByRole('link', { name: other.title })).not.toBeInTheDocument();
   expect(screen.queryByText(none)).not.toBeInTheDocument();
   // 切り替えたときの件数は、常にある読み上げの領域に出る
-  expect(screen.getByText(/^s*1 本$/)).toHaveAttribute('aria-live', 'polite');
+  expect(screen.getByText(/^\s*1 本$/)).toHaveAttribute('aria-live', 'polite');
 });
 
 it.each(pages)('%s は回答がなくても入口を出し、絞り込むと 0 件の案内を出す', async (path, candidate) => {
   renderApp(path);
   await userEvent.click(await screen.findByRole('checkbox', { name: filter }));
   expect(screen.getByText(none)).toBeVisible();
-  expect(screen.getByText(/^s*0 本$/)).toHaveAttribute('aria-live', 'polite');
+  expect(screen.getByText(/^\s*0 本$/)).toHaveAttribute('aria-live', 'polite');
   expect(screen.queryByRole('link', { name: candidate.title })).not.toBeInTheDocument();
 });
 

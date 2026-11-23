@@ -22,13 +22,19 @@ function isCalloutHeading(line) {
   const leading = body.match(/^(?:\*+|_+)/)?.[0];
   const trailing = body.match(/(?:\*+|_+)$/)?.[0];
   if (leading?.[0] === marker && trailing?.[0] === marker && leading.length % 2 && trailing.length % 2) return false;
-  if (['*', '_', '`'].some((symbol) => body.split(symbol).length % 2 === 0)) return false;
-  // 表示は、見出しの中のリンク・取り消し線・HTML の中身の文字も見出しとして読みます。
+  // 表示は、見出しの中のリンク・取り消し線（~ が 1〜2 本）・HTML（タグとコメント）の中身の文字も見出しとして読みます。
+  // 記号の偶奇は、リンク先や属性を除いたあとの文字で見ます。
   const plain = body
     .replace(/!?\[((?:\\.|[^\[\]\\]|\[(?:\\.|[^\[\]\\])*\])*)\]\((?:\\.|[^()\\]|\((?:\\.|[^()\\])*\))*\)/g, '$1')
+    .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<\/?[A-Za-z][\w:-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, '')
-    .replace(/~~/g, '');
-  const title = plain.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
+    .replace(/~+/g, '')
+    // バックスラッシュのエスケープも文字として読みます（強調の記号 * _ ` は、そのままにして数えます）。
+    .replace(/\\([!-/:-@[\]^{-~])/g, (match, char) => ('*_`'.includes(char) ? match : char));
+  if (['*', '_', '`'].some((symbol) => plain.split(symbol).length % 2 === 0)) return false;
+  // 文字参照（&#12398; など）は、normalizeInlineCheckQuestion と同じ処理で文字にします。
+  const text = plain.replace(/&(amp|lt|gt|quot|#\d+|#[xX][\da-fA-F]+);/g, decodeCharacterReference);
+  const title = text.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
   return Object.hasOwn(CALLOUT_KINDS, title);
 }
 
