@@ -266,7 +266,7 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
           {/* 3. 入れ物のラベル（入れ物の地の色で縁取り、線がラベルの後ろで切れて見えるようにする） */}
           <g className="dg-layer-box-labels">
             {boxes.map((b) => (
-              <text key={b.id} className={cls(b.id, `dg-box-label dg-box-label--${b.kind}`)} x={b.x + 6} y={b.y + 11}>
+              <text key={b.id} className={cls(b.id, `dg-box-label dg-box-label--${b.kind}`)} x={b.labelBox ? r1(b.labelBox.x + 2) : b.x + 6} y={b.labelBox ? r1(b.labelBox.y + 10) : b.y + 11}>
                 {b.label}
               </text>
             ))}
@@ -278,6 +278,8 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
               <g key={n.id} className={cls(n.id, `dg-node dg-cat-${n.category}`)} data-id={n.id}>
                 <rect className="dg-node-body" x={n.x} y={n.y} width={n.w} height={n.h} rx={6} />
                 <rect className="dg-node-band" x={n.x} y={n.y} width={n.w} height={5} rx={2} />
+                {/* 停止の × は文字の後ろに描き、文字は部品の地の色で縁取る（× が文字に重ならない） */}
+                {view.marks.get(n.id) === 'down' && <DownCross x={n.x} y={n.y} w={n.w} h={n.h} />}
                 {n.short ? (
                   <>
                     <text className="dg-node-short" x={n.x + n.w / 2} y={n.y + 21}>
@@ -294,7 +296,6 @@ export function Diagram({ scene, step: fixedStep, caption, altId }: DiagramProps
                     {n.label}
                   </text>
                 )}
-                {view.marks.get(n.id) === 'down' && <DownCross x={n.x} y={n.y} w={n.w} h={n.h} />}
               </g>
             ))}
           </g>

@@ -164,4 +164,31 @@ describe('Diagram', () => {
     expect(v2.marks.get('region-p')).toBe('down');
     expect(stepView(scene, 0).dim.size).toBe(0);
   });
+
+  it('入れ物のラベルは、scene の labelBox の位置に描く（ない古いデータは左上）', () => {
+    const moved: DiagramScene = {
+      ...scene,
+      boxes: [{ ...scene.boxes[0], labelBox: { x: 40, y: 61, w: 24, h: 13 } }, scene.boxes[1]],
+    };
+    const { container } = render(<Diagram scene={moved} step={0} />);
+    const labels = container.querySelectorAll('.dg-box-label');
+    expect(labels[0].getAttribute('x')).toBe('42');
+    expect(labels[0].getAttribute('y')).toBe('71');
+    expect(labels[1].getAttribute('x')).toBe('114');
+    expect(labels[1].getAttribute('y')).toBe('71');
+  });
+
+  it('停止した部品の × は、部品の文字より先（後ろ）に描く', () => {
+    const down: DiagramScene = {
+      ...scene,
+      steps: [{ ...scene.steps[0], marks: [{ id: 'app-p', state: 'down' }] }],
+    };
+    const { container } = render(<Diagram scene={down} step={1} />);
+    const node = container.querySelector('[data-id="app-p"]')!;
+    const kids = [...node.children].map((c) => c.getAttribute('class'));
+    expect(node.getAttribute('class')).toContain('is-down');
+    expect(kids.indexOf('dg-down-x')).toBeGreaterThan(-1);
+    expect(kids.indexOf('dg-down-x')).toBeLessThan(kids.indexOf('dg-node-short'));
+    expect(kids.indexOf('dg-down-x')).toBeLessThan(kids.indexOf('dg-node-label'));
+  });
 });

@@ -4591,8 +4591,8 @@
   },
   "elb.alb-subnet-capacity": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "6b1a46bed6e8"
+    "checkedAt": "2026-11-23",
+    "hash": "f9a8cc815ac8"
   },
   "elb.alb-target-types": {
     "status": "verified",
@@ -5738,6 +5738,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "15dfc3e01787"
+  },
+  "iam.principal-wildcard-orgid": {
+    "status": "verified",
+    "checkedAt": "2026-11-23",
+    "hash": "8bcd44d8e8c6"
   },
   "iam.role-assumers": {
     "status": "verified",
@@ -9823,6 +9828,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "ab0b97199067"
+  },
+  "vpc.subnet-cidr-subset": {
+    "status": "verified",
+    "checkedAt": "2026-11-23",
+    "hash": "9f7e0bc1e5d1"
   },
   "vpc.subnet-reserved-ips": {
     "status": "verified",
