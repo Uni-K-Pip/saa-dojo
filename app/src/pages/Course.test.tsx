@@ -169,6 +169,21 @@ describe('学習コースのシミュレーター', () => {
     else expect(row.queryByText('済み')).not.toBeInTheDocument();
   });
 
+  it('同じユニットで、レッスンの読み直しの札とシナリオの項目を両方出す', async () => {
+    const lesson: LessonMeta = { ...lessons[0], checkIds: ['c00000001'] };
+    const mixed: Course = { stages: [{ ...simCourse.stages[0], units: [
+      { ...simCourse.stages[0].units[0], items: [{ kind: 'lesson', ref: lesson.id }, { kind: 'sim', ref: scenario.id }] },
+    ] }] };
+    useFakeContent(makeContentFiles([], { course: mixed, lessons: [lesson], 'sim-index': [simulator] }));
+    await db.events.add(event('check-answer', { lessonId: lesson.id, checkId: 'c00000001', correct: false, choice: 2 }));
+    renderApp('/course/u00');
+    const lessonLink = await screen.findByRole('link', { name: lesson.title });
+    expect(within(lessonLink.closest('li')!).getByText('読み直し')).toBeVisible();
+    const simLink = screen.getByRole('link', { name: scenario.title });
+    expect(simLink).toHaveAttribute('href', to);
+    expect(within(simLink.closest('li')!).queryByText('読み直し')).not.toBeInTheDocument();
+  });
+
   it('ホームの「次にやること」に未了のシナリオを出す', async () => {
     renderApp('/');
     const card = within(await screen.findByRole('region', { name: '次にやること' }));
