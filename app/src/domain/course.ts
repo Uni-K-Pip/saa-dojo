@@ -17,6 +17,8 @@ function courseItemKey(item: CourseItem): string {
   switch (item.kind) {
     case 'lesson':
     case 'doc':
+    case 'lab':
+    case 'pattern':
       return `${item.kind}:${item.ref}`;
     case 'mock':
       return `mock:${item.mock}`;
@@ -31,6 +33,8 @@ function courseCheckKey(unitId: string, itemKey: string): string {
 
 function collectCompletion(events: readonly AppEvent[]) {
   const lessons = new Set<string>();
+  const labs = new Set<string>();
+  const patterns = new Set<string>();
   const mocks = new Set<MockKind>();
   const checks = new Map<string, CourseCheckEvent>();
   let drill = false;
@@ -38,6 +42,12 @@ function collectCompletion(events: readonly AppEvent[]) {
     switch (event.type) {
       case 'lesson-read':
         lessons.add(event.lessonId);
+        break;
+      case 'lab-read':
+        labs.add(event.labId);
+        break;
+      case 'pattern-read':
+        patterns.add(event.patternId);
         break;
       case 'mock-result':
         // 合格準備度が初回として数える結果（65 問以上で 1 問以上回答。mock.ts の firstAttempt）だけで済みにする
@@ -54,7 +64,7 @@ function collectCompletion(events: readonly AppEvent[]) {
       }
     }
   }
-  return { lessons, mocks, checks, drill };
+  return { lessons, labs, patterns, mocks, checks, drill };
 }
 
 export function answeredUnitPracticeCount(unit: CourseUnit, history: History): number {
@@ -66,6 +76,10 @@ function progressFor(unit: CourseUnit, history: History, completion: ReturnType<
     switch (item.kind) {
       case 'lesson':
         return completion.lessons.has(item.ref);
+      case 'lab':
+        return completion.labs.has(item.ref);
+      case 'pattern':
+        return completion.patterns.has(item.ref);
       case 'practice':
         // 候補が 0 問なら済みにしない（要修正の問題を除いた結果、候補がなくなった場合）
         return unit.practiceIds.length > 0 &&

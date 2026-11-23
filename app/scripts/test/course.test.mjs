@@ -80,14 +80,11 @@ describe('学習コースのスキーマと検査', () => {
     expect(checkCourseForBuild(parsed('needs-fix'), hidden).errors).toContain('u00 のユニット演習の候補が 0 問です');
   });
 
-  it('指定されたミニラボがあるときだけ、ステージ 1・2 のユニットを検査する', () => {
+  it('ミニラボがある場合も、既定ではミニラボのないユニットを警告しない', () => {
     const course = { stages: [stage(), ...[1, 2, 3].map((id) => stage(id, [unit(`u0${id}`, [doc])]))] };
     expect(checkCourse(course, ctx).warnings).toEqual([]);
     expect(checkCourse(course, { ...ctx, labIds: new Set() }).warnings).toEqual([]);
-    expect(checkCourse(course, { ...ctx, labIds: new Set(['lab-test']) }).warnings).toEqual([
-      { code: 'course-no-lab', message: expect.stringContaining('u01') },
-      { code: 'course-no-lab', message: expect.stringContaining('u02') },
-    ]);
+    expect(checkCourse(course, { ...ctx, labIds: new Set(['lab-test']) }).warnings).toEqual([]);
   });
 
   it('複数レッスンの知識項目に重なる問題から演習・基礎だけを id 順で返す', () => {

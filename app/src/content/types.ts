@@ -195,6 +195,10 @@ export interface Manifest {
     artifactsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
     sims?: number;
     simsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    labs?: number;
+    labsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    patterns?: number;
+    patternsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
   };
   files: Record<string, ManifestFile>;
 }
@@ -553,4 +557,30 @@ export interface SimScenario<C extends object = object> extends SimScenarioMeta 
   toggles: SimToggle[];
   explain: { initial: string; toggles: Record<string, string> };
   references: { href: string; title: string }[];
+}
+
+interface ReadingMaterialMeta {
+  id: string;
+  title: string;
+  order: number;
+  knowledgeRefs: string[];
+  services: string[];
+  diagram: string;
+  status: DiagramStatus;
+  questionIds: string[];
+}
+
+export interface LabMeta extends ReadingMaterialMeta {
+  unit: string;
+  estimatedMinutes: number;
+}
+
+export interface PatternMeta extends ReadingMaterialMeta {
+  taskStatements: string[];
+  qualifiers: Exclude<Qualifier, 'other'>[];
+}
+
+export interface MaterialBody {
+  id: string;
+  body: string;
 }

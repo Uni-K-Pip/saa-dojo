@@ -13,7 +13,9 @@ export const MATERIAL_STATUS_FILE = 'material-status.json';
 export const MATERIAL_SECTIONS = {
   diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'] },
   artifacts: { label: '実物', kind: 'artifact', omit: ['createdBy'] },
-  sims: { label: 'シナリオ', kind: 'sim', omit: ['createdBy'], skipUnreferenced: true },
+  sims: { label: 'シナリオ', kind: 'sim', omit: ['createdBy'], refs: false },
+  labs: { label: 'ミニラボ', kind: 'lab', omit: ['createdBy'], body: true, refs: false },
+  patterns: { label: '設計パターン', kind: 'pattern', omit: ['createdBy'], body: true, refs: false },
 };
 const SECTION_OF_KIND = Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([s, c]) => [c.kind, s]));
 
@@ -36,9 +38,16 @@ export function materialEffectiveStatus(statusFile, section, id, obj) {
   return { status: rec.status, stale: false, recorded: true, checkedAt: rec.checkedAt };
 }
 
-/** 区分の教材ごとの実効の状態（id → materialEffectiveStatus の値）。items は [{ data }] */
+/** 本文を持つ教材は front matter と本文を一緒にハッシュへ渡します。 */
+export function materialHashInput(section, { data, body }) {
+  return MATERIAL_SECTIONS[section]?.body ? { ...data, body } : data;
+}
+
+/** 区分の教材ごとの実効の状態（id → materialEffectiveStatus の値）。 */
 export function materialStatuses(statusFile, section, items) {
-  return new Map(items.map(({ data }) => [data.id, materialEffectiveStatus(statusFile, section, data.id, data)]));
+  return new Map(items.map((item) => [
+    item.data.id, materialEffectiveStatus(statusFile, section, item.data.id, materialHashInput(section, item)),
+  ]));
 }
 export const diagramStatuses = (statusFile, diagrams) => materialStatuses(statusFile, 'diagrams', diagrams);
 
@@ -46,28 +55,33 @@ export const diagramStatuses = (statusFile, diagrams) => materialStatuses(status
 export const isShown = (status, includeUnverified) => status === 'verified' || (status === 'pending' && includeUnverified);
 
 /**
- * ビルドで出す教材を選ぶ。戻り値: { shown: [{ data, status }]（id の順）, excluded: { pending, 'needs-fix', rejected } }
+ * ビルドで出す教材を選び、元の教材に status を付けます。shown は id の順です。
  */
 export function selectMaterials(statuses, items, includeUnverified) {
   const excluded = { pending: 0, 'needs-fix': 0, rejected: 0 };
   const shown = [];
-  for (const { data } of [...items].sort((a, b) => (a.data.id < b.data.id ? -1 : a.data.id > b.data.id ? 1 : 0))) {
-    const { status } = statuses.get(data.id);
-    if (isShown(status, includeUnverified)) shown.push({ data, status });
+  for (const item of [...items].sort((a, b) => (a.data.id < b.data.id ? -1 : a.data.id > b.data.id ? 1 : 0))) {
+    const { status } = statuses.get(item.data.id);
+    if (isShown(status, includeUnverified)) shown.push({ ...item, status });
     else excluded[status]++;
   }
   return { shown, excluded };
 }
 
+const countsForRefs = ({ material }, statuses) =>
+  !material || statuses[material.section]?.get(material.id)?.status === 'verified';
+
 /**
- * 本文（レッスン・早見表・ガイド）の図と実物の参照のうち、実効の状態が verified でないものを指すもの。
+ * 教材の本文の図と実物の参照のうち、実効の状態が verified でないものを指すもの。
  * 存在しない教材・形の違う参照は含めない（それは参照の検査のエラー）。
- * statuses: { diagrams: Map, artifacts: Map }（区分 → materialStatuses の値。ない区分は見ない）
+ * statuses: 区分ごとの materialStatuses の値。本文に material が付く教材は検証済みのときだけ数える。
  * 戻り値: [{ rel, line, kind, id, status, block }]（line は本文の行。block は画像だけの行で、表示がその位置に出すもの）
  */
 export function unverifiedMaterialRefs(texts, statuses) {
   const out = [];
-  for (const { rel, body } of texts) {
+  for (const text of texts) {
+    if (!countsForRefs(text, statuses)) continue;
+    const { rel, body } = text;
     for (const { kind, id, line, reference, block } of parseMaterialRefs(body, { withLine: true })) {
       const map = statuses[SECTION_OF_KIND[kind]];
       if (reference || !id || !map?.has(id)) continue;
@@ -80,8 +94,8 @@ export function unverifiedMaterialRefs(texts, statuses) {
 
 /**
  * 検証状態の検査。statusFile はスキーマに通った material-status.json の中身（なければ null）。
- * materials: { diagrams: [{ rel, data }], artifacts: [{ rel, data }] }（スキーマに通ったもの）
- * presentIds: { diagrams: Set, artifacts: Set }（ファイルはあるがスキーマに通らなかったものを含む id。省略可）
+ * materials: 区分ごとの教材（スキーマに通ったもの）
+ * presentIds: 区分ごとの id の集合（ファイルはあるがスキーマに通らなかったものを含む。省略可）
  * 戻り値: { issues: [{ level, code, rel, message }], statuses: { 区分: Map }, unverifiedRefs }
  *   エラー: 存在しない教材の記録（material-status-key。ファイルがあってスキーマのエラーで読めないものは、そちらのエラーに任せて出さない）
  *   警告: 記録したあとに内容が変わった教材（material-stale-review）、検証済みなのにどこからも参照されない教材（diagram-unreferenced・artifact-unreferenced）
@@ -91,24 +105,29 @@ export function checkMaterialStatus({ statusFile, materials, presentIds = {}, te
   const issues = [];
   const stale = [];
   const statuses = {};
-  const referenced = new Set();
-  for (const { body } of texts) for (const { kind, id } of parseMaterialRefs(body)) if (id) referenced.add(`${kind}:${id}`);
   for (const [section, conf] of Object.entries(MATERIAL_SECTIONS)) {
     const items = materials[section] ?? [];
-    const byId = new Map(items.map((d) => [d.data.id, d]));
+    const byId = materialStatuses(statusFile, section, items);
+    statuses[section] = byId;
     for (const id of Object.keys(statusFile?.[section] ?? {})) {
       const d = byId.get(id);
       if (!d) {
         if (!presentIds[section]?.has(id)) issues.push({ level: 'error', code: 'material-status-key', rel: file, message: `${section}.${id}: この id の${conf.label}はありません` });
         continue;
       }
-      if (materialEffectiveStatus(statusFile, section, id, d.data).stale) stale.push(`${conf.label} ${id}`);
+      if (d.stale) stale.push(`${conf.label} ${id}`);
     }
-    statuses[section] = materialStatuses(statusFile, section, items);
-    if (conf.skipUnreferenced) continue;
-    for (const { rel, data } of items) {
+  }
+  const referenced = new Set();
+  for (const text of texts) {
+    if (!countsForRefs(text, statuses)) continue;
+    for (const { kind, id } of parseMaterialRefs(text.body)) if (id) referenced.add(`${kind}:${id}`);
+  }
+  for (const [section, conf] of Object.entries(MATERIAL_SECTIONS)) {
+    if (conf.refs === false) continue;
+    for (const { rel, data } of materials[section] ?? []) {
       if (statuses[section].get(data.id).status === 'verified' && !referenced.has(`${conf.kind}:${data.id}`)) {
-        issues.push({ level: 'warning', code: `${conf.kind}-unreferenced`, rel, message: `検証済みの${conf.label} ${data.id} を、レッスン・早見表・ガイドの本文のどこからも参照していません` });
+        issues.push({ level: 'warning', code: `${conf.kind}-unreferenced`, rel, message: `検証済みの${conf.label} ${data.id} を、教材の本文のどこからも参照していません` });
       }
     }
   }

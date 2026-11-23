@@ -29,6 +29,8 @@ import {
   DiagramSchema,
   MaterialStatusSchema,
   ArtifactSchema,
+  LabFrontSchema,
+  PatternFrontSchema,
 } from './lib/schema.mjs';
 import { checkArtifact, checkArtifactRefs } from './lib/artifact.mjs';
 import { checkSimFiles, simContext } from './lib/sim.mjs';
@@ -37,7 +39,8 @@ import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalo
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
 import { parseInlineChecks } from './lib/inline-check.mjs';
 import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
-import { CourseSchema, checkCourse as checkCourseData } from './lib/course.mjs';
+import { CourseSchema, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
+import { checkLab, checkPattern, labPatternContext, labPatternPathMessage, labPatternTexts } from './lib/lab-pattern.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -119,6 +122,8 @@ function classify(rel) {
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram', stem };
   if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact', stem };
   if (p[0] === 'sims' && n === 3 && ext === '.json') return { kind: 'sim', sim: p[1], stem };
+  if (p[0] === 'labs' && n === 2 && ext === '.md') return { kind: 'lab', stem };
+  if (p[0] === 'patterns' && n === 2 && ext === '.md') return { kind: 'pattern', stem };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question', dirTask: 'basics', stem };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2]) && p[2][0] === domainDir[1]) {
@@ -148,6 +153,7 @@ export const LAYOUT_HELP = [
   '  catalog-status.json / catalog-needs.json / material-status.json',
   '  diagrams/<dg-…>.json   artifacts/<ar-…>.json',
   '  sims/<シミュレーターid>/<sim-…>.json',
+  '  labs/<lab-…>.md   patterns/<pattern-…>.md',
 ];
 
 // ---------- 読み込み（文字コード・JSON・front matter） ----------
@@ -309,6 +315,10 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     sims: [],
     simStems: new Set(),
     simFiles: 0,
+    labs: [],
+    patterns: [],
+    labStems: new Set(),
+    patternStems: new Set(),
     diagramStems: new Set(),
     reviewStatus: { present: false, data: null },
     materialStatus: { present: false, data: null }, // 教材の検証状態（material-status.json）
@@ -321,7 +331,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
       files: { entries: 0, comparisons: 0 },
     },
     ids: new Map(), // id -> [{ type, rel }]（スキーマ不適合のファイルも含む）
-    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0, diagramFiles: 0, artifactFiles: 0 },
+    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0, diagramFiles: 0, artifactFiles: 0, labFiles: 0, patternFiles: 0 },
   };
 
   if (!fs.existsSync(contentDir) || !fs.statSync(contentDir).isDirectory()) {
@@ -498,6 +508,20 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
           report.error('path-mismatch', rel, `ファイル名と id が違います（ファイル名: ${cls.stem}.json、id: ${j.value.id}）`);
         }
         if (data) content.artifacts.push({ rel, data });
+        break;
+      }
+      case 'lab':
+      case 'pattern': {
+        const { kind } = cls;
+        content.counts[`${kind}Files`]++;
+        content[`${kind}Stems`].add(cls.stem);
+        const fm = readMarkdown(rel);
+        if (!fm) break;
+        const data = validateWith(kind === 'lab' ? LabFrontSchema : PatternFrontSchema, fm.data, rel);
+        registerId(fm.data?.id, kind, rel);
+        const mismatch = typeof fm.data?.id === 'string' && labPatternPathMessage(rel, fm.data.id);
+        if (mismatch) report.error('path-mismatch', rel, mismatch);
+        if (data) content[`${kind}s`].push({ rel, data, body: fm.body });
         break;
       }
       case 'diagram': {
@@ -988,7 +1012,7 @@ function checkCatalogModel(content) {
     lessonIds: idsOf('lesson'),
     docIds: idsOf('doc'),
     questions: content.questions.map((q) => ({ file: q.rel, data: q.data })),
-    markdown: [...content.lessons, ...content.docs].map((m) => ({ file: m.rel, text: m.body })),
+    markdown: [...content.lessons, ...content.docs, ...content.labs, ...content.patterns].map((m) => ({ file: m.rel, text: m.body })),
     status: catalog.status.data,
     statusFile: CATALOG_STATUS_FILE,
     needs: catalog.needs.data ? { file: CATALOG_NEEDS_FILE, data: catalog.needs.data } : null,
@@ -1000,7 +1024,7 @@ function checkCatalogModel(content) {
 // 図（scripts/lib/diagram.mjs。ビルドと同じ判定）
 function checkDiagrams(content) {
   const { report, serviceIndex } = content;
-  const refs = checkDiagramRefs({ texts: [...content.lessons, ...content.docs], diagrams: diagramRefIndex(content.diagrams) });
+  const refs = checkDiagramRefs({ texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)], diagrams: diagramRefIndex(content.diagrams) });
   for (const { rel, message } of refs) report.error('diagram-ref', rel, message);
   if (content.diagrams.length === 0) return;
   const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
@@ -1016,21 +1040,22 @@ function checkDiagrams(content) {
 function checkMaterialStatusFile(content, sims) {
   const { report, materialStatus } = content;
   if (materialStatus.present && !materialStatus.data) return;
-  const { issues, unverifiedRefs } = checkMaterialStatus({
+  const { issues, statuses, unverifiedRefs } = checkMaterialStatus({
     statusFile: materialStatus.data,
-    materials: { diagrams: content.diagrams, artifacts: content.artifacts, sims },
-    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, sims: content.simStems },
-    texts: [...content.lessons, ...content.docs],
+    materials: { ...content, sims },
+    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems, sims: content.simStems },
+    texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)],
   });
   for (const i of issues) report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
   for (const ref of unverifiedRefs) report.warn(`${ref.kind}-ref-unverified`, ref.rel, unverifiedRefMessage(ref));
+  return statuses;
 }
 
 // 実物（scripts/lib/artifact.mjs。ビルドと同じ判定）
 function checkArtifacts(content) {
   const { report } = content;
   const ids = new Set(content.artifacts.map(({ data }) => data.id));
-  for (const { rel, message } of checkArtifactRefs({ texts: [...content.lessons, ...content.docs], artifactIds: ids })) report.error('artifact-ref', rel, message);
+  for (const { rel, message } of checkArtifactRefs({ texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)], artifactIds: ids })) report.error('artifact-ref', rel, message);
   if (content.artifacts.length === 0) return;
   const lessonIds = new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === 'lesson')).map(([id]) => id));
   const factIds = new Set(content.catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => f.id)));
@@ -1038,6 +1063,19 @@ function checkArtifacts(content) {
     const found = checkArtifact(data, { lessonIds, factIds });
     for (const m of found.errors) report.error('artifact', rel, m);
     for (const w of found.warnings) report.warn(w.code, rel, w.message);
+  }
+}
+
+function checkLabsAndPatterns(content) {
+  const { report, labs, patterns, bpIndex } = content;
+  const ctx = labPatternContext(content, bpIndex ?? undefined);
+  for (const [kind, items, check] of [['lab', labs, checkLab], ['pattern', patterns, checkPattern]]) {
+    for (const item of items) {
+      const { rel } = item;
+      const { errors, warnings } = check(item, ctx);
+      for (const message of errors) report.error(kind, rel, message);
+      for (const { code, message } of warnings) report.warn(code, rel, message);
+    }
   }
 }
 
@@ -1060,15 +1098,17 @@ function checkInlineChecks(content) {
     if (count === 1 || count === 2) report.warn('inline-check-few', lesson.rel, `その場の確認が ${count} 個あります。1 レッスンに 3〜6 個が目安です。`);
   }
   for (const doc of docs) check(doc);
+  for (const item of labPatternTexts(content)) check(item);
 }
 
-function checkCourse(content) {
+function checkCourse(content, materialStatuses) {
   if (!content.course) return;
   const { rel, data } = content.course;
   const { report } = content;
   const { errors, warnings } = checkCourseData(data, {
     lessons: content.lessons.map(({ data }) => data),
     docIds: new Set(content.docs.map(({ data }) => data.id)),
+    ...courseMaterialContext(content, materialStatuses),
     // ユニット演習の候補はビルドと同じく、要修正・却下の問題を除いて数える
     questions: content.questions.filter(({ data }) => !HIDDEN_STATUSES.has(statusOf(content, data.id))).map(({ data }) => data),
   });
@@ -1098,6 +1138,7 @@ export function checkContent(content) {
   for (const q of content.questions) checkQuestion(content, q);
   for (const l of content.lessons) checkLesson(content, l);
   for (const d of content.docs) checkDoc(content, d);
+  for (const { rel, data } of [...content.labs, ...content.patterns]) checkServiceNames(content, rel, data.services, 'services');
   for (const d of content.decks) checkDeck(content, d);
   for (const g of content.glossaries) checkGlossary(content, g);
   for (const e of content.catalog.entries) checkCatalogEntry(content, e);
@@ -1118,9 +1159,10 @@ export function checkContent(content) {
   }));
   for (const i of sims.issues) content.report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
   content.simCount = sims.items.length;
-  checkMaterialStatusFile(content, sims.items);
+  checkLabsAndPatterns(content);
+  const materialStatuses = checkMaterialStatusFile(content, sims.items);
   checkInlineChecks(content);
-  checkCourse(content);
+  checkCourse(content, materialStatuses);
   checkLongestCorrect(content);
   return content;
 }
@@ -1166,6 +1208,8 @@ export function summarize(content) {
       diagrams: { files: c.diagramFiles, valid: content.diagrams.length },
       artifacts: { files: c.artifactFiles, valid: content.artifacts.length },
       sims: { files: content.simFiles, valid: content.simCount },
+      labs: { files: c.labFiles, valid: content.labs.length },
+      patterns: { files: c.patternFiles, valid: content.patterns.length },
     },
     stats: {
       questionsByPool,
@@ -1230,6 +1274,13 @@ const CODE_LABELS = {
   'artifact-ref-unverified': '本文が検証済みでない実物を指す',
   'artifact-unreferenced': 'どこからも参照されていない検証済みの実物',
   'artifact-notes-few': '実物の注目点が少ない',
+  lab: 'ミニラボの不整合',
+  pattern: '設計パターンの不整合',
+  'lab-steps': 'ミニラボの手順数が目安の外',
+  'lab-breaks': '壊してみる節の確認数が目安の外',
+  'lab-step-diagram': '段階を指定した図がない手順',
+  'lab-length': 'ミニラボの字数が目安の外',
+  'pattern-length': '設計パターンの字数が目安の外',
   'material-status-key': 'material-status の不明な id',
   'material-stale-review': '検証後に内容が変わった教材',
   'diagram-alt-short': '図の代替文が短い',
@@ -1239,6 +1290,9 @@ const CODE_LABELS = {
   'inline-check-few': 'その場の確認が少ない',
   course: '学習コースの不整合',
   'course-no-lab': 'ミニラボのないユニット',
+  'course-material-unverified': '学習コースが検証済みでない教材を指す',
+  'course-lab-unit': 'ミニラボを配置したユニットの不一致',
+  'course-item-order': 'ユニット内の教材順の不整合',
   'diagram-height': '図の高さが目安を超える',
   'diagram-crowded': '図の浮く要素の置き場所が足りない',
   'diagram-side': '図の線の辺の指定が使えない',
@@ -1271,6 +1325,8 @@ function renderText(result, opts) {
     if (c.diagrams.files > 0) L.push(`  図 ${c.diagrams.files} 件（有効 ${c.diagrams.valid}）`);
     if (c.artifacts.files > 0) L.push(`  実物 ${c.artifacts.files} 件（有効 ${c.artifacts.valid}）`);
     L.push(`  シナリオ ${c.sims.files} 件（有効 ${c.sims.valid}）`);
+    if (c.labs.files > 0) L.push(`  ミニラボ ${c.labs.files} 件（有効 ${c.labs.valid}）`);
+    if (c.patterns.files > 0) L.push(`  設計パターン ${c.patterns.files} 件（有効 ${c.patterns.valid}）`);
     if (c.catalog) {
       L.push(`  図鑑 エントリ ${c.catalog.entryFiles} 件（有効 ${c.catalog.entries}・事実 ${c.catalog.facts} 件） / 比較 ${c.catalog.comparisonFiles} 件（有効 ${c.catalog.comparisons}）`);
     }

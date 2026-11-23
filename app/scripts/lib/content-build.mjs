@@ -13,6 +13,8 @@ import { checkMaterialsForBuild, excludedRefWarnings } from './material-build.mj
 import { crosscheckMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
 import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
+import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
+import { buildLabPatternOutputs, checkLabsAndPatternsForBuild } from './lab-pattern-build.mjs';
 
 export const FORMAT = 'saa-dojo-content';
 export const FORMAT_VERSION = 1;
@@ -64,6 +66,8 @@ export function classify(rel) {
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram' };
   if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact' };
   if (p[0] === 'sims' && n === 3 && ext === '.json') return { kind: 'sim', sim: p[1] };
+  if (p[0] === 'labs' && n === 2 && ext === '.md') return { kind: 'lab' };
+  if (p[0] === 'patterns' && n === 2 && ext === '.md') return { kind: 'pattern' };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2])) return { kind: 'question' };
@@ -122,9 +126,11 @@ export function parseContent(files, schema) {
     materialStatusPresent: false,
     // 実物（content/saa-c03/artifacts）。スキーマに通ったものだけ
     artifacts: [],
+    labs: [],
+    patterns: [],
     sims: [],
     // 区分ごとのファイル名（スキーマに通らなかったものを含む。検証状態の記録の検査で使う）
-    materialStems: { diagrams: new Set(), artifacts: new Set(), sims: new Set() },
+    materialStems: { diagrams: new Set(), artifacts: new Set(), labs: new Set(), patterns: new Set(), sims: new Set() },
   };
 
   const validate = (s, value, rel) => {
@@ -228,6 +234,15 @@ export function parseContent(files, schema) {
         if (data) parsed.artifacts.push({ rel, data });
         break;
       }
+      case 'lab':
+      case 'pattern': {
+        const section = `${cls.kind}s`;
+        parsed.materialStems[section].add(path.posix.basename(rel, '.md'));
+        const fm = markdown(rel, text);
+        const data = fm && validate(cls.kind === 'lab' ? schema.LabFrontSchema : schema.PatternFrontSchema, fm.data, rel);
+        if (data) parsed[section].push({ rel, data, body: fm.body });
+        break;
+      }
       case 'diagram': {
         parsed.materialStems.diagrams.add(path.posix.basename(rel, '.json'));
         const j = json(rel, text);
@@ -286,6 +301,7 @@ function crossCheck(parsed, err, warn) {
   for (const q of parsed.questions) claim(q.data.id, q.rel);
   for (const l of parsed.lessons) claim(l.data.id, l.rel);
   for (const d of parsed.docs) claim(d.data.id, d.rel);
+  for (const { rel, data } of [...parsed.labs, ...parsed.patterns]) claim(data.id, rel);
   for (const d of parsed.decks) {
     claim(`deck:${d.data.deck}`, d.rel);
     for (const c of d.data.cards) claim(c.id, d.rel);
@@ -317,14 +333,14 @@ function crossCheck(parsed, err, warn) {
   const artifacts = checkArtifactsForBuild(parsed);
   for (const m of artifacts.errors) err(...splitMsg(m));
   for (const m of artifacts.warnings) warn(...splitMsg(m));
-  // 図と実物の検証状態
+  // 教材の検証状態
   const materials = checkMaterialsForBuild(parsed);
   for (const m of materials.errors) err(...splitMsg(m));
   for (const m of materials.warnings) warn(...splitMsg(m));
-  for (const { rel, body } of [...parsed.lessons, ...parsed.docs]) {
+  for (const { rel, body } of [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)]) {
     for (const { line, message } of crosscheckMarkdown(body)) err(rel, `本文 ${line} 行目: ${message}`);
   }
-  const course = checkCourseForBuild(parsed, HIDDEN_STATUSES);
+  const course = checkCourseForBuild(parsed, HIDDEN_STATUSES, materials.statuses);
   for (const m of course.errors) err(parsed.course.rel, m);
   for (const w of course.warnings) warn(parsed.course.rel, w.message);
   const taskIds = new Set(['basics']);
@@ -335,6 +351,9 @@ function crossCheck(parsed, err, warn) {
       for (const i of t.items) itemIds.add(i.id);
     }
   }
+  const labsAndPatterns = checkLabsAndPatternsForBuild(parsed, { itemIds, taskIds });
+  for (const m of labsAndPatterns.errors) err(...splitMsg(m));
+  for (const m of labsAndPatterns.warnings) warn(...splitMsg(m));
   for (const { rel, data: q } of parsed.questions) {
     if (!taskIds.has(q.taskStatement)) err(rel, `taskStatement ${q.taskStatement} が blueprint にありません`);
     const bad = q.knowledgeRefs.filter((r) => !itemIds.has(r));
@@ -430,6 +449,9 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   // レッスンの確認問題: lessonRefs で参照している問題と、本文で ID を挙げている問題（保留模試は除く）
   const lessonQuestions = (id, body) => {
     const ids = new Set(questions.filter((q) => q.lessonRefs.includes(id)).map((q) => q.id));
+    return bodyQuestions(body, ids);
+  };
+  const bodyQuestions = (body, ids = new Set()) => {
     for (const m of body.matchAll(QUESTION_ID_IN_TEXT)) if (visible.has(m[0])) ids.add(m[0]);
     return [...ids].filter((qid) => {
       const pool = visible.get(qid)?.pool;
@@ -504,7 +526,17 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const sims = buildSimOutputs(parsed, { includeUnverified });
   add('sim-index', 'sim-index', sims.index);
   for (const item of sims.items) add(`sim:${item.id}`, `sims/${item.id}`, item);
-  if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions));
+  const materialOptions = { includeUnverified, canon, questionIds: bodyQuestions };
+  const labs = buildLabPatternOutputs(parsed, 'labs', materialOptions);
+  add('lab-index', 'lab-index', labs.index);
+  for (const item of labs.items) add(`lab:${item.id}`, `labs/${item.id}`, item);
+  const patterns = buildLabPatternOutputs(parsed, 'patterns', materialOptions);
+  add('pattern-index', 'pattern-index', patterns.index);
+  for (const item of patterns.items) add(`pattern:${item.id}`, `patterns/${item.id}`, item);
+  if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions, {
+    labIds: new Set(labs.index.map(({ id }) => id)),
+    patternIds: new Set(patterns.index.map(({ id }) => id)),
+  }));
 
   const out = [];
   const manifestFiles = {};
@@ -550,6 +582,10 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       artifactsExcluded: artifacts.excluded,
       sims: sims.items.length,
       simsExcluded: sims.excluded,
+      labs: labs.items.length,
+      labsExcluded: labs.excluded,
+      patterns: patterns.items.length,
+      patternsExcluded: patterns.excluded,
       courseUnits: parsed.course?.data.stages.reduce((total, stage) => total + stage.units.length, 0) ?? 0,
     },
     files: manifestFiles,

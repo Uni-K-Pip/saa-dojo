@@ -29,6 +29,7 @@ export const REVIEW_STATUSES = ['verified', 'pending', 'needs-fix', 'rejected'];
 
 // 判断軸: 問題文の制約語が何を最優先しているか
 export const QUALIFIERS = ['cost', 'operational', 'availability', 'performance', 'security', 'minimal-change', 'other'];
+export const PATTERN_QUALIFIERS = QUALIFIERS.filter((qualifier) => qualifier !== 'other');
 // basics: 基礎講座の確認問題 / practice: 演習 / mockA・mockB: 保留模試（演習には出さない）
 export const POOLS = ['basics', 'practice', 'mockA', 'mockB'];
 // 本番の65問をドメイン比重（30/26/24/20%）で割り振った数
@@ -717,9 +718,34 @@ export const SIM_CONFIG_SCHEMAS = {
     });
   }),
 };
+// ミニラボ・設計パターン（Markdown の front matter）
+export const LAB_ID = /^lab-[a-z0-9][a-z0-9-]{1,60}$/;
+export const PATTERN_ID = /^pattern-[a-z0-9][a-z0-9-]{1,60}$/;
+
+const MaterialFrontSchema = z.object({
+  title: z.string().min(2).max(80),
+  order: z.number().int().min(0).max(999),
+  knowledgeRefs: z.array(itemId).min(1).max(20),
+  services: z.array(serviceName).min(1).max(20),
+  diagram: z.string().regex(DIAGRAM_ID),
+  createdBy: sessionId,
+}).strict();
+
+export const LabFrontSchema = MaterialFrontSchema.extend({
+  id: z.string().regex(LAB_ID),
+  unit: z.string().regex(/^u\d{2}$/),
+  estimatedMinutes: z.number().int().min(10).max(25),
+});
+
+export const PatternFrontSchema = MaterialFrontSchema.extend({
+  id: z.string().regex(PATTERN_ID),
+  taskStatements: z.array(taskId).min(1).max(6),
+  qualifiers: z.array(z.enum(PATTERN_QUALIFIERS)).min(1).max(3)
+    .refine(unique, { message: '判断軸が重複しています' }),
+});
 
 // 教材の検証状態（content/saa-c03/material-status.json）。種類ごとの区分 → 教材の id → 記録。
-// 今の区分は diagrams（図）と artifacts（実物）。区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
+// 区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
 // hash は検証した時点の内容のハッシュ（scripts/lib/material-status.mjs の materialHash）
 const MaterialStatusRecordSchema = z
   .object({
@@ -733,5 +759,7 @@ export const MaterialStatusSchema = z
     diagrams: z.record(z.string().regex(DIAGRAM_ID, { message: '図の id ではない' }), MaterialStatusRecordSchema).optional(),
     artifacts: z.record(z.string().regex(ARTIFACT_ID, { message: '実物の id ではない' }), MaterialStatusRecordSchema).optional(),
     sims: z.record(z.string().regex(SIM_SCENARIO_ID, { message: 'シナリオの id ではない' }), MaterialStatusRecordSchema).optional(),
+    labs: z.record(z.string().regex(LAB_ID, { message: 'ミニラボの id ではない' }), MaterialStatusRecordSchema).optional(),
+    patterns: z.record(z.string().regex(PATTERN_ID, { message: '設計パターンの id ではない' }), MaterialStatusRecordSchema).optional(),
   })
   .strict();

@@ -2,7 +2,7 @@ import { use, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { CourseNextStep, courseItemDetails, unitTitle } from '../components/CourseNextStep';
 import type { CourseUnit } from '../content/course-types';
-import { loadCourse, loadDocs, loadLessons, loadQuestionIndex } from '../content/loader';
+import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
 import { answeredUnitPracticeCount, courseProgress, pickUnitPractice, unitPracticeCandidates, unitProgress } from '../domain/course';
 import { randomRng } from '../domain/rng';
@@ -36,7 +36,7 @@ export default function CoursePage() {
                   <Link to={`/course/${unit.id}`}>{unitTitle(unit)}</Link>
                   <span className="small muted">済み {done} / {total}</span>
                 </div>
-                <div className="progress" aria-hidden="true"><span style={{ width: `${100 * done / total}%` }} /></div>
+                {total > 0 && <div className="progress" aria-hidden="true"><span style={{ width: `${100 * done / total}%` }} /></div>}
               </li>
             ))}
           </ul>
@@ -54,6 +54,8 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
   const hasKind = (kind: CourseUnit['items'][number]['kind']) => unit.items.some((item) => item.kind === kind);
   const lessons = hasKind('lesson') ? use(loadLessons()) : [];
   const docs = hasKind('doc') ? use(loadDocs()) : [];
+  const labs = hasKind('lab') ? use(loadLabIndex()) : [];
+  const patterns = hasKind('pattern') ? use(loadPatternIndex()) : [];
   const index = hasKind('practice') ? use(loadQuestionIndex()) : [];
   const { items } = unitProgress(unit, study);
   const candidates = unitPracticeCandidates(unit, index).length;
@@ -90,7 +92,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
       {error && <p className="notice warn" role="alert">{error}</p>}
       <ol className="list" role="list">
         {items.map(({ item, key, done }) => {
-          const details = courseItemDetails(item, unit.id, lessons, docs);
+          const details = courseItemDetails(item, unit.id, lessons, docs, labs, patterns);
           const manual = item.kind === 'doc' || item.kind === 'analysis';
           return (
             <li key={key}>

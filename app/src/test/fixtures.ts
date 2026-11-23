@@ -159,6 +159,11 @@ export function makeContentFiles(questions: Question[], extra: Record<string, un
       glossary: 0,
       cheatsheets: 0,
       guides: 0,
+      labs: Array.isArray(extra['lab-index']) ? extra['lab-index'].length : 0,
+      patterns: Array.isArray(extra['pattern-index']) ? extra['pattern-index'].length : 0,
+      sims: Array.isArray(extra['sim-index'])
+        ? (extra['sim-index'] as { scenarios: unknown[] }[]).reduce((n, e) => n + e.scenarios.length, 0)
+        : 0,
     },
     files: manifestFiles,
   };

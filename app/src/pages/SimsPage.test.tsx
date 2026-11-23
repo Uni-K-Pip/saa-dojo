@@ -174,11 +174,14 @@ describe('シミュレーターの画面', () => {
     await screen.findByRole('heading', { name: 'メニュー' });
     const main = within(screen.getByRole('main'));
     expect(main.getByRole('link', { name: /学習コース/ })).toBeVisible();
-    if (show) expect(main.getByRole('link', { name: /シミュレーター/ })).toHaveAttribute('href', '/sims');
-    else expect(main.queryByRole('link', { name: /シミュレーター/ })).toBeNull();
+    if (show) expect(await main.findByRole('link', { name: /シミュレーター/ })).toHaveAttribute('href', '/sims');
+    else {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(main.queryByRole('link', { name: /シミュレーター/ })).toBeNull();
+    }
   });
 
-  it.each([false, true])('横のナビは、描画のあとに読んだ一覧で出し分ける（%s）', async (show) => {
+  it.each([false, true])('横のナビは、manifest のシナリオの件数で出し分ける（%s）', async (show) => {
     useFakeContent(files(show ? [entry] : []));
     renderApp('/');
     await screen.findByRole('heading', { level: 1 });

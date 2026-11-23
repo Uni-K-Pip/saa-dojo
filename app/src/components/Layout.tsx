@@ -1,13 +1,15 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
+import { loadManifest } from '../content/loader';
 import { ErrorBoundary } from './ErrorBoundary';
-import { loadSimIndex } from '../content/loader';
 
 export interface NavItem {
   to: string;
   label: string;
   icon: string;
   group: string;
+  /** 出力に 1 件以上あるときだけ出す教材（manifest の件数で判定） */
+  whenAny?: 'labs' | 'patterns' | 'sims';
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -15,6 +17,9 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/course', label: '学習コース', icon: '🧭', group: '学ぶ' },
   { to: '/basics', label: '基礎講座', icon: '🔰', group: '学ぶ' },
   { to: '/roadmap', label: 'ロードマップ', icon: '🗺', group: '学ぶ' },
+  { to: '/sims', label: 'シミュレーター', icon: '▦', group: '学ぶ', whenAny: 'sims' },
+  { to: '/labs', label: 'ミニラボ', icon: '🧪', group: '学ぶ', whenAny: 'labs' },
+  { to: '/patterns', label: '設計パターン', icon: '🧩', group: '学ぶ', whenAny: 'patterns' },
   { to: '/practice', label: '演習', icon: '✎', group: '解く' },
   { to: '/mock', label: '模擬試験', icon: '⏱', group: '解く' },
   { to: '/review', label: '復習', icon: '↻', group: '解く' },
@@ -29,11 +34,17 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/about', label: 'このアプリについて', icon: 'ℹ', group: 'その他' },
 ];
 
-export const SIM_NAV_ITEM: NavItem = { to: '/sims', label: 'シミュレーター', icon: '▦', group: '学ぶ' };
-
-export function menuItems(hasSims: boolean): NavItem[] {
-  if (!hasSims) return NAV_ITEMS;
-  return NAV_ITEMS.flatMap((item) => item.to === '/roadmap' ? [item, SIM_NAV_ITEM] : [item]);
+/** 件数で出し分ける項目を除いたメニュー。manifest が読めないあいだは出さない */
+export function useNavItems(): NavItem[] {
+  const [counts, setCounts] = useState<Partial<Record<'labs' | 'patterns' | 'sims', number>>>({});
+  useEffect(() => {
+    let alive = true;
+    loadManifest()
+      .then((m) => { if (alive) setCounts({ labs: m.counts.labs ?? 0, patterns: m.counts.patterns ?? 0, sims: m.counts.sims ?? 0 }); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  return NAV_ITEMS.filter((i) => !i.whenAny || (counts[i.whenAny] ?? 0) > 0);
 }
 
 const BOTTOM: { to: string; label: string; icon: string }[] = [
@@ -44,10 +55,11 @@ const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/menu', label: 'メニュー', icon: '☰' },
 ];
 
-function SideNav({ hasSims }: { hasSims: boolean }) {
+function SideNav() {
+  const navItems = useNavItems();
   let lastGroup = '';
   const items: ReactNode[] = [];
-  for (const item of menuItems(hasSims)) {
+  for (const item of navItems) {
     if (item.group && item.group !== lastGroup) {
       items.push(
         <li key={`g-${item.group}`} className="nav-group" aria-hidden="true">
@@ -73,22 +85,6 @@ function SideNav({ hasSims }: { hasSims: boolean }) {
 
 export function Layout({ toast }: { toast?: ReactNode }) {
   const location = useLocation();
-  const [hasSims, setHasSims] = useState(false);
-  // 出すシナリオがあるときだけ、横のナビにシミュレーターを出す。一覧のデータは最初の描画のあとに読む（初期表示を待たせない）
-  useEffect(() => {
-    let alive = true;
-    const timer = setTimeout(() => {
-      loadSimIndex()
-        .then((list) => {
-          if (alive && list.some(({ scenarios }) => scenarios.length > 0)) setHasSims(true);
-        })
-        .catch(() => {});
-    }, 0);
-    return () => {
-      alive = false;
-      clearTimeout(timer);
-    };
-  }, []);
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -105,7 +101,7 @@ export function Layout({ toast }: { toast?: ReactNode }) {
         </NavLink>
       </header>
       <div className="app-body">
-        <SideNav hasSims={hasSims} />
+        <SideNav />
         <main id="main" className="main" tabIndex={-1}>
           <ErrorBoundary resetKey={location.pathname}>
             <Suspense
@@ -115,7 +111,7 @@ export function Layout({ toast }: { toast?: ReactNode }) {
                 </div>
               }
             >
-              <Outlet context={setHasSims} />
+              <Outlet />
             </Suspense>
           </ErrorBoundary>
           <footer className="app-footer">
