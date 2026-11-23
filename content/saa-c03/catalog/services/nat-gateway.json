@@ -305,6 +305,20 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "nat-gateway.source-translation",
+      "title": "送信元アドレスの付け替えと応答での復元",
+      "kind": "feature",
+      "text": "パブリック・プライベートのどちらの NAT ゲートウェイも、インスタンスの送信元プライベート IPv4 アドレスを、NAT ゲートウェイのプライベート IPv4 アドレスに対応付ける。パブリック NAT ゲートウェイでは、その NAT ゲートウェイのプライベート IPv4 アドレスを、インターネットゲートウェイが、関連付けられた Elastic IP アドレスに対応付ける。応答の通信をインスタンスへ送るときは、NAT ゲートウェイがアドレスを元の送信元 IP アドレスに戻す。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "NAT gateways - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
@@ -327,5 +341,6 @@
     }
   ],
   "createdBy": "cx14",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-24"
 }

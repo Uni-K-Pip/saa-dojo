@@ -6609,6 +6609,11 @@
     "checkedAt": "2026-11-21",
     "hash": "c3fa79c54594"
   },
+  "nat-gateway.source-translation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "3accfac8b8c5"
+  },
   "nat-gateway.zonal-resilience": {
     "status": "verified",
     "checkedAt": "2026-11-21",
