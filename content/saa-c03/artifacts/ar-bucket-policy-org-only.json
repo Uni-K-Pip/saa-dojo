@@ -29,6 +29,6 @@
     "answer": "読めません。Condition に合わないので、この文の許可は当たりません。ほかにどこからも許可されていなければ、暗黙的に拒否されます。"
   },
   "lessonRefs": ["lesson-basics-iam"],
-  "factRefs": ["iam.global-key-principalorgid"],
+  "factRefs": ["iam.global-key-principalorgid", "iam.principal-wildcard-orgid"],
   "createdBy": "v1"
 }

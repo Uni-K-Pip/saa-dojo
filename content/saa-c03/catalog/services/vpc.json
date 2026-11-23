@@ -120,6 +120,20 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "vpc.subnet-cidr-subset",
+      "title": "サブネットの CIDR と VPC の CIDR の関係",
+      "kind": "constraint",
+      "text": "サブネットの CIDR ブロックは、VPC の CIDR ブロックと同じにする（VPC にサブネットを 1 つだけ作る場合）か、VPC の CIDR ブロックの一部（サブセット）にする（VPC に複数のサブネットを作る場合）。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Subnet CIDR blocks - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-sizing.html"
+        }
+      ],
+      "checkedAt": "2026-11-23"
+    },
+    {
       "id": "vpc.cidr-secondary",
       "title": "セカンダリ CIDR ブロックの追加",
       "kind": "feature",
@@ -814,5 +828,5 @@
   ],
   "createdBy": "sc5",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-21"
+  "updatedAt": "2026-11-23"
 }

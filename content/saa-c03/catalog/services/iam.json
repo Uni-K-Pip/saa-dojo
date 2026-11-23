@@ -365,6 +365,24 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "iam.principal-wildcard-orgid",
+      "title": "Principal の \"*\" と aws:PrincipalOrgID で組織に限る書き方",
+      "kind": "feature",
+      "text": "リソースベースのポリシーで Principal に \"*\"（すべてのプリンシパル）を指定し、Condition で aws:PrincipalOrgID を組織 ID と StringEquals で比べると、許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる。Allow で \"*\" を使うのは公開・匿名アクセスを意図するときだけにし、そうでなければ Condition で絞ることが勧められている。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "AWS global condition context keys - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        },
+        {
+          "title": "AWS JSON policy elements: Principal - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html"
+        }
+      ],
+      "checkedAt": "2026-11-23"
+    },
+    {
       "id": "iam.global-key-principalarn",
       "title": "aws:PrincipalArn はロールの ARN",
       "kind": "feature",
@@ -659,5 +677,5 @@
   ],
   "createdBy": "sc3",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-21"
+  "updatedAt": "2026-11-23"
 }
