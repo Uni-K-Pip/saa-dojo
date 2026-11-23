@@ -190,6 +190,9 @@ export interface Manifest {
     diagrams?: number;
     /** 出力から除いた図の枚数（状態ごと。未検証は --include-unverified のビルドでだけ出す。古いデータにはない） */
     diagramsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    /** 出した実物の件数と、除いた件数（状態ごと。古いデータにはない） */
+    artifacts?: number;
+    artifactsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
   };
   files: Record<string, ManifestFile>;
 }
@@ -480,3 +483,38 @@ export interface LayersScene extends ChartScene {
 }
 
 export type AnyDiagramScene = DiagramScene | DecisionScene | PositionScene | TimelineScene | LayersScene;
+
+// ---------- 実物（app/scripts/lib/artifact-build.mjs と scripts/lib/artifact.mjs の renderArtifact の出力） ----------
+
+export type ArtifactFormat = 'json' | 'table' | 'text';
+
+export interface ArtifactIndexEntry {
+  id: string;
+  title: string;
+  kind: string;
+  kindLabel: string;
+  format: ArtifactFormat;
+  status: DiagramStatus;
+}
+
+/** 本体の行（json は整形済み、text は書いたまま）。indent は字下げの字数、marks はかかる注目点の番号、starts はこの行から始まる注目点の番号 */
+export interface ArtifactLine {
+  indent: number;
+  text: string;
+  marks: number[];
+  starts: number[];
+}
+
+export interface ArtifactRow {
+  cells: string[];
+  marks: number[];
+  starts: number[];
+}
+
+export interface ArtifactData extends ArtifactIndexEntry {
+  notes: { n: number; text: string; where: string }[];
+  lines?: ArtifactLine[];
+  columns?: string[];
+  rows?: ArtifactRow[];
+  ask?: { text: string; answer: string };
+}

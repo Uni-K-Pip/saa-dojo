@@ -6,6 +6,8 @@ import type {
   CatalogIndex,
   DiagramIndexEntry,
   AnyDiagramScene,
+  ArtifactData,
+  ArtifactIndexEntry,
   DocEntry,
   FlashcardDeck,
   GlossaryEntry,
@@ -82,6 +84,9 @@ export const loadComparisons = () => loadKey<CatalogComparison[]>('catalog-compa
 export const loadDiagramIndex = () => loadKey<DiagramIndexEntry[]>('diagram-index', []);
 /** レイアウト済みの図 1 枚。ないときは null */
 export const loadDiagram = (id: string) => loadKey<AnyDiagramScene | null>(`diagram:${id}`, null);
+export const loadArtifactIndex = () => loadKey<ArtifactIndexEntry[]>('artifact-index', []);
+/** 実物 1 件（表示用に整えたもの）。ないとき（出力から除かれたときを含む）は null */
+export const loadArtifact = (id: string) => loadKey<ArtifactData | null>(`artifact:${id}`, null);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {

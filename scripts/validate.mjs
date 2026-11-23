@@ -28,7 +28,9 @@ import {
   CatalogNeedsSchema,
   DiagramSchema,
   MaterialStatusSchema,
+  ArtifactSchema,
 } from './lib/schema.mjs';
+import { checkArtifact, checkArtifactRefs } from './lib/artifact.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
@@ -114,6 +116,7 @@ function classify(rel) {
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison', stem };
   }
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram', stem };
+  if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact', stem };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question', dirTask: 'basics', stem };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2]) && p[2][0] === domainDir[1]) {
@@ -141,7 +144,7 @@ export const LAYOUT_HELP = [
   '  cheatsheets/<id>.md   guides/<id>.md',
   '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
   '  catalog-status.json / catalog-needs.json / material-status.json',
-  '  diagrams/<dg-…>.json',
+  '  diagrams/<dg-…>.json   artifacts/<ar-…>.json',
 ];
 
 // ---------- 読み込み（文字コード・JSON・front matter） ----------
@@ -298,6 +301,9 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     decks: [], // { rel, data }
     glossaries: [], // { rel, data }
     diagrams: [], // { rel, data }（スキーマに通ったものだけ）
+    artifacts: [], // { rel, data }（スキーマに通ったものだけ）
+    artifactStems: new Set(), // 実物のファイル名（スキーマに通らなかったものを含む）
+    diagramStems: new Set(),
     reviewStatus: { present: false, data: null },
     materialStatus: { present: false, data: null }, // 教材の検証状態（material-status.json）
     // サービス図鑑: { rel, data }（スキーマに通ったものだけ）。status・needs は存在の有無と中身
@@ -309,7 +315,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
       files: { entries: 0, comparisons: 0 },
     },
     ids: new Map(), // id -> [{ type, rel }]（スキーマ不適合のファイルも含む）
-    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0, diagramFiles: 0 },
+    counts: { questionFiles: 0, lessonFiles: 0, cheatsheetFiles: 0, guideFiles: 0, deckFiles: 0, glossaryFiles: 0, diagramFiles: 0, artifactFiles: 0 },
   };
 
   if (!fs.existsSync(contentDir) || !fs.statSync(contentDir).isDirectory()) {
@@ -465,8 +471,22 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         if (data) content.course = { rel, data };
         break;
       }
+      case 'artifact': {
+        content.counts.artifactFiles++;
+        content.artifactStems.add(cls.stem);
+        const j = readJson(rel);
+        if (!j) break;
+        const data = validateWith(ArtifactSchema, j.value, rel);
+        registerId(j.value?.id, 'artifact', rel);
+        if (typeof j.value?.id === 'string' && j.value.id !== cls.stem) {
+          report.error('path-mismatch', rel, `ファイル名と id が違います（ファイル名: ${cls.stem}.json、id: ${j.value.id}）`);
+        }
+        if (data) content.artifacts.push({ rel, data });
+        break;
+      }
       case 'diagram': {
         content.counts.diagramFiles++;
+        content.diagramStems.add(cls.stem);
         const j = readJson(rel);
         if (!j) break;
         const data = validateWith(DiagramSchema, j.value, rel);
@@ -982,11 +1002,27 @@ function checkMaterialStatusFile(content) {
   if (materialStatus.present && !materialStatus.data) return;
   const { issues, unverifiedRefs } = checkMaterialStatus({
     statusFile: materialStatus.data,
-    diagrams: content.diagrams,
+    materials: { diagrams: content.diagrams, artifacts: content.artifacts },
+    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems },
     texts: [...content.lessons, ...content.docs],
   });
   for (const i of issues) report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
-  for (const ref of unverifiedRefs) report.warn('diagram-ref-unverified', ref.rel, unverifiedRefMessage(ref));
+  for (const ref of unverifiedRefs) report.warn(`${ref.kind}-ref-unverified`, ref.rel, unverifiedRefMessage(ref));
+}
+
+// 実物（scripts/lib/artifact.mjs。ビルドと同じ判定）
+function checkArtifacts(content) {
+  const { report } = content;
+  const ids = new Set(content.artifacts.map(({ data }) => data.id));
+  for (const { rel, message } of checkArtifactRefs({ texts: [...content.lessons, ...content.docs], artifactIds: ids })) report.error('artifact-ref', rel, message);
+  if (content.artifacts.length === 0) return;
+  const lessonIds = new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === 'lesson')).map(([id]) => id));
+  const factIds = new Set(content.catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => f.id)));
+  for (const { rel, data } of content.artifacts) {
+    const found = checkArtifact(data, { lessonIds, factIds });
+    for (const m of found.errors) report.error('artifact', rel, m);
+    for (const w of found.warnings) report.warn(w.code, rel, w.message);
+  }
 }
 
 function checkInlineChecks(content) {
@@ -1058,6 +1094,7 @@ export function checkContent(content) {
   checkCatalogNearDuplicates(content);
   checkCatalogModel(content);
   checkDiagrams(content);
+  checkArtifacts(content);
   checkMaterialStatusFile(content);
   checkInlineChecks(content);
   checkCourse(content);
@@ -1104,6 +1141,7 @@ export function summarize(content) {
       glossaryFiles: c.glossaryFiles,
       glossaryEntries: content.glossaries.reduce((n, g) => n + g.data.entries.length, 0),
       diagrams: { files: c.diagramFiles, valid: content.diagrams.length },
+      artifacts: { files: c.artifactFiles, valid: content.artifacts.length },
     },
     stats: {
       questionsByPool,
@@ -1156,8 +1194,13 @@ const CODE_LABELS = {
   'diagram-ref': '図の参照の誤り',
   'diagram-ref-unverified': '本文が検証済みでない図を指す',
   'diagram-unreferenced': 'どこからも参照されていない検証済みの図',
+  artifact: '実物の不整合',
+  'artifact-ref': '実物の参照の誤り',
+  'artifact-ref-unverified': '本文が検証済みでない実物を指す',
+  'artifact-unreferenced': 'どこからも参照されていない検証済みの実物',
+  'artifact-notes-few': '実物の注目点が少ない',
   'material-status-key': 'material-status の不明な id',
-  'material-stale-review': '検証後に内容が変わった図',
+  'material-stale-review': '検証後に内容が変わった教材',
   'diagram-alt-short': '図の代替文が短い',
   'diagram-single-result': '選択フローの結論が 1 つだけ',
   'diagram-same-position': '位置づけ図の項目が同じ位置に重なる',
@@ -1195,6 +1238,7 @@ function renderText(result, opts) {
     L.push(`  問題 ${c.questions.files} 件（有効 ${c.questions.valid}） / レッスン ${c.lessons.files} 件（有効 ${c.lessons.valid}） / 早見表 ${c.cheatsheets} 件 / ガイド ${c.guides} 件`);
     L.push(`  フラッシュカード ${c.flashcardDecks.files} デッキ・${c.flashcards} 枚 / 用語集 ${c.glossaryFiles} ファイル・${c.glossaryEntries} 語`);
     if (c.diagrams.files > 0) L.push(`  図 ${c.diagrams.files} 件（有効 ${c.diagrams.valid}）`);
+    if (c.artifacts.files > 0) L.push(`  実物 ${c.artifacts.files} 件（有効 ${c.artifacts.valid}）`);
     if (c.catalog) {
       L.push(`  図鑑 エントリ ${c.catalog.entryFiles} 件（有効 ${c.catalog.entries}・事実 ${c.catalog.facts} 件） / 比較 ${c.catalog.comparisonFiles} 件（有効 ${c.catalog.comparisons}）`);
     }

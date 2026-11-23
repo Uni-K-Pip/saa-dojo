@@ -591,8 +591,64 @@ export const DiagramSchema = z.discriminatedUnion('type', [
   ArchitectureDiagramSchema, DecisionDiagramSchema, PositionDiagramSchema, TimelineDiagramSchema, LayersDiagramSchema,
 ]);
 
+// 実物（content/saa-c03/artifacts/<id>.json。docs/visual-materials-design.md の 6章）
+export const ARTIFACT_ID = /^ar-[a-z0-9][a-z0-9-]{1,60}$/;
+export const ARTIFACT_KINDS = [
+  'iam-policy', 'trust-policy', 'bucket-policy', 'scp', 'key-policy', 'endpoint-policy', 'route-table', 'sg-rules',
+  'nacl-rules', 's3-lifecycle', 'scaling-policy', 'dns-records', 'listener-rules', 'queue-settings', 'function-settings',
+  'table-design', 'db-settings', 'alarm', 'event-pattern', 'distribution-settings', 'backup-plan', 'template',
+];
+export const ARTIFACT_FORMATS = ['json', 'table', 'text'];
+// 上限（幅 360px で読めることを条件に決めた。表の列とセルの字数、行の字数は折り返して読める範囲）。
+// jsonLines・jsonDepth は整形したあとの行数と入れ子の深さで、scripts/lib/artifact.mjs が検査する
+export const ARTIFACT_LIMITS = {
+  title: [4, 60],
+  notes: 5,
+  noteText: [10, 120],
+  noteLines: 10,
+  askText: [10, 120],
+  askAnswer: [10, 200],
+  columns: [2, 4],
+  columnLabel: 16,
+  rows: [1, 12],
+  cell: 40,
+  lines: [1, 30],
+  lineChars: 80,
+  jsonLines: 40,
+  jsonDepth: 6,
+  path: 100,
+};
+const L = ARTIFACT_LIMITS;
+const ArtifactNoteSchema = z
+  .object({
+    path: z.string().min(1).max(L.path).optional(),
+    row: z.number().int().min(1).optional(),
+    lines: z.array(z.number().int().min(1)).min(1).max(L.noteLines).optional(),
+    text: z.string().min(L.noteText[0]).max(L.noteText[1]),
+  })
+  .strict();
+// format ごとの本体（document・columns と rows・lines）と注目点の場所（path・row・lines）の組み合わせは、
+// わかりやすい文で報告するため、スキーマではなく checkArtifact で検査する
+export const ArtifactSchema = z
+  .object({
+    id: z.string().regex(ARTIFACT_ID),
+    kind: z.enum(ARTIFACT_KINDS),
+    title: z.string().min(L.title[0]).max(L.title[1]),
+    format: z.enum(ARTIFACT_FORMATS),
+    document: z.record(z.string(), z.unknown()).optional(),
+    columns: z.array(z.string().min(1).max(L.columnLabel)).min(L.columns[0]).max(L.columns[1]).optional(),
+    rows: z.array(z.array(z.string().max(L.cell))).min(L.rows[0]).max(L.rows[1]).optional(),
+    lines: z.array(z.string().max(L.lineChars)).min(L.lines[0]).max(L.lines[1]).optional(),
+    notes: z.array(ArtifactNoteSchema).max(L.notes),
+    ask: z.object({ text: z.string().min(L.askText[0]).max(L.askText[1]), answer: z.string().min(L.askAnswer[0]).max(L.askAnswer[1]) }).strict().optional(),
+    lessonRefs: z.array(z.string().regex(LESSON_ID)).max(6),
+    factRefs: z.array(z.string().regex(FACT_ID)).max(12),
+    createdBy: sessionId,
+  })
+  .strict();
+
 // 教材の検証状態（content/saa-c03/material-status.json）。種類ごとの区分 → 教材の id → 記録。
-// 今の区分は diagrams（図）だけ。区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
+// 今の区分は diagrams（図）と artifacts（実物）。区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
 // hash は検証した時点の内容のハッシュ（scripts/lib/material-status.mjs の materialHash）
 const MaterialStatusRecordSchema = z
   .object({
@@ -604,5 +660,6 @@ const MaterialStatusRecordSchema = z
 export const MaterialStatusSchema = z
   .object({
     diagrams: z.record(z.string().regex(DIAGRAM_ID, { message: '図の id ではない' }), MaterialStatusRecordSchema).optional(),
+    artifacts: z.record(z.string().regex(ARTIFACT_ID, { message: '実物の id ではない' }), MaterialStatusRecordSchema).optional(),
   })
   .strict();

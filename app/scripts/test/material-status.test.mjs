@@ -153,6 +153,24 @@ describe('validate', () => {
     ]);
   });
 
+  it('スキーマに通らなかった図に記録があっても、「図がない」のエラーは重ねない', () => {
+    const found = statusIssues({ diagrams: [{ ...d, extra: 1 }], status: { diagrams: { [d.id]: rec(d) } } });
+    expect(found.map((i) => i.code)).toEqual(['schema']);
+    expect(found[0].file).toBe(`content/saa-c03/diagrams/${d.id}.json`);
+  });
+
+  it('画像だけの行とリンクで、警告の文を表示の動きに合わせる', () => {
+    const body = `${ref}
+
+[図を開く](#/diagrams/${d.id}) と、文の途中の ![図](#/diagrams/${d.id}) です。`;
+    const found = statusIssues({ diagrams: [d], status: { diagrams: {} }, body });
+    expect(found.map((i) => i.message)).toEqual([
+      expect.stringContaining('本番のビルドでは図を省いて本文だけを表示します'),
+      expect.stringContaining('リンクで指しています。検証済みになるまで、本番のビルドではリンクを開くと「見つかりません」と表示します'),
+      expect.stringContaining('リンクで指しています。検証済みになるまで、本番のビルドではリンクを開くと「見つかりません」と表示します'),
+    ]);
+  });
+
   it('スキーマ違反はエラー', () => {
     expect(statusIssues({ diagrams: [d], status: { diagrams: {}, lessons: {} } })).toEqual([
       expect.objectContaining({ level: 'error', code: 'schema', file: 'content/saa-c03/material-status.json' }),
@@ -220,6 +238,13 @@ describe('ビルドでの絞り込み', () => {
     expect(included.some((w) => w.includes(pend.id))).toBe(false);
   });
 
+  it('除いた図をリンクで指すときは、リンクが「見つかりません」になることを警告に出す', () => {
+    const { built } = build({ diagrams, status, body: `[図を開く](#/diagrams/${pend.id})` });
+    expect(built.warnings.filter((w) => w.includes('出力から除いた'))).toEqual([
+      expect.stringMatching(new RegExp(`^${lessonRel}: 本文 \\d+ 行目: 図 ${pend.id}（未検証）を出力から除いたため、リンクを開くと「見つかりません」と表示します$`)),
+    ]);
+  });
+
   it('除く図にも検査をかけ、エラーがあれば止める', () => {
     const broken = { ...pend, lessonRefs: ['lesson-4.1-absent'], factRefs: [] };
     const dirs = fixture({ diagrams: [broken], status: { diagrams: {} } });
@@ -229,10 +254,14 @@ describe('ビルドでの絞り込み', () => {
   });
 
   it('存在しない図を指す参照は、今までどおり止める', () => {
-    const dirs = fixture({ diagrams: [ver], status, body: '![図](#/diagrams/dg-absent)' });
+    // 記録は検証済みの 1 枚だけにして、参照の切れだけで止まることを見る（その図を本文が指すので、参照のない警告も出ない）
+    const body = `![図](#/diagrams/${ver.id})
+
+![図](#/diagrams/dg-absent)`;
+    const dirs = fixture({ diagrams: [ver], status: { diagrams: { [ver.id]: rec(ver) } }, body });
     const built = buildContent({ ...dirs, schema });
     expect(built).toMatchObject({ ok: false, manifest: null });
-    expect(built.errors).toContainEqual(expect.stringContaining('参照先の図 dg-absent'));
+    expect(built.errors).toEqual([expect.stringContaining('参照先の図 dg-absent')]);
   });
 
   it('存在しない図の記録と、スキーマ違反の検証状態は、ビルドを止める', () => {

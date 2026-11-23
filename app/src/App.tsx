@@ -34,6 +34,8 @@ const MenuPage = lazy(() => import('./pages/MenuPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const DiagramPage = lazy(() => import('./pages/DiagramPage'));
 const DiagramsPage = lazy(() => import('./pages/DiagramPage').then((m) => ({ default: m.DiagramsPage })));
+const ArtifactPage = lazy(() => import('./pages/ArtifactPage'));
+const ArtifactsPage = lazy(() => import('./pages/ArtifactPage').then((m) => ({ default: m.ArtifactsPage })));
 
 function Appearance() {
   const { settings } = useStudy();
@@ -84,6 +86,8 @@ export function AppRoutes() {
         <Route path="menu" element={<MenuPage />} />
         <Route path="diagrams" element={<DiagramsPage />} />
         <Route path="diagrams/:id" element={<DiagramPage />} />
+        <Route path="artifacts" element={<ArtifactsPage />} />
+        <Route path="artifacts/:id" element={<ArtifactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

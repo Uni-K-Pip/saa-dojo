@@ -1,7 +1,8 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
-import { parseDiagramRefs } from '../../../scripts/lib/diagram.mjs';
+import { parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
+import { materialKindOf } from '../../../scripts/lib/diagram-refs.mjs';
 import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 
 const parser = unified().use(remarkParse).use(remarkGfm);
@@ -34,7 +35,7 @@ function looksLikeCheckTitle(node, parent) {
 
 function hasVisual(node) {
   return node.type === 'image' || node.type === 'imageReference'
-    || (node.type === 'link' && node.url.startsWith('#/diagrams/'))
+    || (node.type === 'link' && materialKindOf(node.url) !== null)
     || (node.children ?? []).some(hasVisual);
 }
 
@@ -78,7 +79,7 @@ function inspectInlineChecks(markdown, tree) {
 }
 
 function diagramRefDifferences(markdown, tree, converted) {
-  const checked = parseDiagramRefs(markdown, { withLine: true });
+  const checked = parseMaterialRefs(markdown, { withLine: true });
   const hasReference = checked.some(({ reference }) => reference);
   const pending = new Map();
   for (const { href, line, reference } of checked) {
@@ -108,26 +109,29 @@ function diagramRefDifferences(markdown, tree, converted) {
     if (question.children.length === 1 && question.children[0].type === 'paragraph') {
       walk(question, (part) => collect(part, check.questionLine + part.position.start.line - 1));
     } else if (hasVisual(question)) {
-      differences.push({ line: check.questionLine, message: '問いに図や画像、図へのリンクは書けません。' });
+      differences.push({ line: check.questionLine, message: '問いに図・実物・画像と、図や実物へのリンクは書けません。' });
     }
     if (check.options.some(({ text }) => hasVisual(parser.parse(text)))) {
-      differences.push({ line: check.line, message: '選択肢に図や画像、図へのリンクは書けません。' });
+      differences.push({ line: check.line, message: '選択肢に図・実物・画像と、図や実物へのリンクは書けません。' });
     }
     walk(parser.parse(check.reason), (part) => collect(part, check.reasonLines[part.position.start.line - 1]));
     return false;
   });
 
   const unmatched = [];
-  const report = (href, line) => differences.push({
-    line,
-    message: `図の参照 ${href} を、検査と表示で違って読んでいます。` +
-      '`![キャプション](#/diagrams/<id>)` の形で、コードの外に書いてください。',
-  });
+  const report = (href, line) => {
+    const [name, dir] = materialKindOf(href) === 'artifact' ? ['実物', 'artifacts'] : ['図', 'diagrams'];
+    differences.push({
+      line,
+      message: `${name}の参照 ${href} を、検査と表示で違って読んでいます。` +
+        `\`![キャプション](#/${dir}/<id>)\` の形で、コードの外に書いてください。`,
+    });
+  };
   for (const { node, line } of displayed) {
     if (node.type === 'imageReference' || node.type === 'linkReference') {
       const href = definitions.get(node.identifier.toUpperCase());
-      if (!hasReference && href?.startsWith('#/diagrams/')) report(href, line);
-    } else if ((node.type === 'image' || node.type === 'link') && node.url.startsWith('#/diagrams/')) {
+      if (!hasReference && href && materialKindOf(href) !== null) report(href, line);
+    } else if ((node.type === 'image' || node.type === 'link') && materialKindOf(node.url) !== null) {
       const validated = pending.get(node.url);
       const sameLine = validated?.indexOf(line) ?? -1;
       if (sameLine >= 0) validated.splice(sameLine, 1);

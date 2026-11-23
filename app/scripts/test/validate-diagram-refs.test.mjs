@@ -249,7 +249,7 @@ it.each([
   ['問い', check.replace('保存できますか？', '保存できますか？\n>\n> ![図](#/diagrams/dg-test-layers)')],
   ['問い', check.replace('保存できますか？', '# [図](#/diagrams/dg-test-layers)について')],
 ])('文字だけで表示する%sに画像や図へのリンクを書くと validate が報告します（%#）', (part, source) => {
-  const problem = `${part}に図や画像、図へのリンクは書けません。`;
+  const problem = `${part}に図・実物・画像と、図や実物へのリンクは書けません。`;
   expect(parseInlineChecks(source)).toMatchObject([{ problems: [problem] }]);
   // 図は未検証なので、図を指す行には未検証の図への参照の警告も出る（ここでは確かめない）
   const found = issues({ [sheetRel]: md(sheetRel, source), ...Object.fromEntries([layers()].map(diagramFile)) });
