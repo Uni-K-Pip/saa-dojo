@@ -377,6 +377,8 @@ export interface DiagramBox {
   depth: number;
   /** いちばん近い外側の入れ物の id */
   parent: string | null;
+  /** ラベルの矩形（線を避けて、ラベルの帯の中で右へずれることがある。古いデータにはない） */
+  labelBox?: DiagramRect | null;
   /** 状態の札の矩形（どの段階でも marks に出ないなら null） */
   tag: DiagramRect | null;
 }
