@@ -11,9 +11,12 @@ import type {
   DocEntry,
   FlashcardDeck,
   GlossaryEntry,
+  LabMeta,
   LessonBody,
   LessonMeta,
   Manifest,
+  MaterialBody,
+  PatternMeta,
   Pool,
   Question,
   QuestionMeta,
@@ -87,6 +90,10 @@ export const loadDiagram = (id: string) => loadKey<AnyDiagramScene | null>(`diag
 export const loadArtifactIndex = () => loadKey<ArtifactIndexEntry[]>('artifact-index', []);
 /** 実物 1 件（表示用に整えたもの）。ないとき（出力から除かれたときを含む）は null */
 export const loadArtifact = (id: string) => loadKey<ArtifactData | null>(`artifact:${id}`, null);
+export const loadLabIndex = () => loadKey<LabMeta[]>('lab-index', []);
+export const loadLab = (id: string) => loadKey<MaterialBody | null>(`lab:${id}`, null);
+export const loadPatternIndex = () => loadKey<PatternMeta[]>('pattern-index', []);
+export const loadPattern = (id: string) => loadKey<MaterialBody | null>(`pattern:${id}`, null);
 
 /** 問題の本文が入っているファイルのキー */
 export function questionFileKey(meta: Pick<QuestionMeta, 'pool' | 'domain'>): string {
