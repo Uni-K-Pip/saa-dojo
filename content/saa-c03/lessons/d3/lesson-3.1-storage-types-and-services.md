@@ -114,6 +114,8 @@ Transfer Acceleration は、バケット単位で有効にして専用のエン�
 | S3 のデータを HPC や機械学習で高速に処理 | FSx for Lustre |
 | 大量データの保存、配信、容量の自動拡張 | S3 |
 
+![質問に答えてストレージを選ぶ](#/diagrams/dg-storage-choice)
+
 - **Web アプリケーション**: 起動ディスクは gp3、画像は S3 に置き、配信は CloudFront でキャッシュします。
 - **EC2 上の高負荷データベース**: まず gp3 に IOPS を追加し、足りなければ io2 にします。
 
