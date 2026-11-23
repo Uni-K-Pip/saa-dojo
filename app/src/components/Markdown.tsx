@@ -2,7 +2,8 @@
 import type { ReactNode } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { diagramRefOf } from '../../../scripts/lib/diagram-refs.mjs';
+import { artifactRefOf, diagramRefOf } from '../../../scripts/lib/diagram-refs.mjs';
+import { ArtifactRef } from './ArtifactRef';
 import { DiagramRef } from './DiagramRef';
 import { CheckAnswerContext, InlineCheck, InlineCheckOption, InlineCheckReason, type CheckAnswer } from './InlineCheck';
 import { remarkCallouts, remarkInlineChecks } from './markdown-plugins';
@@ -25,12 +26,17 @@ const paragraph: Components['p'] = ({ node, children, ...props }) => {
   if (image?.type === 'element' && image.tagName === 'img' && typeof image.properties.src === 'string') {
     const ref = diagramRefOf(image.properties.src);
     if (ref) return <DiagramRef {...ref} caption={String(image.properties.alt ?? '')} />;
+    const artifact = artifactRefOf(image.properties.src);
+    if (artifact) return <ArtifactRef {...artifact} caption={String(image.properties.alt ?? '')} />;
   }
   return <p {...props}>{children}</p>;
 };
 
-const image: Components['img'] = ({ node: _node, src, alt, ...props }) =>
-  typeof src === 'string' && diagramRefOf(src) ? <a href={src}>図: {alt}</a> : <img src={src} alt={alt} {...props} />;
+const image: Components['img'] = ({ node: _node, src, alt, ...props }) => {
+  if (typeof src === 'string' && diagramRefOf(src)) return <a href={src}>図: {alt}</a>;
+  if (typeof src === 'string' && artifactRefOf(src)) return <a href={src}>実物: {alt}</a>;
+  return <img src={src} alt={alt} {...props} />;
+};
 
 export function Markdown({ children, renderQuestionRef, onCheckAnswer }: Props) {
   const components: Components = {

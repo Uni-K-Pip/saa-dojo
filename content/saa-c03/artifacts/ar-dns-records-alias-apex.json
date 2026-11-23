@@ -1,0 +1,28 @@
+{
+  "id": "ar-dns-records-alias-apex",
+  "kind": "dns-records",
+  "title": "ゾーンの頂点と www をロードバランサーに向けるレコード",
+  "format": "text",
+  "lines": [
+    "ホストゾーン: example.com",
+    "",
+    "名前: example.com",
+    "  タイプ: A（エイリアス）",
+    "  エイリアス先: ロードバランサー my-load-balancer",
+    "",
+    "名前: www.example.com",
+    "  タイプ: A（エイリアス）",
+    "  エイリアス先: ロードバランサー my-load-balancer"
+  ],
+  "notes": [
+    { "lines": [3, 4, 5], "text": "ゾーンの頂点（ホストゾーンと同じ名前の example.com）にも、エイリアスレコードなら作れます。CNAME レコードは頂点には作れません。" },
+    { "lines": [5, 9], "text": "エイリアスの先はロードバランサーです。ロードバランサーの IP アドレスが変わっても、Route 53 が追従して新しいアドレスで応答します。" }
+  ],
+  "ask": {
+    "text": "example.com を、エイリアスではなく CNAME レコードでロードバランサーに向けられますか？",
+    "answer": "向けられません。CNAME レコードは、ホストゾーンと同じ名前（ゾーンの頂点）には作れないので、エイリアスレコードを使います。"
+  },
+  "lessonRefs": ["lesson-basics-dns-http-tls"],
+  "factRefs": ["route53.alias-zone-apex", "route53.alias-load-balancer"],
+  "createdBy": "v1"
+}

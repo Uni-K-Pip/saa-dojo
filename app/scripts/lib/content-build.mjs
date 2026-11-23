@@ -7,6 +7,8 @@ import YAML from 'yaml';
 import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
+import { buildArtifactOutputs, checkArtifactsForBuild } from './artifact-build.mjs';
+import { checkMaterialsForBuild, excludedRefWarnings } from './material-build.mjs';
 import { crosscheckMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
 import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
@@ -59,6 +61,7 @@ export function classify(rel) {
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison' };
   }
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram' };
+  if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact' };
   if (p[0] === 'questions' && ext === '.json') {
     if (n === 3 && p[1] === 'basics') return { kind: 'question' };
     if (n === 4 && domainDir && /^[1-4]\.[1-5]$/.test(p[2])) return { kind: 'question' };
@@ -115,6 +118,10 @@ export function parseContent(files, schema) {
     // 教材の検証状態（material-status.json）。なければ、どの図も未検証
     materialStatus: null,
     materialStatusPresent: false,
+    // 実物（content/saa-c03/artifacts）。スキーマに通ったものだけ
+    artifacts: [],
+    // 区分ごとのファイル名（スキーマに通らなかったものを含む。検証状態の記録の検査で使う）
+    materialStems: { diagrams: new Set(), artifacts: new Set() },
   };
 
   const validate = (s, value, rel) => {
@@ -205,7 +212,15 @@ export function parseContent(files, schema) {
         if (data) parsed.course = { rel, data };
         break;
       }
+      case 'artifact': {
+        parsed.materialStems.artifacts.add(path.posix.basename(rel, '.json'));
+        const j = json(rel, text);
+        const data = j && schema.ArtifactSchema && validate(schema.ArtifactSchema, j.value, rel);
+        if (data) parsed.artifacts.push({ rel, data });
+        break;
+      }
       case 'diagram': {
+        parsed.materialStems.diagrams.add(path.posix.basename(rel, '.json'));
         const j = json(rel, text);
         const data = j && schema.DiagramSchema && validate(schema.DiagramSchema, j.value, rel);
         if (data) parsed.diagrams.push({ rel, data });
@@ -283,6 +298,14 @@ function crossCheck(parsed, err, warn) {
   const diagrams = checkDiagramsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
   for (const m of diagrams.errors) err(...splitMsg(m));
   for (const m of diagrams.warnings) warn(...splitMsg(m));
+  // 実物: 図と同じく、検査のエラーでビルドを止める
+  const artifacts = checkArtifactsForBuild(parsed);
+  for (const m of artifacts.errors) err(...splitMsg(m));
+  for (const m of artifacts.warnings) warn(...splitMsg(m));
+  // 図と実物の検証状態
+  const materials = checkMaterialsForBuild(parsed);
+  for (const m of materials.errors) err(...splitMsg(m));
+  for (const m of materials.warnings) warn(...splitMsg(m));
   for (const { rel, body } of [...parsed.lessons, ...parsed.docs]) {
     for (const { line, message } of crosscheckMarkdown(body)) err(rel, `本文 ${line} 行目: ${message}`);
   }
@@ -459,6 +482,10 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const diagrams = buildDiagramOutputs(parsed, serviceIndex, { includeUnverified });
   add('diagram-index', 'diagram-index', diagrams.index);
   for (const scene of diagrams.scenes) add(`diagram:${scene.id}`, `diagrams/${scene.id}`, scene);
+  // 実物（表示用に整えたもの）。一覧は artifact-index、1 件ずつは artifact:<id>。図と同じ規則で絞る
+  const artifacts = buildArtifactOutputs(parsed, { includeUnverified });
+  add('artifact-index', 'artifact-index', artifacts.index);
+  for (const item of artifacts.items) add(`artifact:${item.id}`, `artifacts/${item.id}`, item);
   if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions));
 
   const out = [];
@@ -501,12 +528,14 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       catalogFactStatus: catalog?.counts.catalogFactStatus ?? { verified: 0, pending: 0 },
       diagrams: diagrams.scenes.length,
       diagramsExcluded: diagrams.excluded,
+      artifacts: artifacts.items.length,
+      artifactsExcluded: artifacts.excluded,
       courseUnits: parsed.course?.data.stages.reduce((total, stage) => total + stage.units.length, 0) ?? 0,
     },
     files: manifestFiles,
   };
   out.push({ rel: 'manifest.json', text: JSON.stringify(manifest, null, 2) });
-  return { files: out, manifest, warnings: diagrams.warnings };
+  return { files: out, manifest, warnings: excludedRefWarnings(parsed, { includeUnverified }) };
 }
 
 // ---------- 書き出し ----------

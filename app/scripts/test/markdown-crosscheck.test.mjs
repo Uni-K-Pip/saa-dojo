@@ -165,7 +165,7 @@ it.each([
   ['問い', check.replace('問いですか？', '# [図](&#35;/diagrams/dg-a)'), 2],
 ])('文字だけで表示する%sの図リンクは文字参照で書いても突き合わせが報告します', (part, markdown, line) => {
   expect(parseInlineChecks(markdown)).toMatchObject([{ problems: [] }]);
-  expect(crosscheckMarkdown(markdown)).toEqual([{ line, message: `${part}に図や画像、図へのリンクは書けません。` }]);
+  expect(crosscheckMarkdown(markdown)).toEqual([{ line, message: `${part}に図・実物・画像と、図や実物へのリンクは書けません。` }]);
 });
 
 it('確認を組み立て直した後の図の参照のずれを元の行で報告します', () => {

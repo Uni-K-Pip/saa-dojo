@@ -1,0 +1,198 @@
+/* 実物の表示。色は styles.css の変数で、明るい背景と暗い背景の両方に対応する。
+   強調は背景と左の線と番号の 3 つで示し、色だけに頼らない。 */
+.artifact .ar-body {
+  margin: 8px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.ar-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  padding: 6px 0;
+}
+
+.ar-line {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 0 10px;
+  border-left: 4px solid transparent;
+}
+
+.ar-code.numbered .ar-line {
+  grid-template-columns: 2.2em 1fr;
+}
+
+.ar-ln {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 0.6em;
+  user-select: none;
+}
+
+/* 長い行は折り返す（横にスクロールしない）。折り返した行も字下げをそろえる */
+.ar-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.ar-mark {
+  background: var(--tip-bg);
+  border-left-color: var(--primary);
+}
+
+.ar-num {
+  display: inline-block;
+  min-width: 1.5em;
+  margin-right: 0.4em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-family: system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.ar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ar-table th,
+.ar-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.ar-table thead th {
+  background: var(--surface-2);
+}
+
+.ar-table tbody tr {
+  border-left: 4px solid transparent;
+}
+
+.ar-table tbody tr.ar-mark {
+  border-left-color: var(--primary);
+}
+
+.ar-rowhead {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.ar-rowno {
+  margin-right: 0.4em;
+}
+
+/* 狭い画面では、行ごとに「列名: 値」を縦に並べる（強調した行が操作なしで見えるように） */
+@media (max-width: 520px) {
+  .ar-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .ar-table,
+  .ar-table tbody,
+  .ar-table tr,
+  .ar-table th,
+  .ar-table td {
+    display: block;
+  }
+  .ar-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    padding: 4px 0;
+  }
+  .ar-table th,
+  .ar-table td {
+    border-bottom: 0;
+    padding: 2px 10px;
+  }
+  .ar-rowhead {
+    width: auto;
+  }
+  .ar-rowhead::before {
+    content: '行 ';
+    color: var(--muted);
+  }
+  .ar-table td {
+    display: grid;
+    grid-template-columns: 7em 1fr;
+    gap: 0.5em;
+  }
+  .ar-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-weight: 600;
+  }
+}
+
+.ar-sub {
+  margin: 12px 0 4px;
+  font-weight: 700;
+}
+
+.ar-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ar-notes li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3em;
+  align-items: start;
+  margin: 0 0 8px;
+}
+
+.ar-where {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.ar-ask {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.ar-ask p {
+  margin: 0 0 6px;
+}
+
+.ar-ask summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.ar-ask details p {
+  margin-top: 6px;
+}
+
+.ar-ref {
+  margin: 16px 0;
+}
+
+.ar-ref figcaption {
+  font-weight: 600;
+}

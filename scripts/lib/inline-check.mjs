@@ -33,7 +33,7 @@ export function isInlineCheckBlockquote(node, check) {
 }
 
 function hasVisual(text) {
-  return text.includes('![') || /\]\([ \t\n]*<?#\/diagrams\//.test(text);
+  return text.includes('![') || /\]\([ \t\n]*<?#\/(?:diagrams|artifacts)\//.test(text);
 }
 
 function questionHasBlock(question) {
@@ -93,10 +93,10 @@ export function parseInlineChecks(markdown) {
     const options = matches.filter(Boolean).map(([, mark, text]) => ({ text, correct: mark.toLowerCase() === 'x' }));
     if (!question) problems.push('問いがありません。');
     if (questionBody.filter((value) => value.trim()).join('\n').trim().length > 120) problems.push('問いは 120 字までです。');
-    if (hasVisual(question) && questionHasBlock(question)) problems.push('問いに図や画像、図へのリンクは書けません。');
+    if (hasVisual(question) && questionHasBlock(question)) problems.push('問いに図・実物・画像と、図や実物へのリンクは書けません。');
     if (options.length < 2 || options.length > 4) problems.push('選択肢は 2〜4 個にしてください。');
     if (options.filter(({ correct }) => correct).length !== 1) problems.push('正解（[x]）は 1 個にしてください。');
-    if (options.some(({ text }) => hasVisual(text))) problems.push('選択肢に図や画像、図へのリンクは書けません。');
+    if (options.some(({ text }) => hasVisual(text))) problems.push('選択肢に図・実物・画像と、図や実物へのリンクは書けません。');
     if (!reason) problems.push('理由がありません。');
     if (first >= 0 && matches.slice(first, last + 1).some((match) => !match)) {
       problems.push('選択肢の並びの途中に別の行があります。');

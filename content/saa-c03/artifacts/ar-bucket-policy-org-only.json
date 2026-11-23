@@ -1,0 +1,34 @@
+{
+  "id": "ar-bucket-policy-org-only",
+  "kind": "bucket-policy",
+  "title": "組織の中のアカウントだけに読み取りを許すバケットポリシー",
+  "format": "json",
+  "document": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::example-bucket/*",
+        "Condition": {
+          "StringEquals": {
+            "aws:PrincipalOrgID": "o-exampleorgid"
+          }
+        }
+      }
+    ]
+  },
+  "notes": [
+    { "path": "Statement[0].Principal", "text": "Principal の * は「だれでも」ですが、この許可が当たるのは、下の Condition に合う要求だけです。" },
+    { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、組織 o-exampleorgid に属するときだけ許可します。アカウントを個別に並べずに済み、組織のアカウントが増減しても書き直しません。" },
+    { "path": "Statement[0].Action", "text": "許可する操作は、オブジェクトの読み取り（s3:GetObject）だけです。" }
+  ],
+  "ask": {
+    "text": "組織に属さないアカウントのロールは、このバケットのオブジェクトを読めますか？",
+    "answer": "読めません。Condition に合わないので、この文の許可は当たりません。ほかにどこからも許可されていなければ、暗黙的に拒否されます。"
+  },
+  "lessonRefs": ["lesson-basics-iam"],
+  "factRefs": ["iam.global-key-principalorgid"],
+  "createdBy": "v1"
+}

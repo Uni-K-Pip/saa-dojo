@@ -3,7 +3,7 @@
 // 構造の形はスキーマ（schema.mjs の DiagramSchema）で確かめたあとに、ここで意味を確かめる。
 import { DESIGN_WIDTH, layoutDiagram, layoutDiagramReport, textWidth } from './diagram-layout.mjs';
 import { checkKindDiagram, layoutKindDiagram, shapeBounds } from './diagram-kinds.mjs';
-import { diagramRefOf } from './diagram-refs.mjs';
+import { artifactRefOf, diagramRefOf, materialKindOf } from './diagram-refs.mjs';
 
 // ---------------------------------------------------------------- 語彙
 
@@ -421,19 +421,45 @@ function withoutDiagramCode(markdown) {
   ).join('');
 }
 
-export function parseDiagramRefs(markdown, { withLine = false } = {}) {
+/**
+ * 本文の図と実物の参照（#/diagrams/<id>、#/artifacts/<id>）を、コードの外から行単位の近似で拾います。
+ * 戻り値: [{ kind: 'diagram' | 'artifact', href, id?, step?, image?, block?, reference?, line? }]
+ *   id は形の正しい参照だけに付きます。image は画像の形（`![…](…)`）、block は画像だけの行
+ *   （表示ではその位置に図や実物を出す。ほかはリンクとして残る）、reference は参照形式の定義です。
+ */
+export function parseMaterialRefs(markdown, { withLine = false } = {}) {
   const text = withoutDiagramCode(markdown);
-  const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/diagrams\/[^<>\s]*)>|(#\/diagrams\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
-  const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/diagrams\/[^>\s]*)/gm;
-  const location = (index) => withLine ? { line: text.slice(0, index).split('\n').length } : {};
+  const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/(?:diagrams|artifacts)\/[^<>\s]*)>|(#\/(?:diagrams|artifacts)\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
+  const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/(?:diagrams|artifacts)\/[^>\s]*)/gm;
+  const lineOf = (index) => text.slice(0, index).split('\n').length;
+  const lines = text.split('\n');
+  const refOf = (kind, href) => (kind === 'diagram' ? diagramRefOf(href) : artifactRefOf(href));
   const refs = Array.from(text.matchAll(inline), (match) => {
     const href = match[1] ?? match[2];
-    return { href, ...diagramRefOf(href), ...location(match.index) };
+    const kind = materialKindOf(href);
+    const line = lineOf(match.index);
+    const image = match[0].startsWith('!');
+    // 引用の印を除いた行が、この画像だけなら、表示はその位置に図や実物を出します
+    const content = lines[line - 1].replace(/^(?: {0,3}>[ \t]?)+/, '').trim();
+    const block = image && content === match[0].trim();
+    return { kind, href, ...refOf(kind, href), image, block, ...(withLine ? { line } : {}) };
   });
   for (const match of text.matchAll(definitions)) {
-    refs.push({ href: match[1], reference: true, ...location(match.index) });
+    refs.push({ kind: materialKindOf(match[1]), href: match[1], reference: true, ...(withLine ? { line: lineOf(match.index) } : {}) });
   }
   return refs;
+}
+
+/** 本文の図の参照（parseMaterialRefs の図だけ。形は { href, id?, step?, reference?, line? }） */
+export function parseDiagramRefs(markdown, { withLine = false } = {}) {
+  return parseMaterialRefs(markdown, { withLine })
+    .filter((ref) => ref.kind === 'diagram')
+    .map(({ href, id, step, reference, line }) => ({
+      href,
+      ...(id === undefined ? {} : { id, step }),
+      ...(reference ? { reference } : {}),
+      ...(withLine ? { line } : {}),
+    }));
 }
 
 export function checkDiagramRefs({ texts, diagrams }) {

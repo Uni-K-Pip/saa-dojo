@@ -4,12 +4,12 @@ import { createElement } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
-import { loadDiagram } from '../content/loader';
-import type { DiagramScene } from '../content/types';
+import { loadArtifact, loadDiagram } from '../content/loader';
+import type { ArtifactData, DiagramScene } from '../content/types';
 import { hashString } from '../domain/rng';
 import { Markdown } from './Markdown';
 
-vi.mock('../content/loader', () => ({ loadDiagram: vi.fn() }));
+vi.mock('../content/loader', () => ({ loadDiagram: vi.fn(), loadArtifact: vi.fn() }));
 
 const html = (md: string) => renderToStaticMarkup(createElement(Markdown, null, md));
 
@@ -121,6 +121,41 @@ describe('Markdown の図の参照', () => {
     });
     await screen.findByRole('img', { name: scene.title });
     expect(screen.queryByText('未検証')).not.toBeInTheDocument();
+  });
+});
+
+describe('Markdown の実物の参照', () => {
+  const item: ArtifactData = {
+    id: 'ar-test', title: '実物の題です', kind: 'sg-rules', kindLabel: 'セキュリティグループのルール', format: 'text', status: 'pending',
+    lines: [{ indent: 0, text: '一行目の設定', marks: [1], starts: [1] }],
+    notes: [{ n: 1, text: '注目点の説明です。', where: '1 行目' }],
+  };
+
+  it('段落の画像 1 つを、その位置に実物として出します', async () => {
+    vi.mocked(loadArtifact).mockReturnValue(Promise.resolve(item));
+    await act(async () => {
+      render(createElement(Markdown, null, '本文です。\n\n![実物のキャプション](#/artifacts/ar-test)'));
+    });
+    expect(await screen.findByText('実物のキャプション')).toHaveProperty('tagName', 'FIGCAPTION');
+    expect(screen.getByRole('group', { name: 'セキュリティグループのルールの本体' })).toHaveTextContent('一行目の設定');
+    expect(screen.getByText('未検証')).toHaveClass('badge', 'pending');
+    expect(loadArtifact).toHaveBeenCalledWith('ar-test');
+  });
+
+  it('文の途中の実物の画像はリンクにします', () => {
+    render(createElement(Markdown, null, '次の ![設定を見る](#/artifacts/ar-test) を読みます。'));
+    expect(screen.getByRole('link', { name: '実物: 設定を見る' })).toHaveAttribute('href', '#/artifacts/ar-test');
+  });
+
+  it('実物がない（出力から除かれた）ときは、本文だけを表示します', async () => {
+    vi.mocked(loadArtifact).mockReturnValue(Promise.resolve(null));
+    await act(async () => {
+      render(createElement(Markdown, null, '本文です。\n\n![省かれた実物](#/artifacts/ar-missing)\n\n続きです。'));
+    });
+    expect(screen.getByText('本文です。')).toBeVisible();
+    expect(screen.getByText('続きです。')).toBeVisible();
+    expect(screen.queryByText('省かれた実物')).not.toBeInTheDocument();
+    expect(screen.queryByText('実物を読み込んでいます…')).not.toBeInTheDocument();
   });
 });
 
