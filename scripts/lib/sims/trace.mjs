@@ -93,6 +93,10 @@ export const RULES = {
     label: 'NAT ゲートウェイとセキュリティグループ', text: 'NAT ゲートウェイにはセキュリティグループを関連付けられません',
     factRef: 'nat-gateway.no-security-group', evidence: ['セキュリティグループを関連付けられない'],
   },
+  'nat-translate': {
+    label: 'NAT ゲートウェイの付け替え', text: 'NAT ゲートウェイは、インスタンスの送信元のプライベート IPv4 アドレスを NAT ゲートウェイのプライベート IPv4 アドレスに対応付け、パブリック NAT ゲートウェイでは、インターネットゲートウェイがそれを関連付けられた Elastic IP アドレスに対応付けます。応答の通信は、NAT ゲートウェイが元の送信元 IP アドレスに戻します',
+    factRef: 'nat-gateway.source-translation', evidence: ['NAT ゲートウェイのプライベート IPv4 アドレスに対応付ける', '関連付けられた Elastic IP アドレスに対応付ける', '元の送信元 IP アドレスに戻す'],
+  },
   'vpce-gateway': {
     label: 'ゲートウェイエンドポイント', text: 'ゲートウェイエンドポイントは、ルートテーブルのプレフィックスリストへのルートで、インターネットゲートウェイや NAT デバイスなしで S3 に接続します',
     factRef: 'vpc.gateway-endpoint-services', evidence: ['インターネットゲートウェイや NAT デバイスなしで接続', 'プレフィックスリストへのルート'],
@@ -454,7 +458,8 @@ export function run(config) {
     if (isNat(host)) use('nat-eip');
     const publicIp = publicIps.get(host.id);
     if (!publicIp) return stage('igw', 'igw', 'route', {}, 'no-public-ip');
-    use('igw-nat');
+    // NAT ゲートウェイから外へ出る行きは、NAT の事実が受け持つ（インターネットゲートウェイが Elastic IP アドレスに対応付ける）
+    use(isNat(host) && outbound && phase === 'forward' ? 'nat-translate' : 'igw-nat');
     if (!outbound && phase === 'forward') destination = publicIp;
     return stage('igw', 'igw', 'route', translate(outbound, outbound ? publicIp : host));
   }
@@ -462,6 +467,7 @@ export function run(config) {
   function natGate(host, peer) {
     use('nat-outbound', 'nat-no-sg');
     if (!peer) return stage('nat', host.id, 'no-sg', {}, 'nat-inbound');
+    use('nat-translate');
     return stage('nat', host.id, 'no-sg', translate(phase === 'forward', peer));
   }
 

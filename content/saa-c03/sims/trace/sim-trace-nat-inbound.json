@@ -152,7 +152,7 @@
   "explain": {
     "initial": "行きの途中までは進みますが、NAT ゲートウェイの段で止まります。{{rule:nat-outbound}}。インターネットから中の部品へ接続させたいときは、インターネット向けのロードバランサーをパブリックサブネットに置く構成を使います。",
     "toggles": {
-      "from-app": "アプリのサーバーから更新サーバーへ接続すると、NAT ゲートウェイを通って届きます。更新サーバーから見える送信元は、NAT ゲートウェイのアドレス {{out:seenSource}} です。応答は、内側から始めた通信の応答として戻ります。",
+      "from-app": "アプリのサーバーから更新サーバーへ接続すると、NAT ゲートウェイを通って届きます。更新サーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。{{rule:nat-translate}}。応答は、内側から始めた通信の応答として戻ります。",
       "direct-to-app": "アプリのサーバーへ直接送ると、パブリック IP アドレスがないので、インターネットゲートウェイの段で止まります。{{rule:igw-requirements}}。"
     }
   },
@@ -169,7 +169,8 @@
     "nat-gateway.no-security-group",
     "vpc.quota-sg-per-eni",
     "vpc.sg-stateful-allow-only",
-    "vpc.route-priority"
+    "vpc.route-priority",
+    "nat-gateway.source-translation"
   ],
   "lessonRefs": [
     "lesson-1.2-vpc-network-security",

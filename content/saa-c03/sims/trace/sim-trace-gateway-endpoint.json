@@ -210,7 +210,8 @@
     "nat-gateway.public-internet-route",
     "nat-gateway.public-elastic-ip",
     "nat-gateway.no-security-group",
-    "vpc-endpoints.gateway-route-association"
+    "vpc-endpoints.gateway-route-association",
+    "nat-gateway.source-translation"
   ],
   "lessonRefs": [
     "lesson-1.2-private-connectivity",

@@ -183,7 +183,7 @@
   "explain": {
     "initial": "{{rule:route-longest}}。192.0.2.80 には 0.0.0.0/0 と 192.0.2.0/24 の両方が当てはまり、範囲の狭い 192.0.2.0/24 のインターネットゲートウェイへのルートが選ばれます。アプリのサーバーにはパブリック IP アドレスがないので、インターネットゲートウェイの段で止まります。",
     "toggles": {
-      "remove-route": "足したルートを消すと、0.0.0.0/0 の NAT ゲートウェイへのルートだけが当てはまり、届きます。取引先のサーバーから見える送信元は、NAT ゲートウェイのアドレス {{out:seenSource}} です。",
+      "remove-route": "足したルートを消すと、0.0.0.0/0 の NAT ゲートウェイへのルートだけが当てはまり、届きます。取引先のサーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。{{rule:nat-translate}}。",
       "app-public-ip": "アプリにパブリック IP アドレスを付けると、条件がそろい、インターネットゲートウェイを通って届きます。取引先のサーバーから見える送信元は {{out:seenSource}} です。インターネットゲートウェイへのルートを持つので、アプリのサブネットはパブリックサブネットになります。",
       "other-dest": "宛先が 198.51.100.20 だと、足した 192.0.2.0/24 のルートには当てはまりません。0.0.0.0/0 の NAT ゲートウェイへのルートが使われ、届きます。"
     }
@@ -201,7 +201,8 @@
     "vpc.igw-basics",
     "nat-gateway.public-internet-route",
     "nat-gateway.public-elastic-ip",
-    "nat-gateway.no-security-group"
+    "nat-gateway.no-security-group",
+    "nat-gateway.source-translation"
   ],
   "lessonRefs": [
     "lesson-basics-ip-subnet-routing",

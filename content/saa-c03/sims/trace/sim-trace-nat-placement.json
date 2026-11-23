@@ -192,8 +192,8 @@
   "explain": {
     "initial": "アプリのサブネットのルートは NAT ゲートウェイへ向いているので、行きは NAT ゲートウェイまで進みます。止まるのは NAT ゲートウェイのサブネットのルートテーブルです。{{rule:nat-route-igw}}。このサブネットには local ルートしかなく、更新サーバーへの行き先がありません。",
     "toggles": {
-      "move-to-public": "NAT ゲートウェイを、インターネットゲートウェイへのルートがあるパブリックサブネットに置くと、更新サーバーまで届きます。更新サーバーから見える送信元は、NAT ゲートウェイのアドレス {{out:seenSource}} です。{{rule:nat-eip}}。",
-      "add-igw-route": "NAT のサブネットのルートテーブルにインターネットゲートウェイへのルートを足すと、更新サーバーまで届きます。このサブネットは、インターネットゲートウェイへのルートを持つので、パブリックサブネットになります。更新サーバーから見える送信元は {{out:seenSource}} です。"
+      "move-to-public": "NAT ゲートウェイを、インターネットゲートウェイへのルートがあるパブリックサブネットに置くと、更新サーバーまで届きます。更新サーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。{{rule:nat-translate}}。{{rule:nat-eip}}。",
+      "add-igw-route": "NAT のサブネットのルートテーブルにインターネットゲートウェイへのルートを足すと、更新サーバーまで届きます。このサブネットは、インターネットゲートウェイへのルートを持つので、パブリックサブネットになります。更新サーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。"
     }
   },
   "factRefs": [
@@ -210,7 +210,8 @@
     "vpc.nacl-stateless",
     "vpc.nacl-default-allow",
     "nat-gateway.outbound-connections",
-    "vpc.igw-basics"
+    "vpc.igw-basics",
+    "nat-gateway.source-translation"
   ],
   "lessonRefs": [
     "lesson-1.2-vpc-network-security",

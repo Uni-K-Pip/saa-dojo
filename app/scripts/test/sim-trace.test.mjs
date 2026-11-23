@@ -265,14 +265,16 @@ describe('行きと戻りの段', () => {
   });
 
   it('規則は実行した段に対応し、表の順で重複なく含まれます', () => {
-    expect(Object.keys(RULES)).toHaveLength(26);
+    expect(Object.keys(RULES)).toHaveLength(27);
     expect(trace(clientToAlb).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless',
       'nacl-default', 'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'address-match', 'trace-order']);
     expect(trace(appToUpdate, (config) => { config.securityGroups['sg-app'].outbound = []; }).rules)
       .toEqual(['sg-eni', 'sg-allow-only', 'subnet-kind', 'trace-order']);
     expect(trace(appToUpdate).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless', 'nacl-default',
       'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'nat-outbound', 'nat-route-igw', 'nat-eip',
-      'nat-no-sg', 'address-match', 'trace-order']);
+      'nat-no-sg', 'nat-translate', 'address-match', 'trace-order']);
+    // NAT ゲートウェイの付け替えは、付け替えた実行でだけ入る（外から NAT へは付け替える前に止まる）
+    expect(trace({ from: 'update', to: 'nat' }).rules).not.toContain('nat-translate');
     // 段の並びに含まれる AWS の動きは、その動きが効いた実行で、受け持つ規則が入る
     const internetStopped = trace(clientToAlb, (config) => setAcl(config, 'pub', { inbound: [] }));
     expect(internetStopped.output).toMatchObject({ stop: 'forward-nacl-in' });

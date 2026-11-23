@@ -48,6 +48,7 @@
 | `nat-route-igw` | NAT ゲートウェイでインターネットへ出るには、NAT ゲートウェイのサブネットのルートで、インターネットゲートウェイへ送る | 事実 `nat-gateway.public-internet-route` | `インターネットゲートウェイへトラフィックをルーティング` |
 | `nat-eip` | パブリック NAT ゲートウェイには Elastic IP アドレスを関連付ける（インターネットゲートウェイを通るときのパブリック IP アドレス） | 事実 `nat-gateway.public-elastic-ip` | `Elastic IP アドレスを関連付ける必要` |
 | `nat-no-sg` | NAT ゲートウェイにはセキュリティグループがない（NAT ゲートウェイの段では、セキュリティグループを見ない） | 事実 `nat-gateway.no-security-group` | `セキュリティグループを関連付けられない` |
+| `nat-translate` | NAT ゲートウェイは、インスタンスの送信元のプライベート IPv4 アドレスを NAT ゲートウェイのプライベート IPv4 アドレスに対応付け、パブリック NAT ゲートウェイでは、インターネットゲートウェイがそれを関連付けられた Elastic IP アドレスに対応付ける。応答は NAT ゲートウェイが元の送信元のアドレスに戻す | 事実 `nat-gateway.source-translation` | `NAT ゲートウェイのプライベート IPv4 アドレスに対応付ける`・`関連付けられた Elastic IP アドレスに対応付ける`・`元の送信元 IP アドレスに戻す` |
 | `vpce-gateway` | ゲートウェイエンドポイントは、ルートテーブルのプレフィックスリストへのルートで S3 へ運ぶ。インターネットゲートウェイ、NAT、パブリック IP アドレスは要らない | 事実 `vpc.gateway-endpoint-services` | `インターネットゲートウェイや NAT デバイスなしで接続`、`プレフィックスリストへのルート` |
 | `vpce-precedence` | ゲートウェイエンドポイントのルートがあれば、`0.0.0.0/0` が別の行き先でも、S3 宛てはエンドポイントの経路を使う | 事実 `vpc-endpoints.gateway-route-precedence` | `エンドポイントの経路が優先される` |
 | `s3-public-endpoint` | エンドポイントのルートのないサブネットの部品は、S3 の公開のサービスエンドポイントを使う（NAT ゲートウェイかインターネットゲートウェイを通り、インターネットの相手と同じ経路になる） | 事実 `vpc-endpoints.gateway-route-association` | `公開のサービスエンドポイントを使う` |
@@ -83,10 +84,10 @@
 | NAT ゲートウェイの段にセキュリティグループがない | `nat-no-sg` | NAT ゲートウェイの段 |
 | NAT ゲートウェイから先は NAT ゲートウェイのサブネットのルートを見る | `nat-route-igw` | 行きの NAT ゲートウェイのサブネットの `route` の段 |
 | インターネットゲートウェイでのアドレスの付け替え | `igw-nat` | インターネットゲートウェイの段を通ったとき |
-| NAT ゲートウェイでの送信元のアドレスの付け替えと戻し | **受け持つ事実がない**（3.3） | （今は `nat-outbound` が入る） |
+| NAT ゲートウェイでの送信元のアドレスの付け替えと戻し、NAT ゲートウェイから外へ出る行きのインターネットゲートウェイでの Elastic IP アドレスへの付け替え | `nat-translate` | NAT ゲートウェイの段で付け替えたとき、NAT ゲートウェイから外へ出る行きのインターネットゲートウェイの段 |
 | S3 宛てで、エンドポイントがなければ NAT かインターネットゲートウェイを通る | `s3-public-endpoint` | エンドポイントを通らない S3 宛ての実行 |
 | S3 宛てで、エンドポイントがあれば NAT もインターネットゲートウェイも通らない | `vpce-gateway`、`vpce-precedence` | エンドポイントを通ったとき |
-| 宛先から見える送信元（`seenSource`）が付け替えのあとのアドレス | `igw-nat`（と NAT ゲートウェイの付け替え） | 付け替えがあったとき |
+| 宛先から見える送信元（`seenSource`）が付け替えのあとのアドレス | `igw-nat`、NAT ゲートウェイを通るときは `nat-translate` | 付け替えがあったとき |
 
 ### 3.3 図鑑に事実のない規則（足す案）
 
@@ -96,7 +97,7 @@
 | `nacl-default` | レッスン `lesson-1.2-vpc-network-security` の表（「既定のネットワーク ACL はすべて許可」） | デフォルトのネットワーク ACL がすべての通信を許可すること。サブネットに明示的に関連付けなければデフォルトが使われること | 図鑑に事実 `vpc.nacl-default-allow` を足す。本文の案: 「VPC のデフォルトのネットワーク ACL は、すべてのインバウンドとアウトバウンドの IPv4 通信を許可する。サブネットにネットワーク ACL を明示的に関連付けなければ、デフォルトのネットワーク ACL が使われる。」 |
 
 - 2 件は、エンジンを作る前に、図鑑の手順（起草と検証を分ける）で足して検証しました（2026-11-24。どちらも検証済み）。規則の `evidence` は、`route-table` が `サブネットやゲートウェイから出る通信`・`local ルート`、`nacl-default` が `IPv4 通信をすべて許可`。
-- 段の並びの点検（3.2.1）で、NAT ゲートウェイが送信元のアドレスを自分のアドレスに付け替え、応答で元に戻すことを受け持つ事実がないとわかりました。案: 図鑑に事実 `nat-gateway.source-translation` を足し（本文の案「NAT ゲートウェイは、インスタンスの送信元 IP アドレスを NAT ゲートウェイの IP アドレスに置き換え、応答を返すときに元のアドレスに戻す」。公式の資料の NAT gateway basics）、規則 `nat-translate` で受け持つ。
+- 段の並びの点検（3.2.1）で、NAT ゲートウェイが送信元のアドレスを付け替え、応答で元に戻すことを受け持つ事実がないとわかりました。図鑑に事実 `nat-gateway.source-translation` を同じ手順で足して検証し（2026-11-24。公式の資料の NAT gateways のページ）、規則 `nat-translate` で受け持ちます。公式の資料の言い方では、NAT ゲートウェイが付け替える先は NAT ゲートウェイのプライベート IPv4 アドレスで、Elastic IP アドレスへはインターネットゲートウェイが対応付けます。エンジンの段もこの 2 段で付け替え、宛先から見える送信元（`seenSource`）は Elastic IP アドレスです。外から NAT ゲートウェイへ向かう通信と、応答がインターネットゲートウェイを通るときの付け替えは `igw-nat` が受け持ちます。
 - 足せなかったときの代わり: `nacl-default` は、シナリオの設定に「デフォルト」を書かず、すべてを許可するルールを明示する（画面の語も「すべて許可のルール」にする）。`route-table` は代わりがなく、シナリオ 8.1 の初期の設定（戻りで止まる）を、ルートのある設定に組み替える。
 
 ## 4. 操作の入力と出力
@@ -203,7 +204,7 @@ toggle は最上位の項目を 1 つだけ書き換える（`sims-design.md` 3.
 | `reason` | 4.3 の止まる理由 | 止まらなければ出さない | |
 | `forward`・`return` | `[{ gate, at, verdict, basis, rule?, route?, translate? }]` | 段の並び。`verdict` は `pass`・`stop`。`basis` は判定のよりどころ（`rule`（当たったルール）、`stateful`（応答として通す）、`default-out`（アウトバウンドの既定の許可）、`final-deny`、`no-sg`、`route`）。`rule` は当たったルールの表示用の値（ネットワーク ACL はルールの番号、セキュリティグループは何行目か）、`route` は使ったルール（`{ dest, target }`。local を含む）、`translate` は付け替え（`{ from, to }`）。行きで止まれば `return` は空 | `trace-order` ほか段ごと |
 | `routeTarget` | `local`・`igw`・`nat`・`vpce`・`none` | 送信元のサブネットのルートテーブルで選ばれた行き先（行きの最初の `route` の段）。`sg-out` か `nacl-out` で止まったときは出さない | `route-table`、`route-longest`、`vpce-precedence` |
-| `seenSource` | アドレス | 宛先から見えた送信元のアドレス（NAT ゲートウェイやインターネットゲートウェイで付け替えたあと）。行きが届いたときだけ | `igw-nat`、`nat-outbound` |
+| `seenSource` | アドレス | 宛先から見えた送信元のアドレス（NAT ゲートウェイやインターネットゲートウェイで付け替えたあと）。行きが届いたときだけ | `igw-nat`、`nat-translate` |
 | `subnetKinds` | `[{ subnet, kind }]` | 各サブネットの種類（`public`・`private`・`isolated`）。表示の札にだけ使う | `subnet-kind` |
 
 - `OUTPUT_KEYS.trace` の種類: `delivered` は真偽、`stop`・`reason`・`routeTarget` は決まった語（`enum`）、`stopAt` は決まった語ではない文字列（差し込めない種類にする）、`seenSource` はアドレス（`{{out:seenSource}}` で差し込める）、`forward`・`return`・`subnetKinds` は配列。
