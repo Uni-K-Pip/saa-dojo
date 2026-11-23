@@ -181,6 +181,25 @@ describe('checkDiagram', () => {
     expect(errors).toEqual([]);
     expect(warnings.map((w) => w.code)).toContain('diagram-side');
   });
+
+  it('見本 3 つは図の警告（diagram-overlap・diagram-crowded など）がない', () => {
+    const lessonIds = new Set(['lesson-3.4-vpc-design', 'lesson-2.2-ha-basics', 'lesson-2.2-disaster-recovery', LESSON]);
+    for (const f of ['dg-dr-pilot-light.json', 'dg-sns-sqs-fanout.json', 'dg-vpc-three-tier.json']) {
+      const d = readJson('diagrams', f);
+      expect(checkDiagram(d, { lessonIds, serviceIndex }).warnings, f).toEqual([]);
+    }
+  });
+
+  it('線が入れ物のラベルを横切り、避けられないときは diagram-overlap の警告', () => {
+    const d = base({
+      root: { dir: 'col', children: [{ id: 'user', node: 'actor' }, { id: 'grp', box: 'region', label: 'とても長い名前のリージョン', children: [{ id: 'fn', node: 'lambda' }] }] },
+      edges: [{ id: 'e1', from: 'user', to: 'fn' }],
+      steps: [],
+    });
+    const { errors, warnings } = checkDiagram(d, ctx);
+    expect(errors).toEqual([]);
+    expect(warnings).toContainEqual({ code: 'diagram-overlap', message: '線 e1 が、入れ物 grp のラベル「とても長い名前のリージョン」を横切るか、すぐそばを通ります' });
+  });
 });
 
 describe('checkDiagram: 段階ごとの見え方', () => {
