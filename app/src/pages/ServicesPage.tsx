@@ -1,6 +1,7 @@
 // サービス図鑑の一覧: 検索（?q=）、区分・タスク・未読の絞り込み、分類ごとのリスト
 import { use, useDeferredValue, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
+import { useSearchText } from '../state/useSearchText';
 import { loadBlueprint, loadCatalogIndex } from '../content/loader';
 import type { CatalogIndexService, CatalogTier } from '../content/types';
 import { catalogPath } from '../domain/catalog';
@@ -25,8 +26,7 @@ export default function ServicesPage() {
   const index = use(loadCatalogIndex());
   const blueprint = use(loadBlueprint());
   const { events } = useStudy();
-  const [params, setParams] = useSearchParams();
-  const query = params.get('q') ?? '';
+  const { text: query, setText: setQuery, update, params } = useSearchText();
   const deferred = useDeferredValue(query);
   const tiers = list(params, 'tier').map(Number).filter((n): n is CatalogTier => n === 1 || n === 2 || n === 3);
   const tasks = list(params, 'task');
@@ -34,14 +34,6 @@ export default function ServicesPage() {
   const read = useMemo(() => catalogReadMap(events), [events]);
 
   // 検索語と絞り込みは URL に持つ（詳細から戻っても同じ表示になる）
-  const update = (changes: Record<string, string | null>) => {
-    const next = new URLSearchParams(params);
-    for (const [k, v] of Object.entries(changes)) {
-      if (v) next.set(k, v);
-      else next.delete(k);
-    }
-    setParams(next, { replace: true });
-  };
   const toggle = <T extends string | number>(key: string, current: readonly T[], value: T) => {
     const set = new Set<T>(current);
     if (!set.delete(value)) set.add(value);
@@ -82,7 +74,7 @@ export default function ServicesPage() {
           <input
             type="search"
             value={query}
-            onChange={(e) => update({ q: e.target.value || null })}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="例: S3、Lambda、アクセスポイント"
             autoComplete="off"
           />
