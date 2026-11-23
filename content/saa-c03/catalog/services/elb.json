@@ -544,6 +544,21 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "elb.alb-https-target-group",
+      "title": "HTTPS のターゲットグループ",
+      "kind": "feature",
+      "text": "ALB のターゲットグループのプロトコルは HTTP か HTTPS である。HTTPS にすると、ロードバランサーは、ターゲットにインストールした証明書を使って、ターゲットとの間に TLS 接続を確立する。ロードバランサーはこの証明書を検証しないので、自己署名の証明書も使える。",
+      "examPoint": "ALB とターゲットの間の通信も TLS で保護するには、ターゲットグループのプロトコルを HTTPS にする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Target groups for your Application Load Balancers",
+          "url": "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
       "id": "elb.nlb-tls-vs-tcp",
       "title": "NLB の TLS リスナーと TCP リスナー",
       "kind": "feature",
@@ -885,5 +900,5 @@
   ],
   "createdBy": "sc8",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-23"
+  "updatedAt": "2026-11-24"
 }

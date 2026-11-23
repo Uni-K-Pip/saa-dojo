@@ -32,8 +32,8 @@
     },
     "dg-storage-choice": {
       "status": "verified",
-      "checkedAt": "2026-11-23",
-      "hash": "700b6002f077"
+      "checkedAt": "2026-11-24",
+      "hash": "b89c9a2a0adc"
     },
     "dg-vpc-build-up": {
       "status": "verified",
@@ -49,8 +49,8 @@
   "artifacts": {
     "ar-bucket-policy-org-only": {
       "status": "verified",
-      "checkedAt": "2026-11-23",
-      "hash": "049ce520b364"
+      "checkedAt": "2026-11-24",
+      "hash": "6022778e0c3f"
     },
     "ar-dns-records-alias-apex": {
       "status": "verified",
@@ -59,15 +59,20 @@
     },
     "ar-sg-rules-app-tier": {
       "status": "verified",
-      "checkedAt": "2026-11-23",
-      "hash": "bc22815edabd"
+      "checkedAt": "2026-11-24",
+      "hash": "396cf1266c46"
     }
   },
   "sims": {
     "sim-cidr-alb-subnet": {
       "status": "verified",
-      "checkedAt": "2026-11-23",
-      "hash": "28111139a654"
+      "checkedAt": "2026-11-24",
+      "hash": "adafbfc60b41"
+    },
+    "sim-cidr-peering-overlap": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "853779d6e3d6"
     },
     "sim-cidr-reserved-addresses": {
       "status": "verified",
@@ -88,8 +93,8 @@
   "labs": {
     "lab-vpc-from-scratch": {
       "status": "verified",
-      "checkedAt": "2026-11-23",
-      "hash": "762c100c3470"
+      "checkedAt": "2026-11-24",
+      "hash": "006509542ccf"
     }
   },
   "patterns": {
