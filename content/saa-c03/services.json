@@ -525,7 +525,7 @@
       "id": "direct-connect",
       "name": "AWS Direct Connect",
       "short": "DirectConnect",
-      "aliases": [],
+      "aliases": ["DX"],
       "category": "ネットワーキングとコンテンツ配信"
     },
     {
