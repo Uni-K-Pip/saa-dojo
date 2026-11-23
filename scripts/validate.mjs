@@ -27,11 +27,13 @@ import {
   CatalogStatusSchema,
   CatalogNeedsSchema,
   DiagramSchema,
+  MaterialStatusSchema,
 } from './lib/schema.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
 import { parseInlineChecks } from './lib/inline-check.mjs';
+import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
 import { CourseSchema, checkCourse as checkCourseData } from './lib/course.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -106,6 +108,7 @@ function classify(rel) {
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (rel === CATALOG_STATUS_FILE) return { kind: 'catalog-status' };
   if (rel === CATALOG_NEEDS_FILE) return { kind: 'catalog-needs' };
+  if (rel === MATERIAL_STATUS_FILE) return { kind: 'material-status' };
   if (p[0] === 'catalog' && n === 3 && ext === '.json') {
     if (p[1] === 'services') return { kind: 'catalog-entry', stem };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison', stem };
@@ -137,7 +140,7 @@ export const LAYOUT_HELP = [
   '  flashcards/<デッキ>.json   glossary/<名前>.json',
   '  cheatsheets/<id>.md   guides/<id>.md',
   '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
-  '  catalog-status.json / catalog-needs.json',
+  '  catalog-status.json / catalog-needs.json / material-status.json',
   '  diagrams/<dg-…>.json',
 ];
 
@@ -296,6 +299,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     glossaries: [], // { rel, data }
     diagrams: [], // { rel, data }（スキーマに通ったものだけ）
     reviewStatus: { present: false, data: null },
+    materialStatus: { present: false, data: null }, // 教材の検証状態（material-status.json）
     // サービス図鑑: { rel, data }（スキーマに通ったものだけ）。status・needs は存在の有無と中身
     catalog: {
       entries: [],
@@ -502,6 +506,12 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         content.catalog.status.present = true;
         const j = readJson(rel);
         if (j) content.catalog.status.data = validateWith(CatalogStatusSchema, j.value, rel);
+        break;
+      }
+      case 'material-status': {
+        content.materialStatus.present = true;
+        const j = readJson(rel);
+        if (j) content.materialStatus.data = validateWith(MaterialStatusSchema, j.value, rel);
         break;
       }
       case 'catalog-needs': {
@@ -966,6 +976,19 @@ function checkDiagrams(content) {
   }
 }
 
+// 教材の検証状態（scripts/lib/material-status.mjs。ビルドと同じ判定）。スキーマに通らなかったときは検査しない
+function checkMaterialStatusFile(content) {
+  const { report, materialStatus } = content;
+  if (materialStatus.present && !materialStatus.data) return;
+  const { issues, unverifiedRefs } = checkMaterialStatus({
+    statusFile: materialStatus.data,
+    diagrams: content.diagrams,
+    texts: [...content.lessons, ...content.docs],
+  });
+  for (const i of issues) report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
+  for (const ref of unverifiedRefs) report.warn('diagram-ref-unverified', ref.rel, unverifiedRefMessage(ref));
+}
+
 function checkInlineChecks(content) {
   const { report, lessons, docs } = content;
   function check({ rel, body }) {
@@ -1035,6 +1058,7 @@ export function checkContent(content) {
   checkCatalogNearDuplicates(content);
   checkCatalogModel(content);
   checkDiagrams(content);
+  checkMaterialStatusFile(content);
   checkInlineChecks(content);
   checkCourse(content);
   checkLongestCorrect(content);
@@ -1130,6 +1154,10 @@ const CODE_LABELS = {
   'correct-longest': '正解が最長に偏っている',
   diagram: '図の不整合',
   'diagram-ref': '図の参照の誤り',
+  'diagram-ref-unverified': '本文が検証済みでない図を指す',
+  'diagram-unreferenced': 'どこからも参照されていない検証済みの図',
+  'material-status-key': 'material-status の不明な id',
+  'material-stale-review': '検証後に内容が変わった図',
   'diagram-alt-short': '図の代替文が短い',
   'diagram-single-result': '選択フローの結論が 1 つだけ',
   'diagram-same-position': '位置づけ図の項目が同じ位置に重なる',

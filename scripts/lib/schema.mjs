@@ -590,3 +590,19 @@ export const LayersDiagramSchema = z.object({
 export const DiagramSchema = z.discriminatedUnion('type', [
   ArchitectureDiagramSchema, DecisionDiagramSchema, PositionDiagramSchema, TimelineDiagramSchema, LayersDiagramSchema,
 ]);
+
+// 教材の検証状態（content/saa-c03/material-status.json）。種類ごとの区分 → 教材の id → 記録。
+// 今の区分は diagrams（図）だけ。区分は省ける。知らない区分はエラーにする（区分を足すときはここに足す）。
+// hash は検証した時点の内容のハッシュ（scripts/lib/material-status.mjs の materialHash）
+const MaterialStatusRecordSchema = z
+  .object({
+    status: z.enum(REVIEW_STATUSES),
+    checkedAt: z.string().regex(DATE),
+    hash: z.string().regex(/^[0-9a-f]{12}$/),
+  })
+  .strict();
+export const MaterialStatusSchema = z
+  .object({
+    diagrams: z.record(z.string().regex(DIAGRAM_ID, { message: '図の id ではない' }), MaterialStatusRecordSchema).optional(),
+  })
+  .strict();

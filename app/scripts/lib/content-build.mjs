@@ -53,6 +53,7 @@ export function classify(rel) {
   if (rel === 'review-status.json') return { kind: 'review-status' };
   if (rel === 'catalog-status.json') return { kind: 'catalog-status' };
   if (rel === 'catalog-needs.json') return { kind: 'catalog-needs' };
+  if (rel === 'material-status.json') return { kind: 'material-status' };
   if (p[0] === 'catalog' && n === 3 && ext === '.json') {
     if (p[1] === 'services') return { kind: 'catalog-entry' };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison' };
@@ -111,6 +112,9 @@ export function parseContent(files, schema) {
     catalogNeeds: null,
     // 図（content/saa-c03/diagrams）。スキーマに通ったものだけ
     diagrams: [],
+    // 教材の検証状態（material-status.json）。なければ、どの図も未検証
+    materialStatus: null,
+    materialStatusPresent: false,
   };
 
   const validate = (s, value, rel) => {
@@ -168,6 +172,13 @@ export function parseContent(files, schema) {
         const j = json(rel, text);
         const data = j && schema.CatalogStatusSchema && validate(schema.CatalogStatusSchema, j.value, rel);
         if (data) parsed.catalogStatus = data;
+        break;
+      }
+      case 'material-status': {
+        parsed.materialStatusPresent = true;
+        const j = json(rel, text);
+        const data = j && schema.MaterialStatusSchema && validate(schema.MaterialStatusSchema, j.value, rel);
+        if (data) parsed.materialStatus = data;
         break;
       }
       case 'catalog-needs': {
@@ -349,7 +360,8 @@ const questionMeta = (q) => ({
   needsSourceCheck: q.needsSourceCheck,
 });
 
-export function buildOutputs(parsed, schema) {
+// includeUnverified: 未検証（pending）の図も出す（npm run dev 用。既定は出さない）
+export function buildOutputs(parsed, schema, { includeUnverified = false } = {}) {
   // services 欄を台帳の正規名に直す（重複は除き、順序は保つ）。台帳がなければ書かれた表記のまま出力する。
   // 試験範囲のサービスに解決できない表記は、そのまま残す（検出は validate の役目）。
   const serviceIndex = parsed.registry && parsed.blueprint ? buildServiceIndex(parsed.blueprint, parsed.registry) : null;
@@ -442,8 +454,9 @@ export function buildOutputs(parsed, schema) {
     for (const e of catalog.entries) add(`catalog:${e.id}`, `catalog/${e.id}`, e.data);
     add('catalog-compare', 'catalog-compare', catalog.comparisons);
   }
-  // 図（レイアウト済みの scene）。一覧は diagram-index、1 枚ずつは diagram:<id>
-  const diagrams = buildDiagramOutputs(parsed, serviceIndex);
+  // 図（レイアウト済みの scene）。一覧は diagram-index、1 枚ずつは diagram:<id>。
+  // 検証済みの図だけを出す（includeUnverified のときは未検証も）。needs-fix・rejected は出さない
+  const diagrams = buildDiagramOutputs(parsed, serviceIndex, { includeUnverified });
   add('diagram-index', 'diagram-index', diagrams.index);
   for (const scene of diagrams.scenes) add(`diagram:${scene.id}`, `diagrams/${scene.id}`, scene);
   if (parsed.course) add('course', 'course', buildCourseOutput(parsed, questions));
@@ -487,12 +500,13 @@ export function buildOutputs(parsed, schema) {
       comparisons: catalog?.counts.comparisons ?? 0,
       catalogFactStatus: catalog?.counts.catalogFactStatus ?? { verified: 0, pending: 0 },
       diagrams: diagrams.scenes.length,
+      diagramsExcluded: diagrams.excluded,
       courseUnits: parsed.course?.data.stages.reduce((total, stage) => total + stage.units.length, 0) ?? 0,
     },
     files: manifestFiles,
   };
   out.push({ rel: 'manifest.json', text: JSON.stringify(manifest, null, 2) });
-  return { files: out, manifest };
+  return { files: out, manifest, warnings: diagrams.warnings };
 }
 
 // ---------- 書き出し ----------
@@ -519,12 +533,12 @@ export function writeOutputs(outDir, built) {
   }
 }
 
-export function buildContent({ contentDir, outDir, schema }) {
+export function buildContent({ contentDir, outDir, schema, includeUnverified = false }) {
   const parsed = parseContent(readContentFiles(contentDir), schema);
   if (parsed.errors.length > 0 || !parsed.blueprint) {
     return { ok: false, errors: parsed.errors, warnings: parsed.warnings, manifest: null };
   }
-  const built = buildOutputs(parsed, schema);
+  const built = buildOutputs(parsed, schema, { includeUnverified });
   writeOutputs(outDir, built);
-  return { ok: true, errors: [], warnings: parsed.warnings, manifest: built.manifest };
+  return { ok: true, errors: [], warnings: [...parsed.warnings, ...built.warnings], manifest: built.manifest };
 }

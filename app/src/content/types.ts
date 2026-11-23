@@ -186,8 +186,10 @@ export interface Manifest {
     catalogFacts?: number;
     comparisons?: number;
     catalogFactStatus?: { verified: number; pending: number };
-    /** 図の枚数（古いデータにはない） */
+    /** 出した図の枚数（古いデータにはない） */
     diagrams?: number;
+    /** 出力から除いた図の枚数（状態ごと。未検証は --include-unverified のビルドでだけ出す。古いデータにはない） */
+    diagramsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
   };
   files: Record<string, ManifestFile>;
 }

@@ -69,7 +69,7 @@ describe('Markdown の図の参照', () => {
     expect(screen.getByRole('img', { name: '別の画像' })).toHaveAttribute('src', 'example.png');
   });
 
-  it('図がなければ本文だけを表示します', async () => {
+  it('図がない（ビルドが未検証・要修正・却下の図を出力から除いた）ときは、本文だけを表示します', async () => {
     const missing = Promise.resolve(null);
     vi.mocked(loadDiagram).mockReturnValue(missing);
     await act(async () => {
@@ -112,6 +112,15 @@ describe('Markdown の図の参照', () => {
     });
     await screen.findByRole('img', { name: scene.title });
     expect(screen.getByText('未検証')).toHaveClass('badge', 'pending');
+  });
+
+  it('検証済みの図には札を出しません', async () => {
+    vi.mocked(loadDiagram).mockReturnValue(Promise.resolve({ ...scene, status: 'verified' }));
+    await act(async () => {
+      render(createElement(Markdown, null, '![図](#/diagrams/dg-test)'));
+    });
+    await screen.findByRole('img', { name: scene.title });
+    expect(screen.queryByText('未検証')).not.toBeInTheDocument();
   });
 });
 

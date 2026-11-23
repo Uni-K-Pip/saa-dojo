@@ -739,7 +739,8 @@ function layoutTree(tree, diagram, warn) {
  *   boxes: [{ id, kind, label, x, y, w, h, depth, parent, tag }],
  *   nodes: [{ id, kind, category, short, label, x, y, w, h, parent, tag }]（tag は状態の札の矩形か null）,
  *   edges: [{ id, kind, from, to, both, points, label, labelAt, labelBox }],
- *   steps: [{ text, focus, edges, reveal, marks, badgeAt }], status }
+ *   steps: [{ text, focus, edges, reveal, marks, badgeAt }] }
+ * 検証状態（status）は含めない（アプリのビルドが material-status.json から足す）
  */
 export function layoutDiagramReport(diagram, { serviceIndex = null } = {}) {
   const warnings = [];
@@ -767,7 +768,6 @@ export function layoutDiagramReport(diagram, { serviceIndex = null } = {}) {
     nodes: [],
     edges: [],
     steps: [],
-    status: 'pending',
   };
   forEachEl(tree, (el) => {
     if (el.type === 'box') scene.boxes.push({ id: el.id, kind: el.kind, label: el.label, x: el.x, y: el.y, w: el.w, h: el.h, depth: el.depth, parent: el.parentBox, tag: null });

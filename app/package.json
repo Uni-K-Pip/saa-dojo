@@ -9,7 +9,7 @@
   },
   "scripts": {
     "content": "node scripts/build-content.mjs",
-    "dev": "npm run content && vite",
+    "dev": "node scripts/build-content.mjs --include-unverified && vite",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "build": "npm run content && npm run typecheck && vite build",
     "preview": "vite preview",

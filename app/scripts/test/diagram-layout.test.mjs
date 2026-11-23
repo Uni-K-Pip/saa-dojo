@@ -117,7 +117,8 @@ describe.each(SAMPLES)('%s', (id) => {
   it('段階の数と番号の位置がそろっている', () => {
     expect(scene.steps).toHaveLength(diagram.steps.length);
     for (const s of scene.steps) expect(s.badgeAt).not.toBeNull();
-    expect(scene.status).toBe('pending');
+    // 検証状態はレイアウトでは決めない（ビルドが material-status.json から足す）
+    expect(scene).not.toHaveProperty('status');
   });
 });
 
