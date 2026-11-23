@@ -1,0 +1,179 @@
+{
+  "id": "sim-trace-nat-inbound",
+  "title": "NAT ゲートウェイ越しに中へ入れるか",
+  "intro": "3 層の VPC で、アプリのサーバーはプライベートサブネットにあり、外へは NAT ゲートウェイ（203.0.113.20）を通ります。社外の担当者が、インターネット（198.51.100.7）から NAT ゲートウェイのアドレスの 443 へ接続して、アプリのサーバーに届けようとしています。",
+  "predict": {
+    "text": "この接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "アプリのサーバーに届く",
+        "value": "none"
+      },
+      {
+        "text": "NAT ゲートウェイが通さない",
+        "value": "forward-nat"
+      },
+      {
+        "text": "インターネットゲートウェイで止まる",
+        "value": "forward-igw"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "cidr": "10.0.2.0/24",
+        "routeTable": "rt-app",
+        "nacl": "acl-default"
+      },
+      {
+        "id": "pub",
+        "label": "パブリック",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-pub",
+        "nacl": "acl-default"
+      }
+    ],
+    "routeTables": {
+      "rt-app": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "nat:nat"
+        }
+      ],
+      "rt-pub": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-default": "default"
+    },
+    "securityGroups": {
+      "sg-app": {
+        "inbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.10",
+        "sg": "sg-app"
+      },
+      {
+        "id": "nat",
+        "label": "NAT",
+        "kind": "nat-gateway",
+        "subnet": "pub",
+        "ip": "10.0.1.20"
+      }
+    ],
+    "publicIps": {
+      "nat": "203.0.113.20"
+    },
+    "externals": [
+      {
+        "id": "client",
+        "label": "クライアント",
+        "kind": "internet",
+        "ip": "198.51.100.7"
+      },
+      {
+        "id": "update",
+        "label": "更新サーバー",
+        "kind": "internet",
+        "ip": "192.0.2.80"
+      }
+    ],
+    "flow": {
+      "from": "client",
+      "to": "nat",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "from-app",
+      "label": "アプリから更新サーバーへ送る",
+      "set": {
+        "flow": {
+          "from": "app",
+          "to": "update",
+          "port": 443,
+          "clientPort": 50000
+        }
+      }
+    },
+    {
+      "id": "direct-to-app",
+      "label": "アプリのサーバーへ直接送る",
+      "set": {
+        "flow": {
+          "from": "client",
+          "to": "app",
+          "port": 443,
+          "clientPort": 50000
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "forward-nat",
+      "reason": "nat-inbound"
+    },
+    "toggles": {
+      "from-app": {
+        "delivered": true,
+        "stop": "none",
+        "seenSource": "203.0.113.20"
+      },
+      "direct-to-app": {
+        "stop": "forward-igw",
+        "reason": "no-public-ip"
+      }
+    }
+  },
+  "explain": {
+    "initial": "行きの途中までは進みますが、NAT ゲートウェイの段で止まります。{{rule:nat-outbound}}。インターネットから中の部品へ接続させたいときは、インターネット向けのロードバランサーをパブリックサブネットに置く構成を使います。",
+    "toggles": {
+      "from-app": "アプリのサーバーから更新サーバーへ接続すると、NAT ゲートウェイを通って届きます。更新サーバーから見える送信元は、NAT ゲートウェイのアドレス {{out:seenSource}} です。応答は、内側から始めた通信の応答として戻ります。",
+      "direct-to-app": "アプリのサーバーへ直接送ると、パブリック IP アドレスがないので、インターネットゲートウェイの段で止まります。{{rule:igw-requirements}}。"
+    }
+  },
+  "factRefs": [
+    "nat-gateway.outbound-connections",
+    "vpc.igw-requirements",
+    "vpc.igw-basics",
+    "nat-gateway.public-internet-route",
+    "nat-gateway.public-elastic-ip",
+    "vpc.route-table-local",
+    "vpc.nacl-stateless",
+    "vpc.nacl-default-allow",
+    "vpc.subnet-types",
+    "nat-gateway.no-security-group",
+    "vpc.quota-sg-per-eni",
+    "vpc.sg-stateful-allow-only",
+    "vpc.route-priority"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v6"
+}

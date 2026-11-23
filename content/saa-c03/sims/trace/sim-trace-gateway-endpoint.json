@@ -1,0 +1,221 @@
+{
+  "id": "sim-trace-gateway-endpoint",
+  "title": "S3 への通信はどこを通るか",
+  "intro": "アプリのサーバーから S3 へ 443 で接続します。アプリのサブネットのルートテーブルには、0.0.0.0/0 を NAT ゲートウェイへ向けるルートと、S3 のプレフィックスリストをゲートウェイエンドポイントへ向けるルートの 2 つがあります。セキュリティグループのアウトバウンドは、作成直後のまま（すべて許可）です。",
+  "predict": {
+    "text": "S3 への通信は、どの経路で運ばれますか。",
+    "key": "routeTarget",
+    "choices": [
+      {
+        "text": "NAT ゲートウェイ",
+        "value": "nat"
+      },
+      {
+        "text": "ゲートウェイエンドポイント",
+        "value": "vpce"
+      },
+      {
+        "text": "インターネットゲートウェイ",
+        "value": "igw"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "cidr": "10.0.2.0/24",
+        "routeTable": "rt-app",
+        "nacl": "acl-app"
+      },
+      {
+        "id": "pub",
+        "label": "パブリック",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-pub",
+        "nacl": "acl-default"
+      }
+    ],
+    "routeTables": {
+      "rt-app": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "nat:nat"
+        },
+        {
+          "dest": "pl-s3",
+          "target": "vpce-s3"
+        }
+      ],
+      "rt-pub": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-default": "default",
+      "acl-app": "default"
+    },
+    "securityGroups": {
+      "sg-app": {
+        "inbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.10",
+        "sg": "sg-app"
+      },
+      {
+        "id": "nat",
+        "label": "NAT",
+        "kind": "nat-gateway",
+        "subnet": "pub",
+        "ip": "10.0.1.20"
+      }
+    ],
+    "publicIps": {
+      "nat": "203.0.113.20"
+    },
+    "externals": [
+      {
+        "id": "s3",
+        "label": "S3",
+        "kind": "s3"
+      }
+    ],
+    "flow": {
+      "from": "app",
+      "to": "s3",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "remove-endpoint-route",
+      "label": "エンドポイントのルートを消す",
+      "set": {
+        "routeTables": {
+          "rt-app": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "nat:nat"
+            }
+          ],
+          "rt-pub": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sg-vpc-only",
+      "label": "アウトバウンドを VPC の中だけにする",
+      "set": {
+        "securityGroups": {
+          "sg-app": {
+            "inbound": [],
+            "outbound": [
+              {
+                "ports": "all",
+                "peer": "10.0.0.0/16"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "nacl-deny-any",
+      "label": "ネットワーク ACL で 0.0.0.0/0 を拒否",
+      "set": {
+        "nacls": {
+          "acl-default": "default",
+          "acl-app": {
+            "inbound": [],
+            "outbound": [
+              {
+                "rule": 100,
+                "action": "deny",
+                "ports": "all",
+                "cidr": "0.0.0.0/0"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": true,
+      "stop": "none",
+      "routeTarget": "vpce"
+    },
+    "toggles": {
+      "remove-endpoint-route": {
+        "delivered": true,
+        "stop": "none",
+        "routeTarget": "nat"
+      },
+      "sg-vpc-only": {
+        "stop": "forward-sg-out",
+        "reason": "sg-no-match"
+      },
+      "nacl-deny-any": {
+        "stop": "forward-nacl-out",
+        "reason": "nacl-deny"
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:vpce-precedence}}。このルートテーブルでは 0.0.0.0/0 が NAT ゲートウェイへ向いていますが、S3 宛てはエンドポイントのルートで運ばれます。{{rule:vpce-sg-nacl}}。ここでは許可があるので通ります。",
+    "toggles": {
+      "remove-endpoint-route": "エンドポイントのルートを消すと、S3 宛ての通信は 0.0.0.0/0 の NAT ゲートウェイへのルートで運ばれ、NAT ゲートウェイとインターネットゲートウェイを通って届きます。",
+      "sg-vpc-only": "アウトバウンドを VPC の中だけにすると、S3 宛ての通信はどのルールにも当てはまらず、セキュリティグループの段で止まります。{{rule:vpce-sg-nacl}}。",
+      "nacl-deny-any": "アウトバウンドのルール 100 が 0.0.0.0/0 を拒否するので、ルートより前のネットワーク ACL の段で止まります。{{rule:nacl-no-prefix-list}}。このシミュレーターでは、S3 宛てには 0.0.0.0/0 のルールだけを当てはめます。"
+    }
+  },
+  "factRefs": [
+    "vpc.gateway-endpoint-services",
+    "vpc-endpoints.gateway-route-precedence",
+    "vpc-endpoints.gateway-sg-nacl",
+    "vpc.nacl-no-prefix-list",
+    "vpc.route-priority",
+    "vpc.route-table-local",
+    "vpc.quota-sg-per-eni",
+    "vpc.sg-stateful-allow-only",
+    "vpc.nacl-stateless",
+    "vpc.nacl-default-allow",
+    "vpc.subnet-types",
+    "vpc.igw-requirements",
+    "vpc.igw-basics",
+    "nat-gateway.outbound-connections",
+    "nat-gateway.public-internet-route",
+    "nat-gateway.public-elastic-ip",
+    "nat-gateway.no-security-group",
+    "vpc-endpoints.gateway-route-association"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-private-connectivity",
+    "lesson-basics-ip-subnet-routing",
+    "lesson-1.2-vpc-network-security"
+  ],
+  "createdBy": "v6"
+}

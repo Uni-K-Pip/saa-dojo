@@ -1,0 +1,268 @@
+{
+  "id": "sim-trace-nacl-ephemeral",
+  "title": "443 だけを許可したネットワーク ACL",
+  "intro": "ウェブサーバーのサブネットに、カスタムのネットワーク ACL を付けました。インバウンドはルール 100 で TCP 443 を 0.0.0.0/0 から許可し、アウトバウンドもルール 100 で TCP 443 を 0.0.0.0/0 へ許可しています。クライアントは、送信元のポート 50000 から 443 へ接続します。",
+  "predict": {
+    "text": "このクライアントからの接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "届く（応答も返る）",
+        "value": "none"
+      },
+      {
+        "text": "行きのネットワーク ACL で止まる",
+        "value": "forward-nacl-in"
+      },
+      {
+        "text": "戻りのネットワーク ACL で止まる",
+        "value": "return-nacl-out"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-web",
+        "nacl": "acl-web"
+      }
+    ],
+    "routeTables": {
+      "rt-web": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-web": {
+        "inbound": [
+          {
+            "rule": 100,
+            "action": "allow",
+            "ports": {
+              "from": 443,
+              "to": 443
+            },
+            "cidr": "0.0.0.0/0"
+          }
+        ],
+        "outbound": [
+          {
+            "rule": 100,
+            "action": "allow",
+            "ports": {
+              "from": 443,
+              "to": 443
+            },
+            "cidr": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "securityGroups": {
+      "sg-web": {
+        "inbound": [
+          {
+            "ports": {
+              "from": 443,
+              "to": 443
+            },
+            "peer": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "hosts": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "kind": "instance",
+        "subnet": "web",
+        "ip": "10.0.1.10",
+        "sg": "sg-web"
+      }
+    ],
+    "publicIps": {
+      "web": "203.0.113.10"
+    },
+    "externals": [
+      {
+        "id": "client",
+        "label": "クライアント",
+        "kind": "internet",
+        "ip": "198.51.100.7"
+      }
+    ],
+    "flow": {
+      "from": "client",
+      "to": "web",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "allow-ephemeral",
+      "label": "戻りに 1024-65535 を許可",
+      "set": {
+        "nacls": {
+          "acl-web": {
+            "inbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 443,
+                  "to": 443
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ],
+            "outbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 1024,
+                  "to": 65535
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "deny-first",
+      "label": "拒否を先に置く",
+      "set": {
+        "nacls": {
+          "acl-web": {
+            "inbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 443,
+                  "to": 443
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ],
+            "outbound": [
+              {
+                "rule": 90,
+                "action": "deny",
+                "ports": "all",
+                "cidr": "0.0.0.0/0"
+              },
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 1024,
+                  "to": 65535
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "deny-last",
+      "label": "拒否を後ろに置く",
+      "set": {
+        "nacls": {
+          "acl-web": {
+            "inbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 443,
+                  "to": 443
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ],
+            "outbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 1024,
+                  "to": 65535
+                },
+                "cidr": "0.0.0.0/0"
+              },
+              {
+                "rule": 200,
+                "action": "deny",
+                "ports": "all",
+                "cidr": "0.0.0.0/0"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "return-nacl-out",
+      "reason": "nacl-no-match"
+    },
+    "toggles": {
+      "allow-ephemeral": {
+        "delivered": true,
+        "stop": "none"
+      },
+      "deny-first": {
+        "stop": "return-nacl-out",
+        "reason": "nacl-deny"
+      },
+      "deny-last": {
+        "delivered": true,
+        "stop": "none"
+      }
+    }
+  },
+  "explain": {
+    "initial": "行きは宛先のポート 443 なので通ります。応答はクライアントのポート 50000 宛てで、アウトバウンドのルール 100 は 443 だけを許可しているため当てはまりません。{{rule:nacl-stateless}}。{{rule:nacl-final-deny}}。",
+    "toggles": {
+      "allow-ephemeral": "アウトバウンドのルール 100 を 1024 から 65535 の許可にすると、クライアントのポート 50000 に当てはまり、応答が通ります。1024〜65535 を許可するのが実用的な範囲であることは、レッスンで確かめられます。",
+      "deny-first": "番号の小さいルール 90 が、すべての通信を拒否します。{{rule:nacl-order}}。応答はルール 90 に先に当たって拒否され、ルール 100 の許可には届きません。",
+      "deny-last": "ルール 100 の許可が先に当たるので、ルール 200 の拒否は使われません。{{rule:nacl-order}}。応答は通ります。"
+    }
+  },
+  "factRefs": [
+    "vpc.nacl-stateless",
+    "vpc.nacl-custom-default-deny",
+    "vpc.sg-stateful-allow-only",
+    "vpc.igw-requirements",
+    "vpc.route-table-local",
+    "vpc.quota-sg-per-eni",
+    "vpc.subnet-types",
+    "vpc.igw-basics",
+    "vpc.route-priority"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v6"
+}
