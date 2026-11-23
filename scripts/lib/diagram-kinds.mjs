@@ -293,7 +293,9 @@ function layoutTimeline(diagram, warnings) {
 }
 
 // 層の図の行の注記（1 行、文字の大きさ 10）
-const LAYER_NOTE_H = 14;
+const LAYER_NOTE_H = 16; // 上の行のセルの下端から次の行のセルの上端まで（ベースラインは上から LAYER_NOTE_BASE）
+const LAYER_NOTE_BASE = 11;
+const LAYER_NOTE_MARK_W = 13; // 「※ 」の描く幅（「※」は日本語のフォントで 1 文字分。WIDE_CHAR には入れない）
 const layerNoteText = (note) => `※ ${note}`;
 const layerNoteMaxW = () => DESIGN_WIDTH - 2 * MARGIN - 8; // 読み込みの順で DESIGN_WIDTH がまだないことがあるので、使うときに求める
 
@@ -321,7 +323,7 @@ function layoutLayers(diagram) {
     y += h;
     // 行の注記: 行のすぐ下に 1 行（次の行との間）
     if (row.note) {
-      shapes.push(text(MARGIN + 4, y + LAYER_NOTE_H - 4, layerNoteText(row.note), 'dg-c-muted'));
+      shapes.push(text(MARGIN + 4, y + LAYER_NOTE_BASE, layerNoteText(row.note), 'dg-c-muted'));
       y += LAYER_NOTE_H;
     }
   }
@@ -484,7 +486,7 @@ function checkLayers(diagram, errors) {
   if (keys.size < 1 || keys.size > 3) errors.push('legend のキーは 1〜3 個にしてください。');
   diagram.rows.forEach(({ label, cells, note }, i) => {
     if (note) {
-      const w = Math.ceil(textWidth(layerNoteText(note), 10));
+      const w = Math.ceil(LAYER_NOTE_MARK_W + textWidth(note, 10));
       if (w > layerNoteMaxW()) errors.push(`rows[${i}]（${label}）.note: 注記が 1 行に収まりません（幅 ${w}、上限 ${layerNoteMaxW()}）。短くしてください。`);
     }
     const where = `rows[${i}]（${label}）.cells`;

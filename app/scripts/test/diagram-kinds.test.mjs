@@ -302,7 +302,7 @@ describe('層の図', () => {
     const notes = scene.shapes.filter(({ cls }) => cls === 'dg-c-muted');
     expect(notes).toHaveLength(1);
     expect(notes[0].lines).toEqual(['※ 関数では実行環境を AWS が用意します']);
-    expect(scene.height).toBe(plain.height + 14);
+    expect(scene.height).toBe(plain.height + 16);
     // 注記は 1 行目のセルの下、2 行目のセルの上
     const cells = scene.shapes.filter(({ cls }) => cls.startsWith('dg-c-cell-') && cls !== 'dg-c-cell-text');
     expect(notes[0].y).toBeGreaterThan(cells[0].y + cells[0].h);
@@ -318,7 +318,8 @@ describe('層の図', () => {
     // 31 字はスキーマで止まる。幅の検査は、文字の幅の見積もりが変わったときの備え
     d.rows[0].note = 'あ'.repeat(31);
     expect(DiagramSchema.safeParse(d).success).toBe(false);
-    expect(errorsOf(d)).toContain('rows[0]（アプリ）.note: 注記が 1 行に収まりません');
+    // 「※ 」は 13 として数える（全角 31 字で 13 + 310）
+    expect(errorsOf(d)).toContain('rows[0]（アプリ）.note: 注記が 1 行に収まりません（幅 323、上限 316）');
   });
 });
 
