@@ -193,6 +193,10 @@ export interface Manifest {
     /** 出した実物の件数と、除いた件数（状態ごと。古いデータにはない） */
     artifacts?: number;
     artifactsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    labs?: number;
+    labsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    patterns?: number;
+    patternsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
   };
   files: Record<string, ManifestFile>;
 }
@@ -517,4 +521,30 @@ export interface ArtifactData extends ArtifactIndexEntry {
   columns?: string[];
   rows?: ArtifactRow[];
   ask?: { text: string; answer: string };
+}
+
+interface ReadingMaterialMeta {
+  id: string;
+  title: string;
+  order: number;
+  knowledgeRefs: string[];
+  services: string[];
+  diagram: string;
+  status: DiagramStatus;
+  questionIds: string[];
+}
+
+export interface LabMeta extends ReadingMaterialMeta {
+  unit: string;
+  estimatedMinutes: number;
+}
+
+export interface PatternMeta extends ReadingMaterialMeta {
+  taskStatements: string[];
+  qualifiers: Exclude<Qualifier, 'other'>[];
+}
+
+export interface MaterialBody {
+  id: string;
+  body: string;
 }

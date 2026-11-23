@@ -73,6 +73,17 @@ export interface LessonReadEvent extends EventBase {
   lessonId: string;
 }
 
+// ミニラボ・設計パターンの読了は合格準備度には使わない。
+export interface LabReadEvent extends EventBase {
+  type: 'lab-read';
+  labId: string;
+}
+
+export interface PatternReadEvent extends EventBase {
+  type: 'pattern-read';
+  patternId: string;
+}
+
 /** 合格準備度と復習の予定には使わない（設計書 7 章、決定 L-7） */
 export interface CheckAnswerEvent extends EventBase {
   type: 'check-answer';
@@ -111,6 +122,8 @@ export type AppEvent =
   | SettingEvent
   | MockResultEvent
   | LessonReadEvent
+  | LabReadEvent
+  | PatternReadEvent
   | CheckAnswerEvent
   | CatalogReadEvent
   | CourseCheckEvent

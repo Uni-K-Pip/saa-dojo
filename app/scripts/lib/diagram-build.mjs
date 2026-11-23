@@ -3,9 +3,10 @@
 // 検証状態は scripts/lib/material-status.mjs（material-status.json）。設計は docs/visual-materials-design.md の 4章・11.1・12.2。
 import { checkDiagram, checkDiagramRefs, diagramRefIndex, layoutAnyDiagram } from '../../../scripts/lib/diagram.mjs';
 import { diagramStatuses, selectMaterials } from '../../../scripts/lib/material-status.mjs';
+import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
 
 const stemOf = (rel) => rel.split('/').pop().replace(/\.json$/, '');
-const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs];
+const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)];
 
 /**
  * 図の検査（"ファイル: メッセージ" の文字列）。エラーがあればビルドを止める。

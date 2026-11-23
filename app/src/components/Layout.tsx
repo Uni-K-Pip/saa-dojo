@@ -1,5 +1,6 @@
-import { Suspense, type ReactNode } from 'react';
+import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
+import { loadManifest } from '../content/loader';
 import { ErrorBoundary } from './ErrorBoundary';
 
 export interface NavItem {
@@ -7,6 +8,8 @@ export interface NavItem {
   label: string;
   icon: string;
   group: string;
+  /** 出力に 1 件以上あるときだけ出す教材（manifest の件数で判定） */
+  whenAny?: 'labs' | 'patterns';
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -14,6 +17,8 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/course', label: '学習コース', icon: '🧭', group: '学ぶ' },
   { to: '/basics', label: '基礎講座', icon: '🔰', group: '学ぶ' },
   { to: '/roadmap', label: 'ロードマップ', icon: '🗺', group: '学ぶ' },
+  { to: '/labs', label: 'ミニラボ', icon: '🧪', group: '学ぶ', whenAny: 'labs' },
+  { to: '/patterns', label: '設計パターン', icon: '🧩', group: '学ぶ', whenAny: 'patterns' },
   { to: '/practice', label: '演習', icon: '✎', group: '解く' },
   { to: '/mock', label: '模擬試験', icon: '⏱', group: '解く' },
   { to: '/review', label: '復習', icon: '↻', group: '解く' },
@@ -28,6 +33,19 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/about', label: 'このアプリについて', icon: 'ℹ', group: 'その他' },
 ];
 
+/** 件数で出し分ける項目を除いたメニュー。manifest が読めないあいだは出さない */
+export function useNavItems(): NavItem[] {
+  const [counts, setCounts] = useState<Partial<Record<'labs' | 'patterns', number>>>({});
+  useEffect(() => {
+    let alive = true;
+    loadManifest()
+      .then((m) => { if (alive) setCounts({ labs: m.counts.labs ?? 0, patterns: m.counts.patterns ?? 0 }); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  return NAV_ITEMS.filter((i) => !i.whenAny || (counts[i.whenAny] ?? 0) > 0);
+}
+
 const BOTTOM: { to: string; label: string; icon: string }[] = [
   { to: '/', label: 'ホーム', icon: '⌂' },
   { to: '/course', label: '学ぶ', icon: '🧭' },
@@ -37,9 +55,10 @@ const BOTTOM: { to: string; label: string; icon: string }[] = [
 ];
 
 function SideNav() {
+  const navItems = useNavItems();
   let lastGroup = '';
   const items: ReactNode[] = [];
-  for (const item of NAV_ITEMS) {
+  for (const item of navItems) {
     if (item.group && item.group !== lastGroup) {
       items.push(
         <li key={`g-${item.group}`} className="nav-group" aria-hidden="true">

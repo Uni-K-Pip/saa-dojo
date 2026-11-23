@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
 import { materialKindOf } from '../../../scripts/lib/diagram-refs.mjs';
 import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { headingsInSection, parseSections } from '../../../scripts/lib/lab-pattern.mjs';
 
 const parser = unified().use(remarkParse).use(remarkGfm);
 
@@ -155,4 +156,29 @@ export function crosscheckMarkdown(markdown) {
   const tree = parser.runSync(parser.parse(markdown));
   const { converted, differences } = inspectInlineChecks(markdown, tree);
   return [...differences, ...diagramRefDifferences(markdown, tree, converted)].sort((a, b) => a.line - b.line);
+}
+
+/** 固定の見出しとミニラボの手順を、表示と同じ解析で確かめます。 */
+export function crosscheckSections(markdown, { lab }) {
+  const expected = parseSections(markdown);
+  const displayed = [];
+  walk(parser.runSync(parser.parse(markdown)), (node) => {
+    if (node.type === 'heading') {
+      displayed.push({ depth: node.depth, title: textOf(node).trim(), line: node.position.start.line });
+    }
+  });
+  const relevant = (headings) => [
+    ...headings.filter(({ depth }) => depth === 2),
+    ...(lab ? headingsInSection(headings, '手順').filter(({ depth }) => depth === 3) : []),
+  ].sort((a, b) => a.line - b.line);
+  const left = relevant(expected);
+  const right = relevant(displayed);
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const a = left[i];
+    const b = right[i];
+    if (a?.line !== b?.line || a?.depth !== b?.depth || (a?.depth === 2 && a.title !== b?.title)) {
+      return { line: Math.min(a?.line ?? Infinity, b?.line ?? Infinity), message: '見出しを、検査と表示で違って読んでいます。見出しは行頭に ## または ### を付けて書いてください。' };
+    }
+  }
+  return null;
 }

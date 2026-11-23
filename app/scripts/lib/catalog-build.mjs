@@ -35,7 +35,7 @@ export function checkCatalogForBuild(parsed, serviceIndex) {
     lessonIds: new Set(parsed.lessons.map((l) => l.data.id)),
     docIds: new Set(parsed.docs.map((d) => d.data.id)),
     questions: parsed.questions.map((q) => ({ file: q.rel, data: q.data })),
-    markdown: [...parsed.lessons, ...parsed.docs].map((m) => ({ file: m.rel, text: m.body })),
+    markdown: [...parsed.lessons, ...parsed.docs, ...parsed.labs, ...parsed.patterns].map((m) => ({ file: m.rel, text: m.body })),
     status: parsed.catalogStatusPresent ? parsed.catalogStatus : null,
     statusFile: 'catalog-status.json',
     needs: parsed.catalogNeeds ? { file: parsed.catalogNeeds.rel, data: parsed.catalogNeeds.data } : null,
