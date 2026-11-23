@@ -82,11 +82,11 @@ export const RULES = {
     factRef: 'nat-gateway.outbound-connections', evidence: ['外部サービスから、そのインスタンスへの接続を開始することはできない'],
   },
   'nat-route-igw': {
-    label: 'NAT ゲートウェイから先のルート', text: 'NAT ゲートウェイでインターネットへ出るには、NAT ゲートウェイからインターネットゲートウェイへ通信をルーティングします',
+    label: 'NAT ゲートウェイから先のルート', text: 'パブリック NAT ゲートウェイでプライベートサブネットからインターネットへ接続するには、NAT ゲートウェイから VPC のインターネットゲートウェイへ通信をルーティングします',
     factRef: 'nat-gateway.public-internet-route', evidence: ['インターネットゲートウェイへトラフィックをルーティング'],
   },
   'nat-eip': {
-    label: 'NAT ゲートウェイの Elastic IP アドレス', text: 'パブリック NAT ゲートウェイには Elastic IP アドレスを関連付ける必要があります',
+    label: 'NAT ゲートウェイの Elastic IP アドレス', text: 'ゾーン型のパブリック NAT ゲートウェイを作成するときは、Elastic IP アドレスを関連付ける必要があります',
     factRef: 'nat-gateway.public-elastic-ip', evidence: ['Elastic IP アドレスを関連付ける必要'],
   },
   'nat-no-sg': {
