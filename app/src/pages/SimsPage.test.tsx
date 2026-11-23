@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NOT_COVERED, run, type SplitConfig } from '../../../scripts/lib/sims/cidr.mjs';
+import { buildPresetConfig, DESCRIPTION as TRACE_DESCRIPTION, NOT_COVERED as TRACE_NOT_COVERED } from '../../../scripts/lib/sims/trace.mjs';
 import { CidrResult } from '../sims/cidr/CidrResult';
 import type { SimIndexEntry, SimScenario } from '../content/types';
 import { appendEvent, getAllEvents, mergeEvents } from '../db/repo';
@@ -37,9 +38,45 @@ const entry: SimIndexEntry = {
   scenarios: [{ id, title: scenario.title, status: scenario.status }],
 };
 
+const traceId = 'sim-trace-nacl-ephemeral';
+const traceConfig = buildPresetConfig({ appNacl: 'https' });
+const traceScenario: SimScenario = {
+  id: traceId,
+  sim: 'trace',
+  title: '443 だけを許可したネットワーク ACL',
+  status: 'pending',
+  intro: 'アプリから S3 に接続し、応答が戻るかを確かめます。',
+  predict: {
+    key: 'stop', text: '通信はどこで止まりますか。',
+    choices: [{ text: '戻りのネットワーク ACL', value: 'return-nacl-in' }, { text: '行きも戻りも通る', value: 'none' }],
+  },
+  config: traceConfig,
+  toggles: [
+    {
+      id: 'rename-subnet', label: 'アプリのサブネットの名前を変える',
+      set: { subnets: traceConfig.subnets.map((subnet) => subnet.id === 'app' ? { ...subnet, label: 'アプリのサブネット' } : subnet) },
+    },
+    {
+      id: 'allow-return', label: '応答のポートを許可する',
+      set: { nacls: buildPresetConfig({ appNacl: 'ephemeral' }).nacls },
+    },
+  ],
+  explain: {
+    initial: 'ネットワーク ACL では戻りにも許可が要ります。',
+    toggles: { 'rename-subnet': 'サブネットの名前が変わりました。', 'allow-return': '応答も通ります。' },
+  },
+  references: [{ href: '#/lessons/lesson-1.2-vpc-network-security', title: 'VPC のネットワークセキュリティ' }],
+};
+const traceEntry: SimIndexEntry = {
+  id: 'trace', name: 'VPC の通信の追跡', description: TRACE_DESCRIPTION,
+  notCovered: TRACE_NOT_COVERED,
+  scenarios: [{ id: traceId, title: traceScenario.title, status: traceScenario.status }],
+};
+
 const files = (entries: SimIndexEntry[] = [entry]) => makeContentFiles([], {
   'sim-index': entries,
-  ...(entries.length ? { [`sim:${id}`]: scenario } : {}),
+  ...(entries.some(({ id }) => id === 'cidr') ? { [`sim:${id}`]: scenario } : {}),
+  ...(entries.some(({ id }) => id === 'trace') ? { [`sim:${traceId}`]: traceScenario } : {}),
 });
 
 describe('シミュレーターの画面', () => {
@@ -50,6 +87,7 @@ describe('シミュレーターの画面', () => {
   it.each([
     ['/sims', 'シミュレーター', '表示できるシミュレーターはまだありません。'],
     ['/sims/cidr', 'CIDR とサブネット', '表示できるシナリオはまだありません。'],
+    ['/sims/trace', 'VPC の通信の追跡', '表示できるシナリオはまだありません。'],
     [`/sims/cidr/${id}`, '見つかりません', /まだ検証が済んでいないシナリオ/],
   ])('0 件で %s を開く', async (path, heading, message) => {
     useFakeContent(files([]));
@@ -141,6 +179,65 @@ describe('シミュレーターの画面', () => {
     renderApp('/sims/cidr');
     expect(await screen.findByRole('link', { name: scenario.title })).toBeVisible();
     expect(screen.queryByText(/実行済み/)).toBeNull();
+  });
+
+  it('trace の予想と実行を表示し、設定を変えた結果を読み上げて記録する', async () => {
+    const user = userEvent.setup();
+    useFakeContent(files([traceEntry]));
+    renderApp(`/sims/trace/${traceId}`);
+    const execute = await screen.findByRole('button', { name: '実行する' });
+    expect(execute).toBeDisabled();
+    expect(screen.getByRole('heading', { name: traceScenario.title })).toBeVisible();
+    await user.click(screen.getByRole('button', { name: '戻りのネットワーク ACL' }));
+    await user.click(execute);
+    expect(screen.getByRole('heading', { name: '結果' })).toHaveFocus();
+    expect(screen.getByText('予想どおり', { exact: false, selector: '.badge' })).toBeVisible();
+    expect(screen.getByText('戻りのネットワーク ACL（アプリ）で止まりました', { selector: '.trace-summary strong' })).toBeVisible();
+    expect(screen.getByText('ネットワーク ACL では戻りにも許可が要ります。')).toBeVisible();
+
+    const live = document.querySelector('.sim-flow [aria-live="polite"]');
+    await user.click(screen.getByRole('button', { name: 'アプリのサブネットの名前を変える' }));
+    expect(live).toHaveTextContent('戻りのネットワーク ACL（アプリのサブネット）で止まりました');
+    expect(screen.getByText('戻りのネットワーク ACL（アプリのサブネット）で止まりました', { selector: '.trace-summary strong' })).toBeVisible();
+    await user.click(screen.getByRole('button', { name: '応答のポートを許可する' }));
+    expect(screen.getByRole('heading', { name: '最初の結果' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: '変更した結果' })).toBeVisible();
+    expect(screen.getByText('届きました（行きと戻り）', { selector: '.trace-summary strong' })).toBeVisible();
+    expect(screen.getByText('応答も通ります。')).toBeVisible();
+
+    await waitFor(async () => {
+      const events = await getAllEvents();
+      expect(events).toHaveLength(3);
+      expect(events).toEqual(expect.arrayContaining([
+        expect.objectContaining({ sim: 'trace', scenarioId: traceId, run: 'initial', choice: 1, correct: true }),
+        expect.objectContaining({ sim: 'trace', scenarioId: traceId, run: 'rename-subnet' }),
+        expect.objectContaining({ sim: 'trace', scenarioId: traceId, run: 'allow-return' }),
+      ]));
+    });
+  });
+
+  it('trace の自由に試すで結果と入力エラーを表示し、記録しない', async () => {
+    const user = userEvent.setup();
+    useFakeContent(files([entry, traceEntry]));
+    renderApp('/sims/trace');
+    const controls = within(await screen.findByRole('region', { name: '自由に試す' }));
+    expect(screen.getByRole('link', { name: traceScenario.title })).toHaveAttribute('href', `/sims/trace/${traceId}`);
+    expect(screen.getByRole('link', { name: 'VPC どうしの接続' })).toHaveAttribute('href', '/lessons/lesson-3.4-hybrid-and-multi-vpc');
+    expect(controls.getByText('届きました（行きと戻り）', { selector: '.trace-summary strong' })).toBeVisible();
+    expect(controls.getAllByRole('combobox')).toHaveLength(10);
+
+    const nacl = controls.getByRole('combobox', { name: 'アプリのサブネットのネットワーク ACL' });
+    await user.selectOptions(nacl, 'https');
+    expect(controls.getByText('戻りのネットワーク ACL（アプリ）で止まりました', { selector: '.trace-summary strong' })).toBeVisible();
+    const destination = controls.getByRole('combobox', { name: '宛先' });
+    await user.selectOptions(destination, 'app');
+    expect(controls.getByRole('alert')).toHaveTextContent('送信元と宛先には別の相手を指定してください。');
+    expect(controls.queryByRole('heading', { name: '行き' })).toBeNull();
+    await user.selectOptions(destination, 's3');
+    await user.selectOptions(nacl, 'ephemeral');
+    expect(controls.queryByRole('alert')).toBeNull();
+    expect(controls.getByText('届きました（行きと戻り）', { selector: '.trace-summary strong' })).toBeVisible();
+    expect(await getAllEvents()).toEqual([]);
   });
 
   it('自由に試すで 3 つの操作と入力エラーを表示し、記録しない', async () => {

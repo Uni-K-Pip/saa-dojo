@@ -6,9 +6,26 @@ import { compareEvents, type SimRunEvent } from '../domain/events';
 import { useStudy } from '../state/study';
 import './SimsPage.css';
 
-const CidrScenario = lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrScenario })));
-const CidrExplore = lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrExplore })));
-const CidrLimitations = lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrLimitations })));
+const simulators = {
+  cidr: {
+    name: 'CIDR とサブネット',
+    Scenario: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrScenario }))),
+    Explore: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrExplore }))),
+    Limitations: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrLimitations }))),
+  },
+  trace: {
+    name: 'VPC の通信の追跡',
+    Scenario: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceScenario }))),
+    Explore: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceExplore }))),
+    Limitations: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceLimitations }))),
+  },
+};
+
+type Simulator = (typeof simulators)[keyof typeof simulators];
+
+function getSimulator(id: string): Simulator | undefined {
+  return Object.hasOwn(simulators, id) ? simulators[id as keyof typeof simulators] : undefined;
+}
 
 export default function SimsPage() {
   const entries = use(loadSimIndex()).filter(({ scenarios }) => scenarios.length);
@@ -67,14 +84,16 @@ function ScenarioList({ entry }: { entry: SimIndexEntry }) {
 export function SimulatorPage() {
   const { sim = '' } = useParams();
   const entry = use(loadSimIndex()).find(({ id, scenarios }) => id === sim && scenarios.length > 0);
-  if (sim !== 'cidr') return <SimNotFound id={sim} />;
+  const simulator = getSimulator(sim);
+  if (!simulator) return <SimNotFound id={sim} />;
   if (!entry) return (
     <article className="sim">
-      <h1>CIDR とサブネット</h1>
+      <h1>{simulator.name}</h1>
       <p>表示できるシナリオはまだありません。</p>
       <Link to="/sims">シミュレーターの一覧へ</Link>
     </article>
   );
+  const { Explore, Limitations } = simulator;
   return (
     <article className="sim">
       <Link to="/sims">シミュレーターの一覧</Link>
@@ -82,13 +101,13 @@ export function SimulatorPage() {
       <p>{entry.description}</p>
       <section className="card">
         <h2>このシミュレーターが扱わないこと</h2>
-        <CidrLimitations lines={entry.notCovered} />
+        <Limitations lines={entry.notCovered} />
       </section>
       <section className="card">
         <h2>シナリオ</h2>
         <ScenarioList entry={entry} />
       </section>
-      <CidrExplore key={sim} />
+      <Explore key={sim} />
     </article>
   );
 }
@@ -96,12 +115,13 @@ export function SimulatorPage() {
 export function SimScenarioPage() {
   const { sim = '', id = '' } = useParams();
   const entry = use(loadSimIndex()).find((entry) => entry.id === sim && entry.scenarios.some((scenario) => scenario.id === id));
-  if (sim !== 'cidr' || !entry) return <SimNotFound id={id} parent={sim === 'cidr' ? sim : undefined} />;
-  return <ScenarioContent key={id} entry={entry} id={id} />;
+  const simulator = getSimulator(sim);
+  if (!simulator || !entry) return <SimNotFound id={id} parent={simulator ? sim : undefined} />;
+  return <ScenarioContent key={id} entry={entry} id={id} Scenario={simulator.Scenario} />;
 }
 
-function ScenarioContent({ entry, id }: { entry: SimIndexEntry; id: string }) {
+function ScenarioContent({ entry, id, Scenario }: { entry: SimIndexEntry; id: string; Scenario: Simulator['Scenario'] }) {
   const scenario = use(loadSim(id));
   if (!scenario || scenario.sim !== entry.id) return <SimNotFound id={id} parent={entry.id} />;
-  return <CidrScenario entry={entry} scenario={scenario} />;
+  return <Scenario entry={entry} scenario={scenario} />;
 }
