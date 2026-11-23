@@ -6,7 +6,7 @@
   "lessonRefs": [
     "lesson-4.1-s3-storage-classes"
   ],
-  "factRefs": [],
+  "factRefs": ["s3.lifecycle"],
   "createdBy": "v2",
   "ticks": [
     {

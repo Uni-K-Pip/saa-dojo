@@ -40,7 +40,7 @@
     {
       "id": "lake-formation",
       "name": "AWS Lake Formation",
-      "short": "Lake Form.",
+      "short": "LakeFormation",
       "aliases": [],
       "category": "分析"
     },
@@ -108,7 +108,7 @@
     {
       "id": "step-functions",
       "name": "AWS Step Functions",
-      "short": "Step Fn",
+      "short": "StepFunctions",
       "aliases": [],
       "category": "アプリケーション統合"
     },
@@ -524,7 +524,7 @@
     {
       "id": "direct-connect",
       "name": "AWS Direct Connect",
-      "short": "DX",
+      "short": "DirectConnect",
       "aliases": [],
       "category": "ネットワーキングとコンテンツ配信"
     },

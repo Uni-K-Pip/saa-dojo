@@ -123,9 +123,10 @@
       "id": "r-efs",
       "result": "Amazon EFS",
       "service": "efs",
-      "why": "Linux 向けの共有ファイルシステムです。容量が自動で増減し、リージョン型なら複数の AZ のサーバーから使えます。",
+      "why": "Linux 向けの共有ファイルシステムです。容量が自動で増減し、リージョン型ならデータを複数の AZ に保存します。",
       "factRefs": [
-        "efs.elastic-capacity"
+        "efs.elastic-capacity",
+        "efs.regional-resilience"
       ]
     }
   ]
