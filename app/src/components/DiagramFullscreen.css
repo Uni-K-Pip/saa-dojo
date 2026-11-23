@@ -32,12 +32,13 @@
 .dg-dialog-header h2 { margin: 0; }
 .dg-dialog-header button { flex-shrink: 0; }
 
-/* 幅いっぱいに描き、高さが足りないときは dialog の中を縦にスクロールする（縮めて文字を小さくしない） */
+/* 幅いっぱいに描き、高さが足りないときは dialog の中を縦にスクロールする（縮めて文字を小さくしない）。
+   広い画面で大きくなりすぎないよう、設計の大きさの 2 倍で止めて中央に置く */
 .dg-dialog { overflow-y: auto; }
 
 .dg-svg.dg-svg--full {
   width: 100%;
-  max-width: none;
+  max-width: calc(var(--dg-w, 328) * 2px);
   max-height: none;
 }
 

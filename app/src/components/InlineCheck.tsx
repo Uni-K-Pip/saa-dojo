@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ComponentProps } from 'react';
+import { createContext, useContext, useRef, useState, type ComponentProps } from 'react';
 import type { ExtraProps } from 'react-markdown';
 import './InlineCheck.css';
 
@@ -15,6 +15,7 @@ const CheckContext = createContext<{
 export function InlineCheck({ node, children, className, ...props }: ComponentProps<'section'> & ExtraProps) {
   const onAnswer = useContext(CheckAnswerContext);
   const [selected, setSelected] = useState<number | null>(null);
+  const section = useRef<HTMLElement>(null);
   const checkId = node?.properties.dataCheckId;
   const correctChoice = node?.properties.dataCorrectChoice;
   if (typeof checkId !== 'string' || typeof correctChoice !== 'number') {
@@ -25,9 +26,14 @@ export function InlineCheck({ node, children, className, ...props }: ComponentPr
     setSelected(choice);
     onAnswer?.({ checkId, choice, correct: choice === correctChoice });
   };
+  // 「もう一度」のボタンは消えるので、フォーカスを最初の選択肢へ移す
+  const reset = () => {
+    setSelected(null);
+    section.current?.querySelector<HTMLButtonElement>('.inline-check-option')?.focus();
+  };
   return (
-    <CheckContext.Provider value={{ selected, correctChoice, select, reset: () => setSelected(null) }}>
-      <section className={className} aria-label="その場の確認">{children}</section>
+    <CheckContext.Provider value={{ selected, correctChoice, select, reset }}>
+      <section ref={section} className={className} aria-label="その場の確認">{children}</section>
     </CheckContext.Provider>
   );
 }
@@ -39,7 +45,8 @@ export function InlineCheckOption({ node, children, ...props }: ComponentProps<'
   const answered = check.selected !== null;
   return (
     <li data-choice={choice}>
-      <button type="button" className="btn inline-check-option" disabled={answered} onClick={() => check.select(choice)}>
+      {/* disabled にすると、押したボタンからフォーカスが外れて本文の位置を失うので aria-disabled にする */}
+      <button type="button" className="btn inline-check-option" aria-disabled={answered || undefined} onClick={() => check.select(choice)}>
         {children}
         {check.selected === choice && <span className="badge">あなたの答え</span>}
         {answered && check.correctChoice === choice && <span className="badge ok">正解</span>}

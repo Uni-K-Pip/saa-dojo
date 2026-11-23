@@ -102,6 +102,15 @@ describe('Markdown の図の参照', () => {
     expect(screen.getByText('図の内容を文章で読む').tagName).toBe('SUMMARY');
     expect(screen.getByText(scene.alt).closest('details')).not.toBeNull();
   });
+
+  it('検証済みでない図には、本文の中でも「未検証」の札を出します', async () => {
+    vi.mocked(loadDiagram).mockReturnValue(Promise.resolve(scene));
+    await act(async () => {
+      render(createElement(Markdown, null, '![図](#/diagrams/dg-test)'));
+    });
+    await screen.findByRole('img', { name: scene.title });
+    expect(screen.getByText('未検証')).toHaveClass('badge', 'pending');
+  });
 });
 
 describe('Markdown のその場の確認', () => {
@@ -129,20 +138,25 @@ describe('Markdown のその場の確認', () => {
     expect(check.getByText('正解')).toBeVisible();
     expect(check.getByText('不正解です。')).toBeVisible();
     expect(check.getByText('保存する仕組みがあるからです。')).toBeVisible();
-    expect(check.getByRole('button', { name: /できません/ })).toBeDisabled();
-    expect(check.getByRole('button', { name: /^できます/ })).toBeDisabled();
+    // 押したボタンはフォーカスを持ったまま、もう押せない（aria-disabled）
+    expect(check.getByRole('button', { name: /できません/ })).toHaveFocus();
+    expect(check.getByRole('button', { name: /できません/ })).toHaveAttribute('aria-disabled', 'true');
+    expect(check.getByRole('button', { name: /^できます/ })).toHaveAttribute('aria-disabled', 'true');
+    await user.click(check.getByRole('button', { name: /^できます/ }));
+    expect(onCheckAnswer).toHaveBeenCalledTimes(1);
     expect(onCheckAnswer).toHaveBeenNthCalledWith(1, { checkId: 'c5e320e13', choice: 1, correct: false });
     rerender(createElement(Markdown, { onCheckAnswer: (a) => onCheckAnswer(a), children: example }));
     expect(check.getByText('不正解です。')).toBeVisible();
     await user.click(check.getByRole('button', { name: 'もう一度' }));
     expect(check.queryByText('保存する仕組みがあるからです。')).not.toBeInTheDocument();
+    expect(check.getByRole('button', { name: 'できません' })).toHaveFocus();
     await user.click(check.getByRole('button', { name: 'できます' }));
     expect(check.getByText('正解です。')).toBeVisible();
     expect(onCheckAnswer).toHaveBeenNthCalledWith(2, { checkId: 'c5e320e13', choice: 2, correct: true });
     unmount();
     render(createElement(Markdown, { onCheckAnswer, children: example }));
     expect(screen.queryByText('正解です。')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'できます' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'できます' })).not.toHaveAttribute('aria-disabled');
   });
 
   it.each([

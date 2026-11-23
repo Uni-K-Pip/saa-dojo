@@ -19,5 +19,5 @@
   text-align: start;
 }
 
-.inline-check-option:disabled { opacity: 1; }
+.btn.inline-check-option[aria-disabled='true'] { opacity: 1; cursor: default; }
 .inline-check-reason p { margin-block: 0.4rem; }

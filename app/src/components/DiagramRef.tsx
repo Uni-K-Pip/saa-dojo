@@ -22,6 +22,8 @@ function LoadedDiagram({ id, step, caption }: Props) {
   if (!scene) return null;
   return (
     <>
+      {/* /diagrams の画面と同じく、検証済みでない図には札を出す */}
+      {scene.status === 'pending' && <p className="meta-row"><span className="badge pending">未検証</span></p>}
       <DiagramView key={id} scene={scene} step={step} caption={caption} altId={altId} />
       <details className="dg-alt">
         <summary>図の内容を文章で読む</summary>
