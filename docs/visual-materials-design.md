@@ -678,9 +678,9 @@ W8（2026-11-23）で置いた細部です。どれも設計者の既定で、�
 | W8 | ミニラボと設計パターン（スキーマ、validate、画面）。**済み**（2026-11-23。8.3 と 9.2 の終わり。見本はミニラボ 1 つと設計パターン 1 つ。作った時点では未検証で、今はどちらも検証済み。学習コースのユニットに入れている） | `schema.mjs`、`scripts/lib/lab-pattern.mjs`、`app/src/pages/` | W3、W5 |
 | W9 | coverage の拡張（11.4）と `coverage-lists.json`。**済み**（2026-11-24。集計は `scripts/lib/coverage-materials.mjs`、一覧のスキーマと付録の読み取りは `scripts/lib/coverage-lists.mjs`。説明は content-guide 9・14 章）。暗記カードは事実を指す欄がなく、今は図鑑の core の到達と想起に含めていない。演習問題の対応（一覧の `questionRefs`、または問題の側に欄を足すか）と、暗記カードを数えるかは、まだ決まっていない（問題の量産の前に決める。今の `questionRefs` は仮の入れ物） | `scripts/coverage.mjs`、`scripts/lib/` | W1、W5、W8 |
 | W10 | シミュレーターの共通の枠（予想 → 実行 → 理由、`expect` との一致のテスト、記録）。**済み**（2026-11-23。`sims-design.md`。学習コースのユニットにシナリオを並べるのも済み） | `scripts/lib/sims/`、`scripts/lib/sim.mjs`、`app/src/sims/` | W3 |
-| W11〜W16 | シミュレーター 6 つ（Sim3 → Sim2 → Sim1 → Sim5 → Sim6 → Sim4 の順。小さいものから）。**W11（Sim3）は済み**（2026-11-23。`sim-cidr-design.md`。シナリオ 5 件。作った時点ではどれも未検証で、今は 5 件とも検証済み（2026-11-24）） | `app/src/sims/`、`content/saa-c03/sims/` | W10 |
+| W11〜W16 | シミュレーター 6 つ（Sim3 → Sim2 → Sim1 → Sim5 → Sim6 → Sim4 の順。小さいものから）。**W11（Sim3）は済み**（2026-11-23。`sim-cidr-design.md`。シナリオ 5 件。作った時点ではどれも未検証で、今は 5 件とも検証済み（2026-11-24））。**W12（Sim2）は済み**（2026-11-24。`sim-trace-design.md`。VPC の通信の追跡。シナリオ 8 件。作った時点ではどれも未検証） | `app/src/sims/`、`content/saa-c03/sims/` | W10 |
 | W17 | ops: 起草と検証の指示、束、画像の出力、監査の教材の範囲の拡張 | `../saa-dojo-ops` | W2 |
-| W18 | `content-guide.md` と `app-spec.md` への反映。W1・W3・W4・W5・W7・W8・W10・W11 と W6 の図と実物のぶんは反映済み（content-guide 13 章、15〜21 章） | `docs/` | 各タスクの完了ごと |
+| W18 | `content-guide.md` と `app-spec.md` への反映。W1・W3・W4・W5・W7・W8・W10・W11・W12 と W6 の図と実物のぶんは反映済み（content-guide 13 章、15〜21 章） | `docs/` | 各タスクの完了ごと |
 
 W1・W2・W7 は、既存のレッスンを変えないので、図鑑の作業と並行できます。
 
