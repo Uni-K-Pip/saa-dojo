@@ -3,8 +3,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createElement } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { loadDiagram } from '../content/loader';
 import type { DiagramScene } from '../content/types';
+import { hashString } from '../domain/rng';
 import { Markdown } from './Markdown';
 
 vi.mock('../content/loader', () => ({ loadDiagram: vi.fn() }));
@@ -168,6 +170,18 @@ describe('Markdown のその場の確認', () => {
     expect(screen.queryByRole('region', { name: 'その場の確認' })).not.toBeInTheDocument();
     expect(container.querySelector('blockquote')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('確認の回答に検査の questionKey から作った checkId を渡します', async () => {
+    const markdown = example.replace('**保存**できますか？', '![データ](example.png)を `snake_case` に保存できますか？');
+    const [{ questionKey }] = parseInlineChecks(markdown);
+    expect(questionKey).toBe('データを snake_case に保存できますか？');
+    const checkId = `c${hashString(questionKey).toString(16).padStart(8, '0')}`;
+    const onCheckAnswer = vi.fn();
+    render(createElement(Markdown, { onCheckAnswer, children: markdown }));
+    expect(screen.getByRole('img', { name: 'データ' })).toBeVisible();
+    await userEvent.setup().click(screen.getByRole('button', { name: 'できます' }));
+    expect(onCheckAnswer).toHaveBeenCalledWith({ checkId, choice: 2, correct: true });
   });
 
   it('引用記号のない直後の行は回答前も本文に表示します', () => {

@@ -1,7 +1,7 @@
 // Markdown の変換プラグイン。囲み記事（`> **試験のポイント**`・`> **ひっかけ注意**`）を色付きの枠にする。
 import type { Blockquote, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import type { Plugin } from 'unified';
-import { parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { hashString } from '../domain/rng';
 
 export const CALLOUT_KINDS: Record<string, 'tip' | 'trap'> = {
@@ -102,12 +102,12 @@ export const remarkInlineChecks: Plugin<[], Root> = function () {
     walk(tree, (bq) => {
       const position = bq.position;
       const check = checks.get(position?.start.line ?? 0);
-      if (!check || !position || bq.children[0]?.type !== 'paragraph' || bq.children[0].children[0]?.type !== 'strong') return;
+      if (!check || !position || !isInlineCheckBlockquote(bq, check.line)) return;
       const questionBlocks = blocks(check.question);
       const questionText = questionBlocks.map(plainText).join(' ').replace(/\s+/g, ' ').trim();
       const question = questionBlocks.length === 1 && questionBlocks[0].type === 'paragraph'
         ? questionBlocks[0] : { type: 'paragraph' as const, children: [{ type: 'text' as const, value: questionText }] };
-      const checkId = `c${hashString(questionText).toString(16).padStart(8, '0')}`;
+      const checkId = `c${hashString(check.questionKey).toString(16).padStart(8, '0')}`;
       bq.data = {
         hName: 'section',
         hProperties: {

@@ -421,15 +421,18 @@ function withoutDiagramCode(markdown) {
   ).join('');
 }
 
-export function parseDiagramRefs(markdown) {
+export function parseDiagramRefs(markdown, { withLine = false } = {}) {
   const text = withoutDiagramCode(markdown);
   const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/diagrams\/[^<>\s]*)>|(#\/diagrams\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
   const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/diagrams\/[^>\s]*)/gm;
-  const refs = Array.from(text.matchAll(inline), ([, angleHref, bareHref]) => {
-    const href = angleHref ?? bareHref;
-    return { href, ...diagramRefOf(href) };
+  const location = (index) => withLine ? { line: text.slice(0, index).split('\n').length } : {};
+  const refs = Array.from(text.matchAll(inline), (match) => {
+    const href = match[1] ?? match[2];
+    return { href, ...diagramRefOf(href), ...location(match.index) };
   });
-  for (const [, href] of text.matchAll(definitions)) refs.push({ href, reference: true });
+  for (const match of text.matchAll(definitions)) {
+    refs.push({ href: match[1], reference: true, ...location(match.index) });
+  }
   return refs;
 }
 

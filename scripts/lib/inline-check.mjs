@@ -3,9 +3,30 @@ const HEAD = /^\s*>\s*\*\*その場の確認\*\*\s*$/;
 const QUOTE = /^[ \t]*>[ \t]?/;
 const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const OPTION =/^[-*] \[([ xX])\][ \t]+(.+)$/;
+const CHARACTER_REFERENCES = { amp: '&', lt: '<', gt: '>', quot: '"' };
+
+function decodeCharacterReference(_match, reference) {
+  if (reference[0] !== '#') return CHARACTER_REFERENCES[reference];
+  const hex = reference[1].toLowerCase() === 'x';
+  const code = Number.parseInt(reference.slice(hex ? 2 : 1), hex ? 16 : 10);
+  return code === 0 || (code >= 0xd800 && code <= 0xdfff) || code > 0x10ffff ? '\uFFFD' : String.fromCodePoint(code);
+}
 
 export function normalizeInlineCheckQuestion(question) {
-  return question.replace(/[*_`]/g, '').replace(/\s+/g, ' ').trim();
+  return question
+    .replace(/!?\[((?:\\.|[^\[\]\\]|\[(?:\\.|[^\[\]\\])*\])*)\]\((?:\\.|[^()\\]|\((?:\\.|[^()\\])*\))*\)/g, '$1')
+    .replace(/<\/?[A-Za-z][\w:-]*(?:\s+(?:"[^"]*"|'[^']*'|[^'">])*)?\s*\/?>/g, '')
+    .replace(/~~|[*`]/g, '')
+    // 語の中のアンダースコアは名前の一部として残します。
+    .replace(/(?<![\p{L}\p{M}\p{N}_])_+|_+(?![\p{L}\p{M}\p{N}_])/gu, '')
+    .replace(/&(amp|lt|gt|quot|#\d+|#[xX][\da-fA-F]+);/g, decodeCharacterReference)
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function isInlineCheckBlockquote(node, line) {
+  return node.type === 'blockquote' && node.position?.start.line === line
+    && node.children?.[0]?.type === 'paragraph' && node.children[0].children?.[0]?.type === 'strong';
 }
 
 export function parseInlineChecks(markdown) {
@@ -21,8 +42,11 @@ export function parseInlineChecks(markdown) {
     if (fence !== null || !HEAD.test(lines[i])) continue;
     const line = i + 1;
     const problems = [];
-    if (i > 0 && QUOTE.test(lines[i - 1])) {
-      problems.push('その場の確認は、前の引用と空行で分けてください。');
+    for (let previous = i - 1; previous >= 0 && lines[previous].trim(); previous--) {
+      if (QUOTE.test(lines[previous])) {
+        problems.push('その場の確認は、前の引用と空行で分けてください。');
+        break;
+      }
     }
     const body = [];
     while (i + 1 < lines.length && QUOTE.test(lines[i + 1]) && !HEAD.test(lines[i + 1])) {

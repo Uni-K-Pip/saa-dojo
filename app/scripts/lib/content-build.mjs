@@ -7,6 +7,7 @@ import YAML from 'yaml';
 import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
+import { crosscheckMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
 import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
 
@@ -271,6 +272,9 @@ function crossCheck(parsed, err, warn) {
   const diagrams = checkDiagramsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
   for (const m of diagrams.errors) err(...splitMsg(m));
   for (const m of diagrams.warnings) warn(...splitMsg(m));
+  for (const { rel, body } of [...parsed.lessons, ...parsed.docs]) {
+    for (const { line, message } of crosscheckMarkdown(body)) err(rel, `本文 ${line} 行目: ${message}`);
+  }
   const course = checkCourseForBuild(parsed, HIDDEN_STATUSES);
   for (const m of course.errors) err(parsed.course.rel, m);
   for (const w of course.warnings) warn(parsed.course.rel, w.message);

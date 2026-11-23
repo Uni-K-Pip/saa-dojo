@@ -5,7 +5,7 @@ import path from 'node:path';
 import { afterEach, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
 import { parseDiagramRefs } from '../../../scripts/lib/diagram.mjs';
-import { parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { normalizeInlineCheckQuestion, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
 import { buildContent } from '../lib/content-build.mjs';
 import { architecture, decision, layers, lessonId, position, timeline } from './diagram-fixtures.mjs';
@@ -208,6 +208,18 @@ it.each([
 });
 
 it.each([
+  ['ふつうの引用', '> 前置きです。\n続きの行です。', 3],
+  ['囲み記事', '> **試験のポイント**\n> 大事な点です。\n続きの行です。', 4],
+])('%sの遅延継続のあとに空行なしで書いた確認を報告します', (_label, quote, line) => {
+  const source = `${quote}\n${check}`;
+  const problem = 'その場の確認は、前の引用と空行で分けてください。';
+  expect(parseInlineChecks(source)).toMatchObject([{ line, problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) }).filter(({ code }) => code === 'inline-check')).toEqual([
+    expect.objectContaining({ level: 'error', message: expect.stringContaining(problem) }),
+  ]);
+});
+
+it.each([
   [check.replace('> 保存できますか？\n', ''), '問いがありません'],
   [check.replace('保存できますか？', '問'.repeat(121)), '問いは 120 字まで'],
   [check.replace('> - [ ] できません\n', ''), '選択肢は 2〜4 個'],
@@ -260,6 +272,23 @@ it('正しい参照とその場の確認にはエラーも警告も出ません'
   })).toEqual([]);
 });
 
+it.each([
+  ['リンク', '[保存](https://example.com/storage)できますか？'],
+  ['取り消し線', '~~保存~~できますか？'],
+])('問いの文に%sだけを付けても validate が重複を報告します', (_label, decorated) => {
+  const source = `${check}\n\n${check.replace('保存できますか？', decorated)}`;
+  expect(issues({ [lessonRel]: md(lessonRel, source) }).filter(({ code }) => code === 'inline-check')).toEqual([
+    expect.objectContaining({ level: 'error', message: expect.stringContaining('確認と同じです。') }),
+  ]);
+});
+
+it('問いの画像・タグ・文字参照・強調を正規化し、語中のアンダースコアを残します', () => {
+  expect(normalizeInlineCheckQuestion(
+    ' __![保存](https://example.com/storage)__ <b title="a > b">先</b> \n' +
+    ' `snake_case` &amp; &lt;値&gt; &quot;例&quot; &#39; &#65; &#x1F4BE; は ~~同じ~~ ですか？ ',
+  )).toBe('保存 先 snake_case & <値> "例" \' A 💾 は 同じ ですか？');
+});
+
 it('4 種類の図がビルドの索引と個別の出力に現れます', () => {
   const diagrams = [decision(), position(), timeline(), layers()];
   const dirs = fixture({
@@ -282,5 +311,20 @@ it('図の参照が切れていると、ビルドは出力を作る前に止ま�
   const dirs = fixture({ [guideRel]: md(guideRel, '![図](#/diagrams/dg-absent)') });
   const built = buildContent({ ...dirs, schema });
   expect(built).toMatchObject({ ok: false, manifest: null, errors: [expect.stringContaining(`${guideRel}: 参照先の図 dg-absent`)] });
+  expect(fs.existsSync(dirs.outDir)).toBe(false);
+});
+
+it.each([
+  ['レッスン', lessonRel], ['早見表', sheetRel], ['ガイド', guideRel],
+])('%sの確認にずれがあると、ビルドは出力を作る前に本文の行を報告します', (_label, rel) => {
+  const source = md(rel, `<div>\n${check}`);
+  const body = source.split('\n---\n')[1];
+  const line = body.split('\n').indexOf('> **その場の確認**') + 1;
+  const dirs = fixture({ [rel]: source });
+  expect(buildContent({ ...dirs, schema })).toMatchObject({
+    ok: false,
+    manifest: null,
+    errors: [expect.stringContaining(`${rel}: 本文 ${line} 行目: その場の確認が表示では確認として扱われません`)],
+  });
   expect(fs.existsSync(dirs.outDir)).toBe(false);
 });
