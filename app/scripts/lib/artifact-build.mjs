@@ -2,6 +2,7 @@
 // 検査は scripts/lib/artifact.mjs に任せ、validate と同じ判定にする。設計は docs/visual-materials-design.md の 6章・11.1。
 import { checkArtifact, checkArtifactRefs, renderArtifact } from '../../../scripts/lib/artifact.mjs';
 import { materialStatuses, selectMaterials } from '../../../scripts/lib/material-status.mjs';
+import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
 
 const stemOf = (rel) => rel.split('/').pop().replace(/\.json$/, '');
 
@@ -21,7 +22,7 @@ export function checkArtifactsForBuild(parsed) {
     for (const w of found.warnings) warnings.push(`${rel}: ${w.message}`);
   }
   const artifactIds = new Set((parsed.artifacts ?? []).map(({ data }) => data.id));
-  for (const { rel, message } of checkArtifactRefs({ texts: [...parsed.lessons, ...parsed.docs], artifactIds })) errors.push(`${rel}: ${message}`);
+  for (const { rel, message } of checkArtifactRefs({ texts: [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)], artifactIds })) errors.push(`${rel}: ${message}`);
   return { errors, warnings };
 }
 

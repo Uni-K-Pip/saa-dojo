@@ -3,6 +3,8 @@ import type { MockKind } from '../domain/events';
 export type CourseItem = { note?: string } & (
   | { kind: 'lesson'; ref: string }
   | { kind: 'doc'; ref: string }
+  | { kind: 'lab'; ref: string }
+  | { kind: 'pattern'; ref: string }
   | { kind: 'practice' }
   | { kind: 'drill' }
   | { kind: 'analysis' }

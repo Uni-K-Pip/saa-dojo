@@ -1,11 +1,12 @@
 // 教材の検証状態（material-status.json）のビルドでの検査と、除いた図・実物を本文が指すときの警告。
 // 判定は scripts/lib/material-status.mjs（validate と同じ）。
 import { MATERIAL_STATUS_FILE, checkMaterialStatus, excludedRefMessage, isShown } from '../../../scripts/lib/material-status.mjs';
+import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
 
-const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs];
+const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)];
 const run = (parsed) => checkMaterialStatus({
   statusFile: parsed.materialStatus,
-  materials: { diagrams: parsed.diagrams ?? [], artifacts: parsed.artifacts ?? [] },
+  materials: parsed,
   presentIds: parsed.materialStems,
   texts: textsOf(parsed),
   file: MATERIAL_STATUS_FILE,
@@ -16,8 +17,9 @@ export function checkMaterialsForBuild(parsed) {
   const errors = [];
   const warnings = [];
   if (parsed.materialStatusPresent && !parsed.materialStatus) return { errors, warnings };
-  for (const i of run(parsed).issues) (i.level === 'error' ? errors : warnings).push(`${i.rel}: ${i.message}`);
-  return { errors, warnings };
+  const { issues, statuses } = run(parsed);
+  for (const i of issues) (i.level === 'error' ? errors : warnings).push(`${i.rel}: ${i.message}`);
+  return { errors, warnings, statuses };
 }
 
 /** このビルドで除いた図・実物を、本文が指しているところの警告（"ファイル: 本文 N 行目: …"） */

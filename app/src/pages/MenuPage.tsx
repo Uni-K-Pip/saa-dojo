@@ -1,8 +1,9 @@
 import { Link } from 'react-router';
-import { NAV_ITEMS } from '../components/Layout';
+import { useNavItems } from '../components/Layout';
 
 export default function MenuPage() {
-  const groups = [...new Set(NAV_ITEMS.map((i) => i.group))];
+  const navItems = useNavItems();
+  const groups = [...new Set(navItems.map((i) => i.group))];
   return (
     <div>
       <h1>メニュー</h1>
@@ -10,7 +11,7 @@ export default function MenuPage() {
         <section key={g || 'top'} className="card">
           {g && <h2 style={{ marginTop: 0 }}>{g}</h2>}
           <ul className="list">
-            {NAV_ITEMS.filter((i) => i.group === g).map((i) => (
+            {navItems.filter((i) => i.group === g).map((i) => (
               <li key={i.to}>
                 <Link to={i.to}>
                   <span aria-hidden="true">{i.icon} </span>

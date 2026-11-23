@@ -1,8 +1,8 @@
 import { Suspense, use } from 'react';
 import { Link } from 'react-router';
 import type { CourseItem, CourseUnit } from '../content/course-types';
-import { loadCourse, loadDocs, loadLessons } from '../content/loader';
-import type { DocEntry, LessonMeta } from '../content/types';
+import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex } from '../content/loader';
+import type { DocEntry, LabMeta, LessonMeta, PatternMeta } from '../content/types';
 import { nextStep } from '../domain/course';
 import { useStudy } from '../state/study';
 
@@ -14,6 +14,7 @@ export function unitTitle(unit: CourseUnit): string {
 
 export function courseItemDetails(
   item: CourseItem, unitId: string, lessons: LessonMeta[], docs: DocEntry[],
+  labs: LabMeta[] = [], patterns: PatternMeta[] = [],
 ): { label: string; title: string; to: string; action: string; minutes?: number } {
   switch (item.kind) {
     case 'lesson': {
@@ -24,6 +25,14 @@ export function courseItemDetails(
       const doc = docs.find((d) => d.id === item.ref);
       const label = (doc?.kind === 'guide' || item.ref.startsWith('guide-')) ? 'ガイド' : '早見表';
       return { label, title: doc?.title ?? item.ref, to: `/docs/${item.ref}`, action: `${label}を読む` };
+    }
+    case 'lab': {
+      const lab = labs.find((l) => l.id === item.ref);
+      return { label: 'ミニラボ', title: lab?.title ?? item.ref, to: `/labs/${item.ref}`, action: 'ミニラボを読む', minutes: lab?.estimatedMinutes };
+    }
+    case 'pattern': {
+      const pattern = patterns.find((p) => p.id === item.ref);
+      return { label: '設計パターン', title: pattern?.title ?? item.ref, to: `/patterns/${item.ref}`, action: '設計パターンを読む' };
     }
     case 'practice':
       return { label: 'ユニット演習', title: 'ユニット演習', to: `/course/${unitId}`, action: 'ユニット演習へ' };
@@ -44,7 +53,9 @@ function NextStepCard({ showCourseLink }: { showCourseLink: boolean }) {
   const next = nextStep(course, study);
   const lessons = next?.item.kind === 'lesson' ? use(loadLessons()) : [];
   const docs = next?.item.kind === 'doc' ? use(loadDocs()) : [];
-  const details = next && courseItemDetails(next.item, next.unit.id, lessons, docs);
+  const labs = next?.item.kind === 'lab' ? use(loadLabIndex()) : [];
+  const patterns = next?.item.kind === 'pattern' ? use(loadPatternIndex()) : [];
+  const details = next && courseItemDetails(next.item, next.unit.id, lessons, docs, labs, patterns);
 
   return (
     <section className="card course-text" aria-labelledby="course-next-h">
