@@ -36,8 +36,8 @@ import { checkArtifact, checkArtifactRefs } from './lib/artifact.mjs';
 import { checkSimFiles, simContext } from './lib/sim.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
-import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
-import { parseInlineChecks } from './lib/inline-check.mjs';
+import { checkDiagram, checkDiagramRefs, diagramRefIndex, parseMaterialRefs } from './lib/diagram.mjs';
+import { parseInlineChecks, suspectMarkdownFences } from './lib/inline-check.mjs';
 import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
 import { CourseSchema, WARN_UNITS_WITHOUT_LAB, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
 import { checkLab, checkPattern, labPatternContext, labPatternPathMessage, labPatternTexts } from './lib/lab-pattern.mjs';
@@ -1085,6 +1085,12 @@ function checkInlineChecks(content) {
   const { report, lessons, docs } = content;
   function check({ rel, body }) {
     const checks = parseInlineChecks(body);
+    for (const { line, checkLine } of suspectMarkdownFences(body)) {
+      report.warn('markdown-fence', rel, `本文 ${line} 行目の \`\`\`markdown のフェンスの中、${checkLine} 行目にその場の確認の見出しがあります。フェンスの閉じ忘れなら、後ろの確認がコードとして出ます。記法の例なら、見出しの行（\`#\`）を例に含めないでください。`);
+    }
+    for (const { kind, line, continued } of parseMaterialRefs(body, { withLine: true })) {
+      if (continued) report.warn('material-ref-continued', rel, `本文 ${line} 行目: ${kind === 'artifact' ? '実物' : '図'}の画像の行の前に文が続いています。表示ではリンクになり、アプリのビルドが止まります。前後に空行を入れて、画像だけの段落にしてください。`);
+    }
     const firstLines = new Map();
     for (const { line, questionKey, problems, followingCallout } of checks) {
       for (const problem of problems) report.error('inline-check', rel, `本文 ${line} 行目: ${problem}`);

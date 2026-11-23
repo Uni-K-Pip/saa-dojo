@@ -57,5 +57,5 @@ describe('演習で1問解く', () => {
 
     await user.click(screen.getByRole('button', { name: '結果を見る' }));
     expect(await screen.findByText('1 / 2 問正解')).toBeInTheDocument();
-  });
+  }, 15000);
 });

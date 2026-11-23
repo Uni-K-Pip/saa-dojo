@@ -10,13 +10,17 @@ export function LessonRereadBadge({ count }: { count: number | undefined }) {
   );
 }
 
-export function LessonRereadFilter({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) {
+/** count は、絞り込んだときに出るレッスンの数（切り替えたときに読み上げる） */
+export function LessonRereadFilter({ checked, onChange, count }: { checked: boolean; onChange: (checked: boolean) => void; count: number }) {
   return (
     <p>
       <label className="chip">
         <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
         読み直すとよいレッスン
       </label>
+      <span className="small muted" aria-live="polite">
+        {checked ? ` ${count} 本` : ''}
+      </span>
     </p>
   );
 }

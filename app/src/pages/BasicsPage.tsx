@@ -66,7 +66,7 @@ export default function BasicsPage() {
         )}
       </div>
       {lessons.some((l) => l.checkIds?.length) && (
-        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} />
+        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} count={lessons.filter((l) => reread.has(l.id)).length} />
       )}
       {rereadOnly && reread.size === 0 ? (
         <p className="notice">{NO_REREAD_LESSONS}</p>

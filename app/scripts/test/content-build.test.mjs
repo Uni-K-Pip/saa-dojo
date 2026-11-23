@@ -146,10 +146,12 @@ describe('コンテンツのビルド', () => {
     const { files: out, manifest } = buildOutputs(parsed, schema);
     const byKey = (key) => JSON.parse(out.find((f) => f.rel === manifest.files[key].path).text);
     const display = unified().use(remarkParse).use(remarkGfm).use(remarkInlineChecks);
+    // リストの中など、入れ子の確認も数えるため、木全体をたどる
+    const displayedCheckIds = (node) => [node.data?.hProperties?.dataCheckId ?? [], ...(node.children ?? []).map(displayedCheckIds)].flat();
     for (const { id, checkIds } of byKey('lessons')) {
       const { body } = byKey(`lesson:${id}`);
       const tree = display.runSync(display.parse(body), body);
-      const displayedIds = tree.children.flatMap((node) => node.data?.hProperties?.dataCheckId ?? []);
+      const displayedIds = displayedCheckIds(tree);
       expect(checkIds).toEqual(displayedIds);
       expect(checkIds).toHaveLength(id.endsWith('empty') ? 0 : id.includes('basics') ? 1 : 2);
     }

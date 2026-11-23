@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
-import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { isInlineCheckBlockquote, parseInlineChecks, suspectMarkdownFences } from '../../../scripts/lib/inline-check.mjs';
 import { crosscheckMarkdown } from '../lib/markdown-crosscheck.mjs';
 import { calloutOf } from '../../src/components/markdown-callouts.mjs';
 
@@ -122,6 +122,10 @@ it.each([
   '**試験のポイント**', '__ひっかけ注意：__', '**試験のポイント：**',
   '**試験のポイント** は大事', '**試験の*ポイント***', '__`ひっかけ`注意__ は大事',
   '***試験の*ポイント**', '**_試験のポイント_**', '__*ひっかけ注意*__',
+  '**[試験のポイント](#x)**', '**~~試験のポイント~~**', '__[ひっかけ](#x)注意__', '**<b>試験のポイント</b>**',
+  '**[試験のポイント](https://docs.aws.amazon.com/a_b.html)**', '**[試験のポイント](#a*b)**', '**[試験のポイント](#a`b)**',
+  '**<span title="a_b">試験のポイント</span>**', '**~試験のポイント~**', '**試験の<!-- c -->ポイント**',
+  '**&#35430;験のポイント**', '**試験のポイント\\:**',
 ])('直後に囲み記事の見出し %s が続くと、その行を報告します', (title) => {
   expect(calloutOf(parser.parse(`> ${title}`).children[0])).not.toBeNull();
   const markdown = `${check}\n> ${title}\n> 注意点です。`;
@@ -308,4 +312,14 @@ it.each([
 ])('%sに正しく書いた確認は検査と突き合わせを通ります', (_label, markdown) => {
   expect(parseInlineChecks(markdown)).toMatchObject([{ problems: [] }]);
   expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it('閉じ忘れた markdown のフェンスの中の確認を、見出しのあとにあるものだけ警告する', () => {
+  const example = '> **その場の確認**\n> 問い\n> - [x] 正\n> - [ ] 誤\n>\n> 理由';
+  // 閉じ忘れ: フェンスの中に次の見出しと本文の確認が入る
+  expect(suspectMarkdownFences(`## 例\n\n\`\`\`markdown\n${example}\n\n## 次の節\n\n${example.replace('問い', '別の問い')}\n\`\`\`\n`))
+    .toEqual([{ line: 3, checkLine: 13 }]);
+  // 記法の例だけ（見出しなし）、markdown 以外のフェンス、閉じたあとの確認は警告しない
+  expect(suspectMarkdownFences(`\`\`\`markdown\n${example}\n\`\`\`\n\n## 次の節\n\n${example}\n`)).toEqual([]);
+  expect(suspectMarkdownFences(`\`\`\`text\n## 見出し\n${example}\n\`\`\`\n`)).toEqual([]);
 });
