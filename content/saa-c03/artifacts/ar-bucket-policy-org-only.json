@@ -22,7 +22,7 @@
   "notes": [
     { "path": "Statement[0].Principal", "text": "ここでは Principal（相手）を \"*\"（すべて）にし、Condition で組織に絞っています。公開・匿名アクセスを意図しないなら、\"*\" でなく意図する相手を書き、Condition でさらに絞ることが強く勧められています。" },
     { "path": "Statement[0].Action", "text": "許可する操作は、オブジェクトの読み取り（s3:GetObject）だけです。" },
-    { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、AWS Organizations の組織 o-exampleorgid（複数のアカウントの集まり）に属するときだけ許可します。組織内の全アカウントに許可する定番の条件で、アカウントが増減しても書き直しません。" }
+    { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、AWS Organizations の組織 o-exampleorgid に属するときだけ許可します。組織内の全アカウントに許可する定番の条件で、アカウントが増減しても書き直しません。" }
   ],
   "ask": {
     "text": "組織に属さないアカウントのロールは、このバケットのオブジェクトを読めますか？",

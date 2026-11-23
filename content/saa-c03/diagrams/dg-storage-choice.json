@@ -2,7 +2,7 @@
   "id": "dg-storage-choice",
   "type": "decision",
   "title": "ストレージの選び方",
-  "alt": "ブロック、ファイル、オブジェクトのストレージを、質問に答えて選ぶ図です。最初に、OS からディスクとして使うかを聞きます。使うなら、消えてもよい一時データを最速で扱う場合はインスタンスストア、そうでなければ Amazon EBS です。使わないなら、フォルダーとファイルの階層（ファイルシステム）として使うかを聞きます。使わないなら、API でオブジェクトとして読み書きする Amazon S3 です。使うなら、Windows（SMB）は FSx for Windows File Server、S3 のデータを HPC や機械学習で高速に処理するなら FSx for Lustre、それ以外の Linux のファイル共有は Amazon EFS です。ただし、NetApp ONTAP や ZFS の運用をそのまま移すなら、FSx for NetApp ONTAP・OpenZFS を選びます。",
+  "alt": "ブロック、ファイル、オブジェクトのストレージを、質問に答えて選ぶ図です。最初に、OS からディスクとして使うかを聞きます。使うなら、消えてもよい一時データを最速で扱う場合はインスタンスストア、そうでなければ Amazon EBS です。使わないなら、フォルダーとファイルの階層（ファイルシステム）として使うかを聞きます。使わないなら、API でオブジェクトとして読み書きする Amazon S3 です。使うなら、Windows（SMB）は FSx for Windows File Server、S3 のデータを HPC や機械学習で高速に処理するなら FSx for Lustre、オンプレミスの NetApp ONTAP や ZFS の運用をそのまま移すなら FSx for NetApp ONTAP か FSx for OpenZFS、それ以外の Linux のファイル共有は Amazon EFS です。",
   "lessonRefs": [
     "lesson-3.1-storage-types-and-services",
     "lesson-basics-storage-types"
@@ -98,16 +98,30 @@
     },
     {
       "id": "q-hpc",
-      "ask": "S3 のデータを HPC や機械学習で高速に処理しますか。",
+      "ask": "S3 のデータを HPC・機械学習で高速処理しますか。NetApp ONTAP・ZFS の運用を移しますか。",
       "choices": [
         {
-          "label": "はい",
+          "label": "高速処理",
           "to": "r-lustre"
         },
         {
-          "label": "いいえ",
+          "label": "ONTAP・ZFS",
+          "to": "r-ontap-zfs"
+        },
+        {
+          "label": "どちらでもない",
           "to": "r-efs"
         }
+      ]
+    },
+    {
+      "id": "r-ontap-zfs",
+      "result": "FSx for ONTAP・OpenZFS",
+      "service": "fsx",
+      "why": "NetApp の運用を保って移すなら FSx for NetApp ONTAP、ZFS を移すなら FSx for OpenZFS です。どちらも NFS で使えます。",
+      "factRefs": [
+        "fsx.ontap-file-protocols",
+        "fsx.openzfs-nfs-migration"
       ]
     },
     {
@@ -123,11 +137,10 @@
       "id": "r-efs",
       "result": "Amazon EFS",
       "service": "efs",
-      "why": "Linux 向けの共有ファイルシステムです。容量が自動で増減し、リージョン型ならデータを複数の AZ に保存します。NetApp ONTAP や ZFS の運用をそのまま移すなら、FSx for NetApp ONTAP・OpenZFS を選びます。",
+      "why": "Linux 向けの共有ファイルシステムです。容量が自動で増減し、リージョン型ならデータを複数の AZ に保存します。",
       "factRefs": [
         "efs.elastic-capacity",
-        "efs.regional-resilience",
-        "fsx.openzfs-nfs-migration"
+        "efs.regional-resilience"
       ]
     }
   ]
