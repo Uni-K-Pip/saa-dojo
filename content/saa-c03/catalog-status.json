@@ -4549,6 +4549,11 @@
     "checkedAt": "2026-11-14",
     "hash": "a5cd07eb36f8"
   },
+  "elb.alb-https-target-group": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "77901882ef54"
+  },
   "elb.alb-https-termination": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -9846,8 +9851,8 @@
   },
   "vpc.subnet-reserved-ips": {
     "status": "verified",
-    "checkedAt": "2026-11-23",
-    "hash": "92bf3afa80f9"
+    "checkedAt": "2026-11-24",
+    "hash": "85c3d47e164c"
   },
   "vpc.subnet-types": {
     "status": "verified",

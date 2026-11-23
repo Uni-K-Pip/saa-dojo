@@ -211,8 +211,17 @@ describe('重なり', () => {
       }
     }
     const rulesFor = { peering: 'peering-overlap', subnets: 'no-overlap-in-vpc' };
+    const lastOfBlock = ({ network, prefix }) => network + countOf(prefix) - 1n;
+    const kinds = new Set();
     for (const a of blocks) for (const b of blocks) {
       const { relation, shared } = referenceOverlap(a, b);
+      // 規則「同じか、片方がもう片方を含むときだけ重なる」を、範囲の始まりと終わりの区間の共通部分で別に確かめる
+      const from = a.network > b.network ? a.network : b.network;
+      const to = lastOfBlock(a) < lastOfBlock(b) ? lastOfBlock(a) : lastOfBlock(b);
+      const sharedByInterval = to >= from ? to - from + 1n : 0n;
+      expect(sharedByInterval, `${blockText(a)} ${blockText(b)} 区間`).toBe(shared);
+      expect(relation === 'disjoint', `${blockText(a)} ${blockText(b)} 関係`).toBe(sharedByInterval === 0n);
+      kinds.add(lastOfBlock(a) + 1n === b.network ? 'adjacent' : relation);
       for (const context of ['peering', 'subnets']) {
         const label = `${blockText(a)} ${blockText(b)} ${context}`;
         const result = run({ op: 'overlap', a: blockText(a), b: blockText(b), context });
@@ -229,6 +238,8 @@ describe('重なり', () => {
         );
       }
     }
+    // 同じ・含む（両方向）・隣り合う・離れている、のどれもが組に入っている
+    expect([...kinds].sort()).toEqual(['a-contains-b', 'adjacent', 'b-contains-a', 'disjoint', 'same']);
   });
 });
 
@@ -299,5 +310,5 @@ describe('分割', () => {
         }
       }
     }
-  }, 15000);
+  });
 });
