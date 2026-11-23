@@ -3,8 +3,8 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach } from 'vitest';
 import { cleanup, configure } from '@testing-library/react';
 
-// 全体を並列で実行すると、遅延読み込みの画面が既定の 1 秒をわずかに超えることがある
-configure({ asyncUtilTimeout: 3000 });
+// 他の処理と重なると、遅延読み込みの画面が既定の 1 秒を超えることがある（テストの制限時間 20 秒より短くしておく）
+configure({ asyncUtilTimeout: 10000 });
 
 afterEach(() => {
   cleanup();

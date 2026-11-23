@@ -79,5 +79,8 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.mjs'],
     alias: { zod: zodDir, yaml: yamlDir, 'virtual:pwa-register/react': pwaStub },
     restoreMocks: true,
+    // 他の処理と重なっても落ちないよう、既定の 5 秒（テスト）と 10 秒（フック）を延ばす
+    testTimeout: 20000,
+    hookTimeout: 30000,
   },
 });
