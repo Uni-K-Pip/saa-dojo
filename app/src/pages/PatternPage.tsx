@@ -25,11 +25,16 @@ export function PatternsPage() {
   const { events } = useStudy();
   const read = patternReadMap(events);
   const [params, setParams] = useSearchParams();
-  const qualifier = params.get('q') ?? '';
-  const task = params.get('task') ?? '';
-  const service = params.get('service') ?? '';
   const tasks = [...new Set(patterns.flatMap((pattern) => pattern.taskStatements))].sort();
   const services = [...new Set(patterns.flatMap((pattern) => pattern.services))].sort((a, b) => a.localeCompare(b, 'ja'));
+  // 選択肢にない URL の値（教材が外れたあとのブックマークなど）は、表示と絞り込みの両方で未指定として扱う
+  const pick = (key: string, options: readonly string[]) => {
+    const value = params.get(key) ?? '';
+    return options.includes(value) ? value : '';
+  };
+  const qualifier = pick('q', qualifiers);
+  const task = pick('task', tasks);
+  const service = pick('service', services);
   const filtered = patterns.filter((pattern) =>
     (!qualifier || pattern.qualifiers.some((q) => q === qualifier)) &&
     (!task || pattern.taskStatements.includes(task)) &&

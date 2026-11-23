@@ -17,8 +17,13 @@ export function parseSections(body) {
   let fence = null;
   for (const [index, line] of lines.entries()) {
     const f = FENCE.exec(line);
-    if (f && (fence === null || f[1][0] === fence[0] && f[1].length >= fence.length)) {
-      fence = fence === null ? f[1] : null;
+    if (f && fence === null) {
+      fence = f[1];
+      continue;
+    }
+    // 閉じるのは、同じ記号で同じ長さ以上の並びのあとに空白しかない行だけ（`~~~text` は閉じない）
+    if (f && f[1][0] === fence[0] && f[1].length >= fence.length && line.slice(f[0].length).trim() === '') {
+      fence = null;
       continue;
     }
     const match = fence === null && HEADING.exec(line);
@@ -85,7 +90,8 @@ export function checkLab({ data, body }, ctx) {
   const headings = parseSections(body);
   checkHeadings(headings, LAB_SECTIONS, errors);
   checkRefs(data, ctx, errors);
-  if (ctx.unitIds && !ctx.unitIds.has(data.unit)) errors.push(`ユニット ${data.unit} が学習コースにありません`);
+  if (!ctx.unitIds) errors.push(`学習コース（course.json）が読めないため、ユニット ${data.unit} を確かめられません`);
+  else if (!ctx.unitIds.has(data.unit)) errors.push(`ユニット ${data.unit} が学習コースにありません`);
 
   const steps = headingsInSection(headings, '手順').filter(({ depth }) => depth === 3);
   if (steps.length === 0) errors.push('「## 手順」に小見出し（### 1. 題）がありません');
@@ -95,8 +101,8 @@ export function checkLab({ data, body }, ctx) {
     else if (number !== String(index + 1)) {
       errors.push(`本文 ${step.line} 行目: 手順の番号は ${index + 1} にしてください（実際: ${number}）`);
     }
-    if (!parseDiagramRefs(step.body).some(({ step: diagramStep }) => diagramStep !== undefined)) {
-      warnings.push({ code: 'lab-step-diagram', message: `本文 ${step.line} 行目: 手順に段階（?step=番号）を指定した図の参照がありません` });
+    if (!parseDiagramRefs(step.body).some(({ id, step: diagramStep }) => id === data.diagram && diagramStep > 0)) {
+      warnings.push({ code: 'lab-step-diagram', message: `本文 ${step.line} 行目: 手順に、図 ${data.diagram} の段階（?step=1 以上）を指定した参照がありません` });
     }
   }
   checkRange(warnings, 'lab-steps', '手順の数', steps.length, '手', LAB_LIMITS.steps);

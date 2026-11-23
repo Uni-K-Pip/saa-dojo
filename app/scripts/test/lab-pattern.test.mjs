@@ -86,6 +86,7 @@ function fixture(extra = {}) {
     [`diagrams/${diagram.id}.json`]: diagram,
     [labRel]: markdown(lab, labBody()),
     [patternRel]: markdown(pattern, patternBody),
+    'course.json': course([{ kind: 'lesson', ref: lessonId }]),
     ...extra,
   };
   for (const [rel, value] of Object.entries(source)) {
@@ -132,6 +133,17 @@ describe('ミニラボと設計パターンの共通検査', () => {
     expect(checkPattern({ data: pattern, body: '短い本文' }, ctx).warnings.map(({ code }) => code)).toEqual(['pattern-length']);
   });
 
+  it('手順の図は、front matter の図の 1 以上の段階を指すときだけ通す', () => {
+    const codes = (body) => inspect(body).warnings.map(({ code }) => code);
+    expect(codes(labBody().replaceAll('?step=1', '?step=0'))).toEqual(Array(5).fill('lab-step-diagram'));
+    expect(codes(labBody().replaceAll(`${diagram.id}?step=`, 'dg-other?step='))).toEqual(Array(5).fill('lab-step-diagram'));
+  });
+
+  it('閉じフェンスのあとに文字がある行では、コードブロックを閉じない', () => {
+    const example = '~~~markdown\n~~~text\n## 余分な見出し\n~~~~\n\n````markdown\n```text\n### 0. 手順の例\n```\n````\n\n';
+    expect(inspect(example + labBody())).toEqual({ errors: [], warnings: [] });
+  });
+
   it('図の存在・種類・段階、項目、タスク、ユニットを確かめる', () => {
     const body = labBody();
     expect(inspect(body, { ...lab, diagram: 'dg-missing', unit: 'u99', knowledgeRefs: ['4.1-K99'] }).errors)
@@ -140,7 +152,8 @@ describe('ミニラボと設計パターンの共通検査', () => {
       const bad = { ...ctx, diagrams: new Map([[diagram.id, { type, steps: 0 }]]) };
       expect(inspect(body, lab, bad).errors).toEqual([`図 ${diagram.id} は段階表示つきの構成図にしてください`]);
     }
-    expect(inspect(body, { ...lab, unit: 'u99' }, { ...ctx, unitIds: undefined }).errors).toEqual([]);
+    expect(inspect(body, { ...lab, unit: 'u99' }, { ...ctx, unitIds: undefined }).errors)
+      .toEqual(['学習コース（course.json）が読めないため、ユニット u99 を確かめられません']);
     expect(checkPattern({ data: { ...pattern, taskStatements: ['4.5'] }, body: patternBody }, ctx).errors)
       .toEqual(['taskStatements が blueprint にありません: 4.5']);
   });

@@ -113,6 +113,32 @@ describe('ミニラボと設計パターンの一覧', () => {
     await user.selectOptions(service, '');
     expect(screen.getByText('2 件')).toBeInTheDocument();
   });
+
+  it('選択肢にない URL の絞り込み値は、表示と絞り込みの両方で無視する', async () => {
+    renderApp('/patterns?q=cost&task=9.9&service=Amazon%20EC2');
+    expect(await screen.findByRole('link', { name: pattern.title })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'タスク' })).toHaveValue('');
+    expect(screen.getByRole('combobox', { name: 'サービス' })).toHaveValue('');
+    expect(screen.getByText('1 件')).toBeInTheDocument();
+  });
+});
+
+describe('メニューの入口', () => {
+  it('出力に 1 件以上あるときだけ、ミニラボと設計パターンをメニューに出す', async () => {
+    const view = renderApp('/menu');
+    const menu = within(await screen.findByRole('main'));
+    expect(await menu.findByRole('link', { name: /ミニラボ/ })).toHaveAttribute('href', '/labs');
+    expect(menu.getByRole('link', { name: /設計パターン/ })).toHaveAttribute('href', '/patterns');
+    view.unmount();
+
+    useFakeContent(makeContentFiles([]));
+    renderApp('/menu');
+    const empty = within(await screen.findByRole('main'));
+    expect(await empty.findByRole('heading', { name: 'メニュー' })).toBeInTheDocument();
+    expect(empty.getByRole('link', { name: /学習コース/ })).toBeInTheDocument();
+    expect(empty.queryByRole('link', { name: /ミニラボ/ })).not.toBeInTheDocument();
+    expect(empty.queryByRole('link', { name: /設計パターン/ })).not.toBeInTheDocument();
+  });
 });
 
 describe('ミニラボと設計パターンの本文', () => {
