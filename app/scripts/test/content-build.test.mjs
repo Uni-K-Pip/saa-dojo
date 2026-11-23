@@ -18,7 +18,9 @@ const contentDir = path.resolve(appDir, '../content/saa-c03');
 const read = (rel) => fs.readFileSync(path.join(contentDir, rel), 'utf8');
 
 const baseQuestion = JSON.parse(read('questions/d1/1.1/saa-1.1-ex-001.json'));
-const lesson = read('lessons/d4/lesson-4.1-s3-storage-classes.md');
+// 実際のレッスンを、図と実物のデータなしで読ませるので、画像だけの段落の図・実物の参照の行は取り除く
+const lesson = read('lessons/d4/lesson-4.1-s3-storage-classes.md')
+  .replace(/^!\[[^\]\n]*\]\(#\/(?:diagrams|artifacts)\/[^)\n]*\)\n\n/gm, '');
 
 function question(id, over = {}) {
   return { ...baseQuestion, id, createdBy: id.split('-')[2], ...over };
