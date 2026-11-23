@@ -583,6 +583,8 @@ export const LayersDiagramSchema = z.object({
   rows: z.array(z.object({
     label: z.string().min(1).max(16),
     cells: z.array(legendKey).min(1).max(4),
+    // 行の短い注記（1 行。行の下に「※」を付けて描く。1 行に収まるかは diagram-kinds.mjs の checkLayers が確かめる）
+    note: z.string().min(1).max(30).optional(),
   }).strict()).min(1).max(8),
   legend: z.record(legendKey, z.string().min(1).max(8)),
 }).strict();
