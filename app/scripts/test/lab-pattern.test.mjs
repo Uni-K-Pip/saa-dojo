@@ -307,13 +307,18 @@ describe('検証状態と教材の出力', () => {
     }
   });
 
-  it('本文の図への参照の警告は検証済み教材だけに出す', () => {
+  it('既定のビルドに出さないミニラボは本文の警告を出さず、検証済みなら front matter の警告だけを出す', () => {
     const pendingLab = fixture();
     expect(pendingLab.validate().map(({ code }) => code)).not.toContain('diagram-ref-unverified');
     expect(pendingLab.build().warnings.join('\n')).not.toContain('出力から除いたため');
     const verifiedLab = fixture({ 'material-status.json': { labs: { [lab.id]: rec('labs', lab, labBody()) } } });
-    expect(verifiedLab.validate()).toContainEqual(expect.objectContaining({ code: 'diagram-ref-unverified', message: expect.stringMatching(/^本文 \d+ 行目: /) }));
-    expect(verifiedLab.build().warnings).toContainEqual(expect.stringContaining('出力から除いたため'));
+    const validateWarnings = verifiedLab.validate().filter(({ code }) => code === 'diagram-ref-unverified');
+    expect(validateWarnings.map(({ message }) => message)).toEqual([expect.stringMatching(/^front matter の diagram /)]);
+    const built = verifiedLab.build();
+    expect(built.ok).toBe(true);
+    expect(built.warnings.filter((warning) => warning.startsWith(`${labRel}: `))).toEqual([
+      `${labRel}: ${validateWarnings[0].message}`,
+    ]);
   });
 
   it.each([
@@ -322,12 +327,14 @@ describe('検証状態と教材の出力', () => {
     ['図が要修正', rec('diagrams', diagram, undefined, 'needs-fix'), '要修正', false],
     ['図も検証済み', rec('diagrams', diagram), undefined, true],
   ])('%s ときに front matter の警告・出力・コースの項目を確かめる', (_, diagramRecord, status, shown) => {
+    const body = patternBody + '\n' + diagramRef + '\n';
     const { validate, build } = fixture({
       'course.json': course([lessonItem, labItem, patternItem]),
+      [patternRel]: markdown(pattern, body),
       'material-status.json': {
         diagrams: diagramRecord ? { [diagram.id]: diagramRecord } : {},
         labs: { [lab.id]: rec('labs', lab, labBody()) },
-        patterns: { [pattern.id]: rec('patterns', pattern, patternBody) },
+        patterns: { [pattern.id]: rec('patterns', pattern, body) },
       },
     });
     const issues = validate();
@@ -335,6 +342,7 @@ describe('検証状態と教材の出力', () => {
     const diagramWarnings = issues.filter(({ code }) => code === 'diagram-ref-unverified');
     if (shown) expect(diagramWarnings).toEqual([]);
     else {
+      expect(diagramWarnings).toHaveLength(2);
       for (const [rel, label] of [[labRel, 'ミニラボ'], [patternRel, '設計パターン']]) {
         expect(diagramWarnings).toContainEqual(expect.objectContaining({
           level: 'warning', file: `content/saa-c03/${rel}`,
@@ -346,6 +354,7 @@ describe('検証状態と教材の出力', () => {
     for (const [includeUnverified, available] of [[false, shown], [true, true]]) {
       const built = build(includeUnverified);
       expect(built.ok, built.errors.join('\n')).toBe(true);
+      expect(built.warnings.filter((warning) => /: 本文 \d+ 行目: .*を出力から除いたため/.test(warning))).toEqual([]);
       const excluded = { pending: 0, 'needs-fix': 0, rejected: 0, diagram: available ? 0 : 1 };
       expect(built.manifest.counts).toMatchObject({
         labs: Number(available), labsExcluded: excluded,

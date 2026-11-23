@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { resolveConfig } from 'vite';
+import { build, resolveConfig } from 'vite';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { guardUnverifiedContent } from '../../vite.config.ts';
 
@@ -41,4 +41,26 @@ it('開発サーバーと preview の設定では、未検証を含むコンテ�
   fs.writeFileSync(manifest, '{"includeUnverified":true}');
   await expect(resolve('serve')).resolves.toBeDefined();
   await expect(resolve('serve', true)).resolves.toBeDefined();
+});
+
+function buildWithExternalPublicDir() {
+  const publicDir = path.join(root, 'external-public');
+  const project = path.join(root, 'project');
+  fs.mkdirSync(path.join(publicDir, 'data'), { recursive: true });
+  fs.writeFileSync(path.join(publicDir, 'data', 'manifest.json'), '{"includeUnverified":true}');
+  fs.mkdirSync(project);
+  fs.writeFileSync(path.join(project, 'index.html'), '<!doctype html><title>検査用の画面</title>');
+  return build({
+    configFile: false, root: project, publicDir, plugins: [guardUnverifiedContent()],
+    build: { write: false }, logLevel: 'silent',
+  });
+}
+
+it('Vite の JS API で root の外に指定した publicDir の manifest でもビルドを止める', async () => {
+  await expect(buildWithExternalPublicDir()).rejects.toThrow(/npm run content.*SAA_ALLOW_UNVERIFIED_BUILD=1/);
+});
+
+it('環境変数で root の外に指定した publicDir のガードも解除できる', async () => {
+  vi.stubEnv('SAA_ALLOW_UNVERIFIED_BUILD', '1');
+  await expect(buildWithExternalPublicDir()).resolves.toBeDefined();
 });

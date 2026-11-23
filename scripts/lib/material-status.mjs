@@ -68,12 +68,13 @@ export function selectMaterials(statuses, items, includeUnverified) {
 }
 
 const countsForRefs = ({ material }, statuses) =>
-  !material || statuses[material.section]?.get(material.id)?.status === 'verified';
+  !material || (statuses[material.section]?.get(material.id)?.status === 'verified'
+    && (!material.diagram || statuses.diagrams?.get(material.diagram)?.status === 'verified'));
 
 /**
  * 教材の本文の図と実物の参照のうち、実効の状態が verified でないものを指すもの。
  * 存在しない教材・形の違う参照は含めない（それは参照の検査のエラー）。
- * statuses: 区分ごとの materialStatuses の値。本文に material が付く教材は検証済みのときだけ数える。
+ * statuses: 区分ごとの materialStatuses の値。本文に material が付く教材は既定のビルドに出すときだけ数える。
  * 戻り値: [{ rel, line, kind, id, status, block }]（line は本文の行。block は画像だけの行で、表示がその位置に出すもの）
  */
 export function unverifiedMaterialRefs(texts, statuses) {

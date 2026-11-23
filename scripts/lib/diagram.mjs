@@ -423,31 +423,49 @@ function withoutDiagramCode(markdown) {
 
 /**
  * 本文の図と実物の参照（#/diagrams/<id>、#/artifacts/<id>）を、コードの外から行単位の近似で拾います。
- * 戻り値: [{ kind: 'diagram' | 'artifact', href, id?, step?, image?, block?, reference?, line? }]
+ * 戻り値: [{ kind: 'diagram' | 'artifact', href, id?, step?, image?, block?, reference?, nestedImageLine?, line? }]
  *   id は形の正しい参照だけに付きます。image は画像の形（`![…](…)`）、block は画像だけの行
  *   （表示ではその位置に図や実物を出す。ほかはリンクとして残る）、reference は参照形式の定義です。
  */
 export function parseMaterialRefs(markdown, { withLine = false } = {}) {
   const text = withoutDiagramCode(markdown);
-  const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/(?:diagrams|artifacts)\/[^<>\s]*)>|(#\/(?:diagrams|artifacts)\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
+  const inline = /!?\[((?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*)\]\(\s*(?:<(#\/(?:diagrams|artifacts)\/[^<>\s]*)>|(#\/(?:diagrams|artifacts)\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
   const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/(?:diagrams|artifacts)\/[^>\s]*)/gm;
   const lineOf = (index) => text.slice(0, index).split('\n').length;
   const lines = text.split('\n');
   const refOf = (kind, href) => (kind === 'diagram' ? diagramRefOf(href) : artifactRefOf(href));
-  const refs = Array.from(text.matchAll(inline), (match) => {
-    const href = match[1] ?? match[2];
+  const refs = [];
+  function add(match, index) {
+    const href = match[2] ?? match[3];
     const kind = materialKindOf(href);
-    const line = lineOf(match.index);
+    const line = lineOf(index);
     const image = match[0].startsWith('!');
-    // 引用の印を除いた行が、この画像だけなら、表示はその位置に図や実物を出します
+    // 引用の印を除いた行が、この画像だけかを見ます。表示との突き合わせはビルドで行います。
     const content = lines[line - 1].replace(/^(?: {0,3}>[ \t]?)+/, '').trim();
     const block = image && content === match[0].trim();
-    return { kind, href, ...refOf(kind, href), image, block, ...(withLine ? { line } : {}) };
-  });
+    const ref = { kind, href, ...refOf(kind, href), image, block, ...(withLine ? { line } : {}) };
+    refs.push(ref);
+    return ref;
+  }
+  for (const match of text.matchAll(inline)) {
+    const ref = add(match, match.index);
+    if (ref.image) continue;
+    const label = match[1];
+    for (const inner of label.matchAll(inline)) {
+      if (!inner[0].startsWith('!') || /(?<!\\)(?:\\\\)*\\$/.test(label.slice(0, inner.index))) continue;
+      const index = match.index + 1 + inner.index;
+      ref.nestedImageLine ??= lineOf(index);
+      add(inner, index);
+    }
+  }
   for (const match of text.matchAll(definitions)) {
     refs.push({ kind: materialKindOf(match[1]), href: match[1], reference: true, ...(withLine ? { line: lineOf(match.index) } : {}) });
   }
   return refs;
+}
+
+export function nestedMaterialImageMessage(line) {
+  return `本文 ${line} 行目: 図・実物へのリンクの中に、図・実物の画像は書けません`;
 }
 
 /** 本文の図の参照（parseMaterialRefs の図だけ。形は { href, id?, step?, reference?, line? }） */
@@ -465,7 +483,9 @@ export function parseDiagramRefs(markdown, { withLine = false } = {}) {
 export function checkDiagramRefs({ texts, diagrams }) {
   const errors = [];
   for (const { rel, body } of texts) {
-    for (const { href, id, step, reference } of parseDiagramRefs(body)) {
+    for (const { kind, href, id, step, reference, nestedImageLine } of parseMaterialRefs(body)) {
+      if (kind !== 'diagram') continue;
+      if (nestedImageLine !== undefined) errors.push({ rel, message: nestedMaterialImageMessage(nestedImageLine) });
       const target = diagrams.get(id);
       const maxStep = target?.type === 'architecture' ? target.steps : 0;
       let message;

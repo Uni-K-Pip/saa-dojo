@@ -1,7 +1,9 @@
 // 基礎講座: AWS 未経験者向けの基礎レッスンと確認問題
 import { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { LessonRereadBadge, LessonRereadFilter, NO_REREAD_LESSONS } from '../components/LessonReread';
 import { loadBlueprint, loadLessons, loadQuestionIndex } from '../content/loader';
+import { lessonRereadCounts } from '../domain/lesson-reread';
 import { lessonReadMap, percent, progressOf } from '../domain/progress';
 import { randomRng } from '../domain/rng';
 import { pickQuestions } from '../domain/selection';
@@ -15,10 +17,12 @@ export default function BasicsPage() {
   const { events, history } = useStudy();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [rereadOnly, setRereadOnly] = useState(false);
   const read = lessonReadMap(events);
   const pool = index.filter((q) => q.pool === 'basics');
   const p = progressOf(pool, history);
   const readCount = lessons.filter((l) => read.has(l.id)).length;
+  const reread = lessonRereadCounts(events, lessons);
 
   async function startAll() {
     if (busy || pool.length === 0) return;
@@ -61,11 +65,17 @@ export default function BasicsPage() {
           </div>
         )}
       </div>
-      {lessons.length === 0 ? (
+      {lessons.some((l) => l.checkIds?.length) && (
+        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} />
+      )}
+      {rereadOnly && reread.size === 0 ? (
+        <p className="notice">{NO_REREAD_LESSONS}</p>
+      ) : lessons.length === 0 ? (
         <div className="notice warn">基礎講座のレッスンはまだありません。</div>
       ) : (
         <ol className="list card">
           {lessons.map((l, i) => {
+            if (rereadOnly && !reread.has(l.id)) return null;
             const qp = progressOf(
               l.questionIds.map((id) => ({ id })),
               history,
@@ -80,7 +90,12 @@ export default function BasicsPage() {
                     約 {l.estimatedMinutes} 分{l.questionIds.length > 0 ? `・確認問題 ${qp.answered}/${qp.total}` : ''}
                   </span>
                 </span>
-                {read.has(l.id) && <span className="badge ok">読了</span>}
+                {(read.has(l.id) || reread.has(l.id)) && (
+                  <span className="meta-row">
+                    {read.has(l.id) && <span className="badge ok">読了</span>}
+                    <LessonRereadBadge count={reread.get(l.id)} />
+                  </span>
+                )}
               </li>
             );
           })}

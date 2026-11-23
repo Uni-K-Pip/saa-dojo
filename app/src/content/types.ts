@@ -114,6 +114,8 @@ export interface LessonMeta {
   estimatedMinutes: number;
   /** 確認問題（lessonRefs で参照している問題と本文で挙げている問題。保留模試は含まない） */
   questionIds: string[];
+  /** 本文のその場の確認の ID */
+  checkIds: string[];
 }
 
 export interface LessonBody {

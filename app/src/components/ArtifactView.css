@@ -35,7 +35,9 @@
   grid-template-columns: 2.2em 2.2em 1fr;
 }
 
+/* 本文を選んでコピーしたときに番号が混ざらないよう、行番号と同じく選択の対象から外す */
 .ar-gutter {
+  user-select: none;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

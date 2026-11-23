@@ -9,9 +9,9 @@ import * as schema from '../../../scripts/lib/schema.mjs';
 import { checkArtifact, jsonLines, parseJsonPath, rangeKey, renderArtifact, resolveJsonPath } from '../../../scripts/lib/artifact.mjs';
 import { parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
 import { materialHash } from '../../../scripts/lib/material-status.mjs';
-import { buildContent } from '../lib/content-build.mjs';
+import { buildContent, parseFrontMatter } from '../lib/content-build.mjs';
 import { crosscheckMarkdown } from '../lib/markdown-crosscheck.mjs';
-import { lessonId } from './diagram-fixtures.mjs';
+import { architecture, lessonId } from './diagram-fixtures.mjs';
 
 const repoContent = new URL('../../../content/saa-c03/', import.meta.url);
 const read = (rel) => fs.readFileSync(new URL(rel, repoContent), 'utf8');
@@ -254,6 +254,31 @@ describe('本文の参照', () => {
     expect(crosscheckMarkdown('![実物](#/artifacts/ar-test-json (題))')).toEqual([
       { line: 1, message: expect.stringContaining('実物の参照 #/artifacts/ar-test-json を、検査と表示で違って読んでいます') },
     ]);
+  });
+
+  it.each([
+    ['[![図](#/diagrams/dg-absent)](#/artifacts/ar-test-json)', '図 dg-absent'],
+    [`[![実物](#/artifacts/ar-absent)](#/diagrams/${architecture().id})`, '実物 ar-absent'],
+  ])('教材へのリンクに入れた画像とその参照先を validate とビルドで同じく検査する（%s）', (ref, missing) => {
+    const diagram = architecture();
+    const dirs = fixture({ artifacts: [jsonArtifact()], raw: { [`diagrams/${diagram.id}.json`]: diagram }, body: ref });
+    const line = parseFrontMatter(lesson(ref)).body.split('\n').indexOf(ref) + 1;
+    const expected = [
+      `本文 ${line} 行目: 図・実物へのリンクの中に、図・実物の画像は書けません`,
+      `参照先の${missing} がありません。`,
+    ].sort();
+    const validated = checkContent(loadContent({ root: dirs.root })).issues.filter(({ level }) => level === 'error');
+    expect(validated.map(({ message }) => message).sort()).toEqual(expected);
+    const built = buildContent({ ...dirs, schema });
+    expect(built.ok).toBe(false);
+    expect(built.errors.sort()).toEqual(expected.map((message) => `${lessonRel}: ${message}`).sort());
+  });
+
+  it('外部リンクやレッスンへのリンクの中の画像には入れ子の検査をかけない', () => {
+    const body = `[![実物](#/artifacts/ar-test-json)](https://example.com)\n\n[![実物](#/artifacts/ar-test-json)](#/lessons/${lessonId})`;
+    const dirs = fixture({ artifacts: [jsonArtifact()], body });
+    expect(checkContent(loadContent({ root: dirs.root })).issues.filter(({ level }) => level === 'error')).toEqual([]);
+    expect(buildContent({ ...dirs, schema }).errors).toEqual([]);
   });
 });
 

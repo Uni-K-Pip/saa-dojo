@@ -5,9 +5,13 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import * as schema from '../../../scripts/lib/schema.mjs';
 import { buildOutputs, classify, parseContent, writeOutputs } from '../lib/content-build.mjs';
 import { catalogHash } from '../../../scripts/lib/catalog.mjs';
+import { remarkInlineChecks } from '../../src/components/markdown-plugins.ts';
 
 const appDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const contentDir = path.resolve(appDir, '../content/saa-c03');
@@ -116,6 +120,38 @@ describe('コンテンツのビルド', () => {
     const lessons = JSON.parse(out.find((f) => f.rel === manifest.files.lessons.path).text);
     expect(lessons[0].questionIds).toEqual(['saa-1.1-a-001']);
     expect(manifest.files['lesson:lesson-4.1-s3-storage-classes'].path).toMatch(/^lessons\/lesson-4\.1-s3-storage-classes\.[0-9a-f]{12}\.json$/);
+  });
+
+  it('基礎講座と通常のレッスンの一覧に表示と同じその場の確認の ID を出す', () => {
+    const check = (question) => [
+      '> **その場の確認**', `> ${question}`, '>',
+      '> - [x] はい', '> - [ ] いいえ', '>', '> 理由です。',
+    ].join('\n');
+    const lessons = [
+      ['basics', 'basics', 'lesson-basics-reread', 0, check('**保存**できますか？')],
+      ['d4', '4.1', 'lesson-4.1-reread', 4, `${check('**保存**できますか？')}\n\n${check('[読み取り](#/lessons/lesson-basics-reread)が必要ですか？')}`],
+      ['d4', '4.1', 'lesson-4.1-empty', 4, '10. 記法の例\n\n' +
+        ['```markdown', check('記法の例ですか？'), '```'].join('\n').replace(/^/gm, '    ')],
+    ];
+    const parsed = parseContent(files([], lessons.map(([dir, task, id, domain, body]) => ({
+      rel: `lessons/${dir}/${id}.md`,
+      text: [
+        '---', `id: ${id}`, 'title: 確認のあるレッスン', `taskStatement: "${task}"`, `domain: ${domain}`,
+        'order: 1', 'knowledgeRefs: []', 'services: []', 'estimatedMinutes: 5', 'createdBy: t', '---', body,
+      ].join('\n'),
+    }))), schema);
+    expect(parsed.errors).toEqual([]);
+    const { files: out, manifest } = buildOutputs(parsed, schema);
+    const byKey = (key) => JSON.parse(out.find((f) => f.rel === manifest.files[key].path).text);
+    const display = unified().use(remarkParse).use(remarkGfm).use(remarkInlineChecks);
+    for (const { id, checkIds } of byKey('lessons')) {
+      const { body } = byKey(`lesson:${id}`);
+      const tree = display.runSync(display.parse(body), body);
+      const displayedIds = tree.children.flatMap((node) => node.data?.hProperties?.dataCheckId ?? []);
+      expect(checkIds).toEqual(displayedIds);
+      expect(checkIds).toHaveLength(id.endsWith('empty') ? 0 : id.includes('basics') ? 1 : 2);
+    }
+    expect(byKey('lessons')).toHaveLength(lessons.length);
   });
 
   it('学習コースを出力し、ユニット演習から保留模試と要修正の問題を除く', () => {

@@ -1,4 +1,6 @@
 // レッスン・早見表・ガイドの「その場の確認」を行単位で読みます。
+import { hashString } from './hash-string.mjs';
+
 const HEAD = /^([ \t]*)>[ \t]*\*\*その場の確認([：:]?)\*\*(.*)$/;
 const QUOTE = /^([ \t]*)>[ \t]?/;
 const BLANK = /^[ \t]*$/;
@@ -13,8 +15,22 @@ export const CALLOUT_KINDS = {
 };
 
 function isCalloutHeading(line) {
-  const title = /^(\*\*|__)([^*_]+)\1$/.exec(line.trim())?.[2].trim().replace(/[：:]$/, '');
-  return title !== undefined && Object.hasOwn(CALLOUT_KINDS, title);
+  const strong = /^([*_])\1(?=\S)(.*?\S)\1\1(?!\1)/.exec(line.trim());
+  if (!strong) return false;
+  const [, marker, body] = strong;
+  // 両端に同じ記号が奇数個余る場合は、強調が太字の外側に来ます。
+  const leading = body.match(/^(?:\*+|_+)/)?.[0];
+  const trailing = body.match(/(?:\*+|_+)$/)?.[0];
+  if (leading?.[0] === marker && trailing?.[0] === marker && leading.length % 2 && trailing.length % 2) return false;
+  if (['*', '_', '`'].some((symbol) => body.split(symbol).length % 2 === 0)) return false;
+  const title = body.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
+  return Object.hasOwn(CALLOUT_KINDS, title);
+}
+
+export const isInlineCheckHeading = (line) => HEAD.test(line);
+
+export function inlineCheckId(questionKey) {
+  return `c${hashString(questionKey).toString(16).padStart(8, '0')}`;
 }
 
 function decodeCharacterReference(_match, reference) {
@@ -85,7 +101,7 @@ export function parseInlineChecks(markdown) {
     const body = [];
     let indentMismatch = false;
     let quote;
-    while ((quote = QUOTE.exec(lines[i + 1] ?? '')) && !HEAD.test(lines[i + 1])) {
+    while ((quote = QUOTE.exec(lines[i + 1] ?? '')) && !isInlineCheckHeading(lines[i + 1])) {
       if (quote[1] !== heading[1]) indentMismatch = true;
       body.push(lines[++i].slice(quote[0].length));
     }

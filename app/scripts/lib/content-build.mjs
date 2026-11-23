@@ -9,7 +9,7 @@ import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
 import { buildArtifactOutputs, checkArtifactsForBuild } from './artifact-build.mjs';
 import { checkMaterialsForBuild, excludedRefWarnings } from './material-build.mjs';
-import { crosscheckMarkdown } from './markdown-crosscheck.mjs';
+import { inspectMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
 import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
 import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
@@ -322,9 +322,13 @@ function crossCheck(parsed, err, warn) {
   const materials = checkMaterialsForBuild(parsed);
   for (const m of materials.errors) err(...splitMsg(m));
   for (const m of materials.warnings) warn(...splitMsg(m));
-  for (const { rel, body } of [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)]) {
-    for (const { line, message } of crosscheckMarkdown(body)) err(rel, `本文 ${line} 行目: ${message}`);
-  }
+  const inspectBody = ({ rel, body }) => {
+    const { differences, checkIds } = inspectMarkdown(body);
+    for (const { line, message } of differences) err(rel, `本文 ${line} 行目: ${message}`);
+    return checkIds;
+  };
+  for (const lesson of parsed.lessons) lesson.checkIds = inspectBody(lesson);
+  for (const item of [...parsed.docs, ...labPatternTexts(parsed)]) inspectBody(item);
   const course = checkCourseForBuild(parsed, HIDDEN_STATUSES, materials.statuses);
   for (const m of course.errors) err(parsed.course.rel, m);
   for (const w of course.warnings) warn(parsed.course.rel, w.message);
@@ -456,7 +460,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   add(
     'lessons',
     'lessons',
-    lessons.map(({ data, body }) => ({
+    lessons.map(({ data, body, checkIds = [] }) => ({
       id: data.id,
       title: data.title,
       domain: data.domain,
@@ -466,6 +470,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       services: canon(data.services),
       estimatedMinutes: data.estimatedMinutes,
       questionIds: lessonQuestions(data.id, body),
+      checkIds,
     })),
   );
   for (const { data, body } of lessons) add(`lesson:${data.id}`, `lessons/${data.id}`, { id: data.id, body });

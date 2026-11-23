@@ -1,7 +1,9 @@
 // ロードマップ: ドメイン → タスクごとのレッスンと演習、進捗
-import { use } from 'react';
+import { use, useState } from 'react';
 import { Link } from 'react-router';
+import { LessonRereadBadge, LessonRereadFilter, NO_REREAD_LESSONS } from '../components/LessonReread';
 import { loadBlueprint, loadLessons, loadQuestionIndex } from '../content/loader';
+import { lessonRereadCounts } from '../domain/lesson-reread';
 import { answeredItems, lessonReadMap, percent, progressOf } from '../domain/progress';
 import { useStudy } from '../state/study';
 
@@ -10,10 +12,18 @@ export default function RoadmapPage() {
   const lessons = use(loadLessons());
   const index = use(loadQuestionIndex());
   const { events, history } = useStudy();
+  const [rereadOnly, setRereadOnly] = useState(false);
   const read = lessonReadMap(events);
   const covered = answeredItems(index, history);
   const practice = index.filter((q) => q.pool === 'practice');
   const basicsLessons = lessons.filter((l) => l.domain === 0);
+  const domains = blueprint?.domains ?? [];
+  const taskIds = new Set(domains.flatMap((d) => d.tasks.map((t) => t.id)));
+  const roadmapLessons = lessons.filter((l) => taskIds.has(l.taskStatement));
+  const reread = lessonRereadCounts(events, roadmapLessons);
+  const shownLessons = rereadOnly ? roadmapLessons.filter((l) => reread.has(l.id)) : roadmapLessons;
+  const shownTasks = new Set(shownLessons.map((l) => l.taskStatement));
+  const shownDomains = rereadOnly ? domains.filter((d) => d.tasks.some((t) => shownTasks.has(t.id))) : domains;
 
   return (
     <div>
@@ -25,14 +35,18 @@ export default function RoadmapPage() {
           {basicsLessons.filter((l) => read.has(l.id)).length} 本）から始めてください。
         </div>
       )}
-      {(blueprint?.domains ?? []).map((d) => (
+      {roadmapLessons.some((l) => l.checkIds?.length) && (
+        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} />
+      )}
+      {rereadOnly && shownLessons.length === 0 && <p className="notice">{NO_REREAD_LESSONS}</p>}
+      {shownDomains.map((d) => (
         <section key={d.id} className="card" aria-labelledby={`d${d.id}-h`}>
           <h2 id={`d${d.id}-h`}>
             ドメイン {d.id}: {d.nameJa}
             <span className="small muted">（出題比重 {d.weightPercent}%）</span>
           </h2>
-          {d.tasks.map((t) => {
-            const tl = lessons.filter((l) => l.taskStatement === t.id);
+          {d.tasks.filter((t) => !rereadOnly || shownTasks.has(t.id)).map((t) => {
+            const tl = shownLessons.filter((l) => l.taskStatement === t.id);
             const tq = practice.filter((q) => q.taskStatement === t.id);
             const p = progressOf(tq, history);
             const itemsDone = t.items.filter((i) => covered.has(i.id)).length;
@@ -60,6 +74,7 @@ export default function RoadmapPage() {
                             <span className="badge ok">読了</span>
                           </>
                         )}
+                        {' '}<LessonRereadBadge count={reread.get(l.id)} />
                       </li>
                     ))}
                   </ul>

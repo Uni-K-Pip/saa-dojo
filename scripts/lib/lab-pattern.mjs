@@ -141,7 +141,7 @@ export function labPatternPathMessage(rel, id) {
 
 export function labPatternTexts({ labs = [], patterns = [] }) {
   return [
-    ...labs.map(({ rel, body, data }) => ({ rel, body, material: { section: 'labs', id: data.id } })),
-    ...patterns.map(({ rel, body, data }) => ({ rel, body, material: { section: 'patterns', id: data.id } })),
+    ...labs.map(({ rel, body, data }) => ({ rel, body, material: { section: 'labs', id: data.id, diagram: data.diagram } })),
+    ...patterns.map(({ rel, body, data }) => ({ rel, body, material: { section: 'patterns', id: data.id, diagram: data.diagram } })),
   ];
 }
