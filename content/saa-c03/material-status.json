@@ -10,6 +10,11 @@
       "checkedAt": "2026-11-23",
       "hash": "fc62023f5bd1"
     },
+    "dg-elb-choice": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "82c6cf8a2931"
+    },
     "dg-s3-glacier-position": {
       "status": "verified",
       "checkedAt": "2026-11-23",

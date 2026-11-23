@@ -1,0 +1,104 @@
+{
+  "id": "dg-elb-choice",
+  "type": "decision",
+  "title": "ロードバランサーの選び方",
+  "alt": "ELB の 3 種類（ALB・NLB・GWLB）を、質問に答えて選ぶ図です。最初に、他社のファイアウォールなどの仮想アプライアンスで通信を検査するかを聞きます。検査するなら GWLB です。検査しないなら、URL のパスやホスト名、HTTP ヘッダーで振り分けるかを聞きます。振り分けるなら、取引先に固定の IP アドレスを伝える必要があれば ALB と Global Accelerator、Web の攻撃も防ぐなら ALB と AWS WAF、どちらでもなければ ALB です。振り分けないなら、UDP や HTTP ではない TCP の通信は NLB です。HTTP の通信で、固定の IP アドレスが必要なら NLB、必要なければ ALB です。",
+  "lessonRefs": [
+    "lesson-3.4-edge-and-load-balancing"
+  ],
+  "factRefs": [],
+  "createdBy": "r5",
+  "start": "q-inspect",
+  "nodes": [
+    {
+      "id": "q-inspect",
+      "ask": "他社のファイアウォールなどの仮想アプライアンスで、通信を検査しますか？",
+      "choices": [
+        { "label": "はい", "to": "r-gwlb" },
+        { "label": "いいえ", "to": "q-path" }
+      ]
+    },
+    {
+      "id": "r-gwlb",
+      "result": "GWLB",
+      "why": "レイヤー 3 で動き、ファイアウォールや侵入検知などの仮想アプライアンスを、すべての通信の出入口として透過的に挟みます。",
+      "factRefs": ["elb.gwlb-transparent-gateway"]
+    },
+    {
+      "id": "q-path",
+      "ask": "URL のパスやホスト名、HTTP ヘッダーで振り分けますか？",
+      "choices": [
+        { "label": "はい", "to": "q-path-ip" },
+        { "label": "いいえ", "to": "q-proto" }
+      ]
+    },
+    {
+      "id": "q-path-ip",
+      "ask": "取引先に固定の IP アドレスを伝える必要もありますか？",
+      "choices": [
+        { "label": "はい", "to": "r-alb-ga" },
+        { "label": "いいえ", "to": "q-waf" }
+      ]
+    },
+    {
+      "id": "r-alb-ga",
+      "result": "ALB と Global Accelerator",
+      "why": "ALB の IP アドレスは固定できません。Global Accelerator のエンドポイントに ALB を登録すると、静的な IP アドレスを入り口にしたまま、ALB で振り分けられます。",
+      "factRefs": ["elb.static-ip-support-by-type", "global-accelerator.fixed-anycast-entry", "global-accelerator.standard-endpoints"]
+    },
+    {
+      "id": "q-waf",
+      "ask": "SQL インジェクションなどの Web の攻撃も防ぎますか？",
+      "choices": [
+        { "label": "はい", "to": "r-alb-waf" },
+        { "label": "いいえ", "to": "r-alb-route" }
+      ]
+    },
+    {
+      "id": "r-alb-waf",
+      "result": "ALB と AWS WAF",
+      "why": "ALB に AWS WAF のウェブ ACL を関連付け、ルールでリクエストを許可・ブロックします。Web の攻撃の検査は、ALB ではなく AWS WAF が受け持ちます。",
+      "factRefs": ["elb.waf-integration"]
+    },
+    {
+      "id": "r-alb-route",
+      "result": "ALB",
+      "why": "レイヤー 7 で動き、ホスト名・パス・HTTP ヘッダーなどを条件にしたルールで、転送先のターゲットグループを決めます。",
+      "factRefs": ["elb.alb-layer7", "elb.alb-condition-types"]
+    },
+    {
+      "id": "q-proto",
+      "ask": "UDP や、HTTP ではない TCP の通信ですか？",
+      "choices": [
+        { "label": "はい", "to": "r-nlb-proto" },
+        { "label": "いいえ", "to": "q-ip" }
+      ]
+    },
+    {
+      "id": "r-nlb-proto",
+      "result": "NLB",
+      "why": "レイヤー 4 で動き、TCP・UDP・TLS のリスナーで、HTTP の中身ではなく接続の単位で転送します。",
+      "factRefs": ["elb.nlb-layer4"]
+    },
+    {
+      "id": "q-ip",
+      "ask": "取引先に固定の IP アドレスを伝える必要がありますか？",
+      "choices": [
+        { "label": "はい", "to": "r-nlb-ip" },
+        { "label": "いいえ", "to": "r-alb-web" }
+      ]
+    },
+    {
+      "id": "r-nlb-ip",
+      "result": "NLB",
+      "why": "静的 IP と Elastic IP アドレスの割り当てに対応するのは NLB だけです。NLB は有効にした AZ ごとに静的な IP アドレスを持ちます。",
+      "factRefs": ["elb.static-ip-support-by-type", "elb.nlb-static-ip"]
+    },
+    {
+      "id": "r-alb-web",
+      "result": "ALB",
+      "why": "HTTP・HTTPS を扱うレイヤー 7 のロードバランサーで、Web アプリケーションに向きます。固定の IP アドレスは持ちません。",
+      "factRefs": ["elb.alb-layer7", "elb.static-ip-support-by-type"]
+    }
+  ]
+}

@@ -47,6 +47,8 @@ Classic Load Balancer は前の世代のロードバランサーです。新し�
 | 自社のサービスを AWS PrivateLink で別の VPC に公開したい | NLB |
 | 他社のファイアウォールで、VPC に出入りする通信をすべて検査したい | GWLB |
 
+![質問に答えてロードバランサーを選ぶ](#/diagrams/dg-elb-choice)
+
 ## 一緒に使う機能
 
 - **ヘルスチェック**: 異常なターゲットに通信を送らないようにします。Amazon EC2 Auto Scaling で ELB のヘルスチェックを使うと、異常なインスタンスを自動で置き換えます。
