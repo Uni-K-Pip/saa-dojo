@@ -1,13 +1,8 @@
 // Markdown の変換プラグイン。囲み記事（`> **試験のポイント**`・`> **ひっかけ注意**`）を色付きの枠にする。
 import type { Blockquote, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import type { Plugin } from 'unified';
-import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { CALLOUT_KINDS, isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { hashString } from '../domain/rng';
-
-export const CALLOUT_KINDS: Record<string, 'tip' | 'trap'> = {
-  試験のポイント: 'tip',
-  ひっかけ注意: 'trap',
-};
 
 function textOf(nodes: readonly PhrasingContent[]): string {
   return nodes
@@ -92,7 +87,7 @@ function plainText(node: RootContent | Root): string {
 export const remarkInlineChecks: Plugin<[], Root> = function () {
   return (tree: Root, file: { toString(): string }) => {
     const markdown = file.toString();
-    const checks = new Map(parseInlineChecks(markdown).filter((c) => !c.problems.length).map((c) => [c.line, c]));
+    const checks = new Map(parseInlineChecks(markdown).filter((c) => !c.problems.length && !c.followingCallout).map((c) => [c.line, c]));
     if (!checks.size) return;
     const source = markdown.split(/\r\n?|\n/);
     const parse = (value: string) => this.parse(value) as Root;

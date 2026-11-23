@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -10,10 +13,32 @@ const yamlDir = fileURLToPath(new URL('./node_modules/yaml', import.meta.url));
 // テストでは Service Worker の登録を空の実装に差し替える
 const pwaStub = fileURLToPath(new URL('./src/test/pwa-register-stub.ts', import.meta.url));
 
+export function guardUnverifiedContent(): Plugin {
+  return {
+    name: 'guard-unverified-content',
+    apply: 'build',
+    configResolved({ publicDir }) {
+      if (!publicDir || process.env.SAA_ALLOW_UNVERIFIED_BUILD === '1') return;
+      let manifest;
+      try {
+        manifest = JSON.parse(readFileSync(join(publicDir, 'data', 'manifest.json'), 'utf8'));
+      } catch {
+        return;
+      }
+      if (manifest?.includeUnverified === true) {
+        throw new Error('未検証の教材を含むコンテンツのままビルドしようとしています。' +
+          '`npm run content` で既定のコンテンツを書き出してからビルドしてください。' +
+          '未検証の教材を含める場合は、環境変数 SAA_ALLOW_UNVERIFIED_BUILD=1 を設定してください。');
+      }
+    },
+  };
+}
+
 export default defineConfig({
   // GitHub Pages のサブパスで動かす
   base: '/saa-dojo/',
   plugins: [
+    guardUnverifiedContent(),
     react(),
     VitePWA({
       // 更新があればトーストで知らせ、利用者の操作で再読み込みする

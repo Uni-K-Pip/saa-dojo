@@ -7,6 +7,16 @@ const OPTION =/^[-*] \[([ xX])\][ \t]+(.+)$/;
 const THEMATIC_BREAK = /^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})$/;
 const CHARACTER_REFERENCES = { amp: '&', lt: '<', gt: '>', quot: '"' };
 
+export const CALLOUT_KINDS = {
+  試験のポイント: 'tip',
+  ひっかけ注意: 'trap',
+};
+
+function isCalloutHeading(line) {
+  const title = /^(\*\*|__)([^*_]+)\1$/.exec(line.trim())?.[2].trim().replace(/[：:]$/, '');
+  return title !== undefined && Object.hasOwn(CALLOUT_KINDS, title);
+}
+
 function decodeCharacterReference(_match, reference) {
   if (reference[0] !== '#') return CHARACTER_REFERENCES[reference];
   const hex = reference[1].toLowerCase() === 'x';
@@ -44,7 +54,7 @@ function questionHasBlock(question) {
     || /^ {0,3}<(?:!--|\?|![A-Z]|!\[CDATA\[|\/?(?:script|pre|style|textarea|div|table|section)(?=[ \t>/]|$))/i.test(line)
     || (index === 0 && /^ {0,3}(?:(?:[-+*]|\d{1,9}[.)])(?:[ \t]|$)|\[[^\]]+\]:[ \t]*\S)/.test(line))
     || THEMATIC_BREAK.test(line) || (index > 0 && /^ {0,3}(?:-+|=+)[ \t]*$/.test(line))
-    || (index > 0 && lines[index - 1].includes('|') && /^ {0,3}\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*$/.test(line)));
+    || (index > 0 && lines[index - 1].includes('|') && /^ {0,3}\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*(?:\|[ \t]*)?$/.test(line)));
 }
 
 export function parseInlineChecks(markdown) {
@@ -87,6 +97,11 @@ export function parseInlineChecks(markdown) {
     const questionLine = line + 1 + questionBody.findIndex((value) => value.trim());
     const question = questionBody.join('\n').trim();
     const reasonBody = last < 0 ? [] : body.slice(last + 1);
+    const callout = reasonBody.findIndex(isCalloutHeading);
+    const followingCallout = callout < 0 ? undefined : {
+      line: line + last + 2 + callout,
+      message: 'その場の確認と次の引用（囲み記事）は、空行で分けてください。',
+    };
     // 理由は空の引用行を省いて表示するため、残る行の元の行番号を控えます。
     const reasonLines = reasonBody.flatMap((value, index) => value.trim() ? [line + last + 2 + index] : []);
     const reason = reasonBody.filter((value) => value.trim()).join('\n').trim();
@@ -101,7 +116,7 @@ export function parseInlineChecks(markdown) {
     if (first >= 0 && matches.slice(first, last + 1).some((match) => !match)) {
       problems.push('選択肢の並びの途中に別の行があります。');
     }
-    checks.push({ line, endLine: i + 1, questionLine, question, questionKey: normalizeInlineCheckQuestion(question), options, reason, reasonLines, problems });
+    checks.push({ line, endLine: i + 1, questionLine, question, questionKey: normalizeInlineCheckQuestion(question), options, reason, reasonLines, problems, followingCallout });
   }
   return checks;
 }

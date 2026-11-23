@@ -1,4 +1,4 @@
-import { checkCourse, courseMaterialContext, unitPracticePool } from '../../../scripts/lib/course.mjs';
+import { WARN_UNITS_WITHOUT_LAB, checkCourse, courseMaterialContext, unitPracticePool } from '../../../scripts/lib/course.mjs';
 
 // hiddenStatuses: 出題しない検証状態。ユニット演習の候補は、validate と同じく出題できる問題で数える
 export function checkCourseForBuild(parsed, hiddenStatuses = new Set(), materialStatuses) {
@@ -7,6 +7,7 @@ export function checkCourseForBuild(parsed, hiddenStatuses = new Set(), material
     lessons: parsed.lessons.map(({ data }) => data),
     docIds: new Set(parsed.docs.map(({ data }) => data.id)),
     ...courseMaterialContext(parsed, materialStatuses),
+    warnUnitsWithoutLab: WARN_UNITS_WITHOUT_LAB,
     questions: parsed.questions
       .filter(({ data }) => !hiddenStatuses.has(parsed.reviewStatus?.[data.id]?.status ?? 'pending'))
       .map(({ data }) => data),

@@ -6,7 +6,19 @@ import { materialKindOf } from '../../../scripts/lib/diagram-refs.mjs';
 import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { headingsInSection, parseSections } from '../../../scripts/lib/lab-pattern.mjs';
 
-const parser = unified().use(remarkParse).use(remarkGfm);
+const unclosedFences = new WeakSet();
+const parser = unified().use(remarkParse).use(remarkGfm).use(function trackCodeFences() {
+  // remark の解析で確定した開き・閉じの記号列を拾う。字下げや引用の中でも同じ判定になる。
+  const data = this.data();
+  (data.fromMarkdownExtensions ??= []).push({
+    enter: {
+      codeFencedFenceSequence() {
+        const node = this.stack.findLast(({ type }) => type === 'code');
+        if (!unclosedFences.delete(node)) unclosedFences.add(node);
+      },
+    },
+  });
+});
 
 function walk(node, visit, inQuote = false, parent = undefined) {
   if (visit(node, inQuote, parent) === false) return;
@@ -41,17 +53,20 @@ function hasVisual(node) {
 }
 
 function inspectInlineChecks(markdown, tree) {
-  const pending = new Map(parseInlineChecks(markdown).filter(({ problems }) => problems.length === 0).map((check) => [check.line, check]));
+  const checks = parseInlineChecks(markdown);
+  const pending = new Map(checks.filter(({ problems }) => problems.length === 0).map((check) => [check.line, check]));
   const converted = new Map();
   const headings = new Set();
-  const differences = [];
+  const differences = checks.flatMap(({ followingCallout }) => followingCallout ? [followingCallout] : []);
   walk(tree, (node, inQuote, parent) => {
     const line = node.position.start.line;
     if (node.type === 'blockquote') {
       const check = pending.get(line);
       if (check && isInlineCheckBlockquote(node, check)) {
-        converted.set(node, check);
         pending.delete(line);
+        // 囲み記事との区切りは、上で実際の見出しの行を報告している。
+        if (check.followingCallout) return false;
+        converted.set(node, check);
         if (node.position.end.line > check.endLine) differences.push({
           line: check.endLine + 1,
           message: '確認の理由のあとに引用の続きがあります。確認と次の本文を空行で分けてください。',
@@ -151,11 +166,26 @@ function diagramRefDifferences(markdown, tree, converted) {
   return differences;
 }
 
+function unclosedFenceErrors(markdown, tree) {
+  const lastLine = markdown.split(/\r\n?|\n/).findLastIndex((line) => /[^ \t]/.test(line)) + 1;
+  const errors = [];
+  walk(tree, (node) => {
+    if (unclosedFences.has(node) && node.position.end.line >= lastLine) {
+      errors.push({
+        line: node.position.start.line,
+        message: 'コードフェンスが閉じていません。開きと同じ記号で、同じ数以上の行で閉じてください。',
+      });
+    }
+  });
+  return errors;
+}
+
 /** 本文を行単位の検査と表示で読み、判定が異なる箇所を本文の行番号で返します。 */
 export function crosscheckMarkdown(markdown) {
   const tree = parser.runSync(parser.parse(markdown));
   const { converted, differences } = inspectInlineChecks(markdown, tree);
-  return [...differences, ...diagramRefDifferences(markdown, tree, converted)].sort((a, b) => a.line - b.line);
+  return [...differences, ...diagramRefDifferences(markdown, tree, converted), ...unclosedFenceErrors(markdown, tree)]
+    .sort((a, b) => a.line - b.line);
 }
 
 /** 固定の見出しとミニラボの手順を、表示と同じ解析で確かめます。 */

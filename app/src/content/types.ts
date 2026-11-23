@@ -167,6 +167,8 @@ export interface Manifest {
   version: number;
   exam: string;
   contentHash: string;
+  /** 未検証を含める設定で書き出したか（古いデータにはない） */
+  includeUnverified?: boolean;
   counts: {
     questions: Record<Pool, number>;
     verified: number;
@@ -194,9 +196,9 @@ export interface Manifest {
     artifacts?: number;
     artifactsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
     labs?: number;
-    labsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    labsExcluded?: { pending: number; 'needs-fix': number; rejected: number; diagram?: number };
     patterns?: number;
-    patternsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    patternsExcluded?: { pending: number; 'needs-fix': number; rejected: number; diagram?: number };
   };
   files: Record<string, ManifestFile>;
 }
@@ -503,7 +505,10 @@ export interface ArtifactIndexEntry {
   status: DiagramStatus;
 }
 
-/** 本体の行（json は整形済み、text は書いたまま）。indent は字下げの字数、marks はかかる注目点の番号、starts はこの行から始まる注目点の番号 */
+/**
+ * 本体の行（json は整形済み、text は書いたまま）。indent は字下げの字数、marks はかかる注目点の番号。
+ * starts はこの行に出す注目点の番号（text は連続した行の塊ごとの先頭、json は範囲の先頭）。
+ */
 export interface ArtifactLine {
   indent: number;
   text: string;
@@ -511,6 +516,7 @@ export interface ArtifactLine {
   starts: number[];
 }
 
+/** 表の行。marks はかかる注目点の番号、starts はこの行に出す注目点の番号（指定した 1 行）。 */
 export interface ArtifactRow {
   cells: string[];
   marks: number[];

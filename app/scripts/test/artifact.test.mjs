@@ -164,11 +164,20 @@ describe('checkArtifact', () => {
     expect(errs(deep)).toEqual([expect.stringContaining('入れ子が 7 段')]);
   });
   it('数字だけのキー（入れ子を含む）はエラー', () => {
-    const doc = { Version: '2012-10-17', Map: { '10': 'ten', b: { '2': 'two' } } };
+    const doc = { Version: '2012-10-17', Map: [{ '0': '最初' }, { '0': '次' }] };
     expect(errs({ ...jsonArtifact(), document: doc, notes: [note({ path: 'Version' }), note({ path: 'Map' })] })).toEqual([
-      expect.stringContaining('数字だけのキーがあります（10, 2）'),
+      'document に数字だけのキーは書けません（読み込むと並びが変わることがあるため）。場所: Map[0].0, Map[1].0',
     ]);
     expect(errs({ ...jsonArtifact(), document: { ...doc, Map: { a10: 'x', '1a': 'y' } }, notes: [note({ path: 'Version' }), note({ path: 'Map' })] })).toEqual([]);
+  });
+  it('数字だけのキーの場所が多いときは先頭の 5 件と残りの件数を示す', () => {
+    const document = {
+      Version: '2012-10-17', Map: { 'a.b': { 0: true }, a: { b: { 0: true } } },
+      List: Array.from({ length: 4 }, () => ({ 0: true })),
+    };
+    expect(errs({ ...jsonArtifact(), document, notes: [note({ path: 'Version' }), note({ path: 'List' })] })).toEqual([
+      expect.stringContaining('場所: Map["a.b"].0, Map.a.b.0, List[0].0, List[1].0, List[2].0、ほか 1 件'),
+    ]);
   });
   it('整形した 1 行が字下げを含めて上限の字数を超えるとエラー', () => {
     const at = (len) => ({ ...jsonArtifact(), document: { Version: '2012-10-17', A: { B: 'x'.repeat(len) } }, notes: [note({ path: 'Version' }), note({ path: 'A' })] });

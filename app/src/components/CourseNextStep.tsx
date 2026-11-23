@@ -15,7 +15,7 @@ export function unitTitle(unit: CourseUnit): string {
 export function courseItemDetails(
   item: CourseItem, unitId: string, lessons: LessonMeta[], docs: DocEntry[],
   labs: LabMeta[] = [], patterns: PatternMeta[] = [],
-): { label: string; title: string; to: string; action: string; minutes?: number } {
+): { label: string; title: string; to: string; action: string; minutes?: number; status?: LabMeta['status'] } {
   switch (item.kind) {
     case 'lesson': {
       const lesson = lessons.find((l) => l.id === item.ref);
@@ -28,11 +28,11 @@ export function courseItemDetails(
     }
     case 'lab': {
       const lab = labs.find((l) => l.id === item.ref);
-      return { label: 'ミニラボ', title: lab?.title ?? item.ref, to: `/labs/${item.ref}`, action: 'ミニラボを読む', minutes: lab?.estimatedMinutes };
+      return { label: 'ミニラボ', title: lab?.title ?? item.ref, to: `/labs/${item.ref}`, action: 'ミニラボを読む', minutes: lab?.estimatedMinutes, status: lab?.status };
     }
     case 'pattern': {
       const pattern = patterns.find((p) => p.id === item.ref);
-      return { label: '設計パターン', title: pattern?.title ?? item.ref, to: `/patterns/${item.ref}`, action: '設計パターンを読む' };
+      return { label: '設計パターン', title: pattern?.title ?? item.ref, to: `/patterns/${item.ref}`, action: '設計パターンを読む', status: pattern?.status };
     }
     case 'practice':
       return { label: 'ユニット演習', title: 'ユニット演習', to: `/course/${unitId}`, action: 'ユニット演習へ' };

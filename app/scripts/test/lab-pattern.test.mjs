@@ -202,6 +202,16 @@ describe('ミニラボと設計パターンの共通検査', () => {
     }
   });
 
+  it('確認の直後に続く囲み記事を validate とビルドが同じ行と文面で報告する', () => {
+    const title = '> **試験のポイント**';
+    const body = patternBody + '\n' + check(1).trimEnd() + `\n${title}\n> 注意点です。`;
+    const line = body.split('\n').indexOf(title) + 1;
+    const message = `本文 ${line} 行目: その場の確認と次の引用（囲み記事）は、空行で分けてください。`;
+    const { validate, build } = fixture({ [patternRel]: markdown(pattern, body) });
+    expect(validate()).toContainEqual(expect.objectContaining({ level: 'error', code: 'inline-check', message }));
+    expect(build().errors).toContain(`${patternRel}: ${message}`);
+  });
+
   it('教材のスキーマ、ファイル名と id、重複を検査する', () => {
     expect(schema.LabFrontSchema.safeParse({ ...lab, estimatedMinutes: 26 }).success).toBe(false);
     expect(schema.PatternFrontSchema.safeParse({ ...pattern, qualifiers: ['cost', 'cost'] }).success).toBe(false);
@@ -228,7 +238,7 @@ describe('検証状態と教材の出力', () => {
     const body = `\n${labBody()}\n`;
     const dirs = fixture({
       [labRel]: '\ufeff' + markdown(lab, body).replaceAll('\n', '\r\n'),
-      'material-status.json': { labs: { [lab.id]: rec('labs', lab, body) } },
+      'material-status.json': { labs: { [lab.id]: rec('labs', lab, body) }, diagrams: { [diagram.id]: rec('diagrams', diagram) } },
     });
     const validated = loadContent({ root: dirs.root }).labs[0];
     const parsed = parseContent(readContentFiles(dirs.contentDir), schema).labs[0];
@@ -269,6 +279,7 @@ describe('検証状態と教材の出力', () => {
       'questions/basics/saa-basics-t-001.json': question('saa-basics-t-001', 'basics', 'basics'),
       'review-status.json': { 'saa-4.1-t-002': { status: 'needs-fix', checkedAt: '2026-11-23' } },
       'material-status.json': {
+        diagrams: { [diagram.id]: rec('diagrams', diagram) },
         labs: { [lab.id]: rec('labs', lab, labBody()), [fix.id]: rec('labs', fix, labBody(), 'needs-fix') },
         patterns: { [rejected.id]: rec('patterns', rejected, patternBody, 'rejected') },
       },
@@ -277,16 +288,16 @@ describe('検証状態と教材の出力', () => {
     const production = build();
     expect(production.ok, production.errors.join('\n')).toBe(true);
     expect(production.manifest.counts).toMatchObject({
-      labs: 1, labsExcluded: { pending: 0, 'needs-fix': 1, rejected: 0 },
-      patterns: 0, patternsExcluded: { pending: 1, 'needs-fix': 0, rejected: 1 },
+      labs: 1, labsExcluded: { pending: 0, 'needs-fix': 1, rejected: 0, diagram: 0 },
+      patterns: 0, patternsExcluded: { pending: 1, 'needs-fix': 0, rejected: 1, diagram: 0 },
     });
     expect(production.output('lab-index')).toEqual([expect.objectContaining({
       status: 'verified', services: ['Amazon S3'], questionIds: ['saa-4.1-t-001', 'saa-basics-t-001'],
     })]);
     const preview = build(true);
     expect(preview.manifest.counts).toMatchObject({
-      labs: 1, labsExcluded: { pending: 0, 'needs-fix': 1, rejected: 0 },
-      patterns: 1, patternsExcluded: { pending: 0, 'needs-fix': 0, rejected: 1 },
+      labs: 1, labsExcluded: { pending: 0, 'needs-fix': 1, rejected: 0, diagram: 0 },
+      patterns: 1, patternsExcluded: { pending: 0, 'needs-fix': 0, rejected: 1, diagram: 0 },
     });
     expect(preview.output('pattern-index')).toEqual([expect.objectContaining({ id: pattern.id, status: 'pending', qualifiers: ['cost'] })]);
     expect(preview.output(`pattern:${pattern.id}`)).toEqual({ id: pattern.id, body: patternBody });
@@ -296,13 +307,58 @@ describe('検証状態と教材の出力', () => {
     }
   });
 
-  it('図への参照の警告は検証済み教材の本文だけに出す', () => {
+  it('本文の図への参照の警告は検証済み教材だけに出す', () => {
     const pendingLab = fixture();
     expect(pendingLab.validate().map(({ code }) => code)).not.toContain('diagram-ref-unverified');
     expect(pendingLab.build().warnings.join('\n')).not.toContain('出力から除いたため');
     const verifiedLab = fixture({ 'material-status.json': { labs: { [lab.id]: rec('labs', lab, labBody()) } } });
-    expect(verifiedLab.validate()).toContainEqual(expect.objectContaining({ code: 'diagram-ref-unverified', message: expect.stringContaining(diagram.id) }));
+    expect(verifiedLab.validate()).toContainEqual(expect.objectContaining({ code: 'diagram-ref-unverified', message: expect.stringMatching(/^本文 \d+ 行目: /) }));
     expect(verifiedLab.build().warnings).toContainEqual(expect.stringContaining('出力から除いたため'));
+  });
+
+  it.each([
+    ['図に記録がない', undefined, '未検証', false],
+    ['図のハッシュが違う', { ...rec('diagrams', diagram), hash: '000000000000' }, '未検証', false],
+    ['図が要修正', rec('diagrams', diagram, undefined, 'needs-fix'), '要修正', false],
+    ['図も検証済み', rec('diagrams', diagram), undefined, true],
+  ])('%s ときに front matter の警告・出力・コースの項目を確かめる', (_, diagramRecord, status, shown) => {
+    const { validate, build } = fixture({
+      'course.json': course([lessonItem, labItem, patternItem]),
+      'material-status.json': {
+        diagrams: diagramRecord ? { [diagram.id]: diagramRecord } : {},
+        labs: { [lab.id]: rec('labs', lab, labBody()) },
+        patterns: { [pattern.id]: rec('patterns', pattern, patternBody) },
+      },
+    });
+    const issues = validate();
+    expect(issues.filter(({ level }) => level === 'error')).toEqual([]);
+    const diagramWarnings = issues.filter(({ code }) => code === 'diagram-ref-unverified');
+    if (shown) expect(diagramWarnings).toEqual([]);
+    else {
+      for (const [rel, label] of [[labRel, 'ミニラボ'], [patternRel, '設計パターン']]) {
+        expect(diagramWarnings).toContainEqual(expect.objectContaining({
+          level: 'warning', file: `content/saa-c03/${rel}`,
+          message: `front matter の diagram が検証済みでない図 ${diagram.id}（${status}）を指しています。` +
+            `このままでは既定のビルドにこの${label}を出しません。図を先に検証してください。`,
+        }));
+      }
+    }
+    for (const [includeUnverified, available] of [[false, shown], [true, true]]) {
+      const built = build(includeUnverified);
+      expect(built.ok, built.errors.join('\n')).toBe(true);
+      const excluded = { pending: 0, 'needs-fix': 0, rejected: 0, diagram: available ? 0 : 1 };
+      expect(built.manifest.counts).toMatchObject({
+        labs: Number(available), labsExcluded: excluded,
+        patterns: Number(available), patternsExcluded: excluded,
+      });
+      expect(built.output('lab-index').map(({ id }) => id)).toEqual(available ? [lab.id] : []);
+      expect(built.output('pattern-index').map(({ id }) => id)).toEqual(available ? [pattern.id] : []);
+      expect(Object.hasOwn(built.manifest.files, `lab:${lab.id}`)).toBe(available);
+      expect(Object.hasOwn(built.manifest.files, `pattern:${pattern.id}`)).toBe(available);
+      expect(built.output('course').stages[0].units[0].items).toEqual(available ? [lessonItem, labItem, patternItem] : [lessonItem]);
+      const diagramAvailable = shown || (includeUnverified && status === '未検証');
+      expect(Object.hasOwn(built.manifest.files, `diagram:${diagram.id}`)).toBe(diagramAvailable);
+    }
   });
 
   it('検証済み図の参照の有無は検証済み教材の本文から数える', () => {
