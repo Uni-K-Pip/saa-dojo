@@ -314,7 +314,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 変えられる設定: `NAT をパブリックサブネットに移す`（`none`、`seenSource` 203.0.113.20）、`NAT のサブネットに IGW へのルートを足す`（`none`。そのサブネットの種類が `public` に変わる）
 - 理由で触れること: NAT ゲートウェイは、IGW へのルートのあるパブリックサブネットに置く。宛先から見える送信元は NAT ゲートウェイのアドレス
 - 裏づけ: 事実 `nat-gateway.public-internet-route`、`nat-gateway.public-zonal-placement`、`nat-gateway.public-elastic-ip`、`nat-gateway.no-security-group`、`vpc.subnet-types`、`vpc.route-priority`、`vpc.route-table-local`（足す）、`vpc.igw-requirements`。レッスン `lesson-1.2-vpc-network-security`
-- 使う規則: `route-table`、`route-longest`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-outbound`、`igw-requirements`、`igw-nat`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
+- 使う規則: `route-table`、`route-longest`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`nat-outbound`、`igw-requirements`、`igw-nat`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
 - `nat-gateway.public-zonal-placement` は規則の表にはないが、理由の文の裏づけとして `factRefs` に入れる
 
 ### 8.5 `sim-trace-nat-inbound`: NAT ゲートウェイ越しに中へ入れるか
@@ -325,7 +325,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 変えられる設定: `アプリから更新サーバーへ送る`（`flow` をアプリ → 更新サーバーに。`none`、`seenSource` 203.0.113.20）、`アプリのサーバーへ直接送る`（`flow` をクライアント → アプリに。`forward-igw`、`no-public-ip`）
 - 理由で触れること: NAT ゲートウェイは内から外への接続を通し、その応答だけを戻す。インターネットから中の部品へ接続させたいなら、ロードバランサーなどをパブリックサブネットに置く（レッスンへのリンク）
 - 裏づけ: 事実 `nat-gateway.outbound-connections`、`vpc.igw-requirements`、`vpc.igw-basics`、`nat-gateway.public-internet-route`、`nat-gateway.public-elastic-ip`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-vpc-network-security`
-- 使う規則: `nat-outbound`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`igw-requirements`、`igw-nat`、`route-table`、`route-longest`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
+- 使う規則: `nat-outbound`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`igw-requirements`、`igw-nat`、`route-table`、`route-longest`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
 
 ### 8.6 `sim-trace-gateway-endpoint`: S3 への通信はどこを通るか
 
