@@ -3,7 +3,7 @@
 //   node scripts/build-content.mjs [--content <dir>] [--out <dir>] [--include-unverified] [--quiet]
 //     --content             content/saa-c03 のディレクトリ（既定: ../content/saa-c03）
 //     --out                 出力先（既定: public/data）
-//     --include-unverified  未検証の図と実物も「未検証」の札つきで出す（npm run dev 用。既定は検証済みだけを出す）
+//     --include-unverified  未検証の教材も「未検証」の札つきで出す（npm run dev 用。既定は検証済みだけを出す）
 //     --quiet               警告を表示しない
 // 検証はリポジトリ直下の scripts/lib/schema.mjs で行い、エラーがあれば終了コード 1 で止める。
 import { register } from 'node:module';
@@ -59,6 +59,8 @@ if (!result.ok) {
 const c = result.manifest.counts;
 const dx = c.diagramsExcluded;
 const ax = c.artifactsExcluded;
+const lx = c.labsExcluded;
+const px = c.patternsExcluded;
 console.log(
   `コンテンツを書き出しました（${path.relative(process.cwd(), opts.out) || '.'}）: ` +
     `演習 ${c.questions.practice} 問 / 基礎 ${c.questions.basics} 問 / 模試A ${c.questions.mockA} 問 / 模試B ${c.questions.mockB} 問 / ` +
@@ -66,6 +68,8 @@ console.log(
     `早見表 ${c.cheatsheets} / ガイド ${c.guides} / 図鑑 ${c.catalogEntries} 件（事実 ${c.catalogFacts}・比較 ${c.comparisons}） / ` +
     `問題の除外: 要修正 ${c.excluded['needs-fix']}・却下 ${c.excluded.rejected} / ` +
     `図 ${c.diagrams} 枚（除外: 未検証 ${dx.pending}・要修正 ${dx['needs-fix']}・却下 ${dx.rejected}） / ` +
-    `実物 ${c.artifacts} 件（除外: 未検証 ${ax.pending}・要修正 ${ax['needs-fix']}・却下 ${ax.rejected}）` +
-    (opts.includeUnverified ? '。未検証の図と実物も出しています' : ''),
+    `実物 ${c.artifacts} 件（除外: 未検証 ${ax.pending}・要修正 ${ax['needs-fix']}・却下 ${ax.rejected}） / ` +
+    `ミニラボ ${c.labs} 件（除外: 未検証 ${lx.pending}・要修正 ${lx['needs-fix']}・却下 ${lx.rejected}） / ` +
+    `設計パターン ${c.patterns} 件（除外: 未検証 ${px.pending}・要修正 ${px['needs-fix']}・却下 ${px.rejected}）` +
+    (opts.includeUnverified ? '。未検証の教材も出しています' : ''),
 );

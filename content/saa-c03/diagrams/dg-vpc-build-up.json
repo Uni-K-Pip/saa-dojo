@@ -1,0 +1,105 @@
+{
+  "id": "dg-vpc-build-up",
+  "type": "architecture",
+  "title": "3 層の VPC を組み立てる順（2 つの AZ）",
+  "alt": "3 層の VPC を、部品を 1 つずつ足して組み立てる順に見せる図です。VPC を作り、2 つの AZ にパブリック、プライベート、分離のサブネットを作ります。インターネットゲートウェイを付けてパブリックサブネットから向け、パブリックサブネットに ALB を置きます。プライベートサブネットにアプリケーションサーバーを置いて ALB から振り分け、AZ ごとの NAT ゲートウェイから外へ出します。最後に、分離されたサブネットにデータベースのプライマリとスタンバイを置き、同期で複製します。",
+  "lessonRefs": ["lesson-3.4-vpc-design", "lesson-1.2-vpc-network-security", "lesson-2.2-ha-basics"],
+  "factRefs": ["vpc.subnet-types", "vpc.regional-subnet-az", "vpc.igw-requirements"],
+  "createdBy": "v3",
+  "root": {
+    "dir": "col",
+    "children": [
+      { "id": "internet", "node": "internet", "label": "インターネット" },
+      { "id": "igw", "node": "igw", "label": "出入り口" },
+      {
+        "id": "vpc", "box": "vpc", "label": "VPC 10.0.0.0/16", "dir": "row",
+        "children": [
+          {
+            "id": "az-a", "box": "az", "label": "AZ-a", "dir": "col",
+            "children": [
+              { "id": "pub-a", "box": "subnet-public", "label": "パブリック", "dir": "row",
+                "children": [
+                  { "id": "nat-a", "node": "nat-gateway", "label": "外へ出る" },
+                  { "id": "alb-a", "node": "elb", "label": "ALB" }
+                ] },
+              { "id": "pri-a", "box": "subnet-private", "label": "プライベート", "align": "end",
+                "children": [{ "id": "app-a", "node": "ec2", "label": "アプリ" }] },
+              { "id": "iso-a", "box": "subnet-isolated", "label": "分離", "align": "end",
+                "children": [{ "id": "db-a", "node": "rds", "label": "プライマリ" }] }
+            ]
+          },
+          {
+            "id": "az-c", "box": "az", "label": "AZ-c", "dir": "col",
+            "children": [
+              { "id": "pub-c", "box": "subnet-public", "label": "パブリック", "dir": "row",
+                "children": [
+                  { "id": "alb-c", "node": "elb", "label": "ALB" },
+                  { "id": "nat-c", "node": "nat-gateway", "label": "外へ出る" }
+                ] },
+              { "id": "pri-c", "box": "subnet-private", "label": "プライベート", "align": "start",
+                "children": [{ "id": "app-c", "node": "ec2", "label": "アプリ" }] },
+              { "id": "iso-c", "box": "subnet-isolated", "label": "分離", "align": "start",
+                "children": [{ "id": "db-c", "node": "rds", "label": "スタンバイ" }] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    { "id": "e1", "from": "internet", "to": "igw", "both": true },
+    { "id": "e2", "from": "igw", "to": "alb-a" },
+    { "id": "e3", "from": "igw", "to": "alb-c" },
+    { "id": "e4", "from": "alb-a", "to": "app-a" },
+    { "id": "e5", "from": "alb-c", "to": "app-c" },
+    { "id": "e6", "from": "app-a", "to": "db-a" },
+    { "id": "e7", "from": "app-c", "to": "db-a" },
+    { "id": "e8", "from": "app-a", "to": "nat-a", "fromSide": "left", "toSide": "bottom" },
+    { "id": "e9", "from": "app-c", "to": "nat-c", "fromSide": "right", "toSide": "bottom" },
+    { "id": "e10", "from": "nat-a", "to": "igw" },
+    { "id": "e11", "from": "nat-c", "to": "igw" },
+    { "id": "e12", "from": "db-a", "to": "db-c", "kind": "data", "label": "同期" }
+  ],
+  "steps": [
+    {
+      "text": "VPC を作り、使う IP アドレスの範囲を CIDR 表記（10.0.0.0/16）で決めます。中はまだ空です。",
+      "focus": ["vpc"],
+      "reveal": ["vpc"]
+    },
+    {
+      "text": "2 つの AZ のそれぞれに、パブリック、プライベート、分離の 3 種類のサブネットを作ります。サブネットは必ず 1 つの AZ に属します。",
+      "focus": ["az-a", "az-c"],
+      "reveal": ["az-a", "az-c", "pub-a", "pri-a", "iso-a", "pub-c", "pri-c", "iso-c"]
+    },
+    {
+      "text": "インターネットゲートウェイを VPC に付け、パブリックサブネットのルートテーブルで 0.0.0.0/0 をインターネットゲートウェイへ向けます。",
+      "focus": ["internet", "igw", "pub-a", "pub-c"],
+      "edges": ["e1"],
+      "reveal": ["igw", "e1"]
+    },
+    {
+      "text": "インターネット向けの ALB を、2 つの AZ のパブリックサブネットに置きます。",
+      "focus": ["igw", "alb-a", "alb-c"],
+      "edges": ["e2", "e3"],
+      "reveal": ["alb-a", "alb-c", "e2", "e3"]
+    },
+    {
+      "text": "アプリケーションサーバーをプライベートサブネットに置き、ALB から振り分けます。サーバーにパブリック IP アドレスは要りません。",
+      "focus": ["alb-a", "alb-c", "app-a", "app-c"],
+      "edges": ["e4", "e5"],
+      "reveal": ["app-a", "app-c", "e4", "e5"]
+    },
+    {
+      "text": "AZ ごとに NAT ゲートウェイをパブリックサブネットに作り、同じ AZ のプライベートサブネットから 0.0.0.0/0 を向けます。",
+      "focus": ["app-a", "app-c", "nat-a", "nat-c", "igw"],
+      "edges": ["e8", "e9", "e10", "e11"],
+      "reveal": ["nat-a", "nat-c", "e8", "e9", "e10", "e11"]
+    },
+    {
+      "text": "データベースを分離されたサブネットに置きます。プライマリから別の AZ のスタンバイへ同期で複製します。",
+      "focus": ["app-a", "app-c", "db-a", "db-c"],
+      "edges": ["e6", "e7", "e12"],
+      "reveal": ["db-a", "db-c", "e6", "e7", "e12"]
+    }
+  ]
+}

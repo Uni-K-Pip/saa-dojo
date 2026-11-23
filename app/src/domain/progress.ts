@@ -25,6 +25,28 @@ export function catalogReadMap(events: readonly AppEvent[]): Map<string, number>
   return m;
 }
 
+/** ミニラボ ID → 最後に読了を記録した時刻 */
+export function labReadMap(events: readonly AppEvent[]): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const e of events) {
+    if (e.type !== 'lab-read') continue;
+    const prev = m.get(e.labId);
+    if (prev === undefined || e.at > prev) m.set(e.labId, e.at);
+  }
+  return m;
+}
+
+/** 設計パターン ID → 最後に読了を記録した時刻 */
+export function patternReadMap(events: readonly AppEvent[]): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const e of events) {
+    if (e.type !== 'pattern-read') continue;
+    const prev = m.get(e.patternId);
+    if (prev === undefined || e.at > prev) m.set(e.patternId, e.at);
+  }
+  return m;
+}
+
 export interface Progress {
   total: number;
   /** 1回以上回答した問題 */
