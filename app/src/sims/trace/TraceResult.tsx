@@ -173,7 +173,7 @@ function TraceStages({ config, output, direction }: { config: Config; output: Ou
           {stages.map((stage, index) => {
             const stopped = stage.verdict === 'stop';
             const reason = stopped && output.reason ? REASONS[output.reason] : '';
-            const detail = reason && !stage.rule ? reason : stageDetail(config, stage, direction);
+            const detail = reason && (!stage.rule || stage.basis === 'final-deny') ? reason : stageDetail(config, stage, direction);
             const gate = GATES[stage.gate];
             const place = stageLabel(config, stage);
             return (

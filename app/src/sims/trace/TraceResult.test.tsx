@@ -70,8 +70,8 @@ describe('VPC の通信の追跡の結果', () => {
     const back = direction('戻り').getAllByRole('listitem');
     expect(back).toHaveLength(2);
     expect(back[1]).toHaveClass('trace-stopped');
-    expect(back[1]).toHaveTextContent('どのルールにも当てはまらない（*）');
     expect(back[1]).toHaveTextContent('最後の * のルールで拒否されました。');
+    expect(back[1]).not.toHaveTextContent('どのルールにも当てはまらない（*）');
   });
 
   it('戻りのセキュリティグループでステートフルの判定を表示する', () => {
