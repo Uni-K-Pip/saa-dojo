@@ -5,6 +5,7 @@ import { searchGlossary } from '../domain/search';
 import { ServiceLink } from '../components/ServiceLinks';
 import { useServiceLinker } from '../state/useContent';
 import { useSearchText } from '../state/useSearchText';
+import { ReviewBadge } from '../components/ReviewStatus';
 
 const LIMIT = 200;
 
@@ -14,6 +15,8 @@ export default function GlossaryPage() {
   const { text: query, setText: setQuery } = useSearchText();
   const deferred = useDeferredValue(query);
   const hits = useMemo(() => searchGlossary(entries, deferred), [entries, deferred]);
+  // すべてが未検証のあいだは、語ごとの札の代わりに上の 1 行で知らせる（172 語に同じ札が並ばないように）
+  const allPending = entries.length > 0 && entries.every((e) => e.status === 'pending');
 
   return (
     <div>
@@ -26,6 +29,11 @@ export default function GlossaryPage() {
         <p className="small muted" style={{ margin: 0 }} aria-live="polite">
           {query ? `${hits.length} 件見つかりました` : `${entries.length} 語`}
         </p>
+        {allPending && (
+          <p className="small muted" style={{ margin: '4px 0 0' }}>
+            <span className="badge pending">未検証</span> 用語の説明は、まだ内容の検証が済んでいません。
+          </p>
+        )}
       </div>
       {entries.length === 0 ? (
         <div className="notice warn">用語集はまだありません。</div>
@@ -37,6 +45,7 @@ export default function GlossaryPage() {
             <div key={`${e.term}|${e.en}`}>
               <dt>
                 {e.term} <span className="small muted">{e.en}</span>
+                {!allPending && <>{' '}<ReviewBadge status={e.status} label="用語" /></>}
               </dt>
               <dd>
                 {e.definition}

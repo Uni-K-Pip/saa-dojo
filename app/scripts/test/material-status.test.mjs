@@ -93,7 +93,7 @@ describe('ハッシュと実効の状態', () => {
   });
 
   it('知らない区分はハッシュを作らない', () => {
-    expect(() => materialHash('lessons', d)).toThrow();
+    expect(() => materialHash('quizzes', d)).toThrow();
   });
 
   it('記録なし・一致・内容が変わった', () => {
@@ -174,7 +174,7 @@ describe('スキーマ', () => {
   });
 
   it('知らない区分、図の id でない鍵、形の違う記録はエラー', () => {
-    expect(parse({ lessons: {} })).toBe(false);
+    expect(parse({ quizzes: {} })).toBe(false);
     expect(parse({ diagrams: { 'vpc-three-tier': ok } })).toBe(false);
     expect(parse({ diagrams: { 'dg-test-decision': { ...ok, status: 'done' } } })).toBe(false);
     expect(parse({ diagrams: { 'dg-test-decision': { ...ok, checkedAt: '2026/11/23' } } })).toBe(false);
@@ -237,7 +237,7 @@ describe('validate', () => {
   });
 
   it('スキーマ違反はエラー', () => {
-    expect(statusIssues({ diagrams: [d], status: { diagrams: {}, lessons: {} } })).toEqual([
+    expect(statusIssues({ diagrams: [d], status: { diagrams: {}, quizzes: {} } })).toEqual([
       expect.objectContaining({ level: 'error', code: 'schema', file: 'content/saa-c03/material-status.json' }),
     ]);
   });
@@ -332,6 +332,6 @@ describe('ビルドでの絞り込み', () => {
   it('存在しない図の記録と、スキーマ違反の検証状態は、ビルドを止める', () => {
     expect(buildContent({ ...fixture({ diagrams: [ver], status: { diagrams: { 'dg-absent': rec(ver) } } }), schema }).errors)
       .toContainEqual(expect.stringContaining('material-status.json: diagrams.dg-absent'));
-    expect(buildContent({ ...fixture({ diagrams: [ver], status: { lessons: {} } }), schema }).ok).toBe(false);
+    expect(buildContent({ ...fixture({ diagrams: [ver], status: { quizzes: {} } }), schema }).ok).toBe(false);
   });
 });

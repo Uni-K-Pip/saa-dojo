@@ -19,6 +19,7 @@ const lessons: LessonMeta[] = [
     estimatedMinutes: 10,
     questionIds: ['saa-1.1-t-001', 'saa-1.1-t-002'],
     checkIds: [],
+    status: 'verified',
   },
   {
     id: 'lesson-basics-cloud',
@@ -31,6 +32,7 @@ const lessons: LessonMeta[] = [
     estimatedMinutes: 5,
     questionIds: [],
     checkIds: [],
+    status: 'verified',
   },
 ];
 const body = [

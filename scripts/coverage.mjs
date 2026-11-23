@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
 import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
 import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, entryIdFor, recheckLimit } from './lib/catalog.mjs';
-import { MATERIAL_SECTIONS, checkMaterialStatus } from './lib/material-status.mjs';
+import { MATERIAL_SECTIONS, checkMaterialStatus, existingMaterialItems } from './lib/material-status.mjs';
 import { checkSimFiles, simContext } from './lib/sim.mjs';
 import {
   CHECKS_PER_LESSON,
@@ -237,7 +237,7 @@ export function computeMaterialCoverage(content) {
   })).items;
   const { statuses } = checkMaterialStatus({
     statusFile: content.materialStatus.data,
-    materials: { ...content, sims },
+    materials: { ...content, ...existingMaterialItems(content), sims },
     texts: [],
     ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
   });
