@@ -124,7 +124,9 @@ describe('学習コースのスキーマと検査', () => {
     const lessons = content.lessons.map(({ data }) => data);
     const questions = content.questions.map(({ data }) => data);
     const docIds = new Set(content.docs.map(({ data }) => data.id));
-    expect(checkCourse(course, { lessons, questions, docIds })).toEqual({ errors: [], warnings: [] });
+    const idsOf = (items) => new Set(items.map(({ data }) => data.id));
+    const materials = { labIds: idsOf(content.labs), patternIds: idsOf(content.patterns), simIds: idsOf(content.sims) };
+    expect(checkCourse(course, { lessons, questions, docIds, ...materials })).toEqual({ errors: [], warnings: [] });
     const units = course.stages.flatMap(({ units }) => units);
     const refs = units.flatMap(({ items }) => items.filter(({ kind }) => kind === 'lesson').map(({ ref }) => ref));
     expect(refs).toHaveLength(47);
