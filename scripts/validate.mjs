@@ -41,6 +41,7 @@ import { parseInlineChecks, suspectMarkdownFences } from './lib/inline-check.mjs
 import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
 import { CourseSchema, WARN_UNITS_WITHOUT_LAB, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
 import { checkLab, checkPattern, labPatternContext, labPatternPathMessage, labPatternTexts } from './lib/lab-pattern.mjs';
+import { COVERAGE_LISTS_FILE, CoverageListsSchema, checkCoverageLists } from './lib/coverage-lists.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -115,6 +116,7 @@ function classify(rel) {
   if (rel === CATALOG_STATUS_FILE) return { kind: 'catalog-status' };
   if (rel === CATALOG_NEEDS_FILE) return { kind: 'catalog-needs' };
   if (rel === MATERIAL_STATUS_FILE) return { kind: 'material-status' };
+  if (rel === COVERAGE_LISTS_FILE) return { kind: 'coverage-lists' };
   if (p[0] === 'catalog' && n === 3 && ext === '.json') {
     if (p[1] === 'services') return { kind: 'catalog-entry', stem };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison', stem };
@@ -150,7 +152,7 @@ export const LAYOUT_HELP = [
   '  flashcards/<デッキ>.json   glossary/<名前>.json',
   '  cheatsheets/<id>.md   guides/<id>.md',
   '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
-  '  catalog-status.json / catalog-needs.json / material-status.json',
+  '  catalog-status.json / catalog-needs.json / material-status.json / coverage-lists.json',
   '  diagrams/<dg-…>.json   artifacts/<ar-…>.json',
   '  sims/<シミュレーターid>/<sim-…>.json',
   '  labs/<lab-…>.md   patterns/<pattern-…>.md',
@@ -322,6 +324,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     diagramStems: new Set(),
     reviewStatus: { present: false, data: null },
     materialStatus: { present: false, data: null }, // 教材の検証状態（material-status.json）
+    coverageLists: { present: false, data: null }, // 網羅の一覧（coverage-lists.json）
     // サービス図鑑: { rel, data }（スキーマに通ったものだけ）。status・needs は存在の有無と中身
     catalog: {
       entries: [],
@@ -572,6 +575,12 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         content.materialStatus.present = true;
         const j = readJson(rel);
         if (j) content.materialStatus.data = validateWith(MaterialStatusSchema, j.value, rel);
+        break;
+      }
+      case 'coverage-lists': {
+        content.coverageLists.present = true;
+        const j = readJson(rel);
+        if (j) content.coverageLists.data = validateWith(CoverageListsSchema, j.value, rel);
         break;
       }
       case 'catalog-needs': {
@@ -1110,6 +1119,24 @@ function checkInlineChecks(content) {
   for (const item of labPatternTexts(content)) check(item);
 }
 
+// 網羅の一覧（scripts/lib/coverage-lists.mjs）。一覧が指す教材がまだないのはエラーにしない（coverage が不足として数える）
+function checkCoverageListsFile(content) {
+  const { report, coverageLists, bpIndex } = content;
+  if (!coverageLists.data) return;
+  const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
+  const { errors, warnings } = checkCoverageLists(coverageLists.data, {
+    taskIds: bpIndex?.taskIds,
+    cheatsheetIds: new Set(content.docs.filter((d) => d.docKind === 'cheatsheet').map((d) => d.data.id)),
+    catalogComparisonIds: idsOf('catalog-comparison'),
+    questionIds: new Set(content.questions.map(({ data }) => data.id)),
+    labIds: idsOf('lab'),
+    patternIds: idsOf('pattern'),
+    simIds: idsOf('sim'),
+  });
+  for (const m of errors) report.error('coverage-lists', COVERAGE_LISTS_FILE, m);
+  for (const m of warnings) report.warn('coverage-lists-ref', COVERAGE_LISTS_FILE, m);
+}
+
 function checkCourse(content, materialStatuses) {
   if (!content.course) return;
   const { rel, data } = content.course;
@@ -1173,6 +1200,7 @@ export function checkContent(content) {
   const materialStatuses = checkMaterialStatusFile(content, sims.items);
   checkInlineChecks(content);
   checkCourse(content, materialStatuses);
+  checkCoverageListsFile(content);
   checkLongestCorrect(content);
   return content;
 }

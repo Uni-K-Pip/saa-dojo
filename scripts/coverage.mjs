@@ -13,6 +13,20 @@ import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
 import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
 import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, recheckLimit } from './lib/catalog.mjs';
+import { MATERIAL_SECTIONS, checkMaterialStatus } from './lib/material-status.mjs';
+import { checkSimFiles, simContext } from './lib/sim.mjs';
+import {
+  CHECKS_PER_LESSON,
+  MIN_QUESTIONS_PER_ITEM,
+  artifactKindCounts,
+  cheatsheetFigureRows,
+  coreFactReach,
+  labUnitRows,
+  lessonMaterialRows,
+  listCoverage,
+  statusBreakdown,
+  summarizeLessonMaterials,
+} from './lib/coverage-materials.mjs';
 
 // ---------- 目標値 ----------
 const TARGET_DIFFICULTY = { 1: 20, 2: 50, 3: 30 }; // 難易度 1・2・3 の比率（%）
@@ -208,6 +222,70 @@ export function computeCatalogCoverage(content, { serviceRows = [], today = loca
   };
 }
 
+// ---------- 図・実物・その場の確認・ミニラボ・網羅の一覧・事実の到達・検証状態（docs/visual-materials-design.md 11.4） ----------
+// 読み方は validate・ビルドと同じ関数（scripts/lib）を使い、数え方は scripts/lib/coverage-materials.mjs にある。
+export function computeMaterialCoverage(content) {
+  const { catalog } = content;
+  const lists = content.coverageLists?.data ?? null;
+
+  // 検証状態（validate と同じ呼び方。図のハッシュのレイアウトは、台帳があるときだけ台帳を使う）
+  const sims = checkSimFiles(content.sims, simContext({
+    lessons: content.lessons,
+    catalogEntries: catalog.entries,
+    catalogStatus: catalog.status.data,
+  })).items;
+  const { statuses } = checkMaterialStatus({
+    statusFile: content.materialStatus.data,
+    materials: { ...content, sims },
+    texts: [],
+    ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
+  });
+
+  const diagrams = new Map(content.diagrams.map(({ data }) => [data.id, { type: data.type, status: statuses.diagrams.get(data.id).status }]));
+  const artifacts = new Map(content.artifacts.map(({ data }) => [data.id, { status: statuses.artifacts.get(data.id).status }]));
+  const lessonRows = lessonMaterialRows(content.lessons, { diagrams, artifacts });
+  const cheatsheets = content.docs.filter((d) => d.docKind === 'cheatsheet');
+
+  const labs = labUnitRows(content.course?.data ?? null, content.labs, statuses.labs);
+
+  const questionIds = new Set(content.questions.filter(({ data }) => !HIDDEN_STATUSES.has(statusOf(content, data.id))).map(({ data }) => data.id));
+  const idsOf = (type) => new Set([...content.ids].filter(([, list]) => list.some((x) => x.type === type)).map(([id]) => id));
+  const listsCoverage = lists
+    ? listCoverage(lists, {
+        cheatsheetIds: new Set(cheatsheets.map((d) => d.data.id)),
+        catalogComparisonIds: idsOf('catalog-comparison'),
+        questionIds,
+        labIds: idsOf('lab'),
+        patternIds: idsOf('pattern'),
+        simIds: idsOf('sim'),
+        statuses,
+      })
+    : null;
+
+  // 図鑑の core の事実の到達。ミニラボ・設計パターンは、公開される（検証済みの）ものだけ数える
+  const shown = (section, items) => items.filter(({ data }) => statuses[section].get(data.id).status === 'verified');
+  const facts = catalog.entries.flatMap(({ data: e }) => e.facts.map((f) => ({ id: f.id, tier: e.tier, depth: f.depth })));
+  const reach = coreFactReach(facts, {
+    texts: [...content.lessons, ...content.docs, ...shown('labs', content.labs), ...shown('patterns', content.patterns)].map((x) => x.body),
+    questionFactRefs: content.questions.filter(({ data }) => questionIds.has(data.id)).flatMap(({ data }) => data.factRefs ?? []),
+    extraRefs: [
+      ...content.diagrams.flatMap(({ data }) => data.factRefs ?? []),
+      ...content.artifacts.flatMap(({ data }) => data.factRefs ?? []),
+      ...content.sims.flatMap(({ data }) => (Array.isArray(data?.factRefs) ? data.factRefs : [])),
+    ],
+  });
+
+  return {
+    lessons: { rows: lessonRows, ...summarizeLessonMaterials(lessonRows) },
+    cheatsheets: cheatsheetFigureRows(cheatsheets, { diagrams, artifacts }),
+    artifactKinds: artifactKindCounts(content.artifacts, statuses.artifacts),
+    labs,
+    lists: listsCoverage,
+    facts: reach,
+    status: statusBreakdown(statuses, Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([k, v]) => [k, v.label]))),
+  };
+}
+
 export function computeCoverage(content, { today } = {}) {
   const { blueprint, bpIndex, serviceIndex } = content;
 
@@ -365,6 +443,7 @@ export function computeCoverage(content, { today } = {}) {
       rows: serviceRows,
     },
     catalog: computeCatalogCoverage(content, { serviceRows, today }),
+    materials: computeMaterialCoverage(content),
   };
 }
 
@@ -564,6 +643,7 @@ export function renderMarkdown(cov, { full = false } = {}) {
   }
 
   renderCatalogMarkdown(cov.catalog, { full, push });
+  renderMaterialsMarkdown(cov.materials, { full, push });
 
   return L.join('\n').replace(/\n{3,}/g, '\n\n');
 }
@@ -646,6 +726,138 @@ function renderCatalogMarkdown(c, { full, push }) {
     push(table(['サービス', '登場（問題）', '事実', '区分'], listed.map((r) => [r.name, r.questions, r.facts, r.tier ?? '-']), 'lrrr'), '');
   }
   if (listed.length < few.length) push(`…ほか ${few.length - listed.length} 件（--full で全件表示）`, '');
+}
+
+function renderMaterialsMarkdown(m, { full, push }) {
+  const ids = (arr) => (arr.length ? list(arr.map((id) => id.replace(/^lesson-/, ''))) : 'なし');
+  const L = m.lessons;
+  const [lo, hi] = CHECKS_PER_LESSON;
+  const clipped = (arr) => `${ids(full ? arr : arr.slice(0, MAX_LISTED))}${!full && arr.length > MAX_LISTED ? `、ほか ${arr.length - MAX_LISTED} 本（--full で全件）` : ''}`;
+
+  push('## 図・実物・その場の確認', '');
+  push(
+    `レッスン ${L.lessons} 本のうち、図を本文に出しているものは ${L.lessons - L.withoutDiagram.length} 本、図の参照は計 ${L.diagramRefs} 件です` +
+      `（種類: ${Object.entries(L.byType).map(([t, n]) => `${t} ${n}`).join(' / ')}）。実物の参照は計 ${L.artifactRefs} 件です。`,
+    '',
+  );
+  push(`- 図のないレッスン（${L.withoutDiagram.length} 本）: ${clipped(L.withoutDiagram)}`);
+  push(`- 検証済みの図のないレッスン（公開のビルドで図が出ない）: ${L.withoutVerifiedDiagram.length} 本`);
+  push(
+    `- その場の確認: 計 ${L.checks.total} 個。ある ${L.checks.withChecks} 本 / ない ${L.checks.none.length} 本 / 目安（${lo}〜${hi} 個）に満たない ${L.checks.few.length} 本 / 目安内 ${L.checks.inRange} 本 / 超える ${L.checks.many.length} 本`,
+    '',
+  );
+  if (full) {
+    push('### レッスンごとの図と確認', '');
+    push(
+      table(
+        ['レッスン', '図', '検証済み', '種類', '実物', '確認'],
+        L.rows.map((r) => [r.id, r.diagrams, r.verifiedDiagrams, Object.entries(r.types).filter(([, n]) => n > 0).map(([t, n]) => `${t} ${n}`).join(' / ') || '-', r.artifacts, r.checks]),
+        'lrrlrr',
+      ),
+      '',
+    );
+  }
+
+  push('### 早見表の選択フローと位置づけ図', '');
+  const count = (pred) => m.cheatsheets.filter(pred).length;
+  push(
+    `早見表 ${m.cheatsheets.length} 本のうち、選択フローがあるのは ${count((r) => r.decision)} 本、位置づけ図があるのは ${count((r) => r.position)} 本です` +
+      `（検証済みの図だけなら ${count((r) => r.decisionVerified)} 本・${count((r) => r.positionVerified)} 本）。`,
+    '',
+  );
+  const mark = (has, verified) => (has ? (verified ? 'あり' : 'あり（未検証）') : '-');
+  push(
+    table(
+      ['早見表', '図', '選択フロー', '位置づけ図'],
+      m.cheatsheets.map((r) => [r.id.replace(/^cheatsheet-/, ''), r.diagrams, mark(r.decision, r.decisionVerified), mark(r.position, r.positionVerified)]),
+      'lrll',
+    ),
+    '',
+  );
+
+  push('### 実物の種類', '');
+  const kinds = m.artifactKinds;
+  const used = kinds.filter((k) => k.count > 0);
+  push(`実物は ${kinds.reduce((n, k) => n + k.count, 0)} 件、設計書の ${kinds.length} 種類のうち ${used.length} 種類にあります（検証済み ${kinds.reduce((n, k) => n + k.verified, 0)} 件）。`, '');
+  push(`- ある種類: ${used.length ? list(used.map((k) => `${k.kind} ${k.count}（検証済み ${k.verified}）`)) : 'なし'}`);
+  push(`- ない種類（${kinds.length - used.length} 種類）: ${list(kinds.filter((k) => k.count === 0).map((k) => k.kind)) || 'なし'}`, '');
+
+  push('## ミニラボ（ユニット別）', '');
+  if (m.labs.length === 0) {
+    push('学習コース（course.json）がないため、ユニット別に数えません。', '');
+  } else {
+    const withLab = m.labs.filter((u) => u.labs.length > 0);
+    push(
+      `ユニット ${m.labs.length} 個のうち、ミニラボがあるのは ${withLab.length} 個、ミニラボは計 ${m.labs.reduce((n, u) => n + u.labs.length, 0)} 件` +
+        `（検証済み ${m.labs.reduce((n, u) => n + u.verified, 0)} 件）です。ミニラボは front matter の unit で数えます。`,
+      '',
+    );
+    if (withLab.length) push(table(['ユニット', '名称', 'ミニラボ', '検証済み'], withLab.map((u) => [u.unit, u.title, list(u.labs.map((l) => l.id)), u.verified]), 'llll'), '');
+    const empty = (pred) => m.labs.filter((u) => u.labs.length === 0 && pred(u.stage)).map((u) => u.unit);
+    push(`- ミニラボのないユニット（ステージ 1・2。量産の対象）: ${list(empty((s) => s === 1 || s === 2)) || 'なし'}`);
+    push(`- ミニラボのないユニット（ステージ 0・3・4）: ${list(empty((s) => s !== 1 && s !== 2)) || 'なし'}`, '');
+  }
+
+  push('## 網羅の一覧（比較の組・設計パターン・つまずきの型）', '');
+  if (!m.lists) {
+    push('coverage-lists.json がありません。', '');
+  } else {
+    push(
+      `一覧（coverage-lists.json。学習設計書の付録 B〜D）の項目ごとに、対応する教材を数えます。比較の組は早見表か図鑑の比較が 1 つ以上と演習問題が ${MIN_QUESTIONS_PER_ITEM} 問以上、` +
+        `設計パターンは設計パターンの教材と演習問題が ${MIN_QUESTIONS_PER_ITEM} 問以上、つまずきの型はミニラボ・シナリオ・問題のどれかが 1 つ以上で満たします。` +
+        '演習問題は、一覧の questionRefs に書いたものだけを数えます。',
+      '',
+    );
+    push(
+      table(
+        ['一覧', '項目', '教材あり', `演習 ${MIN_QUESTIONS_PER_ITEM} 問以上`, '満たす', '不足'],
+        Object.values(m.lists).map((x) => [x.label, x.total, x.withMaterial, x.withQuestions, x.met, x.total - x.met]),
+        'lrrrrr',
+      ),
+      '',
+    );
+    for (const x of Object.values(m.lists)) {
+      const unmet = x.rows.filter((r) => !r.met);
+      const shown = full ? unmet : unmet.slice(0, MAX_LISTED);
+      push(`### ${x.label}（不足 ${unmet.length} 件）`, '');
+      for (const r of shown) push(`- ${r.id} ${r.name}（教材 ${r.materials}、問題 ${r.questions}）`);
+      if (shown.length < unmet.length) push(`- …ほか ${unmet.length - shown.length} 件（--full で全件表示）`);
+      if (unmet.length) push('');
+    }
+  }
+
+  push('## 図鑑の core の事実の到達', '');
+  const f = m.facts;
+  const pctOf = (s) => (s.percent === null ? '-' : `${s.reached} / ${s.total}（${s.percent}%）`);
+  push(
+    '到達は、レッスン・早見表・ガイド・公開される（検証済みの）ミニラボと設計パターンの本文の図鑑へのリンク（`?f=` つき）か、出題対象の問題の factRefs から指される core の事実の割合です。' +
+      '想起は、問題の factRefs で問われる割合です。暗記カードは事実を指す欄がないため、どちらにも含めていません（カードの分だけ低く出ます）。',
+    '',
+  );
+  push(
+    table(
+      ['指標', '今', '目標'],
+      [
+        ['到達（区分 1 の core）', pctOf(f.reach.tier1), `${f.targets.reachTier1}%`],
+        ['到達（全体の core）', pctOf(f.reach.all), `${f.targets.reachAll}%`],
+        ['想起（区分 1 の core。問題のみ）', pctOf(f.recall.tier1), `${f.targets.recallTier1}%`],
+        ['参考: 到達に図・実物・シナリオの factRefs も加える（全体）', pctOf(f.withOtherRefs.all), '-'],
+      ],
+      'lrr',
+    ),
+    '',
+  );
+
+  push('## 教材の検証状態（material-status.json）', '');
+  push('記録がない、または記録のあとに内容が変わったものは、未検証（pending）に数えます。', '');
+  push(
+    table(
+      ['区分', '件数', 'verified', 'pending', 'needs-fix', 'rejected', '（記録なし）', '（変更で戻った）'],
+      m.status.map((x) => [x.label, x.total, x.verified, x.pending, x['needs-fix'], x.rejected, x.unrecorded, x.stale]),
+      'lrrrrrrr',
+    ),
+    '',
+  );
 }
 
 // ---------- CLI ----------

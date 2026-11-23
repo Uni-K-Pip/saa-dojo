@@ -59,6 +59,7 @@ export function classify(rel) {
   if (rel === 'catalog-status.json') return { kind: 'catalog-status' };
   if (rel === 'catalog-needs.json') return { kind: 'catalog-needs' };
   if (rel === 'material-status.json') return { kind: 'material-status' };
+  if (rel === 'coverage-lists.json') return { kind: 'coverage-lists' }; // coverage の入力。ビルドは読まない（検査は validate）
   if (p[0] === 'catalog' && n === 3 && ext === '.json') {
     if (p[1] === 'services') return { kind: 'catalog-entry' };
     if (p[1] === 'comparisons') return { kind: 'catalog-comparison' };
