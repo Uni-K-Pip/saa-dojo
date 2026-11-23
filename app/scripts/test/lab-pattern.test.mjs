@@ -9,7 +9,7 @@ import { CourseSchema, courseItemKey } from '../../../scripts/lib/course.mjs';
 import { checkLab, checkPattern, LAB_SECTIONS, PATTERN_SECTIONS } from '../../../scripts/lib/lab-pattern.mjs';
 import { materialHash, materialHashInput } from '../../../scripts/lib/material-status.mjs';
 import { buildContent, parseContent, readContentFiles } from '../lib/content-build.mjs';
-import { architecture, lessonId } from './diagram-fixtures.mjs';
+import { architecture, diagramHash, lessonId } from './diagram-fixtures.mjs';
 
 const diagram = architecture();
 const common = { order: 10, knowledgeRefs: ['4.1-K1'], services: ['Amazon Simple Storage Service'], diagram: diagram.id, createdBy: 't' };
@@ -63,7 +63,7 @@ const question = (id, pool, taskStatement = '4.1') => ({
   lessonRefs: [lessonId], needsSourceCheck: false, createdBy: 't', createdAt: '2026-11-23',
 });
 const rec = (section, data, body, status = 'verified') => ({
-  status, checkedAt: '2026-11-23', hash: materialHash(section, materialHashInput(section, { data, body })),
+  status, checkedAt: '2026-11-23', hash: section === 'diagrams' ? diagramHash(data) : materialHash(section, materialHashInput(section, { data, body })),
 });
 
 const tmp = [];

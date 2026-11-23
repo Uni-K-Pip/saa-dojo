@@ -319,7 +319,7 @@ function crossCheck(parsed, err, warn) {
   for (const m of artifacts.errors) err(...splitMsg(m));
   for (const m of artifacts.warnings) warn(...splitMsg(m));
   // 教材の検証状態
-  const materials = checkMaterialsForBuild(parsed);
+  const materials = checkMaterialsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
   for (const m of materials.errors) err(...splitMsg(m));
   for (const m of materials.warnings) warn(...splitMsg(m));
   for (const { rel, body } of [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)]) {
@@ -571,7 +571,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
     files: manifestFiles,
   };
   out.push({ rel: 'manifest.json', text: JSON.stringify(manifest, null, 2) });
-  return { files: out, manifest, warnings: excludedRefWarnings(parsed, { includeUnverified }) };
+  return { files: out, manifest, warnings: excludedRefWarnings(parsed, { includeUnverified, serviceIndex }) };
 }
 
 // ---------- 書き出し ----------

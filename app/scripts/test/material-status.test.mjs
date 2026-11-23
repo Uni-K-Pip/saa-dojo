@@ -6,9 +6,18 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
-import { materialEffectiveStatus, materialHash } from '../../../scripts/lib/material-status.mjs';
+import { materialEffectiveStatus, materialHash, materialHashInput } from '../../../scripts/lib/material-status.mjs';
+import { diagramHashSubject, layoutAnyDiagram, roundForHash } from '../../../scripts/lib/diagram.mjs';
 import { buildContent } from '../lib/content-build.mjs';
-import { decision, layers, lessonId, position, timeline } from './diagram-fixtures.mjs';
+import { architecture, decision, diagramHash, layers, lessonId, position, repoServiceIndex, timeline } from './diagram-fixtures.mjs';
+
+const PINNED_HASHES = {
+  architecture: '0232a0983c4c',
+  decision: '58b5482acab3',
+  layers: '4c528222b714',
+  position: '1298201bdc99',
+  timeline: '14ac6d20ff48',
+};
 
 const repoContent = new URL('../../../content/saa-c03/', import.meta.url);
 const read = (rel) => fs.readFileSync(new URL(rel, repoContent), 'utf8');
@@ -32,7 +41,7 @@ createdBy: v1
 候補を比べるときは、保管料金に加えて読み出しや移行にかかる費用を確認します。利用頻度の変化を見込んで、選んだ保存先が条件に合い続けるかも確認します。
 ${addition ? `\n${addition}\n` : ''}`;
 
-const rec = (d, status = 'verified') => ({ status, checkedAt: '2026-11-23', hash: materialHash('diagrams', d) });
+const rec = (d, status = 'verified') => ({ status, checkedAt: '2026-11-23', hash: diagramHash(d) });
 
 const tmp = [];
 afterEach(() => {
@@ -88,13 +97,69 @@ describe('ハッシュと実効の状態', () => {
   });
 
   it('記録なし・一致・内容が変わった', () => {
-    expect(materialEffectiveStatus({ diagrams: {} }, 'diagrams', d.id, d)).toMatchObject({ status: 'pending', recorded: false, stale: false });
-    expect(materialEffectiveStatus(null, 'diagrams', d.id, d)).toMatchObject({ status: 'pending', recorded: false });
+    const subject = (x) => diagramHashSubject(x, { serviceIndex: repoServiceIndex });
+    expect(materialEffectiveStatus({ diagrams: {} }, 'diagrams', d.id, subject(d))).toMatchObject({ status: 'pending', recorded: false, stale: false });
+    expect(materialEffectiveStatus(null, 'diagrams', d.id, subject(d))).toMatchObject({ status: 'pending', recorded: false });
     const file = { diagrams: { [d.id]: rec(d) } };
-    expect(materialEffectiveStatus(file, 'diagrams', d.id, d)).toMatchObject({ status: 'verified', stale: false, recorded: true });
-    expect(materialEffectiveStatus(file, 'diagrams', d.id, { ...d, alt: `${d.alt}追記` })).toMatchObject({ status: 'pending', stale: true });
+    expect(materialEffectiveStatus(file, 'diagrams', d.id, subject(d))).toMatchObject({ status: 'verified', stale: false, recorded: true });
+    expect(materialEffectiveStatus(file, 'diagrams', d.id, subject({ ...d, alt: `${d.alt}追記` }))).toMatchObject({ status: 'pending', stale: true });
     const fix = { diagrams: { [d.id]: rec(d, 'needs-fix') } };
-    expect(materialEffectiveStatus(fix, 'diagrams', d.id, d)).toMatchObject({ status: 'needs-fix' });
+    expect(materialEffectiveStatus(fix, 'diagrams', d.id, subject(d))).toMatchObject({ status: 'needs-fix' });
+  });
+});
+
+describe('図のハッシュの対象（データとレイアウトの結果）', () => {
+  const kinds = { architecture, decision, layers, position, timeline };
+
+  it('データとレイアウトの結果を合わせ、createdBy を除く', () => {
+    for (const make of Object.values(kinds)) {
+      const d = make();
+      const s = diagramHashSubject(d, { serviceIndex: repoServiceIndex });
+      expect(s).not.toHaveProperty('createdBy');
+      expect(s.scene).toEqual(roundForHash(layoutAnyDiagram(d, { serviceIndex: repoServiceIndex })));
+      expect(s.scene.error).toBeUndefined();
+    }
+  });
+
+  it('データも配置も同じなら同じハッシュ（別に作った同じ図、validate と同じ関数）', () => {
+    for (const make of Object.values(kinds)) {
+      expect(diagramHash(make())).toBe(diagramHash(structuredClone(make())));
+      const d = make();
+      expect(materialHash('diagrams', materialHashInput('diagrams', { data: d }, { serviceIndex: repoServiceIndex }))).toBe(diagramHash(d));
+    }
+  });
+
+  it('配置だけが変わるとハッシュが変わり、記録は未検証に戻る', () => {
+    const d = architecture();
+    const before = diagramHashSubject(d, { serviceIndex: repoServiceIndex });
+    // レイアウトを変えて、部品が 1 つだけ動いた場合（図のデータは同じ）
+    const moved = structuredClone(before);
+    moved.scene.nodes[0].x += 4;
+    expect(materialHash('diagrams', moved)).not.toBe(materialHash('diagrams', before));
+    const file = { diagrams: { [d.id]: { status: 'verified', checkedAt: '2026-11-23', hash: materialHash('diagrams', before) } } };
+    expect(materialEffectiveStatus(file, 'diagrams', d.id, before)).toMatchObject({ status: 'verified' });
+    expect(materialEffectiveStatus(file, 'diagrams', d.id, moved)).toMatchObject({ status: 'pending', stale: true });
+    // 部品の短い名前（台帳）が変わって、配置が変わる場合も同じ
+    expect(diagramHash(d, null)).not.toBe(diagramHash(d));
+  });
+
+  it('数は 0.01 に丸める（末尾の桁の違いと -0 は同じハッシュ）', () => {
+    expect(roundForHash({ a: [0.1 + 0.2, -0, 12.344999999], b: 'x', c: null })).toEqual({ a: [0.3, 0, 12.34], b: 'x', c: null });
+    expect(Object.is(roundForHash(-0.001), 0)).toBe(true);
+  });
+
+  it('レイアウトできない図は、データだけのハッシュにしない', () => {
+    const d = { ...architecture(), root: null };
+    const s = diagramHashSubject(d, { serviceIndex: repoServiceIndex });
+    expect(s.scene).toEqual({ error: true });
+  });
+
+  // 環境（Windows と CI の Linux）で同じハッシュになることを、値を固定して確かめる。
+  // 台帳に依らないよう serviceIndex なしで作る。レイアウトを意図して変えたときは、ここの値を新しい値に直す
+  // （そのとき、検証済みの図は未検証に戻る）
+  it('ハッシュの値が環境で変わらない（全部の種類）', () => {
+    const got = Object.fromEntries(Object.entries(kinds).map(([k, make]) => [k, diagramHash(make(), null)]));
+    expect(got).toEqual(PINNED_HASHES);
   });
 });
 

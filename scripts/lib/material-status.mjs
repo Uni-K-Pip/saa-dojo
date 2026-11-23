@@ -4,14 +4,15 @@
 // 内容が変わった教材は pending（未検証）。設計は docs/visual-materials-design.md の 11.1・11.3。
 import crypto from 'node:crypto';
 import { stableStringify } from './catalog.mjs';
-import { parseMaterialRefs } from './diagram.mjs';
+import { diagramHashSubject, parseMaterialRefs } from './diagram.mjs';
 
 export const MATERIAL_STATUS_FILE = 'material-status.json';
 
 // 区分ごとの設定。kind は本文の参照の種類（parseMaterialRefs）と警告のコードの頭、omit はハッシュに含めない欄（記録の欄）。
+// subject はハッシュの対象を組み立てる関数（図は、データにレイアウトの結果を足す。ctx は { serviceIndex }）。
 // 区分を足すときは schema.mjs の MaterialStatusSchema にも足す
 export const MATERIAL_SECTIONS = {
-  diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'] },
+  diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'], subject: ({ data }, ctx) => diagramHashSubject(data, ctx) },
   artifacts: { label: '実物', kind: 'artifact', omit: ['createdBy'] },
   labs: { label: 'ミニラボ', kind: 'lab', omit: ['createdBy'], body: true, refs: false },
   patterns: { label: '設計パターン', kind: 'pattern', omit: ['createdBy'], body: true, refs: false },
@@ -37,18 +38,23 @@ export function materialEffectiveStatus(statusFile, section, id, obj) {
   return { status: rec.status, stale: false, recorded: true, checkedAt: rec.checkedAt };
 }
 
-/** 本文を持つ教材は front matter と本文を一緒にハッシュへ渡します。 */
-export function materialHashInput(section, { data, body }) {
-  return MATERIAL_SECTIONS[section]?.body ? { ...data, body } : data;
+/**
+ * ハッシュに渡すもの。本文を持つ教材は front matter と本文を一緒に、図はデータとレイアウトの結果を一緒に渡します。
+ * ctx: { serviceIndex }（図のレイアウトに使う。ビルドと同じもの）
+ */
+export function materialHashInput(section, { data, body }, ctx = {}) {
+  const conf = MATERIAL_SECTIONS[section];
+  if (conf?.subject) return conf.subject({ data, body }, ctx);
+  return conf?.body ? { ...data, body } : data;
 }
 
 /** 区分の教材ごとの実効の状態（id → materialEffectiveStatus の値）。 */
-export function materialStatuses(statusFile, section, items) {
+export function materialStatuses(statusFile, section, items, ctx = {}) {
   return new Map(items.map((item) => [
-    item.data.id, materialEffectiveStatus(statusFile, section, item.data.id, materialHashInput(section, item)),
+    item.data.id, materialEffectiveStatus(statusFile, section, item.data.id, materialHashInput(section, item, ctx)),
   ]));
 }
-export const diagramStatuses = (statusFile, diagrams) => materialStatuses(statusFile, 'diagrams', diagrams);
+export const diagramStatuses = (statusFile, diagrams, ctx = {}) => materialStatuses(statusFile, 'diagrams', diagrams, ctx);
 
 /** そのビルドで出すか（検証済みは出す。未検証は includeUnverified のときだけ。要修正・却下は出さない） */
 export const isShown = (status, includeUnverified) => status === 'verified' || (status === 'pending' && includeUnverified);
@@ -95,18 +101,19 @@ export function unverifiedMaterialRefs(texts, statuses) {
  * 検証状態の検査。statusFile はスキーマに通った material-status.json の中身（なければ null）。
  * materials: 区分ごとの教材（スキーマに通ったもの）
  * presentIds: 区分ごとの id の集合（ファイルはあるがスキーマに通らなかったものを含む。省略可）
+ * ctx: ハッシュの対象を組み立てるときに使うもの（{ serviceIndex }。materialHashInput）
  * 戻り値: { issues: [{ level, code, rel, message }], statuses: { 区分: Map }, unverifiedRefs }
  *   エラー: 存在しない教材の記録（material-status-key。ファイルがあってスキーマのエラーで読めないものは、そちらのエラーに任せて出さない）
  *   警告: 記録したあとに内容が変わった教材（material-stale-review）、検証済みなのにどこからも参照されない教材（diagram-unreferenced・artifact-unreferenced）
  *   unverifiedRefs は unverifiedMaterialRefs の結果（警告にするかは呼び出し側が決める）
  */
-export function checkMaterialStatus({ statusFile, materials, presentIds = {}, texts, file = MATERIAL_STATUS_FILE }) {
+export function checkMaterialStatus({ statusFile, materials, presentIds = {}, texts, file = MATERIAL_STATUS_FILE, ctx = {} }) {
   const issues = [];
   const stale = [];
   const statuses = {};
   for (const [section, conf] of Object.entries(MATERIAL_SECTIONS)) {
     const items = materials[section] ?? [];
-    const byId = materialStatuses(statusFile, section, items);
+    const byId = materialStatuses(statusFile, section, items, ctx);
     statuses[section] = byId;
     for (const id of Object.keys(statusFile?.[section] ?? {})) {
       const d = byId.get(id);
