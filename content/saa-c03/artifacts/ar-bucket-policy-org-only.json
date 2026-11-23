@@ -20,9 +20,9 @@
     ]
   },
   "notes": [
-    { "path": "Statement[0].Principal", "text": "Principal の * は「だれでも」ですが、この許可が当たるのは、下の Condition に合う要求だけです。" },
-    { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、組織 o-exampleorgid に属するときだけ許可します。アカウントを個別に並べずに済み、組織のアカウントが増減しても書き直しません。" },
-    { "path": "Statement[0].Action", "text": "許可する操作は、オブジェクトの読み取り（s3:GetObject）だけです。" }
+    { "path": "Statement[0].Principal", "text": "Principal は、このバケットにアクセスできる相手を書く欄です。ここでは相手を個別に挙げず、下の Condition で絞っています。" },
+    { "path": "Statement[0].Action", "text": "許可する操作は、オブジェクトの読み取り（s3:GetObject）だけです。" },
+    { "path": "Statement[0].Condition", "text": "要求したプリンシパルが、組織 o-exampleorgid に属するときだけ許可します。アカウントを個別に並べずに済み、組織のアカウントが増減しても書き直しません。" }
   ],
   "ask": {
     "text": "組織に属さないアカウントのロールは、このバケットのオブジェクトを読めますか？",

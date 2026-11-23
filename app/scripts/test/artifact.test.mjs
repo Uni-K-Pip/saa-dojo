@@ -6,7 +6,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
-import { checkArtifact, jsonLines, parseJsonPath, renderArtifact, resolveJsonPath } from '../../../scripts/lib/artifact.mjs';
+import { checkArtifact, jsonLines, parseJsonPath, rangeKey, renderArtifact, resolveJsonPath } from '../../../scripts/lib/artifact.mjs';
 import { parseMaterialRefs } from '../../../scripts/lib/diagram.mjs';
 import { materialHash } from '../../../scripts/lib/material-status.mjs';
 import { buildContent } from '../lib/content-build.mjs';
@@ -108,7 +108,8 @@ describe('注目点の場所（JSON）', () => {
     expect(parseJsonPath('Statement[0].Condition.StringEquals')).toEqual(['Statement', 0, 'Condition', 'StringEquals']);
     expect(parseJsonPath('Statement[0].Condition.StringEquals.aws:PrincipalOrgID')).toEqual(['Statement', 0, 'Condition', 'StringEquals', 'aws:PrincipalOrgID']);
     expect(parseJsonPath('Rules[1][0]')).toEqual(['Rules', 1, 0]);
-    for (const bad of ['', '.Version', 'Statement[a]', 'Statement..x', 'Statement[0]x', 'a[0].']) expect(parseJsonPath(bad)).toBeNull();
+    expect(parseJsonPath('Rules[10]')).toEqual(['Rules', 10]);
+    for (const bad of ['', '.Version', 'Statement[a]', 'Statement..x', 'Statement[0]x', 'a[0].', 'Statement[01]', 'Statement[00]']) expect(parseJsonPath(bad)).toBeNull();
     const doc = jsonArtifact().document;
     expect(resolveJsonPath(doc, parseJsonPath('Statement[0].Condition'))).toMatchObject({ found: true });
     expect(resolveJsonPath(doc, parseJsonPath('Statement[1]')).found).toBe(false);
@@ -119,7 +120,7 @@ describe('注目点の場所（JSON）', () => {
   it('整形した行と、場所ごとの行の範囲を返す', () => {
     const { lines, ranges } = jsonLines(jsonArtifact().document);
     expect(lines.map((l) => '  '.repeat(l.indent) + l.text).join('\n')).toBe(JSON.stringify(jsonArtifact().document, null, 2));
-    const [s, e] = ranges.get('Statement[0].Condition');
+    const [s, e] = ranges.get(rangeKey(['Statement', 0, 'Condition']));
     expect(lines[s].text).toBe('"Condition": {');
     expect(lines[e].text).toBe('}');
   });
@@ -162,6 +163,25 @@ describe('checkArtifact', () => {
     const deep = { ...jsonArtifact(), document: { a: { b: { c: { d: { e: { f: { g: 1 } } } } } } }, notes: [note({ path: 'a' }), note({ path: 'a.b' })] };
     expect(errs(deep)).toEqual([expect.stringContaining('入れ子が 7 段')]);
   });
+  it('数字だけのキー（入れ子を含む）はエラー', () => {
+    const doc = { Version: '2012-10-17', Map: { '10': 'ten', b: { '2': 'two' } } };
+    expect(errs({ ...jsonArtifact(), document: doc, notes: [note({ path: 'Version' }), note({ path: 'Map' })] })).toEqual([
+      expect.stringContaining('数字だけのキーがあります（10, 2）'),
+    ]);
+    expect(errs({ ...jsonArtifact(), document: { ...doc, Map: { a10: 'x', '1a': 'y' } }, notes: [note({ path: 'Version' }), note({ path: 'Map' })] })).toEqual([]);
+  });
+  it('整形した 1 行が字下げを含めて上限の字数を超えるとエラー', () => {
+    const at = (len) => ({ ...jsonArtifact(), document: { Version: '2012-10-17', A: { B: 'x'.repeat(len) } }, notes: [note({ path: 'Version' }), note({ path: 'A' })] });
+    // 入れ子 2 段の字下げ 4 字 + "B": "" の 7 字 + 値
+    expect(errs(at(schema.ARTIFACT_LIMITS.jsonLineChars - 11))).toEqual([]);
+    expect(errs(at(schema.ARTIFACT_LIMITS.jsonLineChars - 10))).toEqual([expect.stringContaining('字下げを含めて 121 字')]);
+  });
+  it('text: タブを含む行と、字下げが上限を超える行はエラー', () => {
+    const lines = (ls) => ({ ...textArtifact(), lines: ls });
+    const pad = ' '.repeat(schema.ARTIFACT_LIMITS.textIndent);
+    expect(errs(lines([`${pad}名前: a`, '\tタイプ: A', 'x']))).toEqual([expect.stringContaining('2 行目にタブ')]);
+    expect(errs(lines([`${pad} 名前: a`, 'タイプ: A', 'x']))).toEqual([expect.stringContaining('1 行目の字下げが 13 字')]);
+  });
   it('注目点が 1 個以下は警告', () => {
     expect(checkArtifact({ ...textArtifact(), notes: [note({ lines: [1] })] }, ctx).warnings).toEqual([expect.objectContaining({ code: 'artifact-notes-few' })]);
   });
@@ -184,6 +204,19 @@ describe('表示用の出力', () => {
     ]);
     expect(text.notes.map((n) => n.where)).toEqual(['1・2 行目', '3 行目']);
   });
+  it('json: `.` や `[n]` を含むキーがあっても、入れ子の場所を強調する', () => {
+    const lineOf = (document, path) => {
+      const out = renderArtifact({ ...jsonArtifact(), document, notes: [note({ path }), note({ path })] }, 'verified');
+      return out.lines.filter((l) => l.marks.includes(1)).map((l) => l.text);
+    };
+    expect(lineOf({ a: { b: 1 }, 'a.b': 2 }, 'a.b')).toEqual(['"b": 1']);
+    expect(lineOf({ 'a.b': 2, a: { b: 1 } }, 'a.b')).toEqual(['"b": 1']);
+    expect(lineOf({ a: ['x'], 'a[0]': 'y' }, 'a[0]')).toEqual(['"x"']);
+  });
+  it('text: 飛び飛びの行は、連続した塊ごとに先頭の行へ番号を付ける', () => {
+    const a = { ...textArtifact(), lines: ['1', '2', '3', '4', '5'], notes: [note({ lines: [5, 1, 2, 4] }), note({ lines: [3] })] };
+    expect(renderArtifact(a, 'verified').lines.map((l) => l.starts)).toEqual([[1], [], [2], [1], []]);
+  });
 });
 
 describe('本文の参照', () => {
@@ -202,15 +235,15 @@ describe('本文の参照', () => {
     const found = issues({ artifacts: [jsonArtifact()], body }).filter((i) => i.code === 'artifact-ref');
     expect(found.map((i) => i.message)).toEqual([
       '参照先の実物 ar-absent がありません。',
-      '実物の参照の形が違います（#/artifacts/ar-test-json?step=1）。実物には ?step などは付けられません。',
+      '実物の参照の形が違います（#/artifacts/ar-test-json?step=1）。`#/artifacts/` のあとには、`ar-` で始まる実物の id（英小文字・数字・ハイフン）だけを書きます。?step などは付けられません。',
       '実物の参照は参照形式では書けません。`![キャプション](#/artifacts/<id>)` の形で書いてください。',
     ]);
   });
 
   it('ビルドの突き合わせ: 検査と表示で読み方がずれる書き方を止める', () => {
-    expect(crosscheckMarkdown('![実物](#/artifacts/ar-a)\n\n文の [実物](#/artifacts/ar-a) です。')).toEqual([]);
-    expect(crosscheckMarkdown('![実物](#/artifacts/ar-a (題))')).toEqual([
-      { line: 1, message: expect.stringContaining('実物の参照 #/artifacts/ar-a を、検査と表示で違って読んでいます') },
+    expect(crosscheckMarkdown('![実物](#/artifacts/ar-test-json)\n\n文の [実物](#/artifacts/ar-test-json) です。')).toEqual([]);
+    expect(crosscheckMarkdown('![実物](#/artifacts/ar-test-json (題))')).toEqual([
+      { line: 1, message: expect.stringContaining('実物の参照 #/artifacts/ar-test-json を、検査と表示で違って読んでいます') },
     ]);
   });
 });

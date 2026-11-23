@@ -614,7 +614,9 @@ export const ARTIFACT_LIMITS = {
   cell: 40,
   lines: [1, 30],
   lineChars: 80,
+  textIndent: 12,
   jsonLines: 40,
+  jsonLineChars: 120,
   jsonDepth: 6,
   path: 100,
 };
