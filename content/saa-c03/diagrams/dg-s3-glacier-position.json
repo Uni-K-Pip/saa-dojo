@@ -2,7 +2,7 @@
   "id": "dg-s3-glacier-position",
   "type": "position",
   "title": "S3 Glacier のストレージクラスの位置づけ",
-  "alt": "S3 Glacier の 3 つのストレージクラスを、取り出しの速さ（横軸）と最低保存期間（縦軸）の 2 つの軸に置いた図です。位置は順位で、比率ではありません。S3 Glacier Instant Retrieval はミリ秒で取り出せるので右端に置き、最低保存期間は 90 日です。S3 Glacier Flexible Retrieval は事前に復元が必要で数分から数時間かかり、最低保存期間は同じ 90 日です。S3 Glacier Deep Archive は事前に復元が必要で、標準で通常 12 時間以内、大容量で通常 48 時間以内に取り出せます。最低保存期間も 180 日と最も長いので、左上に置かれます。",
+  "alt": "S3 Glacier の 3 つのストレージクラスを、取り出しの速さ（横軸）と最低保存期間（縦軸）の 2 つの軸に置いた図です。位置は順位で、比率ではありません。S3 Glacier Instant Retrieval は四半期に 1 回程度アクセスされる長期のアーカイブ向けで、ミリ秒で取り出せるので右端に置き、最低保存期間は 90 日です。S3 Glacier Flexible Retrieval は事前に復元が必要で数分から数時間かかり、最低保存期間は同じ 90 日です。S3 Glacier Deep Archive は事前に復元が必要で、標準で通常 12 時間以内、大容量で通常 48 時間以内に取り出せます。最低保存期間も 180 日と最も長いので、左上に置かれます。",
   "lessonRefs": ["lesson-4.1-s3-storage-classes"],
   "factRefs": [
     "s3.glacier-instant-retrieval",

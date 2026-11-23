@@ -3,27 +3,42 @@
     "dg-compute-responsibility-layers": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "faebcb1ee5de"
+      "hash": "323d5bc3ae07"
+    },
+    "dg-dr-pilot-light": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "fc62023f5bd1"
     },
     "dg-s3-glacier-position": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "f28309370ff4"
+      "hash": "391ee7ff4608"
     },
     "dg-s3-lifecycle-timeline": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "84fd3d3292c1"
+      "hash": "455768e98fab"
     },
     "dg-sns-sqs-fanout": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "319297b8e491"
+      "hash": "7dc85777fbe3"
     },
     "dg-storage-choice": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "4992a99f7a86"
+      "hash": "700b6002f077"
+    },
+    "dg-vpc-build-up": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "af4dc19c6833"
+    },
+    "dg-vpc-three-tier": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "c39556b16d26"
     }
   },
   "artifacts": {
