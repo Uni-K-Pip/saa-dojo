@@ -59,6 +59,7 @@ if (!result.ok) {
 const c = result.manifest.counts;
 const dx = c.diagramsExcluded;
 const ax = c.artifactsExcluded;
+const sx = c.simsExcluded;
 const lx = c.labsExcluded;
 const px = c.patternsExcluded;
 console.log(
@@ -71,5 +72,6 @@ console.log(
     `実物 ${c.artifacts} 件（除外: 未検証 ${ax.pending}・要修正 ${ax['needs-fix']}・却下 ${ax.rejected}） / ` +
     `ミニラボ ${c.labs} 件（除外: 未検証 ${lx.pending}・要修正 ${lx['needs-fix']}・却下 ${lx.rejected}・図が未検証 ${lx.diagram}） / ` +
     `設計パターン ${c.patterns} 件（除外: 未検証 ${px.pending}・要修正 ${px['needs-fix']}・却下 ${px.rejected}・図が未検証 ${px.diagram}）` +
+    ` / シナリオ ${c.sims} 件（除外: 未検証 ${sx.pending}・要修正 ${sx['needs-fix']}・却下 ${sx.rejected}）` +
     (opts.includeUnverified ? '。未検証の教材も出しています' : ''),
 );

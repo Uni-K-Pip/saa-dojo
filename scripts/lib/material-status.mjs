@@ -14,6 +14,7 @@ export const MATERIAL_STATUS_FILE = 'material-status.json';
 export const MATERIAL_SECTIONS = {
   diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'], subject: ({ data }, ctx) => diagramHashSubject(data, ctx) },
   artifacts: { label: '実物', kind: 'artifact', omit: ['createdBy'] },
+  sims: { label: 'シナリオ', kind: 'sim', omit: ['createdBy'], refs: false },
   labs: { label: 'ミニラボ', kind: 'lab', omit: ['createdBy'], body: true, refs: false },
   patterns: { label: '設計パターン', kind: 'pattern', omit: ['createdBy'], body: true, refs: false },
 };

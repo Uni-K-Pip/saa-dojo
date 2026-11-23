@@ -33,6 +33,7 @@ import {
   PatternFrontSchema,
 } from './lib/schema.mjs';
 import { checkArtifact, checkArtifactRefs } from './lib/artifact.mjs';
+import { checkSimFiles, simContext } from './lib/sim.mjs';
 import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
@@ -120,6 +121,7 @@ function classify(rel) {
   }
   if (p[0] === 'diagrams' && n === 2 && ext === '.json') return { kind: 'diagram', stem };
   if (p[0] === 'artifacts' && n === 2 && ext === '.json') return { kind: 'artifact', stem };
+  if (p[0] === 'sims' && n === 3 && ext === '.json') return { kind: 'sim', sim: p[1], stem };
   if (p[0] === 'labs' && n === 2 && ext === '.md') return { kind: 'lab', stem };
   if (p[0] === 'patterns' && n === 2 && ext === '.md') return { kind: 'pattern', stem };
   if (p[0] === 'questions' && ext === '.json') {
@@ -150,6 +152,7 @@ export const LAYOUT_HELP = [
   '  catalog/services/<サービスid>.json   catalog/comparisons/<cmp-…>.json',
   '  catalog-status.json / catalog-needs.json / material-status.json',
   '  diagrams/<dg-…>.json   artifacts/<ar-…>.json',
+  '  sims/<シミュレーターid>/<sim-…>.json',
   '  labs/<lab-…>.md   patterns/<pattern-…>.md',
 ];
 
@@ -309,6 +312,9 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     diagrams: [], // { rel, data }（スキーマに通ったものだけ）
     artifacts: [], // { rel, data }（スキーマに通ったものだけ）
     artifactStems: new Set(), // 実物のファイル名（スキーマに通らなかったものを含む）
+    sims: [],
+    simStems: new Set(),
+    simFiles: 0,
     labs: [],
     patterns: [],
     labStems: new Set(),
@@ -479,6 +485,16 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         const j = readJson(rel);
         const data = j && validateWith(CourseSchema, j.value, rel);
         if (data) content.course = { rel, data };
+        break;
+      }
+      case 'sim': {
+        content.simFiles++;
+        content.simStems.add(cls.stem);
+        const j = readJson(rel);
+        if (j) {
+          registerId(j.value?.id, 'sim', rel);
+          content.sims.push({ rel, sim: cls.sim, data: j.value });
+        }
         break;
       }
       case 'artifact': {
@@ -1021,13 +1037,13 @@ function checkDiagrams(content) {
 }
 
 // 教材の検証状態（scripts/lib/material-status.mjs。ビルドと同じ判定）。スキーマに通らなかったときは検査しない
-function checkMaterialStatusFile(content) {
+function checkMaterialStatusFile(content, sims) {
   const { report, materialStatus } = content;
   if (materialStatus.present && !materialStatus.data) return;
   const { issues, statuses, unverifiedRefs } = checkMaterialStatus({
     statusFile: materialStatus.data,
-    materials: content,
-    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems },
+    materials: { ...content, sims },
+    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems, sims: content.simStems },
     texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)],
     // 図のハッシュの対象（レイアウトの結果）は、ビルドと同じ台帳で組み立てる（ビルドは台帳がないとき null）
     ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
@@ -1140,8 +1156,15 @@ export function checkContent(content) {
   checkCatalogModel(content);
   checkDiagrams(content);
   checkArtifacts(content);
+  const sims = checkSimFiles(content.sims, simContext({
+    lessons: content.lessons,
+    catalogEntries: content.catalog.entries,
+    catalogStatus: content.catalog.status.data,
+  }));
+  for (const i of sims.issues) content.report[i.level === 'error' ? 'error' : 'warn'](i.code, i.rel, i.message);
+  content.simCount = sims.items.length;
   checkLabsAndPatterns(content);
-  const materialStatuses = checkMaterialStatusFile(content);
+  const materialStatuses = checkMaterialStatusFile(content, sims.items);
   checkInlineChecks(content);
   checkCourse(content, materialStatuses);
   checkLongestCorrect(content);
@@ -1188,6 +1211,7 @@ export function summarize(content) {
       glossaryEntries: content.glossaries.reduce((n, g) => n + g.data.entries.length, 0),
       diagrams: { files: c.diagramFiles, valid: content.diagrams.length },
       artifacts: { files: c.artifactFiles, valid: content.artifacts.length },
+      sims: { files: content.simFiles, valid: content.simCount },
       labs: { files: c.labFiles, valid: content.labs.length },
       patterns: { files: c.patternFiles, valid: content.patterns.length },
     },
@@ -1243,6 +1267,13 @@ const CODE_LABELS = {
   'diagram-ref-unverified': '教材が検証済みでない図を指す',
   'diagram-unreferenced': 'どこからも参照されていない検証済みの図',
   artifact: '実物の不整合',
+  sim: 'シナリオの不整合',
+  'sim-expect': 'シナリオの期待値の不一致',
+  'sim-predict': 'シナリオの予想の誤り',
+  'sim-insert': 'シナリオの差し込みの誤り',
+  'sim-rule-ref': 'シナリオの裏づけの誤り',
+  'sim-rule-fact': 'シミュレーターの規則と図鑑の不整合',
+  'sim-rule-fact-unverified': 'シミュレーターの規則を裏づける事実が未検証',
   'artifact-ref': '実物の参照の誤り',
   'artifact-ref-unverified': '本文が検証済みでない実物を指す',
   'artifact-unreferenced': 'どこからも参照されていない検証済みの実物',
@@ -1297,6 +1328,7 @@ function renderText(result, opts) {
     L.push(`  フラッシュカード ${c.flashcardDecks.files} デッキ・${c.flashcards} 枚 / 用語集 ${c.glossaryFiles} ファイル・${c.glossaryEntries} 語`);
     if (c.diagrams.files > 0) L.push(`  図 ${c.diagrams.files} 件（有効 ${c.diagrams.valid}）`);
     if (c.artifacts.files > 0) L.push(`  実物 ${c.artifacts.files} 件（有効 ${c.artifacts.valid}）`);
+    L.push(`  シナリオ ${c.sims.files} 件（有効 ${c.sims.valid}）`);
     if (c.labs.files > 0) L.push(`  ミニラボ ${c.labs.files} 件（有効 ${c.labs.valid}）`);
     if (c.patterns.files > 0) L.push(`  設計パターン ${c.patterns.files} 件（有効 ${c.patterns.valid}）`);
     if (c.catalog) {

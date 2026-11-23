@@ -20,6 +20,8 @@ AWS Certified Solutions Architect – Associate（SAA）に、このアプリだ
 | `docs/learning-design.md` | 全体の設計。目標、教材の体系、学習コース、網羅と受け入れの基準、計画（未実装を含む） |
 | `docs/visual-materials-design.md` | 図解・操作型教材の設計（未実装を含む） |
 | `docs/service-catalog-design.md` | サービス図鑑の設計 |
+| `docs/sims-design.md` | シミュレーターの共通の枠の設計 |
+| `docs/sim-cidr-design.md` | シミュレーター「CIDR とサブネット」の設計 |
 | `docs/content-guide.md` | 実装済みの教材の形式と書き方の規則 |
 | `docs/app-spec.md` | 実装済みのアプリの仕様 |
 

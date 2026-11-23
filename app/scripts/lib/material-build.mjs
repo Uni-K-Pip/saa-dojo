@@ -7,7 +7,7 @@ const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs, ...labPatternTex
 // serviceIndex は図のハッシュの対象（レイアウトの結果）を組み立てるのに使う。図の出力と同じもの
 const run = (parsed, serviceIndex) => checkMaterialStatus({
   statusFile: parsed.materialStatus,
-  materials: parsed,
+  materials: { ...parsed, sims: parsed.checkedSims?.items ?? [] },
   presentIds: parsed.materialStems,
   texts: textsOf(parsed),
   file: MATERIAL_STATUS_FILE,

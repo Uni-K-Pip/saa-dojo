@@ -1,0 +1,112 @@
+{
+  "id": "sim-cidr-three-tier-split",
+  "title": "2 つの AZ と 3 つの層に分けられるか",
+  "intro": "10.0.0.0/24 の VPC を使います。2 つの AZ のそれぞれにパブリック、アプリ、データの層を作ります。各層のサブネットは /26 にそろえます。",
+  "predict": {
+    "text": "6 つのサブネットがこの VPC に入りますか。",
+    "key": "fits",
+    "choices": [
+      {
+        "text": "入る",
+        "value": true
+      },
+      {
+        "text": "入らない",
+        "value": false
+      }
+    ]
+  },
+  "config": {
+    "op": "split",
+    "vpc": "10.0.0.0/24",
+    "azs": 2,
+    "tiers": [
+      {
+        "name": "パブリック",
+        "kind": "public"
+      },
+      {
+        "name": "アプリ",
+        "kind": "private"
+      },
+      {
+        "name": "データ",
+        "kind": "isolated"
+      }
+    ],
+    "prefix": 26
+  },
+  "toggles": [
+    {
+      "id": "subnet-smaller",
+      "label": "サブネットを /27 にする",
+      "set": {
+        "prefix": 27
+      }
+    },
+    {
+      "id": "vpc-larger",
+      "label": "VPC を /23 にする",
+      "set": {
+        "vpc": "10.0.0.0/23"
+      }
+    },
+    {
+      "id": "two-tiers",
+      "label": "層を 2 つにする",
+      "set": {
+        "tiers": [
+          {
+            "name": "パブリック",
+            "kind": "public"
+          },
+          {
+            "name": "アプリ",
+            "kind": "private"
+          }
+        ]
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "fits": false,
+      "issue": "not-enough",
+      "needed": 384,
+      "available": 256
+    },
+    "toggles": {
+      "subnet-smaller": {
+        "fits": true,
+        "remaining": 64
+      },
+      "vpc-larger": {
+        "fits": true,
+        "remaining": 128
+      },
+      "two-tiers": {
+        "fits": true,
+        "remaining": 0
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:subnet-one-az}}。層ごとに AZ の数だけサブネットが要ります。全部で {{out:needed}} 個のアドレスが要ります。VPC の範囲は {{out:available}} 個なので、全部は入りません。",
+    "toggles": {
+      "subnet-smaller": "各サブネットを小さくすると、全部で {{out:needed}} 個のアドレスで足ります。割り当てたあとに VPC の範囲が {{out:remaining}} 個分残ります。",
+      "vpc-larger": "VPC の範囲が {{out:available}} 個に広がり、サブネットが全部入ります。割り当てたあとに {{out:remaining}} 個分残ります。",
+      "two-tiers": "層を減らすと、必要なサブネットも減ります。要るアドレスが {{out:needed}} 個になり、VPC の範囲にちょうど収まります。残りは {{out:remaining}} 個です。"
+    }
+  },
+  "factRefs": [
+    "vpc.regional-subnet-az",
+    "vpc.cidr-size",
+    "vpc.subnet-reserved-ips",
+    "vpc.subnet-cidr-subset"
+  ],
+  "lessonRefs": [
+    "lesson-3.4-vpc-design",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v4"
+}
