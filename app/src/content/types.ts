@@ -197,6 +197,8 @@ export interface Manifest {
     /** 出した実物の件数と、除いた件数（状態ごと。古いデータにはない） */
     artifacts?: number;
     artifactsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
+    sims?: number;
+    simsExcluded?: { pending: number; 'needs-fix': number; rejected: number };
     labs?: number;
     labsExcluded?: { pending: number; 'needs-fix': number; rejected: number; diagram?: number };
     patterns?: number;
@@ -531,6 +533,40 @@ export interface ArtifactData extends ArtifactIndexEntry {
   columns?: string[];
   rows?: ArtifactRow[];
   ask?: { text: string; answer: string };
+}
+
+export interface SimScenarioMeta {
+  id: string;
+  title: string;
+  status: DiagramStatus;
+}
+
+export interface SimIndexEntry {
+  id: string;
+  name: string;
+  description: string;
+  notCovered: string[];
+  scenarios: SimScenarioMeta[];
+}
+
+export interface SimToggle {
+  id: string;
+  label: string;
+  set: Record<string, unknown>;
+}
+
+export interface SimScenario<C extends object = object> extends SimScenarioMeta {
+  sim: string;
+  intro: string;
+  predict: {
+    text: string;
+    key: string;
+    choices: { text: string; value: string | number | boolean }[];
+  };
+  config: C;
+  toggles: SimToggle[];
+  explain: { initial: string; toggles: Record<string, string> };
+  references: { href: string; title: string }[];
 }
 
 interface ReadingMaterialMeta {

@@ -1,0 +1,92 @@
+{
+  "id": "sim-cidr-reserved-addresses",
+  "title": "小さなサブネットに何台置けるか",
+  "intro": "管理用のサーバーを置くために、VPC の中に 10.0.0.0/28 のサブネットを作ります。サーバーは 1 台ごとにプライベート IPv4 アドレスを 1 つ使います。",
+  "predict": {
+    "text": "このサブネットで、サーバーに割り当てられるアドレスはいくつですか。",
+    "key": "usable",
+    "choices": [
+      {
+        "text": "16 個",
+        "value": 16
+      },
+      {
+        "text": "15 個",
+        "value": 15
+      },
+      {
+        "text": "11 個",
+        "value": 11
+      },
+      {
+        "text": "14 個",
+        "value": 14
+      }
+    ]
+  },
+  "config": {
+    "op": "size",
+    "role": "subnet",
+    "cidr": "10.0.0.0/28"
+  },
+  "toggles": [
+    {
+      "id": "prefix-27",
+      "label": "/27 にする",
+      "set": {
+        "cidr": "10.0.0.0/27"
+      }
+    },
+    {
+      "id": "prefix-24",
+      "label": "/24 にする",
+      "set": {
+        "cidr": "10.0.0.0/24"
+      }
+    },
+    {
+      "id": "prefix-29",
+      "label": "/29 にする",
+      "set": {
+        "cidr": "10.0.0.0/29"
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "total": 16,
+      "usable": 11,
+      "allowed": true
+    },
+    "toggles": {
+      "prefix-27": {
+        "total": 32,
+        "usable": 27
+      },
+      "prefix-24": {
+        "total": 256,
+        "usable": 251
+      },
+      "prefix-29": {
+        "allowed": false,
+        "sizeIssue": "too-small"
+      }
+    }
+  },
+  "explain": {
+    "initial": "サブネットのアドレスは全部で {{out:total}} 個です。AWS が {{rule:reserved}} を予約するため、割り当てられるのは残りの {{out:usable}} 個です。",
+    "toggles": {
+      "prefix-27": "範囲を広げると、全部で {{out:total}} 個になります。AWS は {{rule:reserved}} を予約するため、残りの {{out:usable}} 個を割り当てられます。",
+      "prefix-24": "範囲をさらに広げると、全部で {{out:total}} 個になります。AWS は {{rule:reserved}} を予約するため、残りの {{out:usable}} 個を割り当てられます。",
+      "prefix-29": "サブネットの IPv4 CIDR の大きさは {{rule:size-range}} の範囲です。この設定の範囲は小さすぎるので、サブネットを作れません。"
+    }
+  },
+  "factRefs": [
+    "vpc.subnet-reserved-ips",
+    "vpc.cidr-size"
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v4"
+}

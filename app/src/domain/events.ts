@@ -114,6 +114,15 @@ export interface CourseCheckEvent extends EventBase {
   done: boolean;
 }
 
+export interface SimRunEvent extends EventBase {
+  type: 'sim-run';
+  sim: string;
+  scenarioId: string;
+  run: string;
+  choice?: number;
+  correct?: boolean;
+}
+
 export type AppEvent =
   | AnswerEvent
   | MissReasonEvent
@@ -127,6 +136,7 @@ export type AppEvent =
   | CheckAnswerEvent
   | CatalogReadEvent
   | CourseCheckEvent
+  | SimRunEvent
   | DrillEvent;
 
 type DistributiveOmit<T, K extends keyof EventBase> = T extends unknown ? Omit<T, K> : never;

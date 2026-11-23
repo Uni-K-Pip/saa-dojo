@@ -9,7 +9,7 @@ export interface NavItem {
   icon: string;
   group: string;
   /** 出力に 1 件以上あるときだけ出す教材（manifest の件数で判定） */
-  whenAny?: 'labs' | 'patterns';
+  whenAny?: 'labs' | 'patterns' | 'sims';
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -17,6 +17,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/course', label: '学習コース', icon: '🧭', group: '学ぶ' },
   { to: '/basics', label: '基礎講座', icon: '🔰', group: '学ぶ' },
   { to: '/roadmap', label: 'ロードマップ', icon: '🗺', group: '学ぶ' },
+  { to: '/sims', label: 'シミュレーター', icon: '▦', group: '学ぶ', whenAny: 'sims' },
   { to: '/labs', label: 'ミニラボ', icon: '🧪', group: '学ぶ', whenAny: 'labs' },
   { to: '/patterns', label: '設計パターン', icon: '🧩', group: '学ぶ', whenAny: 'patterns' },
   { to: '/practice', label: '演習', icon: '✎', group: '解く' },
@@ -35,11 +36,11 @@ export const NAV_ITEMS: NavItem[] = [
 
 /** 件数で出し分ける項目を除いたメニュー。manifest が読めないあいだは出さない */
 export function useNavItems(): NavItem[] {
-  const [counts, setCounts] = useState<Partial<Record<'labs' | 'patterns', number>>>({});
+  const [counts, setCounts] = useState<Partial<Record<'labs' | 'patterns' | 'sims', number>>>({});
   useEffect(() => {
     let alive = true;
     loadManifest()
-      .then((m) => { if (alive) setCounts({ labs: m.counts.labs ?? 0, patterns: m.counts.patterns ?? 0 }); })
+      .then((m) => { if (alive) setCounts({ labs: m.counts.labs ?? 0, patterns: m.counts.patterns ?? 0, sims: m.counts.sims ?? 0 }); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
