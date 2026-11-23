@@ -34,10 +34,14 @@ export default function ServicesPage() {
   const read = useMemo(() => catalogReadMap(events), [events]);
 
   // 検索語と絞り込みは URL に持つ（詳細から戻っても同じ表示になる）
-  const toggle = <T extends string | number>(key: string, current: readonly T[], value: T) => {
-    const set = new Set<T>(current);
-    if (!set.delete(value)) set.add(value);
-    update({ [key]: [...set].join(',') || null });
+  // 今の値は確定前の更新を含む params から取る（続けて 2 つ押しても先の 1 つが消えない）
+  const toggle = (key: string, value: string | number) => {
+    update((now) => {
+      const set = new Set(list(now, key));
+      const v = String(value);
+      if (!set.delete(v)) set.add(v);
+      return { [key]: [...set].join(',') || null };
+    });
   };
 
   const taskIds = useMemo(() => {
@@ -82,7 +86,7 @@ export default function ServicesPage() {
         <div className="chips chips-scroll" role="group" aria-label="絞り込み">
           {TIERS.map((t) => (
             <label key={t} className="chip">
-              <input type="checkbox" checked={tiers.includes(t)} onChange={() => toggle('tier', tiers, t)} />
+              <input type="checkbox" checked={tiers.includes(t)} onChange={() => toggle('tier', t)} />
               {TIER_LABELS[t]}
             </label>
           ))}
@@ -92,7 +96,7 @@ export default function ServicesPage() {
           </label>
           {taskIds.map((t) => (
             <label key={t} className="chip" title={taskTitle(t)}>
-              <input type="checkbox" checked={tasks.includes(t)} onChange={() => toggle('task', tasks, t)} />
+              <input type="checkbox" checked={tasks.includes(t)} onChange={() => toggle('task', t)} />
               タスク {t}
             </label>
           ))}

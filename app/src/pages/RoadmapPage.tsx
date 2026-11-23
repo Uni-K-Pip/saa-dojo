@@ -36,7 +36,7 @@ export default function RoadmapPage() {
         </div>
       )}
       {roadmapLessons.some((l) => l.checkIds?.length) && (
-        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} />
+        <LessonRereadFilter checked={rereadOnly} onChange={setRereadOnly} count={shownLessons.length} />
       )}
       {rereadOnly && shownLessons.length === 0 && <p className="notice">{NO_REREAD_LESSONS}</p>}
       {shownDomains.map((d) => (

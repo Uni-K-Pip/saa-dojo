@@ -21,3 +21,5 @@ export function parseInlineChecks(markdown: string): {
   problems: string[];
   followingCallout?: { line: number; message: string };
 }[];
+
+export function suspectMarkdownFences(markdown: string): { line: number; checkLine: number }[];

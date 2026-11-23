@@ -12,6 +12,7 @@ function Search() {
   return (
     <div>
       <input type="search" value={text} onChange={(e) => setText(e.target.value)} />
+      <button type="button" onClick={() => update((now) => ({ tier: (now.get('tier') ?? '') + '1' }))}>追記</button>
       <button type="button" onClick={() => update({ tier: params.get('tier') ? null : '1' })}>区分</button>
       <output>{location.search}</output>
     </div>
@@ -72,5 +73,99 @@ describe('useSearchText', () => {
     await waitFor(() => expect(input.value).toBe('one'));
     act(() => { void navigate(1); });
     await waitFor(() => expect(input.value).toBe('twox'));
+  });
+
+  it('確定の前に別の検索語へ移り、戻ったときも、入力を URL に合わせる', async () => {
+    const input = renderSearch(['/s?q=vpc']);
+    act(() => {
+      fireEvent.change(input, { target: { value: 'vpcxx' } });
+      void navigate('/s?q=nat');
+    });
+    await waitFor(() => expect(input.value).toBe('nat'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(input.value).toBe('vpcxx'));
+    expect(search()).toBe('?q=vpcxx');
+  });
+
+  it('確定の前に 2 つ続けて更新しても、先の変更が消えない', async () => {
+    renderSearch(['/s']);
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: '追記' }));
+      fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    });
+    await waitFor(() => expect(search()).toBe('?tier=11'));
+  });
+
+  it('打つ → 外から別の検索語へ移る → 移った先でまた打つ → 戻る、で入力を URL に合わせる', async () => {
+    const input = renderSearch(['/s?q=one']);
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+
+    act(() => { void navigate('/s?q=link'); });
+    await waitFor(() => expect(input.value).toBe('link'));
+
+    fireEvent.change(input, { target: { value: 'linky' } });
+    await waitFor(() => expect(search()).toBe('?q=linky'));
+
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+    await waitFor(() => expect(input.value).toBe('onex'));
+  });
+
+  it('戻ったあとに打っても、URL のほかの部分が古い値に戻らない', async () => {
+    const input = renderSearch(['/s?q=one&tier=1']);
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex&tier=1'));
+
+    act(() => { void navigate('/s?q=link&tier=2'); });
+    await waitFor(() => expect(input.value).toBe('link'));
+    fireEvent.change(input, { target: { value: 'linky' } });
+    await waitFor(() => expect(search()).toBe('?q=linky&tier=2'));
+
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=onex&tier=1'));
+    fireEvent.change(input, { target: { value: 'z' } });
+    await waitFor(() => expect(search()).toBe('?q=z&tier=1'));
+  });
+
+  it('確定した検索語のあと、空の検索語へ外から移って打ち、戻ると、確定した検索語に戻る', async () => {
+    const input = renderSearch(['/s']);
+    fireEvent.change(input, { target: { value: 'vpc' } });
+    await waitFor(() => expect(search()).toBe('?q=vpc'));
+    act(() => { void navigate('/s'); });
+    await waitFor(() => expect(input.value).toBe(''));
+    fireEvent.change(input, { target: { value: 'nat' } });
+    await waitFor(() => expect(search()).toBe('?q=nat'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=vpc'));
+    await waitFor(() => expect(input.value).toBe('vpc'));
+  });
+
+  it('戻った先で打ってから進むと、進んだ先の検索語に合わせる', async () => {
+    const input = renderSearch(['/s?q=one', '/s?q=two']);
+    fireEvent.change(input, { target: { value: 'twox' } });
+    await waitFor(() => expect(search()).toBe('?q=twox'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(input.value).toBe('one'));
+    fireEvent.change(input, { target: { value: 'onex' } });
+    await waitFor(() => expect(search()).toBe('?q=onex'));
+    act(() => { void navigate(1); });
+    await waitFor(() => expect(search()).toBe('?q=twox'));
+    await waitFor(() => expect(input.value).toBe('twox'));
+  });
+
+  it('区分を関数の形で更新したあと外から移って戻ると、戻った先の URL に重ねて更新する', async () => {
+    const input = renderSearch(['/s?q=a']);
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=a&tier=1'));
+    act(() => { void navigate('/s?q=b'); });
+    await waitFor(() => expect(input.value).toBe('b'));
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=b&tier=1'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(search()).toBe('?q=a&tier=1'));
+    await waitFor(() => expect(input.value).toBe('a'));
+    fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    await waitFor(() => expect(search()).toBe('?q=a&tier=11'));
   });
 });

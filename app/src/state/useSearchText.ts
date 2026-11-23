@@ -4,7 +4,7 @@
 // transition の確定より先に次の文字が来たときに、その間の文字が消える。
 // 戻る・進む、`?q=` つきのリンクなど、外から URL が変わったときは、入力を URL に合わせる。
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation, useNavigationType, useSearchParams } from 'react-router';
 
 type Mark = { token: string; seq: number };
 const MARK = 'searchText';
@@ -17,6 +17,8 @@ function markOf(state: unknown): Mark | undefined {
 }
 
 export type SearchParamChanges = Record<string, string | null>;
+// 変更は、確定前のものも含めた今の検索の部分から作ってもよい（続けて 2 つ押しても先の 1 つが消えない）
+export type SearchParamUpdate = SearchParamChanges | ((current: URLSearchParams) => SearchParamChanges);
 
 /**
  * @returns `text`（入力の値）、`setText`（入力が変わったとき）、`update`（ほかの絞り込みを URL に書く。検索語は今の入力の値を書く）、`params`（今の URL の検索の部分）
@@ -24,21 +26,21 @@ export type SearchParamChanges = Record<string, string | null>;
 export function useSearchText(key = 'q') {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
+  const navigationType = useNavigationType();
   const fromUrl = params.get(key) ?? '';
   const [text, setTextState] = useState(fromUrl);
   // この画面が書いた位置の更新には印（token と連番）を付け、外からの変更と見分ける
   const token = useRef(Math.random().toString(36).slice(2));
   const seq = useRef(0);
-  const acked = useRef(0);
   const latest = useRef(fromUrl);
   // 最後に書いた（または外から来た）検索の部分。確定前の更新に、次の更新を重ねるために持つ
   const pending = useRef(params);
 
   useEffect(() => {
     const mark = markOf(location.state);
-    if (mark?.token === token.current && mark.seq > acked.current) {
-      // 自分が書いた更新が確定した（途中の値のこともある）。入力はもっと新しいので、そのままにする
-      acked.current = mark.seq;
+    if (navigationType === 'REPLACE' && mark?.token === token.current && mark.seq < seq.current) {
+      // 自分の書き込み（replace）で届いた位置のうち、最新より前のもの（途中の値）。入力はもっと新しいので、そのままにする。
+      // 戻る・進む（POP）と外からの移動（PUSH）で届いた位置は、印があっても常に URL に合わせる
       return;
     }
     pending.current = params;
@@ -50,8 +52,9 @@ export function useSearchText(key = 'q') {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
-  const write = useCallback((changes: SearchParamChanges) => {
+  const write = useCallback((update: SearchParamUpdate) => {
     const next = new URLSearchParams(pending.current);
+    const changes = typeof update === 'function' ? update(pending.current) : update;
     for (const [k, v] of Object.entries({ ...changes, [key]: latest.current || null })) {
       if (v) next.set(k, v);
       else next.delete(k);

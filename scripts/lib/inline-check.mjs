@@ -22,8 +22,19 @@ function isCalloutHeading(line) {
   const leading = body.match(/^(?:\*+|_+)/)?.[0];
   const trailing = body.match(/(?:\*+|_+)$/)?.[0];
   if (leading?.[0] === marker && trailing?.[0] === marker && leading.length % 2 && trailing.length % 2) return false;
-  if (['*', '_', '`'].some((symbol) => body.split(symbol).length % 2 === 0)) return false;
-  const title = body.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
+  // 表示は、見出しの中のリンク・取り消し線（~ が 1〜2 本）・HTML（タグとコメント）の中身の文字も見出しとして読みます。
+  // 記号の偶奇は、リンク先や属性を除いたあとの文字で見ます。
+  const plain = body
+    .replace(/!?\[((?:\\.|[^\[\]\\]|\[(?:\\.|[^\[\]\\])*\])*)\]\((?:\\.|[^()\\]|\((?:\\.|[^()\\])*\))*\)/g, '$1')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<\/?[A-Za-z][\w:-]*(?:\s(?:"[^"]*"|'[^']*'|[^'">])*)?\/?>/g, '')
+    .replace(/~+/g, '')
+    // バックスラッシュのエスケープも文字として読みます（強調の記号 * _ ` は、そのままにして数えます）。
+    .replace(/\\([!-/:-@[\]^{-~])/g, (match, char) => ('*_`'.includes(char) ? match : char));
+  if (['*', '_', '`'].some((symbol) => plain.split(symbol).length % 2 === 0)) return false;
+  // 文字参照（&#12398; など）は、normalizeInlineCheckQuestion と同じ処理で文字にします。
+  const text = plain.replace(/&(amp|lt|gt|quot|#\d+|#[xX][\da-fA-F]+);/g, decodeCharacterReference);
+  const title = text.replace(/[*_`]/g, '').trim().replace(/[：:]$/, '');
   return Object.hasOwn(CALLOUT_KINDS, title);
 }
 
@@ -135,4 +146,33 @@ export function parseInlineChecks(markdown) {
     checks.push({ line, endLine: i + 1, questionLine, question, questionKey: normalizeInlineCheckQuestion(question), options, reason, reasonLines, problems, followingCallout });
   }
   return checks;
+}
+
+/**
+ * `markdown`・`md` のフェンスの中に、見出し（`#`）より後ろのその場の確認の見出しがあるものの行を返します。
+ * フェンスの閉じ忘れで、そのあとの本文ごと記法の例になっている疑いがあります（フェンスの中は確認として読みません）。
+ */
+export function suspectMarkdownFences(markdown) {
+  const lines = markdown.split(/\r\n?|\n/);
+  const found = [];
+  let fence = null;
+  for (let i = 0; i < lines.length; i++) {
+    const f = FENCE.exec(lines[i]);
+    if (f && (fence === null || f[1][0] === fence.marker[0] && f[1].length >= fence.marker.length && !lines[i].slice(f[0].length).trim())) {
+      if (fence === null) {
+        const info = lines[i].slice(f[0].length).trim().split(/\s+/)[0].toLowerCase();
+        fence = { marker: f[1], example: info === 'markdown' || info === 'md', line: i + 1, heading: false, reported: false };
+      } else {
+        fence = null;
+      }
+      continue;
+    }
+    if (!fence?.example) continue;
+    if (/^ {0,3}#{1,6}(?:[ \t]|$)/.test(lines[i])) fence.heading = true;
+    else if (fence.heading && !fence.reported && HEAD.test(lines[i])) {
+      fence.reported = true;
+      found.push({ line: fence.line, checkLine: i + 1 });
+    }
+  }
+  return found;
 }
