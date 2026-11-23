@@ -98,7 +98,7 @@ export function unverifiedMaterialRefs(texts, statuses) {
  * presentIds: 区分ごとの id の集合（ファイルはあるがスキーマに通らなかったものを含む。省略可）
  * 戻り値: { issues: [{ level, code, rel, message }], statuses: { 区分: Map }, unverifiedRefs }
  *   エラー: 存在しない教材の記録（material-status-key。ファイルがあってスキーマのエラーで読めないものは、そちらのエラーに任せて出さない）
- *   警告: 記録したあとに内容が変わった教材（material-stale-review）、検証済みなのにどこからも参照されない教材（diagram-unreferenced・artifact-unreferenced）
+ *   警告: 検証後に変わった教材、本文から参照されない検証済みの図・実物、ミニラボ・設計パターンの front matter が指す検証済みでない図
  *   unverifiedRefs は unverifiedMaterialRefs の結果（警告にするかは呼び出し側が決める）
  */
 export function checkMaterialStatus({ statusFile, materials, presentIds = {}, texts, file = MATERIAL_STATUS_FILE }) {
@@ -116,6 +116,21 @@ export function checkMaterialStatus({ statusFile, materials, presentIds = {}, te
         continue;
       }
       if (d.stale) stale.push(`${conf.label} ${id}`);
+    }
+  }
+  for (const section of ['labs', 'patterns']) {
+    for (const { rel, data } of materials[section] ?? []) {
+      if (statuses[section].get(data.id).status !== 'verified') continue;
+      const status = statuses.diagrams.get(data.diagram)?.status;
+      if (!status || status === 'verified') continue;
+      const label = MATERIAL_SECTIONS[section].label;
+      issues.push({
+        level: 'warning',
+        code: 'diagram-ref-unverified',
+        rel,
+        message: `front matter の diagram が検証済みでない図 ${data.diagram}（${STATUS_LABELS[status]}）を指しています。` +
+          `このままでは既定のビルドにこの${label}を出しません。図を先に検証してください。`,
+      });
     }
   }
   const referenced = new Set();

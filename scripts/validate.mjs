@@ -39,7 +39,7 @@ import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalo
 import { checkDiagram, checkDiagramRefs, diagramRefIndex } from './lib/diagram.mjs';
 import { parseInlineChecks } from './lib/inline-check.mjs';
 import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
-import { CourseSchema, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
+import { CourseSchema, WARN_UNITS_WITHOUT_LAB, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
 import { checkLab, checkPattern, labPatternContext, labPatternPathMessage, labPatternTexts } from './lib/lab-pattern.mjs';
 
 export const DEFAULT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -1084,8 +1084,9 @@ function checkInlineChecks(content) {
   function check({ rel, body }) {
     const checks = parseInlineChecks(body);
     const firstLines = new Map();
-    for (const { line, questionKey, problems } of checks) {
+    for (const { line, questionKey, problems, followingCallout } of checks) {
       for (const problem of problems) report.error('inline-check', rel, `本文 ${line} 行目: ${problem}`);
+      if (followingCallout) report.error('inline-check', rel, `本文 ${followingCallout.line} 行目: ${followingCallout.message}`);
       if (!questionKey) continue;
       const firstLine = firstLines.get(questionKey);
       if (firstLine === undefined) firstLines.set(questionKey, line);
@@ -1109,6 +1110,7 @@ function checkCourse(content, materialStatuses) {
     lessons: content.lessons.map(({ data }) => data),
     docIds: new Set(content.docs.map(({ data }) => data.id)),
     ...courseMaterialContext(content, materialStatuses),
+    warnUnitsWithoutLab: WARN_UNITS_WITHOUT_LAB,
     // ユニット演習の候補はビルドと同じく、要修正・却下の問題を除いて数える
     questions: content.questions.filter(({ data }) => !HIDDEN_STATUSES.has(statusOf(content, data.id))).map(({ data }) => data),
   });
@@ -1260,7 +1262,7 @@ const CODE_LABELS = {
   'correct-longest': '正解が最長に偏っている',
   diagram: '図の不整合',
   'diagram-ref': '図の参照の誤り',
-  'diagram-ref-unverified': '本文が検証済みでない図を指す',
+  'diagram-ref-unverified': '教材が検証済みでない図を指す',
   'diagram-unreferenced': 'どこからも参照されていない検証済みの図',
   artifact: '実物の不整合',
   sim: 'シナリオの不整合',

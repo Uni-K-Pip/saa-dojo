@@ -87,6 +87,17 @@ describe('学習コースのスキーマと検査', () => {
     expect(checkCourse(course, { ...ctx, labIds: new Set(['lab-test']) }).warnings).toEqual([]);
   });
 
+  it('設定を有効にするとステージ 1・2 のミニラボがないユニットだけ警告する', () => {
+    const lab = { kind: 'lab', ref: 'lab-test' };
+    const course = { stages: [stage(), stage(1, [unit('u01', [doc]), unit('u02', [lab])]), stage(2, [unit('u03', [doc])]), stage(3, [unit('u04', [doc])])] };
+    const context = { ...ctx, labIds: new Set([lab.ref]) };
+    expect(checkCourse(course, { ...context, warnUnitsWithoutLab: false }).warnings).toEqual([]);
+    expect(checkCourse(course, { ...context, warnUnitsWithoutLab: true }).warnings).toEqual([
+      { code: 'course-no-lab', message: 'u01 にミニラボがありません' },
+      { code: 'course-no-lab', message: 'u03 にミニラボがありません' },
+    ]);
+  });
+
   it('複数レッスンの知識項目に重なる問題から演習・基礎だけを id 順で返す', () => {
     const second = { kind: 'lesson', ref: 'lesson-basics-cloud-and-aws' };
     const questions = [
