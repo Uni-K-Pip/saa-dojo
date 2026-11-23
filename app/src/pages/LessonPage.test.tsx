@@ -18,6 +18,7 @@ const lessons: LessonMeta[] = [
     services: ['AWS IAM'],
     estimatedMinutes: 10,
     questionIds: ['saa-1.1-t-001', 'saa-1.1-t-002'],
+    checkIds: [],
   },
   {
     id: 'lesson-basics-cloud',
@@ -29,6 +30,7 @@ const lessons: LessonMeta[] = [
     services: [],
     estimatedMinutes: 5,
     questionIds: [],
+    checkIds: [],
   },
 ];
 const body = [

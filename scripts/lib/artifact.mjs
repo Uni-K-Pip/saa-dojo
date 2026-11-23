@@ -1,7 +1,7 @@
 // 実物（設定そのものを注目点つきで読む教材）の共通処理。validate とアプリのビルドが同じ判定を使う。
 // 設計は docs/visual-materials-design.md の 6章。スキーマは schema.mjs の ArtifactSchema。
 import { ARTIFACT_LIMITS } from './schema.mjs';
-import { parseMaterialRefs } from './diagram.mjs';
+import { nestedMaterialImageMessage, parseMaterialRefs } from './diagram.mjs';
 
 // 種類（6.3）の日本語の名前
 export const ARTIFACT_KIND_LABELS = {
@@ -191,8 +191,9 @@ export function checkArtifact(a, ctx = {}) {
 export function checkArtifactRefs({ texts, artifactIds }) {
   const errors = [];
   for (const { rel, body } of texts) {
-    for (const { kind, href, id, reference } of parseMaterialRefs(body)) {
+    for (const { kind, href, id, reference, nestedImageLine } of parseMaterialRefs(body)) {
       if (kind !== 'artifact') continue;
+      if (nestedImageLine !== undefined) errors.push({ rel, message: nestedMaterialImageMessage(nestedImageLine) });
       let message;
       if (reference) message = '実物の参照は参照形式では書けません。`![キャプション](#/artifacts/<id>)` の形で書いてください。';
       else if (!id) message = `実物の参照の形が違います（${href}）。\`#/artifacts/\` のあとには、\`ar-\` で始まる実物の id（英小文字・数字・ハイフン）だけを書きます。?step などは付けられません。`;

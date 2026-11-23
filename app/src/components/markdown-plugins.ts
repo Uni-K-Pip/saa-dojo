@@ -1,29 +1,8 @@
 // Markdown の変換プラグイン。囲み記事（`> **試験のポイント**`・`> **ひっかけ注意**`）を色付きの枠にする。
-import type { Blockquote, Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import type { Blockquote, Parent, Root, RootContent } from 'mdast';
 import type { Plugin } from 'unified';
-import { CALLOUT_KINDS, isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
-import { hashString } from '../domain/rng';
-
-function textOf(nodes: readonly PhrasingContent[]): string {
-  return nodes
-    .map((n) => {
-      if (n.type === 'text' || n.type === 'inlineCode') return n.value;
-      if ('children' in n) return textOf(n.children as PhrasingContent[]);
-      return '';
-    })
-    .join('');
-}
-
-/** 引用の先頭が囲み記事の見出しなら、その種類と見出しを返す */
-export function calloutOf(bq: Blockquote): { kind: 'tip' | 'trap'; title: string } | null {
-  const first = bq.children[0];
-  if (first?.type !== 'paragraph') return null;
-  const head = first.children[0];
-  if (head?.type !== 'strong') return null;
-  const title = textOf(head.children).trim().replace(/[：:]$/, '');
-  const kind = CALLOUT_KINDS[title];
-  return kind ? { kind, title } : null;
-}
+import { inlineCheckId, isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
+import { calloutBodyChildren, calloutOf, textOf } from './markdown-callouts.mjs';
 
 function transform(bq: Blockquote): void {
   if (bq.data?.hName) return;
@@ -31,23 +10,7 @@ function transform(bq: Blockquote): void {
   if (!c) return;
   const first = bq.children[0];
   if (first?.type !== 'paragraph') return;
-  first.children.shift();
-  // 見出しの直後の改行やコロンを取り除く
-  while (first.children.length > 0) {
-    const n = first.children[0]!;
-    if (n.type === 'break') {
-      first.children.shift();
-      continue;
-    }
-    if (n.type === 'text') {
-      n.value = n.value.replace(/^[\s:：]+/, '');
-      if (!n.value) {
-        first.children.shift();
-        continue;
-      }
-    }
-    break;
-  }
+  first.children = calloutBodyChildren(first);
   if (first.children.length === 0) bq.children.shift();
   bq.data = { ...(bq.data ?? {}), hName: 'aside', hProperties: { className: ['callout', c.kind], 'aria-label': c.title } } as Blockquote['data'];
   bq.children.unshift({
@@ -102,12 +65,11 @@ export const remarkInlineChecks: Plugin<[], Root> = function () {
       const questionText = questionBlocks.map(plainText).join(' ').replace(/\s+/g, ' ').trim();
       const question = questionBlocks.length === 1 && questionBlocks[0].type === 'paragraph'
         ? questionBlocks[0] : { type: 'paragraph' as const, children: [{ type: 'text' as const, value: questionText }] };
-      const checkId = `c${hashString(check.questionKey).toString(16).padStart(8, '0')}`;
       bq.data = {
         hName: 'section',
         hProperties: {
           className: ['callout', 'inline-check'], 'aria-label': 'その場の確認',
-          dataCheckId: checkId, dataCorrectChoice: check.options.findIndex(({ correct }) => correct) + 1,
+          dataCheckId: inlineCheckId(check.questionKey), dataCorrectChoice: check.options.findIndex(({ correct }) => correct) + 1,
         },
       };
       bq.children = [

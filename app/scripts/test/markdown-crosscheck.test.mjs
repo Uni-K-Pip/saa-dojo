@@ -5,6 +5,7 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import { isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import { crosscheckMarkdown } from '../lib/markdown-crosscheck.mjs';
+import { calloutOf } from '../../src/components/markdown-callouts.mjs';
 
 const check = [
   '> **その場の確認**',
@@ -117,7 +118,12 @@ it('遅延継続で前の囲み記事とつながる確認を検査で止めま�
   }]);
 });
 
-it.each(['**試験のポイント**', '__ひっかけ注意：__'])('直後に囲み記事の見出し %s が続くと、その行を報告します', (title) => {
+it.each([
+  '**試験のポイント**', '__ひっかけ注意：__', '**試験のポイント：**',
+  '**試験のポイント** は大事', '**試験の*ポイント***', '__`ひっかけ`注意__ は大事',
+  '***試験の*ポイント**', '**_試験のポイント_**', '__*ひっかけ注意*__',
+])('直後に囲み記事の見出し %s が続くと、その行を報告します', (title) => {
+  expect(calloutOf(parser.parse(`> ${title}`).children[0])).not.toBeNull();
   const markdown = `${check}\n> ${title}\n> 注意点です。`;
   const issue = { line: 8, message: 'その場の確認と次の引用（囲み記事）は、空行で分けてください。' };
   expect(parseInlineChecks(markdown)[0].followingCallout).toEqual(issue);
@@ -130,6 +136,13 @@ it.each([
   '\n> 本文には **ひっかけ注意** と書かれています。',
 ])('空行で分けた囲み記事や、理由の普通の太字は通ります（%s）', (suffix) => {
   const markdown = check + suffix;
+  expect(parseInlineChecks(markdown)[0].followingCallout).toBeUndefined();
+  expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it.each(['*試験のポイント*', '***試験のポイント***', '**試験の*ポイント**', '**大切な理由**'])('囲み記事にならない強調 %s は理由に続けて書けます', (title) => {
+  expect(calloutOf(parser.parse(`> ${title}`).children[0])).toBeNull();
+  const markdown = `${check}\n> ${title}`;
   expect(parseInlineChecks(markdown)[0].followingCallout).toBeUndefined();
   expect(crosscheckMarkdown(markdown)).toEqual([]);
 });
@@ -179,6 +192,29 @@ it('正しい確認 3 個と図への画像・リンクにはずれがありま�
   expect(crosscheckMarkdown([image, '文中の [図へ](#/diagrams/dg-a?step=2) を見ます。', ...checks].join('\n\n'))).toEqual([]);
 });
 
+it.each(['![図](#/diagrams/dg-test)', '![実物](#/artifacts/ar-test)'])('画像だけの行が文と同じ段落になると報告します（%s）', (ref) => {
+  for (const markdown of [`前の文です。\n${ref}`, `> 前の文です。\n> ${ref}`, `- 前の文です。\n  ${ref}`]) {
+    expect(crosscheckMarkdown(markdown)).toEqual([
+      { line: 2, message: expect.stringContaining('検査は画像だけの行と読みましたが、表示ではリンクになります') },
+    ]);
+  }
+  expect(crosscheckMarkdown(`${ref}\n後ろの文です。`)).toEqual([{ line: 1, message: expect.stringContaining('表示ではリンクになります') }]);
+});
+
+it.each(['![図](#/diagrams/dg-test)', '![実物](#/artifacts/ar-test)'])('引用やリストでも空行で分けた画像の段落は通ります（%s）', (ref) => {
+  for (const markdown of [`前の文です。\n\n${ref}`, `> 前の文です。\n>\n> ${ref}`, `- 前の文です。\n\n  ${ref}`]) {
+    expect(crosscheckMarkdown(markdown)).toEqual([]);
+  }
+  expect(crosscheckMarkdown(`- ${ref}\n- 次の項目です。`)).toEqual([]);
+  expect(crosscheckMarkdown(`> **試験のポイント**\n> ${ref}`)).toEqual([]);
+});
+
+it('空行のあるリストで項目の印に続けた画像が段落になると逆向きのずれを報告します', () => {
+  expect(crosscheckMarkdown('- ![図](#/diagrams/dg-test)\n\n- 次の項目です。')).toEqual([
+    { line: 1, message: expect.stringContaining('表示は画像だけの段落と読みましたが、検査では画像だけの行になっていません') },
+  ]);
+});
+
 it('一段落の問いと理由の図・リンクは表示される参照として照合します', () => {
   const markdown = check.replace('問いですか？', `問いですか？\n> ${image}`)
     .replace('理由です。', '理由です。\n>\n> [図へ](#/diagrams/dg-a?step=2)');
@@ -211,6 +247,25 @@ it('確認を組み立て直した後の図の参照のずれを元の行で報�
 it('コードフェンスの記法の例とインラインコードの中の図の参照にはずれがありません', () => {
   const markdown = ['```markdown', check, image, '```', '', `記法は \`${image}\` です。`].join('\n');
   expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it.each([
+  ['```js\nコードの行\n\n', check, '\n```', 4],
+  ['- 項目\n\n  ~~~text\n  コードの行\n', indent(check), '\n  ~~~', 5],
+  ['> ```js\n> コードの行\n', check.replace(/^/gm, '> '), '\n> ```', 3],
+])('後ろのフェンスまでコードに入った確認を見出しの行で報告します（%s）', (before, body, after, line) => {
+  expect(crosscheckMarkdown(before + body + after)).toEqual([
+    { line, message: expect.stringContaining('その場の確認の見出しがコードの中にあります') },
+  ]);
+});
+
+it.each(['markdown', 'md'])('%s のコードフェンスに書いた記法の例は通ります', (lang) => {
+  expect(crosscheckMarkdown(['```' + lang, check, '```'].join('\n'))).toEqual([]);
+  expect(crosscheckMarkdown('10. 項目\n\n' + indent(['```' + lang, check, '```'].join('\n'), 4))).toEqual([]);
+});
+
+it('本文末までフェンスが閉じず確認も入った場合は、開きの行だけを報告します', () => {
+  expect(crosscheckMarkdown('```js\nコードの行\n' + check)).toEqual([{ line: 1, message: fenceMessage }]);
 });
 
 it.each([

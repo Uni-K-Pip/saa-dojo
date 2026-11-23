@@ -134,7 +134,7 @@ const comparisons: CatalogComparison[] = [
   },
 ];
 const lessons: LessonMeta[] = [
-  { id: 'lesson-4.1-s3', title: 'S3 のストレージクラス', domain: 4, taskStatement: '4.1', order: 1, knowledgeRefs: [], services: ['Amazon S3'], estimatedMinutes: 10, questionIds: [] },
+  { id: 'lesson-4.1-s3', title: 'S3 のストレージクラス', domain: 4, taskStatement: '4.1', order: 1, knowledgeRefs: [], services: ['Amazon S3'], estimatedMinutes: 10, questionIds: [], checkIds: [] },
 ];
 const docs: DocEntry[] = [
   { id: 'cheatsheet-s3', kind: 'cheatsheet', title: 'S3 の早見表', order: 1, taskStatements: [], services: ['Amazon S3'], createdBy: 't', body: '本文' },

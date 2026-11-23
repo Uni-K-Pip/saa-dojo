@@ -1,6 +1,7 @@
 export const CALLOUT_KINDS: Readonly<Record<string, 'tip' | 'trap'>>;
 
 export function normalizeInlineCheckQuestion(question: string): string;
+export function inlineCheckId(questionKey: string): string;
 
 export function isInlineCheckBlockquote(node: {
   type: string;
