@@ -13,9 +13,46 @@ import { architecture, decision, layers, lessonId, position, timeline } from './
 const repoContent = new URL('../../../content/saa-c03/', import.meta.url);
 const read = (rel) => fs.readFileSync(new URL(rel, repoContent), 'utf8');
 const lessonRel = `lessons/d4/${lessonId}.md`;
-const sheetRel = 'cheatsheets/cheatsheet-block-file-storage.md';
-const guideRel = 'guides/guide-exam-strategy.md';
-const md = (rel, addition) => `${read(rel)}\n\n${addition}\n`;
+const sheetRel = 'cheatsheets/cheatsheet-test.md';
+const guideRel = 'guides/guide-test.md';
+const storageBody = '保存するデータの性質を調べます。保存期間と読み取りの頻度を確認し、すぐに読み出す必要があるかを決めます。要件が変わったときは、移行にかかる時間と費用も確かめます。';
+const doc = (id, title) => `---
+id: ${id}
+title: ${title}
+order: 10
+taskStatements: []
+services: []
+createdBy: v1
+---
+`;
+const markdown = {
+  [lessonRel]: `---
+id: ${lessonId}
+title: 保存先の選び方
+domain: 4
+taskStatement: '4.1'
+order: 10
+knowledgeRefs: []
+services: []
+estimatedMinutes: 3
+createdBy: v1
+---
+
+${storageBody}
+
+よく使うデータと、長期保存が必要なデータを分けて考えます。たとえば運用中に何度も読むログと、監査のときだけ読むログでは、読み出しに許される時間が異なります。
+
+候補を比べるときは、保管料金に加えて読み出しや移行にかかる費用を確認します。利用頻度の変化を見込んで、選んだ保存先が条件に合い続けるかも確認します。
+`,
+  [sheetRel]: `${doc('cheatsheet-test', '保存先の早見表')}
+${storageBody}
+候補ごとに条件を照らし合わせ、必要な機能を満たすものを選びます。
+`,
+  [guideRel]: `${doc('guide-test', '読み方のガイド')}
+はじめに見出しを読んで、何を学ぶところかを確認します。本文に例が出てきたら、条件を一つずつ拾い、選んだ方法で満たせるかを確かめます。読み終えたら判断の理由を自分の言葉で書き、条件が変わっても使える考え方をまとめます。
+`,
+};
+const md = (rel, addition) => `${markdown[rel]}\n${addition}\n`;
 const check = [
   '> **その場の確認**',
   '> 保存できますか？',
@@ -38,7 +75,7 @@ function fixture(files = {}) {
   const outDir = path.join(root, 'out');
   const source = {
     'blueprint.json': read('blueprint.json'), 'services.json': read('services.json'), 'review-status.json': {},
-    [lessonRel]: read(lessonRel), ...files,
+    [lessonRel]: markdown[lessonRel], ...files,
   };
   for (const [rel, value] of Object.entries(source)) {
     const dest = path.join(contentDir, rel);
@@ -57,6 +94,64 @@ it('図への参照を画像・リンクから読み取り、正しい形だけ 
     { href: '#/diagrams/dg-test-position?step=0', id: 'dg-test-position', step: 0 },
     { href: '#/diagrams/dg-test-position?step=-1' },
   ]);
+});
+
+it('タイトルつきの図参照とキャプションに角括弧を含む図参照を読み取ります', () => {
+  const source = [
+    '![図](#/diagrams/dg-none "題")',
+    "[図](#/diagrams/dg-test-position?step=0 '題')",
+    '![外側 [内側] の図](#/diagrams/dg-test-layers)',
+  ].join('\n');
+  expect(parseDiagramRefs(source)).toEqual([
+    { href: '#/diagrams/dg-none', id: 'dg-none', step: undefined },
+    { href: '#/diagrams/dg-test-position?step=0', id: 'dg-test-position', step: 0 },
+    { href: '#/diagrams/dg-test-layers', id: 'dg-test-layers', step: undefined },
+  ]);
+  expect(issues({
+    [lessonRel]: md(lessonRel, source),
+    ...Object.fromEntries([position(), layers()].map(diagramFile)),
+  }).filter(({ code }) => code === 'diagram-ref')).toEqual([
+    expect.objectContaining({ level: 'error', message: '参照先の図 dg-none がありません。' }),
+  ]);
+});
+
+it('インラインコードとコードフェンスの中にある図参照の例は読みません', () => {
+  const example = '![図](#/diagrams/dg-none)';
+  const source = [
+    `例は \`${example}\` です。`,
+    `\`\`中に \` を含む ${example}\`\``,
+    `\`\`複数行の例\n${example}\`\`です。`,
+    '',
+    '````markdown', example, '[参照]: #/diagrams/dg-none', '```', example, '````',
+    '',
+    '~~~markdown', example, '~~~閉じる行ではありません', example, '~~~~',
+    '',
+    '> ~~~markdown', `> ${example}`, '> ~~~',
+    '',
+    '> ~~~markdown', `> ${example}`,
+    '',
+    '1. ~~~markdown', `   ${example}`, '   ~~~',
+    '',
+    '10. 記法の例', '    ~~~markdown', `    ${example}`, '    ~~~',
+    '',
+    '![`コード`を含む図](#/diagrams/dg-test-layers)',
+  ].join('\n');
+  expect(parseDiagramRefs(source)).toEqual([
+    { href: '#/diagrams/dg-test-layers', id: 'dg-test-layers', step: undefined },
+  ]);
+});
+
+it('図の参照形式を読み取り、validate とビルドでエラーにします', () => {
+  const source = '![図][ref]\n\n[ref]: <#/diagrams/dg-test-layers> "題"';
+  expect(parseDiagramRefs(source)).toEqual([{ href: '#/diagrams/dg-test-layers', reference: true }]);
+  const files = { [guideRel]: md(guideRel, source), ...Object.fromEntries([layers()].map(diagramFile)) };
+  const message = '図の参照は参照形式では書けません。`![キャプション](#/diagrams/<id>)` の形で書いてください。';
+  expect(issues(files).filter(({ code }) => code === 'diagram-ref')).toEqual([
+    expect.objectContaining({ level: 'error', message }),
+  ]);
+  const dirs = fixture(files);
+  expect(buildContent({ ...dirs, schema })).toMatchObject({ ok: false, manifest: null, errors: [`${guideRel}: ${message}`] });
+  expect(fs.existsSync(dirs.outDir)).toBe(false);
 });
 
 it('validate は参照の形・図の不在・段階の超過を本文ごとに報告します', () => {
@@ -90,10 +185,26 @@ it('その場の確認の行番号、複数行の問いと理由、選択肢を�
   expect(parseInlineChecks(source)).toEqual([{
     line: 3,
     question: '保存できますか？\n条件を考えましょう。',
+    questionKey: '保存できますか？ 条件を考えましょう。',
     options: [{ text: 'できません', correct: false }, { text: 'できます', correct: true }],
     reason: '保存する仕組みを備えているからです。\n補足です。',
     problems: [],
   }]);
+});
+
+it.each([
+  '> **試験のポイント**\n> 大事な点です。',
+  '> 前置きです。\n>',
+])('前の引用と空行で分けていない確認をパーサーと validate が報告します（%#）', (quote) => {
+  const source = [
+    quote, '> **その場の確認**', '> 問いですか？', '>',
+    '> - [ ] いいえ', '> - [x] はい', '>', '> 理由です。',
+  ].join('\n');
+  const problem = 'その場の確認は、前の引用と空行で分けてください。';
+  expect(parseInlineChecks(source)).toMatchObject([{ line: 3, problems: [problem] }]);
+  expect(issues({ [sheetRel]: md(sheetRel, source) }).filter(({ code }) => code === 'inline-check')).toEqual([
+    expect.objectContaining({ level: 'error', message: expect.stringContaining(problem) }),
+  ]);
 });
 
 it.each([
@@ -118,8 +229,25 @@ it('コードフェンスの中の記法の例は、その場の確認として�
 });
 
 it.each([1, 2])('レッスンにその場の確認が %s 個なら警告します', (n) => {
-  const found = issues({ [lessonRel]: md(lessonRel, Array(n).fill(check).join('\n\n')) });
+  const checks = [check, check.replace('保存できますか', '読み取れますか')];
+  const found = issues({ [lessonRel]: md(lessonRel, checks.slice(0, n).join('\n\n')) });
   expect(found).toEqual([expect.objectContaining({ level: 'warning', code: 'inline-check-few' })]);
+});
+
+it.each([
+  ['レッスン', lessonRel], ['早見表', sheetRel], ['ガイド', guideRel],
+])('%sの同じ問いを強調・インラインコード・空白の違いを除いて検出します', (_label, rel) => {
+  const first = check.replace('保存できますか？', '**条件を** 満たしますか？');
+  const second = check.replace('保存できますか？', '_条件を_\n>   `満たしますか？`');
+  const body = md(rel, `${first}\n\n${second}`);
+  const firstLine = markdown[rel].split('\n---\n')[1].split('\n').length + 1;
+  const secondLine = firstLine + first.split('\n').length + 1;
+  expect(issues({ [rel]: body }).filter(({ code }) => code === 'inline-check')).toEqual([
+    expect.objectContaining({
+      level: 'error',
+      message: `本文 ${secondLine} 行目: 問いの文が ${firstLine} 行目の確認と同じです。問いの文を変えてください（記録の checkId が重なります）。`,
+    }),
+  ]);
 });
 
 it('正しい参照とその場の確認にはエラーも警告も出ません', () => {

@@ -970,8 +970,13 @@ function checkInlineChecks(content) {
   const { report, lessons, docs } = content;
   function check({ rel, body }) {
     const checks = parseInlineChecks(body);
-    for (const { line, problems } of checks) {
+    const firstLines = new Map();
+    for (const { line, questionKey, problems } of checks) {
       for (const problem of problems) report.error('inline-check', rel, `本文 ${line} 行目: ${problem}`);
+      if (!questionKey) continue;
+      const firstLine = firstLines.get(questionKey);
+      if (firstLine === undefined) firstLines.set(questionKey, line);
+      else report.error('inline-check', rel, `本文 ${line} 行目: 問いの文が ${firstLine} 行目の確認と同じです。問いの文を変えてください（記録の checkId が重なります）。`);
     }
     return checks.length;
   }

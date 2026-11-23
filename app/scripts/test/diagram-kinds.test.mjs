@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { DiagramSchema } from '../../../scripts/lib/schema.mjs';
 import { checkDiagram, layoutAnyDiagram, shortNameOf } from '../../../scripts/lib/diagram.mjs';
-import { layoutKindDiagram, wrapText } from '../../../scripts/lib/diagram-kinds.mjs';
+import { layoutKindDiagram, shapeBounds, wrapText } from '../../../scripts/lib/diagram-kinds.mjs';
 import { DESIGN_WIDTH, textWidth } from '../../../scripts/lib/diagram-layout.mjs';
 import { buildServiceIndex } from '../../../scripts/lib/service-registry.mjs';
 import { architecture, ask, decision, layers, lessonId, position, result, timeline } from './diagram-fixtures.mjs';
@@ -25,9 +25,72 @@ it.each([
   const diagram = DiagramSchema.parse(fixture());
   expect(checkDiagram(diagram, ctx)).toEqual({ errors: [], warnings: [] });
   const scene = sceneOf(diagram);
-  expect(scene.width).toBeLessThanOrEqual(DESIGN_WIDTH);
+  const { left, right } = shapeBounds(scene);
+  expect(left).toBeGreaterThanOrEqual(0);
+  expect(right).toBeLessThanOrEqual(DESIGN_WIDTH);
   expect(scene).toEqual(sceneOf(structuredClone(diagram)));
   expect(DiagramSchema.safeParse({ ...diagram, extra: true }).success).toBe(false);
+});
+
+it.each([
+  ['位置づけ図', {
+    ...position(),
+    items: Array.from({ length: 10 }, (_, i) => ({
+      id: `item${i}`, label: '保存先の候補'.repeat(5), x: 5, y: 3,
+    })),
+  }],
+  ['時間の図', {
+    ...timeline(),
+    ticks: Array.from({ length: 8 }, (_, at) => ({ at, label: `時点 ${at}` })),
+    lanes: Array.from({ length: 4 }, () => ({
+      label: '保存中のデータ',
+      spans: [{ from: 0, to: 7, label: '保存期間中のデータ'.repeat(3) + 'の帯図' }],
+    })),
+  }],
+  ['層の図', {
+    ...layers(),
+    columns: ['サーバー', 'コンテナ', '関数', 'マネージドサービス'],
+    rows: Array.from({ length: 8 }, (_, i) => ({
+      label: `管理する層 ${i + 1}`, cells: ['you', 'you', 'cloud', 'cloud'],
+    })),
+  }],
+  ['選択フロー', {
+    ...decision(),
+    nodes: [
+      ...[
+        ask('root', 'a', 'b'), ask('a', 'c', 'r0'), ask('b', 'd', 'e'),
+        ask('c', 'f', 'r1'), ask('d', 'r2', 'r3'), ask('e', 'r4', 'r5'), ask('f', 'r6', 'r7'),
+      ].map((node) => ({ ...node, ask: '保存期間と読み出し頻度を考慮し、データをすぐに取り出せることと、毎月の保管費用を予算内に収めることを両立できそうですか？' })),
+      ...Array.from({ length: 8 }, (_, i) => result(`r${i}`)),
+    ],
+  }],
+])('%sの項目数や文字数が上限でも中身が幅 328 に収まります', (_label, fixture) => {
+  const diagram = DiagramSchema.parse(fixture);
+  const { left, right } = shapeBounds(sceneOf(diagram));
+  expect(left).toBeGreaterThanOrEqual(0);
+  expect(right).toBeLessThanOrEqual(DESIGN_WIDTH);
+  expect(errorsOf(diagram)).toBe('');
+});
+
+it('文字の揃え方と行ごとの幅を使い、右へのはみ出しを返します', () => {
+  const scene = {
+    width: DESIGN_WIDTH,
+    shapes: [
+      { t: 'rect', x: 5, y: 5, w: 20, h: 10 },
+      { t: 'line', points: [[8, 15], [3, 12], [10, 8]] },
+      { t: 'circle', cx: 10, cy: 8, r: 4 },
+      { t: 'text', x: 30, y: 35, lines: ['左の端です'], size: 10, anchor: 'end' },
+      { t: 'text', x: 320, y: 60, lines: ['図', '長い文字の行'], size: 11, bold: true, anchor: 'middle' },
+    ],
+  };
+  expect(shapeBounds(scene)).toEqual({ left: -20, top: 4, right: 353, bottom: 76.75 });
+});
+
+it('帯の文字が図の右端を越えると図の検査でエラーになります', () => {
+  const d = timeline();
+  d.lanes[0].spans[0].label = 'あ' + '、'.repeat(29);
+  const diagram = DiagramSchema.parse(d);
+  expect(errorsOf(diagram)).toBe('図の中身が幅 328 をはみ出しています（左端 6、右端 339）。');
 });
 
 it('全角を字ごとに折り返し、句読点から行を始めません', () => {

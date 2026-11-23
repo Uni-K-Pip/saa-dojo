@@ -2,7 +2,7 @@
 // validate.mjs とアプリのビルド（app/scripts/lib/diagram-build.mjs）が共有する。依存パッケージなし。
 // 構造の形はスキーマ（schema.mjs の DiagramSchema）で確かめたあとに、ここで意味を確かめる。
 import { DESIGN_WIDTH, layoutDiagram, layoutDiagramReport, textWidth } from './diagram-layout.mjs';
-import { checkKindDiagram, layoutKindDiagram } from './diagram-kinds.mjs';
+import { checkKindDiagram, layoutKindDiagram, shapeBounds } from './diagram-kinds.mjs';
 import { diagramRefOf } from './diagram-refs.mjs';
 
 // ---------------------------------------------------------------- 語彙
@@ -237,7 +237,10 @@ export function checkDiagram(diagram, ctx = {}) {
     warnings.push(...checked.warnings);
     if (errors.length === 0) {
       const { scene, warnings: layoutWarnings } = layoutKindDiagram(diagram, { serviceIndex });
-      if (scene.width > DESIGN_WIDTH) err(wideDiagramMessage(scene.width));
+      const { left, right } = shapeBounds(scene);
+      if (left < 0 || right > DESIGN_WIDTH) {
+        err(`図の中身が幅 ${DESIGN_WIDTH} をはみ出しています（左端 ${left}、右端 ${right}）。`);
+      }
       if (diagram.type !== 'decision' && scene.height > DIAGRAM_LIMITS.height) {
         warn('diagram-height', `レイアウトした高さが ${scene.height} あります（目安 ${DIAGRAM_LIMITS.height} 以下）。図を分けてください。`);
       }
@@ -377,20 +380,68 @@ export function diagramRefIndex(items) {
   ]));
 }
 
-export function parseDiagramRefs(text) {
-  return Array.from(text.matchAll(/!?\[[^\]]*\]\((#\/diagrams\/[^)\s]*)\)/g), ([, href]) => ({
-    href, ...diagramRefOf(href),
-  }));
+function withoutDiagramCode(markdown) {
+  let fence;
+  let listDepth = 0;
+  const listIndents = [0];
+  const text = markdown.split(/\r\n?|\n/).map((line) => {
+    const quote = /^(?: {0,3}>[ \t]?)+/.exec(line)?.[0] ?? '';
+    const quoteMarks = quote.match(/ {0,3}>[ \t]?/g) ?? [];
+    const depth = quoteMarks.length;
+    const content = line.slice(quote.length);
+    if (fence) {
+      const code = line.slice(quoteMarks.slice(0, fence.depth).join('').length);
+      if (depth >= fence.depth && (!code.trim() || /^ */.exec(code)[0].length >= fence.indent)) {
+        const end = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(code.slice(fence.indent))?.[1];
+        if (end && end[0] === fence.mark[0] && end.length >= fence.mark.length) fence = undefined;
+        return '';
+      }
+      fence = undefined;
+    }
+
+    if (depth !== listDepth) {
+      listDepth = depth;
+      listIndents.length = 1;
+    }
+    if (!content.trim()) return line;
+    // リスト内では項目の本文の字下げを起点にフェンスを読みます。
+    const indent = /^ */.exec(content)[0].length;
+    while (listIndents.at(-1) > indent) listIndents.pop();
+    const list = /^ {0,3}(?:[-+*]|\d{1,9}[.)]) {1,4}(?=\S)/.exec(content.slice(listIndents.at(-1)));
+    if (list) listIndents.push(listIndents.at(-1) + list[0].length);
+    const start = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(content.slice(listIndents.at(-1)));
+    if (start && (start[1][0] === '~' || !start[2].includes('`'))) {
+      fence = { mark: start[1], depth, indent: listIndents.at(-1) };
+    }
+    return fence ? '' : line;
+  }).join('\n');
+  // 空行をまたがず、同じ数のバッククォートで閉じたコードを検査から除きます。
+  return text.split(/(\n[ \t]*\n)/).map((block) =>
+    block.replace(/(?<![\\`])(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)/g, (span) => span.replace(/[^\n]+/g, '\0')),
+  ).join('');
+}
+
+export function parseDiagramRefs(markdown) {
+  const text = withoutDiagramCode(markdown);
+  const inline = /!?\[(?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*\]\(\s*(?:<(#\/diagrams\/[^<>\s]*)>|(#\/diagrams\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
+  const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/diagrams\/[^>\s]*)/gm;
+  const refs = Array.from(text.matchAll(inline), ([, angleHref, bareHref]) => {
+    const href = angleHref ?? bareHref;
+    return { href, ...diagramRefOf(href) };
+  });
+  for (const [, href] of text.matchAll(definitions)) refs.push({ href, reference: true });
+  return refs;
 }
 
 export function checkDiagramRefs({ texts, diagrams }) {
   const errors = [];
   for (const { rel, body } of texts) {
-    for (const { href, id, step } of parseDiagramRefs(body)) {
+    for (const { href, id, step, reference } of parseDiagramRefs(body)) {
       const target = diagrams.get(id);
       const maxStep = target?.type === 'architecture' ? target.steps : 0;
       let message;
-      if (!id) message = `図の参照の形が違います（${href}）。`;
+      if (reference) message = '図の参照は参照形式では書けません。`![キャプション](#/diagrams/<id>)` の形で書いてください。';
+      else if (!id) message = `図の参照の形が違います（${href}）。`;
       else if (!target) message = `参照先の図 ${id} がありません。`;
       else if (step !== undefined && step > maxStep) message = `図 ${id} の step=${step} が段階の数（${maxStep}）を超えています。`;
       if (message) errors.push({ rel, message });

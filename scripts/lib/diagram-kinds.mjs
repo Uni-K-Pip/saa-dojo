@@ -74,6 +74,42 @@ const centeredBaseline = (cy, lines) => cy - (lines.length - 1) * LINE_HEIGHT[10
 const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 const isAsk = (node) => node.ask !== undefined;
 
+/** 描画する形の外接矩形を求めます。文字の大きさは推定値です。 */
+export function shapeBounds({ shapes }) {
+  let left = Infinity;
+  let top = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+  function include(x1, y1, x2 = x1, y2 = y1) {
+    left = Math.min(left, x1);
+    top = Math.min(top, y1);
+    right = Math.max(right, x2);
+    bottom = Math.max(bottom, y2);
+  }
+  for (const shape of shapes) {
+    switch (shape.t) {
+      case 'rect':
+        include(shape.x, shape.y, shape.x + shape.w, shape.y + shape.h);
+        break;
+      case 'line':
+        for (const [x, y] of shape.points) include(x, y);
+        break;
+      case 'circle':
+        include(shape.cx - shape.r, shape.cy - shape.r, shape.cx + shape.r, shape.cy + shape.r);
+        break;
+      case 'text': {
+        const { x, y, lines, size, bold, anchor } = shape;
+        const width = Math.max(0, ...lines.map((line) => textWidth(line, size, bold)));
+        const start = x - (anchor === 'end' ? width : anchor === 'middle' ? width / 2 : 0);
+        const lastBaseline = y + (lines.length - 1) * LINE_HEIGHT[size];
+        include(start, y - size, start + width, lastBaseline + size / 4);
+        break;
+      }
+    }
+  }
+  return left === Infinity ? { left: 0, top: 0, right: 0, bottom: 0 } : { left, top, right, bottom };
+}
+
 function layoutDecision(diagram, serviceIndex) {
   const byId = new Map(diagram.nodes.map((node) => [node.id, node]));
   const links = [];
