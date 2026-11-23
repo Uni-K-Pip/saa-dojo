@@ -2,7 +2,7 @@
   "id": "dg-compute-responsibility-layers",
   "type": "layers",
   "title": "サービスの種類と責任の範囲",
-  "alt": "責任共有モデルで、EC2（インフラ型）、RDS（マネージド型）、Lambda・S3・DynamoDB（抽象化型）の 3 種類について、利用者と AWS の担当を層ごとに比べた図です。施設とハードウェアは、どれも AWS が受け持ちます。OS の更新と、データベースなどのソフトウェアの更新は、EC2 では利用者、RDS と抽象化型では AWS が受け持ちます。アプリケーションのコード、通信の許可、データとアクセス権限は、どの種類でも利用者の責任です。",
+  "alt": "責任共有モデルで、EC2（インフラ型）、RDS（マネージド型）、Lambda・S3・DynamoDB（抽象化型）の 3 種類について、利用者と AWS の担当を層ごとに比べた図です。施設とハードウェアは、どれも AWS が受け持ちます。OS の更新は、EC2 では利用者、RDS と抽象化型では AWS が受け持ちます。データベースなどのソフトウェアの更新は、EC2 では自分で入れたものを利用者が受け持ち、RDS では AWS が受け持ちます（適用する時間帯は利用者が選びます）。抽象化型では AWS が受け持ちます。アプリケーションのコード、通信の許可、データとアクセス権限は、どの種類でも利用者の責任です。",
   "lessonRefs": ["lesson-basics-shared-responsibility"],
   "factRefs": [],
   "createdBy": "v2",
@@ -10,7 +10,7 @@
   "rows": [
     { "label": "施設・ハードウェア", "cells": ["aws", "aws", "aws"] },
     { "label": "OS の更新", "cells": ["user", "aws", "aws"] },
-    { "label": "ソフトウェアの更新", "cells": ["user", "aws", "aws"] },
+    { "label": "DB などのソフト更新", "cells": ["user", "aws", "aws"] },
     { "label": "アプリのコード", "cells": ["user", "user", "user"] },
     { "label": "通信の許可", "cells": ["user", "user", "user"] },
     { "label": "データ・アクセス権限", "cells": ["user", "user", "user"] }

@@ -1,3 +1,41 @@
 {
-  "diagrams": {}
+  "diagrams": {
+    "dg-compute-responsibility-layers": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "faebcb1ee5de"
+    },
+    "dg-s3-glacier-position": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "f28309370ff4"
+    },
+    "dg-s3-lifecycle-timeline": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "84fd3d3292c1"
+    },
+    "dg-sns-sqs-fanout": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "319297b8e491"
+    },
+    "dg-storage-choice": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "4992a99f7a86"
+    }
+  },
+  "artifacts": {
+    "ar-dns-records-alias-apex": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "dbbb9a370646"
+    },
+    "ar-sg-rules-app-tier": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "bc22815edabd"
+    }
+  }
 }
