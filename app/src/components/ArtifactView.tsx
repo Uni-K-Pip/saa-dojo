@@ -14,9 +14,12 @@ function NoteNum({ n }: { n: number }) {
 
 function Lines({ item }: { item: ArtifactData }) {
   const numbered = item.format === 'text';
+  const lines = item.lines ?? [];
+  // 注目点の番号は、本文の前の専用の列に出す（番号のある行だけ字が右にずれないよう、どの行も同じ幅を取る）
+  const noted = lines.some((l) => l.starts.length > 0);
   return (
-    <div className={`ar-code${numbered ? ' numbered' : ''}`}>
-      {(item.lines ?? []).map((l, i) => (
+    <div className={`ar-code${numbered ? ' numbered' : ''}${noted ? ' noted' : ''}`}>
+      {lines.map((l, i) => (
         <div key={i} className={l.marks.length ? 'ar-line ar-mark' : 'ar-line'}>
           {numbered && (
             <span className="ar-ln">
@@ -24,10 +27,14 @@ function Lines({ item }: { item: ArtifactData }) {
               {i + 1}
             </span>
           )}
+          {noted && (
+            <span className="ar-gutter">
+              {l.starts.map((n) => (
+                <NoteNum key={n} n={n} />
+              ))}
+            </span>
+          )}
           <span className="ar-text" style={{ paddingLeft: `${l.indent}ch` }}>
-            {l.starts.map((n) => (
-              <NoteNum key={n} n={n} />
-            ))}
             {l.text}
           </span>
         </div>

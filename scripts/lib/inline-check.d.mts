@@ -1,3 +1,5 @@
+export const CALLOUT_KINDS: Readonly<Record<string, 'tip' | 'trap'>>;
+
 export function normalizeInlineCheckQuestion(question: string): string;
 
 export function isInlineCheckBlockquote(node: {
@@ -16,4 +18,5 @@ export function parseInlineChecks(markdown: string): {
   reason: string;
   reasonLines: number[];
   problems: string[];
+  followingCallout?: { line: number; message: string };
 }[];

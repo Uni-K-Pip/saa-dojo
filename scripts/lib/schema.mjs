@@ -603,7 +603,9 @@ export const ARTIFACT_KINDS = [
 ];
 export const ARTIFACT_FORMATS = ['json', 'table', 'text'];
 // 上限（幅 360px で読めることを条件に決めた。表の列とセルの字数、行の字数は折り返して読める範囲）。
-// jsonLines・jsonDepth は整形したあとの行数と入れ子の深さで、scripts/lib/artifact.mjs が検査する
+// jsonLines・jsonDepth・jsonLineChars（整形後の行数・入れ子の深さ・字下げを含む 1 行の字数）と
+// textIndent（text の行頭の空白）は scripts/lib/artifact.mjs が検査する。
+// lineChars は、text の字下げを含めた行全体の字数を Zod で検査する別の上限。
 export const ARTIFACT_LIMITS = {
   title: [4, 60],
   notes: 5,

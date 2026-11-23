@@ -2,6 +2,9 @@ import { z } from 'zod';
 import { DOC_ID, LAB_ID, LESSON_ID, PATTERN_ID } from './schema.mjs';
 import { STATUS_LABELS } from './material-status.mjs';
 
+// ミニラボの量産が始まったら true にする。
+export const WARN_UNITS_WITHOUT_LAB = false;
+
 const item = (kind, fields = {}) => z.object({
   kind: z.literal(kind),
   note: z.string().min(1).max(60).optional(),

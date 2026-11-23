@@ -26,6 +26,26 @@
   grid-template-columns: 2.2em 1fr;
 }
 
+/* 注目点の番号の列。番号のない行も同じ幅を取り、本文の字の位置をそろえる */
+.ar-code.noted .ar-line {
+  grid-template-columns: 2.2em 1fr;
+}
+
+.ar-code.numbered.noted .ar-line {
+  grid-template-columns: 2.2em 2.2em 1fr;
+}
+
+.ar-gutter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.ar-gutter .ar-num {
+  margin-right: 0;
+}
+
 .ar-ln {
   color: var(--muted);
   text-align: right;
