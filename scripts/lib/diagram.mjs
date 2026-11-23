@@ -468,7 +468,10 @@ export function parseMaterialRefs(markdown, { withLine = false } = {}) {
     // 引用の印を除いた行が、この画像だけかを見ます。表示との突き合わせはビルドで行います。
     const content = lines[line - 1].replace(/^(?: {0,3}>[ \t]?)+/, '').trim();
     const block = image && content === match[0].trim();
-    const ref = { kind, href, ...refOf(kind, href), image, block, ...(withLine ? { line } : {}) };
+    // 画像だけの行でも、前の行に文が続くと、表示では 1 つの段落になり、画像はリンクになります（ビルドが止めます）。
+    const before = line > 1 ? lines[line - 2].replace(/^(?: {0,3}>[ \t]?)+/, '').trim() : '';
+    const continued = block && before !== '' && !/^(?:#{1,6}(?:[ \t]|$)|`{3,}|~{3,}|<|(?:-[ \t]*){3,}$|(?:\*[ \t]*){3,}$|(?:_[ \t]*){3,}$)/.test(before);
+    const ref = { kind, href, ...refOf(kind, href), image, block, ...(continued ? { continued } : {}), ...(withLine ? { line } : {}) };
     refs.push(ref);
     return ref;
   }

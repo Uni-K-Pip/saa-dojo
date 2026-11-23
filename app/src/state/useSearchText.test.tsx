@@ -12,6 +12,7 @@ function Search() {
   return (
     <div>
       <input type="search" value={text} onChange={(e) => setText(e.target.value)} />
+      <button type="button" onClick={() => update((now) => ({ tier: (now.get('tier') ?? '') + '1' }))}>追記</button>
       <button type="button" onClick={() => update({ tier: params.get('tier') ? null : '1' })}>区分</button>
       <output>{location.search}</output>
     </div>
@@ -72,5 +73,26 @@ describe('useSearchText', () => {
     await waitFor(() => expect(input.value).toBe('one'));
     act(() => { void navigate(1); });
     await waitFor(() => expect(input.value).toBe('twox'));
+  });
+
+  it('確定の前に別の検索語へ移り、戻ったときも、入力を URL に合わせる', async () => {
+    const input = renderSearch(['/s?q=vpc']);
+    act(() => {
+      fireEvent.change(input, { target: { value: 'vpcxx' } });
+      void navigate('/s?q=nat');
+    });
+    await waitFor(() => expect(input.value).toBe('nat'));
+    act(() => { void navigate(-1); });
+    await waitFor(() => expect(input.value).toBe('vpcxx'));
+    expect(search()).toBe('?q=vpcxx');
+  });
+
+  it('確定の前に 2 つ続けて更新しても、先の変更が消えない', async () => {
+    renderSearch(['/s']);
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: '追記' }));
+      fireEvent.click(screen.getByRole('button', { name: '追記' }));
+    });
+    await waitFor(() => expect(search()).toBe('?tier=11'));
   });
 });

@@ -315,10 +315,12 @@ function crossCheck(parsed, err, warn) {
 
   const bp = parsed.blueprint;
   if (!bp) return;
+  // 台帳から作る索引は、出力と同じ条件（台帳と blueprint がそろったとき）で 1 回だけ作って使い回す
+  const serviceIndex = parsed.registry ? buildServiceIndex(bp, parsed.registry) : null;
   // 台帳の不整合は validate がエラーにする。ビルドは警告にとどめ、解決できる表記だけを正規名に直す
-  if (parsed.registry) for (const msg of buildServiceIndex(bp, parsed.registry).problems) warn('services.json', msg);
+  if (parsed.registry) for (const msg of serviceIndex.problems) warn('services.json', msg);
   // サービス図鑑: 参照切れ・ファイル名と id の不一致はエラー、それ以外は警告
-  const catalog = checkCatalogForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
+  const catalog = checkCatalogForBuild(parsed, serviceIndex);
   const splitMsg = (m) => {
     const i = m.indexOf(': ');
     return [m.slice(0, i), m.slice(i + 2)];
@@ -326,7 +328,7 @@ function crossCheck(parsed, err, warn) {
   for (const m of catalog.errors) err(...splitMsg(m));
   for (const m of catalog.warnings) warn(...splitMsg(m));
   // 図: スキーマと checkDiagram のエラーでビルドを止める（レイアウトの警告は警告のまま）
-  const diagrams = checkDiagramsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
+  const diagrams = checkDiagramsForBuild(parsed, serviceIndex);
   for (const m of diagrams.errors) err(...splitMsg(m));
   for (const m of diagrams.warnings) warn(...splitMsg(m));
   // 実物: 図と同じく、検査のエラーでビルドを止める
@@ -334,7 +336,7 @@ function crossCheck(parsed, err, warn) {
   for (const m of artifacts.errors) err(...splitMsg(m));
   for (const m of artifacts.warnings) warn(...splitMsg(m));
   // 教材の検証状態
-  const materials = checkMaterialsForBuild(parsed, parsed.registry ? buildServiceIndex(bp, parsed.registry) : null);
+  const materials = checkMaterialsForBuild(parsed, serviceIndex);
   for (const m of materials.errors) err(...splitMsg(m));
   for (const m of materials.warnings) warn(...splitMsg(m));
   const inspectBody = ({ rel, body }) => {

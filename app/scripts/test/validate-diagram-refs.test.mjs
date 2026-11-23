@@ -413,3 +413,17 @@ it.each([
   });
   expect(fs.existsSync(dirs.outDir)).toBe(false);
 });
+
+it('前の行に文が続く画像の行と、閉じ忘れた markdown のフェンスを、validate が警告する', () => {
+  const continued = md(sheetRel, '前の文です。\n![図](#/diagrams/dg-test-architecture)');
+  expect(parseDiagramRefs(continued.split('\n').slice(-3).join('\n'))).toHaveLength(1);
+  expect(issues({ [sheetRel]: continued }).filter(({ code }) => code === 'material-ref-continued')).toEqual([
+    expect.objectContaining({ level: 'warning', message: expect.stringContaining('前に文が続いています') }),
+  ]);
+  const spaced = md(sheetRel, '前の文です。\n\n![図](#/diagrams/dg-test-architecture)');
+  expect(issues({ [sheetRel]: spaced }).filter(({ code }) => code === 'material-ref-continued')).toEqual([]);
+  const fence = md(sheetRel, `\`\`\`markdown\n## 例\n\n${check}\n\`\`\``);
+  expect(issues({ [sheetRel]: fence }).filter(({ code }) => code === 'markdown-fence')).toEqual([
+    expect.objectContaining({ level: 'warning' }),
+  ]);
+});
