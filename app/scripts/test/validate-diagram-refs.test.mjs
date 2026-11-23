@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterEach, expect, it } from 'vitest';
 import { checkContent, loadContent } from '../../../scripts/validate.mjs';
 import { parseDiagramRefs } from '../../../scripts/lib/diagram.mjs';
+import { materialHash } from '../../../scripts/lib/material-status.mjs';
 import { normalizeInlineCheckQuestion, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
 import * as schema from '../../../scripts/lib/schema.mjs';
 import { buildContent } from '../lib/content-build.mjs';
@@ -86,6 +87,10 @@ function fixture(files = {}) {
 }
 
 const diagramFile = (d) => [`diagrams/${d.id}.json`, d];
+// 図を検証済みとして記録した material-status.json（未検証の図への参照の警告を出さないため）
+const verifiedFile = (...ds) => ['material-status.json', {
+  diagrams: Object.fromEntries(ds.map((d) => [d.id, { status: 'verified', checkedAt: '2026-11-23', hash: materialHash('diagrams', d) }])),
+}];
 const issues = (files) => checkContent(loadContent({ root: fixture(files).root })).issues;
 
 it('図への参照を画像・リンクから読み取り、正しい形だけ id と step を得ます', () => {
@@ -246,7 +251,9 @@ it.each([
 ])('文字だけで表示する%sに画像や図へのリンクを書くと validate が報告します（%#）', (part, source) => {
   const problem = `${part}に図や画像、図へのリンクは書けません。`;
   expect(parseInlineChecks(source)).toMatchObject([{ problems: [problem] }]);
-  expect(issues({ [sheetRel]: md(sheetRel, source), ...Object.fromEntries([layers()].map(diagramFile)) })).toEqual([
+  // 図は未検証なので、図を指す行には未検証の図への参照の警告も出る（ここでは確かめない）
+  const found = issues({ [sheetRel]: md(sheetRel, source), ...Object.fromEntries([layers()].map(diagramFile)) });
+  expect(found.filter(({ code }) => code !== 'diagram-ref-unverified')).toEqual([
     expect.objectContaining({ level: 'error', code: 'inline-check', message: expect.stringContaining(problem) }),
   ]);
 });
@@ -328,6 +335,7 @@ it('正しい参照とその場の確認にはエラーも警告も出ません'
     [sheetRel]: md(sheetRel, `[図](#/diagrams/dg-test-layers?step=0)\n\n${check}`),
     [guideRel]: md(guideRel, `[図](#/diagrams/dg-test-layers)\n\n${check}`),
     ...Object.fromEntries([architecture(), layers()].map(diagramFile)),
+    ...Object.fromEntries([verifiedFile(architecture(), layers())]),
   })).toEqual([]);
 });
 
@@ -367,13 +375,13 @@ it('閉じていないタグのあとに空白が 64,000 字続いても問い�
   expect(normalizeInlineCheckQuestion('<a' + ' '.repeat(64000))).toBe('<a');
 });
 
-it('4 種類の図がビルドの索引と個別の出力に現れます', () => {
+it('4 種類の図が、未検証も出すビルドの索引と個別の出力に現れます', () => {
   const diagrams = [decision(), position(), timeline(), layers()];
   const dirs = fixture({
     ...Object.fromEntries(diagrams.map(diagramFile)),
     [lessonRel]: md(lessonRel, '![図](#/diagrams/dg-test-decision?step=0)'),
   });
-  const built = buildContent({ ...dirs, schema });
+  const built = buildContent({ ...dirs, schema, includeUnverified: true });
   expect(built.errors).toEqual([]);
   expect(built.ok).toBe(true);
   const output = (key) => JSON.parse(fs.readFileSync(path.join(dirs.outDir, built.manifest.files[key].path), 'utf8'));

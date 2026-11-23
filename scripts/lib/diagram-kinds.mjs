@@ -341,7 +341,7 @@ export function layoutKindDiagram(diagram, { serviceIndex } = {}) {
     case 'timeline': layout = layoutTimeline(diagram, warnings); break;
     case 'layers': layout = layoutLayers(diagram); break;
   }
-  return { scene: { id, type, title, alt, width: DESIGN_WIDTH, status: 'pending', ...layout }, warnings };
+  return { scene: { id, type, title, alt, width: DESIGN_WIDTH, ...layout }, warnings };
 }
 
 function checkService(item, where, { serviceIndex }, errors) {

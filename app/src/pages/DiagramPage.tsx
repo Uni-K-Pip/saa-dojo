@@ -1,5 +1,6 @@
 // 図の単独表示（/diagrams/:id）と、試作用の一覧（/diagrams）。メニューには出さない（URL で直接開く）。
 // ?step=<番号> で、その段階に止めた図を出す（docs/visual-materials-design.md の 4.8）。
+// 公開のビルドは検証済みの図だけを持つ。未検証の図（「未検証」の札つき）は、開発用のビルド（npm run dev）でだけ見える。
 import { use } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { DiagramView } from '../components/DiagramView';
@@ -20,7 +21,7 @@ export function DiagramsPage() {
     <article>
       <h1>図の一覧（試作）</h1>
       {list.length === 0 ? (
-        <p>図はまだありません。</p>
+        <p>表示できる図はまだありません。図は、検証が済んだものから載せます。</p>
       ) : (
         <ul>
           {list.map((d) => (
@@ -45,7 +46,7 @@ export default function DiagramPage() {
     return (
       <div className="card">
         <h1>見つかりません</h1>
-        <p>指定された図（{id}）はありません。</p>
+        <p>指定された図（{id}）は表示できません。図がないか、まだ検証が済んでいない図です。</p>
         <Link className="btn" to="/diagrams">
           図の一覧へ
         </Link>
