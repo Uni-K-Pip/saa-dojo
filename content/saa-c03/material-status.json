@@ -67,7 +67,7 @@
     "sim-cidr-reserved-addresses": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "a00634165102"
+      "hash": "0fa7fb49161d"
     },
     "sim-cidr-three-tier-split": {
       "status": "verified",
@@ -84,7 +84,7 @@
     "lab-vpc-from-scratch": {
       "status": "verified",
       "checkedAt": "2026-11-23",
-      "hash": "6503e54e607a"
+      "hash": "762c100c3470"
     }
   },
   "patterns": {
