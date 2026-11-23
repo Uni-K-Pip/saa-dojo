@@ -49,6 +49,7 @@
           "items": [
             { "kind": "lesson", "ref": "lesson-3.4-vpc-design" },
             { "kind": "lesson", "ref": "lesson-1.2-vpc-network-security" },
+            { "kind": "lab", "ref": "lab-vpc-from-scratch" },
             { "kind": "sim", "ref": "sim-cidr-vpc-size-limits" },
             { "kind": "sim", "ref": "sim-cidr-three-tier-split" },
             { "kind": "practice" }

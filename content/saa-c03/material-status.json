@@ -80,6 +80,13 @@
       "hash": "c384b840a82b"
     }
   },
+  "labs": {
+    "lab-vpc-from-scratch": {
+      "status": "verified",
+      "checkedAt": "2026-11-23",
+      "hash": "6503e54e607a"
+    }
+  },
   "patterns": {
     "pattern-sns-sqs-fanout": {
       "status": "verified",
