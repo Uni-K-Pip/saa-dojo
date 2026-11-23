@@ -105,13 +105,16 @@ export function jsonLines(document) {
 
 const has = (obj, k) => obj[k] !== undefined;
 
-/** document の中（入れ子を含む）の、数字だけのキー */
-function numericKeys(value, out = []) {
-  if (Array.isArray(value)) for (const v of value) numericKeys(v, out);
+/** document の中（入れ子を含む）の、数字だけのキーの場所 */
+function numericKeyPaths(value, path = '', out = []) {
+  if (Array.isArray(value)) value.forEach((item, i) => numericKeyPaths(item, `${path}[${i}]`, out));
   else if (value && typeof value === 'object')
     for (const [k, v] of Object.entries(value)) {
-      if (/^\d+$/.test(k)) out.push(k);
-      numericKeys(v, out);
+      // 区切り記号を含むキーも、入れ子の場所と区別できる形で示す。
+      const segment = /^[^.[\]\s"\\,]+$/.test(k) ? `${path ? '.' : ''}${k}` : `[${JSON.stringify(k)}]`;
+      const keyPath = path + segment;
+      if (/^\d+$/.test(k)) out.push(keyPath);
+      numericKeyPaths(v, keyPath, out);
     }
   return out;
 }
@@ -142,8 +145,12 @@ export function checkArtifact(a, ctx = {}) {
       const chars = l.indent * 2 + l.text.length;
       if (chars > ARTIFACT_LIMITS.jsonLineChars) errors.push(`document を整形した ${i + 1} 行目が、字下げを含めて ${chars} 字あります（上限 ${ARTIFACT_LIMITS.jsonLineChars}）`);
     });
-    const numeric = numericKeys(a.document);
-    if (numeric.length) errors.push(`document に数字だけのキーがあります（${numeric.join(', ')}）。読み込むと並びが変わり、書いた順に表示できません`);
+    const numeric = numericKeyPaths(a.document);
+    if (numeric.length) {
+      const limit = 5;
+      const rest = numeric.length > limit ? `、ほか ${numeric.length - limit} 件` : '';
+      errors.push(`document に数字だけのキーは書けません（読み込むと並びが変わることがあるため）。場所: ${numeric.slice(0, limit).join(', ')}${rest}`);
+    }
   }
   if (a.format === 'text' && a.lines) {
     a.lines.forEach((l, i) => {
@@ -206,7 +213,8 @@ const whereOf = (a, n) => {
 
 /**
  * アプリに出す形（ビルドが書く）。注目点の番号は notes の順に 1 から。
- * 本体の行（json・text）と表の行（table）に、かかる注目点の番号（marks）と、そこから始まる注目点の番号（starts）を付ける。
+ * 本体と表の行に、かかる注目点の番号（marks）と、その行に出す注目点の番号（starts）を付ける。
+ * starts は text では連続した行の塊ごとの先頭、json では範囲の先頭、table では指定した 1 行に付く。
  */
 export function renderArtifact(a, status) {
   const notes = a.notes.map((n, i) => ({ n: i + 1, text: n.text, where: whereOf(a, n) }));

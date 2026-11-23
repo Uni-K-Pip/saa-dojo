@@ -69,7 +69,7 @@ console.log(
     `問題の除外: 要修正 ${c.excluded['needs-fix']}・却下 ${c.excluded.rejected} / ` +
     `図 ${c.diagrams} 枚（除外: 未検証 ${dx.pending}・要修正 ${dx['needs-fix']}・却下 ${dx.rejected}） / ` +
     `実物 ${c.artifacts} 件（除外: 未検証 ${ax.pending}・要修正 ${ax['needs-fix']}・却下 ${ax.rejected}） / ` +
-    `ミニラボ ${c.labs} 件（除外: 未検証 ${lx.pending}・要修正 ${lx['needs-fix']}・却下 ${lx.rejected}） / ` +
-    `設計パターン ${c.patterns} 件（除外: 未検証 ${px.pending}・要修正 ${px['needs-fix']}・却下 ${px.rejected}）` +
+    `ミニラボ ${c.labs} 件（除外: 未検証 ${lx.pending}・要修正 ${lx['needs-fix']}・却下 ${lx.rejected}・図が未検証 ${lx.diagram}） / ` +
+    `設計パターン ${c.patterns} 件（除外: 未検証 ${px.pending}・要修正 ${px['needs-fix']}・却下 ${px.rejected}・図が未検証 ${px.diagram}）` +
     (opts.includeUnverified ? '。未検証の教材も出しています' : ''),
 );

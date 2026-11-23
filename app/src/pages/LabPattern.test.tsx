@@ -183,6 +183,25 @@ describe('ミニラボと設計パターンの本文', () => {
 });
 
 describe('学習コースから読む', () => {
+  it('ユニットでは未検証の教材に一覧と同じ札を付ける', async () => {
+    const verifiedLab: LabMeta = { ...lab, id: 'lab-test-other', title: '検証済みのミニラボ', status: 'verified' };
+    const stage = course.stages[0]!;
+    const unit = stage.units[0]!;
+    useFakeContent(makeContentFiles([question], {
+      'lab-index': [lab, verifiedLab],
+      'pattern-index': [pattern, alternative],
+      course: { stages: [{ ...stage, units: [{ ...unit, items: [
+        ...unit.items, { kind: 'lab', ref: verifiedLab.id }, { kind: 'pattern', ref: alternative.id },
+      ] }] }] },
+    }));
+    renderApp('/course/u03');
+    for (const material of [lab, pattern, verifiedLab, alternative]) {
+      const row = within((await screen.findByRole('link', { name: material.title })).closest('li')!);
+      if (material.status === 'pending') expect(row.getByText('未検証')).toHaveClass('badge', 'pending');
+      else expect(row.queryByText('未検証')).not.toBeInTheDocument();
+    }
+  });
+
   it('元の順で教材を案内し、読了するたびに済みになる', async () => {
     const user = userEvent.setup();
     renderApp('/course/u03');

@@ -24,13 +24,14 @@ export function checkLabsAndPatternsForBuild(parsed, blueprintIndex) {
 
 const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
-export function buildLabPatternOutputs(parsed, section, { includeUnverified, canon, questionIds }) {
+export function buildLabPatternOutputs(parsed, section, { includeUnverified, diagramIds, canon, questionIds }) {
   const materials = parsed[section];
   const { shown, excluded } = selectMaterials(materialStatuses(parsed.materialStatus, section, materials), materials, includeUnverified);
-  shown.sort((a, b) => cmp(a.data.unit ?? '', b.data.unit ?? '') || a.data.order - b.data.order || cmp(a.data.id, b.data.id));
-  const index = shown.map(({ data: { createdBy, ...meta }, body, status }) => ({
+  const available = includeUnverified ? shown : shown.filter(({ data }) => diagramIds.has(data.diagram));
+  available.sort((a, b) => cmp(a.data.unit ?? '', b.data.unit ?? '') || a.data.order - b.data.order || cmp(a.data.id, b.data.id));
+  const index = available.map(({ data: { createdBy, ...meta }, body, status }) => ({
     ...meta, services: canon(meta.services), status, questionIds: questionIds(body),
   }));
-  const items = shown.map(({ data, body }) => ({ id: data.id, body }));
-  return { index, items, excluded };
+  const items = available.map(({ data, body }) => ({ id: data.id, body }));
+  return { index, items, excluded: { ...excluded, diagram: shown.length - available.length } };
 }

@@ -508,7 +508,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const artifacts = buildArtifactOutputs(parsed, { includeUnverified });
   add('artifact-index', 'artifact-index', artifacts.index);
   for (const item of artifacts.items) add(`artifact:${item.id}`, `artifacts/${item.id}`, item);
-  const materialOptions = { includeUnverified, canon, questionIds: bodyQuestions };
+  const materialOptions = { includeUnverified, diagramIds: new Set(diagrams.index.map(({ id }) => id)), canon, questionIds: bodyQuestions };
   const labs = buildLabPatternOutputs(parsed, 'labs', materialOptions);
   add('lab-index', 'lab-index', labs.index);
   for (const item of labs.items) add(`lab:${item.id}`, `labs/${item.id}`, item);
@@ -541,6 +541,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
     version: FORMAT_VERSION,
     exam: schema.EXAM,
     contentHash,
+    includeUnverified,
     counts: {
       questions: { practice: count('practice'), basics: count('basics'), mockA: count('mockA'), mockB: count('mockB') },
       verified: questions.filter((q) => q.status === 'verified').length,

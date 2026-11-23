@@ -1,6 +1,7 @@
 import { use, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { CourseNextStep, courseItemDetails, unitTitle } from '../components/CourseNextStep';
+import { MaterialBadges } from '../components/MaterialReading';
 import type { CourseUnit } from '../content/course-types';
 import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
@@ -98,6 +99,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
             <li key={key}>
               <div className="meta-row">
                 <span className="badge">{details.label}</span>
+                {details.status && <MaterialBadges status={details.status} />}
                 {done && <span className="badge ok">済み</span>}
               </div>
               {item.kind !== 'practice' && (

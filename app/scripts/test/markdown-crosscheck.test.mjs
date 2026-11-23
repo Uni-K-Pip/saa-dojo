@@ -20,6 +20,7 @@ const checkMessage = expect.stringContaining('その場の確認が表示では�
 const headingMessage = '『その場の確認』の見出しが確認として扱われていません。見出しは `> **その場の確認**` だけの行にしてください。';
 const taskMessage = '確認として表示されない引用の中にタスクリストがあります（正解の印がそのまま見えます）。その場の確認の書き方を直してください。';
 const diagramMessage = expect.stringContaining('図の参照 #/diagrams/dg-a を、検査と表示で違って読んでいます');
+const fenceMessage = 'コードフェンスが閉じていません。開きと同じ記号で、同じ数以上の行で閉じてください。';
 const parser = unified().use(remarkParse).use(remarkGfm);
 const indent = (value, spaces = 2) => value.replace(/^/gm, ' '.repeat(spaces));
 
@@ -116,6 +117,37 @@ it('遅延継続で前の囲み記事とつながる確認を検査で止めま�
   }]);
 });
 
+it.each(['**試験のポイント**', '__ひっかけ注意：__'])('直後に囲み記事の見出し %s が続くと、その行を報告します', (title) => {
+  const markdown = `${check}\n> ${title}\n> 注意点です。`;
+  const issue = { line: 8, message: 'その場の確認と次の引用（囲み記事）は、空行で分けてください。' };
+  expect(parseInlineChecks(markdown)[0].followingCallout).toEqual(issue);
+  expect(crosscheckMarkdown(markdown)).toEqual([issue]);
+});
+
+it.each([
+  '\n\n> **試験のポイント**\n> 注意点です。',
+  '\n> **大切な理由**\n> 選択の根拠です。',
+  '\n> 本文には **ひっかけ注意** と書かれています。',
+])('空行で分けた囲み記事や、理由の普通の太字は通ります（%s）', (suffix) => {
+  const markdown = check + suffix;
+  expect(parseInlineChecks(markdown)[0].followingCallout).toBeUndefined();
+  expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it.each(['|---|---|', ':--:', '| :-- | --: ', '--|--|', '-- | :--:'])('問いの表の区切り行 %s を従来どおり検出します', (delimiter) => {
+  const markdown = check.replace('問いですか？', `${image} | 題\n> ${delimiter}`);
+  expect(parseInlineChecks(markdown)[0].problems).toEqual(['問いに図・実物・画像と、図や実物へのリンクは書けません。']);
+});
+
+it('長い空白のあとに別の文字が続く行は速やかに判定し、表の区切り行として扱いません', () => {
+  const markdown = check.replace('問いですか？', `${image} | 題\n> | --${' '.repeat(32000)}文字`);
+  const start = performance.now();
+  const [parsed] = parseInlineChecks(markdown);
+  const elapsed = performance.now() - start;
+  expect(parsed.problems).toEqual(['問いは 120 字までです。']);
+  expect(elapsed).toBeLessThan(50);
+});
+
 it.each([
   ['丸括弧のタイトル', '![図](#/diagrams/dg-a (題))', 1],
   ['2 段の入れ子の角括弧', '![図 [注 [さらに]]](#/diagrams/dg-a)', 1],
@@ -178,6 +210,26 @@ it('確認を組み立て直した後の図の参照のずれを元の行で報�
 
 it('コードフェンスの記法の例とインラインコードの中の図の参照にはずれがありません', () => {
   const markdown = ['```markdown', check, image, '```', '', `記法は \`${image}\` です。`].join('\n');
+  expect(crosscheckMarkdown(markdown)).toEqual([]);
+});
+
+it.each([
+  '~~~markdown\n```',
+  '````markdown\n```',
+  '~~~markdown\n    ~~~',
+  '> ~~~markdown\n> ```',
+  '~~~',
+])('本文末まで閉じていないコードフェンスを開きの行で報告します（%s）', (source) => {
+  expect(crosscheckMarkdown(`前置きです。\n\n${source}\r\n\r\n`)).toEqual([{ line: 3, message: fenceMessage }]);
+});
+
+it.each([
+  '~~~text\n本文です。\n~~~~ \t',
+  '````markdown\n```text\n本文です。\n```\n````',
+  '> ~~~text\n> 本文です。\n> ~~~',
+  '- 項目\n\n  ~~~text\n  本文です。\n  ~~~',
+  '    ~~~text\n    本文です。',
+])('正しく閉じたフェンスや字下げのコードブロックは通ります（%s）', (markdown) => {
   expect(crosscheckMarkdown(markdown)).toEqual([]);
 });
 

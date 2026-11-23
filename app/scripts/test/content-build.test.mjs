@@ -29,6 +29,16 @@ function files(questions, extra = []) {
 }
 
 describe('コンテンツのビルド', () => {
+  it('manifest に未検証を含める設定を記録する', () => {
+    const parsed = parseContent(files([]), schema);
+    const output = (options) => {
+      const built = buildOutputs(parsed, schema, options);
+      return JSON.parse(built.files.find(({ rel }) => rel === 'manifest.json').text);
+    };
+    expect(output().includeUnverified).toBe(false);
+    expect(output({ includeUnverified: true }).includeUnverified).toBe(true);
+  });
+
   it('検証状態で問題を絞り、プールごとに分けて出力する', () => {
     const qs = [
       question('saa-1.1-a-001'),
