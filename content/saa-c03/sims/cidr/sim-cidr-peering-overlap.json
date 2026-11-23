@@ -73,9 +73,9 @@
   "explain": {
     "initial": "自分の VPC の範囲が相手の範囲をすべて含んでいます。重なるアドレスは {{out:sharedCount}} 個です。{{rule:peering-overlap}}。",
     "toggles": {
-      "peer-disjoint": "重なるアドレスは {{out:sharedCount}} 個です。CIDR が重ならないため、重なりの条件を満たします。",
+      "peer-disjoint": "重なるアドレスは {{out:sharedCount}} 個です。CIDR が重ならないので、重なりを理由にピアリング接続を作れなくなることはありません。",
       "peer-same": "両方の範囲が一致し、{{out:sharedCount}} 個のアドレスが重なります。{{rule:peering-overlap}}。",
-      "own-adjacent": "範囲は隣り合っています。重なるアドレスは {{out:sharedCount}} 個なので、ピアリングの重なりの条件を満たします。"
+      "own-adjacent": "範囲は隣り合っていて、重なるアドレスは {{out:sharedCount}} 個です。重なりを理由にピアリング接続を作れなくなることはありません。"
     }
   },
   "factRefs": [
