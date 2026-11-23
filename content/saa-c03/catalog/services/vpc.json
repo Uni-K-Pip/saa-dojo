@@ -810,6 +810,43 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "vpc.route-table-local",
+      "title": "ルートテーブルと local ルート",
+      "kind": "feature",
+      "text": "ルートテーブルは、サブネットやゲートウェイから出る通信をどこへ送るかを決めるルートの集まりで、各ルートは宛先（CIDR ブロックまたはプレフィックスリスト）とターゲットで表す。どのルートテーブルにも、VPC の中で通信するための local ルートがあり、VPC の CIDR ブロックが宛先になる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Configure route tables - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html"
+        },
+        {
+          "title": "Subnet route tables - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/subnet-route-tables.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "vpc.nacl-default-allow",
+      "title": "デフォルトのネットワーク ACL はすべての通信を許可",
+      "kind": "feature",
+      "text": "VPC に自動で付くデフォルトのネットワーク ACL は、関連付けられたサブネットに出入りする IPv4 通信をすべて許可する。サブネットにネットワーク ACL を明示的に関連付けなければ、そのサブネットはデフォルトのネットワーク ACL に自動で関連付けられる。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Default network ACL for a VPC - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/default-network-acl.html"
+        },
+        {
+          "title": "Control subnet traffic with network access control lists - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"
+        }
+      ],
+      "checkedAt": "2026-11-24",
+      "recheck": "default-value"
     }
   ],
   "seeAlso": [
@@ -828,5 +865,5 @@
   ],
   "createdBy": "sc5",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-23"
+  "updatedAt": "2026-11-24"
 }

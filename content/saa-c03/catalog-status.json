@@ -9734,6 +9734,11 @@
     "checkedAt": "2026-11-14",
     "hash": "e537251a6827"
   },
+  "vpc.nacl-default-allow": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "45bc7ed5282e"
+  },
   "vpc.nacl-no-prefix-list": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -9798,6 +9803,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "7bd4e830acdf"
+  },
+  "vpc.route-table-local": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "a2d180cb771e"
   },
   "vpc.sg-referencing": {
     "status": "verified",
