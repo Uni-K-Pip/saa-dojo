@@ -129,7 +129,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 
 ### 従業員のシングルサインオン
 
-IAM Identity Center の ID ソースは、Identity Center ディレクトリ、Active Directory、外部 ID プロバイダーのうち 1 つを選びます。Okta や Microsoft Entra ID のような外部 ID プロバイダーとは、SAML 2.0 で認証を連携し、ユーザーとグループは SCIM で自動的にプロビジョニングします（手動で登録することもできます）。オンプレミスの AD を使う場合は、AD Connector か AWS Managed Microsoft AD を経由して接続します。
+IAM Identity Center の ID ソースは、AWS Organizations の組織ごとに、Identity Center ディレクトリ、Active Directory、外部 ID プロバイダーのうち 1 つを選びます。Okta や Microsoft Entra ID のような外部 ID プロバイダーとは、SAML 2.0 で認証を連携し、ユーザーとグループは SCIM で自動的にプロビジョニングします（手動で登録することもできます）。オンプレミスの AD を使う場合は、AD Connector か AWS Managed Microsoft AD を経由して接続します。
 
 権限は権限セットとして定義し、組織インスタンスでは、ユーザーやグループとアカウントの組み合わせに割り当てます。割り当てると、各アカウントに対応する IAM ロールが自動で作られ、利用者は AWS アクセスポータルから一時的な認証情報で各アカウントを操作します。
 
