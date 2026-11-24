@@ -9,6 +9,7 @@ import { lessonReadMap, neighbors, progressOf } from '../domain/progress';
 import { randomRng } from '../domain/rng';
 import { pickQuestions } from '../domain/selection';
 import { Markdown } from '../components/Markdown';
+import { ReviewBadge, RevisionNotice } from '../components/ReviewStatus';
 import { createPracticeSession } from '../state/sessions';
 import { ServiceLinkList } from '../components/ServiceLinks';
 import { useServiceLinker } from '../state/useContent';
@@ -91,12 +92,14 @@ function LessonView({ lesson, lessons }: { lesson: LessonMeta; lessons: LessonMe
             <span>確認問題 {quizIds.length} 問</span>
           </>
         )}
+        <ReviewBadge status={lesson.status} label="レッスン" />
         {readAt && <span className="badge ok">読了 {new Date(readAt).toLocaleDateString('ja-JP')}</span>}
       </p>
       {lesson.services.length > 0 && <p className="small muted">
           扱うサービス: <ServiceLinkList names={lesson.services} link={link} />
         </p>}
 
+      <RevisionNotice status={lesson.status} label="レッスン" />
       <div className="card">
         {body ? (
           <Markdown

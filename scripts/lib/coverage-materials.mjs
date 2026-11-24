@@ -219,17 +219,21 @@ export function coreFactReach(facts, { texts = [], questionFactRefs = [], extraR
   };
 }
 
-/** 検証状態の内訳。statuses: { 区分: Map(id → { status, stale, recorded }) }、labels: { 区分: 名前 } */
+/**
+ * 検証状態の内訳。statuses: { 区分: Map(id → { status, stale, recorded }) か、その値の配列 }、labels: { 区分: 名前 }
+ * 配列を渡すと、その長さを件数にする（同じ鍵の項目が複数ある用語を、項目の数で数えるため）
+ */
 export function statusBreakdown(statuses, labels) {
   return Object.entries(statuses).map(([section, map]) => {
     const states = countStates();
     let stale = 0;
     let unrecorded = 0;
-    for (const s of map.values()) {
+    const list = Array.isArray(map) ? map : [...map.values()];
+    for (const s of list) {
       states[s.status]++;
       if (s.stale) stale++;
       if (!s.recorded) unrecorded++;
     }
-    return { section, label: labels[section] ?? section, total: map.size, ...states, stale, unrecorded };
+    return { section, label: labels[section] ?? section, total: list.length, ...states, stale, unrecorded };
   }).sort((a, b) => byText(a.section, b.section));
 }

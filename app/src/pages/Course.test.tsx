@@ -9,11 +9,11 @@ import { renderApp, resetDb, useFakeContent } from '../test/render';
 
 const lessons: LessonMeta[] = [{
   id: 'lesson-1.1-iam-basics', title: 'IAM の基礎', estimatedMinutes: 7,
-  domain: 1, taskStatement: '1.1', order: 1, knowledgeRefs: ['1.1-K1'], services: [], questionIds: [], checkIds: [],
+  domain: 1, taskStatement: '1.1', order: 1, knowledgeRefs: ['1.1-K1'], services: [], questionIds: [], checkIds: [], status: 'verified',
 }];
 const docs: DocEntry[] = [
-  { id: 'cheatsheet-iam', kind: 'cheatsheet', title: 'IAM の早見表', order: 1, taskStatements: [], services: [], createdBy: 't', body: '早見表の本文' },
-  { id: 'guide-exam-strategy', kind: 'guide', title: '試験の進め方', order: 2, taskStatements: [], services: [], createdBy: 't', body: 'ガイドの本文' },
+  { id: 'cheatsheet-iam', kind: 'cheatsheet', title: 'IAM の早見表', order: 1, taskStatements: [], services: [], createdBy: 't', body: '早見表の本文', status: 'verified' },
+  { id: 'guide-exam-strategy', kind: 'guide', title: '試験の進め方', order: 2, taskStatements: [], services: [], createdBy: 't', body: 'ガイドの本文', status: 'verified' },
 ];
 const practice = Array.from({ length: 15 }, (_, i) => makeQuestion({ id: `saa-1.1-t-${String(i + 1).padStart(3, '0')}` }));
 const mock = makeQuestion({ id: 'saa-1.1-t-101', pool: 'mockA' });

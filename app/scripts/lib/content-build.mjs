@@ -4,12 +4,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
-import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
+import { buildServiceIndex, normName, registrySummary } from '../../../scripts/lib/service-registry.mjs';
+import { existingMaterialItems, isExistingShown, materialKeyOf } from '../../../scripts/lib/material-status.mjs';
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
 import { buildArtifactOutputs, checkArtifactsForBuild } from './artifact-build.mjs';
 import { buildSimOutputs, checkSimsForBuild } from './sim-build.mjs';
-import { checkMaterialsForBuild, excludedRefWarnings } from './material-build.mjs';
+import { checkMaterialsForBuild, excludedRefWarnings, existingStatuses } from './material-build.mjs';
 import { inspectMarkdown } from './markdown-crosscheck.mjs';
 import { CourseSchema } from '../../../scripts/lib/course.mjs';
 import { buildCourseOutput, checkCourseForBuild } from './course-build.mjs';
@@ -131,7 +132,10 @@ export function parseContent(files, schema) {
     patterns: [],
     sims: [],
     // 区分ごとのファイル名（スキーマに通らなかったものを含む。検証状態の記録の検査で使う）
-    materialStems: { diagrams: new Set(), artifacts: new Set(), labs: new Set(), patterns: new Set(), sims: new Set() },
+    materialStems: {
+      diagrams: new Set(), artifacts: new Set(), labs: new Set(), patterns: new Set(), sims: new Set(),
+      lessons: new Set(), cheatsheets: new Set(), guides: new Set(), flashcards: new Set(), glossary: new Set(),
+    },
   };
 
   const validate = (s, value, rel) => {
@@ -259,24 +263,28 @@ export function parseContent(files, schema) {
       }
       case 'lesson': {
         const fm = markdown(rel, text);
+        if (typeof fm?.data?.id === 'string') parsed.materialStems.lessons.add(fm.data.id);
         const data = fm && validate(schema.LessonFrontSchema, fm.data, rel);
         if (data) parsed.lessons.push({ rel, data, body: fm.body });
         break;
       }
       case 'doc': {
         const fm = markdown(rel, text);
+        if (typeof fm?.data?.id === 'string') parsed.materialStems[`${cls.docKind}s`].add(fm.data.id);
         const data = fm && validate(schema.DocFrontSchema, fm.data, rel);
         if (data) parsed.docs.push({ rel, data, body: fm.body, docKind: cls.docKind });
         break;
       }
       case 'deck': {
         const j = json(rel, text);
+        for (const card of Array.isArray(j?.value?.cards) ? j.value.cards : []) if (typeof card?.id === 'string') parsed.materialStems.flashcards.add(card.id);
         const data = j && validate(schema.FlashcardDeckSchema, j.value, rel);
         if (data) parsed.decks.push({ rel, data });
         break;
       }
       case 'glossary': {
         const j = json(rel, text);
+        for (const e of Array.isArray(j?.value?.entries) ? j.value.entries : []) if (typeof e?.term === 'string') parsed.materialStems.glossary.add(e.term);
         const data = j && validate(schema.GlossaryFileSchema, j.value, rel);
         if (data) parsed.glossaries.push({ rel, data });
         break;
@@ -446,6 +454,19 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const practice = byPool('practice');
   const visible = new Map(questions.map((q) => [q.id, q]));
 
+  // 既存の教材の検証状態。未検証もそのまま出し、出さないもの（カードと用語の needs-fix・rejected）は isExistingShown が決める
+  const existing = existingStatuses(parsed);
+  const statusIn = (section, key) => existing[section].get(key)?.status ?? 'pending';
+  // 状態ごとの数は項目の数から作る（同じ鍵の項目が複数あっても、1 件にまとめない）
+  const existingItems = existingMaterialItems(parsed);
+  const existingStatus = Object.fromEntries(Object.keys(existing).map((section) => {
+    const counts = { verified: 0, pending: 0, 'needs-fix': 0, rejected: 0 };
+    for (const { data } of existingItems[section]) counts[statusIn(section, materialKeyOf(section, data))]++;
+    return [section, counts];
+  }));
+  const flashcardsExcluded = { 'needs-fix': 0, rejected: 0 };
+  const glossaryExcluded = { 'needs-fix': 0, rejected: 0 };
+
   const lessons = [...parsed.lessons].sort(
     (a, b) =>
       a.data.domain - b.data.domain ||
@@ -489,20 +510,42 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       estimatedMinutes: data.estimatedMinutes,
       questionIds: lessonQuestions(data.id, body),
       checkIds,
+      status: statusIn('lessons', data.id),
     })),
   );
   for (const { data, body } of lessons) add(`lesson:${data.id}`, `lessons/${data.id}`, { id: data.id, body });
   const decks = [...parsed.decks]
-    .map((d) => ({ ...d.data, cards: d.data.cards.map((c) => ({ ...c, services: canon(c.services) })) }))
+    .map((d) => ({
+      ...d.data,
+      cards: d.data.cards.flatMap((c) => {
+        const status = statusIn('flashcards', c.id);
+        if (!isExistingShown('flashcards', status)) {
+          flashcardsExcluded[status]++;
+          return [];
+        }
+        return [{ ...c, services: canon(c.services), status }];
+      }),
+    }))
+    .filter((d) => d.cards.length > 0)
     .sort((a, b) => cmp(a.deck, b.deck));
   add('flashcards', 'flashcards', decks);
+  // 出さない用語は、ほかの語の related からも外す（押しても説明が出ない関連のボタンを残さない）
+  const hiddenTerms = new Set(parsed.glossaries.flatMap((g) => g.data.entries)
+    .filter((e) => !isExistingShown('glossary', statusIn('glossary', e.term))).map((e) => normName(e.term)));
   const glossary = parsed.glossaries
     .flatMap((g) => g.data.entries)
-    .map((e) => ({ ...e, services: canon(e.services) }))
+    .flatMap((e) => {
+      const status = statusIn('glossary', e.term);
+      if (!isExistingShown('glossary', status)) {
+        glossaryExcluded[status]++;
+        return [];
+      }
+      return [{ ...e, services: canon(e.services), related: e.related.filter((r) => !hiddenTerms.has(normName(r))), status }];
+    })
     .sort((a, b) => a.term.localeCompare(b.term, 'ja') || cmp(a.en, b.en));
   add('glossary', 'glossary', glossary);
   const docs = [...parsed.docs]
-    .map(({ data, body, docKind }) => ({ ...data, services: canon(data.services), kind: docKind, body }))
+    .map(({ data, body, docKind }) => ({ ...data, services: canon(data.services), kind: docKind, body, status: statusIn(`${docKind}s`, data.id) }))
     .sort((a, b) => cmp(a.kind, b.kind) || a.order - b.order || cmp(a.id, b.id));
   add('docs', 'docs', docs);
   const services = serviceIndex ? registrySummary(serviceIndex) : null;
@@ -578,7 +621,11 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       basicsLessons: lessons.filter((l) => l.data.domain === 0).length,
       decks: decks.length,
       flashcards: decks.reduce((n, d) => n + d.cards.length, 0),
+      flashcardsExcluded,
       glossary: glossary.length,
+      glossaryExcluded,
+      // 既存の教材の状態ごとの数（出さなかったカードと用語を含む）
+      existingStatus,
       cheatsheets: docs.filter((d) => d.kind === 'cheatsheet').length,
       guides: docs.filter((d) => d.kind === 'guide').length,
       services: services ? services.length : 0,

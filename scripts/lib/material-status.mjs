@@ -10,6 +10,9 @@ export const MATERIAL_STATUS_FILE = 'material-status.json';
 
 // 区分ごとの設定。kind は本文の参照の種類（parseMaterialRefs）と警告のコードの頭、omit はハッシュに含めない欄（記録の欄）。
 // subject はハッシュの対象を組み立てる関数（図は、データにレイアウトの結果を足す。ctx は { serviceIndex }）。
+// key は記録の鍵にする欄（既定は id。用語は term）。
+// existing は既存の教材（レッスン・早見表・ガイド・カード・用語）の区分の印で、未検証でもどのビルドにも出す。
+// needs-fix・rejected のとき、'notice' は表示を続けて「修正待ち」の注意を出し、'exclude' はどのビルドにも出さない。
 // 区分を足すときは schema.mjs の MaterialStatusSchema にも足す
 export const MATERIAL_SECTIONS = {
   diagrams: { label: '図', kind: 'diagram', omit: ['createdBy'], subject: ({ data }, ctx) => diagramHashSubject(data, ctx) },
@@ -17,11 +20,37 @@ export const MATERIAL_SECTIONS = {
   sims: { label: 'シナリオ', kind: 'sim', omit: ['createdBy'], refs: false },
   labs: { label: 'ミニラボ', kind: 'lab', omit: ['createdBy'], body: true, refs: false },
   patterns: { label: '設計パターン', kind: 'pattern', omit: ['createdBy'], body: true, refs: false },
+  lessons: { label: 'レッスン', kind: 'lesson', omit: ['createdBy'], body: true, refs: false, existing: 'notice' },
+  cheatsheets: { label: '早見表', kind: 'cheatsheet', omit: ['createdBy'], body: true, refs: false, existing: 'notice' },
+  guides: { label: 'ガイド', kind: 'guide', omit: ['createdBy'], body: true, refs: false, existing: 'notice' },
+  flashcards: { label: 'カード', kind: 'flashcard', omit: [], refs: false, existing: 'exclude' },
+  glossary: { label: '用語', kind: 'term', key: 'term', omit: [], refs: false, existing: 'exclude' },
 };
 const SECTION_OF_KIND = Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([s, c]) => [c.kind, s]));
+export const EXISTING_SECTIONS = Object.keys(MATERIAL_SECTIONS).filter((s) => MATERIAL_SECTIONS[s].existing);
 
 export const STATUS_LABELS = { verified: '検証済み', pending: '未検証', 'needs-fix': '要修正', rejected: '却下' };
 const HIDDEN = new Set(['needs-fix', 'rejected']);
+
+/** 区分の記録の鍵（既定は id、用語は term） */
+export const materialKeyOf = (section, data) => data?.[MATERIAL_SECTIONS[section]?.key ?? 'id'];
+
+/**
+ * 既存の教材を区分ごとの { rel, data, body? } にします（validate・ビルド・coverage が同じ分け方を使う）。
+ * docs は docKind で早見表とガイドに分け、カードはデッキから、用語はファイルから 1 件ずつ取り出します。
+ */
+export function existingMaterialItems({ lessons = [], docs = [], decks = [], glossaries = [] }) {
+  return {
+    lessons,
+    cheatsheets: docs.filter((d) => d.docKind === 'cheatsheet'),
+    guides: docs.filter((d) => d.docKind === 'guide'),
+    flashcards: decks.flatMap(({ rel, data }) => data.cards.map((card) => ({ rel, data: card }))),
+    glossary: glossaries.flatMap(({ rel, data }) => data.entries.map((entry) => ({ rel, data: entry }))),
+  };
+}
+
+/** 既存の教材をそのビルドに出すか（未検証は出す。needs-fix・rejected は、exclude の区分だけ出さない） */
+export const isExistingShown = (section, status) => MATERIAL_SECTIONS[section].existing !== 'exclude' || !HIDDEN.has(status);
 
 /** 教材のハッシュ。omit の欄を除いた全部の欄を、キー順をそろえた JSON にして SHA-256 の先頭 12 桁 */
 export function materialHash(section, obj) {
@@ -51,9 +80,10 @@ export function materialHashInput(section, { data, body }, ctx = {}) {
 
 /** 区分の教材ごとの実効の状態（id → materialEffectiveStatus の値）。 */
 export function materialStatuses(statusFile, section, items, ctx = {}) {
-  return new Map(items.map((item) => [
-    item.data.id, materialEffectiveStatus(statusFile, section, item.data.id, materialHashInput(section, item, ctx)),
-  ]));
+  return new Map(items.map((item) => {
+    const key = materialKeyOf(section, item.data);
+    return [key, materialEffectiveStatus(statusFile, section, key, materialHashInput(section, item, ctx))];
+  }));
 }
 export const diagramStatuses = (statusFile, diagrams, ctx = {}) => materialStatuses(statusFile, 'diagrams', diagrams, ctx);
 
@@ -117,10 +147,17 @@ export function checkMaterialStatus({ statusFile, materials, presentIds = {}, te
     const items = materials[section] ?? [];
     const byId = materialStatuses(statusFile, section, items, ctx);
     statuses[section] = byId;
+    const keyName = conf.key ?? 'id';
+    const keyCount = new Map();
+    for (const { data } of items) keyCount.set(materialKeyOf(section, data), (keyCount.get(materialKeyOf(section, data)) ?? 0) + 1);
     for (const id of Object.keys(statusFile?.[section] ?? {})) {
       const d = byId.get(id);
       if (!d) {
-        if (!presentIds[section]?.has(id)) issues.push({ level: 'error', code: 'material-status-key', rel: file, message: `${section}.${id}: この id の${conf.label}はありません` });
+        if (!presentIds[section]?.has(id)) issues.push({ level: 'error', code: 'material-status-key', rel: file, message: `${section}.${id}: この ${keyName} の${conf.label}はありません` });
+        continue;
+      }
+      if (keyCount.get(id) > 1) {
+        issues.push({ level: 'error', code: 'material-status-key', rel: file, message: `${section}.${id}: この ${keyName} の${conf.label}が ${keyCount.get(id)} 件あり、どれの記録か決まりません` });
         continue;
       }
       if (d.stale) stale.push(`${conf.label} ${id}`);

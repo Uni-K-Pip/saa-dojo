@@ -62,11 +62,21 @@ const ax = c.artifactsExcluded;
 const sx = c.simsExcluded;
 const lx = c.labsExcluded;
 const px = c.patternsExcluded;
+const fx = c.flashcardsExcluded;
+const gx = c.glossaryExcluded;
+const es = c.existingStatus;
+const EXISTING_LABELS = { lessons: 'レッスン', cheatsheets: '早見表', guides: 'ガイド', flashcards: 'カード', glossary: '用語' };
+const totalOf = (x) => x.verified + x.pending + x['needs-fix'] + x.rejected;
+const existingLine = Object.entries(EXISTING_LABELS).map(([k, label]) => `${label} ${es[k].verified}/${totalOf(es[k])}`).join('・');
+const fixLine = ['lessons', 'cheatsheets', 'guides'].map((k) => `${EXISTING_LABELS[k]} ${es[k]['needs-fix'] + es[k].rejected}`).join('・');
 console.log(
   `コンテンツを書き出しました（${path.relative(process.cwd(), opts.out) || '.'}）: ` +
     `演習 ${c.questions.practice} 問 / 基礎 ${c.questions.basics} 問 / 模試A ${c.questions.mockA} 問 / 模試B ${c.questions.mockB} 問 / ` +
-    `レッスン ${c.lessons + c.basicsLessons} 本 / カード ${c.flashcards} 枚 / 用語 ${c.glossary} 語 / ` +
-    `早見表 ${c.cheatsheets} / ガイド ${c.guides} / 図鑑 ${c.catalogEntries} 件（事実 ${c.catalogFacts}・比較 ${c.comparisons}） / ` +
+    `レッスン ${c.lessons + c.basicsLessons} 本 / ` +
+    `カード ${c.flashcards} 枚（除外: 要修正 ${fx['needs-fix']}・却下 ${fx.rejected}） / ` +
+    `用語 ${c.glossary} 語（除外: 要修正 ${gx['needs-fix']}・却下 ${gx.rejected}） / ` +
+    `早見表 ${c.cheatsheets} / ガイド ${c.guides} / ` +
+    `検証済み: ${existingLine} / 修正待ち: ${fixLine} / 図鑑 ${c.catalogEntries} 件（事実 ${c.catalogFacts}・比較 ${c.comparisons}） / ` +
     `問題の除外: 要修正 ${c.excluded['needs-fix']}・却下 ${c.excluded.rejected} / ` +
     `図 ${c.diagrams} 枚（除外: 未検証 ${dx.pending}・要修正 ${dx['needs-fix']}・却下 ${dx.rejected}） / ` +
     `実物 ${c.artifacts} 件（除外: 未検証 ${ax.pending}・要修正 ${ax['needs-fix']}・却下 ${ax.rejected}） / ` +

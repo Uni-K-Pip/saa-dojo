@@ -3,6 +3,8 @@
 export type Qualifier = 'cost' | 'operational' | 'availability' | 'performance' | 'security' | 'minimal-change' | 'other';
 export type Pool = 'basics' | 'practice' | 'mockA' | 'mockB';
 export type QuestionStatus = 'verified' | 'pending';
+/** レッスン・早見表・ガイドの検証状態（needs-fix・rejected でも出す）。カードと用語は QuestionStatus */
+export type ReviewStatus = 'verified' | 'pending' | 'needs-fix' | 'rejected';
 export type Difficulty = 1 | 2 | 3;
 
 export interface QuestionOption {
@@ -116,6 +118,7 @@ export interface LessonMeta {
   questionIds: string[];
   /** 本文のその場の確認の ID */
   checkIds: string[];
+  status: ReviewStatus;
 }
 
 export interface LessonBody {
@@ -130,6 +133,7 @@ export interface Flashcard {
   taskStatements: string[];
   services: string[];
   tags: string[];
+  status: QuestionStatus;
 }
 
 export interface FlashcardDeck {
@@ -145,6 +149,7 @@ export interface GlossaryEntry {
   definition: string;
   services: string[];
   related: string[];
+  status: QuestionStatus;
 }
 
 export interface DocEntry {
@@ -156,6 +161,7 @@ export interface DocEntry {
   services: string[];
   createdBy: string;
   body: string;
+  status: ReviewStatus;
 }
 
 export interface ManifestFile {

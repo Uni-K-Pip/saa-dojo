@@ -134,10 +134,10 @@ const comparisons: CatalogComparison[] = [
   },
 ];
 const lessons: LessonMeta[] = [
-  { id: 'lesson-4.1-s3', title: 'S3 のストレージクラス', domain: 4, taskStatement: '4.1', order: 1, knowledgeRefs: [], services: ['Amazon S3'], estimatedMinutes: 10, questionIds: [], checkIds: [] },
+  { id: 'lesson-4.1-s3', title: 'S3 のストレージクラス', domain: 4, taskStatement: '4.1', order: 1, knowledgeRefs: [], services: ['Amazon S3'], estimatedMinutes: 10, questionIds: [], checkIds: [], status: 'verified' },
 ];
 const docs: DocEntry[] = [
-  { id: 'cheatsheet-s3', kind: 'cheatsheet', title: 'S3 の早見表', order: 1, taskStatements: [], services: ['Amazon S3'], createdBy: 't', body: '本文' },
+  { id: 'cheatsheet-s3', kind: 'cheatsheet', title: 'S3 の早見表', order: 1, taskStatements: [], services: ['Amazon S3'], createdBy: 't', body: '本文', status: 'verified' },
 ];
 
 const q1 = makeQuestion({ id: 'saa-1.1-t-001', services: ['Amazon S3', 'AWS Local Zones'], factRefs: ['s3.versioning', 's3.not-in-index'] });
