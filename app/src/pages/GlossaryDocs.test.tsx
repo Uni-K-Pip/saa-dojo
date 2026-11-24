@@ -7,9 +7,9 @@ import { makeContentFiles } from '../test/fixtures';
 import { renderApp, resetDb, useFakeContent } from '../test/render';
 
 const glossary: GlossaryEntry[] = [
-  { term: 'サブネット', en: 'Subnet', definition: 'VPC の IP アドレスの範囲を分けたもの。', services: ['Amazon VPC'], related: ['ルートテーブル'] },
-  { term: 'ルートテーブル', en: 'Route table', definition: 'サブネットの通信の行き先を決める表。', services: ['Amazon VPC'], related: [] },
-  { term: 'AWS Lambda', en: 'AWS Lambda', definition: 'サーバーを管理せずにコードを実行するサービス。', services: ['AWS Lambda'], related: [] },
+  { term: 'サブネット', en: 'Subnet', definition: 'VPC の IP アドレスの範囲を分けたもの。', services: ['Amazon VPC'], related: ['ルートテーブル'], status: 'verified' },
+  { term: 'ルートテーブル', en: 'Route table', definition: 'サブネットの通信の行き先を決める表。', services: ['Amazon VPC'], related: [], status: 'verified' },
+  { term: 'AWS Lambda', en: 'AWS Lambda', definition: 'サーバーを管理せずにコードを実行するサービス。', services: ['AWS Lambda'], related: [], status: 'verified' },
 ];
 const docs: DocEntry[] = [
   {
@@ -21,8 +21,9 @@ const docs: DocEntry[] = [
     services: ['AWS PrivateLink'],
     createdBy: 't',
     body: '## 比較\n\n| 種類 | 対応 |\n|---|---|\n| ゲートウェイ型 | S3 と DynamoDB |\n\n> **ひっかけ注意**\n> オンプレミスからは使えない。',
+    status: 'verified',
   },
-  { id: 'guide-exam-strategy', kind: 'guide', title: '試験の解き方', order: 1, taskStatements: [], services: [], createdBy: 't', body: '時間配分は1問2分が目安です。' },
+  { id: 'guide-exam-strategy', kind: 'guide', title: '試験の解き方', order: 1, taskStatements: [], services: [], createdBy: 't', body: '時間配分は1問2分が目安です。', status: 'verified' },
 ];
 
 describe('検索', () => {

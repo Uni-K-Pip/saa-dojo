@@ -1,13 +1,15 @@
 // 教材の検証状態（material-status.json）のビルドでの検査と、除いた図・実物を本文が指すときの警告。
 // 判定は scripts/lib/material-status.mjs（validate と同じ）。
-import { MATERIAL_STATUS_FILE, checkMaterialStatus, excludedRefMessage, isShown } from '../../../scripts/lib/material-status.mjs';
+import {
+  EXISTING_SECTIONS, MATERIAL_STATUS_FILE, checkMaterialStatus, excludedRefMessage, existingMaterialItems, isShown, materialStatuses,
+} from '../../../scripts/lib/material-status.mjs';
 import { labPatternTexts } from '../../../scripts/lib/lab-pattern.mjs';
 
 const textsOf = (parsed) => [...parsed.lessons, ...parsed.docs, ...labPatternTexts(parsed)];
 // serviceIndex は図のハッシュの対象（レイアウトの結果）を組み立てるのに使う。図の出力と同じもの
 const run = (parsed, serviceIndex) => checkMaterialStatus({
   statusFile: parsed.materialStatus,
-  materials: { ...parsed, sims: parsed.checkedSims?.items ?? [] },
+  materials: { ...parsed, ...existingMaterialItems(parsed), sims: parsed.checkedSims?.items ?? [] },
   presentIds: parsed.materialStems,
   texts: textsOf(parsed),
   file: MATERIAL_STATUS_FILE,
@@ -29,4 +31,10 @@ export function excludedRefWarnings(parsed, { includeUnverified = false, service
   return run(parsed, serviceIndex).unverifiedRefs
     .filter((r) => !isShown(r.status, includeUnverified))
     .map((r) => `${r.rel}: ${excludedRefMessage(r)}`);
+}
+
+/** 既存の教材（レッスン・早見表・ガイド・カード・用語）の区分ごとの実効の状態（鍵 → materialEffectiveStatus の値） */
+export function existingStatuses(parsed) {
+  const items = existingMaterialItems(parsed);
+  return Object.fromEntries(EXISTING_SECTIONS.map((section) => [section, materialStatuses(parsed.materialStatus, section, items[section])]));
 }
