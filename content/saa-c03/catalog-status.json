@@ -6609,6 +6609,11 @@
     "checkedAt": "2026-11-21",
     "hash": "c3fa79c54594"
   },
+  "nat-gateway.source-translation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "3accfac8b8c5"
+  },
   "nat-gateway.zonal-resilience": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -9699,6 +9704,11 @@
     "checkedAt": "2026-11-14",
     "hash": "6d299eead95c"
   },
+  "vpc.igw-inbound-translation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "0cd1a658ffab"
+  },
   "vpc.igw-requirements": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -9738,6 +9748,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "e537251a6827"
+  },
+  "vpc.nacl-default-allow": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "45bc7ed5282e"
   },
   "vpc.nacl-no-prefix-list": {
     "status": "verified",
@@ -9799,10 +9814,20 @@
     "checkedAt": "2026-11-14",
     "hash": "2994a8d5a29a"
   },
+  "vpc.route-priority-prefix-list": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "1b553fc9000e"
+  },
   "vpc.route-table-association": {
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "7bd4e830acdf"
+  },
+  "vpc.route-table-local": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "a2d180cb771e"
   },
   "vpc.sg-referencing": {
     "status": "verified",

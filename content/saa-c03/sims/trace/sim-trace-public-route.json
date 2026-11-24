@@ -1,0 +1,169 @@
+{
+  "id": "sim-trace-public-route",
+  "title": "パブリック IP があればインターネットへ出られるか",
+  "intro": "ウェブサーバー（パブリック IP アドレス 203.0.113.10）を、VPC 10.0.0.0/16 のサブネット 10.0.1.0/24 に置きました。VPC にはインターネットゲートウェイをアタッチしてあります。セキュリティグループのアウトバウンドは作成直後のまま、ネットワーク ACL はデフォルトです。サブネットのルートテーブルには local ルートしかありません。このサーバーから、インターネットのサーバー（198.51.100.7）の 443 へ接続します。",
+  "predict": {
+    "text": "このサーバーからの接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "届く（応答も返る）",
+        "value": "none"
+      },
+      {
+        "text": "行きのルートテーブルで止まる",
+        "value": "forward-route"
+      },
+      {
+        "text": "戻りのルートテーブルで止まる",
+        "value": "return-route"
+      },
+      {
+        "text": "行きのセキュリティグループで止まる",
+        "value": "forward-sg-out"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-web",
+        "nacl": "acl-web"
+      }
+    ],
+    "routeTables": {
+      "rt-web": []
+    },
+    "nacls": {
+      "acl-web": "default"
+    },
+    "securityGroups": {
+      "sg-web": {
+        "inbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "kind": "instance",
+        "subnet": "web",
+        "ip": "10.0.1.10",
+        "sg": "sg-web"
+      }
+    ],
+    "publicIps": {
+      "web": "203.0.113.10"
+    },
+    "externals": [
+      {
+        "id": "server",
+        "label": "インターネットのサーバー",
+        "kind": "internet",
+        "ip": "198.51.100.7"
+      }
+    ],
+    "flow": {
+      "from": "web",
+      "to": "server",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "add-igw-route",
+      "label": "0.0.0.0/0 をインターネットゲートウェイへ",
+      "set": {
+        "routeTables": {
+          "rt-web": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "narrow-route",
+      "label": "192.0.2.0/24 だけをゲートウェイへ",
+      "set": {
+        "routeTables": {
+          "rt-web": [
+            {
+              "dest": "192.0.2.0/24",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "remove-public-ip",
+      "label": "パブリック IP アドレスを外す",
+      "set": {
+        "publicIps": {}
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "forward-route",
+      "reason": "no-route",
+      "routeTarget": "none"
+    },
+    "toggles": {
+      "add-igw-route": {
+        "delivered": true,
+        "stop": "none",
+        "routeTarget": "igw",
+        "seenSource": "203.0.113.10"
+      },
+      "narrow-route": {
+        "delivered": false,
+        "stop": "forward-route",
+        "reason": "no-route"
+      },
+      "remove-public-ip": {
+        "delivered": false,
+        "stop": "forward-route",
+        "reason": "no-route"
+      }
+    }
+  },
+  "explain": {
+    "initial": "ウェブサーバーからの接続は、サブネットから出る通信です。{{rule:route-table}}。このサブネットのルートテーブルには local ルートしかなく、198.51.100.7 に当てはまるルートがないので、行きのルートテーブルの段で止まります。{{rule:igw-requirements}}。パブリック IP アドレスがあっても、ゲートウェイへのルートがなければ、この条件を満たしません。",
+    "toggles": {
+      "add-igw-route": "0.0.0.0/0 をインターネットゲートウェイへ向けるルートを足すと、198.51.100.7 に当てはまるルートができ、行きも戻りも届きます。アタッチ、ルート、パブリック IP アドレスがそろいました。宛先から見える送信元は {{out:seenSource}} です。{{rule:igw-nat}}。{{rule:subnet-kind}}。",
+      "narrow-route": "192.0.2.0/24 をインターネットゲートウェイへ向けるルートは、198.51.100.7 に当てはまりません。{{rule:address-match}}。当てはまるルートがないので、行きのルートテーブルの段で止まります。",
+      "remove-public-ip": "パブリック IP アドレスを外しても、結果は変わりません。ルートがないので、パブリック IP アドレスの有無にかかわらず、行きのルートテーブルの段で止まります。{{rule:igw-requirements}}。"
+    }
+  },
+  "factRefs": [
+    "vpc.igw-requirements",
+    "vpc.route-table-local",
+    "vpc.subnet-types",
+    "vpc.igw-basics",
+    "vpc.sg-stateful-allow-only",
+    "vpc.nacl-default-allow",
+    "vpc.quota-sg-per-eni",
+    "vpc.nacl-stateless",
+    "vpc.route-priority"
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing",
+    "lesson-3.4-vpc-design",
+    "lesson-1.2-vpc-network-security"
+  ],
+  "createdBy": "v6"
+}

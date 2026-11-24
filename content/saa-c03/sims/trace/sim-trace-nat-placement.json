@@ -1,0 +1,221 @@
+{
+  "id": "sim-trace-nat-placement",
+  "title": "NAT ゲートウェイを置くサブネット",
+  "intro": "アプリのサーバー（10.0.2.10、パブリック IP アドレスなし）から、インターネットの更新サーバー（192.0.2.80）の 443 へ接続します。アプリのサブネットは 0.0.0.0/0 を NAT ゲートウェイへ向けています。NAT ゲートウェイ（Elastic IP アドレス 203.0.113.20）は、インターネットゲートウェイへのルートがない「NAT」サブネット 10.0.4.0/24 に置きました。",
+  "predict": {
+    "text": "この接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "届く",
+        "value": "none"
+      },
+      {
+        "text": "インターネットゲートウェイで止まる",
+        "value": "forward-igw"
+      },
+      {
+        "text": "NAT のサブネットのルートで止まる",
+        "value": "forward-route"
+      },
+      {
+        "text": "NAT ゲートウェイが通さない",
+        "value": "forward-nat"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "cidr": "10.0.2.0/24",
+        "routeTable": "rt-app",
+        "nacl": "acl-default"
+      },
+      {
+        "id": "nat",
+        "label": "NAT",
+        "cidr": "10.0.4.0/24",
+        "routeTable": "rt-nat",
+        "nacl": "acl-default"
+      },
+      {
+        "id": "pub",
+        "label": "パブリック",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-pub",
+        "nacl": "acl-default"
+      }
+    ],
+    "routeTables": {
+      "rt-app": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "nat:nat"
+        }
+      ],
+      "rt-nat": [],
+      "rt-pub": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-default": "default"
+    },
+    "securityGroups": {
+      "sg-app": {
+        "inbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.10",
+        "sg": "sg-app"
+      },
+      {
+        "id": "nat",
+        "label": "NAT",
+        "kind": "nat-gateway",
+        "subnet": "nat",
+        "ip": "10.0.4.20"
+      }
+    ],
+    "publicIps": {
+      "nat": "203.0.113.20"
+    },
+    "externals": [
+      {
+        "id": "client",
+        "label": "クライアント",
+        "kind": "internet",
+        "ip": "198.51.100.7"
+      },
+      {
+        "id": "update",
+        "label": "更新サーバー",
+        "kind": "internet",
+        "ip": "192.0.2.80"
+      }
+    ],
+    "flow": {
+      "from": "app",
+      "to": "update",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "move-to-public",
+      "label": "NAT をパブリックサブネットに移す",
+      "set": {
+        "hosts": [
+          {
+            "id": "app",
+            "label": "アプリ",
+            "kind": "instance",
+            "subnet": "app",
+            "ip": "10.0.2.10",
+            "sg": "sg-app"
+          },
+          {
+            "id": "nat",
+            "label": "NAT",
+            "kind": "nat-gateway",
+            "subnet": "pub",
+            "ip": "10.0.1.20"
+          }
+        ]
+      }
+    },
+    {
+      "id": "add-igw-route",
+      "label": "NAT のサブネットからインターネットへのルートを足す",
+      "set": {
+        "routeTables": {
+          "rt-app": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "nat:nat"
+            }
+          ],
+          "rt-nat": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "igw"
+            }
+          ],
+          "rt-pub": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "forward-route",
+      "stopAt": "nat",
+      "reason": "no-route",
+      "routeTarget": "nat"
+    },
+    "toggles": {
+      "move-to-public": {
+        "delivered": true,
+        "stop": "none",
+        "seenSource": "203.0.113.20"
+      },
+      "add-igw-route": {
+        "delivered": true,
+        "stop": "none",
+        "seenSource": "203.0.113.20"
+      }
+    }
+  },
+  "explain": {
+    "initial": "アプリのサブネットのルートは NAT ゲートウェイへ向いているので、行きは NAT ゲートウェイまで進みます。止まるのは NAT ゲートウェイのサブネットのルートテーブルです。{{rule:nat-route-igw}}。このサブネットには local ルートしかなく、更新サーバーへの行き先がありません。",
+    "toggles": {
+      "move-to-public": "NAT ゲートウェイを、インターネットゲートウェイへのルートがあるパブリックサブネットに置くと、更新サーバーまで届きます。更新サーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。{{rule:nat-translate}}。{{rule:nat-eip}}。",
+      "add-igw-route": "NAT のサブネットのルートテーブルにインターネットゲートウェイへのルートを足すと、更新サーバーまで届きます。このサブネットは、インターネットゲートウェイへのルートを持つので、パブリックサブネットになります。更新サーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。"
+    }
+  },
+  "factRefs": [
+    "nat-gateway.public-internet-route",
+    "nat-gateway.public-zonal-placement",
+    "nat-gateway.public-elastic-ip",
+    "nat-gateway.no-security-group",
+    "vpc.subnet-types",
+    "vpc.route-priority",
+    "vpc.route-table-local",
+    "vpc.igw-requirements",
+    "vpc.quota-sg-per-eni",
+    "vpc.sg-stateful-allow-only",
+    "vpc.nacl-stateless",
+    "vpc.nacl-default-allow",
+    "nat-gateway.outbound-connections",
+    "vpc.igw-basics",
+    "nat-gateway.source-translation"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v6"
+}

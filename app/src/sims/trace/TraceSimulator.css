@@ -1,0 +1,113 @@
+.trace-result,
+.trace-explore {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.trace-result,
+.trace-fields,
+.trace-stages,
+.trace-subnets {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.trace-summary {
+  margin: 0;
+  padding: 0.65rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.trace-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.trace-stage,
+.trace-subnet {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.trace-stage {
+  border-inline-start: 4px solid var(--border);
+}
+
+.trace-stage.trace-stopped {
+  border-color: var(--ng);
+  background: var(--ng-bg);
+}
+
+.trace-stage p,
+.trace-topology p {
+  margin-block: 0;
+}
+
+.trace-stage p + p,
+.trace-topology p + p {
+  margin-block-start: 0.35rem;
+}
+
+.trace-stage-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.45rem;
+}
+
+.trace-stage-heading > * { min-width: 0; }
+.trace-number { color: var(--muted); font-weight: 700; }
+.trace-pass { color: var(--ok); }
+.trace-stop, .trace-error { color: var(--ng); }
+
+.trace-topology > summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.trace-topology ul { padding-inline-start: 1.35rem; }
+.trace-subnets { margin-block: 0.65rem; }
+.trace-subnet h4 { margin-block: 0 0.4rem; }
+.trace-host {
+  padding-block-start: 0.55rem;
+  margin-block-start: 0.55rem;
+  border-block-start: 1px solid var(--border);
+}
+
+.trace-kind,
+.trace-numbers {
+  font-size: max(12px, 0.85rem);
+}
+
+.trace-kind {
+  display: inline-block;
+  max-width: 100%;
+  padding-inline: 0.4rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.trace-numbers {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.trace-fields { margin-block-end: 1rem; }
+.trace-field { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.2rem; }
+.trace-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding-inline: 0.55rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
