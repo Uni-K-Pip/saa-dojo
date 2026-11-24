@@ -88,6 +88,11 @@
       "status": "verified",
       "checkedAt": "2026-11-23",
       "hash": "c384b840a82b"
+    },
+    "sim-trace-sg-reference": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "e7dc030f1a87"
     }
   },
   "labs": {

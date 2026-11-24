@@ -70,7 +70,7 @@ export const RULES = {
     factRef: 'vpc.subnet-types', evidence: ['インターネットゲートウェイへの直接のルートがあればパブリック', 'VPC の外へのルートが一切なければ分離サブネット'],
   },
   'igw-requirements': {
-    label: 'インターネットと通信する条件', text: 'インターネットゲートウェイのアタッチ、そのゲートウェイへのルート、パブリック IPv4 アドレスか Elastic IP アドレスの 3 つが要ります',
+    label: 'インターネットと通信する条件', text: 'IPv4 でインターネットと通信するには、インターネットゲートウェイを VPC にアタッチし、サブネットのルートテーブルにそのゲートウェイへのルートを入れ、インスタンスにパブリック IPv4 アドレスか Elastic IP アドレスを持たせる必要があります',
     factRef: 'vpc.igw-requirements', evidence: ['アタッチし', 'ゲートウェイへのルートを入れ', 'パブリック IPv4 アドレスか Elastic IP アドレス'],
   },
   'igw-nat': {
