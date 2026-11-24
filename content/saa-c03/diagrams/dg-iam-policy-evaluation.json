@@ -1,0 +1,97 @@
+{
+  "id": "dg-iam-policy-evaluation",
+  "type": "decision",
+  "title": "ポリシーの評価の流れ（同じアカウント、アイデンティティベースのポリシー）",
+  "alt": "同じアカウントの中で、アイデンティティベースのポリシーで許可するときの評価の流れを、質問に答えて追う図です。リソースベースのポリシーによる許可と、別のアカウントのリソースは扱いません。最初に、関係するポリシーのどこかに明示的な拒否（Deny）があるかを聞きます。あれば、許可より優先して拒否（明示的な拒否）です。なければ、アイデンティティベースのポリシーで許可されているかを聞き、許可されていなければ拒否（暗黙の拒否）です。許可されていれば、アクセス許可の境界、SCP、セッションポリシーのうち、あるものすべての範囲に入っているかを聞きます。すべて入るなら許可（どれもなければそのまま許可）、どれかの外なら拒否（上限の外）です。ただし SCP は、Organizations の管理アカウントのユーザーやロールには適用されません。",
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "factRefs": [
+    "iam.policy-evaluation-allow-deny",
+    "iam.boundary-basics",
+    "organizations.scp-permission-ceiling",
+    "iam.boundary-intersection-scp-session",
+    "organizations.scp-management-exemption"
+  ],
+  "createdBy": "v7",
+  "start": "q-deny",
+  "nodes": [
+    {
+      "id": "q-deny",
+      "ask": "関係するポリシーのどこかに、明示的な拒否（Deny）がありますか？",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-explicit-deny"
+        },
+        {
+          "label": "いいえ",
+          "to": "q-allow"
+        }
+      ]
+    },
+    {
+      "id": "r-explicit-deny",
+      "result": "拒否（明示的な拒否）",
+      "why": "関係するポリシーのどこか 1 か所にでも明示的な拒否があれば、ほかに許可があっても、許可より優先して拒否されます。",
+      "factRefs": [
+        "iam.policy-evaluation-allow-deny"
+      ]
+    },
+    {
+      "id": "q-allow",
+      "ask": "アイデンティティベースのポリシーで許可されていますか？",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "q-ceiling"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-implicit-deny"
+        }
+      ]
+    },
+    {
+      "id": "r-implicit-deny",
+      "result": "拒否（暗黙の拒否）",
+      "why": "許可するポリシーがなければ拒否されます。この図はリソースベースのポリシーを扱いません。同じアカウントでは、それが許可していれば許可されることがあります。",
+      "factRefs": [
+        "iam.policy-evaluation-allow-deny"
+      ]
+    },
+    {
+      "id": "q-ceiling",
+      "ask": "アクセス許可の境界、SCP、セッションポリシーのうち、あるものすべての範囲に入っていますか？",
+      "choices": [
+        {
+          "label": "すべて入る",
+          "to": "r-allow"
+        },
+        {
+          "label": "どれかの外",
+          "to": "r-out-of-ceiling"
+        }
+      ]
+    },
+    {
+      "id": "r-allow",
+      "result": "許可",
+      "why": "アイデンティティベースのポリシーと、あれば境界、SCP、セッションポリシーのすべてが許可した範囲だけが許可されます。どれもなければ、ポリシーの許可がそのまま使われます。",
+      "factRefs": [
+        "iam.boundary-intersection-scp-session",
+        "iam.boundary-basics"
+      ]
+    },
+    {
+      "id": "r-out-of-ceiling",
+      "result": "拒否（上限の外）",
+      "why": "境界、SCP、セッションポリシーは、使える範囲を絞ります。その外は、ポリシーで許可されていても拒否されます。ただし SCP は、Organizations の管理アカウントのユーザーやロールには適用されません。",
+      "factRefs": [
+        "iam.boundary-basics",
+        "organizations.scp-permission-ceiling",
+        "organizations.scp-management-exemption"
+      ]
+    }
+  ]
+}

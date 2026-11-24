@@ -1,0 +1,155 @@
+{
+  "id": "dg-assume-role-flow",
+  "type": "architecture",
+  "title": "別のアカウントのロールを引き受けて、S3 を読む流れ",
+  "alt": "アカウント A の利用者が、AWS STS に AssumeRole を呼び、アカウント B のロールの ARN を指定します。引き受けられるのは、B のロールの信頼ポリシーが A を信頼し、A の側でも AssumeRole を許可しているときです。STS は一時的な認証情報を利用者に返します。認証情報には有効期限があります。利用者はその認証情報で、B の S3 のバケットを読みます。引き受けている間は元の権限を手放し、ロールの権限（アクセス許可ポリシー）だけを使います。期限が切れると、認証情報は使えなくなります。",
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "factRefs": [
+    "sts.assume-role-trust-policy",
+    "sts.temporary-credentials",
+    "iam.role-trust-and-permissions"
+  ],
+  "createdBy": "v7",
+  "root": {
+    "dir": "col",
+    "children": [
+      {
+        "id": "sts",
+        "node": "sts",
+        "label": "発行"
+      },
+      {
+        "id": "acct-a",
+        "box": "account",
+        "label": "A",
+        "dir": "row",
+        "children": [
+          {
+            "id": "user",
+            "node": "actor",
+            "label": "利用者"
+          },
+          {
+            "id": "allow",
+            "node": "policy",
+            "label": "引受の許可"
+          }
+        ]
+      },
+      {
+        "id": "acct-b",
+        "box": "account",
+        "label": "B",
+        "dir": "row",
+        "children": [
+          {
+            "id": "bucket",
+            "node": "s3",
+            "label": "バケット"
+          },
+          {
+            "dir": "col",
+            "children": [
+              {
+                "id": "role",
+                "node": "iam",
+                "label": "ロール"
+              },
+              {
+                "dir": "row",
+                "children": [
+                  {
+                    "id": "trust",
+                    "node": "policy",
+                    "label": "信頼"
+                  },
+                  {
+                    "id": "perm",
+                    "node": "policy",
+                    "label": "権限"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    {
+      "id": "e1",
+      "from": "user",
+      "to": "sts",
+      "both": true
+    },
+    {
+      "id": "e3",
+      "from": "user",
+      "to": "bucket"
+    },
+    {
+      "id": "e4",
+      "from": "trust",
+      "to": "role",
+      "kind": "control"
+    },
+    {
+      "id": "e5",
+      "from": "perm",
+      "to": "role",
+      "kind": "control"
+    }
+  ],
+  "steps": [
+    {
+      "text": "アカウント A の利用者が、AWS STS に AssumeRole を呼び、B のロールの ARN を指定します。引き受けられるのは、B のロールの信頼ポリシーが A を信頼し、A の側でも AssumeRole を許可しているときです。",
+      "focus": [
+        "user",
+        "allow",
+        "sts",
+        "role",
+        "trust"
+      ],
+      "edges": [
+        "e1",
+        "e4"
+      ]
+    },
+    {
+      "text": "STS が、一時的な認証情報を利用者に返します。この認証情報には有効期限があります。",
+      "focus": [
+        "sts",
+        "user"
+      ],
+      "edges": [
+        "e1"
+      ]
+    },
+    {
+      "text": "利用者はその認証情報で、B の S3 のバケットを読みます。引き受けている間は元の権限を手放し、ロールの権限（アクセス許可ポリシー）だけを使います。",
+      "focus": [
+        "user",
+        "role",
+        "perm",
+        "bucket"
+      ],
+      "edges": [
+        "e3",
+        "e5"
+      ]
+    },
+    {
+      "text": "認証情報には有効期限があり、期限が切れると使えなくなります。",
+      "focus": [
+        "user",
+        "sts"
+      ],
+      "edges": [
+        "e1"
+      ]
+    }
+  ]
+}

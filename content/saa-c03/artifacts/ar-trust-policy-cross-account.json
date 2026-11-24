@@ -1,0 +1,44 @@
+{
+  "id": "ar-trust-policy-cross-account",
+  "kind": "trust-policy",
+  "title": "アカウント B のロールの信頼ポリシー（アカウント A を信頼する）",
+  "format": "json",
+  "document": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::111122223333:root"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+  "notes": [
+    {
+      "path": "Statement[0].Principal",
+      "text": "Principal にアカウント A のルートユーザーの ARN を書くと、アカウント A 全体への委任になります。"
+    },
+    {
+      "path": "Statement[0].Action",
+      "text": "sts:AssumeRole はロールを引き受ける操作です。信頼ポリシーはだれが引き受けられるかを決め、引き受けたあとにできることはアクセス許可ポリシーが決めます。"
+    },
+    {
+      "path": "Statement[0].Action",
+      "text": "別のアカウントから引き受けるには、アカウント A の側の管理者も AssumeRole を許可している必要があります。"
+    }
+  ],
+  "ask": {
+    "text": "このロールを、アカウント 111122223333 以外のアカウントの IAM ユーザーは引き受けられますか？",
+    "answer": "引き受けられません。この信頼ポリシーが信頼しているのは、アカウント 111122223333（アカウント A）だけだからです。"
+  },
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "factRefs": [
+    "sts.assume-role-trust-policy",
+    "iam.global-key-principalarn"
+  ],
+  "createdBy": "v7"
+}

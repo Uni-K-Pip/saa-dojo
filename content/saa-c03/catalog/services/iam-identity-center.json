@@ -166,6 +166,63 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.former-name",
+      "title": "旧称は AWS Single Sign-On",
+      "kind": "feature",
+      "text": "IAM Identity Center は、2022 年 7 月 26 日に AWS Single Sign-On(AWS SSO)から改称されたサービスである。後方互換性のため、sso や identitystore の API 名前空間、CLI コマンド、サービスエンドポイントなどには旧称由来の名前が残っている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.one-identity-source",
+      "title": "ID ソースは組織に 1 つ",
+      "kind": "constraint",
+      "text": "IAM Identity Center の ID ソースは、AWS Organizations の組織ごとに 1 つだけ持てる。選べるのは外部 ID プロバイダー、Active Directory、Identity Center ディレクトリのいずれかで、初めて有効にしたときは既定で Identity Center ディレクトリが設定される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Manage your identity source - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source.html"
+        }
+      ],
+      "checkedAt": "2026-11-24",
+      "recheck": "default-value"
+    },
+    {
+      "id": "iam-identity-center.ad-connection-path",
+      "title": "AD 接続に必要な Directory Service のディレクトリ",
+      "kind": "integration",
+      "text": "Active Directory を ID ソースにするには、AWS Directory Service に AD Connector または AWS Managed Microsoft AD のディレクトリを用意する。このディレクトリは AWS Organizations の管理アカウントに置く。委任管理者を有効にしている場合は、委任管理者のアカウントに置いたディレクトリも使える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Microsoft AD directory - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.one-ad-directory",
+      "title": "接続できる AD ディレクトリは同時に 1 つ",
+      "kind": "constraint",
+      "text": "IAM Identity Center に同時に接続できるのは、AD Connector のディレクトリ 1 つか、AWS Managed Microsoft AD のディレクトリ 1 つである。複数のドメインやフォレストを扱う必要がある場合は、AWS Managed Microsoft AD を使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Microsoft AD directory - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
@@ -183,5 +240,6 @@
     }
   ],
   "createdBy": "cx2",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-24"
 }

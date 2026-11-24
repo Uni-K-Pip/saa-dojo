@@ -1,9 +1,19 @@
 {
   "diagrams": {
+    "dg-assume-role-flow": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "eeb50db42861"
+    },
     "dg-compute-responsibility-layers": {
       "status": "verified",
       "checkedAt": "2026-11-23",
       "hash": "323d5bc3ae07"
+    },
+    "dg-cross-account-role-build-up": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "a84a83037739"
     },
     "dg-dr-pilot-light": {
       "status": "verified",
@@ -14,6 +24,21 @@
       "status": "verified",
       "checkedAt": "2026-11-24",
       "hash": "9847cdb30e33"
+    },
+    "dg-iam-identities": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "2f14532e2fe0"
+    },
+    "dg-iam-policy-evaluation": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "37a2de723a03"
+    },
+    "dg-identity-service-choice": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "518744331598"
     },
     "dg-s3-glacier-position": {
       "status": "verified",
@@ -57,10 +82,30 @@
       "checkedAt": "2026-11-23",
       "hash": "dbbb9a370646"
     },
+    "ar-iam-policy-assume-role": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "b74f5a2b5845"
+    },
+    "ar-iam-policy-s3-read-tls": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "d909568f00cb"
+    },
     "ar-sg-rules-app-tier": {
       "status": "verified",
       "checkedAt": "2026-11-24",
       "hash": "396cf1266c46"
+    },
+    "ar-trust-policy-cross-account": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "7543978239cb"
+    },
+    "ar-trust-policy-external-id": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "0549eca9b4c0"
     }
   },
   "sims": {
