@@ -52,6 +52,13 @@
             { "kind": "lab", "ref": "lab-vpc-from-scratch" },
             { "kind": "sim", "ref": "sim-cidr-vpc-size-limits" },
             { "kind": "sim", "ref": "sim-cidr-three-tier-split" },
+            { "kind": "sim", "ref": "sim-trace-public-route" },
+            { "kind": "sim", "ref": "sim-trace-longest-prefix" },
+            { "kind": "sim", "ref": "sim-trace-sg-stateful" },
+            { "kind": "sim", "ref": "sim-trace-nacl-ephemeral" },
+            { "kind": "sim", "ref": "sim-trace-sg-reference" },
+            { "kind": "sim", "ref": "sim-trace-nat-placement" },
+            { "kind": "sim", "ref": "sim-trace-nat-inbound" },
             { "kind": "practice" }
           ]
         },
@@ -223,6 +230,7 @@
             { "kind": "lesson", "ref": "lesson-4.4-nat-endpoints-and-data-transfer" },
             { "kind": "lesson", "ref": "lesson-4.4-connectivity-and-edge-cost" },
             { "kind": "doc", "ref": "cheatsheet-data-transfer-costs" },
+            { "kind": "sim", "ref": "sim-trace-gateway-endpoint" },
             { "kind": "practice" }
           ]
         }

@@ -99,6 +99,11 @@
       "checkedAt": "2026-11-24",
       "hash": "53598a81bf66"
     },
+    "sim-trace-nacl-ephemeral": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "6b91e41e3297"
+    },
     "sim-trace-nat-inbound": {
       "status": "verified",
       "checkedAt": "2026-11-24",
