@@ -136,6 +136,11 @@
     }
   },
   "labs": {
+    "lab-cross-account-assume-role": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "19d55972f55f"
+    },
     "lab-vpc-from-scratch": {
       "status": "verified",
       "checkedAt": "2026-11-24",
