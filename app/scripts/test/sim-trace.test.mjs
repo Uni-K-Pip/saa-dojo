@@ -165,13 +165,14 @@ describe('行きと戻りの段', () => {
     expect(output).not.toHaveProperty('reason');
   });
 
-  it('インターネットから届く行きの段はルートを消しても同じで、戻りで止まります', () => {
-    const { output } = trace(clientToAlb, (config) => { config.routeTables['rt-pub'] = []; });
-    expect(output.forward).toEqual(trace(clientToAlb).output.forward);
-    expect(stages(output.return)).toEqual([pass('sg-out', 'alb', 'stateful'), pass('nacl-out', 'pub', 'rule'), stop('route', 'pub', 'route')]);
-    expect(output).toMatchObject({ stop: 'return-route', stopAt: 'pub', reason: 'no-route', delivered: false, seenSource: '198.51.100.7' });
-    expect(output).not.toHaveProperty('routeTarget');
-    expect(output.subnetKinds[0]).toEqual({ subnet: 'pub', kind: 'isolated' });
+  it('インターネットから入る通信で、宛先のサブネットにインターネットゲートウェイへのルートがない構成は入力で拒否します', () => {
+    // 公式の資料は、この構成で通信できないことまでしか述べていないので、段の並びを作らない
+    const config = buildPresetConfig(clientToAlb);
+    config.routeTables['rt-pub'] = [];
+    const result = run(config);
+    expect(result).toMatchObject({ ok: false, error: { code: 'flow', field: 'flow' } });
+    expect(result.error.message).toContain('この組み合わせは追跡しません');
+    expect(result.error.message).not.toMatch(/段/);
   });
 
   it('NAT の前後で ACL とルートを評価し、戻りでは付け替えを元に戻します', () => {
@@ -394,9 +395,13 @@ describe('入力の検査', () => {
   it('インターネットから入れて応答が NAT を選ぶ組を入力で拒否します', () => {
     const switches = { from: 'client', to: 'app', appPublicIp: true, appInbound: 'any' };
     expect(run(buildPresetConfig(switches))).toMatchObject({ ok: false, error: { code: 'flow', field: 'flow' } });
-    expect(trace({ ...switches, appPublicIp: false }).output).toMatchObject({ stop: 'forward-igw', reason: 'no-public-ip' });
-    expect(trace({ ...switches, igw: false }).output).toMatchObject({ stop: 'forward-igw', reason: 'no-igw' });
-    expect(trace(switches, (c) => c.routeTables['rt-app'].push({ dest: '198.51.100.7/32', target: 'igw' })).output.delivered).toBe(true);
+    // パブリック IP やアタッチの有無にかかわらず、インターネットゲートウェイへのルートがなければ拒否する
+    expect(run(buildPresetConfig({ ...switches, appPublicIp: false }))).toMatchObject({ ok: false, error: { code: 'flow' } });
+    expect(run(buildPresetConfig({ ...switches, igw: false }))).toMatchObject({ ok: false, error: { code: 'flow' } });
+    const igwRoute = (c) => c.routeTables['rt-app'].push({ dest: '198.51.100.7/32', target: 'igw' });
+    expect(trace(switches, igwRoute).output.delivered).toBe(true);
+    expect(trace({ ...switches, appPublicIp: false }, igwRoute).output).toMatchObject({ stop: 'forward-igw', reason: 'no-public-ip' });
+    expect(trace({ ...switches, igw: false }, igwRoute).output).toMatchObject({ stop: 'forward-igw', reason: 'no-igw' });
   });
 
   it('NAT から別の NAT や S3 のエンドポイントへ向かう経路を拒否します', () => {
@@ -488,7 +493,12 @@ describe('自由に試すプリセット', () => {
           const original = validateInput(config);
           total++;
           const selfRoute = values.natSubnet === 'app' && values.appRoute === 'nat';
-          const asymmetric = ['client', 'update'].includes(from) && to === 'app' && values.igw && values.appPublicIp && values.appRoute === 'nat';
+          // インターネットから入る通信で、宛先のサブネットの 0.0.0.0/0 がインターネットゲートウェイを指さない構成は拒否する
+          const receiverHost = config.hosts.find(({ id }) => id === to);
+          const receiverRoutes = receiverHost
+            ? config.routeTables[config.subnets.find(({ id }) => id === receiverHost.subnet).routeTable] : [];
+          const asymmetric = ['client', 'update'].includes(from) && Boolean(receiverHost)
+            && receiverRoutes.find(({ dest }) => dest === '0.0.0.0/0')?.target !== 'igw';
           if (selfRoute || asymmetric) {
             assert.equal(original.error?.code, selfRoute ? 'route' : 'flow', label);
             invalid++;
@@ -524,8 +534,8 @@ describe('自由に試すプリセット', () => {
       }
     }
     assert.equal(total, 43200);
-    assert.equal(invalid, 7344);
-    assert.equal(tableChecks, 3984);
+    assert.equal(invalid, 12384);
+    assert.equal(tableChecks, 3424);
     assert.ok(statefulChecks > 0);
   }, 30000);
 });

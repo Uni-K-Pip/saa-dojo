@@ -337,9 +337,11 @@ function prepare(config) {
   requireInput(!isHost(from) || from.subnet !== to.subnet, 'flow', NOT_COVERED[5], 'flow');
 
   const routesFor = (host) => routeTables.get(subnets.get(host.subnet).routeTable);
-  if (!isHost(from) && !isNat(to) && config.vpc.igw && publicIps.has(to.id)) {
-    requireInput(!isNatRoute(selectRoute(routesFor(to), from)), 'flow',
-      'インターネットから届く部品のサブネットで、相手のアドレスへのルートが NAT ゲートウェイを指しています。', 'flow');
+  // インターネットから入る通信で、宛先のサブネットにインターネットゲートウェイへのルートがない構成は追跡しない。
+  // 公式の資料が述べるのは、この構成では通信できないことまでで、どの段で止まるかは述べていないため
+  if (!isHost(from)) {
+    requireInput(selectRoute(routesFor(to), from)?.target === 'igw', 'flow',
+      'IPv4 でインターネットと通信するには、インターネットゲートウェイを VPC にアタッチし、サブネットのルートテーブルにそのゲートウェイへのルートを入れ、パブリック IPv4 アドレスか Elastic IP アドレスを持たせる必要があります。宛先の部品のサブネットには相手のアドレスに当てはまるインターネットゲートウェイへのルートがないので、この通信は成り立ちません。この組み合わせは追跡しません。', 'flow');
   }
   const firstRoute = isHost(from) ? selectRoute(routesFor(from), to) : undefined;
   const nat = isNatRoute(firstRoute) ? endpoints.get(firstRoute.target.slice(4)) : undefined;

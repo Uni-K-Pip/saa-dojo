@@ -1,9 +1,9 @@
 {
   "id": "sim-trace-public-route",
-  "title": "パブリック IP があればインターネットに公開できるか",
-  "intro": "ウェブサーバー（パブリック IP アドレス 203.0.113.10）を、VPC 10.0.0.0/16 のサブネット 10.0.1.0/24 に置きました。セキュリティグループは 443 を 0.0.0.0/0 から許可し、ネットワーク ACL はデフォルトです。サブネットのルートテーブルには local ルートしかありません。インターネットのクライアント（198.51.100.7）から 443 へ接続します。",
+  "title": "パブリック IP があればインターネットへ出られるか",
+  "intro": "ウェブサーバー（パブリック IP アドレス 203.0.113.10）を、VPC 10.0.0.0/16 のサブネット 10.0.1.0/24 に置きました。VPC にはインターネットゲートウェイをアタッチしてあります。セキュリティグループのアウトバウンドは作成直後のまま、ネットワーク ACL はデフォルトです。サブネットのルートテーブルには local ルートしかありません。このサーバーから、インターネットのサーバー（198.51.100.7）の 443 へ接続します。",
   "predict": {
-    "text": "このクライアントからの接続は、どうなりますか。",
+    "text": "このサーバーからの接続は、どうなりますか。",
     "key": "stop",
     "choices": [
       {
@@ -11,8 +11,8 @@
         "value": "none"
       },
       {
-        "text": "行きのインターネットゲートウェイで止まる",
-        "value": "forward-igw"
+        "text": "行きのルートテーブルで止まる",
+        "value": "forward-route"
       },
       {
         "text": "戻りのルートテーブルで止まる",
@@ -20,7 +20,7 @@
       },
       {
         "text": "行きのセキュリティグループで止まる",
-        "value": "forward-sg-in"
+        "value": "forward-sg-out"
       }
     ]
   },
@@ -47,15 +47,7 @@
     },
     "securityGroups": {
       "sg-web": {
-        "inbound": [
-          {
-            "ports": {
-              "from": 443,
-              "to": 443
-            },
-            "peer": "0.0.0.0/0"
-          }
-        ]
+        "inbound": []
       }
     },
     "hosts": [
@@ -73,15 +65,15 @@
     },
     "externals": [
       {
-        "id": "client",
-        "label": "クライアント",
+        "id": "server",
+        "label": "インターネットのサーバー",
         "kind": "internet",
         "ip": "198.51.100.7"
       }
     ],
     "flow": {
-      "from": "client",
-      "to": "web",
+      "from": "web",
+      "to": "server",
       "port": 443,
       "clientPort": 50000
     }
@@ -102,50 +94,59 @@
       }
     },
     {
+      "id": "narrow-route",
+      "label": "192.0.2.0/24 だけをゲートウェイへ",
+      "set": {
+        "routeTables": {
+          "rt-web": [
+            {
+              "dest": "192.0.2.0/24",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "remove-public-ip",
       "label": "パブリック IP アドレスを外す",
       "set": {
         "publicIps": {}
-      }
-    },
-    {
-      "id": "detach-igw",
-      "label": "インターネットゲートウェイを外す",
-      "set": {
-        "vpc": {
-          "cidr": "10.0.0.0/16",
-          "igw": false
-        }
       }
     }
   ],
   "expect": {
     "initial": {
       "delivered": false,
-      "stop": "return-route",
-      "reason": "no-route"
+      "stop": "forward-route",
+      "reason": "no-route",
+      "routeTarget": "none"
     },
     "toggles": {
       "add-igw-route": {
         "delivered": true,
-        "stop": "none"
+        "stop": "none",
+        "routeTarget": "igw",
+        "seenSource": "203.0.113.10"
+      },
+      "narrow-route": {
+        "delivered": false,
+        "stop": "forward-route",
+        "reason": "no-route"
       },
       "remove-public-ip": {
-        "stop": "forward-igw",
-        "reason": "no-public-ip"
-      },
-      "detach-igw": {
-        "stop": "forward-igw",
-        "reason": "no-igw"
+        "delivered": false,
+        "stop": "forward-route",
+        "reason": "no-route"
       }
     }
   },
   "explain": {
-    "initial": "行きでは、{{rule:igw-inbound}}。そのあとネットワーク ACL とセキュリティグループを通って、ウェブサーバーに届きます。戻りの応答は、サブネットから出る通信です。{{rule:route-table}}。このサブネットのルートテーブルには local ルートしかなく、クライアントのアドレスに当てはまる 0.0.0.0/0 のルートがないので、戻りのルートテーブルの段で止まります。",
+    "initial": "ウェブサーバーからの接続は、サブネットから出る通信です。{{rule:route-table}}。このサブネットのルートテーブルには local ルートしかなく、198.51.100.7 に当てはまるルートがないので、行きのルートテーブルの段で止まります。{{rule:igw-requirements}}。パブリック IP アドレスがあっても、ゲートウェイへのルートがなければ、この条件を満たしません。",
     "toggles": {
-      "add-igw-route": "応答の行き先ができて、行きも戻りも届きます。{{rule:igw-requirements}}。これでインターネットゲートウェイ、ルート、パブリック IP アドレスの 3 つがそろいました。このサブネットは、インターネットゲートウェイへのルートを持つので、パブリックサブネットになります。",
-      "remove-public-ip": "{{rule:igw-requirements}}。パブリック IP アドレスを外したので、インターネットと通信するのに要る条件を満たしていません。行きの最初の段で止まります。",
-      "detach-igw": "{{rule:igw-requirements}}。インターネットゲートウェイをアタッチしていないので、インターネットと通信するのに要る条件を満たしていません。行きの最初の段で止まります。"
+      "add-igw-route": "0.0.0.0/0 をインターネットゲートウェイへ向けるルートを足すと、198.51.100.7 に当てはまるルートができ、行きも戻りも届きます。アタッチ、ルート、パブリック IP アドレスがそろいました。宛先から見える送信元は {{out:seenSource}} です。{{rule:igw-nat}}。{{rule:subnet-kind}}。",
+      "narrow-route": "192.0.2.0/24 をインターネットゲートウェイへ向けるルートは、198.51.100.7 に当てはまりません。{{rule:address-match}}。当てはまるルートがないので、行きのルートテーブルの段で止まります。",
+      "remove-public-ip": "パブリック IP アドレスを外しても、結果は変わりません。ルートがないので、パブリック IP アドレスの有無にかかわらず、行きのルートテーブルの段で止まります。{{rule:igw-requirements}}。"
     }
   },
   "factRefs": [
@@ -157,8 +158,7 @@
     "vpc.nacl-default-allow",
     "vpc.quota-sg-per-eni",
     "vpc.nacl-stateless",
-    "vpc.route-priority",
-    "vpc.igw-inbound-translation"
+    "vpc.route-priority"
   ],
   "lessonRefs": [
     "lesson-basics-ip-subnet-routing",
