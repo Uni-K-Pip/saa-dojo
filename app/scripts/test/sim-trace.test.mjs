@@ -227,6 +227,25 @@ describe('行きと戻りの段', () => {
     const { output } = trace(appToUpdate, (config) => { config.routeTables['rt-pub'] = []; });
     expect(output).toMatchObject({ stop: 'forward-route', stopAt: 'pub', reason: 'no-route', routeTarget: 'nat', return: [] });
     expect(output.forward.at(-1)).toEqual({ gate: 'route', at: 'pub', basis: 'route', verdict: 'stop' });
+    expect(trace(appToUpdate, (config) => { config.routeTables['rt-pub'] = []; }).rules).toContain('nat-route-igw');
+  });
+
+  it('NAT を通る行きで、インターネットゲートウェイがアタッチされていなければ、NAT のあとのゲートウェイの段で止まります', () => {
+    const { output } = trace({ ...appToUpdate, igw: false });
+    expect(stages(output.forward)).toEqual([
+      pass('sg-out', 'app', 'default-out'), pass('nacl-out', 'app', 'rule'), pass('route', 'app'),
+      pass('nacl-in', 'pub', 'rule'), pass('nat', 'nat', 'no-sg'), pass('nacl-out', 'pub', 'rule'), pass('route', 'pub'),
+      stop('igw', 'igw', 'route'),
+    ]);
+    expect(output).toMatchObject({ stop: 'forward-igw', stopAt: 'igw', reason: 'no-igw', routeTarget: 'nat', return: [] });
+  });
+
+  it('サブネットの種類は、IGW へのルートでパブリック、エンドポイントのルートだけでもプライベート、local だけで分離になります', () => {
+    expect(trace({ appRoute: 'none' }).output.subnetKinds).toEqual([
+      { subnet: 'pub', kind: 'public' }, { subnet: 'app', kind: 'private' }, { subnet: 'data', kind: 'isolated' },
+    ]);
+    expect(trace({ appRoute: 'none', s3Endpoint: false }).output.subnetKinds)
+      .toContainEqual({ subnet: 'app', kind: 'isolated' });
   });
 
   it('VPC 内は local ルートで往復し、応答側の SG は空のルールを参照しません', () => {

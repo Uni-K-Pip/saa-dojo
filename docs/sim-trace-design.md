@@ -37,9 +37,9 @@
 | `nacl-order` | ルールを番号の小さい順に見て、最初に当てはまったルールの許可・拒否を使う | 事実 `vpc.nacl-stateless` | `番号の小さい順に評価され、一致した時点で適用される` |
 | `nacl-stateless` | 応答の通信も、その方向のルールで見る（自動では許可しない） | 事実 `vpc.nacl-stateless` | `ステートレスなので応答の通信は自動では許可されない` |
 | `nacl-final-deny` | カスタムのネットワーク ACL では、どのルールにも当てはまらない通信を、最後の `*` のルールが拒否する。応答のためには、クライアントのエフェメラルポートへの許可が要る | 事実 `vpc.nacl-custom-default-deny` | `番号が * の削除できないルール`、`エフェメラルポート` |
-| `nacl-default` | デフォルトのネットワーク ACL は、すべてのインバウンドとアウトバウンドの通信を許可する | **事実がない**（3.3。事実 `vpc.nacl-default-allow` を足す案） | （足す事実の本文から決める） |
+| `nacl-default` | デフォルトのネットワーク ACL は、すべてのインバウンドとアウトバウンドの通信を許可する | 事実 `vpc.nacl-default-allow`（3.3 で足した） | `IPv4 通信をすべて許可` |
 | `nacl-no-prefix-list` | ネットワーク ACL のルールはプレフィックスリストを書けない。S3 宛ての通信は、`0.0.0.0/0` のルールだけが当てはまるものとして扱う（S3 の IP 範囲は扱わない） | 事実 `vpc.nacl-no-prefix-list` | `プレフィックスリストを参照できない` |
-| `route-table` | サブネットから出る通信の行き先は、そのサブネットのルートテーブルで決まる。どのルートテーブルにも、VPC の CIDR 宛てを VPC の中で届ける local ルートがある。当てはまるルートがない宛先には送れない | **事実が足りない**（3.3。事実 `vpc.route-table-local` を足す案） | （足す事実の本文から決める） |
+| `route-table` | サブネットから出る通信の行き先は、そのサブネットのルートテーブルで決まる。どのルートテーブルにも、VPC の CIDR 宛てを VPC の中で届ける local ルートがある。当てはまるルートがない宛先には送れない | 事実 `vpc.route-table-local`（3.3 で足した） | `サブネットやゲートウェイから出る通信`、`local ルート` |
 | `route-longest` | 宛先に当てはまるルートが複数あるときは、最も具体的な（プレフィックスが最も長い）ルートを使う | 事実 `vpc.route-priority` | `最も具体的な（プレフィックスが最も長い）ルートが使われる` |
 | `subnet-kind` | サブネットの種類はルートで決まる。インターネットゲートウェイへのルートがあればパブリック、なければプライベート、VPC の外へのルートが一切なければ分離 | 事実 `vpc.subnet-types` | `インターネットゲートウェイへの直接のルートがあればパブリック`、`VPC の外へのルートが一切なければ分離サブネット` |
 | `igw-requirements` | インターネットとの IPv4 の通信には、インターネットゲートウェイのアタッチ、サブネットのルートテーブルのそのゲートウェイへのルート、部品のパブリック IPv4 アドレス（Elastic IP アドレスを含む）が要る | 事実 `vpc.igw-requirements` | `アタッチし`、`ゲートウェイへのルートを入れ`、`パブリック IPv4 アドレスか Elastic IP アドレス` |
@@ -93,17 +93,16 @@
 | S3 宛てで、エンドポイントがあれば NAT もインターネットゲートウェイも通らない | `vpce-gateway`（プレフィックスリストへのルート）、`route-longest`、`0.0.0.0/0` がインターネットゲートウェイ向きなら `vpce-precedence`、ほかの向きなら `route-prefix-list` | エンドポイントを通ったとき |
 | 宛先から見える送信元（`seenSource`）が付け替えのあとのアドレス | `igw-nat`、NAT ゲートウェイを通るときは `nat-translate` | 付け替えがあったとき |
 
-### 3.3 図鑑に事実のない規則（足す案）
+### 3.3 図鑑に足した事実
 
-| 規則 | 今あるもの | 足りないもの | 案 |
+| 規則 | 足す前にあったもの | 足りなかったもの | 足したもの |
 |---|---|---|---|
-| `route-table` | 事実 `vpc.cidr-secondary` の「追加すると VPC 内のルートテーブルに local ルートが自動で入る」（セカンダリ CIDR を足したときの話だけ）。レッスン `lesson-3.4-vpc-design`（「サブネットから出ていく通信の行き先は…ルートテーブルで決まります。…ローカルルートが自動で入っています」）、`lesson-basics-ip-subnet-routing` | ルートテーブルが「サブネットから出る通信」の行き先を決めること、どのルートテーブルにも VPC の中の通信のための local ルートがあること、当てはまるルートがなければ送れないこと | 図鑑に事実 `vpc.route-table-local` を足す。本文の案: 「ルートテーブルは、サブネットやゲートウェイから出る通信をどこへ送るかを決めるルートの集まりである。どのルートテーブルにも、VPC の中の通信のための local ルートがある。」（公式の資料の Route tables の冒頭と Local route の節）。3 つめの「当てはまるルートがなければ送れない」は、公式の資料に言い方があれば本文に入れ、なければ `subnet-kind` の「VPC の外へのルートが一切なければ分離」と合わせて読む |
-| `nacl-default` | レッスン `lesson-1.2-vpc-network-security` の表（「既定のネットワーク ACL はすべて許可」） | デフォルトのネットワーク ACL がすべての通信を許可すること。サブネットに明示的に関連付けなければデフォルトが使われること | 図鑑に事実 `vpc.nacl-default-allow` を足す。本文の案: 「VPC のデフォルトのネットワーク ACL は、すべてのインバウンドとアウトバウンドの IPv4 通信を許可する。サブネットにネットワーク ACL を明示的に関連付けなければ、デフォルトのネットワーク ACL が使われる。」 |
+| `route-table` | 事実 `vpc.cidr-secondary` の「追加すると VPC 内のルートテーブルに local ルートが自動で入る」（セカンダリ CIDR を足したときの話だけ）。レッスン `lesson-3.4-vpc-design`（「サブネットから出ていく通信の行き先は…ルートテーブルで決まります。…ローカルルートが自動で入っています」）、`lesson-basics-ip-subnet-routing` | ルートテーブルが「サブネットから出る通信」の行き先を決めること、どのルートテーブルにも VPC の中の通信のための local ルートがあること、当てはまるルートがなければ送れないこと | 図鑑に事実 `vpc.route-table-local` を足した。足す前の本文の案: 「ルートテーブルは、サブネットやゲートウェイから出る通信をどこへ送るかを決めるルートの集まりである。どのルートテーブルにも、VPC の中の通信のための local ルートがある。」（公式の資料の Route tables の冒頭と Local route の節）。3 つめの「当てはまるルートがなければ送れない」は、公式の資料に言い方があれば本文に入れ、なければ `subnet-kind` の「VPC の外へのルートが一切なければ分離」と合わせて読む |
+| `nacl-default` | レッスン `lesson-1.2-vpc-network-security` の表（「既定のネットワーク ACL はすべて許可」） | デフォルトのネットワーク ACL がすべての通信を許可すること。サブネットに明示的に関連付けなければデフォルトが使われること | 図鑑に事実 `vpc.nacl-default-allow` を足した。足す前の本文の案: 「VPC のデフォルトのネットワーク ACL は、すべてのインバウンドとアウトバウンドの IPv4 通信を許可する。サブネットにネットワーク ACL を明示的に関連付けなければ、デフォルトのネットワーク ACL が使われる。」 |
 
 - 2 件は、エンジンを作る前に、図鑑の手順（起草と検証を分ける）で足して検証しました（2026-11-24。どちらも検証済み）。規則の `evidence` は、`route-table` が `サブネットやゲートウェイから出る通信`・`local ルート`、`nacl-default` が `IPv4 通信をすべて許可`。
 - 段の並びの点検（3.2.1）で、NAT ゲートウェイが送信元のアドレスを付け替え、応答で元に戻すことを受け持つ事実がないとわかりました。図鑑に事実 `nat-gateway.source-translation` を同じ手順で足して検証し（2026-11-24。公式の資料の NAT gateways のページ）、規則 `nat-translate` で受け持ちます。公式の資料の言い方では、NAT ゲートウェイが付け替える先は NAT ゲートウェイのプライベート IPv4 アドレスで、Elastic IP アドレスへはインターネットゲートウェイが対応付けます。エンジンの段もこの 2 段で付け替え、宛先から見える送信元（`seenSource`）は Elastic IP アドレスです。外から NAT ゲートウェイへ向かう通信と、応答がインターネットゲートウェイを通るときの付け替えは `igw-nat` が受け持ちます。
 - シナリオの検証で、さらに 2 点の裏づけが足りないとわかり、図鑑に 2 件を同じ手順で足して検証しました（2026-11-24。どちらも detail）。外から部品へ向かう行きがインターネットゲートウェイで宛先を変換して VPC に届くこと（`vpc.igw-inbound-translation`。規則 `igw-inbound`）と、プレフィックスリストを参照するルートでも具体的なルートが優先されること（`vpc.route-priority-prefix-list`。規則 `route-prefix-list`。`0.0.0.0/0` が NAT ゲートウェイへ向く構成で、S3 宛てにエンドポイントのルートが使われることの裏づけ）。`vpc-endpoints.gateway-route-precedence` は、`0.0.0.0/0` がインターネットゲートウェイへ向くときだけに使います。
-- 足せなかったときの代わり: `nacl-default` は、シナリオの設定に「デフォルト」を書かず、すべてを許可するルールを明示する（画面の語も「すべて許可のルール」にする）。`route-table` は代わりがなく、シナリオ 8.1 の初期の設定（戻りで止まる）を、ルートのある設定に組み替える。
 
 ## 4. 操作の入力と出力
 
@@ -197,7 +196,7 @@ toggle は最上位の項目を 1 つだけ書き換える（`sims-design.md` 3.
 ### 4.4 部品の種類ごとの動き
 
 - `instance`・`alb`・`rds`: どれも、ネットワークインターフェイスにセキュリティグループが 1 つ付いた終点として扱います。ロードバランサーが受けた通信をターゲットへ送り直す中継は扱いません（「クライアント → ALB」と「ALB → アプリ」を別の通信として追う。扱わないことの 5）。
-- `nat-gateway`: 中継だけです。宛先にすると、外から始まる接続として `nat` の段で止まります（`nat-outbound`）。セキュリティグループの段はありません（`nat-no-sg`）。パブリック IP アドレスがないと、インターネットゲートウェイの段で止まります（`nat-eip`、`igw-requirements`）。
+- `nat-gateway`: 中継だけです。インターネットの相手から宛先にすると、外から始まる接続として `nat` の段で止まります（`nat-outbound`）。VPC の中の部品から宛先にした通信は、入力の検査（`flow`）で拒否します（4.2）。セキュリティグループの段はありません（`nat-no-sg`）。パブリック IP アドレスがないと、インターネットゲートウェイの段で止まります（`nat-eip`、`igw-requirements`）。
 
 ### 4.5 出力
 
@@ -213,7 +212,7 @@ toggle は最上位の項目を 1 つだけ書き換える（`sims-design.md` 3.
 | `subnetKinds` | `[{ subnet, kind }]` | 各サブネットの種類（`public`・`private`・`isolated`）。表示の札にだけ使う | `subnet-kind` |
 
 - `OUTPUT_KEYS.trace` の種類: `delivered` は真偽、`stop`・`reason`・`routeTarget` は決まった語（`enum`）、`stopAt` は決まった語ではない文字列（差し込めない種類にする）、`seenSource` はアドレス（`{{out:seenSource}}` で差し込める）、`forward`・`return`・`subnetKinds` は配列。
-- `stopAt` が今の共通の検査の種類（`number`・`address`・`boolean`・`enum`・`array`）のどれに当たるかは、実装のときに `sim.mjs` を見て決めます。`enum` として扱えば、予想の問いと `expect` に使えて、差し込みは止まります（今の決まりのまま）。
+- `stopAt` は、共通の検査では `enum` として扱います（`OUTPUT_KEYS.trace.stopAt`）。予想の問いと `expect` に使え、文への差し込みはできません。
 - `rules`: 実行で通った段の規則を、表の順に重ねずに並べます。シナリオの `factRefs`・`lessonRefs` は、それらの裏づけをすべて含みます（`sim-rule-ref`）。
 
 ## 5. 省くこと
@@ -261,7 +260,7 @@ toggle の結果は、最初の結果の下に重ねて出し、要約の 1 行�
 
 | 案 | 中身 | よい点 | 弱い点 |
 |---|---|---|---|
-| A（すすめる） | 7.1 の段のカードと、構成の塊（自前の部品。`app/src/sims/trace/` の中だけ） | 幅 360px で読める。読み上げで順に追える。ほかの子の触る場所（`app/src/components/`、CSS の共通部分）に手を入れない。結果をアプリがエンジンで計算する決まり（`sims-design.md` 7 章）のまま | 「構成図の上で光る」見せ方にはならない |
+| A（すすめる） | 7.1 の段のカードと、構成の塊（自前の部品。`app/src/sims/trace/` の中だけ） | 幅 360px で読める。読み上げで順に追える。共通の部品（`app/src/components/`、CSS の共通部分）に手を入れない。結果をアプリがエンジンで計算する決まり（`sims-design.md` 7 章）のまま | 「構成図の上で光る」見せ方にはならない |
 | B | ビルドで、シナリオの設定から構成図のデータ（`architecture`）を作り、今のレイアウト（`diagram-layout.mjs`）と図の部品（`Diagram.tsx`）で描く。通った部品と止まった部品を、結果に合わせて強調する | 設計書の見せ方に近い。図の部品とレイアウトの検査（重なりの警告）をそのまま使える | 強調を外から渡すには `Diagram.tsx` に入口を足す必要がある（図の部品そのものの変更）。段階表示（`steps`）で追うと、段の位置がビルドの時点で決まり、toggle と自由に試すの結果ごとにレイアウトし直す（レイアウトのコードをアプリのチャンクに入れるか、ビルドで全部の組を作る）。設定から作る図に、レイアウトの重なりの警告が出ないことを保証しにくい |
 | C | 段のカードだけ（構成の塊もなし） | 最も小さい | どこにある部品かが見えにくく、「パブリックかどうかはルートで決まる」が見えない |
 
@@ -280,7 +279,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 
 設定はプリセットとスイッチから組み立て、エンジンの `validateInput` を通してから実行します。幅 360px では、スイッチを 1 行に 1 つ並べ、結果は 7.1 と同じ部品で出します。
 
-## 8. シナリオの一覧（8 件。未検証で作る）
+## 8. シナリオの一覧（8 件）
 
 文の数値は、結果の値を `{{out:…}}` で差し込みます（このシミュレーターの規則は数値を持たない）。下の「答え」と「結果」は、エンジンが出すはずの値で、`expect` に書く値です。構成は、特に書かなければ 4.1 の例と同じ 3 層の VPC（VPC 10.0.0.0/16 とインターネットゲートウェイ、パブリック 10.0.1.0/24、アプリ 10.0.2.0/24、データ 10.0.3.0/24）から、シナリオに要る部分だけを入れます。
 
@@ -293,7 +292,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 理由で触れること: ルートテーブルはサブネットから出る通信の行き先を決める。インターネットと通信するには、アタッチ、ゲートウェイへのルート、パブリック IP アドレスがそろう必要があり、パブリック IP アドレスがあってもルートがなければ通信できない。ルートは宛先のアドレスに当てはまる必要がある
 - 裏づけ: 事実 `vpc.route-table-local`、`vpc.igw-requirements`、`vpc.subnet-types`、`vpc.igw-basics`、`vpc.sg-stateful-allow-only`、`vpc.nacl-default-allow`。レッスン `lesson-basics-ip-subnet-routing`、`lesson-3.4-vpc-design`
 - 使う規則: `route-table`、`route-longest`、`igw-requirements`、`igw-nat`、`subnet-kind`、`nacl-subnet`、`nacl-default`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`address-match`、`trace-order`
-- 最初の形（インターネットから入る通信で、行きは届き、戻りのルートで止まる）は、入ってくる通信が宛先のサブネットのルートを見ない動きを裏づける事実がなく、検証で 2 回続けて指摘されたので、外への接続に組み直した（12 章の 1）
+- 最初の形（インターネットから入る通信で、行きは届き、戻りのルートで止まる）は、入ってくる通信が宛先のサブネットのルートを見ない動きを裏づける公式の資料がないので、外への接続に組み直した（12 章の 1）
 
 ### 8.2 `sim-trace-sg-stateful`: アウトバウンドを空にしたら応答は返るか
 
@@ -301,7 +300,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「クライアントへの応答は返るか」（`stop`。返る ／ 戻りのセキュリティグループで止まる ／ 戻りのネットワーク ACL で止まる）。答えは「返る」（`none`）。
 - 変えられる設定: `インバウンドの 443 を消す`（`forward-sg-in`、`sg-no-match`）、`宛先のポートを 80 にする`（`forward-sg-in`）、`ネットワーク ACL を 443 だけ許可にする`（カスタムの ACL で、インバウンド・アウトバウンドとも 443 だけ。`return-nacl-out`、`nacl-no-match`）
 - 理由で触れること: セキュリティグループはステートフルで、応答は逆方向のルールに関係なく通る。ネットワーク ACL はステートレスなので、同じ形のルールでも戻りで止まる（3 つ目の toggle で対比）
-- 裏づけ: 事実 `vpc.sg-stateful-allow-only`、`vpc.nacl-stateless`、`vpc.nacl-custom-default-deny`、`vpc.igw-requirements`、`vpc.route-table-local`（足す）、`vpc.nacl-default-allow`（足す）。レッスン `lesson-1.2-vpc-network-security`
+- 裏づけ: 事実 `vpc.sg-stateful-allow-only`、`vpc.nacl-stateless`、`vpc.nacl-custom-default-deny`、`vpc.igw-requirements`、`vpc.route-table-local`、`vpc.nacl-default-allow`。レッスン `lesson-1.2-vpc-network-security`
 - 使う規則: `sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`nacl-order`、`nacl-stateless`、`nacl-final-deny`、`route-table`、`route-longest`、`igw-requirements`、`igw-nat`、`subnet-kind`、`address-match`、`trace-order`
 
 ### 8.3 `sim-trace-nacl-ephemeral`: 443 だけを許可したネットワーク ACL
@@ -310,7 +309,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「この接続はどうなるか」（`stop`。届く ／ 行きのネットワーク ACL で止まる ／ 戻りのネットワーク ACL で止まる）。答えは「戻りのネットワーク ACL で止まる」（`return-nacl-out`、`nacl-no-match`）。
 - 変えられる設定: `戻りに 1024-65535 を許可`（アウトバウンドのルール 100 を TCP 1024〜65535 に。`none`）、`戻りを 1024-65535 にして、拒否を先に置く`（アウトバウンドをルール 90 で全部拒否、ルール 100 で 1024〜65535 を許可。`return-nacl-out`、`nacl-deny`）、`戻りを 1024-65535 にして、拒否を後ろに置く`（ルール 100 で 1024〜65535 を許可、ルール 200 で全部拒否。`none`）
 - 理由で触れること: 応答はクライアントのエフェメラルポート（ここでは 50000）宛て。ルールは番号の小さい順で、最初に当たったものを使う。エフェメラルポートの範囲の実用的な値はレッスンを指す
-- 裏づけ: 事実 `vpc.nacl-stateless`、`vpc.nacl-custom-default-deny`、`vpc.sg-stateful-allow-only`、`vpc.igw-requirements`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-vpc-network-security`
+- 裏づけ: 事実 `vpc.nacl-stateless`、`vpc.nacl-custom-default-deny`、`vpc.sg-stateful-allow-only`、`vpc.igw-requirements`、`vpc.route-table-local`。レッスン `lesson-1.2-vpc-network-security`
 - 使う規則: `nacl-subnet`、`nacl-order`、`nacl-stateless`、`nacl-final-deny`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`route-table`、`route-longest`、`igw-requirements`、`igw-nat`、`subnet-kind`、`address-match`、`trace-order`
 
 ### 8.4 `sim-trace-nat-placement`: NAT ゲートウェイを置くサブネット
@@ -319,7 +318,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「この接続はどうなるか」（`stop`。届く ／ インターネットゲートウェイで止まる ／ NAT ゲートウェイのサブネットのルートで止まる ／ NAT ゲートウェイが通さない）。答えは「NAT ゲートウェイのサブネットのルートで止まる」（`forward-route`、`stopAt` は NAT のサブネット、`no-route`）。「アプリのサブネットのルートで止まる」は `value` が同じ `forward-route` になるので選択肢にしない（`sims-design.md` 3.2 の重なりの禁止）
 - 変えられる設定: `NAT をパブリックサブネットに移す`（`none`、`seenSource` 203.0.113.20）、`NAT のサブネットに IGW へのルートを足す`（`none`。そのサブネットの種類が `public` に変わる）
 - 理由で触れること: NAT ゲートウェイは、IGW へのルートのあるパブリックサブネットに置く。宛先から見える送信元は NAT ゲートウェイのアドレス
-- 裏づけ: 事実 `nat-gateway.public-internet-route`、`nat-gateway.public-zonal-placement`、`nat-gateway.public-elastic-ip`、`nat-gateway.no-security-group`、`vpc.subnet-types`、`vpc.route-priority`、`vpc.route-table-local`（足す）、`vpc.igw-requirements`。レッスン `lesson-1.2-vpc-network-security`
+- 裏づけ: 事実 `nat-gateway.public-internet-route`、`nat-gateway.public-zonal-placement`、`nat-gateway.public-elastic-ip`、`nat-gateway.no-security-group`、`vpc.subnet-types`、`vpc.route-priority`、`vpc.route-table-local`、`vpc.igw-requirements`。レッスン `lesson-1.2-vpc-network-security`
 - 使う規則: `route-table`、`route-longest`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`nat-outbound`、`igw-requirements`、`igw-nat`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
 - `nat-gateway.public-zonal-placement` は規則の表にはないが、理由の文の裏づけとして `factRefs` に入れる
 
@@ -330,7 +329,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 最初の設定: `flow` はクライアント → NAT ゲートウェイ（443）
 - 変えられる設定: `アプリから更新サーバーへ送る`（`flow` をアプリ → 更新サーバーに。`none`、`seenSource` 203.0.113.20）、`アプリのサーバーへ直接送る`（`flow` をクライアント → アプリに。`forward-igw`、`no-public-ip`）
 - 理由で触れること: NAT ゲートウェイは内から外への接続を通し、その応答だけを戻す。インターネットから中の部品へ接続させたいなら、ロードバランサーなどをパブリックサブネットに置く（レッスンへのリンク）
-- 裏づけ: 事実 `nat-gateway.outbound-connections`、`vpc.igw-requirements`、`vpc.igw-basics`、`nat-gateway.public-internet-route`、`nat-gateway.public-elastic-ip`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-vpc-network-security`
+- 裏づけ: 事実 `nat-gateway.outbound-connections`、`vpc.igw-requirements`、`vpc.igw-basics`、`nat-gateway.public-internet-route`、`nat-gateway.public-elastic-ip`、`vpc.route-table-local`。レッスン `lesson-1.2-vpc-network-security`
 - 使う規則: `nat-outbound`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`igw-requirements`、`igw-nat`、`route-table`、`route-longest`、`subnet-kind`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-default`、`address-match`、`trace-order`
 
 ### 8.6 `sim-trace-gateway-endpoint`: S3 への通信はどこを通るか
@@ -339,8 +338,8 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「S3 への通信は、どこを通るか」（`routeTarget`。NAT ゲートウェイ ／ ゲートウェイエンドポイント ／ インターネットゲートウェイ）。答えは「ゲートウェイエンドポイント」（`vpce`。`delivered` 真）。
 - 変えられる設定: `エンドポイントのルートを消す`（`routeTarget` `nat`、`none`。NAT を通って届く）、`アウトバウンドを VPC の中だけにする`（セキュリティグループのアウトバウンドを TCP すべて 10.0.0.0/16 へ。`forward-sg-out`、`sg-no-match`）、`ネットワーク ACL で 0.0.0.0/0 を拒否`（アプリのサブネットのアウトバウンドをルール 100 で 0.0.0.0/0 を拒否。`forward-nacl-out`、`nacl-deny`）
 - 理由で触れること: エンドポイントの経路は 0.0.0.0/0 より優先される。エンドポイントを通っても、セキュリティグループとネットワーク ACL は S3 との通信を許可している必要がある。ネットワーク ACL はプレフィックスリストを書けない
-- 裏づけ: 事実 `vpc.gateway-endpoint-services`、`vpc-endpoints.gateway-route-precedence`、`vpc-endpoints.gateway-sg-nacl`、`vpc.nacl-no-prefix-list`、`vpc.route-priority`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-private-connectivity`（ゲートウェイ型とインターフェイス型の表）
-- 使う規則: `vpce-gateway`、`route-prefix-list`、`vpce-sg-nacl`、`nacl-no-prefix-list`、`route-table`、`route-longest`、`nat-*`（toggle で NAT を通るため）、`igw-*`、`sg-*`、`nacl-*`、`subnet-kind`、`address-match`、`trace-order`
+- 裏づけ: 事実 `vpc.gateway-endpoint-services`、`vpc-endpoints.gateway-route-precedence`、`vpc-endpoints.gateway-sg-nacl`、`vpc.nacl-no-prefix-list`、`vpc.route-priority`、`vpc.route-table-local`。レッスン `lesson-1.2-private-connectivity`（ゲートウェイ型とインターフェイス型の表）
+- 使う規則: `sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-order`、`nacl-stateless`、`nacl-default`、`nacl-no-prefix-list`、`route-table`、`route-longest`、`subnet-kind`、`igw-requirements`、`igw-nat`、`nat-outbound`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`vpce-gateway`、`route-prefix-list`、`s3-public-endpoint`、`vpce-sg-nacl`、`address-match`、`trace-order`
 
 ### 8.7 `sim-trace-longest-prefix`: 足したルートが NAT を迂回する
 
@@ -348,8 +347,8 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「この接続はどうなるか」（`stop`。NAT を通って届く ／ インターネットゲートウェイで止まる ／ ルートが 2 つ当てはまるので止まる）。答えは「インターネットゲートウェイで止まる」（`forward-igw`、`no-public-ip`。`routeTarget` `igw`）。3 つ目は、どの設定でも出ない値（よくある誤解。`value` は `forward-route`）
 - 変えられる設定: `足したルートを消す`（`none`、`routeTarget` `nat`、`seenSource` 203.0.113.20）、`アプリにパブリック IP を付ける`（`none`、`routeTarget` `igw`、`seenSource` はアプリのパブリック IP アドレス。サブネットの種類が `public` になっていることに触れる）、`宛先を 198.51.100.20 にする`（足したルートに当たらない。`none`、`routeTarget` `nat`）
 - 理由で触れること: 当てはまるルートが複数あるときは、最も範囲の狭いルートが使われる。IGW へのルートを足したサブネットはパブリックになる
-- 裏づけ: 事実 `vpc.route-priority`、`vpc.igw-requirements`、`vpc.subnet-types`、`vpc.route-table-local`（足す）、`nat-gateway.outbound-connections`。レッスン `lesson-basics-ip-subnet-routing`
-- 使う規則: `route-longest`、`route-table`、`igw-requirements`、`igw-nat`、`nat-*`、`subnet-kind`、`sg-*`、`nacl-*`、`address-match`、`trace-order`
+- 裏づけ: 事実 `vpc.route-priority`、`vpc.igw-requirements`、`vpc.subnet-types`、`vpc.route-table-local`、`nat-gateway.outbound-connections`。レッスン `lesson-basics-ip-subnet-routing`
+- 使う規則: `sg-eni`、`sg-allow-only`、`sg-stateful`、`nacl-subnet`、`nacl-stateless`、`nacl-default`、`route-table`、`route-longest`、`subnet-kind`、`igw-requirements`、`igw-nat`、`nat-outbound`、`nat-route-igw`、`nat-eip`、`nat-no-sg`、`nat-translate`、`address-match`、`trace-order`
 
 ### 8.8 `sim-trace-sg-reference`: 同じサブネットからでも通らない
 
@@ -357,10 +356,10 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 予想: 「この接続はどうなるか」（`stop`。届く（アプリと同じサブネットだから） ／ 宛先のセキュリティグループで止まる ／ 宛先のネットワーク ACL で止まる）。答えは「宛先のセキュリティグループで止まる」（`forward-sg-in`、`sg-no-match`）。
 - 変えられる設定: `バッチに sg-app を付ける`（`none`）、`送信元を 10.0.2.0/24 にする`（データベースのセキュリティグループのインバウンドの送信元を CIDR に。`none`）、`アプリのサーバーから送る`（`none`）
 - 理由で触れること: 送信元にセキュリティグループを書くと、そのグループを付けた部品だけが当てはまる。CIDR で書くと、その範囲のアドレスのすべてが当てはまる
-- 裏づけ: 事実 `vpc.sg-referencing`、`vpc.sg-stateful-allow-only`、`vpc.route-table-local`（足す）、`vpc.nacl-default-allow`（足す）。レッスン `lesson-1.2-vpc-network-security`（3 層構成とセキュリティグループの連鎖）
-- 使う規則: `sg-reference`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`route-table`、`route-longest`、`nacl-subnet`、`nacl-default`、`subnet-kind`、`address-match`、`trace-order`
+- 裏づけ: 事実 `vpc.sg-referencing`、`vpc.sg-stateful-allow-only`、`vpc.route-table-local`、`vpc.nacl-default-allow`。レッスン `lesson-1.2-vpc-network-security`（3 層構成とセキュリティグループの連鎖）
+- 使う規則: `sg-eni`、`sg-allow-only`、`sg-stateful`、`sg-reference`、`nacl-subnet`、`nacl-stateless`、`nacl-default`、`route-table`、`route-longest`、`subnet-kind`、`address-match`、`trace-order`
 
-（8.6〜8.8 の「使う規則」の `nat-*` などは、実装のときにエンジンの `rules` の出力から正確な一覧にする。）
+（8.6〜8.8 の「使う規則」は、最初の設定とすべての切り替えの実行の `rules` を合わせた一覧です。）
 
 ## 9. エンジンの単体テスト
 
@@ -414,7 +413,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 
 ## 12. 選んだ案（2026-11-24。比べた案とともに）
 
-1. **インターネットから入る通信と、宛先のサブネットのルート**（8.1）: ゲートウェイがアタッチされ、宛先にパブリック IP アドレスがあり、宛先のサブネットに相手のアドレスに当てはまるゲートウェイへのルートがない構成は、入力で拒否する（段の並びを作らない）。パブリック IP アドレスやアタッチがない構成は、ゲートウェイの段で条件を満たさず止まる（`vpc.igw-requirements`）。8.1 は、外への接続で行きのルートテーブルで止まる形にする。最初は「行きは届き、戻りでルートがなくて止まる」としたが、入ってくる通信が宛先のサブネットのルートを見ないことを述べる公式の資料がなく、シナリオの検証で 2 回続けて裏づけがないと判断されたので取り下げた（2026-11-24）。比べた案は、宛先のサブネットに IGW へのルートがなければ行きのインターネットゲートウェイの段で止める形（どの段で止まるかを公式の資料が述べていないので取らない）
+1. **インターネットから入る通信と、宛先のサブネットのルート**（8.1）: ゲートウェイがアタッチされ、宛先にパブリック IP アドレスがあり、宛先のサブネットに相手のアドレスに当てはまるゲートウェイへのルートがない構成は、入力で拒否する（段の並びを作らない）。パブリック IP アドレスやアタッチがない構成は、ゲートウェイの段で条件を満たさず止まる（`vpc.igw-requirements`）。8.1 は、外への接続で行きのルートテーブルで止まる形にする。最初は「行きは届き、戻りでルートがなくて止まる」としたが、入ってくる通信が宛先のサブネットのルートを見ないことを述べる公式の資料がないので取り下げた（2026-11-24）。比べた案は、宛先のサブネットに IGW へのルートがなければ行きのインターネットゲートウェイの段で止める形（どの段で止まるかを公式の資料が述べていないので取らない）
 2. **図鑑に足す事実**: 3.3 の 2 件をどちらも足し、エンジンより先に検証まで済ませる。比べた案は、`vpc.route-table-local` だけを足し、デフォルトのネットワーク ACL を使わない形
 3. **構成図の上で追う見せ方**（7.2）: 段のカードと構成の塊にする。構成図の上での強調は、`Diagram.tsx` に入口を足す作業として、あとの候補にする
 4. **範囲**（5 章）: VPC は 1 つ、シナリオ 8 件。比べた案は、VPC ピアリングを 1 本だけ足す形（エンジンと画面が 2 割ほど増え、シナリオが 1〜2 件増える）
