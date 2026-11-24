@@ -739,6 +739,20 @@
         }
       ],
       "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "ec2.shared-responsibility-aws-side",
+      "title": "責任共有モデルで AWS が責任を持つ範囲",
+      "kind": "feature",
+      "text": "責任共有モデルでは、AWS は、AWS クラウドのすべてのサービスを動かすインフラストラクチャ（ハードウェア、ソフトウェア、ネットワーク、施設）を保護する責任を負う。AWS は、ホストの OS と仮想化のレイヤーから、サービスが動く施設の物理的なセキュリティまでのコンポーネントを運用、管理、統制する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Shared Responsibility Model",
+          "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "references": [
@@ -757,5 +771,5 @@
   ],
   "createdBy": "sc7",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-21"
+  "updatedAt": "2026-11-24"
 }

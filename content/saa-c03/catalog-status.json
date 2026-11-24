@@ -3326,7 +3326,7 @@
   },
   "ec2": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
+    "checkedAt": "2026-11-24",
     "hash": "7f7736255116"
   },
   "ec2-auto-scaling": {
@@ -3708,6 +3708,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "cc344b0c2ef0"
+  },
+  "ec2.shared-responsibility-aws-side": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "331b51ed1b3d"
   },
   "ec2.spot-interruption-behavior": {
     "status": "verified",
@@ -5753,11 +5758,6 @@
     "status": "verified",
     "checkedAt": "2026-11-24",
     "hash": "bc6a19d16a4d"
-  },
-  "iam.last-accessed-information": {
-    "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "268b4c6a6848"
   },
   "iam.managed-vs-inline": {
     "status": "verified",
@@ -7846,7 +7846,7 @@
   },
   "s3": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
+    "checkedAt": "2026-11-24",
     "hash": "3549c142bff4"
   },
   "s3-glacier": {
@@ -8108,6 +8108,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "e6ba35c2956d"
+  },
+  "s3.shared-responsibility-abstracted": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "52895ce5b953"
   },
   "s3.small-object-latency": {
     "status": "verified",

@@ -745,21 +745,6 @@
       "checkedAt": "2026-11-24"
     },
     {
-      "id": "iam.last-accessed-information",
-      "title": "最終アクセス情報で使われていない権限を見つける",
-      "kind": "feature",
-      "text": "最終アクセス情報は、IAM のユーザー、グループ、ロール、ポリシーに許可されたサービスやアクションについて、アクセスを試みた日時を示す。使われていない権限を見つけて取り除き、最小権限に近づけるために使う。成功した試行だけでなく、すべての試行が含まれる。",
-      "examPoint": "使われていない権限を見つけて最小権限に絞り込むなら最終アクセス情報。",
-      "depth": "core",
-      "sources": [
-        {
-          "title": "Refine permissions in AWS using last accessed information - AWS Identity and Access Management",
-          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_last-accessed.html"
-        }
-      ],
-      "checkedAt": "2026-11-24"
-    },
-    {
       "id": "iam.role-vs-resource-policy-permissions",
       "title": "ロールの引き受けとリソースベースポリシーでの権限の違い",
       "kind": "feature",
