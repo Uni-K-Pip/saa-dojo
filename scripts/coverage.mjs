@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { MOCK_COMPOSITION, POOLS, QUALIFIERS } from './lib/schema.mjs';
 import { DEFAULT_ROOT, HIDDEN_STATUSES, loadContent, localToday, statusOf, textMatcher } from './validate.mjs';
 import { RECHECK_DAYS, buildCatalogModel, daysBetween, effectiveStatus, entryIdFor, recheckLimit } from './lib/catalog.mjs';
-import { MATERIAL_SECTIONS, checkMaterialStatus } from './lib/material-status.mjs';
+import { MATERIAL_SECTIONS, checkMaterialStatus, existingMaterialItems, materialKeyOf } from './lib/material-status.mjs';
 import { checkSimFiles, simContext } from './lib/sim.mjs';
 import {
   CHECKS_PER_LESSON,
@@ -237,7 +237,7 @@ export function computeMaterialCoverage(content) {
   })).items;
   const { statuses } = checkMaterialStatus({
     statusFile: content.materialStatus.data,
-    materials: { ...content, sims },
+    materials: { ...content, ...existingMaterialItems(content), sims },
     texts: [],
     ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
   });
@@ -285,8 +285,16 @@ export function computeMaterialCoverage(content) {
     labs,
     lists: listsCoverage,
     facts: reach,
-    status: statusBreakdown(statuses, Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([k, v]) => [k, v.label]))),
+    status: statusBreakdown(statusesByItem(statuses, existingMaterialItems(content)), Object.fromEntries(Object.entries(MATERIAL_SECTIONS).map(([k, v]) => [k, v.label]))),
   };
+}
+
+// 既存の教材の区分は、状態を項目ごとに並べる（同じ用語が複数あっても項目の数で数える）。ほかの区分は Map のまま
+function statusesByItem(statuses, items) {
+  return Object.fromEntries(Object.entries(statuses).map(([section, map]) => [
+    section,
+    items[section] ? items[section].map(({ data }) => map.get(materialKeyOf(section, data))) : map,
+  ]));
 }
 
 export function computeCoverage(content, { today } = {}) {

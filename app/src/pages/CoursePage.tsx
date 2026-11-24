@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { CourseNextStep, courseItemDetails, unitTitle } from '../components/CourseNextStep';
 import { LessonRereadBadge } from '../components/LessonReread';
 import { MaterialBadges } from '../components/MaterialReading';
+import { RevisionBadge } from '../components/ReviewStatus';
 import type { CourseUnit } from '../content/course-types';
 import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadQuestionIndex, loadSimIndex } from '../content/loader';
 import { appendEvent } from '../db/repo';
@@ -104,6 +105,7 @@ function UnitItems({ unit }: { unit: CourseUnit }) {
               <div className="meta-row">
                 <span className="badge">{details.label}</span>
                 {details.status && <MaterialBadges status={details.status} />}
+                <RevisionBadge status={details.review} />
                 {done && <span className="badge ok">済み</span>}
                 {item.kind === 'lesson' && <LessonRereadBadge count={reread.get(item.ref)} />}
               </div>

@@ -814,5 +814,11 @@ export const MaterialStatusSchema = z
     sims: z.record(z.string().regex(SIM_SCENARIO_ID, { message: 'シナリオの id ではない' }), MaterialStatusRecordSchema).optional(),
     labs: z.record(z.string().regex(LAB_ID, { message: 'ミニラボの id ではない' }), MaterialStatusRecordSchema).optional(),
     patterns: z.record(z.string().regex(PATTERN_ID, { message: '設計パターンの id ではない' }), MaterialStatusRecordSchema).optional(),
+    // 既存の教材。鍵はレッスン・文書・カードの id と、用語（term）
+    lessons: z.record(z.string().regex(LESSON_ID, { message: 'レッスンの id ではない' }), MaterialStatusRecordSchema).optional(),
+    cheatsheets: z.record(z.string().regex(DOC_ID).startsWith('cheatsheet-', { message: '早見表の id ではない' }), MaterialStatusRecordSchema).optional(),
+    guides: z.record(z.string().regex(DOC_ID).startsWith('guide-', { message: 'ガイドの id ではない' }), MaterialStatusRecordSchema).optional(),
+    flashcards: z.record(z.string().regex(FLASHCARD_ID, { message: 'カードの id ではない' }), MaterialStatusRecordSchema).optional(),
+    glossary: z.record(z.string().min(1).max(80), MaterialStatusRecordSchema).optional(),
   })
   .strict();

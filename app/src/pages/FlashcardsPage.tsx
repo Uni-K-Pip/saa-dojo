@@ -8,6 +8,7 @@ import { buildFlashcardSchedule, flashcardQueue } from '../domain/flashcards';
 import { Rating, formatDays, previewDays, type Grade, type SrsState } from '../domain/srs';
 import { useStudy } from '../state/study';
 import { useNow } from '../state/useNow';
+import { ReviewBadge } from '../components/ReviewStatus';
 
 const RATINGS: { grade: Grade; label: string; key: string }[] = [
   { grade: Rating.Again, label: 'もう一度', key: '1' },
@@ -99,9 +100,10 @@ function CardView({ card, isNew, state, now }: { card: Flashcard; isNew: boolean
   return (
     <div className="card">
       <div className="flashcard">
-        {isNew && (
-          <p style={{ margin: 0 }}>
-            <span className="badge info">新しいカード</span>
+        {(isNew || card.status === 'pending') && (
+          <p className="meta-row" style={{ margin: 0 }}>
+            {isNew && <span className="badge info">新しいカード</span>}
+            <ReviewBadge status={card.status} label="カード" />
           </p>
         )}
         <div className="front">{card.front}</div>

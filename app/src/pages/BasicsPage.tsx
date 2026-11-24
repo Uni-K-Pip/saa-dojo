@@ -2,6 +2,7 @@
 import { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { LessonRereadBadge, LessonRereadFilter, NO_REREAD_LESSONS } from '../components/LessonReread';
+import { RevisionBadge } from '../components/ReviewStatus';
 import { loadBlueprint, loadLessons, loadQuestionIndex } from '../content/loader';
 import { lessonRereadCounts } from '../domain/lesson-reread';
 import { lessonReadMap, percent, progressOf } from '../domain/progress';
@@ -85,6 +86,7 @@ export default function BasicsPage() {
                 <span>
                   <span className="muted">{i + 1}. </span>
                   <Link to={`/lessons/${l.id}`}>{l.title}</Link>
+                  {' '}<RevisionBadge status={l.status} />
                   <span className="small muted">
                     {' '}
                     約 {l.estimatedMinutes} 分{l.questionIds.length > 0 ? `・確認問題 ${qp.answered}/${qp.total}` : ''}

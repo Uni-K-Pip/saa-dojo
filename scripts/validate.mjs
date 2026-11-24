@@ -38,7 +38,7 @@ import { buildServiceIndex, normName } from './lib/service-registry.mjs';
 import { CATALOG_NEEDS_FILE, CATALOG_STATUS_FILE, buildCatalogModel, checkCatalog } from './lib/catalog.mjs';
 import { checkDiagram, checkDiagramRefs, diagramRefIndex, parseMaterialRefs } from './lib/diagram.mjs';
 import { parseInlineChecks, suspectMarkdownFences } from './lib/inline-check.mjs';
-import { MATERIAL_STATUS_FILE, checkMaterialStatus, unverifiedRefMessage } from './lib/material-status.mjs';
+import { MATERIAL_STATUS_FILE, checkMaterialStatus, existingMaterialItems, unverifiedRefMessage } from './lib/material-status.mjs';
 import { CourseSchema, WARN_UNITS_WITHOUT_LAB, checkCourse as checkCourseData, courseMaterialContext } from './lib/course.mjs';
 import { checkLab, checkPattern, labPatternContext, labPatternPathMessage, labPatternTexts } from './lib/lab-pattern.mjs';
 import { COVERAGE_LISTS_FILE, CoverageListsSchema, checkCoverageLists } from './lib/coverage-lists.mjs';
@@ -311,6 +311,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
     docs: [], // { rel, data, body, docKind }
     decks: [], // { rel, data }
     glossaries: [], // { rel, data }
+    glossaryTerms: new Set(), // 用語集の用語（スキーマに通らなかったファイルを含む。検証状態の記録の検査で使う）
     diagrams: [], // { rel, data }（スキーマに通ったものだけ）
     artifacts: [], // { rel, data }（スキーマに通ったものだけ）
     artifactStems: new Set(), // 実物のファイル名（スキーマに通らなかったものを含む）
@@ -481,6 +482,7 @@ export function loadContent({ root = DEFAULT_ROOT } = {}) {
         const j = readJson(rel);
         if (!j) break;
         const data = validateWith(GlossaryFileSchema, j.value, rel);
+        for (const e of Array.isArray(j.value?.entries) ? j.value.entries : []) if (typeof e?.term === 'string') content.glossaryTerms.add(e.term);
         if (data) content.glossaries.push({ rel, data });
         break;
       }
@@ -837,6 +839,31 @@ function checkGlossary(content, { rel, data: g }) {
   if (dups.length) report.warn('glossary-duplicate', rel, `同じ用語が複数あります: ${dups.slice(0, 5).join(', ')}`);
 }
 
+// ファイルをまたいで同じ用語があるか（ファイルの中の重複は checkGlossary が見る）。
+// 検証状態の記録の鍵は用語なので、またいだ重複も同じ警告にする
+function checkGlossaryAcrossFiles(content) {
+  const filesOf = new Map();
+  for (const { rel, data } of content.glossaries) {
+    for (const e of data.entries) {
+      const key = normName(e.term);
+      if (!filesOf.has(key)) filesOf.set(key, new Set());
+      filesOf.get(key).add(rel);
+    }
+  }
+  const byRel = new Map();
+  for (const [term, rels] of filesOf) {
+    if (rels.size < 2) continue;
+    const [first, ...rest] = [...rels].sort();
+    for (const rel of rest) {
+      if (!byRel.has(rel)) byRel.set(rel, []);
+      byRel.get(rel).push(`${term}（${first} にもある）`);
+    }
+  }
+  for (const [rel, terms] of byRel) {
+    content.report.warn('glossary-duplicate', rel, `ほかの用語集のファイルと同じ用語があります: ${terms.slice(0, 5).join(', ')}${terms.length > 5 ? ' ほか' : ''}`);
+  }
+}
+
 function checkGlossaryRelated(content) {
   // 全ファイルの用語が出そろってから、related の参照先を調べる
   const terms = new Set();
@@ -1045,14 +1072,30 @@ function checkDiagrams(content) {
   }
 }
 
+// 既存の教材の区分ごとの鍵（スキーマに通らなかったファイルのものを含む）
+function existingPresentIds(content) {
+  const idsOf = (type, prefix = '') => new Set([...content.ids]
+    .filter(([id, list]) => id.startsWith(prefix) && list.some((x) => x.type === type)).map(([id]) => id));
+  return {
+    lessons: idsOf('lesson'),
+    cheatsheets: idsOf('doc', 'cheatsheet-'),
+    guides: idsOf('doc', 'guide-'),
+    flashcards: idsOf('flashcard'),
+    glossary: content.glossaryTerms,
+  };
+}
+
 // 教材の検証状態（scripts/lib/material-status.mjs。ビルドと同じ判定）。スキーマに通らなかったときは検査しない
 function checkMaterialStatusFile(content, sims) {
   const { report, materialStatus } = content;
   if (materialStatus.present && !materialStatus.data) return;
   const { issues, statuses, unverifiedRefs } = checkMaterialStatus({
     statusFile: materialStatus.data,
-    materials: { ...content, sims },
-    presentIds: { diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems, sims: content.simStems },
+    materials: { ...content, ...existingMaterialItems(content), sims },
+    presentIds: {
+      diagrams: content.diagramStems, artifacts: content.artifactStems, labs: content.labStems, patterns: content.patternStems, sims: content.simStems,
+      ...existingPresentIds(content),
+    },
     texts: [...content.lessons, ...content.docs, ...labPatternTexts(content)],
     // 図のハッシュの対象（レイアウトの結果）は、ビルドと同じ台帳で組み立てる（ビルドは台帳がないとき null）
     ctx: { serviceIndex: content.registry.data ? content.serviceIndex : null },
@@ -1178,6 +1221,7 @@ export function checkContent(content) {
   for (const { rel, data } of [...content.labs, ...content.patterns]) checkServiceNames(content, rel, data.services, 'services');
   for (const d of content.decks) checkDeck(content, d);
   for (const g of content.glossaries) checkGlossary(content, g);
+  checkGlossaryAcrossFiles(content);
   for (const e of content.catalog.entries) checkCatalogEntry(content, e);
   reportServiceAliases(content);
   checkGlossaryRelated(content);

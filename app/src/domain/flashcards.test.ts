@@ -6,7 +6,7 @@ import { event } from '../test/fixtures';
 
 const DAY = 86_400_000;
 const T0 = new Date(2026, 10, 1, 9, 0, 0).getTime();
-const card = (id: string) => ({ id, front: `表 ${id}`, back: `裏 ${id}`, taskStatements: [], services: [], tags: [] });
+const card = (id: string) => ({ id, front: `表 ${id}`, back: `裏 ${id}`, taskStatements: [], services: [], tags: [], status: 'verified' as const });
 const decks: FlashcardDeck[] = [
   { deck: 'storage', title: 'ストレージ', createdBy: 't', cards: [card('fc-t-001'), card('fc-t-002'), card('fc-t-003')] },
   { deck: 'network', title: 'ネットワーク', createdBy: 't', cards: [card('fc-t-004')] },

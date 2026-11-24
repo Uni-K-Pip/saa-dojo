@@ -2,6 +2,7 @@
 import { use, useState } from 'react';
 import { Link } from 'react-router';
 import { LessonRereadBadge, LessonRereadFilter, NO_REREAD_LESSONS } from '../components/LessonReread';
+import { RevisionBadge } from '../components/ReviewStatus';
 import { loadBlueprint, loadLessons, loadQuestionIndex } from '../content/loader';
 import { lessonRereadCounts } from '../domain/lesson-reread';
 import { answeredItems, lessonReadMap, percent, progressOf } from '../domain/progress';
@@ -67,6 +68,7 @@ export default function RoadmapPage() {
                     {tl.map((l) => (
                       <li key={l.id}>
                         <Link to={`/lessons/${l.id}`}>{l.title}</Link>
+                        {' '}<RevisionBadge status={l.status} />
                         <span className="small muted"> 約 {l.estimatedMinutes} 分</span>
                         {read.has(l.id) && (
                           <>

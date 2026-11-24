@@ -2,7 +2,7 @@ import { Suspense, use } from 'react';
 import { Link } from 'react-router';
 import type { CourseItem, CourseUnit } from '../content/course-types';
 import { loadCourse, loadDocs, loadLabIndex, loadLessons, loadPatternIndex, loadSimIndex } from '../content/loader';
-import type { DocEntry, LabMeta, LessonMeta, PatternMeta, SimIndexEntry } from '../content/types';
+import type { DocEntry, LabMeta, LessonMeta, PatternMeta, ReviewStatus, SimIndexEntry } from '../content/types';
 import { nextStep } from '../domain/course';
 import { useStudy } from '../state/study';
 
@@ -15,16 +15,20 @@ export function unitTitle(unit: CourseUnit): string {
 export function courseItemDetails(
   item: CourseItem, unitId: string, lessons: LessonMeta[], docs: DocEntry[],
   labs: LabMeta[] = [], patterns: PatternMeta[] = [], sims: SimIndexEntry[] = [],
-): { label: string; title: string; to: string; action: string; minutes?: number; status?: LabMeta['status'] } {
+): {
+  label: string; title: string; to: string; action: string; minutes?: number; status?: LabMeta['status'];
+  /** レッスン・早見表・ガイドの検証状態（一覧には修正待ちだけを出す） */
+  review?: ReviewStatus;
+} {
   switch (item.kind) {
     case 'lesson': {
       const lesson = lessons.find((l) => l.id === item.ref);
-      return { label: 'レッスン', title: lesson?.title ?? item.ref, to: `/lessons/${item.ref}`, action: 'レッスンを読む', minutes: lesson?.estimatedMinutes };
+      return { label: 'レッスン', title: lesson?.title ?? item.ref, to: `/lessons/${item.ref}`, action: 'レッスンを読む', minutes: lesson?.estimatedMinutes, review: lesson?.status };
     }
     case 'doc': {
       const doc = docs.find((d) => d.id === item.ref);
       const label = (doc?.kind === 'guide' || item.ref.startsWith('guide-')) ? 'ガイド' : '早見表';
-      return { label, title: doc?.title ?? item.ref, to: `/docs/${item.ref}`, action: `${label}を読む` };
+      return { label, title: doc?.title ?? item.ref, to: `/docs/${item.ref}`, action: `${label}を読む`, review: doc?.status };
     }
     case 'lab': {
       const lab = labs.find((l) => l.id === item.ref);

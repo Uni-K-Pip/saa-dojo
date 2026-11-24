@@ -17,8 +17,8 @@ const decks: FlashcardDeck[] = [
     title: 'ストレージ',
     createdBy: 't',
     cards: [
-      { id: 'fc-t-001', front: 'S3 の耐久性は？', back: '99.999999999%', taskStatements: [], services: [], tags: [] },
-      { id: 'fc-t-002', front: 'EBS は何型？', back: 'ブロックストレージ', taskStatements: [], services: [], tags: [] },
+      { id: 'fc-t-001', front: 'S3 の耐久性は？', back: '99.999999999%', taskStatements: [], services: [], tags: [], status: 'verified' },
+      { id: 'fc-t-002', front: 'EBS は何型？', back: 'ブロックストレージ', taskStatements: [], services: [], tags: [], status: 'verified' },
     ],
   },
 ];

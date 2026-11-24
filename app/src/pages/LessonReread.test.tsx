@@ -9,7 +9,7 @@ import { renderApp, resetDb, useFakeContent } from '../test/render';
 
 const lesson = (over: Partial<LessonMeta> & { id: string; title: string }): LessonMeta => ({
   domain: 1, taskStatement: '1.1', order: 1, knowledgeRefs: [], services: [],
-  estimatedMinutes: 5, questionIds: [], checkIds: ['c00000001', 'c00000002'], ...over,
+  estimatedMinutes: 5, questionIds: [], checkIds: ['c00000001', 'c00000002'], status: 'verified', ...over,
 });
 const roadmap = lesson({ id: 'lesson-1.1-iam', title: 'アクセス管理' });
 const otherRoadmap = lesson({ id: 'lesson-1.1-policies', title: 'ポリシー' });
