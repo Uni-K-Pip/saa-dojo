@@ -65,7 +65,7 @@ export type PresetSwitches = {
   appRoute?: 'none' | 'nat' | 'igw';
   s3Endpoint?: boolean;
   appPublicIp?: boolean;
-  natSubnet?: 'pub' | 'app';
+  natSubnet?: 'pub' | 'data';
   appNacl?: 'default' | 'https' | 'ephemeral';
   appInbound?: 'alb' | 'any' | 'none';
 };

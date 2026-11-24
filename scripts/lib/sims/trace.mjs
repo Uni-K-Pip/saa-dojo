@@ -304,7 +304,7 @@ function prepare(config) {
         const nat = endpoints.get(target.slice(4));
         requireInput(isNat(nat), 'unknown-ref', 'ルートが指す NAT ゲートウェイが設定にありません。', `${field}.target`);
         requireInput(subnets.get(nat.subnet).routeTable !== id, 'route',
-          'NAT ゲートウェイのサブネットから同じ NAT ゲートウェイへはルーティングできません。', `${field}.target`);
+          'NAT ゲートウェイを置いたサブネットのルートが、その NAT ゲートウェイ自身を指す構成は追跡しません。', `${field}.target`);
       }
       return { dest, target, block };
     });
@@ -332,9 +332,11 @@ function prepare(config) {
   requireInput(from, 'unknown-ref', '送信元の ID が設定にありません。', 'flow.from');
   requireInput(to, 'unknown-ref', '宛先の ID が設定にありません。', 'flow.to');
   requireInput(from !== to, 'flow', '送信元と宛先には別の相手を指定してください。', 'flow');
-  requireInput(!isNat(from) && !isS3(from), 'flow', 'NAT ゲートウェイと S3 は送信元に指定できません。', 'flow.from');
+  requireInput(!isNat(from) && !isS3(from), 'flow', 'NAT ゲートウェイと S3 を送信元にした通信は追跡しません。', 'flow.from');
   requireInput(isHost(from) || isHost(to), 'flow', '送信元と宛先のどちらかに VPC 内の部品を指定してください。', 'flow');
   requireInput(!isHost(from) || from.subnet !== to.subnet, 'flow', NOT_COVERED[5], 'flow');
+  // NAT ゲートウェイは中継としてだけ扱う。VPC の中の部品から NAT ゲートウェイそのものへ向かう通信は追跡しない
+  requireInput(!isHost(from) || !isNat(to), 'flow', 'NAT ゲートウェイは通信を中継する部品として扱うので、VPC の中の部品から NAT ゲートウェイそのものへ向かう通信は追跡しません。', 'flow');
 
   const routesFor = (host) => routeTables.get(subnets.get(host.subnet).routeTable);
   // インターネットから入る通信が、アタッチされたインターネットゲートウェイを通って（宛先にパブリック IP アドレスがある）、
@@ -574,7 +576,7 @@ export function buildPresetConfig(switches = {}) {
   if (appRoute !== 'none') config.routeTables['rt-app'].push({ dest: ANY_IPV4, target: appRoute === 'nat' ? 'nat:nat' : 'igw' });
   if (s3Endpoint) config.routeTables['rt-app'].push({ dest: S3, target: 'vpce-s3' });
   if (appPublicIp) config.publicIps.app = '203.0.113.30';
-  if (natSubnet === 'app') Object.assign(config.hosts.find(isNat), { subnet: 'app', ip: '10.0.2.20' });
+  if (natSubnet === 'data') Object.assign(config.hosts.find(isNat), { subnet: 'data', ip: '10.0.3.20' });
   if (appNacl !== 'default') {
     const rules = [{ rule: 100, action: 'allow', ports: { from: 443, to: 443 }, cidr: ANY_IPV4 }];
     if (appNacl === 'ephemeral') rules.push({ rule: 110, action: 'allow', ports: { from: 1024, to: 65535 }, cidr: ANY_IPV4 });

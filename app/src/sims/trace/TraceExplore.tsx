@@ -53,7 +53,7 @@ export function TraceExplore() {
         <TraceSelect label="アプリのサーバーのパブリック IP アドレス" value={Object.hasOwn(config.publicIps, 'app')}
           options={PRESENCE} onChange={choose('appPublicIp')} />
         <TraceSelect label="NAT ゲートウェイの置き場所" value={switches.natSubnet ?? 'pub'} onChange={choose('natSubnet')}
-          options={[[ 'pub', 'パブリックのサブネット'], ['app', 'アプリのサブネット']]} />
+          options={[[ 'pub', 'パブリックのサブネット'], ['data', 'データのサブネット（ルートは local だけ）']]} />
         <TraceSelect label="アプリのサブネットのネットワーク ACL" value={switches.appNacl ?? 'default'} onChange={choose('appNacl')}
           options={[[ 'default', 'デフォルト'], ['https', '443 だけ許可（戻りの許可なし）'], ['ephemeral', '443 とエフェメラルポートを許可']]} />
         <TraceSelect label="アプリのセキュリティグループのインバウンドの送信元" value={switches.appInbound ?? 'alb'} onChange={choose('appInbound')}

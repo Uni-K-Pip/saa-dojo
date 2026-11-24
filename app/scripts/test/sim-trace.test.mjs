@@ -204,14 +204,23 @@ describe('行きと戻りの段', () => {
       .map(({ rule }) => rule)).toEqual(['100', '120', '110', '130']);
   });
 
-  it('NAT を宛先にすると NAT で止まり、NAT の EIP がなければ IGW で止まります', () => {
+  it('インターネットから NAT を宛先にすると NAT で止まり、NAT の EIP がなければ IGW で止まります', () => {
     const inbound = trace({ from: 'client', to: 'nat' }).output;
     expect(stages(inbound.forward)).toEqual([pass('igw', 'igw'), pass('nacl-in', 'pub', 'rule'), stop('nat', 'nat', 'no-sg')]);
     expect(inbound).toMatchObject({ stop: 'forward-nat', stopAt: 'nat', reason: 'nat-inbound', return: [] });
-    expect(trace({ from: 'app', to: 'nat' }).output).toMatchObject({ stop: 'forward-nat', routeTarget: 'local' });
+    const fromInside = run(buildPresetConfig({ from: 'app', to: 'nat' }));
+    expect(fromInside).toMatchObject({ ok: false, error: { code: 'flow', field: 'flow' } });
+    expect(fromInside.error.message).toContain('追跡しません');
     const outbound = trace(appToUpdate, (config) => { delete config.publicIps.nat; }).output;
     expect(outbound).toMatchObject({ stop: 'forward-igw', stopAt: 'igw', reason: 'no-public-ip', routeTarget: 'nat', return: [] });
     expect(outbound).not.toHaveProperty('seenSource');
+  });
+
+  it('NAT をゲートウェイへのルートのないサブネットに置くと、NAT の段を通り、NAT のサブネットのルートテーブルで止まります', () => {
+    const { output, rules } = run(buildPresetConfig({ from: 'app', to: 'update', natSubnet: 'data' }));
+    expect(output).toMatchObject({ stop: 'forward-route', stopAt: 'data', reason: 'no-route', routeTarget: 'nat', return: [] });
+    expect(output.forward.some(({ gate, verdict }) => gate === 'nat' && verdict === 'pass')).toBe(true);
+    expect(rules).toContain('nat-route-igw');
   });
 
   it('NAT のサブネットに合うルートがなければ、そこで止まります', () => {
@@ -433,7 +442,7 @@ const reachability = {
 const collapse = (places) => places.filter((place, index) => place !== places[index - 1]);
 const choices = {
   port: [443, 80, 22, 3306], igw: [false, true], appRoute: ['none', 'nat', 'igw'], s3Endpoint: [false, true],
-  appPublicIp: [false, true], natSubnet: ['pub', 'app'], appNacl: ['default', 'https', 'ephemeral'], appInbound: ['alb', 'any', 'none'],
+  appPublicIp: [false, true], natSubnet: ['pub', 'data'], appNacl: ['default', 'https', 'ephemeral'], appInbound: ['alb', 'any', 'none'],
 };
 const combinations = Object.entries(choices).reduce((configs, [key, values]) =>
   configs.flatMap((config) => values.map((value) => ({ ...config, [key]: value }))), [{}]);
@@ -473,7 +482,7 @@ function checkPath(output, switches) {
 describe('自由に試すプリセット', () => {
   it('既定値は PRESET と一致し、設定を変更しても次の実行に持ち越しません', () => {
     expect(buildPresetConfig()).toEqual(PRESET);
-    const config = buildPresetConfig({ appNacl: 'https', natSubnet: 'app' });
+    const config = buildPresetConfig({ appNacl: 'https', natSubnet: 'data' });
     config.hosts[0].ip = '10.0.1.99';
     expect(buildPresetConfig()).toEqual(PRESET);
     expect(SIM_CONFIG_SCHEMAS.trace.safeParse(PRESET).success).toBe(true);
@@ -487,13 +496,13 @@ describe('自由に試すプリセット', () => {
     for (const values of combinations) {
       for (const [from, targets] of Object.entries(reachability)) {
         for (const [to, expected] of Object.entries(targets)) {
-          if (to === 'nat' && ((from === 'alb' && values.natSubnet === 'pub') || (from === 'app' && values.natSubnet === 'app'))) continue;
           const switches = { ...values, from, to };
           const label = JSON.stringify(switches);
           const config = buildPresetConfig(switches);
           const original = validateInput(config);
           total++;
-          const selfRoute = values.natSubnet === 'app' && values.appRoute === 'nat';
+          // VPC の中の部品から NAT ゲートウェイそのものへ向かう通信は追跡しない
+          const toNat = to === 'nat' && Boolean(config.hosts.find(({ id }) => id === from));
           // インターネットから入る通信が、アタッチされたゲートウェイを通って（宛先にパブリック IP がある）、
           // 0.0.0.0/0 がゲートウェイを指さないサブネットの部品に向かう構成は拒否する
           const receiverHost = config.hosts.find(({ id }) => id === to);
@@ -501,8 +510,8 @@ describe('自由に試すプリセット', () => {
             ? config.routeTables[config.subnets.find(({ id }) => id === receiverHost.subnet).routeTable] : [];
           const asymmetric = ['client', 'update'].includes(from) && Boolean(receiverHost) && values.igw
             && Object.hasOwn(config.publicIps, to) && receiverRoutes.find(({ dest }) => dest === '0.0.0.0/0')?.target !== 'igw';
-          if (selfRoute || asymmetric) {
-            assert.equal(original.error?.code, selfRoute ? 'route' : 'flow', label);
+          if (toNat || asymmetric) {
+            assert.equal(original.error?.code, 'flow', label);
             invalid++;
             continue;
           }
@@ -535,9 +544,9 @@ describe('自由に試すプリセット', () => {
         }
       }
     }
-    assert.equal(total, 43200);
-    assert.equal(invalid, 7920);
-    assert.equal(tableChecks, 3920);
+    assert.equal(total, 44928);
+    assert.equal(invalid, 6624);
+    assert.equal(tableChecks, 4256);
     assert.ok(statefulChecks > 0);
   }, 30000);
 });
