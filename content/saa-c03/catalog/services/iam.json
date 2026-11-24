@@ -846,6 +846,54 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.last-accessed-information",
+      "title": "最終アクセス情報で使われていない権限を見つける",
+      "kind": "feature",
+      "text": "最終アクセス情報は、IAM のユーザー・グループ・ロールなどの ID について、ポリシーが許可したサービスへの最後のアクセス試行の日時を示す機能である。使われていない権限を見つけて削除し、最小権限に近づけるために使う。対象は ID に付いたポリシー（ロールやユーザーに直接、またはグループ経由で付けたもの）が許可したサービスで、リソースベースのポリシー、アクセスコントロールリスト、SCP、権限の境界、セッションポリシーによる許可は含まれない。",
+      "examPoint": "使われていない権限を洗い出して最小権限に近づけるなら、最終アクセス情報。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Refine permissions in AWS using last accessed information - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_last-accessed.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.saml-federation-provider",
+      "title": "SAML 2.0 フェデレーションの IAM 側の構成",
+      "kind": "feature",
+      "text": "IAM の SAML 2.0 フェデレーションでは、組織の IdP が出す SAML メタデータの文書をもとに、IAM に SAML ID プロバイダー（IdP を表すエンティティ）を作り、ロールの信頼ポリシーでその SAML プロバイダーを Principal に指定する。IdP で認証された利用者のアプリが SAML アサーションを付けて sts:AssumeRoleWithSAML を呼ぶと、ロールの一時的な認証情報が返る。ロールの信頼ポリシーで使う SAML IdP は、ロールと同じアカウントにある必要がある。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SAML 2.0 federation - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html"
+        },
+        {
+          "title": "Create a SAML identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.role-arn-not-secret",
+      "title": "ロールの ARN は秘密ではない",
+      "kind": "constraint",
+      "text": "ロールの ARN は秘密ではなく、ほかの利用者が知る・推測することがありうる。第三者にロールを引き受けさせるときは、ARN を知っているだけでは引き受けられないよう、信頼ポリシーの条件（外部 ID など）を組み合わせる。",
+      "trap": "ロールの ARN を知られないことを、アクセス制御の手段にしない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "The confused deputy problem - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [

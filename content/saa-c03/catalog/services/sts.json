@@ -82,6 +82,23 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "sts.assume-role-role-arn",
+      "title": "AssumeRole にはロールの ARN とセッション名を渡す",
+      "kind": "feature",
+      "text": "AssumeRole を呼ぶときは、引き受けるロールの ARN を RoleArn に、セッションの識別子を RoleSessionName に指定する。この 2 つは必須のパラメーターである。RoleSessionName は、同じロールを異なるプリンシパルや目的で引き受けるときにセッションを一意に識別するために使い、引き受けたロールのプリンシパルの ARN にも含まれる。クロスアカウントでは、セッション名がロールを持つアカウントから見え、CloudTrail ログに記録されうる。",
+      "depth": "detail",
+      "tags": [
+        "AssumeRole"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
       "id": "sts.assume-role-external-id",
       "title": "外部 ID でロールの引き受けを絞る",
       "kind": "feature",

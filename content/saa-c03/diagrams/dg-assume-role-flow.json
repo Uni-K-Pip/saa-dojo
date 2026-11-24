@@ -8,6 +8,7 @@
   ],
   "factRefs": [
     "sts.assume-role-trust-policy",
+    "sts.assume-role-role-arn",
     "sts.temporary-credentials",
     "iam.role-trust-and-permissions"
   ],

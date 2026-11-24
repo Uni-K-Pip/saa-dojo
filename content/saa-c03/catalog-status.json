@@ -5619,10 +5619,20 @@
     "checkedAt": "2026-11-16",
     "hash": "ecaf6c6f0479"
   },
+  "iam-identity-center.portal-temporary-credentials": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "7c41cb0cd0fc"
+  },
   "iam-identity-center.provision-account-roles": {
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "1c9738f67e5e"
+  },
+  "iam-identity-center.scim-automatic-provisioning": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "c9ad56670198"
   },
   "iam-identity-center.session-reauthentication": {
     "status": "verified",
@@ -5759,6 +5769,11 @@
     "checkedAt": "2026-11-24",
     "hash": "bc6a19d16a4d"
   },
+  "iam.last-accessed-information": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "c8814ebfffbd"
+  },
   "iam.managed-vs-inline": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5819,6 +5834,11 @@
     "checkedAt": "2026-11-24",
     "hash": "2265211c833a"
   },
+  "iam.role-arn-not-secret": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "c2e5c7e1d098"
+  },
   "iam.role-assumers": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5868,6 +5888,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "195c50c71bcb"
+  },
+  "iam.saml-federation-provider": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "0d247612a1e2"
   },
   "iam.service-linked-role": {
     "status": "verified",
@@ -6308,6 +6333,11 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "007ba9e3e225"
+  },
+  "lambda.resource-based-policy": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "79fd5c93a8d6"
   },
   "lambda.shared-responsibility": {
     "status": "verified",
@@ -9178,6 +9208,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "730788efe1a9"
+  },
+  "sts.assume-role-role-arn": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "be0e545358b5"
   },
   "sts.assume-role-session-duration": {
     "status": "verified",
