@@ -77,7 +77,7 @@ export function summarizeTrace(output: SummaryOutput): string {
   // インターネットゲートウェイの段で止まるのは、インターネットと通信する条件がそろわないとき（ゲートウェイがないこともある）
   if (gate === 'igw') return `${DIRECTIONS[direction]}で止まりました（インターネットと通信する条件を満たしていません）`;
   const gateName = GATES[gate].replace(/（(?:入る|出る)）$/, '');
-  const place = gate === 'igw' || gate === 'vpce' ? undefined : output.stopLabel ?? output.stopAt;
+  const place = gate === 'vpce' ? undefined : output.stopLabel ?? output.stopAt;
   return `${DIRECTIONS[direction]}の${gateName}${place ? `（${place}）` : ''}で止まりました`;
 }
 
