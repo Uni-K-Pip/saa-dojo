@@ -1,0 +1,52 @@
+{
+  "id": "ar-trust-policy-external-id",
+  "kind": "trust-policy",
+  "title": "第三者の事業者に外部 ID を求める信頼ポリシー",
+  "format": "json",
+  "document": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::777788889999:root"
+        },
+        "Action": "sts:AssumeRole",
+        "Condition": {
+          "StringEquals": {
+            "sts:ExternalId": "example-external-id"
+          }
+        }
+      }
+    ]
+  },
+  "notes": [
+    {
+      "path": "Statement[0].Principal",
+      "text": "Principal は、第三者の事業者の AWS アカウントを信頼する指定です。"
+    },
+    {
+      "path": "Statement[0].Action",
+      "text": "許可する操作は sts:AssumeRole です。事業者はこの操作でロールを引き受けます。"
+    },
+    {
+      "path": "Statement[0].Condition",
+      "text": "sts:ExternalId の条件で外部 ID を必須にします。呼び出し元は AssumeRole に同じ値を渡します。"
+    },
+    {
+      "path": "Statement[0].Condition",
+      "text": "外部 ID は、混乱した代理の問題を防ぐための値です。事業者が顧客ごとに一意の値を発行します。"
+    }
+  ],
+  "ask": {
+    "text": "事業者が外部 ID を渡さずに AssumeRole を呼ぶと、このロールを引き受けられますか？",
+    "answer": "引き受けられません。信頼ポリシーが sts:ExternalId の一致を条件にしているため、同じ値を渡さない呼び出しは条件に合いません。"
+  },
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "factRefs": [
+    "sts.assume-role-external-id"
+  ],
+  "createdBy": "v7"
+}

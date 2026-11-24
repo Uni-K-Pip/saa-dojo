@@ -270,6 +270,21 @@
         }
       ],
       "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "directory-service.simple-ad",
+      "title": "Simple AD は Samba 4 を使う小規模向けの AD 互換ディレクトリ",
+      "kind": "feature",
+      "text": "Simple AD は、Samba 4 の Active Directory 互換サーバーで動く、単独のマネージドディレクトリである。規模は Small（最大 500 ユーザー）と Large（最大 5,000 ユーザー）の 2 種類で、AWS Managed Microsoft AD の機能の一部を提供する。ユーザーアカウントとグループの管理、グループポリシー、Kerberos ベースのシングルサインオンなどが使える。",
+      "examPoint": "AWS IAM Identity Center には対応しない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Simple AD",
+          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_simple_ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
@@ -287,5 +302,6 @@
     }
   ],
   "createdBy": "sc39",
-  "createdAt": "2026-11-21"
+  "createdAt": "2026-11-21",
+  "updatedAt": "2026-11-24"
 }

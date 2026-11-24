@@ -1,0 +1,213 @@
+{
+  "id": "dg-cross-account-role-build-up",
+  "type": "architecture",
+  "title": "別のアカウントのロールを引き受ける構成を組み立てる順",
+  "alt": "別のアカウントのロールを引き受ける構成を、5 段で組み立てる図です。アカウント B にロールを作り、信頼ポリシーでアカウント A を指定します。信頼ポリシーは、だれがこのロールを引き受けられるかを決めます。ロールにはアクセス許可ポリシーを付け、引き受けた後に何ができるか（ここではバケットのオブジェクトを読むこと）を決めます。アカウント A の利用者には、B のロールを引き受ける許可（AssumeRole の許可）を付けます。相手の信頼ポリシーと、自分側のこの許可の両方がそろって、引き受けられます。利用者は AWS STS に AssumeRole を呼び、一時的な認証情報を受け取ります。この認証情報には有効期限があり、期限が切れると使えなくなります。最後に、その認証情報でアカウント B のバケットのオブジェクトを読みます。引き受けている間は元の権限を手放し、ロールの権限だけを使います。",
+  "lessonRefs": [
+    "lesson-1.1-roles-federation",
+    "lesson-1.1-iam-basics"
+  ],
+  "factRefs": [
+    "sts.assume-role-trust-policy",
+    "sts.temporary-credentials",
+    "iam.role-trust-and-permissions"
+  ],
+  "createdBy": "v7",
+  "root": {
+    "dir": "col",
+    "children": [
+      {
+        "dir": "row",
+        "children": [
+          {
+            "id": "acct-a",
+            "box": "account",
+            "label": "A",
+            "dir": "row",
+            "children": [
+              {
+                "id": "assume-pol",
+                "node": "policy",
+                "label": "引受の許可"
+              },
+              {
+                "id": "user",
+                "node": "actor",
+                "label": "利用者"
+              }
+            ]
+          },
+          {
+            "id": "sts",
+            "node": "sts",
+            "label": "一時的な認証情報"
+          }
+        ]
+      },
+      {
+        "id": "acct-b",
+        "box": "account",
+        "label": "B",
+        "dir": "row",
+        "children": [
+          {
+            "dir": "col",
+            "children": [
+              {
+                "id": "trust-pol",
+                "node": "policy",
+                "label": "信頼ポリシー"
+              },
+              {
+                "id": "perm-pol",
+                "node": "policy",
+                "label": "権限ポリシー"
+              }
+            ]
+          },
+          {
+            "id": "role",
+            "node": "iam",
+            "label": "ロール"
+          },
+          {
+            "id": "bucket",
+            "node": "s3",
+            "label": "バケット"
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    {
+      "id": "e1",
+      "from": "trust-pol",
+      "to": "role",
+      "kind": "control"
+    },
+    {
+      "id": "e2",
+      "from": "trust-pol",
+      "to": "acct-a",
+      "kind": "control"
+    },
+    {
+      "id": "e3",
+      "from": "perm-pol",
+      "to": "role",
+      "kind": "control"
+    },
+    {
+      "id": "e4",
+      "from": "role",
+      "to": "bucket",
+      "kind": "control"
+    },
+    {
+      "id": "e5",
+      "from": "assume-pol",
+      "to": "user",
+      "kind": "control"
+    },
+    {
+      "id": "e6",
+      "from": "user",
+      "to": "sts",
+      "both": true,
+      "label": "引受"
+    },
+    {
+      "id": "e7",
+      "from": "user",
+      "to": "bucket",
+      "label": "読む"
+    }
+  ],
+  "steps": [
+    {
+      "text": "アカウント B にロールを作り、信頼ポリシーでアカウント A を指定します。信頼ポリシーは、だれがこのロールを引き受けられるかを決めます。",
+      "focus": [
+        "acct-b",
+        "role",
+        "trust-pol",
+        "acct-a"
+      ],
+      "edges": [
+        "e1",
+        "e2"
+      ],
+      "reveal": [
+        "acct-a",
+        "acct-b",
+        "trust-pol",
+        "role",
+        "e1",
+        "e2"
+      ]
+    },
+    {
+      "text": "ロールにアクセス許可ポリシーを付けます。引き受けた後に何ができるかを決めるもので、ここでは、このロールでバケットのオブジェクトを読めるようにします。",
+      "focus": [
+        "role",
+        "perm-pol",
+        "bucket"
+      ],
+      "edges": [
+        "e3",
+        "e4"
+      ],
+      "reveal": [
+        "perm-pol",
+        "bucket",
+        "e3",
+        "e4"
+      ]
+    },
+    {
+      "text": "アカウント A の利用者に、アカウント B のロールを引き受ける許可（AssumeRole の許可）を付けます。相手の信頼ポリシーと、自分側のこの許可の両方がそろって、引き受けられます。",
+      "focus": [
+        "acct-a",
+        "user",
+        "assume-pol"
+      ],
+      "edges": [
+        "e5"
+      ],
+      "reveal": [
+        "user",
+        "assume-pol",
+        "e5"
+      ]
+    },
+    {
+      "text": "利用者が AWS STS の AssumeRole を呼ぶと、STS から一時的な認証情報が返ります。この認証情報には有効期限があり、期限が切れると使えなくなります。",
+      "focus": [
+        "user",
+        "sts"
+      ],
+      "edges": [
+        "e6"
+      ],
+      "reveal": [
+        "sts",
+        "e6"
+      ]
+    },
+    {
+      "text": "一時的な認証情報で、アカウント B のバケットのオブジェクトを読みます。引き受けている間は元の権限を手放し、ロールの権限だけを使います。",
+      "focus": [
+        "user",
+        "bucket",
+        "role",
+        "perm-pol"
+      ],
+      "edges": [
+        "e7"
+      ],
+      "reveal": [
+        "e7"
+      ]
+    }
+  ]
+}

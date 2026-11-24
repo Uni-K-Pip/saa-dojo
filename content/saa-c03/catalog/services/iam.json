@@ -653,6 +653,293 @@
         }
       ],
       "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "iam.abac-tag-condition",
+      "title": "ABAC はタグの一致で許可する",
+      "kind": "feature",
+      "text": "ABAC（属性ベースのアクセス制御）は、タグを属性として権限を決める方式である。プリンシパルのタグとリソースのタグが一致するときに操作を許可するポリシーを書ける。職務ごとにポリシーを作る RBAC では、リソースが増えるたびにポリシーの更新が要るが、ABAC では新しいリソースや新しいプロジェクトの IAM ロールに同じタグを付ければ、ポリシーを変えずにアクセスが許可される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Define permissions based on attributes with ABAC authorization - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.group-members",
+      "title": "IAM ユーザーグループに入れられるもの",
+      "kind": "feature",
+      "text": "IAM ユーザーグループは IAM ユーザーの集まりで、入れられるのはユーザーだけである。ほかのグループを入れ子にはできない。グループにアイデンティティベースのポリシーを付けると、そのグループの全ユーザーにポリシーの権限が及ぶ。1 人のユーザーは複数のグループに所属できる。",
+      "trap": "グループはリソースベースのポリシーの Principal には指定できない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IAM user groups - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.root-user-protection",
+      "title": "ルートユーザーのアクセスキーを作らない",
+      "kind": "constraint",
+      "text": "ルートユーザーのアクセスキーは作らないことが強く勧められている。ルートユーザーは請求情報を含む、アカウントのすべての AWS サービスとリソースに完全にアクセスできるためである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.root-user-mfa-required",
+      "title": "ルートユーザーの MFA は必須",
+      "kind": "constraint",
+      "text": "AWS は、単独・管理・メンバーのすべてのアカウントの種類で、ルートユーザーの MFA の設定を必須としている。MFA がまだ有効でなければ、コンソールへの最初のサインインの試行から 14 日以内に登録が要る。",
+      "depth": "core",
+      "recheck": "default-value",
+      "sources": [
+        {
+          "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+        },
+        {
+          "title": "AWS account root user - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.access-analyzer-policy-generation",
+      "title": "Access Analyzer のポリシー生成",
+      "kind": "feature",
+      "text": "IAM Access Analyzer のポリシー生成は、IAM ユーザーまたはロールが CloudTrail の証跡に記録した実際のアクティビティから、使われた権限を含むポリシーのテンプレートを作る機能である。分析する期間は最大 90 日で指定する。生成には、有効な CloudTrail の証跡と、Access Analyzer が証跡を読むためのサービスロールが要る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IAM Access Analyzer policy generation - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.access-analyzer-policy-validation",
+      "title": "Access Analyzer のポリシー検証",
+      "kind": "feature",
+      "text": "IAM Access Analyzer のポリシー検証は、作成・編集中のポリシーを IAM のポリシー文法と AWS のベストプラクティスに照らして確かめる機能である。結果は、権限が広すぎるなどのセキュリティ警告、ポリシーが機能しなくなるエラー、ベストプラクティスに沿わない一般の警告、改善の提案に分かれて表示される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Validate policies with IAM Access Analyzer - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-validation.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.role-vs-resource-policy-permissions",
+      "title": "ロールの引き受けとリソースベースポリシーでの権限の違い",
+      "kind": "feature",
+      "text": "別のアカウントのリソースにロールを引き受けてアクセスすると、元の権限を手放し、ロールに割り当てられた権限だけを使う。リソースベースのポリシーで許可されてアクセスするときは、元のアカウントのプリンシパルのまま権限を保てる。そのため、共有リソースと自分のアカウントのリソースの間で情報をコピーするような作業に向く。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cross account resource access in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_compare-resource-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.cross-account-both-policies",
+      "title": "クロスアカウントでは両方のアカウントで許可が要る",
+      "kind": "feature",
+      "text": "あるアカウントのプリンシパルが別のアカウントのリソースにアクセスするときは、プリンシパル側のアカウントのアイデンティティベースのポリシーと、リソース側のアカウントのリソースベースのポリシーの両方が許可していて初めて、リクエストが許可される。どちらかのアカウントの評価で明示的な拒否があれば拒否される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Cross-account policy evaluation logic - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic-cross-account.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.resource-policy-service-scope",
+      "title": "リソースベースポリシーが使えるサービス",
+      "kind": "feature",
+      "text": "リソースを直接共有できるのは、そのリソースがリソースベースのポリシーに対応しているサービスである。対応するサービスには Amazon S3 のバケット、Amazon SNS のトピック、Amazon SQS のキューなどがある。対応していないサービスのリソースには、ロールを仲介にしたクロスアカウントのアクセスを使う。ロールなら複数のサービスの権限管理をまとめられる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Cross account resource access in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_compare-resource-policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.root-user-sign-in",
+      "title": "ルートユーザーのサインイン情報",
+      "kind": "feature",
+      "text": "ルートユーザーは、AWS アカウントを作成したときのメールアドレスとパスワードでサインインする。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "AWS account root user - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.user-and-role-identity",
+      "title": "IAM ユーザーと IAM ロールの位置づけ",
+      "kind": "feature",
+      "text": "IAM ユーザーは、アカウント内に作る、1 人の人または 1 つのアプリケーションのための ID で、パスワードやアクセスキーといった長期的な認証情報を持てる。IAM ロールも特定の権限を持つアカウント内の ID だが、特定の人には結び付かない。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "IAM Identities - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id.html"
+        },
+        {
+          "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.implicit-deny",
+      "title": "既定ではリクエストは暗黙に拒否される",
+      "kind": "feature",
+      "text": "AWS のポリシー評価では、既定ではすべてのリクエストが暗黙に拒否される。ただしルートユーザーは完全なアクセス権を持つ例外である。リクエストが許可されるには、ポリシーで明示的に許可されている必要がある。暗黙の拒否は、ポリシーの Deny 文による明示的な拒否とは別のものである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "How AWS enforcement code logic evaluates requests to allow or deny access - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html"
+        }
+      ],
+      "checkedAt": "2026-11-24",
+      "recheck": "default-value"
+    },
+    {
+      "id": "iam.switch-role-console",
+      "title": "コンソールでのロールの切り替え",
+      "kind": "feature",
+      "text": "IAM ユーザーなどでサインインしたあと、マネジメントコンソールの「ロールの切り替え」で、アカウント ID（またはエイリアス）とロール名を入力してロールに切り替えられる。ロールは自分のアカウントでも別のアカウントでもよい。切り替えるには、ポリシーで切り替えの権限が付与されている必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Switch from a user to an IAM role (console) - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.last-accessed-information",
+      "title": "最終アクセス情報で使われていない権限を見つける",
+      "kind": "feature",
+      "text": "最終アクセス情報は、IAM のユーザー・グループ・ロールなどの ID について、ポリシーが許可したサービスへの最後のアクセス試行の日時を示す機能である。使われていない権限を見つけて削除し、最小権限に近づけるために使う。対象は ID に付いたポリシー（ロールやユーザーに直接、またはグループ経由で付けたもの）が許可したサービスで、リソースベースのポリシー、アクセスコントロールリスト、SCP、権限の境界、セッションポリシーによる許可は含まれない。",
+      "examPoint": "使われていない権限を洗い出して最小権限に近づけるなら、最終アクセス情報。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Refine permissions in AWS using last accessed information - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_last-accessed.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.saml-federation-provider",
+      "title": "SAML 2.0 フェデレーションの IAM 側の構成",
+      "kind": "feature",
+      "text": "IAM の SAML 2.0 フェデレーションでは、組織の IdP が出す SAML メタデータの文書をもとに、IAM に SAML ID プロバイダー（IdP を表すエンティティ）を作り、ロールの信頼ポリシーでその SAML プロバイダーを Principal に指定する。IdP で認証された利用者のアプリが SAML アサーションを付けて sts:AssumeRoleWithSAML を呼ぶと、ロールの一時的な認証情報が返る。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "SAML 2.0 federation - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html"
+        },
+        {
+          "title": "Create a SAML identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.role-arn-not-secret",
+      "title": "ロールの ARN は秘密ではない",
+      "kind": "constraint",
+      "text": "ロールの ARN は秘密ではなく、ほかの利用者が知る・推測することがありうる。第三者にロールを引き受けさせるときは、ARN を知っているだけでは引き受けられないよう、信頼ポリシーの条件（外部 ID など）を組み合わせる。",
+      "trap": "ロールの ARN を知られないことを、アクセス制御の手段にしない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "The confused deputy problem - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.aws-managed-policy-not-least-privilege",
+      "title": "AWS 管理ポリシーは最小権限とは限らない",
+      "kind": "feature",
+      "text": "AWS 管理ポリシーは AWS のすべての利用者が使えるように用意されているため、個々の用途に対して最小権限の権限を与えるとは限らない。そのため、用途に固有のカスタマー管理ポリシーを定義して、権限をさらに絞ることが推奨される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Security best practices in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.federation-idp-same-account",
+      "title": "フェデレーションの IdP はロールと同じアカウントに置く",
+      "kind": "constraint",
+      "text": "IAM の SAML 2.0 と OpenID Connect のどちらのフェデレーションでも、ロールの信頼ポリシーで使う ID プロバイダー（IAM に作るエンティティ）は、そのロールと同じアカウントになければならない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Create an OpenID Connect (OIDC) identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
+        },
+        {
+          "title": "Create a SAML identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.global-propagation",
+      "title": "IAM のコントロールプレーンは 1 つで、設定が各リージョンに伝わる",
+      "kind": "feature",
+      "text": "IAM は、リージョンを基盤にしながら世界中で使えるサービスである。すべての商用リージョンに対して IAM のコントロールプレーンは 1 つで、米国東部（バージニア北部）リージョンにある。ロールやポリシーなどの設定の変更はここに送られ、有効なすべてのリージョンの IAM のデータプレーンに伝わる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resilience in AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/disaster-recovery-resiliency.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
@@ -677,5 +964,5 @@
   ],
   "createdBy": "sc3",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-23"
+  "updatedAt": "2026-11-24"
 }

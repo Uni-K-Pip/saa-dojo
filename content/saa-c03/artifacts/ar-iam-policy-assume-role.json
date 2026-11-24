@@ -1,0 +1,42 @@
+{
+  "id": "ar-iam-policy-assume-role",
+  "kind": "iam-policy",
+  "title": "アカウント A の利用者に、B のロールを引き受けることを許すポリシー",
+  "format": "json",
+  "document": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRole",
+        "Resource": "arn:aws:iam::444455556666:role/example-cross-account-role"
+      }
+    ]
+  },
+  "notes": [
+    {
+      "path": "Statement[0].Action",
+      "text": "アカウント A の利用者に付けるアイデンティティベースのポリシーです。許す操作は、ロールを引き受ける AssumeRole です。"
+    },
+    {
+      "path": "Statement[0].Resource",
+      "text": "引き受けてよいロールを、アカウント B の 1 つに限っています。"
+    },
+    {
+      "path": "Statement[0].Resource",
+      "text": "引き受けるには、この A 側の許可と、B のロールの信頼ポリシーが A を信頼していることの両方が要ります。"
+    }
+  ],
+  "ask": {
+    "text": "このポリシーを付けた利用者は、アカウント B のほかのロールも引き受けられますか？",
+    "answer": "このポリシーでは許可されません。Resource が example-cross-account-role の 1 つだけなので、B のほかのロールは対象外です。"
+  },
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "factRefs": [
+    "sts.assume-role-trust-policy",
+    "iam.identity-policy-types"
+  ],
+  "createdBy": "v7"
+}

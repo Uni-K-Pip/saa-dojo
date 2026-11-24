@@ -170,8 +170,13 @@ describe('コンテンツのビルド', () => {
     ];
     const course = { stages: [{ id: 0, title: '土台', goal: '基礎を学ぶ', units }] };
     const status = { 'saa-1.1-a-002': { status: 'needs-fix', checkedAt: '2026-11-04' } };
+    // ユニット演習は、レッスンの knowledgeRefs と問題の knowledgeRefs の重なりで選ぶ。図や実物の参照のない最小のレッスンを渡す
+    const lessonText = [
+      '---', `id: ${lessonId}`, 'title: アクセス管理のレッスン', 'taskStatement: "1.1"', 'domain: 1',
+      'order: 1', 'knowledgeRefs: ["1.1-K4"]', 'services: []', 'estimatedMinutes: 5', 'createdBy: t', '---', '本文です。',
+    ].join('\n');
     const parsed = parseContent(files(qs, [
-      { rel: lessonRel, text: read(lessonRel) },
+      { rel: lessonRel, text: lessonText },
       { rel: 'course.json', text: JSON.stringify(course) },
       { rel: 'review-status.json', text: JSON.stringify(status) },
     ]), schema);

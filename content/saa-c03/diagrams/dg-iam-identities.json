@@ -1,0 +1,171 @@
+{
+  "id": "dg-iam-identities",
+  "type": "architecture",
+  "title": "IAM の ID とポリシーの関係",
+  "alt": "AWS アカウントの中に、ルートユーザー、IAM グループ、IAM ロール、ポリシー 2 つがあります。IAM グループの中には IAM ユーザーが 2 人います。ルートユーザーはアカウントのすべての操作ができるので、日常の作業には使いません。IAM ユーザーは長期的な認証情報を持てます。グループに入れられるのは IAM ユーザーだけで、ロールはグループに入れられず、グループの入れ子もできません。1 つ目のポリシーはグループに付き、所属するユーザー全員に権限が及びます。2 つ目のポリシーはロールに付きます。ロールを引き受けると、AWS STS から一時的な認証情報が発行され、一定時間がたつと使えなくなります。",
+  "lessonRefs": [
+    "lesson-1.1-iam-basics"
+  ],
+  "factRefs": [
+    "iam.identity-policy-types",
+    "iam.root-user-tasks",
+    "sts.temporary-credentials"
+  ],
+  "createdBy": "v7",
+  "root": {
+    "dir": "col",
+    "children": [
+      {
+        "id": "sts",
+        "node": "sts",
+        "label": "一時的な認証"
+      },
+      {
+        "id": "acct",
+        "box": "account",
+        "label": "アカウント",
+        "dir": "col",
+        "children": [
+          {
+            "id": "r3",
+            "dir": "row",
+            "children": [
+              {
+                "id": "pol-r",
+                "node": "policy",
+                "label": "ポリシー"
+              },
+              {
+                "id": "role",
+                "node": "iam",
+                "label": "ロール"
+              }
+            ]
+          },
+          {
+            "id": "r1",
+            "dir": "row",
+            "children": [
+              {
+                "id": "root-user",
+                "node": "actor",
+                "label": "ルートユーザー"
+              }
+            ]
+          },
+          {
+            "id": "r2",
+            "dir": "row",
+            "children": [
+              {
+                "id": "pol-g",
+                "node": "policy",
+                "label": "ポリシー"
+              },
+              {
+                "id": "grp",
+                "box": "group",
+                "label": "IAM グループ",
+                "dir": "row",
+                "children": [
+                  {
+                    "id": "user-1",
+                    "node": "actor",
+                    "label": "IAM ユーザー"
+                  },
+                  {
+                    "id": "user-2",
+                    "node": "actor",
+                    "label": "IAM ユーザー"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    {
+      "id": "e1",
+      "from": "pol-g",
+      "to": "grp",
+      "kind": "control",
+      "label": "付ける"
+    },
+    {
+      "id": "e2",
+      "from": "pol-r",
+      "to": "role",
+      "kind": "control",
+      "label": "付ける"
+    },
+    {
+      "id": "e3",
+      "from": "sts",
+      "to": "role",
+      "kind": "data",
+      "label": "発行"
+    }
+  ],
+  "steps": [
+    {
+      "text": "ルートユーザーは、アカウントを作ったときのメールアドレスとパスワードでサインインする ID です。アカウントのすべての操作ができるので、日常の作業には使いません。",
+      "focus": [
+        "root-user"
+      ],
+      "reveal": [
+        "acct",
+        "root-user"
+      ]
+    },
+    {
+      "text": "IAM ユーザーは、パスワードやアクセスキーといった長期的な認証情報を持てる個別の ID です。IAM グループは IAM ユーザーをまとめる入れ物で、グループに入れられるのは IAM ユーザーだけです。ロールはグループに入れられず、グループの入れ子もできません。",
+      "focus": [
+        "grp",
+        "user-1",
+        "user-2"
+      ],
+      "reveal": [
+        "grp",
+        "user-1",
+        "user-2"
+      ]
+    },
+    {
+      "text": "ポリシーは、IAM ユーザー、グループ、ロールに付けます。この図では、グループとロールに付けています。グループに付けると、所属するユーザー全員に権限が及びます。",
+      "focus": [
+        "pol-g",
+        "grp",
+        "pol-r",
+        "role"
+      ],
+      "edges": [
+        "e1",
+        "e2"
+      ],
+      "reveal": [
+        "pol-g",
+        "pol-r",
+        "role",
+        "e1",
+        "e2"
+      ]
+    },
+    {
+      "text": "ロールは、引き受けて使う ID です。引き受けると AWS STS から一時的な認証情報が発行され、一定時間がたつと使えなくなります。",
+      "focus": [
+        "sts",
+        "role"
+      ],
+      "edges": [
+        "e3"
+      ],
+      "reveal": [
+        "sts",
+        "e3"
+      ]
+    }
+  ]
+}

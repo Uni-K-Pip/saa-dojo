@@ -166,6 +166,105 @@
         }
       ],
       "checkedAt": "2026-11-16"
+    },
+    {
+      "id": "iam-identity-center.former-name",
+      "title": "旧称は AWS Single Sign-On",
+      "kind": "feature",
+      "text": "IAM Identity Center は、2022 年 7 月 26 日に AWS Single Sign-On から改称されたサービスである。後方互換性のため、sso や identitystore の API 名前空間、CLI コマンド、サービスエンドポイントなどには旧称由来の名前が残っている。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.one-identity-source",
+      "title": "ID ソースは組織に 1 つ",
+      "kind": "constraint",
+      "text": "IAM Identity Center の ID ソースは、AWS Organizations の組織ごとに 1 つだけ持てる。選べるのは外部 ID プロバイダー、Active Directory、Identity Center ディレクトリのいずれかである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Manage your identity source - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.default-identity-source",
+      "title": "既定の ID ソースは Identity Center ディレクトリ",
+      "kind": "constraint",
+      "text": "IAM Identity Center を初めて有効にすると、別の ID ソースを選ばない限り、Identity Center ディレクトリが既定の ID ソースとして設定される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Manage your identity source - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source.html"
+        }
+      ],
+      "checkedAt": "2026-11-24",
+      "recheck": "default-value"
+    },
+    {
+      "id": "iam-identity-center.ad-connection-path",
+      "title": "AD 接続のディレクトリを置くアカウント",
+      "kind": "integration",
+      "text": "Active Directory を ID ソースにするときに使う AWS Directory Service のディレクトリ（AD Connector か AWS Managed Microsoft AD）は、委任管理者のアカウントがあればそのアカウントに、なければ AWS Organizations の管理アカウントに置く。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Microsoft AD directory - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.one-ad-directory",
+      "title": "接続できる AD ディレクトリは同時に 1 つ",
+      "kind": "constraint",
+      "text": "IAM Identity Center に同時に接続できるのは、AD Connector のディレクトリ 1 つか、AWS Managed Microsoft AD のディレクトリ 1 つである。複数のドメインやフォレストを扱う必要がある場合は、AWS Managed Microsoft AD を使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Microsoft AD directory - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.scim-automatic-provisioning",
+      "title": "SCIM による自動プロビジョニング",
+      "kind": "integration",
+      "text": "IAM Identity Center は、外部 ID プロバイダーのユーザーとグループの情報を、SCIM v2.0 プロトコルで IAM Identity Center へ自動でプロビジョニング（同期）できる。接続は IdP 側で、IAM Identity Center の SCIM エンドポイントと、IAM Identity Center で作成したベアラートークンを使って設定する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Provision users and groups from an external identity provider using SCIM - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/provision-automatically.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.portal-temporary-credentials",
+      "title": "アクセスポータルから一時的な認証情報を取得",
+      "kind": "feature",
+      "text": "IAM Identity Center のユーザーは、AWS アクセスポータルにサインインしたあと、割り当てられたアカウントの権限セットを選んで、一時的な認証情報を取得できる。この認証情報は AWS CLI や AWS SDK で、そのアカウントのリソースへアクセスするために使う。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Getting IAM Identity Center user credentials for the AWS CLI or AWS SDKs - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/howtogetcredentials.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
@@ -183,5 +282,6 @@
     }
   ],
   "createdBy": "cx2",
-  "createdAt": "2026-11-16"
+  "createdAt": "2026-11-16",
+  "updatedAt": "2026-11-24"
 }

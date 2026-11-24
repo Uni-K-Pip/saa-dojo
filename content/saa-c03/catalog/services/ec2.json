@@ -739,6 +739,34 @@
         }
       ],
       "checkedAt": "2026-11-21"
+    },
+    {
+      "id": "ec2.shared-responsibility-aws-side",
+      "title": "責任共有モデルで AWS が責任を持つ範囲",
+      "kind": "feature",
+      "text": "責任共有モデルでは、AWS は、AWS クラウドのすべてのサービスを動かすインフラストラクチャ（ハードウェア、ソフトウェア、ネットワーク、施設）を保護する責任を負う。AWS は、ホストの OS と仮想化のレイヤーから、サービスが動く施設の物理的なセキュリティまでのコンポーネントを運用、管理、統制する。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Shared Responsibility Model",
+          "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "ec2.customer-content-responsibility",
+      "title": "EC2 の上に置いた自分のコンテンツの管理は利用者の責任",
+      "kind": "feature",
+      "text": "EC2 のデータ保護では、責任共有モデルにより、AWS は AWS クラウドを動かすグローバルなインフラストラクチャを保護し、利用者はそのインフラストラクチャの上でホストする自分のコンテンツの管理（統制）を維持する責任を持つ。利用者は、使う AWS サービスのセキュリティ設定と管理のタスクにも責任を持つ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Data protection in Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "references": [
@@ -757,5 +785,5 @@
   ],
   "createdBy": "sc7",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-21"
+  "updatedAt": "2026-11-24"
 }

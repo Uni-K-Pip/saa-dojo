@@ -428,6 +428,21 @@
       "checkedAt": "2026-11-21"
     },
     {
+      "id": "lambda.resource-based-policy",
+      "title": "リソースベースのポリシーで、ほかのアカウントやサービスに関数を使わせる",
+      "kind": "feature",
+      "text": "関数のリソースベースのポリシーは、ほかの AWS アカウント、ユーザー、組織、AWS のサービスに、その関数へのアクセスを許可するポリシーである。ステートメントの Principal で許可する相手を指定し、Resource で対象の関数、バージョン、エイリアスを指定する。",
+      "examPoint": "ほかのアカウントや AWS のサービスから関数を呼び出せるようにするのは、関数側のリソースベースのポリシー。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Working with resource-based policies in Lambda",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
       "id": "lambda.vpc-access",
       "title": "VPC に接続すると、インターネットへは VPC 側の出口が要る",
       "kind": "feature",
@@ -526,5 +541,5 @@
   ],
   "createdBy": "sc9",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-24"
 }

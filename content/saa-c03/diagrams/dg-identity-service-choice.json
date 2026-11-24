@@ -1,0 +1,152 @@
+{
+  "id": "dg-identity-service-choice",
+  "type": "decision",
+  "title": "ID サービスの選び方",
+  "alt": "ID サービスを、質問に答えて選ぶ図です。最初に、サインインするのが従業員か、自社アプリの利用者（顧客）かを聞きます。顧客なら、AWS のリソースを直接使わせるかを聞き、使わせるなら Cognito ID プール、使わせないなら Cognito ユーザープールです。従業員なら、複数の AWS アカウントへのシングルサインオンや権限の一元管理が要るかを聞き、要るなら IAM Identity Center です。要らなければ Active Directory を使うかを聞き、使わないなら IAM の SAML・OIDC フェデレーションです。使うなら、AWS 上で AD そのもの（AD に依存するワークロード）が要るかを聞き、要るなら AWS Managed Microsoft AD、要らず既存の AD の認証情報をそのまま使うなら AD Connector です。AD Connector はほかのアカウントと共有できず、RDS for SQL Server とも互換性がないので、その場合は AWS Managed Microsoft AD です。",
+  "lessonRefs": [
+    "lesson-1.1-roles-federation"
+  ],
+  "factRefs": [
+    "iam-identity-center.permission-set-template",
+    "iam-identity-center.workforce-access-portal",
+    "iam-identity-center.active-directory-source",
+    "cognito.user-pool-directory",
+    "cognito.user-pool-jwt",
+    "cognito.user-pool-federation",
+    "cognito.identity-pool-credentials",
+    "cognito.identity-pool-guest-access",
+    "directory-service.managed-microsoft-ad",
+    "directory-service.ad-connector",
+    "directory-service.rds-sql-server-compat",
+    "directory-service.directory-sharing"
+  ],
+  "createdBy": "v7",
+  "start": "q-who",
+  "nodes": [
+    {
+      "id": "q-who",
+      "ask": "サインインするのは、従業員ですか、自社アプリの利用者（顧客）ですか？",
+      "choices": [
+        {
+          "label": "従業員",
+          "to": "q-sso"
+        },
+        {
+          "label": "顧客",
+          "to": "q-direct"
+        }
+      ]
+    },
+    {
+      "id": "q-direct",
+      "ask": "アプリの利用者に、S3 などの AWS のリソースを直接使わせますか？",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-id-pool"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-user-pool"
+        }
+      ]
+    },
+    {
+      "id": "r-id-pool",
+      "result": "Cognito ID プール",
+      "why": "ユーザープールなどで認証した利用者を、一時的で権限を限定した AWS の認証情報に交換します。サインインしていないゲストにも、権限を絞って発行できます。",
+      "factRefs": [
+        "cognito.identity-pool-credentials",
+        "cognito.identity-pool-guest-access"
+      ]
+    },
+    {
+      "id": "r-user-pool",
+      "result": "Cognito ユーザープール",
+      "why": "利用者の登録とサインインを受け持ち、JWT を発行します。アプリ側でトークンを検証する構成では単独で使え、外部 IdP のサインインも仲介できます。",
+      "factRefs": [
+        "cognito.user-pool-directory",
+        "cognito.user-pool-jwt",
+        "cognito.user-pool-federation"
+      ]
+    },
+    {
+      "id": "q-sso",
+      "ask": "複数の AWS アカウントへのシングルサインオンや、権限の一元管理が要りますか？",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "r-identity-center"
+        },
+        {
+          "label": "いいえ",
+          "to": "q-ad"
+        }
+      ]
+    },
+    {
+      "id": "r-identity-center",
+      "result": "IAM Identity Center",
+      "why": "権限セットでアカウントごとの権限を割り当て、利用者は AWS アクセスポータルから使います。ID ソースは、Identity Center ディレクトリ、Active Directory、外部 ID プロバイダーから選びます。",
+      "factRefs": [
+        "iam-identity-center.permission-set-template",
+        "iam-identity-center.workforce-access-portal",
+        "iam-identity-center.active-directory-source"
+      ]
+    },
+    {
+      "id": "q-ad",
+      "ask": "Active Directory を使いますか？",
+      "choices": [
+        {
+          "label": "はい",
+          "to": "q-ad-on-aws"
+        },
+        {
+          "label": "いいえ",
+          "to": "r-federation"
+        }
+      ]
+    },
+    {
+      "id": "r-federation",
+      "result": "IAM の SAML・OIDC フェデレーション",
+      "why": "アカウントごとに ID プロバイダーを登録し、ロールを引き受けさせます。",
+      "factRefs": []
+    },
+    {
+      "id": "q-ad-on-aws",
+      "ask": "AWS 上で AD そのもの（AD に依存するワークロード）が要りますか？",
+      "choices": [
+        {
+          "label": "要る",
+          "to": "r-managed-ad"
+        },
+        {
+          "label": "要らない",
+          "to": "r-ad-connector"
+        }
+      ]
+    },
+    {
+      "id": "r-managed-ad",
+      "result": "AWS Managed Microsoft AD",
+      "why": "AWS が運用する Active Directory で、AD に依存するワークロードを AWS 上で動かせます。複数のアカウントで共有でき、RDS for SQL Server でも使えます。",
+      "factRefs": [
+        "directory-service.managed-microsoft-ad",
+        "directory-service.directory-sharing",
+        "directory-service.rds-sql-server-compat"
+      ]
+    },
+    {
+      "id": "r-ad-connector",
+      "result": "AD Connector",
+      "why": "要求をオンプレミスの AD へ転送し、クラウドに情報をキャッシュしません。ほかのアカウントとは共有できず、RDS for SQL Server とも互換性がないので、その場合は AWS Managed Microsoft AD です。",
+      "factRefs": [
+        "directory-service.ad-connector",
+        "directory-service.directory-sharing",
+        "directory-service.rds-sql-server-compat"
+      ]
+    }
+  ]
+}

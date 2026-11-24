@@ -1,0 +1,47 @@
+{
+  "id": "ar-iam-policy-s3-read-tls",
+  "kind": "iam-policy",
+  "title": "TLS の要求だけに example-bucket の読み取りを許すポリシー",
+  "format": "json",
+  "document": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::example-bucket/*",
+        "Condition": {
+          "Bool": {
+            "aws:SecureTransport": "true"
+          }
+        }
+      }
+    ]
+  },
+  "notes": [
+    {
+      "path": "Statement[0].Action",
+      "text": "許可する操作は s3:GetObject だけです。最小権限の「必要な操作」だけを許可しています。"
+    },
+    {
+      "path": "Statement[0].Resource",
+      "text": "対象は example-bucket のオブジェクトだけです。最小権限の「必要なリソース」に絞っています。"
+    },
+    {
+      "path": "Statement[0].Condition",
+      "text": "aws:SecureTransport が true、つまり TLS で送られた要求のときだけ許可します。「必要な条件」で絞っています。"
+    }
+  ],
+  "ask": {
+    "text": "TLS を使わずに送った GetObject の要求は、このポリシーで許可されますか？",
+    "answer": "許可されません。条件に合わないためこの文の許可は当たらず、ほかのポリシーでも許可されていなければ暗黙の拒否になります。"
+  },
+  "lessonRefs": [
+    "lesson-1.1-iam-basics",
+    "lesson-basics-iam"
+  ],
+  "factRefs": [
+    "iam.global-key-securetransport"
+  ],
+  "createdBy": "v7"
+}

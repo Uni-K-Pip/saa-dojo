@@ -827,6 +827,20 @@
         }
       ],
       "checkedAt": "2026-11-20"
+    },
+    {
+      "id": "s3.shared-responsibility-abstracted",
+      "title": "抽象化されたサービスの責任共有",
+      "kind": "feature",
+      "text": "責任共有モデルで、Amazon S3 や Amazon DynamoDB のような抽象化されたサービスでは、AWS がインフラストラクチャのレイヤー、OS、プラットフォームを運用し、利用者はエンドポイントを通じてデータを保存・取得する。利用者は、データの管理（暗号化の選択を含む）、資産の分類、IAM のツールによる適切な権限の付与に責任を持つ。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Shared Responsibility Model - Amazon Web Services (AWS)",
+          "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "references": [
@@ -837,5 +851,5 @@
   ],
   "createdBy": "sc1",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-20"
+  "updatedAt": "2026-11-24"
 }

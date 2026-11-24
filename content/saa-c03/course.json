@@ -40,6 +40,7 @@
           "items": [
             { "kind": "lesson", "ref": "lesson-1.1-iam-basics" },
             { "kind": "lesson", "ref": "lesson-1.1-roles-federation" },
+            { "kind": "lab", "ref": "lab-cross-account-assume-role" },
             { "kind": "practice" }
           ]
         },

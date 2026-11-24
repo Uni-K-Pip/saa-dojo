@@ -82,6 +82,23 @@
       "checkedAt": "2026-11-14"
     },
     {
+      "id": "sts.assume-role-role-arn",
+      "title": "AssumeRole にはロールの ARN とセッション名を渡す",
+      "kind": "feature",
+      "text": "AssumeRole を呼ぶときは、引き受けるロールの ARN を RoleArn に、セッションの識別子を RoleSessionName に指定する。この 2 つは必須のパラメーターである。RoleSessionName は、同じロールを異なるプリンシパルや目的で引き受けるときにセッションを一意に識別するために使い、引き受けたロールのプリンシパルの ARN にも含まれる。クロスアカウントでは、セッション名がロールを持つアカウントから見え、CloudTrail ログに記録されうる。",
+      "depth": "detail",
+      "tags": [
+        "AssumeRole"
+      ],
+      "sources": [
+        {
+          "title": "AssumeRole - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
       "id": "sts.assume-role-external-id",
       "title": "外部 ID でロールの引き受けを絞る",
       "kind": "feature",
@@ -260,6 +277,46 @@
       ],
       "checkedAt": "2026-11-14",
       "recheck": "default-value"
+    },
+    {
+      "id": "sts.session-tags",
+      "title": "セッションタグでロールのセッションに属性を渡す",
+      "kind": "feature",
+      "text": "セッションタグは、ロールを引き受けるとき、またはユーザーをフェデレーションするときに渡すキーと値の属性である。AssumeRole は Tags パラメーター、AssumeRoleWithSAML は SAML 属性、AssumeRoleWithWebIdentity は OIDC トークンで渡す。セッションの認証情報による要求では aws:PrincipalTag 条件キーで参照でき、ID プロバイダーの属性に基づく ABAC に使える。",
+      "examPoint": "ID プロバイダーのユーザー属性に基づいてアクセスを制御するときは、属性をセッションタグとして渡す。",
+      "depth": "detail",
+      "tags": [
+        "セッションタグ",
+        "ABAC",
+        "フェデレーション"
+      ],
+      "sources": [
+        {
+          "title": "Pass session tags in AWS STS",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "sts.confused-deputy-external-id-issuer",
+      "title": "外部 ID は事業者が顧客ごとに一意に決める",
+      "kind": "feature",
+      "text": "第三者の事業者が多数の顧客のロールを引き受ける場合、ある顧客 B が、顧客 A のロールの ARN を事業者に渡すと、事業者が A のロールを使って A のアカウントのリソースにアクセスしてしまうおそれがある（混乱した代理）。これを防ぐため、外部 ID は事業者が顧客ごとに一意な値を決め、顧客はその値をロールの信頼ポリシーの sts:ExternalId の条件に入れる。",
+      "examPoint": "事業者が発行した外部 ID を、顧客がロールの信頼ポリシーの条件に設定する。",
+      "trap": "外部 ID を顧客が自分で考えて決めればよいと考える。",
+      "depth": "detail",
+      "tags": [
+        "外部ID",
+        "混乱した代理"
+      ],
+      "sources": [
+        {
+          "title": "The confused deputy problem",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "references": [
@@ -274,5 +331,5 @@
   ],
   "createdBy": "sc2",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-14"
+  "updatedAt": "2026-11-24"
 }
