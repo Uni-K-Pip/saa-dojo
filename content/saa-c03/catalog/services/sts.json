@@ -205,7 +205,7 @@
       "id": "sts.get-session-token-api-limits",
       "title": "GetSessionToken の認証情報で呼べない API",
       "kind": "constraint",
-      "text": "GetSessionToken が返す認証情報では、MFA の認証情報を含めない限り IAM の API を呼び出せない。また、AWS STS の API は AssumeRole と GetCallerIdentity 以外は呼び出せない。",
+      "text": "GetSessionToken が返す認証情報では、MFA の認証情報を含めない限り IAM の API を呼び出せない。また、AWS STS の API は AssumeRole、GetCallerIdentity、GetScopedCredentials、GetWebIdentityToken、GetDelegatedAccessToken 以外は呼び出せない。",
       "depth": "detail",
       "tags": [
         "GetSessionToken"
@@ -216,7 +216,7 @@
           "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-24"
     },
     {
       "id": "sts.web-identity-saml-unsigned",
