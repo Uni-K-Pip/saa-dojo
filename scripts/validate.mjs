@@ -839,6 +839,31 @@ function checkGlossary(content, { rel, data: g }) {
   if (dups.length) report.warn('glossary-duplicate', rel, `同じ用語が複数あります: ${dups.slice(0, 5).join(', ')}`);
 }
 
+// ファイルをまたいで同じ用語があるか（ファイルの中の重複は checkGlossary が見る）。
+// 検証状態の記録の鍵は用語なので、またいだ重複も同じ警告にする
+function checkGlossaryAcrossFiles(content) {
+  const filesOf = new Map();
+  for (const { rel, data } of content.glossaries) {
+    for (const e of data.entries) {
+      const key = normName(e.term);
+      if (!filesOf.has(key)) filesOf.set(key, new Set());
+      filesOf.get(key).add(rel);
+    }
+  }
+  const byRel = new Map();
+  for (const [term, rels] of filesOf) {
+    if (rels.size < 2) continue;
+    const [first, ...rest] = [...rels].sort();
+    for (const rel of rest) {
+      if (!byRel.has(rel)) byRel.set(rel, []);
+      byRel.get(rel).push(`${term}（${first} にもある）`);
+    }
+  }
+  for (const [rel, terms] of byRel) {
+    content.report.warn('glossary-duplicate', rel, `ほかの用語集のファイルと同じ用語があります: ${terms.slice(0, 5).join(', ')}${terms.length > 5 ? ' ほか' : ''}`);
+  }
+}
+
 function checkGlossaryRelated(content) {
   // 全ファイルの用語が出そろってから、related の参照先を調べる
   const terms = new Set();
@@ -1196,6 +1221,7 @@ export function checkContent(content) {
   for (const { rel, data } of [...content.labs, ...content.patterns]) checkServiceNames(content, rel, data.services, 'services');
   for (const d of content.decks) checkDeck(content, d);
   for (const g of content.glossaries) checkGlossary(content, g);
+  checkGlossaryAcrossFiles(content);
   for (const e of content.catalog.entries) checkCatalogEntry(content, e);
   reportServiceAliases(content);
   checkGlossaryRelated(content);

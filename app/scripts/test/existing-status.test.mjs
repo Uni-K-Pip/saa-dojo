@@ -51,7 +51,8 @@ afterEach(() => {
   for (const root of tmp.splice(0)) fs.rmSync(root, { recursive: true, force: true });
 });
 
-function fixture({ status, lesson = md(lessonFront), cards = deck.cards } = {}) {
+/** files: 置き換えるか足すファイル（content/saa-c03 からの相対パス → 中身） */
+function fixture({ status, lesson = md(lessonFront), cards = deck.cards, files = {} } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'saa-existing-'));
   tmp.push(root);
   const contentDir = path.join(root, 'content', 'saa-c03');
@@ -63,6 +64,7 @@ function fixture({ status, lesson = md(lessonFront), cards = deck.cards } = {}) 
     'flashcards/tst.json': { ...deck, cards },
     'glossary/test.json': glossary,
     ...(status === undefined ? {} : { 'material-status.json': status }),
+    ...files,
   };
   for (const [rel, value] of Object.entries(source)) {
     const dest = path.join(contentDir, rel);
@@ -72,7 +74,7 @@ function fixture({ status, lesson = md(lessonFront), cards = deck.cards } = {}) 
   return { root, contentDir, outDir: path.join(root, 'out') };
 }
 
-const CODES = ['material-status-key', 'material-stale-review', 'schema'];
+const CODES = ['material-status-key', 'material-stale-review', 'schema', 'glossary-duplicate'];
 const statusIssues = (opts) => checkContent(loadContent({ root: fixture(opts).root })).issues.filter((i) => CODES.includes(i.code));
 
 function build(opts, includeUnverified = false) {
@@ -256,5 +258,70 @@ describe('実際の教材', () => {
     expect(c.guides).toBe(total(c.existingStatus.guides));
     expect(c.flashcards + c.flashcardsExcluded['needs-fix'] + c.flashcardsExcluded.rejected).toBe(total(c.existingStatus.flashcards));
     expect(c.glossary + c.glossaryExcluded['needs-fix'] + c.glossaryExcluded.rejected).toBe(total(c.existingStatus.glossary));
+  });
+});
+
+describe('同じ用語がファイルをまたいで 2 つあるとき', () => {
+  const files = { 'glossary/other.json': { createdBy: 'v1', entries: [entry('保存先', { en: 'Storage' })] } };
+
+  it('validate は重複の警告を出す（記録がなくても）', () => {
+    const issues = statusIssues({ files });
+    expect(issues).toEqual([expect.objectContaining({ level: 'warning', code: 'glossary-duplicate', file: 'content/saa-c03/glossary/test.json' })]);
+    expect(issues[0].message).toContain('保存先');
+  });
+
+  it('その用語の記録は、validate とビルドのどちらでもエラー', () => {
+    const status = { glossary: { 保存先: rec(currentHashes().glossary['保存先']) } };
+    const issues = statusIssues({ files, status });
+    expect(issues).toContainEqual(expect.objectContaining({ level: 'error', code: 'material-status-key' }));
+    expect(issues.find((i) => i.code === 'material-status-key').message).toContain('この term の用語が 2 件あり');
+    const built = buildContent({ ...fixture({ files, status }), schema });
+    expect(built.ok).toBe(false);
+    expect(built.errors).toContainEqual(expect.stringContaining('glossary.保存先: この term の用語が 2 件あり'));
+  });
+
+  it('ビルドと coverage は、項目の数で数える', () => {
+    const { built } = build({ files });
+    expect(built.manifest.counts.glossary).toBe(3);
+    const s = built.manifest.counts.existingStatus.glossary;
+    expect(s.verified + s.pending + s['needs-fix'] + s.rejected).toBe(3);
+    const row = computeCoverage(loadContent({ root: fixture({ files }).root })).materials.status.find((x) => x.section === 'glossary');
+    expect(row.total).toBe(3);
+  });
+});
+
+describe('スキーマに通らないファイルの記録', () => {
+  const ok = rec('0123456789ab');
+  it.each([
+    ['レッスン', { lesson: md({ ...lessonFront, estimatedMinutes: 999 }) }, { lessons: { 'lesson-4.1-storage-test': ok } }],
+    ['早見表', { files: { 'cheatsheets/cheatsheet-storage-test.md': md({ ...cheatFront, order: -1 }) } }, { cheatsheets: { 'cheatsheet-storage-test': ok } }],
+    ['ガイド', { files: { 'guides/guide-test.md': md({ ...guideFront, title: 'x' }) } }, { guides: { 'guide-test': ok } }],
+    ['用語集', { files: { 'glossary/test.json': { createdBy: 'v1', entries: [entry('保存先'), entry('移行', { definition: '短い' })] } } }, { glossary: { 移行: ok } }],
+  ])('%s: material-status-key にせず、スキーマのエラーに任せる', (_, opts, status) => {
+    const issues = statusIssues({ ...opts, status });
+    expect(issues.some((i) => i.code === 'material-status-key')).toBe(false);
+    expect(issues.some((i) => i.code === 'schema')).toBe(true);
+  });
+});
+
+describe('ハッシュとサービス名の正規化', () => {
+  it('書いたままのサービス名で作り、ビルドで正規名に直しても verified のまま', () => {
+    const alias = 'Amazon Managed Streaming for Apache Kafka';
+    const c = card(1, { services: [alias] });
+    const status = { flashcards: { 'fc-tst-001': rec(materialHash('flashcards', c)) } };
+    const { output } = build({ status, cards: [c, card(2)] });
+    const [first] = output('flashcards')[0].cards;
+    expect(first.services).toEqual(['Amazon MSK']);
+    expect(first.status).toBe('verified');
+    expect(statusIssues({ status, cards: [c, card(2)] })).toEqual([]);
+  });
+});
+
+describe('出さない用語と related', () => {
+  it('出さない用語は、ほかの語の related から外す', () => {
+    const files = { 'glossary/test.json': { createdBy: 'v1', entries: [entry('保存先'), entry('移行', { related: ['保存先', 'ない語'] })] } };
+    const status = { glossary: { 保存先: rec(materialHash('glossary', entry('保存先')), 'rejected') } };
+    const { output } = build({ files, status });
+    expect(output('glossary')).toEqual([expect.objectContaining({ term: '移行', related: ['ない語'] })]);
   });
 });

@@ -6,7 +6,7 @@ import { loadDocs } from '../content/loader';
 import type { DocEntry } from '../content/types';
 import { excerpt, searchDocs } from '../domain/search';
 import { Markdown } from '../components/Markdown';
-import { ReviewBadge, RevisionBadge, RevisionNotice } from '../components/ReviewStatus';
+import { ReviewBadge, RevisionBadge, RevisionNotice, needsRevision } from '../components/ReviewStatus';
 import { ServiceLinkList } from '../components/ServiceLinks';
 import { useServiceLinker } from '../state/useContent';
 
@@ -83,7 +83,7 @@ export function DocPage() {
         <Link to="/docs">早見表・ガイド</Link> › {KIND_LABELS[doc.kind]}
       </p>
       <h1>{doc.title}</h1>
-      {doc.status !== 'verified' && <p className="meta-row"><ReviewBadge status={doc.status} label={KIND_LABELS[doc.kind]} /></p>}
+      {(doc.status === 'pending' || needsRevision(doc.status)) && <p className="meta-row"><ReviewBadge status={doc.status} label={KIND_LABELS[doc.kind]} /></p>}
       {doc.services.length > 0 && <p className="small muted">
           扱うサービス: <ServiceLinkList names={doc.services} link={link} />
         </p>}

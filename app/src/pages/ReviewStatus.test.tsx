@@ -217,3 +217,55 @@ describe('用語集の検証状態', () => {
     }
   });
 });
+
+it('コースのユニットでは修正待ちの早見表・ガイドの項目にも検証状態の札を表示する', async () => {
+  const docs = [pendingDoc, revisionDoc];
+  const course: Course = {
+    stages: [{
+      id: 1,
+      title: '中心の部品',
+      goal: 'アクセス制御を学びます。',
+      units: [{
+        id: 'u01',
+        title: 'アクセス管理',
+        stage: 1,
+        items: docs.map(({ id }) => ({ kind: 'doc', ref: id })),
+        practiceIds: [],
+      }],
+    }],
+  };
+  useFakeContent(makeContentFiles([], { course, docs }));
+  renderApp('/course/u01');
+  expect(await screen.findByRole('heading', { name: 'U01 アクセス管理' })).toBeVisible();
+  const pendingRow = await findRow(pendingDoc.title);
+  const revisionRow = await findRow(revisionDoc.title);
+  expect(pendingRow.queryByText('未検証')).not.toBeInTheDocument();
+  expect(pendingRow.queryByText('修正待ち')).not.toBeInTheDocument();
+  expect(revisionRow.getByText('修正待ち')).toBeVisible();
+});
+
+describe('status の欄がない古いデータ', () => {
+  // 検証状態を持つ前のビルドの出力でも、札・注意・空の行を出さない
+  const { status: _lessonStatus, ...oldLesson } = verifiedLesson;
+  const { status: _docStatus, ...oldDoc } = pendingDoc;
+
+  it('早見表の本文画面に、札も注意も空の段落も出さない', async () => {
+    useFakeContent(makeContentFiles([], { docs: [oldDoc as DocEntry] }));
+    renderApp(`/docs/${oldDoc.id}`);
+    const heading = await screen.findByRole('heading', { level: 1, name: oldDoc.title });
+    expect(screen.queryByText('未検証')).not.toBeInTheDocument();
+    expect(screen.queryByText('修正待ち')).not.toBeInTheDocument();
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    const next = heading.nextElementSibling;
+    expect(next?.matches('p.meta-row:empty')).not.toBe(true);
+  });
+
+  it('レッスンの本文画面に、札も注意も出さない', async () => {
+    useFakeContent(makeContentFiles([], { lessons: [oldLesson as LessonMeta], [`lesson:${oldLesson.id}`]: { id: oldLesson.id, body: lessonBody } }));
+    renderApp(`/lessons/${oldLesson.id}`);
+    expect(await screen.findByText(lessonBody)).toBeVisible();
+    expect(screen.queryByText('未検証')).not.toBeInTheDocument();
+    expect(screen.queryByText('修正待ち')).not.toBeInTheDocument();
+    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+  });
+});

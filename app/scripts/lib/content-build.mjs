@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import YAML from 'yaml';
-import { buildServiceIndex, registrySummary } from '../../../scripts/lib/service-registry.mjs';
+import { buildServiceIndex, normName, registrySummary } from '../../../scripts/lib/service-registry.mjs';
+import { existingMaterialItems, isExistingShown, materialKeyOf } from '../../../scripts/lib/material-status.mjs';
 import { buildCatalogOutputs, checkCatalogForBuild } from './catalog-build.mjs';
 import { buildDiagramOutputs, checkDiagramsForBuild } from './diagram-build.mjs';
 import { buildArtifactOutputs, checkArtifactsForBuild } from './artifact-build.mjs';
@@ -453,14 +454,16 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
   const practice = byPool('practice');
   const visible = new Map(questions.map((q) => [q.id, q]));
 
-  // 既存の教材の検証状態。未検証もそのまま出し、カードと用語だけは needs-fix・rejected を出さない
+  // 既存の教材の検証状態。未検証もそのまま出し、出さないもの（カードと用語の needs-fix・rejected）は isExistingShown が決める
   const existing = existingStatuses(parsed);
-  const existingStatus = Object.fromEntries(Object.entries(existing).map(([section, map]) => {
+  const statusIn = (section, key) => existing[section].get(key)?.status ?? 'pending';
+  // 状態ごとの数は項目の数から作る（同じ鍵の項目が複数あっても、1 件にまとめない）
+  const existingItems = existingMaterialItems(parsed);
+  const existingStatus = Object.fromEntries(Object.keys(existing).map((section) => {
     const counts = { verified: 0, pending: 0, 'needs-fix': 0, rejected: 0 };
-    for (const { status } of map.values()) counts[status]++;
+    for (const { data } of existingItems[section]) counts[statusIn(section, materialKeyOf(section, data))]++;
     return [section, counts];
   }));
-  const statusIn = (section, key) => existing[section].get(key)?.status ?? 'pending';
   const flashcardsExcluded = { 'needs-fix': 0, rejected: 0 };
   const glossaryExcluded = { 'needs-fix': 0, rejected: 0 };
 
@@ -516,7 +519,7 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
       ...d.data,
       cards: d.data.cards.flatMap((c) => {
         const status = statusIn('flashcards', c.id);
-        if (HIDDEN_STATUSES.has(status)) {
+        if (!isExistingShown('flashcards', status)) {
           flashcardsExcluded[status]++;
           return [];
         }
@@ -526,15 +529,18 @@ export function buildOutputs(parsed, schema, { includeUnverified = false } = {})
     .filter((d) => d.cards.length > 0)
     .sort((a, b) => cmp(a.deck, b.deck));
   add('flashcards', 'flashcards', decks);
+  // 出さない用語は、ほかの語の related からも外す（押しても説明が出ない関連のボタンを残さない）
+  const hiddenTerms = new Set(parsed.glossaries.flatMap((g) => g.data.entries)
+    .filter((e) => !isExistingShown('glossary', statusIn('glossary', e.term))).map((e) => normName(e.term)));
   const glossary = parsed.glossaries
     .flatMap((g) => g.data.entries)
     .flatMap((e) => {
       const status = statusIn('glossary', e.term);
-      if (HIDDEN_STATUSES.has(status)) {
+      if (!isExistingShown('glossary', status)) {
         glossaryExcluded[status]++;
         return [];
       }
-      return [{ ...e, services: canon(e.services), status }];
+      return [{ ...e, services: canon(e.services), related: e.related.filter((r) => !hiddenTerms.has(normName(r))), status }];
     })
     .sort((a, b) => a.term.localeCompare(b.term, 'ja') || cmp(a.en, b.en));
   add('glossary', 'glossary', glossary);
