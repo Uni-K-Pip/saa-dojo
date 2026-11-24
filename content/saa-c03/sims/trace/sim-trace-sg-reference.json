@@ -1,0 +1,221 @@
+{
+  "id": "sim-trace-sg-reference",
+  "title": "同じサブネットからでも通らない",
+  "intro": "データベース（10.0.3.10）のセキュリティグループは、3306 をアプリのセキュリティグループ（sg-app）からだけ許可しています。アプリのサブネット（10.0.2.0/24）にバッチ用のサーバー（10.0.2.30、セキュリティグループ sg-batch）を足し、そこからデータベースの 3306 へ接続します。",
+  "predict": {
+    "text": "この接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "届く（アプリと同じサブネットだから）",
+        "value": "none"
+      },
+      {
+        "text": "宛先のセキュリティグループで止まる",
+        "value": "forward-sg-in"
+      },
+      {
+        "text": "宛先のネットワーク ACL で止まる",
+        "value": "forward-nacl-in"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "cidr": "10.0.2.0/24",
+        "routeTable": "rt-app",
+        "nacl": "acl-default"
+      },
+      {
+        "id": "data",
+        "label": "データ",
+        "cidr": "10.0.3.0/24",
+        "routeTable": "rt-data",
+        "nacl": "acl-default"
+      }
+    ],
+    "routeTables": {
+      "rt-app": [],
+      "rt-data": []
+    },
+    "nacls": {
+      "acl-default": "default"
+    },
+    "securityGroups": {
+      "sg-app": {
+        "inbound": []
+      },
+      "sg-batch": {
+        "inbound": []
+      },
+      "sg-db": {
+        "inbound": [
+          {
+            "ports": {
+              "from": 3306,
+              "to": 3306
+            },
+            "peer": "sg:sg-app"
+          }
+        ]
+      }
+    },
+    "hosts": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.10",
+        "sg": "sg-app"
+      },
+      {
+        "id": "batch",
+        "label": "バッチ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.30",
+        "sg": "sg-batch"
+      },
+      {
+        "id": "db",
+        "label": "データベース",
+        "kind": "rds",
+        "subnet": "data",
+        "ip": "10.0.3.10",
+        "sg": "sg-db"
+      }
+    ],
+    "publicIps": {},
+    "externals": [],
+    "flow": {
+      "from": "batch",
+      "to": "db",
+      "port": 3306,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "attach-sg-app",
+      "label": "バッチの sg を sg-app に変える",
+      "set": {
+        "hosts": [
+          {
+            "id": "app",
+            "label": "アプリ",
+            "kind": "instance",
+            "subnet": "app",
+            "ip": "10.0.2.10",
+            "sg": "sg-app"
+          },
+          {
+            "id": "batch",
+            "label": "バッチ",
+            "kind": "instance",
+            "subnet": "app",
+            "ip": "10.0.2.30",
+            "sg": "sg-app"
+          },
+          {
+            "id": "db",
+            "label": "データベース",
+            "kind": "rds",
+            "subnet": "data",
+            "ip": "10.0.3.10",
+            "sg": "sg-db"
+          }
+        ]
+      }
+    },
+    {
+      "id": "peer-cidr",
+      "label": "送信元を 10.0.2.0/24 にする",
+      "set": {
+        "securityGroups": {
+          "sg-app": {
+            "inbound": []
+          },
+          "sg-batch": {
+            "inbound": []
+          },
+          "sg-db": {
+            "inbound": [
+              {
+                "ports": {
+                  "from": 3306,
+                  "to": 3306
+                },
+                "peer": "10.0.2.0/24"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "from-app",
+      "label": "アプリのサーバーから送る",
+      "set": {
+        "flow": {
+          "from": "app",
+          "to": "db",
+          "port": 3306,
+          "clientPort": 50000
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "forward-sg-in",
+      "reason": "sg-no-match"
+    },
+    "toggles": {
+      "attach-sg-app": {
+        "delivered": true,
+        "stop": "none"
+      },
+      "peer-cidr": {
+        "delivered": true,
+        "stop": "none"
+      },
+      "from-app": {
+        "delivered": true,
+        "stop": "none"
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:sg-reference}}。バッチ用のサーバーは sg-batch を付けているので、sg-app からの許可には当てはまらず、データベースのセキュリティグループの段で止まります。サブネットが同じでも、結果は変わりません。",
+    "toggles": {
+      "attach-sg-app": "バッチ用のサーバーに、sg-batch の代わりに sg-app を付けると、データベースの許可のルールに当てはまり、届きます。",
+      "peer-cidr": "送信元を CIDR の 10.0.2.0/24 にすると、その範囲のアドレスのすべてが当てはまります。バッチ用のサーバーも含まれ、届きます。",
+      "from-app": "アプリのサーバーは sg-app を付けているので、データベースの許可のルールに当てはまり、届きます。"
+    }
+  },
+  "factRefs": [
+    "vpc.sg-referencing",
+    "vpc.sg-stateful-allow-only",
+    "vpc.route-table-local",
+    "vpc.nacl-default-allow",
+    "vpc.quota-sg-per-eni",
+    "vpc.nacl-stateless",
+    "vpc.route-priority",
+    "vpc.subnet-types"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v6"
+}

@@ -1,0 +1,194 @@
+{
+  "id": "sim-trace-sg-stateful",
+  "title": "アウトバウンドを空にしたら応答は返るか",
+  "intro": "ウェブサーバーで、サブネットのルートはインターネットゲートウェイへ向いています。セキュリティグループのインバウンドは 443 を 0.0.0.0/0 から許可し、アウトバウンドのルールはすべて消しました。ネットワーク ACL はデフォルトです。クライアントから 443 へ接続します。",
+  "predict": {
+    "text": "クライアントへの応答は返りますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "返る",
+        "value": "none"
+      },
+      {
+        "text": "戻りのセキュリティグループで止まる",
+        "value": "return-sg-out"
+      },
+      {
+        "text": "戻りのネットワーク ACL で止まる",
+        "value": "return-nacl-out"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-web",
+        "nacl": "acl-web"
+      }
+    ],
+    "routeTables": {
+      "rt-web": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-web": "default"
+    },
+    "securityGroups": {
+      "sg-web": {
+        "inbound": [
+          {
+            "ports": {
+              "from": 443,
+              "to": 443
+            },
+            "peer": "0.0.0.0/0"
+          }
+        ],
+        "outbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "web",
+        "label": "ウェブ",
+        "kind": "instance",
+        "subnet": "web",
+        "ip": "10.0.1.10",
+        "sg": "sg-web"
+      }
+    ],
+    "publicIps": {
+      "web": "203.0.113.10"
+    },
+    "externals": [
+      {
+        "id": "client",
+        "label": "クライアント",
+        "kind": "internet",
+        "ip": "198.51.100.7"
+      }
+    ],
+    "flow": {
+      "from": "client",
+      "to": "web",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "remove-inbound",
+      "label": "インバウンドの 443 を消す",
+      "set": {
+        "securityGroups": {
+          "sg-web": {
+            "inbound": [],
+            "outbound": []
+          }
+        }
+      }
+    },
+    {
+      "id": "port-80",
+      "label": "宛先のポートを 80 にする",
+      "set": {
+        "flow": {
+          "from": "client",
+          "to": "web",
+          "port": 80,
+          "clientPort": 50000
+        }
+      }
+    },
+    {
+      "id": "nacl-443-only",
+      "label": "ネットワーク ACL を 443 だけ許可にする",
+      "set": {
+        "nacls": {
+          "acl-web": {
+            "inbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 443,
+                  "to": 443
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ],
+            "outbound": [
+              {
+                "rule": 100,
+                "action": "allow",
+                "ports": {
+                  "from": 443,
+                  "to": 443
+                },
+                "cidr": "0.0.0.0/0"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": true,
+      "stop": "none"
+    },
+    "toggles": {
+      "remove-inbound": {
+        "stop": "forward-sg-in",
+        "reason": "sg-no-match"
+      },
+      "port-80": {
+        "stop": "forward-sg-in"
+      },
+      "nacl-443-only": {
+        "stop": "return-nacl-out",
+        "reason": "nacl-no-match"
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:sg-stateful}}。そのため、アウトバウンドのルールがなくても、戻りのセキュリティグループの段は通ります。デフォルトのネットワーク ACL はすべてを許可するので、戻りの段もすべて通り、応答が返ります。",
+    "toggles": {
+      "remove-inbound": "インバウンドのルールがないので、行きのセキュリティグループの段で止まります。セキュリティグループには許可ルールだけを書け、拒否ルールは書けません。作成直後のセキュリティグループには、インバウンドの許可がありません。",
+      "port-80": "宛先のポートが 80 になりましたが、インバウンドが許可しているのは 443 だけです。行きのセキュリティグループの段で止まります。",
+      "nacl-443-only": "行きは宛先のポート 443 で通りますが、応答はクライアントのポート宛てです。{{rule:nacl-stateless}}。{{rule:nacl-final-deny}}。同じ形のセキュリティグループでは応答が通ったのに対し、ネットワーク ACL では戻りで止まります。"
+    }
+  },
+  "factRefs": [
+    "vpc.sg-stateful-allow-only",
+    "vpc.nacl-stateless",
+    "vpc.nacl-custom-default-deny",
+    "vpc.igw-requirements",
+    "vpc.route-table-local",
+    "vpc.nacl-default-allow",
+    "vpc.quota-sg-per-eni",
+    "vpc.route-priority",
+    "vpc.subnet-types",
+    "vpc.igw-basics",
+    "vpc.igw-inbound-translation"
+  ],
+  "lessonRefs": [
+    "lesson-1.2-vpc-network-security",
+    "lesson-basics-ip-subnet-routing"
+  ],
+  "createdBy": "v6"
+}

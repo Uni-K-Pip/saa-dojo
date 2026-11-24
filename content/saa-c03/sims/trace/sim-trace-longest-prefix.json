@@ -1,0 +1,212 @@
+{
+  "id": "sim-trace-longest-prefix",
+  "title": "足したルートが NAT を迂回する",
+  "intro": "アプリのサブネットのルートテーブルは、0.0.0.0/0 を NAT ゲートウェイへ向けています。取引先のサーバー（192.0.2.80）へ直接出したくて、だれかが 192.0.2.0/24 をインターネットゲートウェイへ向けるルートを足しました。アプリのサーバーにパブリック IP アドレスはありません。アプリから 192.0.2.80 の 443 へ接続します。",
+  "predict": {
+    "text": "この接続は、どうなりますか。",
+    "key": "stop",
+    "choices": [
+      {
+        "text": "NAT を通って届く",
+        "value": "none"
+      },
+      {
+        "text": "インターネットゲートウェイで止まる",
+        "value": "forward-igw"
+      },
+      {
+        "text": "ルートが 2 つ当てはまるので止まる",
+        "value": "forward-route"
+      }
+    ]
+  },
+  "config": {
+    "op": "trace",
+    "vpc": {
+      "cidr": "10.0.0.0/16",
+      "igw": true
+    },
+    "subnets": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "cidr": "10.0.2.0/24",
+        "routeTable": "rt-app",
+        "nacl": "acl-default"
+      },
+      {
+        "id": "pub",
+        "label": "パブリック",
+        "cidr": "10.0.1.0/24",
+        "routeTable": "rt-pub",
+        "nacl": "acl-default"
+      }
+    ],
+    "routeTables": {
+      "rt-app": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "nat:nat"
+        },
+        {
+          "dest": "192.0.2.0/24",
+          "target": "igw"
+        }
+      ],
+      "rt-pub": [
+        {
+          "dest": "0.0.0.0/0",
+          "target": "igw"
+        }
+      ]
+    },
+    "nacls": {
+      "acl-default": "default"
+    },
+    "securityGroups": {
+      "sg-app": {
+        "inbound": []
+      }
+    },
+    "hosts": [
+      {
+        "id": "app",
+        "label": "アプリ",
+        "kind": "instance",
+        "subnet": "app",
+        "ip": "10.0.2.10",
+        "sg": "sg-app"
+      },
+      {
+        "id": "nat",
+        "label": "NAT",
+        "kind": "nat-gateway",
+        "subnet": "pub",
+        "ip": "10.0.1.20"
+      }
+    ],
+    "publicIps": {
+      "nat": "203.0.113.20"
+    },
+    "externals": [
+      {
+        "id": "update",
+        "label": "取引先のサーバー",
+        "kind": "internet",
+        "ip": "192.0.2.80"
+      },
+      {
+        "id": "other",
+        "label": "別のサーバー",
+        "kind": "internet",
+        "ip": "198.51.100.20"
+      }
+    ],
+    "flow": {
+      "from": "app",
+      "to": "update",
+      "port": 443,
+      "clientPort": 50000
+    }
+  },
+  "toggles": [
+    {
+      "id": "remove-route",
+      "label": "足したルートを消す",
+      "set": {
+        "routeTables": {
+          "rt-app": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "nat:nat"
+            }
+          ],
+          "rt-pub": [
+            {
+              "dest": "0.0.0.0/0",
+              "target": "igw"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "app-public-ip",
+      "label": "アプリにパブリック IP を付ける",
+      "set": {
+        "publicIps": {
+          "nat": "203.0.113.20",
+          "app": "203.0.113.30"
+        }
+      }
+    },
+    {
+      "id": "other-dest",
+      "label": "宛先を 198.51.100.20 にする",
+      "set": {
+        "flow": {
+          "from": "app",
+          "to": "other",
+          "port": 443,
+          "clientPort": 50000
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "delivered": false,
+      "stop": "forward-igw",
+      "reason": "no-public-ip",
+      "routeTarget": "igw"
+    },
+    "toggles": {
+      "remove-route": {
+        "delivered": true,
+        "stop": "none",
+        "routeTarget": "nat",
+        "seenSource": "203.0.113.20"
+      },
+      "app-public-ip": {
+        "delivered": true,
+        "stop": "none",
+        "routeTarget": "igw",
+        "seenSource": "203.0.113.30"
+      },
+      "other-dest": {
+        "delivered": true,
+        "stop": "none",
+        "routeTarget": "nat"
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:route-longest}}。192.0.2.80 には 0.0.0.0/0 と 192.0.2.0/24 の両方が当てはまり、範囲の狭い 192.0.2.0/24 のインターネットゲートウェイへのルートが選ばれます。アプリのサーバーにはパブリック IP アドレスがなく、インターネットと通信するのに要る条件を満たしていないので、インターネットゲートウェイの段で止まります。",
+    "toggles": {
+      "remove-route": "足したルートを消すと、0.0.0.0/0 の NAT ゲートウェイへのルートだけが当てはまり、届きます。取引先のサーバーから見える送信元は、NAT ゲートウェイに関連付けた Elastic IP アドレス {{out:seenSource}} です。{{rule:nat-translate}}。",
+      "app-public-ip": "アプリにパブリック IP アドレスを付けると、条件がそろい、インターネットゲートウェイを通って届きます。取引先のサーバーから見える送信元は {{out:seenSource}} です。アプリのサブネットは、足したルートのため最初からパブリックサブネットで、パブリック IP アドレスの有無では種類は変わりません。",
+      "other-dest": "宛先が 198.51.100.20 だと、足した 192.0.2.0/24 のルートには当てはまりません。0.0.0.0/0 の NAT ゲートウェイへのルートが使われ、届きます。"
+    }
+  },
+  "factRefs": [
+    "vpc.route-priority",
+    "vpc.igw-requirements",
+    "vpc.subnet-types",
+    "vpc.route-table-local",
+    "nat-gateway.outbound-connections",
+    "vpc.quota-sg-per-eni",
+    "vpc.sg-stateful-allow-only",
+    "vpc.nacl-stateless",
+    "vpc.nacl-default-allow",
+    "vpc.igw-basics",
+    "nat-gateway.public-internet-route",
+    "nat-gateway.public-elastic-ip",
+    "nat-gateway.no-security-group",
+    "nat-gateway.source-translation"
+  ],
+  "lessonRefs": [
+    "lesson-basics-ip-subnet-routing",
+    "lesson-1.2-vpc-network-security"
+  ],
+  "createdBy": "v6"
+}

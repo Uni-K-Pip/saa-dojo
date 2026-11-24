@@ -22,6 +22,7 @@ AWS Certified Solutions Architect – Associate（SAA）に、このアプリだ
 | `docs/service-catalog-design.md` | サービス図鑑の設計 |
 | `docs/sims-design.md` | シミュレーターの共通の枠の設計 |
 | `docs/sim-cidr-design.md` | シミュレーター「CIDR とサブネット」の設計 |
+| `docs/sim-trace-design.md` | シミュレーター「VPC の通信の追跡」の設計 |
 | `docs/content-guide.md` | 実装済みの教材の形式と書き方の規則 |
 | `docs/app-spec.md` | 実装済みのアプリの仕様 |
 

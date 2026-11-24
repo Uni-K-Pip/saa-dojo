@@ -133,6 +133,46 @@
       "status": "verified",
       "checkedAt": "2026-11-23",
       "hash": "c384b840a82b"
+    },
+    "sim-trace-gateway-endpoint": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "e3d28d2efdc5"
+    },
+    "sim-trace-longest-prefix": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "53598a81bf66"
+    },
+    "sim-trace-nacl-ephemeral": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "6b91e41e3297"
+    },
+    "sim-trace-nat-inbound": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "a4178587c551"
+    },
+    "sim-trace-nat-placement": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "c517918066ca"
+    },
+    "sim-trace-public-route": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "a9db08fbe534"
+    },
+    "sim-trace-sg-reference": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "e7dc030f1a87"
+    },
+    "sim-trace-sg-stateful": {
+      "status": "verified",
+      "checkedAt": "2026-11-24",
+      "hash": "d6a499add833"
     }
   },
   "labs": {
