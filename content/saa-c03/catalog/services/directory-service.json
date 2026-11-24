@@ -285,20 +285,6 @@
         }
       ],
       "checkedAt": "2026-11-24"
-    },
-    {
-      "id": "directory-service.simple-ad-no-trust",
-      "title": "Simple AD は他のドメインとの信頼関係に対応しない",
-      "kind": "constraint",
-      "text": "Simple AD は、他のドメインとの信頼関係に対応しない。AWS Managed Microsoft AD の機能の一部だけを提供するディレクトリで、信頼関係は対応しない機能に含まれる。",
-      "depth": "core",
-      "sources": [
-        {
-          "title": "Simple AD",
-          "url": "https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_simple_ad.html"
-        }
-      ],
-      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [

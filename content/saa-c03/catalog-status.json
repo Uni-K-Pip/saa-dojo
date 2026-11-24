@@ -2774,11 +2774,6 @@
     "checkedAt": "2026-11-21",
     "hash": "2a91c8e2a04b"
   },
-  "directory-service.simple-ad-no-trust": {
-    "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "73c8465fe992"
-  },
   "directory-service.trust-relationships": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5556,7 +5551,7 @@
   },
   "iam": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
+    "checkedAt": "2026-11-24",
     "hash": "8a337dfab65d"
   },
   "iam-identity-center": {
@@ -5569,6 +5564,11 @@
     "checkedAt": "2026-11-16",
     "hash": "70342653f7fc"
   },
+  "iam-identity-center.ad-connection-path": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "73b50c5e7492"
+  },
   "iam-identity-center.built-in-directory": {
     "status": "verified",
     "checkedAt": "2026-11-16",
@@ -5578,6 +5578,11 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "73df67513981"
+  },
+  "iam-identity-center.default-identity-source": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "bdb0df3d4928"
   },
   "iam-identity-center.external-idp-provisioning": {
     "status": "verified",
@@ -5592,12 +5597,17 @@
   "iam-identity-center.former-name": {
     "status": "verified",
     "checkedAt": "2026-11-24",
-    "hash": "eb176c33b7ef"
+    "hash": "c45e6e18937a"
+  },
+  "iam-identity-center.one-ad-directory": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "5dbb98096083"
   },
   "iam-identity-center.one-identity-source": {
     "status": "verified",
     "checkedAt": "2026-11-24",
-    "hash": "28cb4fa364bc"
+    "hash": "97cdb8117649"
   },
   "iam-identity-center.permission-set-template": {
     "status": "verified",
@@ -5618,6 +5628,21 @@
     "status": "verified",
     "checkedAt": "2026-11-16",
     "hash": "b2fcf8f21ed8"
+  },
+  "iam.abac-tag-condition": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "795e7a43a79e"
+  },
+  "iam.access-analyzer-policy-generation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "609953f0c607"
+  },
+  "iam.access-analyzer-policy-validation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "e08c81cf4caa"
   },
   "iam.access-method-human-workload": {
     "status": "verified",
@@ -5658,6 +5683,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "c3bf1a7860f1"
+  },
+  "iam.cross-account-both-policies": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "e5e9456b818d"
   },
   "iam.cross-service-confused-deputy": {
     "status": "verified",
@@ -5704,6 +5734,11 @@
     "checkedAt": "2026-11-14",
     "hash": "b1ccf0dcf0ab"
   },
+  "iam.group-members": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "a2be88e259b7"
+  },
   "iam.iam-users-still-needed": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5713,6 +5748,16 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "25636bd08607"
+  },
+  "iam.implicit-deny": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "bc6a19d16a4d"
+  },
+  "iam.last-accessed-information": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "268b4c6a6848"
   },
   "iam.managed-vs-inline": {
     "status": "verified",
@@ -5769,6 +5814,11 @@
     "checkedAt": "2026-11-23",
     "hash": "8bcd44d8e8c6"
   },
+  "iam.resource-policy-service-scope": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "2265211c833a"
+  },
   "iam.role-assumers": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5778,6 +5828,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "4c202e1dbe9e"
+  },
+  "iam.role-vs-resource-policy-permissions": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "71900fccc3e8"
   },
   "iam.roles-anywhere-credential-helper": {
     "status": "verified",
@@ -5794,6 +5849,21 @@
     "checkedAt": "2026-11-14",
     "hash": "bc8f6f1c128c"
   },
+  "iam.root-user-mfa-required": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "116976dcc2f3"
+  },
+  "iam.root-user-protection": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "c75a23739d54"
+  },
+  "iam.root-user-sign-in": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "ca46f8512699"
+  },
   "iam.root-user-tasks": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5808,6 +5878,16 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "ad8621b9faa2"
+  },
+  "iam.switch-role-console": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "33161245a921"
+  },
+  "iam.user-and-role-identity": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "b81b3e4e933b"
   },
   "inspector": {
     "status": "verified",
@@ -9099,6 +9179,11 @@
     "checkedAt": "2026-11-14",
     "hash": "bb94d441ba4c"
   },
+  "sts.confused-deputy-external-id-issuer": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "1babdd85ec9b"
+  },
   "sts.get-session-token-api-limits": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -9132,7 +9217,7 @@
   "sts.session-tags": {
     "status": "verified",
     "checkedAt": "2026-11-24",
-    "hash": "dc1449384d42"
+    "hash": "057bf45c6141"
   },
   "sts.temporary-credentials": {
     "status": "verified",

@@ -171,7 +171,7 @@
       "id": "iam-identity-center.former-name",
       "title": "旧称は AWS Single Sign-On",
       "kind": "feature",
-      "text": "IAM Identity Center は、2022 年 7 月 26 日に AWS Single Sign-On(AWS SSO)から改称されたサービスである。後方互換性のため、sso や identitystore の API 名前空間、CLI コマンド、サービスエンドポイントなどには旧称由来の名前が残っている。",
+      "text": "IAM Identity Center は、2022 年 7 月 26 日に AWS Single Sign-On から改称されたサービスである。後方互換性のため、sso や identitystore の API 名前空間、CLI コマンド、サービスエンドポイントなどには旧称由来の名前が残っている。",
       "depth": "detail",
       "sources": [
         {
@@ -185,8 +185,22 @@
       "id": "iam-identity-center.one-identity-source",
       "title": "ID ソースは組織に 1 つ",
       "kind": "constraint",
-      "text": "IAM Identity Center の ID ソースは、AWS Organizations の組織ごとに 1 つだけ持てる。選べるのは外部 ID プロバイダー、Active Directory、Identity Center ディレクトリのいずれかで、初めて有効にしたときは既定で Identity Center ディレクトリが設定される。",
+      "text": "IAM Identity Center の ID ソースは、AWS Organizations の組織ごとに 1 つだけ持てる。選べるのは外部 ID プロバイダー、Active Directory、Identity Center ディレクトリのいずれかである。",
       "depth": "core",
+      "sources": [
+        {
+          "title": "Manage your identity source - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam-identity-center.default-identity-source",
+      "title": "既定の ID ソースは Identity Center ディレクトリ",
+      "kind": "constraint",
+      "text": "IAM Identity Center を初めて有効にすると、別の ID ソースを選ばない限り、Identity Center ディレクトリが既定の ID ソースとして設定される。",
+      "depth": "detail",
       "sources": [
         {
           "title": "Manage your identity source - AWS IAM Identity Center",
@@ -198,9 +212,9 @@
     },
     {
       "id": "iam-identity-center.ad-connection-path",
-      "title": "AD 接続に必要な Directory Service のディレクトリ",
+      "title": "AD 接続のディレクトリを置くアカウント",
       "kind": "integration",
-      "text": "Active Directory を ID ソースにするには、AWS Directory Service に AD Connector または AWS Managed Microsoft AD のディレクトリを用意する。このディレクトリは AWS Organizations の管理アカウントに置く。委任管理者を有効にしている場合は、委任管理者のアカウントに置いたディレクトリも使える。",
+      "text": "Active Directory を ID ソースにするときに使う AWS Directory Service のディレクトリ（AD Connector か AWS Managed Microsoft AD）は、委任管理者のアカウントがあればそのアカウントに、なければ AWS Organizations の管理アカウントに置く。",
       "depth": "detail",
       "sources": [
         {

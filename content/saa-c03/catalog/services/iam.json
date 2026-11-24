@@ -685,9 +685,23 @@
     },
     {
       "id": "iam.root-user-protection",
-      "title": "ルートユーザーの保護",
-      "kind": "feature",
-      "text": "ルートユーザーのアクセスキーは作らないことが強く勧められ、日常の作業にはルートユーザーではなく管理用のユーザーを作って使う。ルートユーザーには MFA を設定する。AWS は、単独・管理・メンバーのすべてのアカウントの種類で、ルートユーザーの MFA の設定を必須としている。コンソールへの最初のサインインの試行から 14 日以内に登録が要る。",
+      "title": "ルートユーザーのアクセスキーを作らない",
+      "kind": "constraint",
+      "text": "ルートユーザーのアクセスキーは作らないことが強く勧められている。ルートユーザーは請求情報を含む、アカウントのすべての AWS サービスとリソースに完全にアクセスできるためである。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.root-user-mfa-required",
+      "title": "ルートユーザーの MFA は必須",
+      "kind": "constraint",
+      "text": "AWS は、単独・管理・メンバーのすべてのアカウントの種類で、ルートユーザーの MFA の設定を必須としている。MFA がまだ有効でなければ、コンソールへの最初のサインインの試行から 14 日以内に登録が要る。",
       "depth": "core",
       "recheck": "default-value",
       "sources": [
@@ -791,16 +805,12 @@
       "id": "iam.root-user-sign-in",
       "title": "ルートユーザーのサインイン情報",
       "kind": "feature",
-      "text": "ルートユーザーは、AWS アカウントを作成したときのメールアドレスとパスワードでサインインする。AWS Organizations のメンバーアカウントにルートユーザーの認証情報が残っている場合は、SCP でメンバーアカウントのルートユーザーの操作を制限できる。",
+      "text": "ルートユーザーは、AWS アカウントを作成したときのメールアドレスとパスワードでサインインする。",
       "depth": "detail",
       "sources": [
         {
           "title": "AWS account root user - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
-        },
-        {
-          "title": "Root user best practices for your AWS account - AWS Identity and Access Management",
-          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
         }
       ],
       "checkedAt": "2026-11-24"
