@@ -9704,6 +9704,11 @@
     "checkedAt": "2026-11-14",
     "hash": "6d299eead95c"
   },
+  "vpc.igw-inbound-translation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "0cd1a658ffab"
+  },
   "vpc.igw-requirements": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -9808,6 +9813,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "2994a8d5a29a"
+  },
+  "vpc.route-priority-prefix-list": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "1b553fc9000e"
   },
   "vpc.route-table-association": {
     "status": "verified",

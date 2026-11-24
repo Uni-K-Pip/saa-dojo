@@ -847,6 +847,34 @@
       ],
       "checkedAt": "2026-11-24",
       "recheck": "default-value"
+    },
+    {
+      "id": "vpc.igw-inbound-translation",
+      "title": "インターネットゲートウェイによる宛先アドレスの変換",
+      "kind": "feature",
+      "text": "インスタンスのパブリック IPv4 アドレスか Elastic IP アドレス宛ての通信は、インターネットゲートウェイが宛先をインスタンスのプライベート IPv4 アドレスに変換してから VPC に届ける。インスタンスが知っているのは VPC とサブネットで定義されたプライベートのアドレス空間だけで、VPC から出ていく通信の送信元は、インターネットゲートウェイがパブリック IPv4 アドレスか Elastic IP アドレスに置き換える。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Enable internet access for a VPC using an internet gateway - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "vpc.route-priority-prefix-list",
+      "title": "プレフィックスリストを参照するルートの優先順位",
+      "kind": "feature",
+      "text": "ルートテーブルにプレフィックスリストを参照するルートがあっても、重なるルートでは、伝播ルート、静的ルート、プレフィックスリストを参照するルートのどれであっても、より具体的なルートが常に優先される。伝播ルートとプレフィックスリストを参照するルートが一致するときは、プレフィックスリストを参照するルートが優先される。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How route priority works - Amazon Virtual Private Cloud",
+          "url": "https://docs.aws.amazon.com/vpc/latest/userguide/route-tables-priority.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
     }
   ],
   "seeAlso": [
