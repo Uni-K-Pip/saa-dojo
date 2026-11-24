@@ -3,7 +3,7 @@
     "dg-assume-role-flow": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "eeb50db42861"
+      "hash": "c2211a350617"
     },
     "dg-compute-responsibility-layers": {
       "status": "verified",
@@ -28,7 +28,7 @@
     "dg-iam-identities": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "2f14532e2fe0"
+      "hash": "65f9195e87b9"
     },
     "dg-iam-policy-evaluation": {
       "status": "verified",
@@ -85,7 +85,7 @@
     "ar-iam-policy-assume-role": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "b74f5a2b5845"
+      "hash": "07d90f7444b2"
     },
     "ar-iam-policy-s3-read-tls": {
       "status": "verified",
@@ -100,12 +100,12 @@
     "ar-trust-policy-cross-account": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "7543978239cb"
+      "hash": "4b8af64a5bed"
     },
     "ar-trust-policy-external-id": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "0549eca9b4c0"
+      "hash": "e9e4f4f20aa6"
     }
   },
   "sims": {
@@ -179,7 +179,7 @@
     "lab-cross-account-assume-role": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "19d55972f55f"
+      "hash": "5ec0827fd79a"
     },
     "lab-vpc-from-scratch": {
       "status": "verified",

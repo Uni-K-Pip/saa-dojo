@@ -3326,7 +3326,7 @@
   },
   "ec2": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
+    "checkedAt": "2026-11-14",
     "hash": "7f7736255116"
   },
   "ec2-auto-scaling": {
@@ -5556,7 +5556,7 @@
   },
   "iam": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
+    "checkedAt": "2026-11-14",
     "hash": "8a337dfab65d"
   },
   "iam-identity-center": {

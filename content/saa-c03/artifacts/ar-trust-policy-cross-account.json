@@ -18,7 +18,7 @@
   "notes": [
     {
       "path": "Statement[0].Principal",
-      "text": "Principal にアカウント A のルートユーザーの ARN を書くと、アカウント A 全体への委任になります。"
+      "text": "Principal にアカウント A の ARN（arn:aws:iam::111122223333:root）を書くと、アカウント A 全体への委任になります。"
     },
     {
       "path": "Statement[0].Action",

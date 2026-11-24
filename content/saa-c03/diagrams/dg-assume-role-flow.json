@@ -82,8 +82,12 @@
     {
       "id": "e1",
       "from": "user",
-      "to": "sts",
-      "both": true
+      "to": "sts"
+    },
+    {
+      "id": "e2",
+      "from": "sts",
+      "to": "user"
     },
     {
       "id": "e3",
@@ -125,7 +129,7 @@
         "user"
       ],
       "edges": [
-        "e1"
+        "e2"
       ]
     },
     {
@@ -146,9 +150,6 @@
       "focus": [
         "user",
         "sts"
-      ],
-      "edges": [
-        "e1"
       ]
     }
   ]

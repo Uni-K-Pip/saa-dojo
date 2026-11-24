@@ -34,8 +34,8 @@ createdBy: v7
 
 ### 1. アカウント B にロールを作り、信頼ポリシーで A を指定する
 
-- **作るもの**: アカウント B のロール example-cross-account-role。信頼ポリシー: Effect Allow、Principal にアカウント A のルートユーザーの ARN（arn:aws:iam::111122223333:root）、Action sts:AssumeRole
-- **なぜ**: だれがこのロールを引き受けられるかは、信頼ポリシーが決めます。Principal にアカウント A のルートユーザーの ARN を書くと、アカウント A 全体への委任になります。ロールは長期的なパスワードやアクセスキーを持たず、引き受けたときに一時的な認証情報が得られるので、B に長期のアクセスキーを作らずに済みます。
+- **作るもの**: アカウント B のロール example-cross-account-role。信頼ポリシー: Effect Allow、Principal にアカウント A の ARN（arn:aws:iam::111122223333:root）、Action sts:AssumeRole
+- **なぜ**: だれがこのロールを引き受けられるかは、信頼ポリシーが決めます。Principal にアカウント A の ARN を書くと、アカウント A 全体への委任になります。ロールは長期的なパスワードやアクセスキーを持たず、引き受けたときに一時的な認証情報が得られるので、B に長期のアクセスキーを作らずに済みます。
 
 ![ロールと信頼ポリシーを作った時点](#/diagrams/dg-cross-account-role-build-up?step=1)
 
