@@ -562,7 +562,7 @@
       "id": "s3.request-rate",
       "title": "プレフィックスごとのリクエスト性能",
       "kind": "quota",
-      "text": "S3 は、パーティション化されたプレフィックスごとに、少なくとも毎秒 3,500 件の PUT/COPY/POST/DELETE、または 5,500 件の GET/HEAD リクエストを処理できる。バケット内のプレフィックスの数に上限はなく、複数のプレフィックスに分けて並列化すると、性能が拡大する。",
+      "text": "S3 は、パーティション化されたプレフィックスごとに、少なくとも毎秒 3,500 件の PUT/COPY/POST/DELETE、または 11,000 件の GET/HEAD リクエストを処理できる。最も高いリクエストレートを得るには、リクエストを 1 つのプレフィックスに集中させず、多くのプレフィックスに分散する。",
       "depth": "core",
       "sources": [
         {
@@ -570,7 +570,7 @@
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-24"
     },
     {
       "id": "s3.small-object-latency",

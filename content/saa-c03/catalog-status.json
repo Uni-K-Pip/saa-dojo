@@ -8136,8 +8136,8 @@
   },
   "s3.request-rate": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "516c99289353"
+    "checkedAt": "2026-11-24",
+    "hash": "9133090dab79"
   },
   "s3.requester-pays": {
     "status": "verified",
@@ -9231,8 +9231,8 @@
   },
   "sts.get-session-token-api-limits": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "5f07cfd285ce"
+    "checkedAt": "2026-11-24",
+    "hash": "6fa140b594e7"
   },
   "sts.get-session-token-long-term-keys": {
     "status": "verified",
