@@ -258,7 +258,8 @@
     "vpc.quota-sg-per-eni",
     "vpc.subnet-types",
     "vpc.igw-basics",
-    "vpc.route-priority"
+    "vpc.route-priority",
+    "vpc.igw-inbound-translation"
   ],
   "lessonRefs": [
     "lesson-1.2-vpc-network-security",

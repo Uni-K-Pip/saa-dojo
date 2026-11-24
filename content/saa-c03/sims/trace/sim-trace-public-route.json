@@ -89,7 +89,7 @@
   "toggles": [
     {
       "id": "add-igw-route",
-      "label": "0.0.0.0/0 を IGW へ向ける",
+      "label": "0.0.0.0/0 をインターネットゲートウェイへ",
       "set": {
         "routeTables": {
           "rt-web": [
@@ -103,14 +103,14 @@
     },
     {
       "id": "remove-public-ip",
-      "label": "パブリック IP を外す",
+      "label": "パブリック IP アドレスを外す",
       "set": {
         "publicIps": {}
       }
     },
     {
       "id": "detach-igw",
-      "label": "IGW を外す",
+      "label": "インターネットゲートウェイを外す",
       "set": {
         "vpc": {
           "cidr": "10.0.0.0/16",
@@ -141,11 +141,11 @@
     }
   },
   "explain": {
-    "initial": "行きの段は、インターネットゲートウェイ、ネットワーク ACL、セキュリティグループのすべてを通ります。止まるのは応答を出す段です。{{rule:route-table}}。このサブネットには local ルートしかなく、クライアントのアドレスへ応答を送る行き先がありません。",
+    "initial": "行きでは、{{rule:igw-inbound}}。そのあとネットワーク ACL とセキュリティグループを通って、ウェブサーバーに届きます。戻りの応答は、サブネットから出る通信です。{{rule:route-table}}。このサブネットのルートテーブルには local ルートしかなく、クライアントのアドレスに当てはまる 0.0.0.0/0 のルートがないので、戻りのルートテーブルの段で止まります。",
     "toggles": {
       "add-igw-route": "応答の行き先ができて、行きも戻りも届きます。{{rule:igw-requirements}}。これでインターネットゲートウェイ、ルート、パブリック IP アドレスの 3 つがそろいました。このサブネットは、インターネットゲートウェイへのルートを持つので、パブリックサブネットになります。",
-      "remove-public-ip": "{{rule:igw-requirements}}。パブリック IP アドレスを外したので条件がそろわず、行きの最初のインターネットゲートウェイの段で止まります。",
-      "detach-igw": "{{rule:igw-requirements}}。インターネットゲートウェイをアタッチしていないので条件がそろわず、行きのインターネットゲートウェイの段で止まります。"
+      "remove-public-ip": "{{rule:igw-requirements}}。パブリック IP アドレスを外したので、インターネットと通信するのに要る条件を満たしていません。行きの最初の段で止まります。",
+      "detach-igw": "{{rule:igw-requirements}}。インターネットゲートウェイをアタッチしていないので、インターネットと通信するのに要る条件を満たしていません。行きの最初の段で止まります。"
     }
   },
   "factRefs": [
@@ -157,7 +157,8 @@
     "vpc.nacl-default-allow",
     "vpc.quota-sg-per-eni",
     "vpc.nacl-stateless",
-    "vpc.route-priority"
+    "vpc.route-priority",
+    "vpc.igw-inbound-translation"
   ],
   "lessonRefs": [
     "lesson-basics-ip-subnet-routing",

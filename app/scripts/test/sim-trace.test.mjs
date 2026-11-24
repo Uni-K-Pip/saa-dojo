@@ -237,7 +237,10 @@ describe('行きと戻りの段', () => {
     expect(stages(output.return)).toEqual([pass('vpce', 'vpce-s3'), pass('nacl-in', 'app', 'rule'), pass('sg-in', 'app', 'stateful'), pass('arrive', 'app')]);
     expect(output).toMatchObject({ stop: 'none', delivered: true, routeTarget: 'vpce', seenSource: '10.0.2.10' });
     expect(output.forward[2].route).toEqual({ dest: 'pl-s3', target: 'vpce-s3' });
-    expect(rules).toContain('vpce-precedence');
+    // 0.0.0.0/0 は NAT ゲートウェイ向きなので、エンドポイントの経路の優先（IGW 向きの事実）ではなく、プレフィックスリストのルートの優先が入る
+    expect(rules).toContain('route-prefix-list');
+    expect(rules).not.toContain('vpce-precedence');
+    expect(trace({ appRoute: 'igw' }).rules).toContain('vpce-precedence');
   });
 
   it('IGW 経由の S3 は S3 の ID に届き、既定ルートがなければ送れません', () => {
@@ -265,9 +268,9 @@ describe('行きと戻りの段', () => {
   });
 
   it('規則は実行した段に対応し、表の順で重複なく含まれます', () => {
-    expect(Object.keys(RULES)).toHaveLength(27);
+    expect(Object.keys(RULES)).toHaveLength(29);
     expect(trace(clientToAlb).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless',
-      'nacl-default', 'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'address-match', 'trace-order']);
+      'nacl-default', 'route-table', 'route-longest', 'subnet-kind', 'igw-requirements', 'igw-nat', 'igw-inbound', 'address-match', 'trace-order']);
     expect(trace(appToUpdate, (config) => { config.securityGroups['sg-app'].outbound = []; }).rules)
       .toEqual(['sg-eni', 'sg-allow-only', 'subnet-kind', 'trace-order']);
     expect(trace(appToUpdate).rules).toEqual(['sg-eni', 'sg-allow-only', 'sg-stateful', 'nacl-subnet', 'nacl-stateless', 'nacl-default',
@@ -279,6 +282,7 @@ describe('行きと戻りの段', () => {
     const internetStopped = trace(clientToAlb, (config) => setAcl(config, 'pub', { inbound: [] }));
     expect(internetStopped.output).toMatchObject({ stop: 'forward-nacl-in' });
     expect(internetStopped.rules).toContain('route-table');
+    expect(internetStopped.rules).toContain('igw-inbound');
     const ephemeral = trace(clientToAlb, (config) => setAcl(config, 'pub', {
       inbound: [aclRule(100, 'allow', ANY, range(443))], outbound: [aclRule(100, 'allow', ANY, range(1024, 65535))],
     }));

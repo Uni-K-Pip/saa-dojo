@@ -77,6 +77,10 @@ export const RULES = {
     label: 'インターネットゲートウェイの付け替え', text: 'インターネットゲートウェイは、IPv4 では 1 対 1 の NAT を行います',
     factRef: 'vpc.igw-basics', evidence: ['1 対 1 の NAT'],
   },
+  'igw-inbound': {
+    label: 'インターネットから入る通信の宛先', text: 'インスタンスのパブリック IPv4 アドレスか Elastic IP アドレス宛ての通信は、インターネットゲートウェイが宛先をインスタンスのプライベート IPv4 アドレスに変換してから VPC に届けます',
+    factRef: 'vpc.igw-inbound-translation', evidence: ['宛先をインスタンスのプライベート IPv4 アドレスに変換してから VPC に届ける'],
+  },
   'nat-outbound': {
     label: 'NAT ゲートウェイの向き', text: 'NAT ゲートウェイは内側の部品から外への接続を可能にし、外側からその部品への接続は開始できません',
     factRef: 'nat-gateway.outbound-connections', evidence: ['外部サービスから、そのインスタンスへの接続を開始することはできない'],
@@ -102,8 +106,12 @@ export const RULES = {
     factRef: 'vpc.gateway-endpoint-services', evidence: ['インターネットゲートウェイや NAT デバイスなしで接続', 'プレフィックスリストへのルート'],
   },
   'vpce-precedence': {
-    label: 'エンドポイントの経路の優先', text: '0.0.0.0/0 がほかへ向いていても、S3 宛ての通信にはエンドポイントの経路が優先されます',
-    factRef: 'vpc-endpoints.gateway-route-precedence', evidence: ['エンドポイントの経路が優先される'],
+    label: 'エンドポイントの経路の優先', text: 'ゲートウェイエンドポイントのあるルートテーブルでは、0.0.0.0/0 がインターネットゲートウェイへ向いていても、同じリージョンの S3 宛ての通信にはエンドポイントの経路が優先されます',
+    factRef: 'vpc-endpoints.gateway-route-precedence', evidence: ['0.0.0.0/0 がインターネットゲートウェイへ向いていても', 'エンドポイントの経路が優先される'],
+  },
+  'route-prefix-list': {
+    label: 'プレフィックスリストのルートの優先', text: '重なるルートでは、プレフィックスリストを参照するルートであっても、より具体的なルートが常に優先されます',
+    factRef: 'vpc.route-priority-prefix-list', evidence: ['より具体的なルートが常に優先される'],
   },
   's3-public-endpoint': {
     label: 'エンドポイントを使わない S3 への通信', text: 'エンドポイントに関連付けのないルートテーブルのサブネットの部品は、エンドポイントではなく公開のサービスエンドポイントを使います',
@@ -438,7 +446,10 @@ export function run(config) {
     if (fromNat) use('nat-route-igw');
     const routes = routesFor(host);
     const match = selectRoute(routes, destination);
-    if (match?.dest === S3 && routes.some(({ dest }) => dest === ANY_IPV4)) use('vpce-precedence');
+    // S3 宛てでエンドポイントのルートと 0.0.0.0/0 が重なるとき、0.0.0.0/0 がインターネットゲートウェイ向きなら
+    // エンドポイントの経路の優先の事実、ほかの向きなら、プレフィックスリストのルートでも具体的なルートが優先される事実が受け持つ
+    const any = match?.dest === S3 ? routes.find(({ dest }) => dest === ANY_IPV4) : undefined;
+    if (any) use(any.target === 'igw' ? 'vpce-precedence' : 'route-prefix-list');
     if (phase === 'forward' && output.routeTarget === undefined) output.routeTarget = targetKind(match?.target);
     if (!match) return stage('route', host.subnet, 'route', {}, 'no-route');
     const { dest, target } = match;
@@ -459,7 +470,9 @@ export function run(config) {
     const publicIp = publicIps.get(host.id);
     if (!publicIp) return stage('igw', 'igw', 'route', {}, 'no-public-ip');
     // NAT ゲートウェイから外へ出る行きは、NAT の事実が受け持つ（インターネットゲートウェイが Elastic IP アドレスに対応付ける）
-    use(isNat(host) && outbound && phase === 'forward' ? 'nat-translate' : 'igw-nat');
+    // 外から部品へ向かう行きは、宛先の変換の事実が受け持つ
+    if (!outbound && phase === 'forward' && !isNat(host)) use('igw-inbound');
+    else use(isNat(host) && outbound && phase === 'forward' ? 'nat-translate' : 'igw-nat');
     if (!outbound && phase === 'forward') destination = publicIp;
     return stage('igw', 'igw', 'route', translate(outbound, outbound ? publicIp : host));
   }

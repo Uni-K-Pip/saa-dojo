@@ -27,8 +27,8 @@ const REASONS: Record<Reason, string> = {
   'nacl-deny': '拒否のルールに当たりました。',
   'nacl-no-match': '最後の * のルールで拒否されました。',
   'no-route': '宛先に当てはまるルートがありません。',
-  'no-igw': 'インターネットゲートウェイがアタッチされていません。',
-  'no-public-ip': 'パブリック IP アドレスがありません。',
+  'no-igw': 'インターネットと通信するのに要る条件を満たしていません。インターネットゲートウェイがアタッチされていません。',
+  'no-public-ip': 'インターネットと通信するのに要る条件を満たしていません。パブリック IP アドレスがありません。',
   'nat-inbound': '外側から NAT ゲートウェイへの接続を開始できません。',
 };
 
@@ -74,6 +74,8 @@ export function summarizeTrace(output: SummaryOutput): string {
   if (output.delivered) return '届きました（行きと戻り）';
   if (output.stop === 'none') return '通信が止まりました。';
   const { direction, gate } = stopGate(output.stop);
+  // インターネットゲートウェイの段で止まるのは、インターネットと通信する条件がそろわないとき（ゲートウェイがないこともある）
+  if (gate === 'igw') return `${DIRECTIONS[direction]}で止まりました（インターネットと通信する条件を満たしていません）`;
   const gateName = GATES[gate].replace(/（(?:入る|出る)）$/, '');
   const place = gate === 'igw' || gate === 'vpce' ? undefined : output.stopLabel ?? output.stopAt;
   return `${DIRECTIONS[direction]}の${gateName}${place ? `（${place}）` : ''}で止まりました`;
@@ -174,7 +176,7 @@ function TraceStages({ config, output, direction }: { config: Config; output: Ou
             const stopped = stage.verdict === 'stop';
             const reason = stopped && output.reason ? REASONS[output.reason] : '';
             const detail = reason && (!stage.rule || stage.basis === 'final-deny') ? reason : stageDetail(config, stage, direction);
-            const gate = GATES[stage.gate];
+            const gate = stage.gate === 'igw' && !config.vpc.igw ? `${GATES.igw}（アタッチされていない）` : GATES[stage.gate];
             const place = stageLabel(config, stage);
             return (
               <li key={index} className={stopped ? 'trace-stage trace-stopped' : 'trace-stage'}>

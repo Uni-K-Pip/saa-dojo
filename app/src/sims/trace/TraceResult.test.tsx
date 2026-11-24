@@ -34,7 +34,7 @@ describe('VPC の通信の追跡の結果', () => {
     const stopped = trace({ appNacl: 'https' });
     expect(summarizeTrace(withStopLabel(stopped.config, stopped.output))).toBe('戻りのネットワーク ACL（アプリ）で止まりました');
     const noIgw = trace({ from: 'client', to: 'alb', igw: false });
-    expect(summarizeTrace(withStopLabel(noIgw.config, noIgw.output))).toBe('行きのインターネットゲートウェイで止まりました');
+    expect(summarizeTrace(withStopLabel(noIgw.config, noIgw.output))).toBe('行きで止まりました（インターネットと通信する条件を満たしていません）');
   });
 
   it('届いたときは行きと戻りを通った順に表示する', () => {

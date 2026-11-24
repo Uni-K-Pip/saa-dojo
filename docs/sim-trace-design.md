@@ -44,13 +44,15 @@
 | `subnet-kind` | サブネットの種類はルートで決まる。インターネットゲートウェイへのルートがあればパブリック、なければプライベート、VPC の外へのルートが一切なければ分離 | 事実 `vpc.subnet-types` | `インターネットゲートウェイへの直接のルートがあればパブリック`、`VPC の外へのルートが一切なければ分離サブネット` |
 | `igw-requirements` | インターネットとの IPv4 の通信には、インターネットゲートウェイのアタッチ、サブネットのルートテーブルのそのゲートウェイへのルート、部品のパブリック IPv4 アドレス（Elastic IP アドレスを含む）が要る | 事実 `vpc.igw-requirements` | `アタッチし`、`ゲートウェイへのルートを入れ`、`パブリック IPv4 アドレスか Elastic IP アドレス` |
 | `igw-nat` | インターネットゲートウェイは、プライベート IP アドレスとパブリック IP アドレスを 1 対 1 で付け替える（宛先から見える送信元はパブリック IP アドレス） | 事実 `vpc.igw-basics` | `1 対 1 の NAT` |
+| `igw-inbound` | インスタンスのパブリック IPv4 アドレスか Elastic IP アドレス宛ての通信は、インターネットゲートウェイが宛先をインスタンスのプライベート IPv4 アドレスに変換してから VPC に届ける（外から部品へ向かう行きのインターネットゲートウェイの段） | 事実 `vpc.igw-inbound-translation` | `宛先をインスタンスのプライベート IPv4 アドレスに変換してから VPC に届ける` |
 | `nat-outbound` | NAT ゲートウェイは、内側の部品から外への接続を通し、その応答を戻す。外側から内側の部品への接続は始められない | 事実 `nat-gateway.outbound-connections` | `外部サービスから、そのインスタンスへの接続を開始することはできない` |
 | `nat-route-igw` | NAT ゲートウェイでインターネットへ出るには、NAT ゲートウェイのサブネットのルートで、インターネットゲートウェイへ送る | 事実 `nat-gateway.public-internet-route` | `インターネットゲートウェイへトラフィックをルーティング` |
 | `nat-eip` | パブリック NAT ゲートウェイには Elastic IP アドレスを関連付ける（インターネットゲートウェイを通るときのパブリック IP アドレス） | 事実 `nat-gateway.public-elastic-ip` | `Elastic IP アドレスを関連付ける必要` |
 | `nat-no-sg` | NAT ゲートウェイにはセキュリティグループがない（NAT ゲートウェイの段では、セキュリティグループを見ない） | 事実 `nat-gateway.no-security-group` | `セキュリティグループを関連付けられない` |
 | `nat-translate` | NAT ゲートウェイは、インスタンスの送信元のプライベート IPv4 アドレスを NAT ゲートウェイのプライベート IPv4 アドレスに対応付け、パブリック NAT ゲートウェイでは、インターネットゲートウェイがそれを関連付けられた Elastic IP アドレスに対応付ける。応答は NAT ゲートウェイが元の送信元のアドレスに戻す | 事実 `nat-gateway.source-translation` | `NAT ゲートウェイのプライベート IPv4 アドレスに対応付ける`・`関連付けられた Elastic IP アドレスに対応付ける`・`元の送信元 IP アドレスに戻す` |
 | `vpce-gateway` | ゲートウェイエンドポイントは、ルートテーブルのプレフィックスリストへのルートで S3 へ運ぶ。インターネットゲートウェイ、NAT、パブリック IP アドレスは要らない | 事実 `vpc.gateway-endpoint-services` | `インターネットゲートウェイや NAT デバイスなしで接続`、`プレフィックスリストへのルート` |
-| `vpce-precedence` | ゲートウェイエンドポイントのルートがあれば、`0.0.0.0/0` が別の行き先でも、S3 宛てはエンドポイントの経路を使う | 事実 `vpc-endpoints.gateway-route-precedence` | `エンドポイントの経路が優先される` |
+| `vpce-precedence` | ゲートウェイエンドポイントのあるルートテーブルでは、`0.0.0.0/0` がインターネットゲートウェイへ向いていても、同じリージョンの S3 宛てにはエンドポイントの経路が優先される（`0.0.0.0/0` がインターネットゲートウェイ向きのときだけ使う） | 事実 `vpc-endpoints.gateway-route-precedence` | `0.0.0.0/0 がインターネットゲートウェイへ向いていても`・`エンドポイントの経路が優先される` |
+| `route-prefix-list` | 重なるルートでは、プレフィックスリストを参照するルートであっても、より具体的なルートが常に優先される（S3 宛てで、エンドポイントのルートと、インターネットゲートウェイ以外へ向く `0.0.0.0/0` が重なるとき） | 事実 `vpc.route-priority-prefix-list` | `より具体的なルートが常に優先される` |
 | `s3-public-endpoint` | エンドポイントのルートのないサブネットの部品は、S3 の公開のサービスエンドポイントを使う（NAT ゲートウェイかインターネットゲートウェイを通り、インターネットの相手と同じ経路になる） | 事実 `vpc-endpoints.gateway-route-association` | `公開のサービスエンドポイントを使う` |
 | `sg-prefix-list` | セキュリティグループのルールの宛先に、S3 のプレフィックスリスト（`pl-s3`）を書ける | 事実 `vpc.sg-rule-sources` | `プレフィックスリストの ID` |
 | `vpce-sg-nacl` | ゲートウェイエンドポイントを通っても、セキュリティグループとネットワーク ACL は S3 との通信を許可している必要がある。セキュリティグループにはプレフィックスリストを書ける | 事実 `vpc-endpoints.gateway-sg-nacl` | `セキュリティグループとサブネットのネットワーク ACL は、S3 や DynamoDB との通信を許可している必要` |
@@ -83,10 +85,12 @@
 | 戻りの通信はクライアントのエフェメラルポート宛て | `nacl-final-deny` | 戻りにカスタムのネットワーク ACL の段があるとき |
 | NAT ゲートウェイの段にセキュリティグループがない | `nat-no-sg` | NAT ゲートウェイの段 |
 | NAT ゲートウェイから先は NAT ゲートウェイのサブネットのルートを見る | `nat-route-igw` | 行きの NAT ゲートウェイのサブネットの `route` の段 |
-| インターネットゲートウェイでのアドレスの付け替え | `igw-nat` | インターネットゲートウェイの段を通ったとき |
+| インターネットゲートウェイでのアドレスの付け替え | `igw-nat` | インターネットゲートウェイの段を通ったとき（外から部品へ向かう行きを除く） |
+| 外から部品へ向かう行きで、インターネットゲートウェイが宛先をプライベートアドレスに変換して VPC に届ける（入ってくる通信の段にルートテーブルがない） | `igw-inbound`（行き）、`route-table`（戻りの応答はサブネットから出る通信） | 外から部品へ向かう行きがインターネットゲートウェイを通ったとき |
+| インターネットと通信する条件がそろわないと、インターネットゲートウェイの段で止まる | `igw-requirements`（止まる理由は「要る条件を満たしていない」と書く。ゲートウェイがない構成で「ゲートウェイで止まる」とは書かない） | インターネットゲートウェイの段を見たとき |
 | NAT ゲートウェイでの送信元のアドレスの付け替えと戻し、NAT ゲートウェイから外へ出る行きのインターネットゲートウェイでの Elastic IP アドレスへの付け替え | `nat-translate` | NAT ゲートウェイの段で付け替えたとき、NAT ゲートウェイから外へ出る行きのインターネットゲートウェイの段 |
 | S3 宛てで、エンドポイントがなければ NAT かインターネットゲートウェイを通る | `s3-public-endpoint` | エンドポイントを通らない S3 宛ての実行 |
-| S3 宛てで、エンドポイントがあれば NAT もインターネットゲートウェイも通らない | `vpce-gateway`、`vpce-precedence` | エンドポイントを通ったとき |
+| S3 宛てで、エンドポイントがあれば NAT もインターネットゲートウェイも通らない | `vpce-gateway`（プレフィックスリストへのルート）、`route-longest`、`0.0.0.0/0` がインターネットゲートウェイ向きなら `vpce-precedence`、ほかの向きなら `route-prefix-list` | エンドポイントを通ったとき |
 | 宛先から見える送信元（`seenSource`）が付け替えのあとのアドレス | `igw-nat`、NAT ゲートウェイを通るときは `nat-translate` | 付け替えがあったとき |
 
 ### 3.3 図鑑に事実のない規則（足す案）
@@ -98,6 +102,7 @@
 
 - 2 件は、エンジンを作る前に、図鑑の手順（起草と検証を分ける）で足して検証しました（2026-11-24。どちらも検証済み）。規則の `evidence` は、`route-table` が `サブネットやゲートウェイから出る通信`・`local ルート`、`nacl-default` が `IPv4 通信をすべて許可`。
 - 段の並びの点検（3.2.1）で、NAT ゲートウェイが送信元のアドレスを付け替え、応答で元に戻すことを受け持つ事実がないとわかりました。図鑑に事実 `nat-gateway.source-translation` を同じ手順で足して検証し（2026-11-24。公式の資料の NAT gateways のページ）、規則 `nat-translate` で受け持ちます。公式の資料の言い方では、NAT ゲートウェイが付け替える先は NAT ゲートウェイのプライベート IPv4 アドレスで、Elastic IP アドレスへはインターネットゲートウェイが対応付けます。エンジンの段もこの 2 段で付け替え、宛先から見える送信元（`seenSource`）は Elastic IP アドレスです。外から NAT ゲートウェイへ向かう通信と、応答がインターネットゲートウェイを通るときの付け替えは `igw-nat` が受け持ちます。
+- シナリオの検証で、さらに 2 点の裏づけが足りないとわかり、図鑑に 2 件を同じ手順で足して検証しました（2026-11-24。どちらも detail）。外から部品へ向かう行きがインターネットゲートウェイで宛先を変換して VPC に届くこと（`vpc.igw-inbound-translation`。規則 `igw-inbound`）と、プレフィックスリストを参照するルートでも具体的なルートが優先されること（`vpc.route-priority-prefix-list`。規則 `route-prefix-list`。`0.0.0.0/0` が NAT ゲートウェイへ向く構成で、S3 宛てにエンドポイントのルートが使われることの裏づけ）。`vpc-endpoints.gateway-route-precedence` は、`0.0.0.0/0` がインターネットゲートウェイへ向くときだけに使います。
 - 足せなかったときの代わり: `nacl-default` は、シナリオの設定に「デフォルト」を書かず、すべてを許可するルールを明示する（画面の語も「すべて許可のルール」にする）。`route-table` は代わりがなく、シナリオ 8.1 の初期の設定（戻りで止まる）を、ルートのある設定に組み替える。
 
 ## 4. 操作の入力と出力
@@ -220,7 +225,7 @@ toggle は最上位の項目を 1 つだけ書き換える（`sims-design.md` 3.
 - ロードバランサーの中継、ターゲットのヘルスチェック
 - 同じサブネットの中の通信（ネットワーク ACL が評価されるかどうかの論点を持ち込まないため）、1 つの部品に複数のセキュリティグループ、ネットワークインターフェイスを複数持つ部品
 - TCP 以外（UDP、ICMP）、NAT ゲートウェイによる送信元ポートの付け替え（もとの `clientPort` のまま数える）、接続の状態の時間切れ
-- local より細かいルート（ミドルボックスのルーティング）、ゲートウェイのルートテーブル（エッジの関連付け）、伝播ルート、エンドポイントポリシーとバケットポリシー
+- local より細かいルート（ミドルボックスのルーティング）、ゲートウェイに関連付けるルートテーブル（エッジの関連付け。入ってくる通信の行き先を変える構成）、伝播ルート、エンドポイントポリシーとバケットポリシー
 - S3 の IP 範囲。S3 宛ての通信に当たるのは、ルートでは `pl-s3` と `0.0.0.0/0`、セキュリティグループのルールでは `pl-s3` と `0.0.0.0/0`、ネットワーク ACL のルールでは `0.0.0.0/0` だけとして扱う。S3 の IP 範囲を CIDR で書いたルート・セキュリティグループのルール・ネットワーク ACL のルールは扱わない（書いても S3 宛てには当たらないものとして計算する。シナリオとプリセットには書かない）。S3 からの応答（戻りのインバウンド）も同じ当たり方で見る
 - 行きと戻りで違う経路を通る通信（非対称のルーティング）。戻りは行きと同じ関門を逆にたどる前提で組み立てる（4.2 の検査で、そうならない構成を入れられないようにする。実装のときに、作れる構成のなかで非対称になるものがないかを単体テストで確かめる）
 - 料金、帯域、可用性（AZ の障害）
@@ -286,7 +291,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 変えられる設定: `0.0.0.0/0 を IGW へ向ける`（`none`、`delivered` 真。サブネットの種類が `public` に変わる）、`パブリック IP を外す`（`forward-igw`、`no-public-ip`）、`IGW を外す`（`forward-igw`、`no-igw`）
 - 理由で触れること: インターネットとの通信には 3 つがそろう必要がある。ルートテーブルはサブネットから出る通信の行き先を決めるので、行きは届いても、応答の行き先がない。パブリックかどうかはルートで決まる
 - 裏づけ: 事実 `vpc.igw-requirements`、`vpc.route-table-local`（足す）、`vpc.subnet-types`、`vpc.igw-basics`、`vpc.sg-stateful-allow-only`、`vpc.nacl-default-allow`（足す）。レッスン `lesson-basics-ip-subnet-routing`、`lesson-3.4-vpc-design`
-- 使う規則: `igw-requirements`、`igw-nat`、`route-table`、`route-longest`、`subnet-kind`、`nacl-subnet`、`nacl-default`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`address-match`、`trace-order`
+- 使う規則: `igw-requirements`、`igw-nat`、`igw-inbound`、`route-table`、`route-longest`、`subnet-kind`、`nacl-subnet`、`nacl-default`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`address-match`、`trace-order`
 - 理由の文と選択肢は 12 章の 1 の条件に従う
 
 ### 8.2 `sim-trace-sg-stateful`: アウトバウンドを空にしたら応答は返るか
@@ -334,7 +339,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 - 変えられる設定: `エンドポイントのルートを消す`（`routeTarget` `nat`、`none`。NAT を通って届く）、`アウトバウンドを VPC の中だけにする`（セキュリティグループのアウトバウンドを TCP すべて 10.0.0.0/16 へ。`forward-sg-out`、`sg-no-match`）、`ネットワーク ACL で 0.0.0.0/0 を拒否`（アプリのサブネットのアウトバウンドをルール 100 で 0.0.0.0/0 を拒否。`forward-nacl-out`、`nacl-deny`）
 - 理由で触れること: エンドポイントの経路は 0.0.0.0/0 より優先される。エンドポイントを通っても、セキュリティグループとネットワーク ACL は S3 との通信を許可している必要がある。ネットワーク ACL はプレフィックスリストを書けない
 - 裏づけ: 事実 `vpc.gateway-endpoint-services`、`vpc-endpoints.gateway-route-precedence`、`vpc-endpoints.gateway-sg-nacl`、`vpc.nacl-no-prefix-list`、`vpc.route-priority`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-private-connectivity`（ゲートウェイ型とインターフェイス型の表）
-- 使う規則: `vpce-gateway`、`vpce-precedence`、`vpce-sg-nacl`、`nacl-no-prefix-list`、`route-table`、`route-longest`、`nat-*`（toggle で NAT を通るため）、`igw-*`、`sg-*`、`nacl-*`、`subnet-kind`、`address-match`、`trace-order`
+- 使う規則: `vpce-gateway`、`route-prefix-list`、`vpce-sg-nacl`、`nacl-no-prefix-list`、`route-table`、`route-longest`、`nat-*`（toggle で NAT を通るため）、`igw-*`、`sg-*`、`nacl-*`、`subnet-kind`、`address-match`、`trace-order`
 
 ### 8.7 `sim-trace-longest-prefix`: 足したルートが NAT を迂回する
 

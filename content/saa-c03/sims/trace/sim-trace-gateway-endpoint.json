@@ -185,7 +185,7 @@
     }
   },
   "explain": {
-    "initial": "{{rule:vpce-precedence}}。このルートテーブルでは 0.0.0.0/0 が NAT ゲートウェイへ向いていますが、S3 宛てはエンドポイントのルートで運ばれます。{{rule:vpce-sg-nacl}}。ここでは許可があるので通ります。",
+    "initial": "{{rule:vpce-gateway}}。このルートテーブルでは、0.0.0.0/0 が NAT ゲートウェイへ向いています。{{rule:route-prefix-list}}。S3 宛てには、0.0.0.0/0 より範囲の狭いプレフィックスリストのルートが使われ、エンドポイントで運ばれます。{{rule:vpce-sg-nacl}}。ここでは許可があるので通ります。",
     "toggles": {
       "remove-endpoint-route": "エンドポイントのルートを消すと、S3 宛ての通信は 0.0.0.0/0 の NAT ゲートウェイへのルートで運ばれ、NAT ゲートウェイとインターネットゲートウェイを通って届きます。",
       "sg-vpc-only": "アウトバウンドを VPC の中だけにすると、S3 宛ての通信はどのルールにも当てはまらず、セキュリティグループの段で止まります。{{rule:vpce-sg-nacl}}。",
@@ -194,7 +194,6 @@
   },
   "factRefs": [
     "vpc.gateway-endpoint-services",
-    "vpc-endpoints.gateway-route-precedence",
     "vpc-endpoints.gateway-sg-nacl",
     "vpc.nacl-no-prefix-list",
     "vpc.route-priority",
@@ -211,7 +210,8 @@
     "nat-gateway.public-elastic-ip",
     "nat-gateway.no-security-group",
     "vpc-endpoints.gateway-route-association",
-    "nat-gateway.source-translation"
+    "nat-gateway.source-translation",
+    "vpc.route-priority-prefix-list"
   ],
   "lessonRefs": [
     "lesson-1.2-private-connectivity",
