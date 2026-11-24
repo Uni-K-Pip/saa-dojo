@@ -866,7 +866,7 @@
       "id": "iam.saml-federation-provider",
       "title": "SAML 2.0 フェデレーションの IAM 側の構成",
       "kind": "feature",
-      "text": "IAM の SAML 2.0 フェデレーションでは、組織の IdP が出す SAML メタデータの文書をもとに、IAM に SAML ID プロバイダー（IdP を表すエンティティ）を作り、ロールの信頼ポリシーでその SAML プロバイダーを Principal に指定する。IdP で認証された利用者のアプリが SAML アサーションを付けて sts:AssumeRoleWithSAML を呼ぶと、ロールの一時的な認証情報が返る。ロールの信頼ポリシーで使う SAML IdP は、ロールと同じアカウントにある必要がある。",
+      "text": "IAM の SAML 2.0 フェデレーションでは、組織の IdP が出す SAML メタデータの文書をもとに、IAM に SAML ID プロバイダー（IdP を表すエンティティ）を作り、ロールの信頼ポリシーでその SAML プロバイダーを Principal に指定する。IdP で認証された利用者のアプリが SAML アサーションを付けて sts:AssumeRoleWithSAML を呼ぶと、ロールの一時的な認証情報が返る。",
       "depth": "core",
       "sources": [
         {
@@ -891,6 +891,52 @@
         {
           "title": "The confused deputy problem - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.aws-managed-policy-not-least-privilege",
+      "title": "AWS 管理ポリシーは最小権限とは限らない",
+      "kind": "feature",
+      "text": "AWS 管理ポリシーは AWS のすべての利用者が使えるように用意されているため、個々の用途に対して最小権限の権限を与えるとは限らない。そのため、用途に固有のカスタマー管理ポリシーを定義して、権限をさらに絞ることが推奨される。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Security best practices in IAM",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.federation-idp-same-account",
+      "title": "フェデレーションの IdP はロールと同じアカウントに置く",
+      "kind": "constraint",
+      "text": "IAM の SAML 2.0 と OpenID Connect のどちらのフェデレーションでも、ロールの信頼ポリシーで使う ID プロバイダー（IAM に作るエンティティ）は、そのロールと同じアカウントになければならない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Create an OpenID Connect (OIDC) identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
+        },
+        {
+          "title": "Create a SAML identity provider in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_saml.html"
+        }
+      ],
+      "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.global-propagation",
+      "title": "IAM のコントロールプレーンは 1 つで、設定が各リージョンに伝わる",
+      "kind": "feature",
+      "text": "IAM は、リージョンを基盤にしながら世界中で使えるサービスである。すべての商用リージョンに対して IAM のコントロールプレーンは 1 つで、米国東部（バージニア北部）リージョンにある。ロールやポリシーなどの設定の変更はここに送られ、有効なすべてのリージョンの IAM のデータプレーンに伝わる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Resilience in AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/disaster-recovery-resiliency.html"
         }
       ],
       "checkedAt": "2026-11-24"

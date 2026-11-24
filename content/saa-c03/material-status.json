@@ -198,12 +198,12 @@
     "lesson-1.1-iam-basics": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "711e41595f8a"
+      "hash": "9c70181d6ed4"
     },
     "lesson-1.1-roles-federation": {
       "status": "verified",
       "checkedAt": "2026-11-24",
-      "hash": "c25dfed16598"
+      "hash": "81e0adeb3bd8"
     }
   }
 }

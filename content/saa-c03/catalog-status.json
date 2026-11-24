@@ -3554,6 +3554,11 @@
     "checkedAt": "2026-11-14",
     "hash": "c4471d4167e7"
   },
+  "ec2.customer-content-responsibility": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "42110b5d848c"
+  },
   "ec2.customer-responsibility": {
     "status": "verified",
     "checkedAt": "2026-11-21",
@@ -5664,6 +5669,11 @@
     "checkedAt": "2026-11-21",
     "hash": "56bc3a2e94b5"
   },
+  "iam.aws-managed-policy-not-least-privilege": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "f189031c6c47"
+  },
   "iam.boundary-basics": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5719,6 +5729,11 @@
     "checkedAt": "2026-11-14",
     "hash": "942644d7b7fd"
   },
+  "iam.federation-idp-same-account": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "7ae2a2686af4"
+  },
   "iam.github-oidc-sub-condition": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5748,6 +5763,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "b1ccf0dcf0ab"
+  },
+  "iam.global-propagation": {
+    "status": "verified",
+    "checkedAt": "2026-11-24",
+    "hash": "a7d7596ec015"
   },
   "iam.group-members": {
     "status": "verified",
@@ -5892,7 +5912,7 @@
   "iam.saml-federation-provider": {
     "status": "verified",
     "checkedAt": "2026-11-24",
-    "hash": "0d247612a1e2"
+    "hash": "38a9e88b518c"
   },
   "iam.service-linked-role": {
     "status": "verified",
