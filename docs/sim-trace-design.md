@@ -308,7 +308,7 @@ A にし、B はあとの候補にします（`Diagram.tsx` に強調の入口�
 
 - 状況: 8.2 の Web サーバーのサブネットに、カスタムのネットワーク ACL を付けた。インバウンドはルール 100 で TCP 443 を 0.0.0.0/0 から許可、アウトバウンドはルール 100 で TCP 443 を 0.0.0.0/0 へ許可。クライアントは送信元のポート 50000 から接続する。
 - 予想: 「この接続はどうなるか」（`stop`。届く ／ 行きのネットワーク ACL で止まる ／ 戻りのネットワーク ACL で止まる）。答えは「戻りのネットワーク ACL で止まる」（`return-nacl-out`、`nacl-no-match`）。
-- 変えられる設定: `戻りに 1024-65535 を許可`（アウトバウンドのルール 100 を TCP 1024〜65535 に。`none`）、`拒否を先に置く`（アウトバウンドをルール 90 で全部拒否、ルール 100 で 1024〜65535 を許可。`return-nacl-out`、`nacl-deny`）、`拒否を後ろに置く`（ルール 100 で 1024〜65535 を許可、ルール 200 で全部拒否。`none`）
+- 変えられる設定: `戻りに 1024-65535 を許可`（アウトバウンドのルール 100 を TCP 1024〜65535 に。`none`）、`戻りを 1024-65535 にして、拒否を先に置く`（アウトバウンドをルール 90 で全部拒否、ルール 100 で 1024〜65535 を許可。`return-nacl-out`、`nacl-deny`）、`戻りを 1024-65535 にして、拒否を後ろに置く`（ルール 100 で 1024〜65535 を許可、ルール 200 で全部拒否。`none`）
 - 理由で触れること: 応答はクライアントのエフェメラルポート（ここでは 50000）宛て。ルールは番号の小さい順で、最初に当たったものを使う。エフェメラルポートの範囲の実用的な値はレッスンを指す
 - 裏づけ: 事実 `vpc.nacl-stateless`、`vpc.nacl-custom-default-deny`、`vpc.sg-stateful-allow-only`、`vpc.igw-requirements`、`vpc.route-table-local`（足す）。レッスン `lesson-1.2-vpc-network-security`
 - 使う規則: `nacl-subnet`、`nacl-order`、`nacl-stateless`、`nacl-final-deny`、`sg-eni`、`sg-allow-only`、`sg-stateful`、`route-table`、`route-longest`、`igw-requirements`、`igw-nat`、`subnet-kind`、`address-match`、`trace-order`
