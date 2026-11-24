@@ -337,9 +337,10 @@ function prepare(config) {
   requireInput(!isHost(from) || from.subnet !== to.subnet, 'flow', NOT_COVERED[5], 'flow');
 
   const routesFor = (host) => routeTables.get(subnets.get(host.subnet).routeTable);
-  // インターネットから入る通信で、宛先のサブネットにインターネットゲートウェイへのルートがない構成は追跡しない。
-  // 公式の資料が述べるのは、この構成では通信できないことまでで、どの段で止まるかは述べていないため
-  if (!isHost(from)) {
+  // インターネットから入る通信が、アタッチされたインターネットゲートウェイを通って（宛先にパブリック IP アドレスがある）、
+  // ゲートウェイへのルートのないサブネットの部品に向かう構成は追跡しない。公式の資料が述べるのは、この構成では
+  // 通信できないことまでで、どの段で止まるかは述べていないため。ゲートウェイの段で条件を満たさず止まる構成は拒否しない
+  if (!isHost(from) && config.vpc.igw && publicIps.has(to.id)) {
     requireInput(selectRoute(routesFor(to), from)?.target === 'igw', 'flow',
       'IPv4 でインターネットと通信するには、インターネットゲートウェイを VPC にアタッチし、サブネットのルートテーブルにそのゲートウェイへのルートを入れ、パブリック IPv4 アドレスか Elastic IP アドレスを持たせる必要があります。宛先の部品のサブネットには相手のアドレスに当てはまるインターネットゲートウェイへのルートがないので、この通信は成り立ちません。この組み合わせは追跡しません。', 'flow');
   }

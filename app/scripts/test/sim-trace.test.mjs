@@ -395,9 +395,10 @@ describe('入力の検査', () => {
   it('インターネットから入れて応答が NAT を選ぶ組を入力で拒否します', () => {
     const switches = { from: 'client', to: 'app', appPublicIp: true, appInbound: 'any' };
     expect(run(buildPresetConfig(switches))).toMatchObject({ ok: false, error: { code: 'flow', field: 'flow' } });
-    // パブリック IP やアタッチの有無にかかわらず、インターネットゲートウェイへのルートがなければ拒否する
-    expect(run(buildPresetConfig({ ...switches, appPublicIp: false }))).toMatchObject({ ok: false, error: { code: 'flow' } });
-    expect(run(buildPresetConfig({ ...switches, igw: false }))).toMatchObject({ ok: false, error: { code: 'flow' } });
+    // ゲートウェイの段で条件を満たさず止まる構成（パブリック IP がない、アタッチがない）は拒否せず、そこで止める
+    expect(trace({ ...switches, appPublicIp: false }).output).toMatchObject({ stop: 'forward-igw', reason: 'no-public-ip' });
+    expect(trace({ ...switches, appPublicIp: false }).output.forward).toHaveLength(1);
+    expect(trace({ ...switches, igw: false }).output).toMatchObject({ stop: 'forward-igw', reason: 'no-igw' });
     const igwRoute = (c) => c.routeTables['rt-app'].push({ dest: '198.51.100.7/32', target: 'igw' });
     expect(trace(switches, igwRoute).output.delivered).toBe(true);
     expect(trace({ ...switches, appPublicIp: false }, igwRoute).output).toMatchObject({ stop: 'forward-igw', reason: 'no-public-ip' });
@@ -493,12 +494,13 @@ describe('自由に試すプリセット', () => {
           const original = validateInput(config);
           total++;
           const selfRoute = values.natSubnet === 'app' && values.appRoute === 'nat';
-          // インターネットから入る通信で、宛先のサブネットの 0.0.0.0/0 がインターネットゲートウェイを指さない構成は拒否する
+          // インターネットから入る通信が、アタッチされたゲートウェイを通って（宛先にパブリック IP がある）、
+          // 0.0.0.0/0 がゲートウェイを指さないサブネットの部品に向かう構成は拒否する
           const receiverHost = config.hosts.find(({ id }) => id === to);
           const receiverRoutes = receiverHost
             ? config.routeTables[config.subnets.find(({ id }) => id === receiverHost.subnet).routeTable] : [];
-          const asymmetric = ['client', 'update'].includes(from) && Boolean(receiverHost)
-            && receiverRoutes.find(({ dest }) => dest === '0.0.0.0/0')?.target !== 'igw';
+          const asymmetric = ['client', 'update'].includes(from) && Boolean(receiverHost) && values.igw
+            && Object.hasOwn(config.publicIps, to) && receiverRoutes.find(({ dest }) => dest === '0.0.0.0/0')?.target !== 'igw';
           if (selfRoute || asymmetric) {
             assert.equal(original.error?.code, selfRoute ? 'route' : 'flow', label);
             invalid++;
@@ -534,8 +536,8 @@ describe('自由に試すプリセット', () => {
       }
     }
     assert.equal(total, 43200);
-    assert.equal(invalid, 12384);
-    assert.equal(tableChecks, 3424);
+    assert.equal(invalid, 7920);
+    assert.equal(tableChecks, 3920);
     assert.ok(statefulChecks > 0);
   }, 30000);
 });
