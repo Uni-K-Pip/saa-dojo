@@ -93,7 +93,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 
 | サービス | 主な利用者 | 何をするか |
 |---|---|---|
-| AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。権限セットでアカウントごとの権限を一元管理する |
+| AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。権限セットで、組織内の AWS アカウントへのアクセスをユーザーやグループに割り当てる |
 | IAM の SAML・OIDC フェデレーション | 従業員、ワークロード | IAM に ID プロバイダーを登録し、ロールを引き受けさせる |
 | AWS Directory Service | Active Directory を使う組織 | AWS Managed Microsoft AD、AD Connector、Simple AD を提供する（Simple AD は新しいお客様は利用できません） |
 | Amazon Cognito | 自社アプリの利用者（顧客） | ユーザープールでサインアップ・サインイン、ID プールで AWS の一時的な認証情報を発行する |
@@ -107,7 +107,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 > - [ ] AWS Directory Service
 > - [x] Amazon Cognito
 >
-> 自社アプリの利用者（顧客）向けのサービスは Amazon Cognito で、ユーザープールでサインアップ・サインインを行います。AWS IAM Identity Center は従業員向け、AWS Directory Service は Active Directory を使う組織向けです。
+> 自社アプリの利用者（顧客）向けのサービスは Amazon Cognito で、ユーザープールでサインアップ・サインインを行います。AWS IAM Identity Center は主に従業員向け、AWS Directory Service は主に Active Directory を使う組織向けです。
 
 ### Directory Service の 3 つの選択肢
 
@@ -165,7 +165,7 @@ SaaS 事業者などの第三者に自社アカウントへのアクセスを許
 ## ひっかけ注意
 
 > **ひっかけ注意**
-> Amazon Cognito は自社アプリの利用者のためのサービスです。従業員が AWS マネジメントコンソールにサインインするために Cognito を使う選択肢は誤りです。
+> Amazon Cognito は自社アプリの利用者のためのサービスです。従業員が複数の AWS アカウントにシングルサインオンするなら、Cognito ではなく IAM Identity Center です。
 
 > **ひっかけ注意**
 > ロールの ARN は秘密の情報ではありません。「ARN を公開しない」ことは混乱した代理の対策になりません。また、外部 ID は顧客ではなく事業者が発行します。
