@@ -111,7 +111,7 @@
     {
       "id": "r-federation",
       "result": "IAM の SAML・OIDC フェデレーション",
-      "why": "ロールと同じアカウントの IAM に ID プロバイダーを登録し、ロールを引き受けさせます。",
+      "why": "ロールの信頼ポリシーで ID プロバイダーを指定し、ロールを引き受けさせます。IAM に登録する ID プロバイダーは、ロールと同じアカウントに置きます。",
       "factRefs": [
         "iam.federation-idp-same-account",
         "iam.saml-federation-provider",
