@@ -220,9 +220,9 @@
     },
     {
       "id": "sts.get-session-token-api-limits",
-      "title": "GetSessionToken の認証情報で呼べない API",
+      "title": "GetSessionToken の認証情報で IAM API を呼ぶには MFA が要る",
       "kind": "constraint",
-      "text": "GetSessionToken が返す認証情報では、MFA の認証情報を含めない限り IAM の API を呼び出せない。また、AWS STS の API は AssumeRole、GetCallerIdentity、GetScopedCredentials、GetWebIdentityToken、GetDelegatedAccessToken 以外は呼び出せない。",
+      "text": "GetSessionToken が返す一時的な認証情報は、原則としてどの AWS サービスの API 呼び出しにも使える。IAM の API を呼び出す場合は、リクエストに MFA の認証情報を含める必要がある。",
       "depth": "detail",
       "tags": [
         "GetSessionToken"
@@ -233,7 +233,24 @@
           "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
         }
       ],
-      "checkedAt": "2026-11-24"
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "sts.get-session-token-sts-apis",
+      "title": "GetSessionToken の認証情報で呼べる STS API",
+      "kind": "constraint",
+      "text": "GetSessionToken が返す一時的な認証情報で呼び出せる AWS STS の API は、AssumeRole、GetCallerIdentity、GetScopedCredentials、GetWebIdentityToken、GetDelegatedAccessToken に限られる。",
+      "depth": "detail",
+      "tags": [
+        "GetSessionToken"
+      ],
+      "sources": [
+        {
+          "title": "GetSessionToken - AWS Security Token Service API Reference",
+          "url": "https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "sts.web-identity-saml-unsigned",
@@ -305,7 +322,7 @@
       "text": "第三者の事業者が多数の顧客のロールを引き受ける場合、ある顧客 B が、顧客 A のロールの ARN を事業者に渡すと、事業者が A のロールを使って A のアカウントのリソースにアクセスしてしまうおそれがある（混乱した代理）。これを防ぐため、外部 ID は事業者が顧客ごとに一意な値を決め、顧客はその値をロールの信頼ポリシーの sts:ExternalId の条件に入れる。",
       "examPoint": "事業者が発行した外部 ID を、顧客がロールの信頼ポリシーの条件に設定する。",
       "trap": "外部 ID を顧客が自分で考えて決めればよいと考える。",
-      "depth": "detail",
+      "depth": "core",
       "tags": [
         "外部ID",
         "混乱した代理"
@@ -331,5 +348,5 @@
   ],
   "createdBy": "sc2",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }

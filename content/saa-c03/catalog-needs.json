@@ -17,7 +17,7 @@
       "task": "1.1",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "IAM では、境界ポリシーの改変や、ロールの境界の削除・差し替え(iam:DeleteRolePermissionsBoundary など)を許可すると境界を回避できる。",
+      "knowledge": "IAM では、権限の境界が、アイデンティティベースのポリシーで IAM ユーザーまたはロールに付与できる最大の権限を定める。権限管理を委任するポリシーの例では、境界に使うポリシーを編集する操作(iam:CreatePolicyVersion など)と、権限の境界を外す操作(iam:DeleteUserPermissionsBoundary)を明示的に拒否する。",
       "decision": "fact",
       "factRefs": [
         "iam.boundary-self-protection",
@@ -32,8 +32,7 @@
       "knowledge": "Amazon S3 のすべてのプリンシパルを拒否するバケットポリシーは、管理者権限の IAM ユーザーでは解除できず、ルートユーザーの特権操作が必要になる。",
       "decision": "fact",
       "factRefs": [
-        "s3.policy-lockout-root",
-        "iam.root-user-tasks"
+        "s3.policy-lockout-root"
       ]
     },
     {
@@ -45,7 +44,6 @@
       "decision": "fact",
       "factRefs": [
         "s3.policy-lockout-root",
-        "iam.root-user-tasks",
         "iam.centralized-root-access"
       ]
     },
@@ -122,7 +120,7 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "none",
-      "knowledge": "IAM 認証情報レポートは IAM ユーザーのパスワードやアクセスキーの状況を示すもので、ロールが呼び出した API は分からない。",
+      "knowledge": "IAM 認証情報レポートは、アカウント内の IAM ユーザーとルートユーザーについて、パスワード、アクセスキー、MFA デバイスなどの認証情報の状態を列挙するものである。",
       "decision": "fact",
       "factRefs": [
         "iam.credential-report"
@@ -274,7 +272,7 @@
       "task": "1.1",
       "side": "correct",
       "gap": "partial",
-      "knowledge": "GitHub Actions は GitHub の OIDC ID プロバイダーを IAM に登録し、信頼ポリシーの aud と sub の条件でリポジトリとブランチを限定してロールを引き受けさせる。",
+      "knowledge": "GitHub Actions は GitHub の OIDC ID プロバイダーを IAM に登録し、信頼ポリシーの sub の条件でリポジトリとブランチを限定してロールを引き受けさせる。",
       "decision": "fact",
       "factRefs": [
         "iam.oidc-trust-aud-sub",
@@ -381,7 +379,7 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Lambda では、実行基盤のサーバー、OS、ランタイムの管理は AWS の責任で、利用者は関数のコードと設定を担当する。",
+      "knowledge": "AWS Lambda では、サーバーの保守やパッチ適用といった基盤の管理は AWS が行い、利用者はアプリケーションのロジックに集中する。",
       "decision": "fact",
       "factRefs": [
         "lambda.shared-responsibility"
@@ -1077,7 +1075,7 @@
       "task": "2.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Lambda のデフォルトのコンピューティングタイプでは、基盤のインスタンスタイプなどを利用者が指定・調整できない。",
+      "knowledge": "Lambda の既定のコンピューティングタイプでは、利用者が設定するのはメモリで、CPU の能力はメモリの設定量に比例して割り当てられる。インスタンスを選んで関数を動かしたいときの選択肢は、Lambda Managed Instances である。",
       "decision": "fact",
       "factRefs": [
         "lambda.memory-cpu",
