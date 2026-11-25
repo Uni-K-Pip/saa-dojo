@@ -111,8 +111,12 @@
     {
       "id": "r-federation",
       "result": "IAM の SAML・OIDC フェデレーション",
-      "why": "アカウントごとに ID プロバイダーを登録し、ロールを引き受けさせます。",
-      "factRefs": []
+      "why": "ロールと同じアカウントの IAM に ID プロバイダーを登録し、ロールを引き受けさせます。",
+      "factRefs": [
+        "iam.federation-idp-same-account",
+        "iam.saml-federation-provider",
+        "iam.oidc-trust-aud-sub"
+      ]
     },
     {
       "id": "q-ad-on-aws",

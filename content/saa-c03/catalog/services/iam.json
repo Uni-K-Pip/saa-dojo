@@ -1,7 +1,7 @@
 {
   "id": "iam",
   "tier": 1,
-  "summary": "AWS のリソースへのアクセスを制御するサービス。だれを認証し、どの権限を認可するかを、ユーザー・グループ・ロール・ポリシーで管理する。追加料金なしで使える。",
+  "summary": "AWS のリソースへのアクセスを制御するサービス。だれを認証し、どの権限を認可するかを、ユーザー・グループ・ロール・ポリシーで管理する。IAM 自体は AWS アカウントの機能として追加料金なしで使える。",
   "chooseWhen": [
     {
       "text": "AWS 上のワークロードやクロスアカウントに、長期キーなしで権限を渡したい",
@@ -47,7 +47,8 @@
     {
       "text": "従業員が複数のアカウントにシングルサインオンしたい（IAM ユーザーを人数分作らない）",
       "factRefs": [
-        "iam.iam-users-still-needed"
+        "iam.iam-users-still-needed",
+        "iam.access-method-human-workload"
       ],
       "alternatives": [
         "iam-identity-center"
@@ -56,7 +57,8 @@
     {
       "text": "組織内の複数アカウントの権限の上限を、組織として一括で決めたい",
       "factRefs": [
-        "iam.boundary-intersection-scp-session"
+        "iam.boundary-intersection-scp-session",
+        "organizations.scp-permission-ceiling"
       ],
       "alternatives": [
         "organizations"
@@ -69,7 +71,6 @@
       "title": "IAM は追加料金なしで使える",
       "kind": "pricing",
       "text": "IAM、AWS IAM Identity Center、AWS STS はアカウントの機能として追加料金なしで提供される。課金されるのは、IAM ユーザーや STS の一時的な認証情報を使って他の AWS サービスを利用したときの、そのサービスの料金だけである。",
-      "examPoint": "「IAM の利用料金」を選択肢に入れる設問は誤り。コストの論点は IAM 以外のサービスにある。",
       "depth": "core",
       "sources": [
         {
@@ -77,7 +78,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.eventual-consistency",
@@ -99,7 +100,7 @@
       "title": "ロールの信頼ポリシーと権限ポリシー",
       "kind": "feature",
       "text": "IAM ロールは長期的なパスワードやアクセスキーを持たず、引き受けると一時的な認証情報が得られる。ロールには「だれが引き受けられるか」を決める信頼ポリシー（必須のリソースベースポリシー）と、引き受けた後に何ができるかを決める権限ポリシーの 2 つが要る。",
-      "examPoint": "クロスアカウントや AWS サービスへの権限委譲は、ロールと信頼ポリシーで行う。",
+      "examPoint": "別の AWS アカウントのプリンシパルにアクセスを許可する主な手段は IAM ロールである。",
       "depth": "core",
       "sources": [
         {
@@ -107,7 +108,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.role-assumers",
@@ -133,13 +134,9 @@
         {
           "title": "IAM roles - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
-        },
-        {
-          "title": "Permissions boundaries for IAM entities - AWS Identity and Access Management",
-          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.policy-evaluation-allow-deny",
@@ -160,9 +157,9 @@
       "id": "iam.boundary-basics",
       "title": "権限の境界は上限を決める",
       "kind": "feature",
-      "text": "権限の境界は、管理ポリシーを使って IAM ユーザーまたはロールに付与できる最大の権限を決める機能で、それ自体は権限を与えない。実効権限は、アイデンティティベースのポリシーと境界の両方が許可した範囲の共通部分になる。ユーザーとロールに設定でき、サービスにリンクされたロールには設定できない。",
-      "examPoint": "開発者にロール作成を任せつつ権限の上限を決めるなら権限の境界。",
-      "trap": "境界だけを付けても何もできない。権限ポリシーが別に要る。",
+      "text": "権限の境界は、管理ポリシーを使って、アイデンティティベースのポリシーが IAM ユーザーまたはロールに付与できる最大の権限を定める。アイデンティティベースのポリシーを通じて実行できるのは、そのポリシーと境界の両方が許可する操作に限られる。境界自体は権限を付与しない。",
+      "examPoint": "開発者にワークロード用ロールの作成と管理を委任するときは、権限の境界で、開発者がそのロールに付与できる権限の上限を定める。",
+      "trap": "境界に操作の許可を書いても、境界そのものから権限は付与されない。",
       "depth": "core",
       "sources": [
         {
@@ -170,11 +167,11 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
         },
         {
-          "title": "Policy evaluation logic - AWS Identity and Access Management",
-          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+          "title": "Security best practices in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.boundary-intersection-scp-session",
@@ -210,10 +207,10 @@
     },
     {
       "id": "iam.boundary-self-protection",
-      "title": "境界は変更・削除を拒否して初めて守られる",
+      "title": "委任先による境界のポリシー編集と境界の削除を拒否する",
       "kind": "constraint",
-      "text": "権限の境界で IAM の管理を委任する場合、委任された管理者が境界のポリシーを編集（iam:CreatePolicyVersion など）したり、iam:DeleteUserPermissionsBoundary で境界を外したりできると、境界を回避できる。公式の委任の例では、これらの操作を明示的に Deny している。",
-      "examPoint": "境界の改変や削除を許す権限があれば、境界による上限は意味を失う。",
+      "text": "IAM の権限管理を委任するポリシーの例では、委任先が境界に使うポリシーを編集する操作（iam:CreatePolicyVersion など）と、自分や他のユーザーの権限の境界を外す操作（iam:DeleteUserPermissionsBoundary）を明示的に拒否する。",
+      "examPoint": "権限管理を委任する例では、境界のポリシーの編集と境界の取り外しに Deny を指定する。",
       "depth": "core",
       "sources": [
         {
@@ -221,7 +218,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.poweruseraccess-no-iam",
@@ -244,7 +241,7 @@
       "kind": "feature",
       "text": "認証情報レポートは、アカウント内の IAM ユーザーとルートユーザーについて、パスワード、最初の 2 つのアクセスキー、MFA デバイス、X.509 署名証明書の状態を列挙した CSV である。生成は 4 時間に 1 回までで、監査や認証情報のライフサイクル確認に使う。",
       "examPoint": "ユーザーの MFA 有効化やキーのローテーション状況の監査は認証情報レポート。",
-      "trap": "API の呼び出し履歴を示すものではなく、認証情報の状態の一覧である。",
+      "trap": "サービス固有の認証情報と、ユーザーごとの 3 つ目以降のアクセスキーはレポートに含まれない。",
       "depth": "core",
       "sources": [
         {
@@ -252,7 +249,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_getting-report.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.password-policy-no-mfa",
@@ -302,7 +299,7 @@
       "title": "MFA を要求する拒否の書き方",
       "kind": "feature",
       "text": "MFA なしのリクエストを拒否するには、Deny の条件に BoolIfExists と aws:MultiFactorAuthPresent が false を指定する。キーが存在しない長期認証情報のリクエストも拒否の対象になる。",
-      "examPoint": "MFA 必須のガードレールは「MFA がなければ Deny」の形で書く。",
+      "examPoint": "MFA で認証されていない要求を Deny で拒否するときは、条件演算子に BoolIfExists を使う。",
       "depth": "detail",
       "sources": [
         {
@@ -314,7 +311,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_configure-api-require.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.mfa-key-absent-long-term",
@@ -401,15 +398,19 @@
       "title": "aws:SecureTransport",
       "kind": "feature",
       "text": "aws:SecureTransport は、要求が TLS で送られたかを true か false で表すブール型のグローバル条件キーで、常に要求に含まれる。ポリシーの条件で、TLS を使った要求だけを許可する用途に使う。",
-      "examPoint": "通信を TLS（HTTPS）に限定して許可するときの条件。",
+      "examPoint": "S3 バケットポリシーで HTTPS（TLS）による暗号化接続だけを許可する条件に aws:SecureTransport を使う。",
       "depth": "core",
       "sources": [
         {
           "title": "AWS global condition context keys - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+        },
+        {
+          "title": "Security best practices for Amazon S3 - Amazon Simple Storage Service",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.source-key-availability",
@@ -417,7 +418,7 @@
       "kind": "constraint",
       "text": "aws:SourceArn と aws:SourceAccount は、AWS のサービスプリンシパルが、あるリソースに代わってサービス間の呼び出しをしたときだけ要求に含まれ、呼び出し元のリソースの ARN とアカウント ID を表す。要求を行うプリンシパル自身の ARN は表さないので、その場合は aws:PrincipalArn を使う。",
       "trap": "IAM ユーザーやロールからの直接の要求には含まれない。",
-      "depth": "core",
+      "depth": "detail",
       "sources": [
         {
           "title": "AWS global condition context keys - AWS Identity and Access Management",
@@ -449,7 +450,7 @@
       "id": "iam.cross-service-source-org",
       "title": "aws:SourceOrgID と RCP による一括適用",
       "kind": "feature",
-      "text": "aws:SourceOrgID や aws:SourceOrgPaths を使うと、サービスプリンシパルが特定の組織や組織パスのリソースの代理で動くときだけ許可できる。リソースコントロールポリシー（RCP）に条件を書けば、個々のリソースポリシーを変えずに組織全体へ混乱した代理の対策を適用できる。",
+      "text": "aws:SourceOrgID や aws:SourceOrgPaths を使うと、サービスプリンシパルが特定の組織や組織パスのリソースの代理で動くときだけ許可できる。組織、組織単位（OU）、またはアカウントにアタッチしたリソースコントロールポリシー（RCP）に条件を書けば、個々のリソースベースのポリシーを変えずに、RCP に対応する AWS サービスのリソースに混乱した代理の対策を一括適用できる。",
       "depth": "detail",
       "sources": [
         {
@@ -457,7 +458,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.roles-anywhere-trust-anchor",
@@ -492,7 +493,7 @@
       "id": "iam.roles-anywhere-profile",
       "title": "Roles Anywhere のプロファイルとセッションポリシー",
       "kind": "feature",
-      "text": "IAM Roles Anywhere のプロファイルは、引き受けるロールと、セッションの権限を絞るセッションポリシーを指定する。1 つのプロファイルに複数のロールを含められるが、セッションポリシーは 1 つだけである。信頼アンカーとロールの結び付きはロールの信頼ポリシーの aws:SourceArn 条件で行う。",
+      "text": "IAM Roles Anywhere のプロファイルは、引き受けるロールと、セッションの権限を絞るセッションポリシーを指定する。1 つのプロファイルに複数のロールを含められるが、セッションポリシーは 1 つだけである。",
       "depth": "detail",
       "sources": [
         {
@@ -500,13 +501,13 @@
           "url": "https://docs.aws.amazon.com/rolesanywhere/latest/userguide/introduction.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.oidc-trust-aud-sub",
       "title": "OIDC フェデレーションの信頼ポリシー",
       "kind": "feature",
-      "text": "OIDC の ID プロバイダーを IAM に登録し、ロールの信頼ポリシーで Principal にそのプロバイダー、Action に sts:AssumeRoleWithWebIdentity を指定する。Condition でトークンの aud（アプリの識別子）と sub（主体）を StringEquals や StringLike で検査し、引き受けられる範囲を限定する。",
+      "text": "OIDC の ID プロバイダーを IAM に登録し、ロールの信頼ポリシーで Principal にそのプロバイダー、Action に sts:AssumeRoleWithWebIdentity を指定する。Condition では StringEquals を使い、トークンの aud がアプリの ID（Amazon Cognito の場合は ID プールの ID）と一致するかを確認する。",
       "examPoint": "CI/CD などの外部ワークロードに長期キーを渡さず、ロールで権限を与える方法。",
       "depth": "core",
       "sources": [
@@ -519,7 +520,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.github-oidc-sub-condition",
@@ -553,8 +554,7 @@
       "id": "iam.root-user-tasks",
       "title": "ルートユーザーでしかできない作業",
       "kind": "constraint",
-      "text": "ルートユーザーはアカウントの全操作ができる ID で、日常の作業には使わない。ルートユーザーが必要な作業には、単独のアカウント（Organizations に属さない）でのメールアドレスなどの設定変更とアカウントの解約（Organizations では管理アカウントから行える）、IAM 管理者が自身の権限を失ったときの復旧、すべてのプリンシパルを拒否する S3 バケットポリシーや SQS キューポリシーの編集・削除などがある。",
-      "examPoint": "自分を締め出したバケットポリシーは通常の IAM 管理者では直せず、ルートユーザーの出番になる。",
+      "text": "ルートユーザーはアカウントの全操作ができる ID で、日常の作業には使わない。ルートユーザーが必要な作業には、単独のアカウント（Organizations に属さない）でのメールアドレス・ルートユーザーのパスワード・ルートユーザーのアクセスキーの更新とアカウントの解約（Organizations のメンバーアカウントは管理アカウントまたは委任管理者アカウントから解約できる）、唯一の IAM 管理者が誤って自分の権限を取り消したときの復旧がある。",
       "depth": "core",
       "sources": [
         {
@@ -562,7 +562,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.centralized-root-access",
@@ -587,7 +587,7 @@
       "id": "iam.iam-users-still-needed",
       "title": "IAM ユーザーが必要な場面",
       "kind": "feature",
-      "text": "フェデレーションを使えない場合に限って、IAM ユーザーの長期アクセスキーを使う。例は、IAM ロールで認証情報を渡せないワークロード、IAM Identity Center に対応しないサードパーティのクライアント、CodeCommit の SSH キーや Amazon Keyspaces のサービス固有の認証情報、IdP に入れないときの緊急用ユーザーである。",
+      "text": "IAM ユーザーの利用は、ID フェデレーションが対応しない用途に限ることが推奨される。IAM ロールで一時的な認証情報を渡せないワークロードや、IAM Identity Center に対応しないサードパーティーの AWS クライアントには長期アクセスキーを使う。AWS CodeCommit では SSH キーまたはサービス固有の認証情報を使える。Amazon Keyspaces で IAM Identity Center のユーザーを使えない場合は、サービス固有の認証情報を使える。ID プロバイダーにアクセスできず、AWS アカウントで操作が必要な場合に備え、緊急アクセス用の IAM ユーザーを用意する方法もある。",
       "depth": "detail",
       "sources": [
         {
@@ -595,13 +595,13 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.global-key-resourceorgid",
       "title": "aws:ResourceOrgID",
       "kind": "feature",
-      "text": "aws:ResourceOrgID は、リクエストの対象となるリソースが属する組織の ID を返すグローバル条件キーで、アイデンティティベースポリシーの Resource 要素に指定したリソースが特定の組織のものかどうかを条件にできる。アカウントの追加・削除にも自動で追従する。",
+      "text": "aws:ResourceOrgID は、要求されたリソースが属する AWS Organizations の組織 ID を、ポリシーで指定した ID と比較するグローバル条件キーである。このキーが要求コンテキストに含まれるのは、リソースを所有するアカウントが組織のメンバーである場合に限られる。一部のアクションはこのキーに対応していない。",
       "depth": "detail",
       "sources": [
         {
@@ -609,7 +609,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
         }
       ],
-      "checkedAt": "2026-11-20"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.identity-policy-types",
@@ -630,7 +630,7 @@
       "title": "管理ポリシーとインラインポリシーの違い",
       "kind": "feature",
       "text": "AWS 管理ポリシーは AWS が作成・管理し、権限を変更できず、更新は付け先のすべての ID に及ぶ。カスタマー管理ポリシーは自分のアカウントで作成して自由に更新でき、複数の ID に付けられる。インラインポリシーは 1 つの ID とだけ 1 対 1 で結び付き、その ID を削除すると一緒に削除される。複数の ID に当てはまるポリシーは管理ポリシーが向く。",
-      "depth": "detail",
+      "depth": "core",
       "sources": [
         {
           "title": "Managed policies and inline policies",
@@ -658,7 +658,7 @@
       "id": "iam.abac-tag-condition",
       "title": "ABAC はタグの一致で許可する",
       "kind": "feature",
-      "text": "ABAC（属性ベースのアクセス制御）は、タグを属性として権限を決める方式である。プリンシパルのタグとリソースのタグが一致するときに操作を許可するポリシーを書ける。職務ごとにポリシーを作る RBAC では、リソースが増えるたびにポリシーの更新が要るが、ABAC では新しいリソースや新しいプロジェクトの IAM ロールに同じタグを付ければ、ポリシーを変えずにアクセスが許可される。",
+      "text": "ABAC（属性ベースのアクセス制御）は、タグを属性として権限を決める方式である。プリンシパルのタグとリソースのタグが一致するときに操作を許可するポリシーを書ける。職務ごとにポリシーを作る RBAC では、リソースが増えるたびにポリシーの更新が要る。ABAC では、新しいリソースに、アクセスを許可するプリンシパルと同じタグを付ければ、既存のポリシーのままアクセスを許可できる。新しいプロジェクトを追加するときは、そのプロジェクトの値をタグに設定した IAM ロールを作れば、ポリシーを変更せずに対応できる。",
       "depth": "core",
       "sources": [
         {
@@ -666,7 +666,7 @@
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
         }
       ],
-      "checkedAt": "2026-11-24"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam.group-members",
@@ -940,6 +940,48 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "iam.policy-json-document",
+      "title": "JSON ポリシー文書の構成",
+      "kind": "feature",
+      "text": "AWS はほとんどのポリシーを JSON 文書として保存する。文書には 1 つ以上のステートメントがあり、Effect の Allow または Deny で許可と拒否を区別する。Action は操作を列挙し、Resource は操作の対象を表す。任意の Condition は権限が適用される条件を指定する。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Policies and permissions in AWS Identity and Access Management - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "iam.policy-evaluation-exceptions",
+      "title": "信頼ポリシーとキーポリシーでの明示的な許可",
+      "kind": "constraint",
+      "text": "同じ AWS アカウント内のアクセスでも、IAM ロールの信頼ポリシーと AWS KMS のキーポリシーでは、それぞれのポリシー自体が対象のプリンシパルを明示的に許可する必要がある。他のサービスでも、同じアカウント内のアクセスにリソースベースのポリシーで明示的な許可が必要な場合がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "How AWS enforcement code logic evaluates requests to allow or deny access - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "iam.policy-resource-element",
+      "title": "Resource 要素で対象の ARN を指定する",
+      "kind": "feature",
+      "text": "IAM ポリシーの Resource 要素は、ステートメントの適用先を ARN で指定する。ARN の区画内では、* が任意の文字列に、? が任意の 1 文字に一致する。arn:aws:s3:::amzn-s3-demo-bucket/* は、この S3 バケット内のすべてのオブジェクトを指す。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "IAM JSON policy elements: Resource - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     }
   ],
   "seeAlso": [
@@ -964,5 +1006,5 @@
   ],
   "createdBy": "sc3",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }

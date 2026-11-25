@@ -93,7 +93,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 
 | サービス | 主な利用者 | 何をするか |
 |---|---|---|
-| AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。組織インスタンスでは、権限セットで、組織内の AWS アカウントへのアクセスをユーザーやグループに割り当てる |
+| AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。組織インスタンス（AWS Organizations の管理アカウントで有効にした IAM Identity Center）では、権限セットで、組織内の AWS アカウントへのアクセスをユーザーやグループに割り当てる |
 | IAM の SAML・OIDC フェデレーション | 従業員、ワークロード | ロールと同じアカウントの IAM に ID プロバイダーを登録し、ロールを引き受けさせる |
 | AWS Directory Service | Active Directory を使う組織 | AWS Managed Microsoft AD、AD Connector を提供する（Simple AD は新しいお客様は利用できません） |
 | Amazon Cognito | 自社アプリの利用者（顧客） | ユーザープールでサインアップ・サインイン、ID プールで AWS の一時的な認証情報を発行する |
@@ -109,7 +109,7 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 >
 > 自社アプリの利用者（顧客）向けのサービスは Amazon Cognito で、ユーザープールでサインアップ・サインインを行います。AWS IAM Identity Center は主に従業員向け、AWS Directory Service は主に Active Directory を使う組織向けです。
 
-### Directory Service の 3 つの選択肢
+### Directory Service の選択肢
 
 | 種類 | 特徴 | 選ぶ場面 |
 |---|---|---|
