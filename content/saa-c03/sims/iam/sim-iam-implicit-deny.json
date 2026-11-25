@@ -1,0 +1,160 @@
+{
+  "id": "sim-iam-implicit-deny",
+  "title": "許可していない操作はどうなるか",
+  "intro": "アカウント A の IAM ユーザー `hana` が、同じアカウントの S3 バケット `example-reports` に `2026/q1.csv` を書き込もうとします。アイデンティティベースのポリシーは、このバケット内のオブジェクトに対する `s3:GetObject` だけを許可しています。バケットポリシーはありません。",
+  "predict": {
+    "text": "この書き込みリクエストはどうなりますか。",
+    "key": "decision",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "allow"
+      },
+      {
+        "text": "拒否される（暗黙の拒否）",
+        "value": "implicit-deny"
+      },
+      {
+        "text": "拒否される（明示的な拒否）",
+        "value": "explicit-deny"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "user",
+      "name": "hana",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "none"
+    },
+    "request": {
+      "action": "s3:PutObject",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:s3:::example-reports/2026/q1.csv",
+      "account": "111122223333"
+    },
+    "scps": null,
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::example-reports/*"
+        ]
+      }
+    ],
+    "boundary": null,
+    "resourcePolicy": null
+  },
+  "toggles": [
+    {
+      "id": "get-object",
+      "label": "読み取りに変える",
+      "set": {
+        "request": {
+          "action": "s3:GetObject",
+          "tls": true
+        }
+      }
+    },
+    {
+      "id": "put-other-bucket",
+      "label": "別のバケットへの書き込みを許可する",
+      "set": {
+        "identityPolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::example-reports/*"
+            ]
+          },
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:PutObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::example-logs/*"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "bucket-policy",
+      "label": "バケット側で書き込みを許可する",
+      "set": {
+        "resourcePolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:PutObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::example-reports/*"
+            ],
+            "principal": {
+              "arn": "arn:aws:iam::111122223333:user/hana"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "implicit-deny",
+      "blocker": "no-allow",
+      "allowed": false,
+      "crossAccount": false
+    },
+    "toggles": {
+      "get-object": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "put-other-bucket": {
+        "decision": "implicit-deny",
+        "blocker": "no-allow",
+        "allowed": false,
+        "crossAccount": false
+      },
+      "bucket-policy": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:default-deny}}。この書き込みに必要な `s3:PutObject` の許可がないため、暗黙に拒否されます。暗黙の拒否は、ポリシーの Deny による明示的な拒否とは別のものです。",
+    "toggles": {
+      "get-object": "同じオブジェクトの読み取りに変えると、アイデンティティベースのポリシーの `s3:GetObject` の許可が当てはまります。このリクエストは許可されます。",
+      "put-other-bucket": "追加した `s3:PutObject` の許可先は `example-logs` のオブジェクトです。リクエスト先の `example-reports` にはその許可が当てはまらず、書き込みは引き続き暗黙に拒否されます。",
+      "bucket-policy": "バケットポリシーが `hana` の ARN を指定して書き込みを許可します。{{rule:same-account-union}}。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "iam.identity-policy-types",
+    "iam.policy-resource-element",
+    "iam.policy-evaluation-allow-deny",
+    "iam.boundary-resource-policy",
+    "s3.bucket-policy"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}

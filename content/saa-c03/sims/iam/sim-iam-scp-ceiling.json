@@ -1,0 +1,272 @@
+{
+  "id": "sim-iam-scp-ceiling",
+  "title": "管理者の権限があれば何でもできるか",
+  "intro": "組織のメンバーであるアカウント A の IAM ユーザー `admin-aki` が、同じアカウントに DynamoDB テーブル `orders` を作ろうとします。アイデンティティベースのポリシーの Allow は、Action と Resource がともに `*` です。サービスコントロールポリシー（SCP）の Allow の Action は、組織のルートとアカウントでは `*`、組織単位（OU）では `s3:*` と `ec2:*` です。",
+  "predict": {
+    "text": "このテーブル作成リクエストの結果と理由はどれですか。",
+    "key": "blocker",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "none"
+      },
+      {
+        "text": "拒否される（SCP に許可がない）",
+        "value": "scp"
+      },
+      {
+        "text": "拒否される（アイデンティティベースのポリシーに許可がない）",
+        "value": "no-allow"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "user",
+      "name": "admin-aki",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "member",
+      "id": "o-exampleorgid"
+    },
+    "request": {
+      "action": "dynamodb:CreateTable",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:dynamodb:ap-northeast-1:111122223333:table/orders",
+      "account": "111122223333"
+    },
+    "scps": [
+      {
+        "at": "root",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      },
+      {
+        "at": "ou",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:*",
+              "ec2:*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      },
+      {
+        "at": "account",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      }
+    ],
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ]
+      }
+    ],
+    "boundary": null,
+    "resourcePolicy": null
+  },
+  "toggles": [
+    {
+      "id": "ou-allow-all",
+      "label": "OU の SCP の許可を広げる",
+      "set": {
+        "scps": [
+          {
+            "at": "root",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          },
+          {
+            "at": "ou",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          },
+          {
+            "at": "account",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "deny-at-root",
+      "label": "組織のルートの SCP で作成を拒否する",
+      "set": {
+        "scps": [
+          {
+            "at": "root",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              },
+              {
+                "effect": "Deny",
+                "actions": [
+                  "dynamodb:CreateTable"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          },
+          {
+            "at": "ou",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          },
+          {
+            "at": "account",
+            "statements": [
+              {
+                "effect": "Allow",
+                "actions": [
+                  "*"
+                ],
+                "resources": [
+                  "*"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "management-account",
+      "label": "管理アカウントに変える",
+      "set": {
+        "org": {
+          "membership": "management",
+          "id": "o-exampleorgid"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "implicit-deny",
+      "blocker": "scp",
+      "allowed": false,
+      "crossAccount": false
+    },
+    "toggles": {
+      "ou-allow-all": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "deny-at-root": {
+        "decision": "explicit-deny",
+        "blocker": "explicit-deny",
+        "denyIn": [
+          "scp-root"
+        ],
+        "allowed": false,
+        "crossAccount": false
+      },
+      "management-account": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:scp-ceiling}}。{{rule:scp-every-level}}。OU の SCP に `dynamodb:CreateTable` の許可がないため、ユーザー側に許可があっても、このリクエストは暗黙に拒否されます。",
+    "toggles": {
+      "ou-allow-all": "OU の SCP の Allow の Action を `*` に変えると、3 つの階層にテーブル作成の許可がそろいます。アイデンティティベースのポリシーにも許可があるため、テーブルを作成できます。",
+      "deny-at-root": "OU の Allow の Action を `*` にし、組織のルートの SCP に `dynamodb:CreateTable` の Deny を加えます。下位の SCP の Allow では上位の Deny を上書きできないため、明示的に拒否されます。",
+      "management-account": "{{rule:scp-management}}。アカウント A を管理アカウントに変えると、アイデンティティベースのポリシーの許可でテーブルを作成できます。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "iam.identity-policy-types",
+    "organizations.scp-permission-ceiling",
+    "organizations.scp-allow-at-every-level",
+    "iam.policy-resource-element",
+    "organizations.scp-deny-inheritance",
+    "organizations.scp-management-exemption"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}
