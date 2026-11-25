@@ -7,7 +7,8 @@
       "text": "イベントをきっかけに、短時間のコードを、サーバー管理なしで動かしたいとき",
       "factRefs": [
         "lambda.shared-responsibility",
-        "lambda.event-triggers"
+        "lambda.event-triggers",
+        "lambda.timeout-max"
       ]
     },
     {
@@ -50,7 +51,7 @@
       ]
     },
     {
-      "text": "同期で 6 MB を超えるデータを直接受け渡したいとき",
+      "text": "同期呼び出しで 6 MB を超えるリクエストを渡したい、またはレスポンスのストリーミングを使わずに 6 MB を超える応答を返したいとき",
       "factRefs": [
         "lambda.invocation-payload"
       ]
@@ -59,7 +60,7 @@
   "facts": [
     {
       "id": "lambda.shared-responsibility",
-      "title": "基盤の管理は AWS、利用者はコードと設定",
+      "title": "基盤の管理は AWS が行い、利用者はアプリケーションのロジックに集中する",
       "kind": "feature",
       "text": "Lambda はサーバーレスのコンピューティングサービスで、サーバーの保守、容量の確保、スケーリング、パッチ適用といった基盤の管理を AWS が自動で行う。利用者はアプリケーションのロジックに集中できる。",
       "examPoint": "サーバー管理の負担をなくしたい、使った分だけ払いたいなら Lambda。",
@@ -70,7 +71,7 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.timeout-max",
@@ -96,7 +97,7 @@
       "title": "メモリは 128〜10,240 MB で、CPU はメモリに比例する",
       "kind": "feature",
       "text": "関数のメモリは 128〜10,240 MB の範囲で 1 MB 単位で設定でき、CPU の能力はメモリの設定量に比例して割り当てられる。1,769 MB で 1 vCPU 相当である。",
-      "examPoint": "CPU を直接指定する設定はなく、CPU を増やすにはメモリを増やす。",
+      "examPoint": "CPU の能力はメモリの設定量に比例するので、CPU の能力を増やすにはメモリの設定を上げる。",
       "depth": "core",
       "sources": [
         {
@@ -104,7 +105,7 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.tmp-storage",
@@ -268,7 +269,7 @@
       "title": "プロビジョニングされた同時実行で初期化済みの環境を用意する",
       "kind": "feature",
       "text": "プロビジョニングされた同時実行は、指定した数の実行環境をあらかじめ初期化して待機させる機能で、コールドスタートによる遅延を減らす。Web やモバイルのように遅延に敏感な処理に向く。使っていなくても、確保した分の追加料金がかかる。",
-      "examPoint": "コールドスタートの遅延を避けたいなら、プロビジョニングされた同時実行（Java は SnapStart も候補）。",
+      "examPoint": "コールドスタートの遅延を避けたいなら、プロビジョニングされた同時実行（SnapStart に対応するランタイムでは SnapStart も候補）。",
       "depth": "core",
       "sources": [
         {
@@ -278,9 +279,13 @@
         {
           "title": "Understanding Lambda Event Function scaling",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        },
+        {
+          "title": "Improving startup performance with Lambda SnapStart",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.provisioned-alias-only",
@@ -541,5 +546,5 @@
   ],
   "createdBy": "sc9",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }

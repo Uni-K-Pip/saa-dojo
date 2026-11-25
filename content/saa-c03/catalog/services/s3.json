@@ -266,15 +266,15 @@
       "id": "s3.mrap-failover",
       "title": "Multi-Region Access Points のフェイルオーバー",
       "kind": "feature",
-      "text": "Multi-Region Access Points は、全リージョンを使うアクティブ-アクティブ構成と、アクティブとパッシブを分けるアクティブ-パッシブ構成を取れる。リージョンで障害が起きたときは、フェイルオーバーコントロールでリージョン間のトラフィックを数分で切り替えられる。",
+      "text": "Multi-Region Access Points は、リクエストが最も近いアクティブなリージョンのバケットへ自動的に振り分けられるアクティブ-アクティブ構成と、アクティブなリージョンとパッシブなリージョンの間でトラフィックをフェイルオーバーさせるアクティブ-パッシブ構成を取れる。リージョンで障害が起きたときは、フェイルオーバーコントロールでリージョン間のトラフィックを数分以内に切り替えられる。",
       "depth": "core",
       "sources": [
         {
-          "title": "Managing multi-Region traffic with Multi-Region Access Points - Amazon S3",
+          "title": "Managing multi-Region traffic with Multi-Region Access Points",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.batch-operations",
@@ -533,15 +533,15 @@
       "id": "s3.requester-pays",
       "title": "リクエスタ支払い",
       "kind": "pricing",
-      "text": "リクエスタ支払いを有効にしたバケットでは、リクエストとデータのダウンロードの料金を要求した側が支払い、バケット所有者は保存の料金だけを支払う。すべてのリクエストの認証が必要で、匿名アクセスは使えない。要求側は x-amz-request-payer ヘッダーなどで、料金の負担に同意を示す。",
+      "text": "リクエスタ支払いを有効にしたバケットでは、リクエストとデータのダウンロードの料金を、バケット所有者ではなく要求した側が支払う。データの保存の料金は、常にバケット所有者が支払う。すべてのリクエストの認証が必要で、匿名アクセスは使えない。要求側は x-amz-request-payer ヘッダーなどで、料金の負担に同意を示す。",
       "depth": "core",
       "sources": [
         {
-          "title": "Using Requester Pays general purpose buckets for storage transfers and usage - Amazon S3",
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.transfer-acceleration",
@@ -594,7 +594,7 @@
       "id": "s3.express-one-zone",
       "title": "S3 Express One Zone",
       "kind": "feature",
-      "text": "S3 Express One Zone は、1 桁ミリ秒の一貫したデータアクセスを提供する、高性能な単一 AZ のストレージクラスで、データはディレクトリバケットに保存される。S3 Standard と比べて、アクセス速度は最大 10 倍、リクエスト料金は 80 パーセント低いとされる。",
+      "text": "S3 Express One Zone は、1 桁ミリ秒の一貫したデータアクセスを提供する、高性能な単一 AZ のストレージクラスで、データはディレクトリバケットに保存される。S3 Standard と比べて、アクセス速度は最大 10 倍とされ、リクエスト料金も低い。",
       "depth": "core",
       "sources": [
         {
@@ -602,7 +602,7 @@
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.concurrent-writes",
@@ -667,7 +667,7 @@
       "id": "s3.storage-classes",
       "title": "S3 のストレージクラス",
       "kind": "feature",
-      "text": "S3 のストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変わる、または不明なデータは、4 つのアクセス階層の間で自動的に移す S3 Intelligent-Tiering に置く。",
+      "text": "S3 のストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変わる、または不明なデータは、アクセスパターンの変化に応じてアクセス階層の間でデータを自動的に移す S3 Intelligent-Tiering に置く。",
       "depth": "core",
       "sources": [
         {
@@ -675,7 +675,7 @@
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.versioning",
@@ -851,5 +851,5 @@
   ],
   "createdBy": "sc1",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }
