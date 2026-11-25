@@ -3719,6 +3719,11 @@
     "checkedAt": "2026-11-24",
     "hash": "331b51ed1b3d"
   },
+  "ec2.shared-responsibility-names": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "bb26d1734bf0"
+  },
   "ec2.spot-interruption-behavior": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5561,8 +5566,8 @@
   },
   "iam": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "8a337dfab65d"
+    "checkedAt": "2026-11-25",
+    "hash": "b2b063b5ada9"
   },
   "iam-identity-center": {
     "status": "verified",
@@ -5646,13 +5651,13 @@
   },
   "iam-identity-center.workforce-access-portal": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "b2fcf8f21ed8"
+    "checkedAt": "2026-11-25",
+    "hash": "acfc1643f0e4"
   },
   "iam.abac-tag-condition": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "795e7a43a79e"
+    "checkedAt": "2026-11-25",
+    "hash": "a071025201bd"
   },
   "iam.access-analyzer-policy-generation": {
     "status": "verified",
@@ -5676,8 +5681,8 @@
   },
   "iam.boundary-basics": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c5ae84280d3f"
+    "checkedAt": "2026-11-25",
+    "hash": "4b947b8b8262"
   },
   "iam.boundary-intersection-scp-session": {
     "status": "verified",
@@ -5691,8 +5696,8 @@
   },
   "iam.boundary-self-protection": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c0ba3b7cc173"
+    "checkedAt": "2026-11-25",
+    "hash": "34001595ccc9"
   },
   "iam.centralized-root-access": {
     "status": "verified",
@@ -5706,8 +5711,8 @@
   },
   "iam.credential-report": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c3bf1a7860f1"
+    "checkedAt": "2026-11-25",
+    "hash": "dffba2a5ab4e"
   },
   "iam.cross-account-both-policies": {
     "status": "verified",
@@ -5721,8 +5726,8 @@
   },
   "iam.cross-service-source-org": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "43e975759f53"
+    "checkedAt": "2026-11-25",
+    "hash": "f2572e99e7d1"
   },
   "iam.eventual-consistency": {
     "status": "verified",
@@ -5751,18 +5756,18 @@
   },
   "iam.global-key-resourceorgid": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "5d8d978cb2c9"
+    "checkedAt": "2026-11-25",
+    "hash": "c2264ff455ef"
   },
   "iam.global-key-securetransport": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "f5d58e60c565"
+    "checkedAt": "2026-11-25",
+    "hash": "9debae9e5405"
   },
   "iam.global-no-charge": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b1ccf0dcf0ab"
+    "checkedAt": "2026-11-25",
+    "hash": "f95c0e18a299"
   },
   "iam.global-propagation": {
     "status": "verified",
@@ -5776,8 +5781,8 @@
   },
   "iam.iam-users-still-needed": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "33fef4b49434"
+    "checkedAt": "2026-11-25",
+    "hash": "0e759c986871"
   },
   "iam.identity-policy-types": {
     "status": "verified",
@@ -5796,13 +5801,13 @@
   },
   "iam.managed-vs-inline": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "dcfb09e67b05"
+    "checkedAt": "2026-11-25",
+    "hash": "22a32e36b9ae"
   },
   "iam.mfa-boolifexists-deny": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b5ed255dde01"
+    "checkedAt": "2026-11-25",
+    "hash": "10ce02912717"
   },
   "iam.mfa-key-absent-long-term": {
     "status": "verified",
@@ -5839,6 +5844,21 @@
     "checkedAt": "2026-11-14",
     "hash": "bebee547cf09"
   },
+  "iam.policy-evaluation-exceptions": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "bac6bd236d68"
+  },
+  "iam.policy-json-document": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "9e4828a59e2e"
+  },
+  "iam.policy-resource-element": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "b1b6da583766"
+  },
   "iam.poweruseraccess-no-iam": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -5866,8 +5886,8 @@
   },
   "iam.role-trust-and-permissions": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "4c202e1dbe9e"
+    "checkedAt": "2026-11-25",
+    "hash": "0e71a83e4199"
   },
   "iam.role-vs-resource-policy-permissions": {
     "status": "verified",
@@ -5881,8 +5901,8 @@
   },
   "iam.roles-anywhere-profile": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "0222e157d1d7"
+    "checkedAt": "2026-11-25",
+    "hash": "655011b9a098"
   },
   "iam.roles-anywhere-trust-anchor": {
     "status": "verified",
@@ -5906,8 +5926,8 @@
   },
   "iam.root-user-tasks": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "195c50c71bcb"
+    "checkedAt": "2026-11-25",
+    "hash": "b346f57414be"
   },
   "iam.saml-federation-provider": {
     "status": "verified",
@@ -5916,13 +5936,13 @@
   },
   "iam.service-linked-role": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "26697d85ecb8"
+    "checkedAt": "2026-11-25",
+    "hash": "85eb063363a8"
   },
   "iam.source-key-availability": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "ad8621b9faa2"
+    "checkedAt": "2026-11-25",
+    "hash": "ed485cdcbec0"
   },
   "iam.switch-role-console": {
     "status": "verified",
@@ -9246,13 +9266,13 @@
   },
   "sts.confused-deputy-external-id-issuer": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "1babdd85ec9b"
+    "checkedAt": "2026-11-25",
+    "hash": "3b9742e2ab45"
   },
   "sts.get-session-token-api-limits": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "6fa140b594e7"
+    "checkedAt": "2026-11-25",
+    "hash": "40c32c672eee"
   },
   "sts.get-session-token-long-term-keys": {
     "status": "verified",
@@ -9263,6 +9283,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "91e1161399ae"
+  },
+  "sts.get-session-token-sts-apis": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "ae4a52d4ab94"
   },
   "sts.regional-endpoints": {
     "status": "verified",

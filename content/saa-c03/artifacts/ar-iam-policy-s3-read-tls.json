@@ -41,7 +41,8 @@
     "lesson-basics-iam"
   ],
   "factRefs": [
-    "iam.global-key-securetransport"
+    "iam.global-key-securetransport",
+    "iam.policy-resource-element"
   ],
   "createdBy": "v7"
 }

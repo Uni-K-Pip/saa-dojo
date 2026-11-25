@@ -46,9 +46,13 @@
         {
           "title": "AWS IAM Identity Center FAQs",
           "url": "https://aws.amazon.com/iam/identity-center/faqs/"
+        },
+        {
+          "title": "What is IAM Identity Center? - AWS IAM Identity Center",
+          "url": "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
         }
       ],
-      "checkedAt": "2026-11-16"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "iam-identity-center.built-in-directory",
@@ -283,5 +287,5 @@
   ],
   "createdBy": "cx2",
   "createdAt": "2026-11-16",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }
