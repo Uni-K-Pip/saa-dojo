@@ -397,7 +397,7 @@
       "id": "iam.global-key-securetransport",
       "title": "aws:SecureTransport",
       "kind": "feature",
-      "text": "aws:SecureTransport は、要求が TLS で送られたかを true か false で表すブール型のグローバル条件キーで、常に要求に含まれる。ポリシーの条件で、TLS を使った要求だけを許可する用途に使う。",
+      "text": "aws:SecureTransport は、要求が TLS で送られたかを true か false で表すブール型のグローバル条件キーで、常に要求に含まれる。ポリシーの条件で、TLS を使った要求だけを許可する用途に使う。Condition では Bool 条件演算子と組み合わせ、比較する値を JSON の文字列で指定できる。たとえば Deny ステートメントの Condition に \"Bool\": {\"aws:SecureTransport\": \"false\"} と書くと、TLS を使わない対象の要求を拒否する。",
       "examPoint": "S3 バケットポリシーで HTTPS（TLS）による暗号化接続だけを許可する条件に aws:SecureTransport を使う。",
       "depth": "core",
       "sources": [
@@ -408,6 +408,10 @@
         {
           "title": "Security best practices for Amazon S3 - Amazon Simple Storage Service",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
+        },
+        {
+          "title": "IAM JSON policy elements: Condition operators - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html"
         }
       ],
       "checkedAt": "2026-11-25"
