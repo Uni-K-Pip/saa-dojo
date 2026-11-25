@@ -1,7 +1,7 @@
 {
   "id": "lambda",
   "tier": 1,
-  "summary": "サーバーを用意・管理せずにコードを実行するサーバーレスのコンピューティングサービスである。イベントを起点に関数を実行し、負荷に応じて自動でスケールして、使った分だけ課金される。",
+  "summary": "Lambda Event Functions は、サーバーを管理せず、イベントや API 呼び出しに応じてコードを実行する AWS Lambda の関数である。Lambda は負荷に応じて実行環境を自動で増減する。",
   "chooseWhen": [
     {
       "text": "イベントをきっかけに、短時間のコードを、サーバー管理なしで動かしたいとき",
@@ -12,7 +12,7 @@
       ]
     },
     {
-      "text": "負荷の増減が大きく、使った分だけ支払いたい処理",
+      "text": "Lambda の既定のコンピューティングタイプで、リクエストの増加に応じて実行環境を自動で増やし、オンデマンド実行のリクエスト数と実行時間（GB 秒）に応じて支払いたいとき",
       "factRefs": [
         "lambda.pricing-model",
         "lambda.concurrency-scaling-rate"
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "text": "コールドスタートの遅延を避けたいときは、プロビジョニングされた同時実行",
+      "text": "コールドスタートの遅延を減らしたいときは、プロビジョニングされた同時実行",
       "factRefs": [
         "lambda.provisioned-concurrency"
       ]
@@ -33,7 +33,7 @@
   ],
   "avoidWhen": [
     {
-      "text": "1 回の処理が 30 分を超える長時間の処理",
+      "text": "1 回の実行時間が上限を超えるとき（通常は 30 分、Lambda Managed Instances の非同期呼び出しと、Amazon MQ・Amazon DocumentDB を除くイベントソースマッピング経由の呼び出しは 90 分）",
       "factRefs": [
         "lambda.timeout-max"
       ],
@@ -44,7 +44,7 @@
       ]
     },
     {
-      "text": "展開後 250 MB を超える依存関係を .zip で持ちたいとき（コンテナイメージを使う）",
+      "text": "展開後 250 MB を超える .zip デプロイパッケージが必要なとき（コンテナイメージの上限は、全レイヤーを含めて展開後 10 GB）",
       "factRefs": [
         "lambda.zip-package-limit",
         "lambda.container-image-size"
@@ -94,18 +94,23 @@
     },
     {
       "id": "lambda.memory-cpu",
-      "title": "メモリは 128〜10,240 MB で、CPU はメモリに比例する",
+      "title": "Lambda Event Functions のメモリ設定と CPU の割り当て",
       "kind": "feature",
-      "text": "関数のメモリは 128〜10,240 MB の範囲で 1 MB 単位で設定でき、CPU の能力はメモリの設定量に比例して割り当てられる。1,769 MB で 1 vCPU 相当である。",
-      "examPoint": "CPU の能力はメモリの設定量に比例するので、CPU の能力を増やすにはメモリの設定を上げる。",
+      "text": "Lambda Event Functions の既定のコンピューティングタイプでは、メモリは 128〜10,240 MB の範囲で 1 MB 単位で設定できる。新しい AWS アカウントには引き下げられたメモリクォータが適用される。CPU の能力はメモリの設定量に比例し、1,769 MB で 1 vCPU 相当になる。",
+      "examPoint": "既定のコンピューティングタイプでは、メモリの設定を上げると、割り当てられる CPU の能力も増える。",
       "depth": "core",
       "sources": [
         {
           "title": "Lambda quotas",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "title": "Lambda Managed Instances",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
         }
       ],
-      "checkedAt": "2026-11-25"
+      "checkedAt": "2026-11-25",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.tmp-storage",
@@ -269,7 +274,7 @@
       "title": "プロビジョニングされた同時実行で初期化済みの環境を用意する",
       "kind": "feature",
       "text": "プロビジョニングされた同時実行は、指定した数の実行環境をあらかじめ初期化して待機させる機能で、コールドスタートによる遅延を減らす。Web やモバイルのように遅延に敏感な処理に向く。使っていなくても、確保した分の追加料金がかかる。",
-      "examPoint": "コールドスタートの遅延を避けたいなら、プロビジョニングされた同時実行（SnapStart に対応するランタイムでは SnapStart も候補）。",
+      "examPoint": "コールドスタートの遅延を減らしたいなら、プロビジョニングされた同時実行。",
       "depth": "core",
       "sources": [
         {
@@ -279,10 +284,6 @@
         {
           "title": "Understanding Lambda Event Function scaling",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
-        },
-        {
-          "title": "Improving startup performance with Lambda SnapStart",
-          "url": "https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html"
         }
       ],
       "checkedAt": "2026-11-25"
@@ -542,6 +543,10 @@
     {
       "title": "Lambda quotas",
       "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
+    {
+      "title": "Lambda Managed Instances",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
     }
   ],
   "createdBy": "sc9",

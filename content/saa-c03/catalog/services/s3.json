@@ -533,7 +533,7 @@
       "id": "s3.requester-pays",
       "title": "リクエスタ支払い",
       "kind": "pricing",
-      "text": "リクエスタ支払いを有効にしたバケットでは、リクエストとデータのダウンロードの料金を、バケット所有者ではなく要求した側が支払う。データの保存の料金は、常にバケット所有者が支払う。すべてのリクエストの認証が必要で、匿名アクセスは使えない。要求側は x-amz-request-payer ヘッダーなどで、料金の負担に同意を示す。",
+      "text": "汎用バケットではリクエスタ支払いを有効にできる。有効にしたバケットへのリクエストが成功した場合、要求側がリクエストとバケットからのデータのダウンロードの料金を支払う。データの保存料金は常にバケット所有者が支払う。バケット所有者自身の AWS アカウント内または AWS 組織内からのリクエストが AccessDenied（HTTP 403 Forbidden）を返す場合、バケット所有者にリクエスト料金がかかる。要求側が RestoreObject API でオブジェクトを復元する場合、リクエストに x-amz-request-payer ヘッダーまたは RequestPayer パラメータが含まれていれば、要求側が支払うのはリクエスト料金だけで、取り出し料金はバケット所有者が支払う。",
       "depth": "core",
       "sources": [
         {
@@ -594,11 +594,11 @@
       "id": "s3.express-one-zone",
       "title": "S3 Express One Zone",
       "kind": "feature",
-      "text": "S3 Express One Zone は、1 桁ミリ秒の一貫したデータアクセスを提供する、高性能な単一 AZ のストレージクラスで、データはディレクトリバケットに保存される。S3 Standard と比べて、アクセス速度は最大 10 倍とされ、リクエスト料金も低い。",
+      "text": "S3 Express One Zone は、一貫して 1 桁ミリ秒でデータにアクセスできる、高性能な単一ゾーンのストレージクラスである。S3 Standard と比べて、データアクセス速度は最大 10 倍で、リクエスト料金は低い。",
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "title": "What is Amazon S3?",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
         }
       ],
@@ -667,12 +667,16 @@
       "id": "s3.storage-classes",
       "title": "S3 のストレージクラス",
       "kind": "feature",
-      "text": "S3 のストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変わる、または不明なデータは、アクセスパターンの変化に応じてアクセス階層の間でデータを自動的に移す S3 Intelligent-Tiering に置く。",
+      "text": "S3 の代表的なストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変化するデータや、アクセスパターンが不明なデータは、S3 Intelligent-Tiering に保存できる。このクラスでは、アクセスパターンの変化に応じて、自動階層化の対象となるデータがアクセス階層間を自動で移動する。128 KB 未満のオブジェクトは自動階層化の対象外となる。",
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "title": "What is Amazon S3?",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "Understanding and managing Amazon S3 storage classes",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
         }
       ],
       "checkedAt": "2026-11-25"
