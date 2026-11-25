@@ -135,10 +135,10 @@ describe('validate とコンテンツのビルド', () => {
     const normal = build();
     expect(normal.ok).toBe(true);
     expect(normal.manifest.counts).toMatchObject({ sims: 0, simsExcluded: { pending: 5 } });
-    // 出せるシナリオがなくても、一覧にはシミュレーターの名前と説明を出す（シナリオは 0 件）
+    // 出せるシナリオがなくても、一覧にはシミュレーターの名前を出す（シナリオは 0 件）。
+    // 説明と「扱わないこと」は、検証の済んだシナリオが出るまで出さない
     const empty = output(normal.manifest, 'sim-index');
-    expect(empty.map(({ id, name }) => [id, name])).toEqual(SIMULATORS.map(({ id, name }) => [id, name]));
-    expect(empty.every(({ scenarios, description, notCovered }) => scenarios.length === 0 && description && notCovered.length > 0)).toBe(true);
+    expect(empty).toEqual(SIMULATORS.map(({ id, name }) => ({ id, name, description: '', notCovered: [], scenarios: [] })));
     expect(output(normal.manifest, 'course').stages[0].units[0].items).toEqual(lessons);
     expect(normal.manifest.files).not.toHaveProperty(`sim:${id}`);
 
@@ -148,6 +148,8 @@ describe('validate とコンテンツのビルド', () => {
     expect(output(dev.manifest, 'course').stages[0].units[0].items).toEqual([...lessons, simItem]);
     const [entry] = output(dev.manifest, 'sim-index');
     expect(entry.id).toBe('cidr');
+    expect(entry.description).toBe(SIMULATORS[0].description);
+    expect(entry.notCovered).toEqual(cidr.NOT_COVERED);
     expect(entry.scenarios.map(({ id }) => id)).toEqual([...entry.scenarios.map(({ id }) => id)].sort());
     expect(entry.scenarios.every(({ status }) => status === 'pending')).toBe(true);
     const item = output(dev.manifest, `sim:${id}`);

@@ -55,10 +55,13 @@ export function buildSimOutputs(parsed, { includeUnverified = false } = {}) {
       ],
     };
   });
-  // 出せるシナリオが 0 件のシミュレーターも一覧に入れる（画面は、シミュレーターの名前をこの一覧から取る）
-  const index = SIMULATORS.map(({ id, name, description, engine }) => ({
-    id, name, description, notCovered: engine.NOT_COVERED,
-    scenarios: items.filter(({ sim }) => sim === id).map(({ id, title, status }) => ({ id, title, status })),
-  }));
+  // 出せるシナリオが 0 件のシミュレーターも一覧に入れる（画面は、シミュレーターの名前をこの一覧から取る）。
+  // 説明と「扱わないこと」は、シナリオの検証で確かめる文なので、出せるシナリオが 1 件もないあいだは出さない
+  const index = SIMULATORS.map(({ id, name, description, engine }) => {
+    const scenarios = items.filter(({ sim }) => sim === id).map(({ id, title, status }) => ({ id, title, status }));
+    return scenarios.length
+      ? { id, name, description, notCovered: engine.NOT_COVERED, scenarios }
+      : { id, name, description: '', notCovered: [], scenarios };
+  });
   return { items, index, excluded };
 }
