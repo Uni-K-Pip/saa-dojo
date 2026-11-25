@@ -2,7 +2,7 @@
   "id": "dg-identity-service-choice",
   "type": "decision",
   "title": "ID サービスの選び方",
-  "alt": "ID サービスを、質問に答えて選ぶ図です。最初に、サインインするのが従業員か、自社アプリの利用者（顧客）かを聞きます。顧客なら、AWS のリソースを直接使わせるかを聞き、使わせるなら Cognito ID プール、使わせないなら Cognito ユーザープールです。従業員なら、複数の AWS アカウントへのシングルサインオンや権限の一元管理が要るかを聞き、要るなら IAM Identity Center です。要らなければ Active Directory を使うかを聞き、使わないなら IAM の SAML・OIDC フェデレーションです。使うなら、AWS 上で AD そのもの（AD に依存するワークロード）が要るかを聞き、要るなら AWS Managed Microsoft AD、要らず既存の AD の認証情報をそのまま使うなら AD Connector です。AD Connector はほかのアカウントと共有できず、RDS for SQL Server とも互換性がないので、その場合は AWS Managed Microsoft AD です。",
+  "alt": "ID サービスを、質問に答えて選ぶ図です。最初に、サインインするのが従業員か、自社アプリの利用者かを聞きます。アプリの利用者なら、AWS のリソースを直接使わせるかを聞き、使わせるなら Cognito ID プール、使わせないなら Cognito ユーザープールです。従業員なら、複数の AWS アカウントへのシングルサインオンや権限の一元管理が要るかを聞き、要るなら IAM Identity Center です。要らなければ Active Directory を使うかを聞き、使わないなら IAM の SAML・OIDC フェデレーションです。使うなら、AWS 上で AD そのもの（AD に依存するワークロード）が要るかを聞き、要るなら AWS Managed Microsoft AD、要らず既存の AD の認証情報をそのまま使うなら AD Connector です。AD Connector はほかのアカウントと共有できず、RDS for SQL Server とも互換性がないので、その場合は AWS Managed Microsoft AD です。",
   "lessonRefs": [
     "lesson-1.1-roles-federation"
   ],
@@ -25,14 +25,14 @@
   "nodes": [
     {
       "id": "q-who",
-      "ask": "サインインするのは、従業員ですか、自社アプリの利用者（顧客）ですか？",
+      "ask": "サインインするのは、従業員ですか、自社アプリの利用者ですか？",
       "choices": [
         {
           "label": "従業員",
           "to": "q-sso"
         },
         {
-          "label": "顧客",
+          "label": "アプリの利用者",
           "to": "q-direct"
         }
       ]

@@ -96,18 +96,18 @@ IAM ロールには、役割の違う 2 種類のポリシーがあります。
 | AWS IAM Identity Center（旧称 AWS Single Sign-On） | 従業員 | 複数の AWS アカウントやアプリケーションへのシングルサインオン。組織インスタンスでは、権限セットで、組織内の AWS アカウントへのアクセスをユーザーやグループに割り当てる |
 | IAM の SAML・OIDC フェデレーション | 従業員、ワークロード | ロールの信頼ポリシーで ID プロバイダーを指定し、ロールを引き受けさせる。IAM に登録する ID プロバイダーは、ロールと同じアカウントに置く |
 | AWS Directory Service | Active Directory を使う組織 | AWS Managed Microsoft AD、AD Connector を提供する（Simple AD は新しいお客様は利用できません） |
-| Amazon Cognito | 自社アプリの利用者（顧客） | ユーザープールでサインアップ・サインイン、ID プールで AWS の一時的な認証情報を発行する |
+| Amazon Cognito | 自社アプリの利用者 | ユーザープールでサインアップ・サインイン、ID プールで AWS の一時的な認証情報を発行する |
 
 ![ID サービスの選び方](#/diagrams/dg-identity-service-choice)
 
 > **その場の確認**
-> 自社アプリの利用者（顧客）のサインアップとサインインに使うサービスはどれですか？
+> 自社アプリの利用者のサインアップとサインインに使うサービスはどれですか？
 >
 > - [ ] AWS IAM Identity Center
 > - [ ] AWS Directory Service
 > - [x] Amazon Cognito
 >
-> 自社アプリの利用者（顧客）向けのサービスは Amazon Cognito で、ユーザープールでサインアップ・サインインを行います。AWS IAM Identity Center は主に従業員向け、AWS Directory Service は主に Active Directory を使う組織向けです。
+> 自社アプリの利用者向けのサービスは Amazon Cognito で、ユーザープールでサインアップ・サインインを行います。AWS IAM Identity Center は主に従業員向け、AWS Directory Service は主に Active Directory を使う組織向けです。
 
 ### Directory Service の選択肢
 
