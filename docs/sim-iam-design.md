@@ -33,7 +33,7 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 
 ## 4. 実装する規則
 
-規則は、エンジンの規則の表（`RULES`）に 1 つずつ置き、図鑑の検証済みの事実で裏づけます。規則の文は事実の文の範囲に収め、**エンジンがその規則を当てる相手と、規則の文の主語をそろえます**（下の表の「当てる相手」。実行の `rules` に入れる条件でもある）。事実の状態は 2026-11-25 の `catalog-status.json` で確かめました（`wildcard` の裏づけを除いて、どれも `verified`）。
+規則は、エンジンの規則の表（`RULES`）に 1 つずつ置き、図鑑の検証済みの事実で裏づけます。規則の文は事実の文の範囲に収め、**エンジンがその規則を当てる相手と、規則の文の主語をそろえます**（下の表の「当てる相手」。実行の `rules` に入れる条件でもある）。事実の状態は 2026-11-26 の `catalog-status.json` で確かめました（どれも `verified`。`wildcard` の裏づけの事実には、Action の `*` を言う文を足す直しが残っています。11 章）。
 
 | 規則の id | 内容 | 裏づけ | `evidence` | 当てる相手（`rules` に入れる条件） |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 | `explicit-deny` | どのポリシーでも、明示的な拒否があれば、許可より優先して拒否される | `iam.policy-evaluation-allow-deny` | `どのポリシーでも明示的な拒否があれば、許可より優先して拒否される` | 同じアカウントで、アイデンティティベース・境界・リソースベースのどれかの Deny が当てはまった実行 |
 | `same-account-union` | 同じアカウントでは、アイデンティティベースとリソースベースのどちらかが許可していれば許可される | `iam.policy-evaluation-allow-deny` | `どちらかが許可していれば許可される` | 同じアカウントの IAM ユーザーとロールで、リソースベースのポリシーがあり、明示的な拒否でない実行 |
 | `identity-policy` | アイデンティティベースのポリシーは、その ID が何をどのリソースにどんな条件で実行できるかを決める | `iam.identity-policy-types` | `その ID が何をどのリソースにどんな条件で実行できるかを決める` | IAM ユーザーとロールの実行 |
-| `boundary-ceiling` | 権限の境界は上限で、それ自体は権限を与えない。アイデンティティベースのポリシーと境界の両方が許可した操作だけが通る | `iam.boundary-basics` | `それ自体は権限を与えない`、`両方が許可した範囲の共通部分`（この事実は文が直される予定。図鑑に入った文に合わせて取り直す） | 境界のある IAM ユーザーとロールの実行（`boundary-user-direct` を当てた実行を除く） |
+| `boundary-ceiling` | 権限の境界は上限で、それ自体は権限を与えない。アイデンティティベースのポリシーと境界の両方が許可した操作だけが通る | `iam.boundary-basics` | `そのポリシーと境界の両方が許可する操作に限られる`、`境界自体は権限を付与しない` | 境界のある IAM ユーザーとロールの実行（`boundary-user-direct` を当てた実行を除く） |
 | `boundary-user-direct` | 同じアカウントで、リソースベースのポリシーが IAM ユーザーの ARN に直接与えた許可は、アイデンティティベースのポリシーや境界の暗黙の拒否では絞られない | `iam.boundary-resource-policy` | `IAM ユーザーの ARN に直接許可を与えている場合`、`暗黙の拒否では制限されない` | 同じアカウントの IAM ユーザーで、その ARN を名指しした Allow が当てはまり、アイデンティティベースか境界に許可がない実行 |
 | `boundary-role-arn` | IAM ロールの ARN への許可は、境界の暗黙の拒否で絞られる | `iam.boundary-resource-policy` | `IAM ロールの ARN への許可は、境界の暗黙の拒否で制限される` | 同じアカウントのロールで、その ARN を名指しした Allow が当てはまり、境界がある実行 |
 | `scp-ceiling` | SCP は、組織内の IAM ユーザーやロールが使える権限の上限を定め、それ自体は権限を与えない | `organizations.scp-permission-ceiling` | `権限の上限を定める`、`SCP 自体は権限を付与せず` | SCP のあるメンバーアカウントの IAM ユーザーとロール |
@@ -56,7 +56,7 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 | `cond-org-id` | `aws:PrincipalOrgID` は、組織に属するプリンシパルの要求にだけ含まれる | `iam.global-key-principalorgid` | `組織に属するプリンシパルの要求にだけ含まれる` | `aws:PrincipalOrgID` の条件を持つ文で、アクションとリソースが当てはまった実行 |
 | `cond-secure-transport` | `aws:SecureTransport` は、要求が TLS で送られたかを表し、常に要求に含まれる | `iam.global-key-securetransport` | `要求が TLS で送られたかを true か false で表す`、`常に要求に含まれる` | `aws:SecureTransport` の条件を持つ文で、アクション・リソース・Principal が当てはまった実行 |
 | `resource-policy-s3` | バケットポリシーは、バケットとその中のオブジェクトへのアクセスを許可・拒否するリソースベースのポリシー | `s3.bucket-policy` | `アクセスを許可・拒否する JSON 形式のリソースベースポリシー` | リソースベースのポリシーのある実行（リソースは S3 だけ） |
-| `wildcard` | Action と Resource では、`*` が任意の文字列に当たる | 事実 `iam.policy-resource-element`（11 章。図鑑に入るまでは、レッスン `lesson-1.1-iam-basics` を仮の裏づけにする） | 図鑑に入った文から取る | `*` を含む文を持つポリシーを見た実行 |
+| `wildcard` | Action と Resource では、`*` が任意の文字列に当たる | `iam.policy-resource-element`（今の文が言うのは Resource の `*` まで。Action の `*` は 11 章の直しで足す） | `* が任意の文字列に` | `*` を含む文を持つポリシーを見た実行 |
 
 - 評価の順そのもの（どの段を先に見るか）は規則にしません（12 章の 1）。
 - 事実で裏づけられない組み合わせは、入力で断ります（5.2）。
@@ -198,13 +198,13 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 
 ## 11. 図鑑の事実の直し（1 件）
 
-規則 `wildcard` のうち、Action の `*` を言う事実が図鑑にありません。`iam` のエントリは事実が上限（60 件）に達するので、新しい事実を足さず、Resource 要素の事実 `iam.policy-resource-element`（図鑑に足す作業の途中）を「Action と Resource のワイルドカード」の 1 件に広げます（件数は増えない。depth は detail のまま）。この事実が図鑑に入ってから直し、検証を通します。
+規則 `wildcard` のうち、Action の `*` を言う事実が図鑑にありません。`iam` のエントリは事実が上限（60 件）に達しているので、新しい事実を足さず、Resource 要素の事実 `iam.policy-resource-element` を「Action と Resource のワイルドカード」の 1 件に広げます（件数は増えない。depth は detail のまま）。直したあと、事実の検証を通します。
 
 - 足す文の案: 「Action 要素でも * を使え、s3:* は Amazon S3 のすべてのアクションに当てはまる。アクションの名前の一部に使うこともできる。」
 - 出典（英語版）: IAM ユーザーガイド「IAM JSON policy elements: Action」の「You can use multi-character match wildcards (*) and single-character match wildcards (?) to give access to all the actions the specific AWS product offers.」「You can also use wildcards (* or ?) as part of the action name.」
 - 検証を通らなかったときは、アクションを完全一致だけにし（5.1 の定数）、規則 `wildcard` の文を Resource だけに狭めます
 
-実装の前に読み直す事実（文が直される・足される予定のもの）: `iam.boundary-basics`（規則 `boundary-ceiling` の `evidence` を取り直す）、`iam.policy-json-document`（規則 `identity-policy` の裏づけに足せる）、`iam.policy-resource-element`。
+2026-11-26 に図鑑の文を読み直し、規則 `boundary-ceiling` の文と `evidence` を、直ったあとの `iam.boundary-basics` に合わせました。ポリシー文書の構成の事実 `iam.policy-json-document` は、規則の裏づけには足しません（`identity-policy` の裏づけは `iam.identity-policy-types` で足りる）。
 
 ## 12. 決めたこと（2026-11-25。比べた案とともに）
 

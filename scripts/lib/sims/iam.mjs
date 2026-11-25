@@ -37,8 +37,8 @@ export const RULES = {
     factRef: 'iam.identity-policy-types', evidence: ['その ID が何をどのリソースにどんな条件で実行できるかを決める'],
   },
   'boundary-ceiling': {
-    label: '権限の境界による上限', text: '権限の境界はそれ自体では権限を与えず、アイデンティティベースのポリシーによる許可を両方が許可した範囲に絞ります',
-    factRef: 'iam.boundary-basics', evidence: ['それ自体は権限を与えない', '両方が許可した範囲の共通部分'],
+    label: '権限の境界による上限', text: '権限の境界自体は権限を付与せず、アイデンティティベースのポリシーを通じて実行できるのは、そのポリシーと境界の両方が許可する操作に限られます',
+    factRef: 'iam.boundary-basics', evidence: ['そのポリシーと境界の両方が許可する操作に限られる', '境界自体は権限を付与しない'],
   },
   'boundary-user-direct': {
     label: 'IAM ユーザーの ARN への直接の許可', text: '同じアカウントでリソースベースのポリシーが IAM ユーザーの ARN に直接与えた許可は、アイデンティティベースのポリシーや権限の境界の暗黙の拒否では制限されません',
@@ -92,10 +92,9 @@ export const RULES = {
     label: 'S3 のバケットポリシー', text: 'バケットポリシーは、バケットとその中のオブジェクトへのアクセスを許可・拒否するリソースベースのポリシーです',
     factRef: 's3.bucket-policy', evidence: ['アクセスを許可・拒否する JSON 形式のリソースベースポリシー'],
   },
-  // 裏づけの事実 iam.policy-resource-element が図鑑に入ったら factRef に替える
   wildcard: {
-    label: 'ワイルドカード', text: 'Action と Resource の * は任意の文字列に当たります',
-    lessonRef: 'lesson-1.1-iam-basics',
+    label: 'ワイルドカード', text: 'Action と Resource の * は任意の文字列に一致します',
+    factRef: 'iam.policy-resource-element', evidence: ['* が任意の文字列に'],
   },
 };
 
