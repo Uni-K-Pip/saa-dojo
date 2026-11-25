@@ -2,7 +2,7 @@
   "id": "dg-elb-choice",
   "type": "decision",
   "title": "ロードバランサーの選び方",
-  "alt": "ELB の 3 種類（ALB・NLB・GWLB）を、質問に答えて選ぶ図です。最初に、他社のファイアウォールなどの仮想アプライアンスへ通信を通すためのロードバランサーかを聞きます。「はい」なら GWLB です（アプリケーションの入口の要件は、別のロードバランサーで満たす）。「いいえ」なら、通信が UDP か、HTTP・HTTPS ではない TCP かを聞き、「はい」なら NLB です。「いいえ」なら、HTTP の内容に応じた振り分け（パス・ホスト名・ヘッダーなど。複数のサービスへの振り分けを含む）・応答（リダイレクト、固定の応答）・認証、Web の攻撃の防御、Lambda 関数への転送のどれかが要るかを聞きます。「はい」なら、固定の IP アドレスか AWS PrivateLink での公開も要る場合は NLB の後ろに ALB（NLB のターゲットに ALB を登録する。固定の IP アドレスだけなら Global Accelerator と ALB でもよい）、要らない場合は ALB です。Web の攻撃は ALB に AWS WAF を関連付けて防ぎ、認証は ALB の HTTPS リスナーで使います。「いいえ」なら、固定の IP アドレス、PrivateLink での公開、非常に高いスループットや低いレイテンシーのどれかが要る場合は NLB、要らない場合は ALB です。",
+  "alt": "ALB・NLB・GWLB を質問で選ぶ図です。Q1: 他社のファイアウォールなどの仮想アプライアンスへ通信を通すためか。はいなら GWLB（通信の検査を担う）、いいえなら Q2 へ。Q2: 通信は UDP か、HTTP・HTTPS ではない TCP か。はいなら NLB（固定 IP や PrivateLink にも対応）、いいえなら Q3 へ。Q3: HTTP の内容に応じた振り分け・応答・認証、Web の攻撃の防御、Lambda 関数への転送のどれかが要るか。はいなら Q4、いいえなら Q5 へ。Q4: 固定の IP アドレスか AWS PrivateLink での公開も要るか。はいなら NLB の後ろに ALB（PrivateLink が不要なら Global Accelerator と ALB でも固定 IP を使える）、いいえなら ALB。AWS WAF は ALB に関連付けたウェブ ACL のルールでリクエストを許可・ブロックし、認証は HTTPS リスナーで使う。Q5: 固定の IP アドレス、PrivateLink での公開、非常に高いスループットや低いレイテンシーのどれかが要るか。はいなら NLB、いいえなら ALB（HTTP・HTTPS の Web 向け。固定 IP は持たず、クライアントの IP は既定で X-Forwarded-For ヘッダーに付け足す）。",
   "lessonRefs": [
     "lesson-3.4-edge-and-load-balancing"
   ],
@@ -21,8 +21,8 @@
     {
       "id": "r-gwlb",
       "result": "GWLB",
-      "why": "レイヤー 3 で動き、ファイアウォールや侵入検知などの仮想アプライアンスを、すべての通信の出入口として透過的に挟みます。固定の IP アドレスや Web の攻撃の防御など、アプリケーションの入口の要件は、別のロードバランサーで満たします。",
-      "factRefs": ["elb.gwlb-transparent-gateway", "elb.static-ip-support-by-type", "elb.waf-integration"]
+      "why": "レイヤー 3 で動き、ファイアウォールや侵入検知などの仮想アプライアンスを、すべての通信の出入口として透過的に挟みます。GWLB が担うのは通信の検査で、アプリケーションの入口は、要件に合わせて別に選びます。",
+      "factRefs": ["elb.gwlb-transparent-gateway"]
     },
     {
       "id": "q-proto",
@@ -57,14 +57,14 @@
     {
       "id": "r-nlb-alb",
       "result": "NLB の後ろに ALB",
-      "why": "NLB のターゲットに ALB を登録し、NLB の固定 IP や PrivateLink と、ALB の振り分けを組み合わせます。AWS WAF や認証は ALB に設定します。固定 IP だけなら、Global Accelerator のエンドポイントに ALB を登録する方法もあります。",
+      "why": "NLB のターゲットに ALB を登録し、NLB と ALB の機能を併用します。AWS WAF は ALB に関連付け、認証は ALB の HTTPS リスナーで使います。PrivateLink が不要なら、Global Accelerator に ALB を登録しても固定 IP を使えます。",
       "factRefs": ["elb.nlb-alb-target", "elb.waf-integration", "global-accelerator.fixed-anycast-entry", "global-accelerator.standard-endpoints"]
     },
     {
       "id": "r-alb-l7",
       "result": "ALB",
-      "why": "パス・ホスト名・HTTP ヘッダーなどの条件で、転送先、リダイレクト、固定の応答を決め、Lambda 関数もターゲットにできます。Web の攻撃は AWS WAF を関連付けて防ぎ、認証は HTTPS リスナーで使います。NLB は HTTP の内容を見ないので、これらが要るなら ALB です。",
-      "factRefs": ["elb.alb-condition-types", "elb.waf-integration", "elb.alb-target-types", "elb.nlb-layer4"]
+      "why": "パス・ホスト名・HTTP ヘッダーなどの条件で、転送先、リダイレクト、固定の応答を決め、Lambda 関数もターゲットにできます。AWS WAF は、関連付けたウェブ ACL のルールでリクエストを許可・ブロックします。認証は HTTPS リスナーで使います。",
+      "factRefs": ["elb.alb-condition-types", "elb.waf-integration", "elb.alb-target-types", "elb.alb-action-types"]
     },
     {
       "id": "q-net",
@@ -77,13 +77,13 @@
     {
       "id": "r-nlb-net",
       "result": "NLB",
-      "why": "有効にした AZ ごとに静的な IP アドレスを持ち、インターネット向きなら Elastic IP アドレスも割り当てられます。PrivateLink のエンドポイントサービスになれ、毎秒数百万のリクエストを低いレイテンシーで処理します。",
+      "why": "有効にした AZ ごとに静的な IP アドレスを持ち、インターネット向きなら Elastic IP アドレスも割り当てられます。PrivateLink のエンドポイントサービスの前面に置けます。毎秒数百万のリクエストを処理でき、大量の接続を低いレイテンシーで扱います。",
       "factRefs": ["elb.static-ip-support-by-type", "elb.nlb-static-ip", "elb.nlb-layer4", "privatelink.endpoint-service-load-balancer"]
     },
     {
       "id": "r-alb-web",
       "result": "ALB",
-      "why": "HTTP・HTTPS を扱うレイヤー 7 のロードバランサーで、Web アプリケーションに向きます。固定の IP アドレスは持ちません。クライアントの IP アドレスは、X-Forwarded-For ヘッダーでターゲットに伝えます。",
+      "why": "HTTP・HTTPS を扱うレイヤー 7 のロードバランサーで、Web アプリケーションに向きます。固定の IP アドレスは持ちません。クライアントの IP アドレスは、既定では X-Forwarded-For ヘッダーに付け足して、ターゲットに伝えます。",
       "factRefs": ["elb.alb-layer7", "elb.static-ip-support-by-type", "elb.alb-xff"]
     }
   ]
