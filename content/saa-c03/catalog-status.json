@@ -3644,6 +3644,11 @@
     "checkedAt": "2026-11-25",
     "hash": "1ad946675807"
   },
+  "ec2.placement-cluster-launch": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "28579a888ee4"
+  },
   "ec2.placement-partition": {
     "status": "verified",
     "checkedAt": "2026-11-14",
@@ -3728,6 +3733,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "0d73e286f1d1"
+  },
+  "ec2.spot-interruption-reasons": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "418b54ec48cc"
   },
   "ec2.spot-no-savings-plans": {
     "status": "verified",
@@ -8044,6 +8054,11 @@
     "checkedAt": "2026-11-25",
     "hash": "5f5a2852ef1f"
   },
+  "s3.express-one-zone-directory-bucket": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "2b89e240a4d5"
+  },
   "s3.glacier-instant-retrieval": {
     "status": "verified",
     "checkedAt": "2026-11-20",
@@ -8163,6 +8178,16 @@
     "status": "verified",
     "checkedAt": "2026-11-25",
     "hash": "a163736d47cc"
+  },
+  "s3.requester-pays-authentication": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "3c54b9141c82"
+  },
+  "s3.requester-pays-request-header": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "27bbed05f847"
   },
   "s3.shared-responsibility-abstracted": {
     "status": "verified",

@@ -781,6 +781,34 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "ec2.placement-cluster-launch",
+      "title": "クラスター配置グループでの起動方法",
+      "kind": "feature",
+      "text": "クラスター配置グループでは、必要な数のインスタンスを 1 回の起動リクエストで起動し、すべてのインスタンスに同じインスタンスタイプを使うことが推奨される。あとからインスタンスを追加したり、複数のインスタンスタイプを混ぜて起動したりすると、容量不足のエラーが発生しやすくなる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Placement strategies for your placement groups",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "ec2.spot-interruption-reasons",
+      "title": "スポットインスタンスの中断理由",
+      "kind": "feature",
+      "text": "Amazon EC2 は、インスタンスを回収する必要がある場合、スポット価格が指定した上限価格を上回った場合、または起動グループやアベイラビリティーゾーングループなど、スポットリクエストの制約を満たせなくなった場合に、スポットインスタンスを中断することがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Spot Instance interruptions",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     }
   ],
   "references": [

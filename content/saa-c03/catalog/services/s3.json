@@ -845,6 +845,56 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "s3.express-one-zone-directory-bucket",
+      "title": "S3 Express One Zone の保存先",
+      "kind": "constraint",
+      "text": "S3 Express One Zone のオブジェクトはディレクトリバケットに保存される。このストレージクラスは汎用バケットでは利用できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon S3?",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "High performance workloads",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "s3.requester-pays-authentication",
+      "title": "リクエスタ支払いの認証要件",
+      "kind": "constraint",
+      "text": "リクエスタ支払いを有効にしたバケットへのリクエストは、すべて認証が必要である。匿名アクセスはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "s3.requester-pays-request-header",
+      "title": "リクエスタ支払いでの料金の受け入れ",
+      "kind": "constraint",
+      "text": "リクエスタ支払いを有効にしたバケットでは、要求側は料金がかかることを受け入れると示す必要がある。DELETE、GET、HEAD、POST、PUT の API リクエストで x-amz-request-payer ヘッダーに requester を指定するか、REST リクエストに RequestPayer パラメータを追加する。AWS CLI では --request-payer を使える。バケット所有者は、自身のリクエストに x-amz-request-payer ヘッダーを追加する必要はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+        },
+        {
+          "title": "Downloading objects from Requester Pays buckets",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     }
   ],
   "references": [
