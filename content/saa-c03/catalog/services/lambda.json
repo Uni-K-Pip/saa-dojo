@@ -164,20 +164,29 @@
       "id": "lambda.layers",
       "title": "レイヤーは 1 関数に最大 5 つ",
       "kind": "quota",
-      "text": "レイヤーは、ライブラリなどの依存関係を関数のコードから分けて共有するための .zip アーカイブで、1 つの関数に最大 5 つまで追加できる。レイヤーを使えるのは .zip でデプロイする関数だけで、コンテナイメージの関数は使えない。レイヤーの大きさも展開後の合計の上限に含まれる。",
-      "trap": "レイヤーに分けても、展開後 250 MB の合計の上限は増えない。",
+      "text": "レイヤーは、ライブラリなどの依存関係を関数のコードから分けて共有するための .zip アーカイブで、1 つの関数に最大 5 つまで追加できる。",
       "depth": "core",
       "sources": [
         {
           "title": "Managing Lambda Event Function dependencies with layers",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html"
-        },
-        {
-          "title": "Lambda quotas",
-          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "lambda.layers-zip-only",
+      "title": "レイヤーを使えるのは .zip でデプロイした Event Function だけ",
+      "kind": "constraint",
+      "text": "レイヤーを使えるのは、.zip ファイルアーカイブとしてデプロイした Lambda Event Functions だけである。コンテナイメージとして定義した Event Function では、イメージを作成するときに、選んだランタイムとコードの依存関係をすべてイメージに含める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing Lambda Event Function dependencies with layers",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.invocation-payload",
@@ -197,7 +206,7 @@
       "id": "lambda.concurrency-default",
       "title": "アカウントの同時実行数は既定で 1,000",
       "kind": "quota",
-      "text": "リージョンごとのアカウント全体の同時実行数の既定値は 1,000 で、Service Quotas で引き上げを申請できる。リクエストの毎秒の上限は同時実行数の 10 倍である。この既定値は、新しいアカウントでは低く設定されることがある。",
+      "text": "リージョンごとのアカウント全体の同時実行数の既定値は 1,000 で、Service Quotas で引き上げを申請できる。新しい AWS アカウントには引き下げられた同時実行数のクォータが適用され、AWS が利用状況に応じてこのクォータを自動で引き上げる。",
       "depth": "core",
       "sources": [
         {
@@ -209,7 +218,22 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
         }
       ],
-      "checkedAt": "2026-11-21",
+      "checkedAt": "2026-11-25",
+      "recheck": "default-value"
+    },
+    {
+      "id": "lambda.requests-per-second-limit",
+      "title": "毎秒のリクエスト数の上限はアカウントの同時実行数の 10 倍",
+      "kind": "quota",
+      "text": "アカウント内のすべての Lambda Event Functions を合わせた毎秒のリクエスト数の上限は、アカウントの同時実行数の 10 倍である。アカウントの同時実行数の上限が既定の 1,000 の場合、毎秒のリクエスト数の上限は 10,000 である。同時実行数と毎秒のリクエスト数は異なり、Event Function の同時実行を設定するときは両方を考慮する必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding Lambda Event Function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-25",
       "recheck": "default-value"
     },
     {

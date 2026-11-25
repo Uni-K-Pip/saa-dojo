@@ -6276,8 +6276,8 @@
   },
   "lambda.concurrency-default": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "7bde8a72f03c"
+    "checkedAt": "2026-11-25",
+    "hash": "8bebb3e8b88f"
   },
   "lambda.concurrency-scaling-rate": {
     "status": "verified",
@@ -6321,8 +6321,13 @@
   },
   "lambda.layers": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d521db647524"
+    "checkedAt": "2026-11-25",
+    "hash": "7a83b5878a32"
+  },
+  "lambda.layers-zip-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "e34ed3d86951"
   },
   "lambda.managed-instances": {
     "status": "verified",
@@ -6358,6 +6363,11 @@
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "455cf6f93ea8"
+  },
+  "lambda.requests-per-second-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "cba4c9d97886"
   },
   "lambda.reserved-concurrency": {
     "status": "verified",
