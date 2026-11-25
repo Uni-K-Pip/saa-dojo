@@ -15,37 +15,38 @@
   "difficulty": 1,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある会社は、毎日午前 2 時に約 1 時間かけて売上レポートを生成する処理を、コンテナイメージとして用意しています。処理には 4 vCPU と 16 GiB のメモリが必要です。チームは、サーバーの管理をせず、処理を実行している時間の分だけ料金を払う構成にしたいと考えています。最もコスト効率の高い方法はどれですか。",
+  "stem": "ある会社は、毎日午前 2 時に約 1 時間かけて売上レポートを生成する処理を、コンテナイメージとして用意しています。処理には 4 vCPU と 16 GiB のメモリが必要です。チームは、サーバーの管理をせず、EC2 インスタンスも使わずに、処理を動かしている間だけ料金がかかる構成にしたいと考えています。最もコスト効率の高い方法はどれですか。",
   "options": [
     {
       "id": "a",
       "text": "Amazon ECS のクラスターを Amazon EC2 インスタンスで常時稼働させ、リザーブドインスタンスを購入する。",
       "correct": false,
-      "rationale": "1 日に 1 時間しか使わないのに、インスタンスは 24 時間分の料金がかかります。インスタンスの管理（OS のパッチ適用など）も必要で、サーバーの管理をしたくないという要件に反します。"
+      "rationale": "1 日に約 1 時間しか使わないのに、インスタンスは 24 時間分の料金がかかります。インスタンスの管理（OS のパッチ適用など）も必要で、サーバーの管理をせず、EC2 インスタンスも使わないという要件に反します。"
     },
     {
       "id": "b",
       "text": "Amazon EventBridge のスケジュールで、AWS Fargate の ECS タスクを毎日起動する。",
       "correct": true,
-      "rationale": "Fargate はサーバーを管理せずにコンテナを実行でき、料金はタスクが使う vCPU とメモリを、実行している時間に応じて払います。スケジュールで毎日 1 時間だけ起動すれば、その時間分の料金で済みます。"
+      "rationale": "Fargate は、サーバーや EC2 インスタンスを管理せずにコンテナを実行でき、4 vCPU と 16 GiB の組み合わせも指定できます。料金は、タスクに指定した vCPU やメモリなどに応じて、コンテナイメージのダウンロードを始めてからタスクが終了するまでの時間に、秒単位でかかります。毎日スケジュールで起動し、処理が終わるとタスクも終了するので、タスクが動いていない時間の料金はかかりません。"
     },
     {
       "id": "c",
       "text": "AWS Lambda 関数としてコンテナイメージをデプロイし、EventBridge のスケジュールで毎日起動する。",
       "correct": false,
-      "rationale": "通常の Lambda 関数は 1 回の実行時間が最大 30 分で、約 1 時間かかる処理は完了できません。関数に割り当てられるメモリも最大 10,240 MB で、16 GiB には足りません。"
+      "rationale": "Lambda 関数のタイムアウトの上限は 1,800 秒（30 分）で、約 1 時間かかる処理は 1 回の実行で完了できません。既定の実行方式では、メモリも最大 10,240 MB で、16 GiB に足りません。Lambda Managed Instances を使う関数なら、非同期呼び出しで最大 90 分まで実行できますが、アカウント内の EC2 インスタンスの上で動くため、EC2 インスタンスを使わないという要件に合いません。"
     },
     {
       "id": "d",
       "text": "Amazon EKS のクラスターにマネージドノードグループを作成し、ノードを常時稼働させてジョブを実行する。",
       "correct": false,
-      "rationale": "クラスターの料金とノードの常時稼働の料金がかかり、ノードの管理も必要です。1 日に 1 時間の処理には割高で、サーバーを管理しない要件にも反します。"
+      "rationale": "クラスターの料金とノードの常時稼働の料金がかかり、ノードの管理も必要です。1 日に約 1 時間の処理には割高で、サーバーの管理をせず、EC2 インスタンスも使わないという要件にも反します。"
     }
   ],
-  "explanation": "コンピューティングサービスは、「実行時間」と「管理の手間」で選びます。\n\n・AWS Lambda: イベント駆動で短時間の処理向け。通常の関数は 1 回の実行が最大 30 分。実行した分だけの課金。\n・AWS Fargate: コンテナをサーバーの管理なしで実行する。実行時間に応じた課金で、Lambda の時間制限を超える処理に使える。ECS と EKS で使える。\n・Amazon EC2: インスタンスを自分で管理する。常時稼働で安定して使うなら、Savings Plans などで割引を受けられる。\n\nこの問題の処理は、1 日 1 時間のバッチで、コンテナ化されています。Fargate のタスクをスケジュールで起動すれば、使った時間分だけの料金で、サーバー管理も不要になります。",
+  "explanation": "コンピューティングサービスは、「実行時間」と「管理の手間」で選びます。\n\n・AWS Lambda: イベント駆動で短時間の処理向け。タイムアウトの上限は 30 分で、既定の実行方式ではメモリは最大 10,240 MB。リクエストの回数と実行時間に応じた課金。EC2 インスタンスの上で関数を動かす Lambda Managed Instances では、非同期呼び出しなどに限り最大 90 分まで実行できるが、料金はインスタンスに対してかかる。\n・AWS Fargate: コンテナを、サーバーの管理なしで実行する。コンテナイメージのダウンロードの開始からタスクの終了までが、秒単位で課金される。Lambda の時間やメモリの上限を超える処理に使える。ECS と EKS で使える。\n・Amazon EC2: インスタンスを自分で管理する。常時稼働で安定して使うなら、Savings Plans などで割引を受けられる。\n\nこの問題の処理は、1 日に約 1 時間のバッチで、コンテナ化されています。Fargate のタスクをスケジュールで起動すれば、料金がかかるのはタスクが動いている間だけで、サーバーの管理も EC2 インスタンスも不要です。",
   "keyPoints": [
-    "コンテナのバッチをサーバー管理なしで、使った時間分だけの料金で実行 → AWS Fargate（スケジュール起動）",
-    "通常の Lambda 関数は 1 回の実行が最大 30 分。長時間の処理には使えない",
+    "コンテナのバッチを、サーバーの管理なしで、タスクが動いている間だけの料金で実行 → AWS Fargate（スケジュール起動）",
+    "Lambda 関数のタイムアウトの上限は 30 分（Lambda Managed Instances の非同期呼び出しなどは 90 分）。既定の実行方式のメモリは最大 10,240 MB",
+    "Fargate の課金は、コンテナイメージのダウンロードの開始からタスクの終了までの秒単位",
     "常時使う安定した負荷なら EC2＋Savings Plans のほうが安くなることがある"
   ],
   "references": [
@@ -54,12 +55,16 @@
       "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
     },
     {
-      "title": "AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
-      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
+      "title": "Lambda Managed Instances - AWS Lambda",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
     },
     {
-      "title": "Using Amazon EventBridge Scheduler to schedule Amazon ECS tasks - Amazon Elastic Container Service",
-      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html"
+      "title": "AWS Fargate Pricing",
+      "url": "https://aws.amazon.com/fargate/pricing/"
+    },
+    {
+      "title": "Architect for AWS Fargate for Amazon ECS - Amazon Elastic Container Service",
+      "url": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html"
     }
   ],
   "lessonRefs": ["lesson-4.2-scaling-and-compute-choice"],
