@@ -18,6 +18,7 @@ const role = { kind: 'role', name: 'analytics-role', account: A };
 const root = { kind: 'root', account: A };
 const namedUser = { arn: `arn:aws:iam::${A}:user/hana` };
 const namedRole = { arn: `arn:aws:iam::${A}:role/analytics-role` };
+const rootOf = (account) => ({ arn: `arn:aws:iam::${account}:root` });
 const bucket = 'arn:aws:s3:::example-reports';
 const object = `${bucket}/2026/q1.csv`;
 const allObjects = `${bucket}/*`;
@@ -130,7 +131,7 @@ describe('シナリオの最初の設定と切り替え', () => {
     check(initial, implicit('identity-side'));
     check({ ...initial, identityPolicy: [...initial.identityPolicy, allow(GET, allObjects)] }, permitted);
     check({ ...initial, resource: { arn: object, account: A } }, permitted);
-    check({ ...initial, resourcePolicy: [allow(GET, allObjects, { principal: { account: A } })] }, implicit('identity-side'));
+    check({ ...initial, resourcePolicy: [allow(GET, allObjects, { principal: rootOf(A) })] }, implicit('identity-side'));
   });
 });
 
@@ -156,12 +157,12 @@ describe('Action、Resource、Principal、Condition の照合', () => {
 
   it.each([
     [namedUser, true], [namedRole, false], [{ arn: `arn:aws:iam::${B}:user/hana` }, false],
-    [{ account: A }, true], [{ account: B }, false], [{ account: C }, false],
+    [rootOf(A), true], [rootOf(B), false],
   ])('別のアカウントへの許可で Principal %j を照合する', (principal, matched) => {
     const { rules } = check(config({
       ...use(GET, object, B), identityPolicy: [allow(GET)], resourcePolicy: [allow(GET, object, { principal })],
     }), matched ? permitted : implicit('resource-side'));
-    expect(rules.includes('principal-account')).toBe(matched && principal.account === A);
+    expect(rules.includes('principal-account')).toBe(principal.arn === rootOf(A).arn);
   });
 
   it.each([
@@ -191,11 +192,11 @@ describe('Action、Resource、Principal、Condition の照合', () => {
     expect(check(value, permitted).rules).not.toContain('cond-org-id');
   });
 
-  it('同じアカウントの Allow でも、別のアカウントの指定は当たらない文として扱う', () => {
-    const value = config({ resourcePolicy: [allow(GET, object, { principal: { account: B } })] });
-    expect(check(value, implicit('no-allow')).rules).not.toContain('principal-account');
-    value.resourcePolicy = [deny(GET, object, { principal: { account: A } })];
-    expect(check(value, explicit(['resource-policy'])).rules).toContain('principal-account');
+  it('同じアカウントでも、ルートユーザーの ARN を指定した Deny はアカウント全体に当たる', () => {
+    const value = config({ identityPolicy: [allow(GET)], resourcePolicy: [deny(GET, object, { principal: rootOf(A) })] });
+    const result = check(value, explicit(['resource-policy']));
+    expect(result.rules).toContain('principal-account');
+    expect(result.output.stages.find(({ stage }) => stage === 'resource').state).toBe('no-allow');
   });
 
   it('アクションのワイルドカードを無効にしても Resource の * は使える', () => {
@@ -364,7 +365,10 @@ describe('入力と登録', () => {
     ['公開の許可', config({ ...use(GET, object, B), resourcePolicy: [allow(GET, object, { principal: '*' })] }), 'unsupported'],
     ['TLS だけを条件とする公開の許可', config({ ...use(GET, object, B),
       resourcePolicy: [allow(GET, object, { principal: '*', condition: tls(true) })] }), 'unsupported'],
-    ['同じアカウント全体への許可', config({ resourcePolicy: [allow(GET, object, { principal: { account: A } })] }), 'unsupported'],
+    ['同じアカウント全体への許可', config({ resourcePolicy: [allow(GET, object, { principal: rootOf(A) })] }), 'unsupported'],
+    ['アカウント ID だけの Principal', config({ ...use(GET, object, B), resourcePolicy: [allow(GET, object, { principal: { account: A } })] }), 'input'],
+    ['無関係なアカウントのルートユーザーの ARN', config({ ...use(GET, object, B),
+      resourcePolicy: [allow(GET, object, { principal: rootOf(C) })] }), 'unsupported'],
     ['同じアカウントで Principal が * の許可', config({ resourcePolicy: [allow(GET, object, { principal: '*', condition: org() })] }), 'unsupported'],
     ['サービスの相違', config(use('ec2:StartInstances')), 'combination'],
     ['リソースのアカウントの相違', config(use(GET, `arn:aws:s3:ap-northeast-1:${B}:example-reports`)), 'combination'],
@@ -476,7 +480,7 @@ it('自由に試すの 25,920 通りを 5.3 の条件の一覧と突き合わせ
   }
   // プリセットにはアカウント全体を指定する Principal がない
   const accountGrant = check(config({
-    ...use(GET, object, B), identityPolicy: [allow(GET)], resourcePolicy: [allow(GET, object, { principal: { account: A } })],
+    ...use(GET, object, B), identityPolicy: [allow(GET)], resourcePolicy: [allow(GET, object, { principal: rootOf(A) })],
   }), permitted);
   for (const id of accountGrant.rules) used.add(id);
   expect([...used].sort()).toEqual([...ruleIds].sort());

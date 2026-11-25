@@ -113,7 +113,7 @@ const NAME = /^[a-z0-9-]{1,32}$/;
 const ORGANIZATION = /^o-[a-z0-9]{10,32}$/;
 const ACTION = /^([a-z][a-z0-9]*):([A-Z][a-zA-Z0-9*]*|\*)$/;
 const ARN = /^arn:aws:([a-z][a-z0-9]*):[a-z0-9-]*:(\d{12}|):[\s\S]+$/;
-const PRINCIPAL_ARN = /^arn:aws:iam::(\d{12}):(?:user|role)\/[a-z0-9-]{1,32}$/;
+const PRINCIPAL_ARN = /^arn:aws:iam::(\d{12}):(?:root|(?:user|role)\/[a-z0-9-]{1,32})$/;
 const SCP_LEVELS = ['root', 'ou', 'account'];
 const NEGATED_KEYS = ['NotAction', 'NotResource', 'NotPrincipal', 'notAction', 'notResource', 'notPrincipal'];
 
@@ -164,27 +164,24 @@ function readArn(value, field, policy = false) {
 }
 
 const principalArn = ({ kind, name, account }) => `arn:aws:iam::${account}:${kind === 'root' ? 'root' : `${kind}/${name}`}`;
+const accountRoot = (account) => principalArn({ kind: 'root', account });
 
 function checkPolicyPrincipal(statement, config, field) {
   const { effect, condition, principal } = statement;
   const accounts = [config.principal.account, config.resource.account];
   if (isString(principal)) checkSupportedText(principal, field);
   if (principal !== '*') {
-    if (objectOf(principal, ['account'])) {
-      requireShape(fits(ACCOUNT, principal.account), field);
-    } else {
-      requireShape(objectOf(principal, ['arn']) && isString(principal.arn), field);
-      checkSupportedText(principal.arn, field);
-      const arn = PRINCIPAL_ARN.exec(principal.arn);
-      requireInput(arn, 'format', 'Principal には IAM ユーザーまたはロールの ARN を指定してください。', field);
-      requireInput(accounts.includes(arn[1]), 'unsupported', 'Principal にリクエストと無関係なアカウントの ARN は指定できません。', field);
-    }
+    requireShape(objectOf(principal, ['arn']) && isString(principal.arn), field);
+    checkSupportedText(principal.arn, field);
+    const arn = PRINCIPAL_ARN.exec(principal.arn);
+    requireInput(arn, 'format', 'Principal には、IAM ユーザーかロールの ARN、またはアカウントのルートユーザーの ARN を指定してください。', field);
+    requireInput(accounts.includes(arn[1]), 'unsupported', 'Principal にリクエストと無関係なアカウントの ARN は指定できません。', field);
   }
   if (effect !== 'Allow') return;
   requireInput(principal !== '*' || condition?.key === ORG_ID, 'unsupported',
     'Principal が * の Allow には aws:PrincipalOrgID の条件が必要です。', field);
-  requireInput(accounts[0] !== accounts[1] || (principal !== '*' && principal.account !== accounts[0]), 'unsupported',
-    '同じアカウントの Allow では、そのアカウント全体や * を Principal に指定できません。', field);
+  requireInput(accounts[0] !== accounts[1] || (principal !== '*' && principal.arn !== accountRoot(accounts[0])), 'unsupported',
+    '同じアカウントの Allow では、ルートユーザーの ARN（アカウント全体）や * を Principal に指定できません。', field);
 }
 
 function checkStatements(statements, field, config, actionWildcards, { scp = false, resource = false } = {}) {
@@ -279,14 +276,15 @@ function scan(statements, policy, context) {
       used.add('cond-org-id');
       if (effect === 'Allow' && target === '*') used.add('principal-org');
     }
-    if (target && target !== '*' && target.account !== principal.account && target.arn !== arn) continue;
+    const wholeAccount = target?.arn === accountRoot(principal.account);
+    if (target && target !== '*' && !wholeAccount && target.arn !== arn) continue;
     if (condition?.key === TLS) {
       used.add('cond-secure-transport');
       if (request.tls !== condition.value) continue;
     }
     if (condition?.key === ORG_ID && org.id !== condition.value) continue;
-    if (target?.account) used.add('principal-account');
-    if (effect === 'Allow' && target?.arn === arn) direct = true;
+    if (wholeAccount) used.add('principal-account');
+    if (effect === 'Allow' && !wholeAccount && target?.arn === arn) direct = true;
     (effect === 'Allow' ? allow : deny).push({ policy, index, effect });
   }
   return { allow, deny, direct, state: allow.length ? 'allow' : statements?.length ? 'no-allow' : 'none' };

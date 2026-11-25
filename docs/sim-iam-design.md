@@ -51,7 +51,7 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 | `scp-root-user` | SCP は、メンバーアカウントのルートユーザーが行う操作にも制限を適用する | `organizations.scp-member-root` | `メンバーアカウントのルートユーザーが行う操作にも制限を適用する` | SCP のあるメンバーアカウントのルートユーザー |
 | `scp-management` | 管理アカウントの操作は、SCP で制限できない | `organizations.scp-management-exemption` | `管理アカウントの操作をその SCP で制限できない` | `scps` のある管理アカウントの実行（ユーザー・ロール・ルート） |
 | `cross-account-both` | 別のアカウントのリソースには、プリンシパルの側のアイデンティティベースのポリシーと、リソースの側のリソースベースのポリシーの両方の許可が要る。どちらかの評価に明示的な拒否があれば拒否される | `iam.cross-account-both-policies` | `両方が許可していて初めて`、`どちらかのアカウントの評価で明示的な拒否があれば拒否される` | 別のアカウントの実行 |
-| `principal-account` | ルートユーザーの ARN は、Principal 要素ではアカウント全体への委任になる | `iam.global-key-principalarn` | `Principal 要素ではアカウント全体への委任になる` | Principal がアカウントの文が当てはまった実行 |
+| `principal-account` | ルートユーザーの ARN は、Principal 要素ではアカウント全体への委任になる | `iam.global-key-principalarn` | `Principal 要素ではアカウント全体への委任になる` | Principal がプリンシパルのアカウントのルートユーザーの ARN の文が当てはまった実行 |
 | `principal-org` | Principal が `*` で、`aws:PrincipalOrgID` を `StringEquals` で比べる文は、指定した組織のアカウントのプリンシパルだけに当たる | `iam.principal-wildcard-orgid` | `許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる` | その形の Allow の文で、アクションとリソースが当てはまった実行 |
 | `cond-org-id` | `aws:PrincipalOrgID` は、組織に属するプリンシパルの要求にだけ含まれる | `iam.global-key-principalorgid` | `組織に属するプリンシパルの要求にだけ含まれる` | `aws:PrincipalOrgID` の条件を持つ文で、アクションとリソースが当てはまった実行 |
 | `cond-secure-transport` | `aws:SecureTransport` は、要求が TLS で送られたかを表し、常に要求に含まれる | `iam.global-key-securetransport` | `要求が TLS で送られたかを true か false で表す`、`常に要求に含まれる` | `aws:SecureTransport` の条件を持つ文で、アクション・リソース・Principal が当てはまった実行 |
@@ -84,7 +84,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 
 - `actions`（1〜4）: `*`、`<サービス>:*`、`<サービス>:<アクション名>`。アクション名の中に `*` を書ける（`s3:Get*`）。サービスは英小文字、アクション名は大文字で始める（AWS の一覧の書き方どおり。照合は大文字と小文字を区別する）
 - `resources`（1〜4）: `*` か ARN。ARN では、最後の区画（5 つ目のコロンのあと）にだけ `*` を書ける。`*` は `/` を含む任意の文字列に当たる
-- `principal`: リソースベースのポリシーの文だけに書く（必須）。`"*"`、`{ account }`（そのアカウントのプリンシパル。`arn:aws:iam::<account>:root`）、`{ arn }`（IAM ユーザーかロールの ARN）
+- `principal`: リソースベースのポリシーの文だけに書く（必須）。`"*"` か `{ arn }`。`arn` は、IAM ユーザーかロールの ARN、またはアカウントのルートユーザーの ARN（`arn:aws:iam::<account>:root`。そのアカウント全体への委任として、そのアカウントのどのプリンシパルにも当たる）。アカウント ID だけの書き方は受けない（規則 `principal-account` の裏づけの事実が、ルートユーザーの ARN について述べているため）
 - `condition`（任意、1 つ）: `{ key: "aws:SecureTransport", value: 真偽 }`（`Bool`。`request.tls` と等しいとき当たる）か `{ key: "aws:PrincipalOrgID", value: 組織 ID }`（`StringEquals`。プリンシパルのアカウントが組織に属し、その ID と等しいとき当たる。リソースベースのポリシーの文だけ）
 - SCP・アイデンティティベース・境界の文に `principal` は書けない。SCP の文の `resources` は `*` だけ
 
@@ -100,7 +100,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 - ルートユーザーに、アイデンティティベース（空でない）・境界・リソースベースのポリシー、別のアカウントのリソース
 - 組織に入っていないのに `scps` がある
 - S3 以外のリソースに `resourcePolicy`
-- 同じアカウントのリソースベースの **Allow** で、Principal がアカウントか `*`（名指しの ARN だけを扱う。Deny はどの形でもよい）
+- 同じアカウントのリソースベースの **Allow** で、Principal がルートユーザーの ARN（アカウント全体）か `*`（IAM ユーザーかロールを名指しした ARN だけを扱う。Deny はどの形でもよい）
 - Allow で Principal が `*` なのに `aws:PrincipalOrgID` の条件がない文（公開の許可は扱わない）
 - リソースベースの文の `{ arn }` が、プリンシパルのアカウントでもリソースのアカウントでもないアカウントの ARN（関係のない第三者は扱わない）
 
@@ -115,7 +115,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 | ルートユーザー | ほかに条件なし |
 | 同じアカウントの IAM ユーザー | 「アイデンティティベースの Allow（`no-allow`）と、境界があれば境界の Allow（`boundary`）」。リソースベースのポリシーがその IAM ユーザーの ARN を名指しで Allow していれば、この 2 つは要らない |
 | 同じアカウントのロール | 「アイデンティティベースの Allow か、リソースベースのポリシーがロールの ARN を名指しした Allow」（`no-allow`）と、境界があれば境界の Allow（`boundary`） |
-| 別のアカウント | アイデンティティベースの Allow（`identity-side`）、境界があれば境界の Allow（`boundary`）、リソースベースの Allow（`resource-side`。Principal は、名指しの ARN、プリンシパルのアカウント、`*` と `aws:PrincipalOrgID`） |
+| 別のアカウント | アイデンティティベースの Allow（`identity-side`）、境界があれば境界の Allow（`boundary`）、リソースベースの Allow（`resource-side`。Principal は、名指しの ARN、プリンシパルのアカウントのルートユーザーの ARN、`*` と `aws:PrincipalOrgID`） |
 
 管理アカウントと、組織に入っていないアカウントでは、SCP を見ません。
 
@@ -147,7 +147,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 - サービスごとの例外（S3 の ACL とブロックパブリックアクセス、VPC エンドポイントのポリシー、S3 以外のリソースベースのポリシー）
 - フェデレーションのユーザーのセッション、匿名のリクエスト、AWS のサービスからのリクエスト、サービスにリンクされたロール
 - グループ、管理ポリシーとインラインポリシーの区別（アイデンティティベースのポリシーは、合わせた 1 つの文の並びとして入れる）
-- 公開の許可（Principal が `*` で条件のない Allow）、同じアカウントで Principal がアカウントや `*` の Allow
+- 公開の許可（Principal が `*` で条件のない Allow）、同じアカウントで Principal がルートユーザーの ARN や `*` の Allow
 - ルートユーザーへのリソースベースのポリシーの効き方
 
 ## 7. 画面に出す「扱わないこと」の文（`NOT_COVERED`）
@@ -184,7 +184,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 4. `sim-iam-scp-ceiling`: メンバーアカウントの管理者（すべて Allow）。SCP は、ルートとアカウントがすべて Allow、OU が `s3:*` と `ec2:*` だけ。リクエストは `dynamodb:CreateTable` → `implicit-deny`・`scp`。変えられる設定: OU の SCP をすべて Allow に（許可）／すべての階層を Allow にして、ルートの SCP に `dynamodb:CreateTable` の Deny を足す（明示的な拒否。上位の Deny は下位の Allow で上書きできない）／管理アカウントにする（許可）。裏づけ: `organizations.scp-permission-ceiling`、`organizations.scp-allow-at-every-level`、`organizations.scp-deny-inheritance`、`organizations.scp-management-exemption`
 5. `sim-iam-scp-root-user`: メンバーアカウントのルートユーザー。OU の SCP に `cloudtrail:StopLogging` の Deny → `explicit-deny`。変えられる設定: リクエストを `cloudtrail:GetTrailStatus` に（許可）／IAM ユーザーにする（拒否のまま）／管理アカウントにする（許可）。裏づけ: `organizations.scp-member-root`、`organizations.scp-deny-inheritance`、`organizations.scp-allow-at-every-level`、`iam.implicit-deny`、`organizations.scp-management-exemption`
 6. `sim-iam-cross-account-bucket`: アカウント A のロールに、アカウント B のバケットへの Allow がある。バケットポリシーはない → `implicit-deny`・`resource-side`。変えられる設定: バケットポリシーでロールの ARN を Allow（許可）／`*` と `aws:PrincipalOrgID` で Allow（許可）／同じアカウントのバケットにする（許可）。裏づけ: `iam.cross-account-both-policies`、`iam.principal-wildcard-orgid`、`iam.global-key-principalorgid`
-7. `sim-iam-cross-account-identity`: アカウント B のバケットポリシーが、アカウント A の IAM ユーザーの ARN を Allow。ユーザーの側のポリシーは自分のバケットだけ → `implicit-deny`・`identity-side`。変えられる設定: アイデンティティベースに足す（許可）／同じアカウントのバケットにする（許可。名指しの許可だけで足りる）／Principal をアカウント A にする（暗黙の拒否のまま）。裏づけ: `iam.cross-account-both-policies`、`iam.boundary-resource-policy`、`iam.global-key-principalarn`
+7. `sim-iam-cross-account-identity`: アカウント B のバケットポリシーが、アカウント A の IAM ユーザーの ARN を Allow。ユーザーの側のポリシーは自分のバケットだけ → `implicit-deny`・`identity-side`。変えられる設定: アイデンティティベースに足す（許可）／同じアカウントのバケットにする（許可。名指しの許可だけで足りる）／Principal をアカウント A のルートユーザーの ARN にする（暗黙の拒否のまま）。裏づけ: `iam.cross-account-both-policies`、`iam.boundary-resource-policy`、`iam.global-key-principalarn`
 
 どのシナリオも、`*` を含む文を使うので、`wildcard` の裏づけを参照に含めます。
 

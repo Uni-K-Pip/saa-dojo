@@ -5,7 +5,7 @@ export type Principal = { account: string } & (
 );
 export type Organization =
   { membership: 'member' | 'management'; id: string } | { membership: 'none'; id?: never };
-export type PolicyPrincipal = '*' | { account: string } | { arn: string };
+export type PolicyPrincipal = '*' | { arn: string };
 export type TransportCondition = { key: 'aws:SecureTransport'; value: boolean };
 export type Condition = TransportCondition | { key: 'aws:PrincipalOrgID'; value: string };
 export type Effect = 'Allow' | 'Deny';

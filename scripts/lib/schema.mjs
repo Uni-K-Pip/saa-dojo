@@ -787,7 +787,7 @@ export const SIM_CONFIG_SCHEMAS = {
       statements: z.array(statement.extend({ resources: z.tuple([z.literal('*')]) })).min(1).max(4),
     }).strict();
     const resourceStatement = statement.extend({
-      principal: z.union([z.literal('*'), z.object({ account }).strict(), z.object({ arn: z.string() }).strict()]),
+      principal: z.union([z.literal('*'), z.object({ arn: z.string() }).strict()]),
       condition: z.discriminatedUnion('key', [tls, orgCondition]).optional(),
     });
     return z.object({
