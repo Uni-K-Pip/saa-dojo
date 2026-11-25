@@ -87,6 +87,7 @@ function SizeResult({ output }: { output: SizeOutput }) {
         <span className="cidr-space" />
         {reserved?.slice(headCount).map(({ address }, index) => <span className="cidr-reserved" key={address}>予約 {headCount + index + 1}</span>)}
       </div>
+      {reserved && <p className="cidr-caption">帯の幅は、アドレスの数の割合どおりではありません。予約の {reserved.length} 個が読める幅で描いています。</p>}
       {!allowed && sizeIssue !== 'none' && <p><strong>作れない大きさ</strong>（{SIZE_ISSUE_LABEL[sizeIssue]}。範囲は {RULES['size-range'].text}）</p>}
       <p>{sizeCounts(output)}</p>
       {reserved && (

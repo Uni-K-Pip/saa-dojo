@@ -4,6 +4,7 @@
 import { DESIGN_WIDTH, layoutDiagram, layoutDiagramReport, textWidth } from './diagram-layout.mjs';
 import { checkKindDiagram, layoutKindDiagram, shapeBounds } from './diagram-kinds.mjs';
 import { artifactRefOf, diagramRefOf, materialKindOf } from './diagram-refs.mjs';
+import { withoutCode } from './markdown-code.mjs';
 
 // ---------------------------------------------------------------- 語彙
 
@@ -405,47 +406,6 @@ export function diagramRefIndex(items) {
   ]));
 }
 
-function withoutDiagramCode(markdown) {
-  let fence;
-  let listDepth = 0;
-  const listIndents = [0];
-  const text = markdown.split(/\r\n?|\n/).map((line) => {
-    const quote = /^(?: {0,3}>[ \t]?)+/.exec(line)?.[0] ?? '';
-    const quoteMarks = quote.match(/ {0,3}>[ \t]?/g) ?? [];
-    const depth = quoteMarks.length;
-    const content = line.slice(quote.length);
-    if (fence) {
-      const code = line.slice(quoteMarks.slice(0, fence.depth).join('').length);
-      if (depth >= fence.depth && (!code.trim() || /^ */.exec(code)[0].length >= fence.indent)) {
-        const end = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(code.slice(fence.indent))?.[1];
-        if (end && end[0] === fence.mark[0] && end.length >= fence.mark.length) fence = undefined;
-        return '';
-      }
-      fence = undefined;
-    }
-
-    if (depth !== listDepth) {
-      listDepth = depth;
-      listIndents.length = 1;
-    }
-    if (!content.trim()) return line;
-    // リスト内では項目の本文の字下げを起点にフェンスを読みます。
-    const indent = /^ */.exec(content)[0].length;
-    while (listIndents.at(-1) > indent) listIndents.pop();
-    const list = /^ {0,3}(?:[-+*]|\d{1,9}[.)]) {1,4}(?=\S)/.exec(content.slice(listIndents.at(-1)));
-    if (list) listIndents.push(listIndents.at(-1) + list[0].length);
-    const start = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(content.slice(listIndents.at(-1)));
-    if (start && (start[1][0] === '~' || !start[2].includes('`'))) {
-      fence = { mark: start[1], depth, indent: listIndents.at(-1) };
-    }
-    return fence ? '' : line;
-  }).join('\n');
-  // 空行をまたがず、同じ数のバッククォートで閉じたコードを検査から除きます。
-  return text.split(/(\n[ \t]*\n)/).map((block) =>
-    block.replace(/(?<![\\`])(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)/g, (span) => span.replace(/[^\n]+/g, '\0')),
-  ).join('');
-}
-
 const QUOTE_PREFIX = /^(?: {0,3}>[ \t]?)+/;
 const HTML_BLOCK_START = /^<(?:!--|\?|![A-Z]|\/?(?:address|article|aside|blockquote|body|center|details|dialog|dir|div|dl|dd|dt|fieldset|figcaption|figure|footer|form|h[1-6]|header|hr|html|iframe|li|main|nav|ol|p|pre|script|section|style|summary|table|tbody|td|th|thead|tr|ul)(?=[ \t>/]|$))/i;
 
@@ -470,7 +430,7 @@ function continuesParagraph(previous, current) {
  *   （表示ではその位置に図や実物を出す。ほかはリンクとして残る）、reference は参照形式の定義です。
  */
 export function parseMaterialRefs(markdown, { withLine = false } = {}) {
-  const text = withoutDiagramCode(markdown);
+  const text = withoutCode(markdown);
   const inline = /!?\[((?:\\[^\n]|[^[\]\\]|\[(?:\\[^\n]|[^[\]\\])*\])*)\]\(\s*(?:<(#\/(?:diagrams|artifacts)\/[^<>\s]*)>|(#\/(?:diagrams|artifacts)\/[^)\s<>]*))(?:\s+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))?\s*\)/g;
   const definitions = /^ {0,3}\[[^\]\n]+\]:[ \t]*(?:\n[ \t]*)?<?(#\/(?:diagrams|artifacts)\/[^>\s]*)/gm;
   const lineOf = (index) => text.slice(0, index).split('\n').length;

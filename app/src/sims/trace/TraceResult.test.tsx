@@ -104,4 +104,36 @@ describe('VPC の通信の追跡の結果', () => {
     expect(app.getByText('pl-s3 → ゲートウェイエンドポイント')).toBeVisible();
     expect(app.getByText('プライベート IP アドレス 10.0.2.10')).toBeVisible();
   });
+
+  it('印刷のあいだだけ構成を開き、終わったら元の開閉に戻す', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<TraceResult {...trace()} />);
+    const summary = screen.getByText('構成を見る');
+    const topology = summary.closest('details')!;
+    const print = (type: 'beforeprint' | 'afterprint') => window.dispatchEvent(new Event(type));
+
+    // 閉じていた構成は、印刷の前に開き、あとで閉じる
+    print('beforeprint');
+    expect(topology).toHaveAttribute('open');
+    // 印刷の前の通知が 2 回続いても、元の開閉を見失わない
+    print('beforeprint');
+    print('afterprint');
+    expect(topology).not.toHaveAttribute('open');
+
+    // 開いていた構成は、印刷のあとも開いたまま
+    await user.click(summary);
+    print('beforeprint');
+    print('afterprint');
+    expect(topology).toHaveAttribute('open');
+
+    // 印刷の前の通知がないまま、あとの通知だけが来ても変えない
+    await user.click(summary);
+    print('afterprint');
+    expect(topology).not.toHaveAttribute('open');
+
+    // 画面から外したあとは、通知を受けない
+    unmount();
+    print('beforeprint');
+    expect(topology).not.toHaveAttribute('open');
+  });
 });
