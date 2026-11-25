@@ -30,7 +30,8 @@ const REASONS: Record<Reason, string> = {
   'no-route': '宛先に当てはまるルートがありません。',
   'no-igw': 'インターネットと通信するのに要る条件を満たしていません。インターネットゲートウェイがアタッチされていません。',
   'no-public-ip': 'インターネットと通信するのに要る条件を満たしていません。パブリック IP アドレスがありません。',
-  'nat-inbound': '外側から NAT ゲートウェイへの接続を開始できません。',
+  // 規則 nat-outbound（事実 nat-gateway.outbound-connections）と同じ言い方にする。NAT ゲートウェイそのものへの接続については言わない
+  'nat-inbound': '外側から、NAT ゲートウェイの内側の部品への接続は開始できません。',
 };
 
 const SUBNET_KINDS: Record<Output['subnetKinds'][number]['kind'], string> = {
