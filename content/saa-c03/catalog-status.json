@@ -1701,8 +1701,8 @@
   },
   "cmp-iam-organizations": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "11c4dfa07474"
+    "checkedAt": "2026-11-26",
+    "hash": "2becd12da98d"
   },
   "cmp-kinesis-data-streams-firehose": {
     "status": "verified",
