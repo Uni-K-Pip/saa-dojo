@@ -6251,8 +6251,8 @@
   },
   "lambda": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "f8b295dbf978"
+    "checkedAt": "2026-11-25",
+    "hash": "b6fd4175e56b"
   },
   "lambda.async-invocation": {
     "status": "verified",
@@ -6321,8 +6321,8 @@
   },
   "lambda.memory-cpu": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d1e985e3a303"
+    "checkedAt": "2026-11-25",
+    "hash": "3081ed76f412"
   },
   "lambda.pricing-model": {
     "status": "verified",
@@ -6341,8 +6341,8 @@
   },
   "lambda.provisioned-concurrency": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "fcb682fc45a1"
+    "checkedAt": "2026-11-25",
+    "hash": "2ca380625025"
   },
   "lambda.provisioned-within-reserved": {
     "status": "verified",
