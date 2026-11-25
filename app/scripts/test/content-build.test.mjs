@@ -18,9 +18,47 @@ const contentDir = path.resolve(appDir, '../content/saa-c03');
 const read = (rel) => fs.readFileSync(path.join(contentDir, rel), 'utf8');
 
 const baseQuestion = JSON.parse(read('questions/d1/1.1/saa-1.1-ex-001.json'));
-// 実際のレッスンを、図と実物のデータなしで読ませるので、画像だけの段落の図・実物の参照の行は取り除く
-const lesson = read('lessons/d4/lesson-4.1-s3-storage-classes.md')
-  .replace(/^!\[[^\]\n]*\]\(#\/(?:diagrams|artifacts)\/[^)\n]*\)\n\n/gm, '');
+// レッスンの見本。実際のレッスンは読まない（教材の側で図や実物を足しても、このテストが落ちないようにする）。
+// 形は実際のレッスンに合わせる: 複数行のリストで書いたフロントマター、見出し・箇条書き・表、
+// 末尾の「確認問題」の節（このテストが渡す問題にはない ID を 1 つ挙げる）。図・実物・図鑑への参照は書かない
+const lesson = [
+  '---',
+  'id: lesson-4.1-s3-storage-classes',
+  'title: S3 ストレージクラスとライフサイクル',
+  'domain: 4',
+  'taskStatement: "4.1"',
+  'order: 10',
+  'knowledgeRefs:',
+  '  - 4.1-K7',
+  '  - 4.1-S5',
+  'services:',
+  '  - Amazon S3',
+  '  - Amazon S3 Glacier',
+  'estimatedMinutes: 15',
+  'createdBy: ex',
+  '---',
+  '',
+  'データの使われ方に合ったストレージクラスを選ぶと、保存のコストを下げられます。',
+  '',
+  '## 基礎',
+  '',
+  '### 料金に関わる 2 つのルール',
+  '',
+  '- **最低保存期間**: この期間より前に削除すると、残りの日数分の料金がかかります。',
+  '- **最小課金サイズ**: これより小さいオブジェクトも、このサイズとして課金されます。',
+  '',
+  '## 使い分け',
+  '',
+  '| ストレージクラス | 最低保存期間 | 取り出し |',
+  '|---|---|---|',
+  '| S3 Standard | なし | ミリ秒 |',
+  '| S3 Glacier Deep Archive | 180 日 | 事前に復元が必要 |',
+  '',
+  '## 確認問題',
+  '',
+  '- `saa-4.1-ex-001`: 保存先とライフサイクルルールを選ぶ問題',
+  '',
+].join('\n');
 
 function question(id, over = {}) {
   return { ...baseQuestion, id, createdBy: id.split('-')[2], ...over };
