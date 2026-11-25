@@ -507,8 +507,8 @@
       "id": "iam.oidc-trust-aud-sub",
       "title": "OIDC フェデレーションの信頼ポリシー",
       "kind": "feature",
-      "text": "OIDC の ID プロバイダーを IAM に登録し、ロールの信頼ポリシーで Principal にそのプロバイダー、Action に sts:AssumeRoleWithWebIdentity を指定する。Condition では StringEquals を使い、トークンの aud がアプリの ID（Amazon Cognito の場合は ID プールの ID）と一致するかを確認する。",
-      "examPoint": "CI/CD などの外部ワークロードに長期キーを渡さず、ロールで権限を与える方法。",
+      "text": "AWS に組み込まれていない OIDC の ID プロバイダーは IAM に登録する。Google、Facebook、Amazon Cognito の ID プロバイダーは AWS に組み込まれており、IAM に個別の ID プロバイダーを作成する手順は省く。ロールの信頼ポリシーでは、Principal の Federated にプロバイダーの URL または IAM に登録したプロバイダーの ARN を、Action に sts:AssumeRoleWithWebIdentity を指定する。Condition では StringEquals を使い、プロバイダーに応じた条件キーの値をアプリの ID（Amazon Cognito では ID プールの ID）と照合する。",
+      "examPoint": "マネージド CI/CD など AWS の外で動くワークロード向けの一時的な認証情報を取得する方法の一つは、IdP の JWT を使って AWS STS の AssumeRoleWithWebIdentity を呼び出すことだ。",
       "depth": "core",
       "sources": [
         {
@@ -518,6 +518,10 @@
         {
           "title": "Create an OpenID Connect (OIDC) identity provider in IAM - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
+        },
+        {
+          "title": "Security best practices in IAM - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
         }
       ],
       "checkedAt": "2026-11-25"
