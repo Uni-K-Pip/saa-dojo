@@ -6361,8 +6361,8 @@
   },
   "lambda.shared-responsibility": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "3f0de9eaca61"
+    "checkedAt": "2026-11-25",
+    "hash": "5f206456149b"
   },
   "lambda.snapstart": {
     "status": "verified",
@@ -8101,8 +8101,8 @@
   },
   "s3.mrap-failover": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b4547bfdd475"
+    "checkedAt": "2026-11-25",
+    "hash": "a366d2046d03"
   },
   "s3.multi-key-atomicity": {
     "status": "verified",
