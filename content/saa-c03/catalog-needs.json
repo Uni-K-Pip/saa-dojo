@@ -381,7 +381,7 @@
       "task": "1.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "AWS Lambda では、実行基盤のサーバー、OS、ランタイムの管理は AWS の責任で、利用者は関数のコードと設定を担当する。",
+      "knowledge": "AWS Lambda では、サーバーの保守やパッチ適用といった基盤の管理は AWS が行い、利用者はアプリケーションのロジックに集中する。",
       "decision": "fact",
       "factRefs": [
         "lambda.shared-responsibility"
@@ -1077,7 +1077,7 @@
       "task": "2.1",
       "side": "incorrect",
       "gap": "partial",
-      "knowledge": "Lambda のデフォルトのコンピューティングタイプでは、基盤のインスタンスタイプなどを利用者が指定・調整できない。",
+      "knowledge": "Lambda の既定のコンピューティングタイプでは、利用者が設定するのはメモリで、CPU の能力はメモリの設定量に比例して割り当てられる。インスタンスを選んで関数を動かしたいときの選択肢は、Lambda Managed Instances である。",
       "decision": "fact",
       "factRefs": [
         "lambda.memory-cpu",

@@ -266,15 +266,15 @@
       "id": "s3.mrap-failover",
       "title": "Multi-Region Access Points のフェイルオーバー",
       "kind": "feature",
-      "text": "Multi-Region Access Points は、全リージョンを使うアクティブ-アクティブ構成と、アクティブとパッシブを分けるアクティブ-パッシブ構成を取れる。リージョンで障害が起きたときは、フェイルオーバーコントロールでリージョン間のトラフィックを数分で切り替えられる。",
+      "text": "Multi-Region Access Points は、リクエストが最も近いアクティブなリージョンのバケットへ自動的に振り分けられるアクティブ-アクティブ構成と、アクティブなリージョンとパッシブなリージョンの間でトラフィックをフェイルオーバーさせるアクティブ-パッシブ構成を取れる。リージョンで障害が起きたときは、フェイルオーバーコントロールでリージョン間のトラフィックを数分以内に切り替えられる。",
       "depth": "core",
       "sources": [
         {
-          "title": "Managing multi-Region traffic with Multi-Region Access Points - Amazon S3",
+          "title": "Managing multi-Region traffic with Multi-Region Access Points",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.batch-operations",
@@ -533,15 +533,15 @@
       "id": "s3.requester-pays",
       "title": "リクエスタ支払い",
       "kind": "pricing",
-      "text": "リクエスタ支払いを有効にしたバケットでは、リクエストとデータのダウンロードの料金を要求した側が支払い、バケット所有者は保存の料金だけを支払う。すべてのリクエストの認証が必要で、匿名アクセスは使えない。要求側は x-amz-request-payer ヘッダーなどで、料金の負担に同意を示す。",
+      "text": "汎用バケットではリクエスタ支払いを有効にできる。有効にしたバケットへのリクエストが成功した場合、要求側がリクエストとバケットからのデータのダウンロードの料金を支払う。データの保存料金は常にバケット所有者が支払う。バケット所有者自身の AWS アカウント内または AWS 組織内からのリクエストが AccessDenied（HTTP 403 Forbidden）を返す場合、バケット所有者にリクエスト料金がかかる。要求側が RestoreObject API でオブジェクトを復元する場合、リクエストに x-amz-request-payer ヘッダーまたは RequestPayer パラメータが含まれていれば、要求側が支払うのはリクエスト料金だけで、取り出し料金はバケット所有者が支払う。",
       "depth": "core",
       "sources": [
         {
-          "title": "Using Requester Pays general purpose buckets for storage transfers and usage - Amazon S3",
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.transfer-acceleration",
@@ -594,15 +594,15 @@
       "id": "s3.express-one-zone",
       "title": "S3 Express One Zone",
       "kind": "feature",
-      "text": "S3 Express One Zone は、1 桁ミリ秒の一貫したデータアクセスを提供する、高性能な単一 AZ のストレージクラスで、データはディレクトリバケットに保存される。S3 Standard と比べて、アクセス速度は最大 10 倍、リクエスト料金は 80 パーセント低いとされる。",
+      "text": "S3 Express One Zone は、一貫して 1 桁ミリ秒でデータにアクセスできる、高性能な単一ゾーンのストレージクラスである。S3 Standard と比べて、データアクセス速度は最大 10 倍で、リクエスト料金は低い。",
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "title": "What is Amazon S3?",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.concurrent-writes",
@@ -667,15 +667,19 @@
       "id": "s3.storage-classes",
       "title": "S3 のストレージクラス",
       "kind": "feature",
-      "text": "S3 のストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変わる、または不明なデータは、4 つのアクセス階層の間で自動的に移す S3 Intelligent-Tiering に置く。",
+      "text": "S3 の代表的なストレージクラスには、S3 Standard、S3 Express One Zone、S3 Standard-IA、S3 One Zone-IA、S3 Glacier Instant Retrieval、S3 Glacier Flexible Retrieval、S3 Glacier Deep Archive、S3 Intelligent-Tiering がある。アクセスパターンが変化するデータや、アクセスパターンが不明なデータは、S3 Intelligent-Tiering に保存できる。このクラスでは、アクセスパターンの変化に応じて、自動階層化の対象となるデータがアクセス階層間を自動で移動する。128 KB 未満のオブジェクトは自動階層化の対象外となる。",
       "depth": "core",
       "sources": [
         {
-          "title": "What is Amazon S3? - Amazon Simple Storage Service",
+          "title": "What is Amazon S3?",
           "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "Understanding and managing Amazon S3 storage classes",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "s3.versioning",
@@ -841,6 +845,56 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "s3.express-one-zone-directory-bucket",
+      "title": "S3 Express One Zone の保存先",
+      "kind": "constraint",
+      "text": "S3 Express One Zone のオブジェクトはディレクトリバケットに保存される。このストレージクラスは汎用バケットでは利用できない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "What is Amazon S3?",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html"
+        },
+        {
+          "title": "High performance workloads",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-bucket-high-performance.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "s3.requester-pays-authentication",
+      "title": "リクエスタ支払いの認証要件",
+      "kind": "constraint",
+      "text": "リクエスタ支払いを有効にしたバケットへのリクエストは、すべて認証が必要である。匿名アクセスはできない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "s3.requester-pays-request-header",
+      "title": "リクエスタ支払いでの料金の受け入れ",
+      "kind": "constraint",
+      "text": "リクエスタ支払いを有効にしたバケットでは、要求側は料金がかかることを受け入れると示す必要がある。DELETE、GET、HEAD、POST、PUT の API リクエストで x-amz-request-payer ヘッダーに requester を指定するか、REST リクエストに RequestPayer パラメータを追加する。AWS CLI では --request-payer を使える。バケット所有者は、自身のリクエストに x-amz-request-payer ヘッダーを追加する必要はない。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Using Requester Pays general purpose buckets for storage transfers and usage",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/RequesterPaysBuckets.html"
+        },
+        {
+          "title": "Downloading objects from Requester Pays buckets",
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/ObjectsinRequesterPaysBuckets.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     }
   ],
   "references": [
@@ -851,5 +905,5 @@
   ],
   "createdBy": "sc1",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }
