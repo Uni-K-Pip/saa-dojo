@@ -3546,8 +3546,8 @@
   },
   "ec2.capacity-vs-discount": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "d2357ef33200"
+    "checkedAt": "2026-11-25",
+    "hash": "d36be5ab0336"
   },
   "ec2.create-action-condition": {
     "status": "verified",
@@ -3621,8 +3621,8 @@
   },
   "ec2.instance-type-change-stop": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "833786ab60a3"
+    "checkedAt": "2026-11-25",
+    "hash": "50fb45449f59"
   },
   "ec2.instance-types-families": {
     "status": "verified",
@@ -3641,8 +3641,13 @@
   },
   "ec2.placement-cluster": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "a4c1de483f7d"
+    "checkedAt": "2026-11-25",
+    "hash": "1ad946675807"
+  },
+  "ec2.placement-cluster-launch": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "28579a888ee4"
   },
   "ec2.placement-partition": {
     "status": "verified",
@@ -3671,8 +3676,8 @@
   },
   "ec2.purchase-options-choice": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b0dfcba7cf3f"
+    "checkedAt": "2026-11-25",
+    "hash": "aed5a905ff3d"
   },
   "ec2.ri-billed-regardless": {
     "status": "verified",
@@ -3721,13 +3726,18 @@
   },
   "ec2.spot-interruption-behavior": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "04297d2c67cc"
+    "checkedAt": "2026-11-25",
+    "hash": "f4199adc3ddc"
   },
   "ec2.spot-interruption-notice": {
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "0d73e286f1d1"
+  },
+  "ec2.spot-interruption-reasons": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "418b54ec48cc"
   },
   "ec2.spot-no-savings-plans": {
     "status": "verified",
@@ -6251,8 +6261,8 @@
   },
   "lambda": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "f8b295dbf978"
+    "checkedAt": "2026-11-25",
+    "hash": "b6fd4175e56b"
   },
   "lambda.async-invocation": {
     "status": "verified",
@@ -6266,8 +6276,8 @@
   },
   "lambda.concurrency-default": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "7bde8a72f03c"
+    "checkedAt": "2026-11-25",
+    "hash": "8bebb3e8b88f"
   },
   "lambda.concurrency-scaling-rate": {
     "status": "verified",
@@ -6311,8 +6321,13 @@
   },
   "lambda.layers": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d521db647524"
+    "checkedAt": "2026-11-25",
+    "hash": "7a83b5878a32"
+  },
+  "lambda.layers-zip-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "e34ed3d86951"
   },
   "lambda.managed-instances": {
     "status": "verified",
@@ -6321,8 +6336,8 @@
   },
   "lambda.memory-cpu": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d1e985e3a303"
+    "checkedAt": "2026-11-25",
+    "hash": "3081ed76f412"
   },
   "lambda.pricing-model": {
     "status": "verified",
@@ -6341,13 +6356,18 @@
   },
   "lambda.provisioned-concurrency": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "fcb682fc45a1"
+    "checkedAt": "2026-11-25",
+    "hash": "2ca380625025"
   },
   "lambda.provisioned-within-reserved": {
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "455cf6f93ea8"
+  },
+  "lambda.requests-per-second-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "cba4c9d97886"
   },
   "lambda.reserved-concurrency": {
     "status": "verified",
@@ -6361,8 +6381,8 @@
   },
   "lambda.shared-responsibility": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "3f0de9eaca61"
+    "checkedAt": "2026-11-25",
+    "hash": "5f206456149b"
   },
   "lambda.snapstart": {
     "status": "verified",
@@ -8041,8 +8061,13 @@
   },
   "s3.express-one-zone": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "a6dc50f294fe"
+    "checkedAt": "2026-11-25",
+    "hash": "5f5a2852ef1f"
+  },
+  "s3.express-one-zone-directory-bucket": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "2b89e240a4d5"
   },
   "s3.glacier-instant-retrieval": {
     "status": "verified",
@@ -8101,8 +8126,8 @@
   },
   "s3.mrap-failover": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b4547bfdd475"
+    "checkedAt": "2026-11-25",
+    "hash": "a366d2046d03"
   },
   "s3.multi-key-atomicity": {
     "status": "verified",
@@ -8161,8 +8186,18 @@
   },
   "s3.requester-pays": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "e6ba35c2956d"
+    "checkedAt": "2026-11-25",
+    "hash": "a163736d47cc"
+  },
+  "s3.requester-pays-authentication": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "3c54b9141c82"
+  },
+  "s3.requester-pays-request-header": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "27bbed05f847"
   },
   "s3.shared-responsibility-abstracted": {
     "status": "verified",
@@ -8181,8 +8216,8 @@
   },
   "s3.storage-classes": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "171bf6298c23"
+    "checkedAt": "2026-11-25",
+    "hash": "ed37f6952ffe"
   },
   "s3.storage-lens": {
     "status": "verified",

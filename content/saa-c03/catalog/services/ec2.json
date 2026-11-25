@@ -87,10 +87,10 @@
     },
     {
       "id": "ec2.instance-type-change-stop",
-      "title": "インスタンスタイプの変更には停止が必要",
+      "title": "EBS バックドインスタンスのタイプ変更には停止が必要",
       "kind": "constraint",
-      "text": "EBS をルートボリュームとするインスタンスのインスタンスタイプを変更するには、先にインスタンスを停止する必要がある。停止している間は利用できないので、停止時間を見込んで計画する。停止して開始すると、インスタンスは新しいハードウェアに移される。",
-      "trap": "稼働したままタイプだけを変えられるわけではない。垂直スケーリングには停止が伴う。",
+      "text": "EBS バックドインスタンスのタイプを現在の構成と互換性があるタイプに変更するには、先にインスタンスを停止する必要がある。停止中は利用できないため、ダウンタイムを見込む。停止したインスタンスを開始すると、新しいハードウェアに移される。スポットインスタンスのインスタンスタイプは変更できない。",
+      "trap": "現在の構成と互換性があるタイプに変更する場合も、EBS バックドインスタンスは停止してから変更する。停止中のダウンタイムを見込む。",
       "depth": "core",
       "sources": [
         {
@@ -98,7 +98,7 @@
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/change-instance-type-of-ebs-backed-instance.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "ec2.stop-ebs-only",
@@ -252,17 +252,21 @@
       "id": "ec2.placement-cluster",
       "title": "クラスター配置グループ",
       "kind": "feature",
-      "text": "クラスター配置グループは、1 つのアベイラビリティーゾーン内でインスタンスを近接配置し、ノード間の低レイテンシーで高いネットワーク性能を得る。HPC のような密結合の処理に向く。複数の AZ にまたがれず、インスタンスは 1 つのラックに隔離されない。",
-      "examPoint": "低レイテンシーと高いスループットが要る密結合の処理。同じタイプのインスタンスを 1 回の起動要求でそろえる。",
-      "trap": "障害の分離が目的なら、近接配置のクラスターではなくスプレッドかパーティションを選ぶ。",
+      "text": "クラスター配置グループは、1 つのアベイラビリティーゾーン内でインスタンスを近接配置する。HPC アプリケーションに典型的な密結合のノード間通信に必要な、低レイテンシーのネットワーク性能を得られる。複数の AZ にまたがることはできない。",
+      "examPoint": "低いネットワークレイテンシー、高いネットワークスループット、またはその両方が有益なアプリケーションに推奨される。",
+      "trap": "少数の重要なインスタンスを互いに分けておきたい場合は、別々のハードウェアに配置するスプレッド配置グループが推奨される。同じ機器を共有すると起こり得る同時障害のリスクを下げられる。パーティション配置グループは、パーティション間でラックを共有せず、ハードウェア障害の影響を分離できる。",
       "depth": "core",
       "sources": [
         {
           "title": "Placement strategies for your placement groups",
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        },
+        {
+          "title": "Placement groups for your Amazon EC2 instances",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "ec2.placement-partition",
@@ -325,18 +329,27 @@
     },
     {
       "id": "ec2.spot-interruption-behavior",
-      "title": "スポットインスタンスの中断",
+      "title": "スポットインスタンスの中断時の動作",
       "kind": "feature",
-      "text": "EC2 は、容量が必要になったとき、スポット価格が指定した最高価格を上回ったとき、起動グループなどの制約を満たせなくなったときにスポットインスタンスを中断する。中断時の動作として、終了、停止、休止のどれかをスポットリクエストで指定する。",
-      "trap": "スポットインスタンスはいつでも中断される可能性がある。止められない処理や唯一のデータの置き場にしない。",
+      "text": "スポットリクエストを作成するときに、中断時の動作を指定できる。中断時の動作には停止、休止、終了がある。指定しなければ、EC2 は中断時にスポットインスタンスを終了する。",
+      "trap": "スポットインスタンスはいつでも中断される可能性がある。大事なデータは、インスタンスが終了しても影響を受けない場所（Amazon S3、Amazon EBS など）に定期的に保存する。",
       "depth": "core",
       "sources": [
         {
           "title": "Spot Instance interruptions",
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html"
+        },
+        {
+          "title": "Prepare for Spot Instance interruptions",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/prepare-for-interruptions.html"
+        },
+        {
+          "title": "Behavior of Spot Instance interruptions",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/interruption-behavior.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25",
+      "recheck": "default-value"
     },
     {
       "id": "ec2.spot-interruption-notice",
@@ -385,7 +398,7 @@
       "id": "ec2.purchase-options-choice",
       "title": "購入オプションの選び分け",
       "kind": "pricing",
-      "text": "特定のインスタンス構成は決められないが利用額を約束できるなら Savings Plans、AZ の容量が必要ならリザーブドインスタンスかキャパシティ予約、柔軟で中断されてもよいならスポットインスタンスを選ぶ。既存のサーバー単位のライセンスを使い、コンプライアンス要件があるなら Dedicated Hosts か Dedicated Instances を選ぶ。",
+      "text": "特定のインスタンス構成は約束できなくても、時間当たりの一定の利用額を約束できる場合は、Savings Plans を購入するとオンデマンドインスタンスの費用を抑えられる。容量の予約が必要なら、特定のアベイラビリティーゾーンのリザーブドインスタンスかキャパシティ予約を購入する。アプリケーションの実行時期を柔軟に決められ、中断も許容できる場合、スポットインスタンスは費用を抑えられる選択肢になる。Dedicated Hosts または Dedicated Instances を利用すると、コンプライアンス要件への対応や、既存のサーバーにひも付くソフトウェアライセンスを使った費用の削減に役立つ。",
       "depth": "core",
       "sources": [
         {
@@ -393,7 +406,7 @@
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "ec2.ri-billing-discount",
@@ -532,8 +545,8 @@
       "id": "ec2.capacity-vs-discount",
       "title": "容量の予約と割引の違い",
       "kind": "constraint",
-      "text": "キャパシティ予約は容量を予約するだけで、課金の割引はない。割引を得るには Savings Plans かリージョンのリザーブドインスタンスと組み合わせる。ゾーンのリザーブドインスタンスは容量と割引の両方を得るが、1 年か 3 年の約束が要る。リージョンのリザーブドインスタンスと Savings Plans は容量を予約しない。",
-      "trap": "割引の購入オプションだけでは容量は確保されない。容量が必要なら AZ を指定した予約を選ぶ。",
+      "text": "キャパシティ予約は特定の AZ の容量を予約する。課金の割引は付かないが、Savings Plans またはリージョンのリザーブドインスタンスと組み合わせると割引を受けられる。ゾーンのリザーブドインスタンスは特定の AZ の容量を予約し、課金の割引を受けられる。リージョンのリザーブドインスタンスと Savings Plans には課金の割引があり、容量は予約されない。",
+      "trap": "リージョンのリザーブドインスタンスと Savings Plans では容量は予約されない。特定の AZ の容量は、キャパシティ予約またはゾーンのリザーブドインスタンスで予約できる。",
       "depth": "detail",
       "sources": [
         {
@@ -541,7 +554,7 @@
           "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "ec2.dedicated-hosts",
@@ -616,7 +629,8 @@
           "url": "https://docs.aws.amazon.com/global-infrastructure/latest/regions/az-ids.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-14",
+      "recheck": "default-value"
     },
     {
       "id": "ec2.az-id",
@@ -767,6 +781,34 @@
         }
       ],
       "checkedAt": "2026-11-24"
+    },
+    {
+      "id": "ec2.placement-cluster-launch",
+      "title": "クラスター配置グループでの起動方法",
+      "kind": "feature",
+      "text": "クラスター配置グループでは、必要な数のインスタンスを 1 回の起動リクエストで起動し、すべてのインスタンスに同じインスタンスタイプを使うことが推奨される。あとからインスタンスを追加したり、複数のインスタンスタイプを混ぜて起動したりすると、容量不足のエラーが発生しやすくなる。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Placement strategies for your placement groups",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "ec2.spot-interruption-reasons",
+      "title": "スポットインスタンスの中断理由",
+      "kind": "feature",
+      "text": "Amazon EC2 は、インスタンスを回収する必要がある場合、スポット価格が指定した上限価格を上回った場合、または起動グループやアベイラビリティーゾーングループなど、スポットリクエストの制約を満たせなくなった場合に、スポットインスタンスを中断することがある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Spot Instance interruptions",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-interruptions.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     }
   ],
   "references": [
@@ -785,5 +827,5 @@
   ],
   "createdBy": "sc7",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }
