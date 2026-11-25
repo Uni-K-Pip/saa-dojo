@@ -769,6 +769,24 @@
       "checkedAt": "2026-11-24"
     },
     {
+      "id": "ec2.shared-responsibility-names",
+      "title": "責任共有モデルでの AWS と利用者の責任の呼び名",
+      "kind": "feature",
+      "text": "責任共有モデルでは、AWS 側の責任を「クラウドのセキュリティ」（Security of the Cloud）、利用者側の責任を「クラウドにおけるセキュリティ」（Security in the Cloud）と呼ぶ。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Shared Responsibility Model",
+          "url": "https://aws.amazon.com/compliance/shared-responsibility-model/"
+        },
+        {
+          "title": "Security in Amazon EC2",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
+    },
+    {
       "id": "ec2.customer-content-responsibility",
       "title": "EC2 の上に置いた自分のコンテンツの管理は利用者の責任",
       "kind": "feature",
