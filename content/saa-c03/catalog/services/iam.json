@@ -979,17 +979,21 @@
     },
     {
       "id": "iam.policy-resource-element",
-      "title": "Resource 要素で対象の ARN を指定する",
+      "title": "Resource 要素の ARN と Action・Resource 要素のワイルドカード",
       "kind": "feature",
-      "text": "IAM ポリシーの Resource 要素は、ステートメントの適用先を ARN で指定する。ARN の区画内では、* が任意の文字列に、? が任意の 1 文字に一致する。arn:aws:s3:::amzn-s3-demo-bucket/* は、この S3 バケット内のすべてのオブジェクトを指す。",
+      "text": "IAM ポリシーの Resource 要素は、ステートメントの適用先を ARN で指定する。ARN の区画内では、* が任意の文字列に、? が任意の 1 文字に一致する。arn:aws:s3:::amzn-s3-demo-bucket/* は、この S3 バケット内のすべてのオブジェクトを指す。Action 要素では、複数の文字に一致する * と 1 文字に一致する ? のワイルドカードを、アクション名の一部にも使える。s3:* は Amazon S3 の全アクションに、iam:*AccessKey* は AccessKey を含む IAM の全アクションに一致する。",
       "depth": "detail",
       "sources": [
         {
           "title": "IAM JSON policy elements: Resource - AWS Identity and Access Management",
           "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html"
+        },
+        {
+          "title": "IAM JSON policy elements: Action - AWS Identity and Access Management",
+          "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html"
         }
       ],
-      "checkedAt": "2026-11-25"
+      "checkedAt": "2026-11-26"
     }
   ],
   "seeAlso": [
