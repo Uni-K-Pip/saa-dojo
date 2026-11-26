@@ -41,6 +41,11 @@
             { "kind": "lesson", "ref": "lesson-1.1-iam-basics" },
             { "kind": "lesson", "ref": "lesson-1.1-roles-federation" },
             { "kind": "lab", "ref": "lab-cross-account-assume-role" },
+            { "kind": "sim", "ref": "sim-iam-implicit-deny" },
+            { "kind": "sim", "ref": "sim-iam-explicit-deny" },
+            { "kind": "sim", "ref": "sim-iam-boundary-ceiling" },
+            { "kind": "sim", "ref": "sim-iam-cross-account-bucket" },
+            { "kind": "sim", "ref": "sim-iam-cross-account-identity" },
             { "kind": "practice" }
           ]
         },
