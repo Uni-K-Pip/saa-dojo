@@ -29,7 +29,7 @@
   },
   "saa-1.1-g1-007": {
     "status": "verified",
-    "checkedAt": "2026-11-25"
+    "checkedAt": "2026-11-26"
   },
   "saa-1.1-g1-008": {
     "status": "verified",
@@ -1256,8 +1256,8 @@
     "checkedAt": "2026-11-04"
   },
   "saa-4.1-g9-001": {
-    "status": "needs-fix",
-    "checkedAt": "2026-11-25"
+    "status": "verified",
+    "checkedAt": "2026-11-26"
   },
   "saa-4.1-g9-002": {
     "status": "verified",
