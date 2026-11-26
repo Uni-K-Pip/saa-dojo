@@ -25,6 +25,7 @@ describe('IAM のポリシーの評価の結果', () => {
       bucketPolicy: 'allow-principal-deny-insecure' });
     const rows = iamSettings(config);
     expect(rows.map(({ key }) => key).sort()).toEqual(Object.keys(config).sort());
+    expect(rows.map(({ value }) => value).join(' ')).not.toContain('→');
     expect(rows.map(({ label, value }) => [label, value])).toEqual([
       ['操作', 'ポリシーの評価'],
       ['だれが', `IAM ユーザー hana（アカウント ${ACCOUNT}）`],
@@ -32,9 +33,9 @@ describe('IAM のポリシーの評価の結果', () => {
       ['何を', 's3:GetObject（TLS なし）'],
       ['どのリソースに', `${RESOURCE}（アカウント ${ACCOUNT}）`],
       ['SCP', 'ルート: Allow * ／ OU: Allow * ／ アカウント: Allow *; Deny s3:DeleteObject'],
-      ['アイデンティティベースのポリシー', `Allow s3:GetObject、s3:PutObject → ${BUCKET}/*`],
-      ['権限の境界', 'Allow s3:Get* → *'],
-      ['リソースベースのポリシー', `Allow s3:GetObject、s3:PutObject → ${BUCKET}/*（Principal: arn:aws:iam::${ACCOUNT}:user/hana） ／ Deny s3:* → ${BUCKET}/*（Principal: すべて（*））（条件: aws:SecureTransport が false）`],
+      ['アイデンティティベースのポリシー', `Allow s3:GetObject、s3:PutObject（Resource: ${BUCKET}/*）`],
+      ['権限の境界', 'Allow s3:Get*（Resource: *）'],
+      ['リソースベースのポリシー', `Allow s3:GetObject、s3:PutObject（Resource: ${BUCKET}/*、Principal: arn:aws:iam::${ACCOUNT}:user/hana） ／ Deny s3:*（Resource: ${BUCKET}/*、Principal: *、Condition: aws:SecureTransport が false）`],
     ]);
   });
 
@@ -47,7 +48,7 @@ describe('IAM のポリシーの評価の結果', () => {
       principal: `ロール analytics-role（アカウント ${ACCOUNT}）`, org: '組織に入っていない',
       request: 's3:GetObject（TLS あり）', resource: `${RESOURCE}（アカウント 444455556666）`,
       scps: 'なし', identityPolicy: 'なし', boundary: 'なし',
-      resourcePolicy: `Allow s3:GetObject → ${BUCKET}/*（Principal: arn:aws:iam::${ACCOUNT}:root）`,
+      resourcePolicy: `Allow s3:GetObject（Resource: ${BUCKET}/*、Principal: arn:aws:iam::${ACCOUNT}:root）`,
     });
     expect(values(buildPresetConfig({ principal: 'root', membership: 'management' }))).toMatchObject({
       principal: `ルートユーザー（アカウント ${ACCOUNT}）`, org: '管理アカウント（o-exampleorgid）', resourcePolicy: 'なし',
@@ -72,9 +73,30 @@ describe('IAM のポリシーの評価の結果', () => {
     ]);
     expect(within(stages[0]).getByText('✓')).toHaveAttribute('aria-hidden', 'true');
     expect(stages[1]).toHaveTextContent('当てはまった文: SCP（ルート）: Allow * ／ SCP（OU）: Allow * ／ SCP（アカウント）: Allow *');
-    expect(stages[1]).toHaveTextContent('上限を満たしています。');
+    expect(stages[1]).toHaveTextContent('上限の範囲内です。');
+    expect(screen.queryByText(/^Allow がない階層:/)).not.toBeInTheDocument();
     expect(stages[2]).toHaveClass('iam-stage-muted');
     expect(stages[3]).toHaveTextContent('許可を与えています。');
+  });
+
+  it('SCP の段で当てはまった文の次に Allow がない階層を表示する', () => {
+    render(<IamResult {...iam({ action: 's3:PutObject', scp: 'ou-read-only', identity: 'all' })} />);
+    const scp = screen.getAllByRole('listitem')[1];
+    expect(Array.from(scp.children).map((row) => row.textContent)).toEqual([
+      '2SCP－ 許可なし',
+      '当てはまった文: SCP（ルート）: Allow * ／ SCP（アカウント）: Allow *',
+      'Allow がない階層: SCP（OU）',
+      'ここに許可がないので、拒否になります。',
+    ]);
+  });
+
+  it('Allow がない階層に設定済みの階層を並べる', () => {
+    const config = buildPresetConfig({ action: 's3:PutObject', scp: 'full', identity: 'all' });
+    config.scps = config.scps?.filter(({ at }) => at !== 'ou').map(({ at }) => ({
+      at, statements: [{ effect: 'Allow', actions: ['s3:GetObject'], resources: ['*'] }],
+    })) ?? null;
+    render(<IamResult {...evaluate(config)} />);
+    expect(screen.getByText('Allow がない階層: SCP（ルート）、SCP（アカウント）')).toBeVisible();
   });
 
   it('別アカウントの段を 2 つに分け、通し番号を付ける', () => {
@@ -88,11 +110,15 @@ describe('IAM のポリシーの評価の結果', () => {
     ]);
   });
 
-  it('ルートユーザーには SCP の説明と 2 段を出す', () => {
-    render(<IamResult {...iam({ principal: 'root', membership: 'management', scp: 'full' })} />);
-    expect(screen.getByText('ルートユーザーの実行では、SCP だけを見ます。')).toBeVisible();
-    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
-      '1明示的な拒否✓ 拒否なし', '2SCP－ 対象外（管理アカウント）',
+  it.each([
+    ['management', 'full', '－ 対象外（管理アカウント）'],
+    ['member', 'full', '✓ 許可あり'],
+    ['none', 'none', '－ ポリシーなし'],
+  ] as const)('ルートユーザーには所属 %s でも同じ説明と 2 段を出す', (membership, scp, state) => {
+    render(<IamResult {...iam({ principal: 'root', membership, scp })} />);
+    expect(screen.getByText('このシミュレーターでは、ルートユーザーの実行は「明示的な拒否」と「SCP」の段だけを表示します。')).toBeVisible();
+    expect(screen.getAllByRole('listitem').map((item) => item.firstElementChild?.textContent)).toEqual([
+      '1明示的な拒否✓ 拒否なし', `2SCP${state}`,
     ]);
   });
 
@@ -110,6 +136,8 @@ describe('IAM のポリシーの評価の結果', () => {
     const deny = screen.getAllByRole('listitem')[0];
     expect(deny).toHaveClass('iam-stage-blocked');
     expect(deny).toHaveTextContent('✕ 拒否あり');
+    expect(deny).toHaveTextContent(`当てはまった文: Deny s3:*（Resource: ${BUCKET}/*、Principal: *、Condition: aws:SecureTransport が false）`);
+    expect(deny).not.toHaveTextContent('→');
     expect(deny).toHaveTextContent('ここで拒否に決まります。ほかのポリシーの許可は結果を変えません。');
     expect(container).not.toHaveTextContent(/評価が終わ|この先は見ません/);
   });
@@ -127,7 +155,7 @@ describe('IAM のポリシーの評価の結果', () => {
     expect(resource.getAllByText('当てはまった文')).toHaveLength(1);
     expect(resource.getByText('Allow').closest('.iam-statement')).toHaveTextContent('当てはまった文');
     expect(resource.getByText('Deny').closest('.iam-statement')).not.toHaveTextContent('当てはまった文');
-    expect(resource.getByText('すべて（*）')).toBeVisible();
+    expect(resource.getByText('*', { selector: 'dd' })).toBeVisible();
     expect(resource.getByText('aws:SecureTransport が false')).toBeVisible();
   });
 });

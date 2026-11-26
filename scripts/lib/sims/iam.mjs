@@ -1,12 +1,12 @@
 export const DESCRIPTION = 'だれが・何を・どのリソースに、を決めて、関係するポリシーから、リクエストが許可されるか拒否されるかを確かめます。';
 
 export const NOT_COVERED = [
-  'リソースコントロールポリシー（RCP）は扱いません。組織のポリシーは SCP だけです。',
+  'リソースコントロールポリシー（RCP）は扱いません。このシミュレーターが扱う組織のポリシーは SCP だけです。',
   'ロールを引き受ける操作（sts:AssumeRole）と信頼ポリシーは扱いません。',
   'KMS のキーとキーポリシーは扱いません。',
   'セッションポリシー、フェデレーションのセッション、匿名のリクエストは扱いません。',
-  'NotAction などの否定の要素とポリシー変数は扱いません。条件キーは 2 種類だけです。',
-  'リソースベースのポリシーは S3 のバケットポリシーだけです。ACL などの例外は扱いません。',
+  'NotAction などの否定の要素とポリシー変数は扱いません。扱う条件キーは 2 種類だけです。',
+  '扱うリソースベースのポリシーは S3 のバケットポリシーだけです。ACL などの例外は扱いません。',
 ];
 
 export const NOT_COVERED_LINKS = {
@@ -29,8 +29,8 @@ export const RULES = {
     factRef: 'iam.policy-evaluation-allow-deny', evidence: ['どのポリシーでも明示的な拒否があれば、許可より優先して拒否される'],
   },
   'same-account-union': {
-    label: '同じアカウントでの許可', text: '同じアカウントでは、アイデンティティベースとリソースベースのポリシーのどちらかが許可していれば許可されます',
-    factRef: 'iam.policy-evaluation-allow-deny', evidence: ['どちらかが許可していれば許可される'],
+    label: '同じアカウントでの許可', text: '同じアカウントでは、アイデンティティベースとリソースベースのポリシーのどちらかが許可していれば許可され、どのポリシーでも明示的な拒否があれば、許可より優先して拒否されます',
+    factRef: 'iam.policy-evaluation-allow-deny', evidence: ['どちらかが許可していれば許可される', 'どのポリシーでも明示的な拒否があれば、許可より優先して拒否される'],
   },
   'identity-policy': {
     label: 'アイデンティティベースのポリシー', text: 'アイデンティティベースのポリシーは、IAM ユーザーやロールが何をどのリソースにどんな条件で実行できるかを決めます',
@@ -72,6 +72,10 @@ export const RULES = {
     label: '別のアカウントで両方に要る許可', text: '別のアカウントのリソースへのリクエストは、プリンシパル側のアイデンティティベースのポリシーとリソース側のリソースベースのポリシーの両方が許可していて初めて許可され、どちらかのアカウントの評価に明示的な拒否があれば拒否されます',
     factRef: 'iam.cross-account-both-policies', evidence: ['両方が許可していて初めて', 'どちらかのアカウントの評価で明示的な拒否があれば拒否される'],
   },
+  'principal-any': {
+    label: 'Principal の *', text: 'リソースベースのポリシーの Principal に "*" を指定すると、すべてのプリンシパルを指します',
+    factRef: 'iam.principal-wildcard-orgid', evidence: ['Principal に "*"（すべてのプリンシパル）を指定し'],
+  },
   'principal-account': {
     label: 'Principal のアカウント指定', text: 'Principal 要素でルートユーザーの ARN を指定すると、アカウント全体への委任になります',
     factRef: 'iam.global-key-principalarn', evidence: ['Principal 要素ではアカウント全体への委任になる'],
@@ -81,11 +85,11 @@ export const RULES = {
     factRef: 'iam.principal-wildcard-orgid', evidence: ['許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる'],
   },
   'cond-org-id': {
-    label: '組織 ID の条件', text: 'aws:PrincipalOrgID は、組織に属するプリンシパルの要求にだけ含まれます',
+    label: '組織 ID の条件', text: 'aws:PrincipalOrgID は、組織に属するプリンシパルのリクエストにだけ含まれます',
     factRef: 'iam.global-key-principalorgid', evidence: ['組織に属するプリンシパルの要求にだけ含まれる'],
   },
   'cond-secure-transport': {
-    label: 'TLS の条件', text: 'aws:SecureTransport は要求が TLS で送られたかを true か false で表し、常に要求に含まれます',
+    label: 'TLS の条件', text: 'aws:SecureTransport はリクエストが TLS で送られたかを true か false で表し、常にリクエストに含まれます',
     factRef: 'iam.global-key-securetransport', evidence: ['要求が TLS で送られたかを true か false で表す', '常に要求に含まれる'],
   },
   'resource-policy-s3': {
@@ -272,6 +276,7 @@ function scan(statements, policy, context) {
     if (actions.some(hasStar) || resources.some(hasStar)) used.add('wildcard');
     if (!actions.some((action) => actionWildcards ? matches(action, request.action) : action === request.action) ||
         !resources.some((pattern) => matches(pattern, resource.arn))) continue;
+    if (target === '*') used.add('principal-any');
     if (condition?.key === ORG_ID) {
       used.add('cond-org-id');
       if (effect === 'Allow' && target === '*') used.add('principal-org');

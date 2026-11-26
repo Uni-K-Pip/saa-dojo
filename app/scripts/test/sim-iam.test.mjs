@@ -48,7 +48,12 @@ const implicit = (...missing) => ({
 const permitted = { decision: 'allow', blocker: 'none', missing: [], denyIn: [] };
 const seen = (policy, index, effect = 'Allow') => ({ policy, index, effect });
 const stage = (stage, state, impact, matched = [], side) => ({ stage, ...(side && { side }), state, impact, matched });
-const ruleIds = Object.keys(RULES);
+const ruleIds = [
+  'default-deny', 'root-full-access', 'explicit-deny', 'same-account-union', 'identity-policy',
+  'boundary-ceiling', 'boundary-user-direct', 'boundary-role-arn', 'scp-ceiling', 'scp-every-level',
+  'scp-deny', 'scp-root-user', 'scp-management', 'cross-account-both', 'principal-any', 'principal-account',
+  'principal-org', 'cond-org-id', 'cond-secure-transport', 'resource-policy-s3', 'wildcard',
+];
 
 function check(value, outcome) {
   const result = run(value);
@@ -72,10 +77,10 @@ describe('シナリオの最初の設定と切り替え', () => {
       request: { action: GET, tls: false }, identityPolicy: [allow([GET, PUT], allObjects)],
       resourcePolicy: [deny('s3:*', allObjects, { principal: '*', condition: tls(false) })],
     });
-    check(initial, explicit(['resource-policy']));
-    check({ ...initial, request: { action: GET, tls: true } }, permitted);
-    check({ ...initial, identityPolicy: [allow()] }, explicit(['resource-policy']));
-    check({ ...initial, resourcePolicy: null }, permitted);
+    expect(check(initial, explicit(['resource-policy'])).rules).toContain('principal-any');
+    expect(check({ ...initial, request: { action: GET, tls: true } }, permitted).rules).toContain('principal-any');
+    expect(check({ ...initial, identityPolicy: [allow()] }, explicit(['resource-policy'])).rules).toContain('principal-any');
+    expect(check({ ...initial, resourcePolicy: null }, permitted).rules).not.toContain('principal-any');
   });
 
   it('sim-iam-boundary-ceiling', () => {
@@ -100,6 +105,9 @@ describe('シナリオの最初の設定と切り替え', () => {
     check(initial, implicit('scp'));
     check({ ...initial, ...use(GET) }, permitted);
     check({ ...initial, scps: fullScps() }, permitted);
+    check({
+      ...initial, scps: [level('root', allow(), deny('dynamodb:CreateTable')), ...initial.scps.slice(1)],
+    }, explicit(['scp-root']));
     check({ ...initial, org: { membership: 'management', id: ORG } }, permitted);
   });
 
@@ -173,9 +181,22 @@ describe('Action、Resource、Principal、Condition の照合', () => {
       resourcePolicy: [allow(GET, object, { principal: '*', condition: org() })],
     });
     expect(check(value, matched ? permitted : implicit('resource-side')).rules)
-      .toEqual(['default-deny', 'identity-policy', 'cross-account-both', 'principal-org', 'cond-org-id', 'resource-policy-s3', 'wildcard']);
+      .toEqual(['default-deny', 'identity-policy', 'cross-account-both', 'principal-any', 'principal-org',
+        'cond-org-id', 'resource-policy-s3', 'wildcard']);
     value.resourcePolicy[0].actions = [PUT];
-    expect(check(value, implicit('resource-side')).rules).not.toContain('principal-org');
+    const { rules } = check(value, implicit('resource-side'));
+    expect(rules).not.toContain('principal-any');
+    expect(rules).not.toContain('principal-org');
+  });
+
+  it('Action と Resource が合う Deny では、条件で外れても Principal の * を使った規則に入れる', () => {
+    const value = config({ resourcePolicy: [deny(GET, object, { principal: '*', condition: tls(false) })] });
+    expect(check(value, implicit('no-allow')).rules).toContain('principal-any');
+  });
+
+  it('Resource が合わない文では Principal の * を使った規則に入れない', () => {
+    const value = config({ resourcePolicy: [deny(GET, `${otherBucket}/*`, { principal: '*' })] });
+    expect(check(value, implicit('no-allow')).rules).not.toContain('principal-any');
   });
 
   it('条件を見た規則は、TLS の前に Principal、組織 ID の前に Action と Resource が合うことを確かめる', () => {
@@ -408,6 +429,7 @@ describe('入力と登録', () => {
   });
 
   it('シナリオの登録前でも、図鑑の本文と規則とレッスンのリンクを共通の検査に通す', () => {
+    expect(Object.keys(RULES)).toEqual(ruleIds);
     const path = (rel) => new URL(`../../../content/saa-c03/${rel}`, import.meta.url);
     const read = (rel) => JSON.parse(readFileSync(path(rel), 'utf8'));
     const lessonIds = ['lesson-1.1-multi-account', 'lesson-1.1-roles-federation',
@@ -448,6 +470,8 @@ function reference(switches) {
   const boundaryAllowed = boundary !== 'read' || read;
   const namedAllowed = ['allow-principal', 'allow-principal-deny-insecure'].includes(bucketPolicy) && (read || write);
   const resourceAllowed = namedAllowed || (bucketPolicy === 'allow-org' && membership !== 'none' && read);
+  const principalAny = !isRoot && (['deny-insecure', 'allow-principal-deny-insecure'].includes(bucketPolicy)
+    || (bucketPolicy === 'allow-org' && read));
   const requirements = [['scp', scpAllowed]];
   if (crossAccount) {
     requirements.push(['identity-side', identityAllowed], ['boundary', boundaryAllowed], ['resource-side', resourceAllowed]);
@@ -459,7 +483,7 @@ function reference(switches) {
   const missing = denyIn.length ? [] : requirements.filter(([, satisfied]) => !satisfied).map(([key]) => key);
   const decision = denyIn.length ? 'explicit-deny' : missing.length ? 'implicit-deny' : 'allow';
   const blocker = denyIn.length ? 'explicit-deny' : missing.length > 1 ? 'multiple' : missing[0] ?? 'none';
-  return { decision, allowed: decision === 'allow', blocker, denyIn, missing, crossAccount };
+  return { decision, allowed: decision === 'allow', blocker, denyIn, missing, crossAccount, principalAny };
 }
 
 it('自由に試すの 25,920 通りを 5.3 の条件の一覧と突き合わせ、全規則が出ることを確かめる', () => {
@@ -473,7 +497,9 @@ it('自由に試すの 25,920 通りを 5.3 の条件の一覧と突き合わせ
       continue;
     }
     const { stages, ...summary } = result.output;
-    assert.deepEqual(summary, reference(switches), label);
+    const { principalAny, ...expected } = reference(switches);
+    assert.deepEqual(summary, expected, label);
+    assert.equal(result.rules.includes('principal-any'), principalAny, label);
     assert.equal(stages.length, switches.principal === 'root' ? 2 : summary.crossAccount ? 6 : 5, label);
     assert.deepEqual(result.rules, ruleIds.filter((id) => result.rules.includes(id)), label);
     for (const id of result.rules) used.add(id);

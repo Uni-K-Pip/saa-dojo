@@ -183,7 +183,8 @@
               {
                 "effect": "Allow",
                 "actions": [
-                  "*"
+                  "s3:*",
+                  "ec2:*"
                 ],
                 "resources": [
                   "*"
@@ -254,7 +255,7 @@
     "initial": "{{rule:scp-ceiling}}。{{rule:scp-every-level}}。OU の SCP に `dynamodb:CreateTable` の許可がないため、ユーザー側に許可があっても、このリクエストは暗黙に拒否されます。",
     "toggles": {
       "ou-allow-all": "OU の SCP の Allow の Action を `*` に変えると、3 つの階層にテーブル作成の許可がそろいます。アイデンティティベースのポリシーにも許可があるため、テーブルを作成できます。",
-      "deny-at-root": "OU の Allow の Action を `*` にし、組織のルートの SCP に `dynamodb:CreateTable` の Deny を加えます。下位の SCP の Allow では上位の Deny を上書きできないため、明示的に拒否されます。",
+      "deny-at-root": "組織のルートの SCP に `dynamodb:CreateTable` の Deny を加えます。{{rule:scp-deny}}。アカウントの SCP に Allow があっても上位の Deny を上書きできないため、このリクエストは明示的に拒否されます。",
       "management-account": "{{rule:scp-management}}。アカウント A を管理アカウントに変えると、アイデンティティベースのポリシーの許可でテーブルを作成できます。"
     }
   },

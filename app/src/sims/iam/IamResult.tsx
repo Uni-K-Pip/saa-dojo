@@ -34,7 +34,7 @@ const STATES: Record<Stage['state'], readonly [mark: string, label: string]> = {
 const IMPACTS: Record<Stage['impact'], string> = {
   'decides-deny': 'ここで拒否に決まります。ほかのポリシーの許可は結果を変えません。',
   grants: '許可を与えています。',
-  passes: '上限を満たしています。',
+  passes: '上限の範囲内です。',
   blocks: 'ここに許可がないので、拒否になります。',
   bypassed: 'リソースベースのポリシーが IAM ユーザーを名指しで許可しているので、ここに許可がなくても結果は変わりません。',
   unused: '',
@@ -48,7 +48,7 @@ type PolicyStatements = Record<Policy, PolicyStatement[] | null>;
 type NumberedStage = { stage: Stage; number: number };
 
 function principalText(principal: PolicyPrincipal) {
-  return principal === '*' ? 'すべて（*）' : principal.arn;
+  return principal === '*' ? principal : principal.arn;
 }
 
 function conditionText({ key, value }: Condition) {
@@ -56,10 +56,12 @@ function conditionText({ key, value }: Condition) {
 }
 
 function statementText({ effect, actions, resources, principal, condition }: PolicyStatement, scp = false) {
-  const target = scp ? '' : ` → ${resources.join('、')}`;
-  const subject = principal ? `（Principal: ${principalText(principal)}）` : '';
-  const when = condition ? `（条件: ${conditionText(condition)}）` : '';
-  return `${effect} ${actions.join('、')}${target}${subject}${when}`;
+  const details = [];
+  if (!scp) details.push(`Resource: ${resources.join('、')}`);
+  if (principal) details.push(`Principal: ${principalText(principal)}`);
+  if (condition) details.push(`Condition: ${conditionText(condition)}`);
+  const summary = `${effect} ${actions.join('、')}`;
+  return details.length ? `${summary}（${details.join('、')}）` : summary;
 }
 
 function policyText(statements: PolicyStatement[] | null) {
@@ -119,6 +121,12 @@ function StageList({ stages, policies }: { stages: NumberedStage[]; policies: Po
         const [mark, state] = STATES[stage.state];
         const impact = IMPACTS[stage.impact];
         const matched = stage.matched.flatMap((match) => matchedText(match, policies)).join(' ／ ');
+        const missingScps = stage.stage === 'scp' && stage.state === 'no-allow'
+          ? (Object.keys(policies) as Policy[])
+            .filter((policy) => policy.startsWith('scp-') && policies[policy] !== null
+              && !stage.matched.some((match) => match.policy === policy))
+            .map((policy) => POLICIES[policy]).join('、')
+          : '';
         const className = ['iam-stage'];
         if (stage.impact === 'decides-deny' || stage.impact === 'blocks') className.push('iam-stage-blocked');
         if (stage.state === 'none' && stage.impact === 'unused') className.push('iam-stage-muted');
@@ -130,6 +138,7 @@ function StageList({ stages, policies }: { stages: NumberedStage[]; policies: Po
               <strong className={`iam-state-${stage.state}`}><span aria-hidden="true">{mark} </span>{state}</strong>
             </p>
             {matched && <p>当てはまった文: {matched}</p>}
+            {missingScps && <p>Allow がない階層: {missingScps}</p>}
             {impact && <p>{impact}</p>}
           </li>
         );
@@ -181,7 +190,7 @@ export function IamResult({ config, output }: { config: Config; output: Output }
   return (
     <div className="iam-result">
       <p className="iam-summary"><strong>{summarizeIam(output)}</strong></p>
-      {config.principal.kind === 'root' && <p>ルートユーザーの実行では、SCP だけを見ます。</p>}
+      {config.principal.kind === 'root' && <p>このシミュレーターでは、ルートユーザーの実行は「明示的な拒否」と「SCP」の段だけを表示します。</p>}
       {hasSides && <p>別のアカウントのリソースなので、両方の評価が許可して初めて通ります。</p>}
       <div className="iam-stage-groups" key={JSON.stringify([config, output])}>
         {hasSides ? Object.entries(SIDES).map(([side, title]) => (

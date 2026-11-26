@@ -33,14 +33,14 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 
 ## 4. 実装する規則
 
-規則は、エンジンの規則の表（`RULES`）に 1 つずつ置き、図鑑の検証済みの事実で裏づけます。規則の文は事実の文の範囲に収め、**エンジンがその規則を当てる相手と、規則の文の主語をそろえます**（下の表の「当てる相手」。実行の `rules` に入れる条件でもある）。事実の状態は 2026-11-26 の `catalog-status.json` で確かめました（どれも `verified`。`wildcard` の裏づけの事実には、Action の `*` を言う文を足す直しが残っています。11 章）。
+規則は、エンジンの規則の表（`RULES`）に 1 つずつ置き、図鑑の検証済みの事実で裏づけます。規則の文は事実の文の範囲に収め、**エンジンがその規則を当てる相手と、規則の文の主語をそろえます**（下の表の「当てる相手」。実行の `rules` に入れる条件でもある）。事実の状態は 2026-11-26 の `catalog-status.json` で確かめました（どれも `verified`。`wildcard` の裏づけの事実は、Action の `*` を言う文を足して検証し直してあります。11 章）。
 
 | 規則の id | 内容 | 裏づけ | `evidence` | 当てる相手（`rules` に入れる条件） |
 |---|---|---|---|---|
 | `default-deny` | 既定ではすべてのリクエストが暗黙に拒否される。許可されるには、ポリシーの明示的な許可が要る | `iam.implicit-deny` | `既定ではすべてのリクエストが暗黙に拒否される`、`ポリシーで明示的に許可されている必要がある` | IAM ユーザーとロールの実行（ルートユーザーには当てない） |
 | `root-full-access` | ルートユーザーは完全なアクセス権を持つ例外 | `iam.implicit-deny` | `ルートユーザーは完全なアクセス権を持つ例外` | ルートユーザーの実行 |
 | `explicit-deny` | どのポリシーでも、明示的な拒否があれば、許可より優先して拒否される | `iam.policy-evaluation-allow-deny` | `どのポリシーでも明示的な拒否があれば、許可より優先して拒否される` | 同じアカウントで、アイデンティティベース・境界・リソースベースのどれかの Deny が当てはまった実行 |
-| `same-account-union` | 同じアカウントでは、アイデンティティベースとリソースベースのどちらかが許可していれば許可される | `iam.policy-evaluation-allow-deny` | `どちらかが許可していれば許可される` | 同じアカウントの IAM ユーザーとロールで、リソースベースのポリシーがあり、明示的な拒否でない実行 |
+| `same-account-union` | 同じアカウントでは、アイデンティティベースとリソースベースのどちらかが許可していれば許可される。どのポリシーでも明示的な拒否があれば、許可より優先して拒否される | `iam.policy-evaluation-allow-deny` | `どちらかが許可していれば許可される`、`どのポリシーでも明示的な拒否があれば、許可より優先して拒否される` | 同じアカウントの IAM ユーザーとロールで、リソースベースのポリシーがあり、明示的な拒否でない実行 |
 | `identity-policy` | アイデンティティベースのポリシーは、その ID が何をどのリソースにどんな条件で実行できるかを決める | `iam.identity-policy-types` | `その ID が何をどのリソースにどんな条件で実行できるかを決める` | IAM ユーザーとロールの実行 |
 | `boundary-ceiling` | 権限の境界は上限で、それ自体は権限を与えない。アイデンティティベースのポリシーと境界の両方が許可した操作だけが通る | `iam.boundary-basics` | `そのポリシーと境界の両方が許可する操作に限られる`、`境界自体は権限を付与しない` | 境界のある IAM ユーザーとロールの実行（`boundary-user-direct` を当てた実行を除く） |
 | `boundary-user-direct` | 同じアカウントで、リソースベースのポリシーが IAM ユーザーの ARN に直接与えた許可は、アイデンティティベースのポリシーや境界の暗黙の拒否では絞られない | `iam.boundary-resource-policy` | `IAM ユーザーの ARN に直接許可を与えている場合`、`暗黙の拒否では制限されない` | 同じアカウントの IAM ユーザーで、その ARN を名指しした Allow が当てはまり、アイデンティティベースか境界に許可がない実行 |
@@ -51,15 +51,17 @@ IAM ユーザーガイドの「How AWS enforcement code logic evaluates requests
 | `scp-root-user` | SCP は、メンバーアカウントのルートユーザーが行う操作にも制限を適用する | `organizations.scp-member-root` | `メンバーアカウントのルートユーザーが行う操作にも制限を適用する` | SCP のあるメンバーアカウントのルートユーザー |
 | `scp-management` | 管理アカウントの操作は、SCP で制限できない | `organizations.scp-management-exemption` | `管理アカウントの操作をその SCP で制限できない` | `scps` のある管理アカウントの実行（ユーザー・ロール・ルート） |
 | `cross-account-both` | 別のアカウントのリソースには、プリンシパルの側のアイデンティティベースのポリシーと、リソースの側のリソースベースのポリシーの両方の許可が要る。どちらかの評価に明示的な拒否があれば拒否される | `iam.cross-account-both-policies` | `両方が許可していて初めて`、`どちらかのアカウントの評価で明示的な拒否があれば拒否される` | 別のアカウントの実行 |
+| `principal-any` | リソースベースのポリシーの Principal に `"*"` を指定すると、すべてのプリンシパルを指す | `iam.principal-wildcard-orgid` | `Principal に "*"（すべてのプリンシパル）を指定し` | リソースベースのポリシーで、Principal が `*` の文（Allow でも Deny でも）のアクションとリソースが当てはまった実行 |
 | `principal-account` | ルートユーザーの ARN は、Principal 要素ではアカウント全体への委任になる | `iam.global-key-principalarn` | `Principal 要素ではアカウント全体への委任になる` | Principal がプリンシパルのアカウントのルートユーザーの ARN の文が当てはまった実行 |
 | `principal-org` | Principal が `*` で、`aws:PrincipalOrgID` を `StringEquals` で比べる文は、指定した組織のアカウントのプリンシパルだけに当たる | `iam.principal-wildcard-orgid` | `許可の対象を指定した組織のメンバーのアカウントのプリンシパルに限れる` | その形の Allow の文で、アクションとリソースが当てはまった実行 |
-| `cond-org-id` | `aws:PrincipalOrgID` は、組織に属するプリンシパルの要求にだけ含まれる | `iam.global-key-principalorgid` | `組織に属するプリンシパルの要求にだけ含まれる` | `aws:PrincipalOrgID` の条件を持つ文で、アクションとリソースが当てはまった実行 |
-| `cond-secure-transport` | `aws:SecureTransport` は、要求が TLS で送られたかを表し、常に要求に含まれる | `iam.global-key-securetransport` | `要求が TLS で送られたかを true か false で表す`、`常に要求に含まれる` | `aws:SecureTransport` の条件を持つ文で、アクション・リソース・Principal が当てはまった実行 |
+| `cond-org-id` | `aws:PrincipalOrgID` は、組織に属するプリンシパルのリクエストにだけ含まれる | `iam.global-key-principalorgid` | `組織に属するプリンシパルの要求にだけ含まれる` | `aws:PrincipalOrgID` の条件を持つ文で、アクションとリソースが当てはまった実行 |
+| `cond-secure-transport` | `aws:SecureTransport` は、リクエストが TLS で送られたかを表し、常にリクエストに含まれる | `iam.global-key-securetransport` | `要求が TLS で送られたかを true か false で表す`、`常に要求に含まれる` | `aws:SecureTransport` の条件を持つ文で、アクション・リソース・Principal が当てはまった実行 |
 | `resource-policy-s3` | バケットポリシーは、バケットとその中のオブジェクトへのアクセスを許可・拒否するリソースベースのポリシー | `s3.bucket-policy` | `アクセスを許可・拒否する JSON 形式のリソースベースポリシー` | リソースベースのポリシーのある実行（リソースは S3 だけ） |
 | `wildcard` | Resource の ARN の区画内では `*` が任意の文字列に当たり、Action でも複数の文字に当たる `*` を使える | `iam.policy-resource-element`（Action の `*` は 11 章の直しで足した） | `* が任意の文字列に`、`複数の文字に一致する *` | `*` を含む文を持つポリシーを見た実行 |
 
 - 評価の順そのもの（どの段を先に見るか）は規則にしません（12 章の 1）。
 - 事実で裏づけられない組み合わせは、入力で断ります（5.2）。
+- 規則の文は、事実の「要求」を、画面のほかの文に合わせて「リクエスト」と書きます（`evidence` は事実の文字列のまま）。
 - 別のアカウントの実行では、明示的な拒否の規則は `cross-account-both`（アイデンティティベース・境界・リソースベースの Deny）と `scp-deny` が受け持ちます。
 
 ## 5. 入力と出力
@@ -152,12 +154,14 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 
 ## 7. 画面に出す「扱わないこと」の文（`NOT_COVERED`）
 
-1. リソースコントロールポリシー（RCP）は扱いません。組織のポリシーは SCP だけです。
+1. リソースコントロールポリシー（RCP）は扱いません。このシミュレーターが扱う組織のポリシーは SCP だけです。
 2. ロールを引き受ける操作（sts:AssumeRole）と信頼ポリシーは扱いません。
 3. KMS のキーとキーポリシーは扱いません。
 4. セッションポリシー、フェデレーションのセッション、匿名のリクエストは扱いません。
-5. NotAction などの否定の要素とポリシー変数は扱いません。条件キーは 2 種類だけです。
-6. リソースベースのポリシーは S3 のバケットポリシーだけです。ACL などの例外は扱いません。
+5. NotAction などの否定の要素とポリシー変数は扱いません。扱う条件キーは 2 種類だけです。
+6. 扱うリソースベースのポリシーは S3 のバケットポリシーだけです。ACL などの例外は扱いません。
+
+「だけです」の文は、AWS の事実の言い切りに読めないように、「扱う」を付けてシミュレーターの範囲の文にします。
 
 `NOT_COVERED_LINKS`: 1 にレッスン `lesson-1.1-multi-account`（組織のポリシー）、2 にレッスン `lesson-1.1-roles-federation`（ロールと信頼ポリシー）、3 にレッスン `lesson-1.3-encryption-and-keys`（KMS のキーポリシー）。
 
@@ -165,11 +169,13 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 
 今ある 2 つのシミュレーターの枠（`SimFlow`、シナリオ・自由に試す・扱わないこと）を使います。幅 360px で 1 列、ボタンは 44px 以上、文字は 12px 以上、色は CSS の変数。
 
-- **設定の表**: 最上位の項目ごとに 1 行（だれが／組織／何を／どのリソースに／SCP／アイデンティティベース／権限の境界／リソースベース）。値は短い要約（「Allow s3:GetObject → example-reports/*」。長いものは折り返す）
+- **設定の表**: 最上位の項目ごとに 1 行（だれが／組織／何を／どのリソースに／SCP／アイデンティティベース／権限の境界／リソースベース）。値は短い要約（「Allow s3:GetObject（Resource: arn:aws:s3:::example-reports/*）」。Principal と条件があれば、同じ括弧の中に「Principal: *」「Condition: aws:SecureTransport が false」と並べる。長いものは折り返す）。要約に矢印（→）は使わない（設定を変えたときの行が「前の値 → 新しい値」と矢印でつなぐので、境目が読めなくなる）。Principal は、ポリシーに書く値のまま出す（`*` の意味は規則 `principal-any` が受け持つ）
 - **結果（`IamResult`）**: 1 列に、次の順で出す
   1. 要約の 1 行（`aria-live`）: 「許可されます」「拒否されます（明示的な拒否）」「拒否されます（暗黙の拒否）」と決め手（「権限の境界に許可がありません」など。`multiple` のときは満たしていない条件を並べる）
-  2. 評価の流れの段のカード（公式の本文の並び。① 明示的な拒否 ② SCP ③ リソースベース ④ アイデンティティベース ⑤ 権限の境界）。各カードは、番号、段の名前、状態（「拒否あり」「拒否なし」「許可あり」「許可なし」「ポリシーなし」「対象外」。文字と印で示し、色だけにしない）、当てはまった文の要約、結果への効き方（「ここで拒否に決まります。ほかのポリシーの許可は結果を変えません。」「許可を与えています。」「上限を満たしています。」「ここに許可がないので、拒否になります。」「リソースベースのポリシーが IAM ユーザーを名指しで許可しているので、ここに許可がなくても結果は変わりません。」）。実行の直後に上から順に現れ、`prefers-reduced-motion` では一度に出す。ポリシーのない段は薄い 1 行。「許可を与えています。」は、結果が拒否のときにも、その段に当てはまる Allow があれば出す（足りない許可は、要約の 1 行と「ここに許可がないので、拒否になります。」の段が示す）
+  2. 評価の流れの段のカード（公式の本文の並び。① 明示的な拒否 ② SCP ③ リソースベース ④ アイデンティティベース ⑤ 権限の境界）。各カードは、番号、段の名前、状態（「拒否あり」「拒否なし」「許可あり」「許可なし」「ポリシーなし」「対象外」。文字と印で示し、色だけにしない）、当てはまった文の要約、結果への効き方（「ここで拒否に決まります。ほかのポリシーの許可は結果を変えません。」「許可を与えています。」「上限の範囲内です。」「ここに許可がないので、拒否になります。」「リソースベースのポリシーが IAM ユーザーを名指しで許可しているので、ここに許可がなくても結果は変わりません。」）。実行の直後に上から順に現れ、`prefers-reduced-motion` では一度に出す。ポリシーのない段は薄い 1 行。「許可を与えています。」は、結果が拒否のときにも、その段に当てはまる Allow があれば出す（足りない許可は、要約の 1 行と「ここに許可がないので、拒否になります。」の段が示す）
   3. 「ここで評価が終わる」とは書かない（明示的な拒否の「ここで拒否に決まります」だけ）
+  4. SCP の段が「許可なし」のときは、「Allow がない階層: SCP（OU）」のように、Allow のない階層の名前を出す（当てはまった文には、Allow のある階層だけが並ぶので）
+- ルートユーザーの実行では、「このシミュレーターでは、ルートユーザーの実行は「明示的な拒否」と「SCP」の段だけを表示します。」を添える（AWS がルートユーザーに当てるポリシーの種類を言い切る文にはしない。その事実が図鑑にないため）
 - 別のアカウントでは、「プリンシパルのアカウントの評価」「リソースのアカウントの評価」の 2 つの見出しに分け、「両方が許可して初めて通ります」を添える
 - 閉じた `<details>`「ポリシーを見る」に、文のカード（Effect・Action・Resource・Principal・Condition）を出し、当てはまった文に印を付ける
 - **自由に試す（`IamExplore`）**: 1 つのプリセット（同じアカウントの S3 のバケット）と、9 つの切り替え（だれが、何を、リソースのアカウント、TLS、組織での立場、SCP、アイデンティティベースのポリシー、権限の境界、バケットポリシー。エンジンの `buildPresetConfig`）。ルートユーザーのときはリソースのアカウント・アイデンティティベースのポリシー・権限の境界・バケットポリシーを、組織に入っていないときは SCP を選べなくする。設定はエンジンの入力の検査を通してから実行し、通らない組み合わせはエラーの文を出す（`expect` と `explain` はない。記録しない）
@@ -181,7 +187,7 @@ toggle は最上位の項目を 1 つ変えるので、変えたい単位を最�
 1. `sim-iam-implicit-deny`: IAM ユーザーに `s3:GetObject`（`example-reports/*`）の Allow だけがある。リクエストは `s3:PutObject` → `implicit-deny`・`no-allow`。変えられる設定: リクエストを GetObject に（許可）／アイデンティティベースに、別のバケットへの PutObject の Allow を足す（暗黙の拒否のまま。アクションは当たるが、リソースが当たらない）／バケットポリシーでこのユーザーの ARN に PutObject を Allow（許可。同じアカウントではどちらかで足りる）。裏づけ: `iam.implicit-deny`、`iam.policy-evaluation-allow-deny`、`iam.identity-policy-types`、`iam.boundary-resource-policy`、`s3.bucket-policy`
 2. `sim-iam-explicit-deny`: アイデンティティベースで Get と Put を Allow。バケットポリシーに、TLS でないリクエストの Deny。TLS なしで GetObject → `explicit-deny`（`denyIn` はリソースベース）。変えられる設定: TLS にする（許可）／アイデンティティベースをすべて Allow に（拒否のまま）／Deny の文を外す（許可）。裏づけ: `iam.policy-evaluation-allow-deny`、`iam.global-key-securetransport`、`s3.bucket-policy`
 3. `sim-iam-boundary-ceiling`: アイデンティティベースは `s3:GetObject` と `s3:DeleteObject`、境界は `s3:GetObject` と `s3:PutObject`。リクエストは `s3:DeleteObject` → `implicit-deny`・`boundary`。変えられる設定: リクエストを GetObject に（許可。両方が許可）／リクエストを PutObject に（`no-allow`。境界は許可しているが、境界は権限を与えない）／境界を外す（許可）。裏づけ: `iam.boundary-basics`、`iam.implicit-deny`
-4. `sim-iam-scp-ceiling`: メンバーアカウントの管理者（すべて Allow）。SCP は、ルートとアカウントがすべて Allow、OU が `s3:*` と `ec2:*` だけ。リクエストは `dynamodb:CreateTable` → `implicit-deny`・`scp`。変えられる設定: OU の SCP をすべて Allow に（許可）／すべての階層を Allow にして、ルートの SCP に `dynamodb:CreateTable` の Deny を足す（明示的な拒否。上位の Deny は下位の Allow で上書きできない）／管理アカウントにする（許可）。裏づけ: `organizations.scp-permission-ceiling`、`organizations.scp-allow-at-every-level`、`organizations.scp-deny-inheritance`、`organizations.scp-management-exemption`
+4. `sim-iam-scp-ceiling`: メンバーアカウントの管理者（すべて Allow）。SCP は、ルートとアカウントがすべて Allow、OU が `s3:*` と `ec2:*` だけ。リクエストは `dynamodb:CreateTable` → `implicit-deny`・`scp`。変えられる設定: OU の SCP をすべて Allow に（許可）／ルートの SCP に `dynamodb:CreateTable` の Deny を足す（明示的な拒否。アカウントの SCP に Allow があっても、上位の Deny は上書きできない。変えるのは Deny の追加だけ）／管理アカウントにする（許可）。裏づけ: `organizations.scp-permission-ceiling`、`organizations.scp-allow-at-every-level`、`organizations.scp-deny-inheritance`、`organizations.scp-management-exemption`
 5. `sim-iam-scp-root-user`: メンバーアカウントのルートユーザー。OU の SCP に `cloudtrail:StopLogging` の Deny → `explicit-deny`。変えられる設定: リクエストを `cloudtrail:GetTrailStatus` に（許可）／IAM ユーザーにする（拒否のまま）／管理アカウントにする（許可）。裏づけ: `organizations.scp-member-root`、`organizations.scp-deny-inheritance`、`organizations.scp-allow-at-every-level`、`iam.implicit-deny`、`organizations.scp-management-exemption`
 6. `sim-iam-cross-account-bucket`: アカウント A のロールに、アカウント B のバケットへの Allow がある。バケットポリシーはない → `implicit-deny`・`resource-side`。変えられる設定: バケットポリシーでロールの ARN を Allow（許可）／`*` と `aws:PrincipalOrgID` で Allow（許可）／同じアカウントのバケットにする（許可）。裏づけ: `iam.cross-account-both-policies`、`iam.principal-wildcard-orgid`、`iam.global-key-principalorgid`
 7. `sim-iam-cross-account-identity`: アカウント B のバケットポリシーが、アカウント A の IAM ユーザーの ARN を Allow。ユーザーの側のポリシーは自分のバケットだけ → `implicit-deny`・`identity-side`。変えられる設定: アイデンティティベースに足す（許可）／同じアカウントのバケットにする（許可。名指しの許可だけで足りる）／Principal をアカウント A のルートユーザーの ARN にする（暗黙の拒否のまま）。裏づけ: `iam.cross-account-both-policies`、`iam.boundary-resource-policy`、`iam.global-key-principalarn`

@@ -146,6 +146,7 @@
     }
   },
   "factRefs": [
+    "iam.principal-wildcard-orgid",
     "iam.implicit-deny",
     "iam.policy-evaluation-allow-deny",
     "iam.identity-policy-types",
