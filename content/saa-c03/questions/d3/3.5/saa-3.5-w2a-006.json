@@ -15,50 +15,66 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "あるメディア企業のオンプレミスの編集アプリケーションは、NFS でマウントした共有フォルダーに素材ファイルを書き込みます。アプリケーションは変更できません。直近のファイルは低レイテンシーで読みたい一方、すべてのデータは Amazon S3 に長期保存し、S3 のライフサイクルルールでアーカイブしたいと考えています。オンプレミスのストレージ容量は増やしたくありません。最も適切な方法はどれですか。",
+  "stem": "あるメディア企業のオンプレミスの編集アプリケーションは、NFS でマウントした共有フォルダーに素材ファイルを書き込みます。アプリケーションのコードは変更できませんが、サーバーの NFS のマウント先は切り替えられます。直近のファイルは低レイテンシーで読みたい一方、すべてのデータは Amazon S3 に長期保存し、編集を終えたファイルは S3 のライフサイクルルールでアーカイブします。ファイルは、夜間などの決まった時刻を待たずに、書き込みに続けて S3 へ送られる必要があります。また、オンプレミスに置くデータは直近のファイルの分だけにとどめ、すべてのデータを保持するストレージは持ちたくありません。最も適切な方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "オンプレミスに AWS Storage Gateway の S3 File Gateway を配置し、アプリケーションの書き込み先を、ゲートウェイの NFS 共有に変更する。",
+      "text": "オンプレミスに AWS Storage Gateway の S3 File Gateway を配置し、サーバーの NFS のマウント先を、ゲートウェイのファイル共有に切り替える。",
       "correct": true,
-      "rationale": "S3 File Gateway は、NFS や SMB のファイル共有として使え、ファイルは S3 のオブジェクトとして保存されます。最近使ったデータはゲートウェイのローカルキャッシュから低レイテンシーで読めます。S3 にあるので、ライフサイクルルールでアーカイブでき、オンプレミスのストレージ容量は増やさずに済みます。"
+      "rationale": "S3 File Gateway は NFS や SMB のファイル共有として使え、共有に書いたファイルは S3 のオブジェクトになります。書き込みは先にローカルのディスクへ保存され、続けて非同期に S3 へアップロードされます。最近アクセスしたデータは、ローカルのキャッシュから低レイテンシーで読めます。オンプレミスに要るのはキャッシュ用のディスクで、すべてのデータは S3 に置かれ、ライフサイクルルールでアーカイブできます。"
     },
     {
       "id": "b",
       "text": "既存のファイルサーバーに書き込み続け、AWS DataSync で夜間に S3 へコピーする。",
       "correct": false,
-      "rationale": "ファイルサーバー側にすべてのデータを保持し続けるため、オンプレミスのストレージ容量は増え続けます。ストレージ容量を増やしたくないという要件を満たしません。"
+      "rationale": "DataSync のタスクはスケジュールに従って動く転送なので、ファイルは夜間の実行まで S3 へ送られません。すべてのデータが既存のファイルサーバーにも残るので、オンプレミスに置くデータを直近の分だけにとどめるという要件も満たしません。"
     },
     {
       "id": "c",
       "text": "Storage Gateway のボリュームゲートウェイ（キャッシュ型ボリューム）を配置し、iSCSI でマウントして書き込む。",
       "correct": false,
-      "rationale": "ボリュームゲートウェイは iSCSI のブロックストレージで、データは S3 上のボリュームとして保存されます。NFS の共有を前提にしたアプリケーションは、変更なしでは使えず、S3 にファイルとして保存されず、ライフサイクルルールでファイル単位にアーカイブすることもできません。"
+      "rationale": "キャッシュ型ボリュームは、iSCSI デバイスとしてマウントするブロックストレージです。NFS のファイル共有にはならないので、NFS のマウント先の切り替えでは使えません。データは S3 に保存されますが、S3 の API やコンソールからはアクセスできないので、ファイルを S3 のオブジェクトとしてライフサイクルルールで管理することもできません。"
     },
     {
       "id": "d",
       "text": "Amazon EFS のファイルシステムを作成し、AWS Direct Connect 経由でオンプレミスから NFS でマウントする。",
       "correct": false,
-      "rationale": "データは S3 ではなく EFS に保存されます。ローカルのキャッシュがないため、読み取りのたびに AWS へのネットワーク往復が発生し、S3 のライフサイクルルールによるアーカイブという要件も満たしません。"
+      "rationale": "オンプレミスから Direct Connect 経由で EFS をマウントすることはできますが、データの保存先は S3 ではなく EFS です。すべてのデータを S3 に保存し、S3 のライフサイクルルールでアーカイブするという要件を満たしません。"
     }
   ],
-  "explanation": "AWS Storage Gateway は、オンプレミスのアプリケーションから AWS のストレージを使うための、ハイブリッドクラウドのゲートウェイです。種類には、S3 File Gateway（NFS／SMB で S3 にファイルをオブジェクトとして保存）、FSx File Gateway（新しいお客様は利用できません）、ボリュームゲートウェイ（iSCSI のブロックストレージ）、テープゲートウェイ（仮想テープ）があります。\n\nS3 File Gateway は、ファイルを 1 対 1 のオブジェクトとして S3 に保存するので、S3 のライフサイクルルールやバージョニング、イベント通知などをそのまま使えます。頻繁にアクセスするデータはゲートウェイのローカルキャッシュに置かれ、低レイテンシーで読み書きできます。DataSync は転送のためのツールで、アプリケーションが使い続けるファイル共有の役割は持ちません。",
+  "explanation": "AWS Storage Gateway は、オンプレミスのアプリケーションが、NFS・SMB・iSCSI などの既存のプロトコルのまま AWS のストレージを使えるようにするハイブリッドストレージのサービスです。種類には、S3 File Gateway（NFS／SMB のファイル共有で、ファイルを S3 のオブジェクトとして保存）、FSx File Gateway（新しい利用者には提供されていません）、ボリュームゲートウェイ（iSCSI のブロックストレージ）、テープゲートウェイ（仮想テープ）があります。\n\nS3 File Gateway では、ファイルとオブジェクトが 1 対 1 に対応するので、保存先のバケットで、ライフサイクルルールやバージョニングを使ってデータを管理できます。書き込みは先にローカルのディスクへ保存され、非同期に S3 へアップロードされます。読み取りはローカルのキャッシュから返し、キャッシュにないデータは S3 から取得します。そのため、オンプレミスにはキャッシュ用のディスクが要りますが、すべてのデータを置くストレージは要りません。\n\nライフサイクルルールで S3 Glacier へ移したファイルは、ファイル共有からアクセスすると I/O エラーになり、使うには先に S3 でオブジェクトを復元します。アーカイブするのは、編集を終えたファイルにします。\n\nDataSync は、タスクを実行したときにデータを転送するサービスです（スケジュールを設定して定期的に実行できます）。アプリケーションが使い続けるファイル共有の役割は持ちません。",
   "keyPoints": [
     "オンプレミスのアプリが NFS／SMB のまま S3 にファイルを保存、ローカルキャッシュあり → S3 File Gateway",
     "iSCSI のブロックストレージ → ボリュームゲートウェイ、バックアップソフトの仮想テープ → テープゲートウェイ",
-    "File Gateway のファイルは S3 のオブジェクトになるので、ライフサイクルルールが使える"
+    "S3 File Gateway のファイルは S3 のオブジェクトになるので、ライフサイクルルールが使える。S3 Glacier へ移したファイルは、復元するまでファイル共有から使えない",
+    "データの転送や移行だけなら DataSync。タスクの実行のたびに転送し、ファイル共有にはならない"
   ],
   "references": [
     {
-      "title": "What is Amazon S3 File Gateway? - AWS Storage Gateway",
+      "title": "What is Amazon S3 File Gateway - AWS Storage Gateway",
       "url": "https://docs.aws.amazon.com/filegateway/latest/files3/what-is-file-s3.html"
     },
     {
       "title": "How Amazon S3 File Gateway works - AWS Storage Gateway",
       "url": "https://docs.aws.amazon.com/filegateway/latest/files3/file-gateway-concepts.html"
+    },
+    {
+      "title": "Using storage classes - AWS Storage Gateway",
+      "url": "https://docs.aws.amazon.com/filegateway/latest/files3/storage-classes.html"
+    },
+    {
+      "title": "AWS Storage Gateway FAQs",
+      "url": "https://aws.amazon.com/storagegateway/faqs/"
     }
   ],
   "lessonRefs": ["lesson-3.5-transfer-and-transform"],
+  "factRefs": [
+    "storage-gateway.s3-file-gateway",
+    "storage-gateway.s3-file-gateway-s3-features",
+    "storage-gateway.local-cache",
+    "storage-gateway.file-gateway-glacier-io-error",
+    "storage-gateway.volume-no-s3-api"
+  ],
   "pool": "practice",
   "needsSourceCheck": false,
   "createdBy": "w2a",

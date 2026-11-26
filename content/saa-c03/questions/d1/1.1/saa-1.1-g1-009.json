@@ -18,38 +18,39 @@
   "difficulty": 2,
   "type": "single",
   "selectCount": 1,
-  "stem": "ある企業はこれまで 1 つの AWS アカウントですべてのワークロードを運用してきましたが、事業部ごとにアカウントを分ける方針になりました。新しいマルチアカウント環境では、全アカウントの監査ログを専用のアカウントに集約し、ベストプラクティスに沿った予防的および発見的なガードレールを最初から適用する必要があります。また、事業部が承認済みの構成で新しいアカウントを自分で作成できるようにしたいと考えています。最も少ない運用負荷でこの環境を構築する方法はどれですか。",
+  "stem": "ある企業はこれまで 1 つの AWS アカウントですべてのワークロードを運用してきましたが、事業部ごとにアカウントを分ける方針になりました。新しいマルチアカウント環境では、全アカウントの AWS CloudTrail のログを専用のアカウントに集約し、禁止する操作を防ぐ統制と、設定の違反を検出する統制を、ベストプラクティスに沿って適用する必要があります。また、事業部が承認済みの構成で新しいアカウントを自分で作成できるようにしたいと考えています。最も少ない運用負荷でこの環境を構築する方法はどれですか。",
   "options": [
     {
       "id": "a",
-      "text": "AWS Control Tower でランディングゾーンを設定し、必要なコントロールを有効にして、事業部には Account Factory でアカウントを作成させる。",
+      "text": "AWS Control Tower でランディングゾーンを設定し、AWS CloudTrail のログの集約と必要なコントロールを有効にして、事業部には Account Factory でアカウントを作成させる。",
       "correct": true,
-      "rationale": "AWS Control Tower は、Organizations、IAM Identity Center、Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーンを自動で構築します。ログアーカイブ用と監査用の共有アカウントが作られ、予防コントロールと検出コントロールを有効にでき、Account Factory で承認済みの構成のアカウントを作成できます。"
+      "rationale": "AWS Control Tower は、AWS Organizations、AWS Service Catalog、AWS IAM Identity Center などを組み合わせて、ベストプラクティスに沿ったランディングゾーンを構築し、リソースの設定と管理を代行します。AWS CloudTrail の集中ログ統合を有効にすると、ログ用のアカウントの S3 バケットにログが集まります。予防コントロールと検出コントロールを OU に適用でき、Account Factory で承認済みの構成のアカウントを作成できます。3 つの要件を、自社で作る仕組みを最も少なくして満たせます。"
     },
     {
       "id": "b",
-      "text": "AWS Organizations で OU とアカウントを作成し、SCP と AWS Config ルールを CloudFormation StackSets で配布する仕組みと、アカウントを作成する手順を自社で構築する。",
+      "text": "AWS Organizations で OU を作成し、CloudTrail の組織の証跡、SCP、CloudFormation StackSets で配布する AWS Config ルール、アカウントを作成する AWS Service Catalog の製品を自社で構築する。",
       "correct": false,
-      "rationale": "同じような環境は作れますが、アカウントの構成、ログの集約、SCP と Config ルールの配布、アカウントを作成する仕組みをすべて自社で設計・構築・保守する必要があります。最も少ない運用負荷という要件を満たしません。"
+      "rationale": "要件は満たせますが、ログの集約、SCP、AWS Config ルールの配布、アカウントを作成する仕組みを、すべて自社で設計・構築・保守する必要があります。AWS Control Tower はこれらをまとめて設定・管理するので、最も少ない運用負荷という要件ではこの案は選べません。"
     },
     {
       "id": "c",
-      "text": "AWS CloudTrail で AWS Organizations の組織の証跡を作成し、全アカウントのログをログ用アカウントの S3 バケットに集約する。",
+      "text": "AWS CloudTrail で AWS Organizations の組織の証跡を作成し、全アカウントのログをログ用のアカウントの S3 バケットに集約する。",
       "correct": false,
-      "rationale": "組織の証跡で監査ログは集約できますが、予防的・発見的なガードレールの適用や、事業部が承認済みの構成でアカウントを作成する仕組みは用意されません。"
+      "rationale": "組織の証跡で全アカウントの CloudTrail のログは集約できますが、操作を防ぐ統制と設定の違反を検出する統制の適用や、事業部が承認済みの構成でアカウントを作成する仕組みは用意されません。"
     },
     {
       "id": "d",
-      "text": "全アカウントで AWS Security Hub と AWS Config を有効にし、ベストプラクティスに反する設定を委任管理者アカウントで一元的に検出する。",
+      "text": "全アカウントで AWS Security Hub CSPM と AWS Config を有効にし、ベストプラクティスに反する設定を委任管理者アカウントで一元的に検出する。",
       "correct": false,
-      "rationale": "Security Hub と Config は設定の問題を検出する発見的な統制で、操作を防ぐ予防的なガードレールにはなりません。承認済みの構成で新しいアカウントを作る仕組みも含まれません。"
+      "rationale": "AWS Security Hub CSPM は、ベストプラクティスや業界標準に照らして設定をチェックするサービスで、違反の検出はできますが、禁止する操作そのものは防げません。CloudTrail のログを専用のアカウントに集約する仕組みと、承認済みの構成で新しいアカウントを作る仕組みも含まれません。"
     }
   ],
-  "explanation": "AWS Control Tower は、マルチアカウント環境の構築と統制を自動化するサービスです。AWS Organizations、AWS IAM Identity Center、AWS Service Catalog などを組み合わせて、ベストプラクティスに沿ったランディングゾーン（OU、アカウント、ユーザーなどを含む、統制の効いたマルチアカウント環境）を短時間で構築します。ランディングゾーンには、ログを集約するログアーカイブアカウントと、セキュリティチームが使う監査アカウントが共有アカウントとして作られます。ランディングゾーンのバージョン 4.0 以降では、それぞれ CloudTrail administrator アカウント、Config aggregator アカウントと呼ばれ、AWS CloudTrail と AWS Config の統合を有効にしたときに用意されます。\n\nコントロール（ガードレールとも呼ばれます）は、環境全体を継続的に統制するルールです。操作そのものを防ぐ予防コントロール（SCP や RCP で実装）、違反を検出する検出コントロール（AWS Config ルールで実装）、リソースを作る前にテンプレートを検査するプロアクティブコントロール（CloudFormation フックで実装）の 3 種類があります。Account Factory を使うと、承認済みの構成で新しいアカウントを作成し、コントロールを自動で適用できます。\n\nOrganizations と StackSets などを組み合わせて自作することもできますが、設計と保守の負荷が大きくなります。「ベストプラクティスに沿ったマルチアカウント環境を素早く」「運用負荷を最小に」とあれば Control Tower を選びます。",
+  "explanation": "AWS Control Tower は、ベストプラクティスに沿ったマルチアカウント環境（ランディングゾーン）を構築して統制するサービスです。AWS Organizations、AWS Service Catalog、AWS IAM Identity Center などを組み合わせ、リソースの設定と管理を代行します。\n\nログの集約は、AWS CloudTrail の集中ログ統合を有効にして行います。ログ用のアカウント（CloudTrail administrator アカウント。以前の名前はログアーカイブアカウント）の S3 バケットに、ランディングゾーン内のアカウントのログファイルが集まります。ランディングゾーンのバージョン 4.0 では、AWS CloudTrail や AWS Config などのサービス統合を有効にするかどうかを選べます。\n\nコントロール（ガードレールとも呼ばれます）は、環境全体を継続的に統制するルールで、OU に適用します。操作そのものを防ぐ予防コントロール（SCP や RCP などで実装）、違反を検出する検出コントロール（AWS Config ルールで実装）、リソースを作る前に検査するプロアクティブコントロール（CloudFormation フックで実装）の 3 種類があります。Account Factory を使うと、承認済みの構成で新しいアカウントを作成できます。\n\nAWS Organizations、組織の証跡、StackSets などを組み合わせて同じ環境を自作することもできますが、設計と保守の負荷が大きくなります。「ベストプラクティスに沿ったマルチアカウント環境」「運用負荷を最小に」とあれば AWS Control Tower を選びます。",
   "keyPoints": [
     "ベストプラクティスに沿ったマルチアカウント環境を少ない運用負荷で → AWS Control Tower",
-    "コントロールは予防（SCP など）・検出（Config ルール）・プロアクティブ（CloudFormation フック）の 3 種類",
-    "承認済みの構成でアカウントを払い出す → Account Factory"
+    "コントロールは予防（SCP や RCP など）・検出（AWS Config ルール）・プロアクティブ（CloudFormation フック）の 3 種類",
+    "承認済みの構成でアカウントを払い出す → Account Factory",
+    "組織の証跡や AWS Security Hub CSPM だけでは、ログの集約か検出のどちらか一部しか満たせない"
   ],
   "references": [
     {
@@ -63,9 +64,20 @@
     {
       "title": "Service integration accounts - AWS Control Tower",
       "url": "https://docs.aws.amazon.com/controltower/latest/userguide/special-accounts.html"
+    },
+    {
+      "title": "Key changes - AWS Control Tower",
+      "url": "https://docs.aws.amazon.com/controltower/latest/userguide/key-changes-lz-v4.html"
     }
   ],
   "lessonRefs": ["lesson-1.1-multi-account"],
+  "factRefs": [
+    "control-tower.landing-zone",
+    "control-tower.account-factory",
+    "control-tower.preventive-control",
+    "control-tower.detective-control",
+    "control-tower.service-integration-setup"
+  ],
   "pool": "practice",
   "needsSourceCheck": false,
   "createdBy": "g1",
