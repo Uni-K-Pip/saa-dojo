@@ -52,6 +52,7 @@
       },
       "factRefs": [
         "iam.boundary-basics",
+        "iam.service-linked-role",
         "organizations.scp-management-exemption",
         "organizations.scp-service-linked-role-exemption"
       ]

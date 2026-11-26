@@ -1,17 +1,18 @@
 {
   "id": "lambda",
   "tier": 1,
-  "summary": "サーバーを用意・管理せずにコードを実行するサーバーレスのコンピューティングサービスである。イベントを起点に関数を実行し、負荷に応じて自動でスケールして、使った分だけ課金される。",
+  "summary": "Lambda Event Functions は、サーバーを管理せず、イベントや API 呼び出しに応じてコードを実行する AWS Lambda の関数である。Lambda は負荷に応じて実行環境を自動で増減する。",
   "chooseWhen": [
     {
       "text": "イベントをきっかけに、短時間のコードを、サーバー管理なしで動かしたいとき",
       "factRefs": [
         "lambda.shared-responsibility",
-        "lambda.event-triggers"
+        "lambda.event-triggers",
+        "lambda.timeout-max"
       ]
     },
     {
-      "text": "負荷の増減が大きく、使った分だけ支払いたい処理",
+      "text": "Lambda の既定のコンピューティングタイプで、リクエストの増加に応じて実行環境を自動で増やし、オンデマンド実行のリクエスト数と実行時間（GB 秒）に応じて支払いたいとき",
       "factRefs": [
         "lambda.pricing-model",
         "lambda.concurrency-scaling-rate"
@@ -24,7 +25,7 @@
       ]
     },
     {
-      "text": "コールドスタートの遅延を避けたいときは、プロビジョニングされた同時実行",
+      "text": "コールドスタートの遅延を減らしたいときは、プロビジョニングされた同時実行",
       "factRefs": [
         "lambda.provisioned-concurrency"
       ]
@@ -32,7 +33,7 @@
   ],
   "avoidWhen": [
     {
-      "text": "1 回の処理が 30 分を超える長時間の処理",
+      "text": "1 回の実行時間が上限を超えるとき（通常は 30 分、Lambda Managed Instances の非同期呼び出しと、Amazon MQ・Amazon DocumentDB を除くイベントソースマッピング経由の呼び出しは 90 分）",
       "factRefs": [
         "lambda.timeout-max"
       ],
@@ -43,14 +44,14 @@
       ]
     },
     {
-      "text": "展開後 250 MB を超える依存関係を .zip で持ちたいとき（コンテナイメージを使う）",
+      "text": "展開後 250 MB を超える .zip デプロイパッケージが必要なとき（コンテナイメージの上限は、全レイヤーを含めて展開後 10 GB）",
       "factRefs": [
         "lambda.zip-package-limit",
         "lambda.container-image-size"
       ]
     },
     {
-      "text": "同期で 6 MB を超えるデータを直接受け渡したいとき",
+      "text": "同期呼び出しで 6 MB を超えるリクエストを渡したい、またはレスポンスのストリーミングを使わずに 6 MB を超える応答を返したいとき",
       "factRefs": [
         "lambda.invocation-payload"
       ]
@@ -59,7 +60,7 @@
   "facts": [
     {
       "id": "lambda.shared-responsibility",
-      "title": "基盤の管理は AWS、利用者はコードと設定",
+      "title": "基盤の管理は AWS が行い、利用者はアプリケーションのロジックに集中する",
       "kind": "feature",
       "text": "Lambda はサーバーレスのコンピューティングサービスで、サーバーの保守、容量の確保、スケーリング、パッチ適用といった基盤の管理を AWS が自動で行う。利用者はアプリケーションのロジックに集中できる。",
       "examPoint": "サーバー管理の負担をなくしたい、使った分だけ払いたいなら Lambda。",
@@ -70,7 +71,7 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html"
         }
       ],
-      "checkedAt": "2026-11-14"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.timeout-max",
@@ -93,18 +94,23 @@
     },
     {
       "id": "lambda.memory-cpu",
-      "title": "メモリは 128〜10,240 MB で、CPU はメモリに比例する",
+      "title": "Lambda Event Functions のメモリ設定と CPU の割り当て",
       "kind": "feature",
-      "text": "関数のメモリは 128〜10,240 MB の範囲で 1 MB 単位で設定でき、CPU の能力はメモリの設定量に比例して割り当てられる。1,769 MB で 1 vCPU 相当である。",
-      "examPoint": "CPU を直接指定する設定はなく、CPU を増やすにはメモリを増やす。",
+      "text": "Lambda Event Functions の既定のコンピューティングタイプでは、メモリは 128〜10,240 MB の範囲で 1 MB 単位で設定できる。新しい AWS アカウントには引き下げられたメモリクォータが適用される。CPU の能力はメモリの設定量に比例し、1,769 MB で 1 vCPU 相当になる。",
+      "examPoint": "既定のコンピューティングタイプでは、メモリの設定を上げると、割り当てられる CPU の能力も増える。",
       "depth": "core",
       "sources": [
         {
           "title": "Lambda quotas",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+        },
+        {
+          "title": "Lambda Managed Instances",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25",
+      "recheck": "default-value"
     },
     {
       "id": "lambda.tmp-storage",
@@ -158,20 +164,29 @@
       "id": "lambda.layers",
       "title": "レイヤーは 1 関数に最大 5 つ",
       "kind": "quota",
-      "text": "レイヤーは、ライブラリなどの依存関係を関数のコードから分けて共有するための .zip アーカイブで、1 つの関数に最大 5 つまで追加できる。レイヤーを使えるのは .zip でデプロイする関数だけで、コンテナイメージの関数は使えない。レイヤーの大きさも展開後の合計の上限に含まれる。",
-      "trap": "レイヤーに分けても、展開後 250 MB の合計の上限は増えない。",
+      "text": "レイヤーは、ライブラリなどの依存関係を関数のコードから分けて共有するための .zip アーカイブで、1 つの関数に最大 5 つまで追加できる。",
       "depth": "core",
       "sources": [
         {
           "title": "Managing Lambda Event Function dependencies with layers",
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html"
-        },
-        {
-          "title": "Lambda quotas",
-          "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25"
+    },
+    {
+      "id": "lambda.layers-zip-only",
+      "title": "レイヤーを使えるのは .zip でデプロイした Event Function だけ",
+      "kind": "constraint",
+      "text": "レイヤーを使えるのは、.zip ファイルアーカイブとしてデプロイした Lambda Event Functions だけである。コンテナイメージとして定義した Event Function では、イメージを作成するときに、選んだランタイムとコードの依存関係をすべてイメージに含める。",
+      "depth": "core",
+      "sources": [
+        {
+          "title": "Managing Lambda Event Function dependencies with layers",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html"
+        }
+      ],
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.invocation-payload",
@@ -191,7 +206,7 @@
       "id": "lambda.concurrency-default",
       "title": "アカウントの同時実行数は既定で 1,000",
       "kind": "quota",
-      "text": "リージョンごとのアカウント全体の同時実行数の既定値は 1,000 で、Service Quotas で引き上げを申請できる。リクエストの毎秒の上限は同時実行数の 10 倍である。この既定値は、新しいアカウントでは低く設定されることがある。",
+      "text": "リージョンごとのアカウント全体の同時実行数の既定値は 1,000 で、Service Quotas で引き上げを申請できる。新しい AWS アカウントには引き下げられた同時実行数のクォータが適用され、AWS が利用状況に応じてこのクォータを自動で引き上げる。",
       "depth": "core",
       "sources": [
         {
@@ -203,7 +218,22 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
         }
       ],
-      "checkedAt": "2026-11-21",
+      "checkedAt": "2026-11-25",
+      "recheck": "default-value"
+    },
+    {
+      "id": "lambda.requests-per-second-limit",
+      "title": "毎秒のリクエスト数の上限はアカウントの同時実行数の 10 倍",
+      "kind": "quota",
+      "text": "アカウント内のすべての Lambda Event Functions を合わせた毎秒のリクエスト数の上限は、アカウントの同時実行数の 10 倍である。アカウントの同時実行数の上限が既定の 1,000 の場合、毎秒のリクエスト数の上限は 10,000 である。同時実行数と毎秒のリクエスト数は異なり、Event Function の同時実行を設定するときは両方を考慮する必要がある。",
+      "depth": "detail",
+      "sources": [
+        {
+          "title": "Understanding Lambda Event Function scaling",
+          "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
+        }
+      ],
+      "checkedAt": "2026-11-25",
       "recheck": "default-value"
     },
     {
@@ -268,7 +298,7 @@
       "title": "プロビジョニングされた同時実行で初期化済みの環境を用意する",
       "kind": "feature",
       "text": "プロビジョニングされた同時実行は、指定した数の実行環境をあらかじめ初期化して待機させる機能で、コールドスタートによる遅延を減らす。Web やモバイルのように遅延に敏感な処理に向く。使っていなくても、確保した分の追加料金がかかる。",
-      "examPoint": "コールドスタートの遅延を避けたいなら、プロビジョニングされた同時実行（Java は SnapStart も候補）。",
+      "examPoint": "コールドスタートの遅延を減らしたいなら、プロビジョニングされた同時実行。",
       "depth": "core",
       "sources": [
         {
@@ -280,7 +310,7 @@
           "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-concurrency.html"
         }
       ],
-      "checkedAt": "2026-11-21"
+      "checkedAt": "2026-11-25"
     },
     {
       "id": "lambda.provisioned-alias-only",
@@ -537,9 +567,13 @@
     {
       "title": "Lambda quotas",
       "url": "https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"
+    },
+    {
+      "title": "Lambda Managed Instances",
+      "url": "https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html"
     }
   ],
   "createdBy": "sc9",
   "createdAt": "2026-11-14",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }

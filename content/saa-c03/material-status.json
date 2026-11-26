@@ -195,10 +195,15 @@
     }
   },
   "lessons": {
+    "lesson-1.1-iam-basics": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "0be5976cc2e1"
+    },
     "lesson-1.1-roles-federation": {
       "status": "verified",
-      "checkedAt": "2026-11-24",
-      "hash": "81e0adeb3bd8"
+      "checkedAt": "2026-11-26",
+      "hash": "e57383ffeda4"
     }
   }
 }

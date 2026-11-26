@@ -1701,8 +1701,8 @@
   },
   "cmp-iam-organizations": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "11c4dfa07474"
+    "checkedAt": "2026-11-26",
+    "hash": "2becd12da98d"
   },
   "cmp-kinesis-data-streams-firehose": {
     "status": "verified",
@@ -3546,8 +3546,8 @@
   },
   "ec2.capacity-vs-discount": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "d2357ef33200"
+    "checkedAt": "2026-11-25",
+    "hash": "d36be5ab0336"
   },
   "ec2.create-action-condition": {
     "status": "verified",
@@ -3621,8 +3621,8 @@
   },
   "ec2.instance-type-change-stop": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "833786ab60a3"
+    "checkedAt": "2026-11-25",
+    "hash": "50fb45449f59"
   },
   "ec2.instance-types-families": {
     "status": "verified",
@@ -3641,8 +3641,13 @@
   },
   "ec2.placement-cluster": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "a4c1de483f7d"
+    "checkedAt": "2026-11-25",
+    "hash": "1ad946675807"
+  },
+  "ec2.placement-cluster-launch": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "28579a888ee4"
   },
   "ec2.placement-partition": {
     "status": "verified",
@@ -3671,8 +3676,8 @@
   },
   "ec2.purchase-options-choice": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b0dfcba7cf3f"
+    "checkedAt": "2026-11-25",
+    "hash": "aed5a905ff3d"
   },
   "ec2.ri-billed-regardless": {
     "status": "verified",
@@ -3719,15 +3724,25 @@
     "checkedAt": "2026-11-24",
     "hash": "331b51ed1b3d"
   },
+  "ec2.shared-responsibility-names": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "bb26d1734bf0"
+  },
   "ec2.spot-interruption-behavior": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "04297d2c67cc"
+    "checkedAt": "2026-11-25",
+    "hash": "f4199adc3ddc"
   },
   "ec2.spot-interruption-notice": {
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "0d73e286f1d1"
+  },
+  "ec2.spot-interruption-reasons": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "418b54ec48cc"
   },
   "ec2.spot-no-savings-plans": {
     "status": "verified",
@@ -5561,8 +5576,8 @@
   },
   "iam": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "8a337dfab65d"
+    "checkedAt": "2026-11-25",
+    "hash": "b2b063b5ada9"
   },
   "iam-identity-center": {
     "status": "verified",
@@ -5646,13 +5661,13 @@
   },
   "iam-identity-center.workforce-access-portal": {
     "status": "verified",
-    "checkedAt": "2026-11-16",
-    "hash": "b2fcf8f21ed8"
+    "checkedAt": "2026-11-25",
+    "hash": "acfc1643f0e4"
   },
   "iam.abac-tag-condition": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "795e7a43a79e"
+    "checkedAt": "2026-11-25",
+    "hash": "a071025201bd"
   },
   "iam.access-analyzer-policy-generation": {
     "status": "verified",
@@ -5676,8 +5691,8 @@
   },
   "iam.boundary-basics": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c5ae84280d3f"
+    "checkedAt": "2026-11-25",
+    "hash": "4b947b8b8262"
   },
   "iam.boundary-intersection-scp-session": {
     "status": "verified",
@@ -5691,8 +5706,8 @@
   },
   "iam.boundary-self-protection": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c0ba3b7cc173"
+    "checkedAt": "2026-11-25",
+    "hash": "34001595ccc9"
   },
   "iam.centralized-root-access": {
     "status": "verified",
@@ -5706,8 +5721,8 @@
   },
   "iam.credential-report": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "c3bf1a7860f1"
+    "checkedAt": "2026-11-25",
+    "hash": "dffba2a5ab4e"
   },
   "iam.cross-account-both-policies": {
     "status": "verified",
@@ -5721,8 +5736,8 @@
   },
   "iam.cross-service-source-org": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "43e975759f53"
+    "checkedAt": "2026-11-25",
+    "hash": "f2572e99e7d1"
   },
   "iam.eventual-consistency": {
     "status": "verified",
@@ -5751,18 +5766,18 @@
   },
   "iam.global-key-resourceorgid": {
     "status": "verified",
-    "checkedAt": "2026-11-20",
-    "hash": "5d8d978cb2c9"
+    "checkedAt": "2026-11-25",
+    "hash": "c2264ff455ef"
   },
   "iam.global-key-securetransport": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "f5d58e60c565"
+    "checkedAt": "2026-11-25",
+    "hash": "ac4f6415a37a"
   },
   "iam.global-no-charge": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b1ccf0dcf0ab"
+    "checkedAt": "2026-11-25",
+    "hash": "f95c0e18a299"
   },
   "iam.global-propagation": {
     "status": "verified",
@@ -5776,8 +5791,8 @@
   },
   "iam.iam-users-still-needed": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "33fef4b49434"
+    "checkedAt": "2026-11-25",
+    "hash": "0e759c986871"
   },
   "iam.identity-policy-types": {
     "status": "verified",
@@ -5796,13 +5811,13 @@
   },
   "iam.managed-vs-inline": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "dcfb09e67b05"
+    "checkedAt": "2026-11-25",
+    "hash": "22a32e36b9ae"
   },
   "iam.mfa-boolifexists-deny": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b5ed255dde01"
+    "checkedAt": "2026-11-25",
+    "hash": "10ce02912717"
   },
   "iam.mfa-key-absent-long-term": {
     "status": "verified",
@@ -5816,8 +5831,8 @@
   },
   "iam.oidc-trust-aud-sub": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "351d4984f230"
+    "checkedAt": "2026-11-25",
+    "hash": "d09a05556174"
   },
   "iam.password-policy-no-lockout": {
     "status": "verified",
@@ -5838,6 +5853,21 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "bebee547cf09"
+  },
+  "iam.policy-evaluation-exceptions": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "bac6bd236d68"
+  },
+  "iam.policy-json-document": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "9e4828a59e2e"
+  },
+  "iam.policy-resource-element": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "b1b6da583766"
   },
   "iam.poweruseraccess-no-iam": {
     "status": "verified",
@@ -5866,8 +5896,8 @@
   },
   "iam.role-trust-and-permissions": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "4c202e1dbe9e"
+    "checkedAt": "2026-11-25",
+    "hash": "0e71a83e4199"
   },
   "iam.role-vs-resource-policy-permissions": {
     "status": "verified",
@@ -5881,8 +5911,8 @@
   },
   "iam.roles-anywhere-profile": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "0222e157d1d7"
+    "checkedAt": "2026-11-25",
+    "hash": "655011b9a098"
   },
   "iam.roles-anywhere-trust-anchor": {
     "status": "verified",
@@ -5906,8 +5936,8 @@
   },
   "iam.root-user-tasks": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "195c50c71bcb"
+    "checkedAt": "2026-11-25",
+    "hash": "b346f57414be"
   },
   "iam.saml-federation-provider": {
     "status": "verified",
@@ -5916,13 +5946,13 @@
   },
   "iam.service-linked-role": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "26697d85ecb8"
+    "checkedAt": "2026-11-25",
+    "hash": "85eb063363a8"
   },
   "iam.source-key-availability": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "ad8621b9faa2"
+    "checkedAt": "2026-11-25",
+    "hash": "ed485cdcbec0"
   },
   "iam.switch-role-console": {
     "status": "verified",
@@ -6251,8 +6281,8 @@
   },
   "lambda": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "f8b295dbf978"
+    "checkedAt": "2026-11-25",
+    "hash": "b6fd4175e56b"
   },
   "lambda.async-invocation": {
     "status": "verified",
@@ -6266,8 +6296,8 @@
   },
   "lambda.concurrency-default": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "7bde8a72f03c"
+    "checkedAt": "2026-11-25",
+    "hash": "8bebb3e8b88f"
   },
   "lambda.concurrency-scaling-rate": {
     "status": "verified",
@@ -6311,8 +6341,13 @@
   },
   "lambda.layers": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d521db647524"
+    "checkedAt": "2026-11-25",
+    "hash": "7a83b5878a32"
+  },
+  "lambda.layers-zip-only": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "e34ed3d86951"
   },
   "lambda.managed-instances": {
     "status": "verified",
@@ -6321,8 +6356,8 @@
   },
   "lambda.memory-cpu": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "d1e985e3a303"
+    "checkedAt": "2026-11-25",
+    "hash": "3081ed76f412"
   },
   "lambda.pricing-model": {
     "status": "verified",
@@ -6341,13 +6376,18 @@
   },
   "lambda.provisioned-concurrency": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "fcb682fc45a1"
+    "checkedAt": "2026-11-25",
+    "hash": "2ca380625025"
   },
   "lambda.provisioned-within-reserved": {
     "status": "verified",
     "checkedAt": "2026-11-21",
     "hash": "455cf6f93ea8"
+  },
+  "lambda.requests-per-second-limit": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "cba4c9d97886"
   },
   "lambda.reserved-concurrency": {
     "status": "verified",
@@ -6361,8 +6401,8 @@
   },
   "lambda.shared-responsibility": {
     "status": "verified",
-    "checkedAt": "2026-11-21",
-    "hash": "3f0de9eaca61"
+    "checkedAt": "2026-11-25",
+    "hash": "5f206456149b"
   },
   "lambda.snapstart": {
     "status": "verified",
@@ -8041,8 +8081,13 @@
   },
   "s3.express-one-zone": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "a6dc50f294fe"
+    "checkedAt": "2026-11-25",
+    "hash": "5f5a2852ef1f"
+  },
+  "s3.express-one-zone-directory-bucket": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "2b89e240a4d5"
   },
   "s3.glacier-instant-retrieval": {
     "status": "verified",
@@ -8101,8 +8146,8 @@
   },
   "s3.mrap-failover": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "b4547bfdd475"
+    "checkedAt": "2026-11-25",
+    "hash": "a366d2046d03"
   },
   "s3.multi-key-atomicity": {
     "status": "verified",
@@ -8161,8 +8206,18 @@
   },
   "s3.requester-pays": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "e6ba35c2956d"
+    "checkedAt": "2026-11-25",
+    "hash": "a163736d47cc"
+  },
+  "s3.requester-pays-authentication": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "3c54b9141c82"
+  },
+  "s3.requester-pays-request-header": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "27bbed05f847"
   },
   "s3.shared-responsibility-abstracted": {
     "status": "verified",
@@ -8181,8 +8236,8 @@
   },
   "s3.storage-classes": {
     "status": "verified",
-    "checkedAt": "2026-11-14",
-    "hash": "171bf6298c23"
+    "checkedAt": "2026-11-25",
+    "hash": "ed37f6952ffe"
   },
   "s3.storage-lens": {
     "status": "verified",
@@ -9246,13 +9301,13 @@
   },
   "sts.confused-deputy-external-id-issuer": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "1babdd85ec9b"
+    "checkedAt": "2026-11-25",
+    "hash": "3b9742e2ab45"
   },
   "sts.get-session-token-api-limits": {
     "status": "verified",
-    "checkedAt": "2026-11-24",
-    "hash": "6fa140b594e7"
+    "checkedAt": "2026-11-25",
+    "hash": "40c32c672eee"
   },
   "sts.get-session-token-long-term-keys": {
     "status": "verified",
@@ -9263,6 +9318,11 @@
     "status": "verified",
     "checkedAt": "2026-11-14",
     "hash": "91e1161399ae"
+  },
+  "sts.get-session-token-sts-apis": {
+    "status": "verified",
+    "checkedAt": "2026-11-25",
+    "hash": "ae4a52d4ab94"
   },
   "sts.regional-endpoints": {
     "status": "verified",
