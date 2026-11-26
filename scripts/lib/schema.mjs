@@ -770,6 +770,49 @@ export const SIM_CONFIG_SCHEMAS = {
       flow: z.object({ from: id, to: id, port, clientPort: port.min(1024) }).strict(),
     }).strict();
   })(),
+  iam: (() => {
+    const account = z.string().regex(/^\d{12}$/);
+    const name = z.string().regex(/^[a-z0-9-]{1,32}$/);
+    const orgId = z.string().regex(/^o-[a-z0-9]{10,32}$/);
+    const tls = z.object({ key: z.literal('aws:SecureTransport'), value: z.boolean() }).strict();
+    const orgCondition = z.object({ key: z.literal('aws:PrincipalOrgID'), value: orgId }).strict();
+    const statement = z.object({
+      effect: z.enum(['Allow', 'Deny']),
+      actions: z.array(z.string()).min(1).max(4),
+      resources: z.array(z.string()).min(1).max(4),
+      condition: tls.optional(),
+    }).strict();
+    const scp = z.object({
+      at: z.enum(['root', 'ou', 'account']),
+      statements: z.array(statement.extend({ resources: z.tuple([z.literal('*')]) })).min(1).max(4),
+    }).strict();
+    const resourceStatement = statement.extend({
+      principal: z.union([z.literal('*'), z.object({ arn: z.string() }).strict()]),
+      condition: z.discriminatedUnion('key', [tls, orgCondition]).optional(),
+    });
+    return z.object({
+      op: z.literal('evaluate'),
+      principal: z.discriminatedUnion('kind', [
+        z.object({ kind: z.literal('user'), name, account }).strict(),
+        z.object({ kind: z.literal('role'), name, account }).strict(),
+        z.object({ kind: z.literal('root'), account }).strict(),
+      ]),
+      org: z.discriminatedUnion('membership', [
+        z.object({ membership: z.literal('none') }).strict(),
+        z.object({ membership: z.literal('member'), id: orgId }).strict(),
+        z.object({ membership: z.literal('management'), id: orgId }).strict(),
+      ]),
+      request: z.object({ action: z.string(), tls: z.boolean() }).strict(),
+      resource: z.object({ arn: z.string(), account }).strict(),
+      scps: z.array(scp).min(2).max(3).refine((levels) =>
+        ['root,account', 'root,ou,account'].includes(levels.map(({ at }) => at).join(',')), {
+        message: 'SCP はルート、OU（任意）、アカウントの順に指定してください。',
+      }).nullable(),
+      identityPolicy: z.array(statement).max(4),
+      boundary: z.array(statement).min(1).max(4).nullable(),
+      resourcePolicy: z.array(resourceStatement).min(1).max(4).nullable(),
+    }).strict();
+  })(),
 };
 // ミニラボ・設計パターン（Markdown の front matter）
 export const LAB_ID = /^lab-[a-z0-9][a-z0-9-]{1,60}$/;

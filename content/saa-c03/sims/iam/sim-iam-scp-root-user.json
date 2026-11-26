@@ -1,0 +1,183 @@
+{
+  "id": "sim-iam-scp-root-user",
+  "title": "ルートユーザーなら SCP を越えられるか",
+  "intro": "組織のメンバーであるアカウント A のルートユーザーが、同じアカウントの CloudTrail の証跡 `org-audit` のログ記録を停止しようとします。組織のルート、組織単位（OU）、アカウントの SCP には、Action と Resource に `*` を指定した Allow があります。OU の SCP には、`cloudtrail:StopLogging` と `cloudtrail:DeleteTrail` を拒否する Deny もあります。",
+  "predict": {
+    "text": "ルートユーザーのこのリクエストはどうなりますか。",
+    "key": "decision",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "allow"
+      },
+      {
+        "text": "拒否される（暗黙の拒否）",
+        "value": "implicit-deny"
+      },
+      {
+        "text": "拒否される（明示的な拒否）",
+        "value": "explicit-deny"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "root",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "member",
+      "id": "o-exampleorgid"
+    },
+    "request": {
+      "action": "cloudtrail:StopLogging",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:cloudtrail:ap-northeast-1:111122223333:trail/org-audit",
+      "account": "111122223333"
+    },
+    "scps": [
+      {
+        "at": "root",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      },
+      {
+        "at": "ou",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          },
+          {
+            "effect": "Deny",
+            "actions": [
+              "cloudtrail:StopLogging",
+              "cloudtrail:DeleteTrail"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      },
+      {
+        "at": "account",
+        "statements": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      }
+    ],
+    "identityPolicy": [],
+    "boundary": null,
+    "resourcePolicy": null
+  },
+  "toggles": [
+    {
+      "id": "get-status",
+      "label": "証跡の状態を確認する",
+      "set": {
+        "request": {
+          "action": "cloudtrail:GetTrailStatus",
+          "tls": true
+        }
+      }
+    },
+    {
+      "id": "iam-user",
+      "label": "IAM ユーザーに変える",
+      "set": {
+        "principal": {
+          "kind": "user",
+          "name": "admin-aki",
+          "account": "111122223333"
+        }
+      }
+    },
+    {
+      "id": "management-account",
+      "label": "管理アカウントに変える",
+      "set": {
+        "org": {
+          "membership": "management",
+          "id": "o-exampleorgid"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "explicit-deny",
+      "blocker": "explicit-deny",
+      "denyIn": [
+        "scp-ou"
+      ],
+      "allowed": false,
+      "crossAccount": false
+    },
+    "toggles": {
+      "get-status": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "iam-user": {
+        "decision": "explicit-deny",
+        "blocker": "explicit-deny",
+        "allowed": false,
+        "crossAccount": false
+      },
+      "management-account": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:scp-root-user}}。OU の SCP の Deny が `cloudtrail:StopLogging` に当てはまるため、ルートユーザーでも明示的に拒否されます。",
+    "toggles": {
+      "get-status": "証跡の状態を確認する `cloudtrail:GetTrailStatus` に変えると、OU の Deny は当てはまりません。{{rule:root-full-access}}。すべての階層の SCP に許可があるため、ルートユーザーは証跡の状態を確認できます。",
+      "iam-user": "リクエストする人を同じメンバーアカウントの IAM ユーザー `admin-aki` に変えても、OU の SCP の Deny がログ記録の停止に当てはまるため、明示的な拒否のままです。",
+      "management-account": "{{rule:scp-management}}。アカウント A を管理アカウントに変えると、OU の SCP の Deny に制限されず、ルートユーザーはログ記録を停止できます。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "organizations.scp-allow-at-every-level",
+    "organizations.scp-deny-inheritance",
+    "organizations.scp-member-root",
+    "iam.policy-resource-element",
+    "iam.identity-policy-types",
+    "organizations.scp-permission-ceiling",
+    "organizations.scp-management-exemption"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}

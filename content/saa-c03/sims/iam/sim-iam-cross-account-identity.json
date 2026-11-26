@@ -1,0 +1,175 @@
+{
+  "id": "sim-iam-cross-account-identity",
+  "title": "バケットポリシーで名指しされていれば読めるか",
+  "intro": "アカウント A の IAM ユーザー `kenji` が、アカウント B の S3 バケット `partner-data` の `2026/sales.csv` を読み取ろうとします。アイデンティティベースのポリシーは、`team-a-data` のオブジェクトの読み取りを許可しています。`partner-data` のバケットポリシーは、`kenji` の ARN を指定して `partner-data` のオブジェクトの読み取りを許可しています。",
+  "predict": {
+    "text": "この読み取りリクエストの結果と理由はどれですか。",
+    "key": "blocker",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "none"
+      },
+      {
+        "text": "拒否される（バケット側の許可がない）",
+        "value": "resource-side"
+      },
+      {
+        "text": "拒否される（ユーザー側の許可がない）",
+        "value": "identity-side"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "user",
+      "name": "kenji",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "none"
+    },
+    "request": {
+      "action": "s3:GetObject",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:s3:::partner-data/2026/sales.csv",
+      "account": "444455556666"
+    },
+    "scps": null,
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::team-a-data/*"
+        ]
+      }
+    ],
+    "boundary": null,
+    "resourcePolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::partner-data/*"
+        ],
+        "principal": {
+          "arn": "arn:aws:iam::111122223333:user/kenji"
+        }
+      }
+    ]
+  },
+  "toggles": [
+    {
+      "id": "add-identity",
+      "label": "ユーザー側に読み取りの許可を足す",
+      "set": {
+        "identityPolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::team-a-data/*"
+            ]
+          },
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::partner-data/*"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "same-account",
+      "label": "バケットをアカウント A に変える",
+      "set": {
+        "resource": {
+          "arn": "arn:aws:s3:::partner-data/2026/sales.csv",
+          "account": "111122223333"
+        }
+      }
+    },
+    {
+      "id": "principal-account",
+      "label": "Principal をルートユーザーの ARN にする",
+      "set": {
+        "resourcePolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::partner-data/*"
+            ],
+            "principal": {
+              "arn": "arn:aws:iam::111122223333:root"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "implicit-deny",
+      "blocker": "identity-side",
+      "allowed": false,
+      "crossAccount": true
+    },
+    "toggles": {
+      "add-identity": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": true
+      },
+      "same-account": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "principal-account": {
+        "decision": "implicit-deny",
+        "blocker": "identity-side",
+        "allowed": false,
+        "crossAccount": true
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:cross-account-both}}。バケットポリシーは `kenji` に読み取りを許可しています。ユーザー側のポリシーには `partner-data` のオブジェクトを読み取る許可がないため、暗黙に拒否されます。",
+    "toggles": {
+      "add-identity": "アイデンティティベースのポリシーに `partner-data` のオブジェクトを読み取る許可を足すと、ユーザー側とバケット側の両方に許可がそろい、読み取れます。",
+      "same-account": "{{rule:boundary-user-direct}}。バケットを `kenji` と同じアカウント A に変えると、バケットポリシーが `kenji` の ARN に直接与えた許可で読み取れます。",
+      "principal-account": "バケットポリシーの Principal を `kenji` の ARN から、アカウント A のルートユーザーの ARN（`arn:aws:iam::111122223333:root`）に変えます。{{rule:principal-account}}。対象は別のアカウントのリソースなので、ユーザー側のアイデンティティベースのポリシーによる許可は引き続き必要で、この設定では暗黙に拒否されます。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "iam.identity-policy-types",
+    "iam.cross-account-both-policies",
+    "s3.bucket-policy",
+    "iam.policy-resource-element",
+    "iam.policy-evaluation-allow-deny",
+    "iam.boundary-resource-policy",
+    "iam.global-key-principalarn"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}

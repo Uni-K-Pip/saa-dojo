@@ -326,7 +326,7 @@ describe('行きと戻りの段', () => {
     });
     expect(prefixList.output.delivered).toBe(true);
     expect(prefixList.rules).toContain('sg-prefix-list');
-    expect(SIMULATORS.map(({ id }) => id)).toEqual(['cidr', 'trace']);
+    expect(SIMULATORS.map(({ id }) => id)).toEqual(['cidr', 'trace', 'iam']);
     expect(SIMULATORS[1].engine.OUTPUT_KEYS).toBe(OUTPUT_KEYS);
   });
 });

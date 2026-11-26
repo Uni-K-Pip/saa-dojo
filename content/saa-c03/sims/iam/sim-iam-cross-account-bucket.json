@@ -1,0 +1,158 @@
+{
+  "id": "sim-iam-cross-account-bucket",
+  "title": "別のアカウントのバケットを読めるか",
+  "intro": "組織 `o-exampleorgid` のメンバーであるアカウント A の IAM ロール `analytics-role` が、アカウント B の S3 バケット `partner-data` の `2026/sales.csv` を読み取ろうとします。アイデンティティベースのポリシーは、このバケット内のオブジェクトの読み取りを許可しています。バケットポリシーはありません。",
+  "predict": {
+    "text": "この読み取りリクエストの結果と理由はどれですか。",
+    "key": "blocker",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "none"
+      },
+      {
+        "text": "拒否される（バケット側の許可がない）",
+        "value": "resource-side"
+      },
+      {
+        "text": "拒否される（ロール側の許可がない）",
+        "value": "identity-side"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "role",
+      "name": "analytics-role",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "member",
+      "id": "o-exampleorgid"
+    },
+    "request": {
+      "action": "s3:GetObject",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:s3:::partner-data/2026/sales.csv",
+      "account": "444455556666"
+    },
+    "scps": null,
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::partner-data/*"
+        ]
+      }
+    ],
+    "boundary": null,
+    "resourcePolicy": null
+  },
+  "toggles": [
+    {
+      "id": "allow-role",
+      "label": "バケット側でロールを指定する",
+      "set": {
+        "resourcePolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::partner-data/*"
+            ],
+            "principal": {
+              "arn": "arn:aws:iam::111122223333:role/analytics-role"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "allow-org",
+      "label": "バケット側で組織を指定する",
+      "set": {
+        "resourcePolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "arn:aws:s3:::partner-data/*"
+            ],
+            "principal": "*",
+            "condition": {
+              "key": "aws:PrincipalOrgID",
+              "value": "o-exampleorgid"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "same-account",
+      "label": "バケットをアカウント A に変える",
+      "set": {
+        "resource": {
+          "arn": "arn:aws:s3:::partner-data/2026/sales.csv",
+          "account": "111122223333"
+        }
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "implicit-deny",
+      "blocker": "resource-side",
+      "allowed": false,
+      "crossAccount": true
+    },
+    "toggles": {
+      "allow-role": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": true
+      },
+      "allow-org": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": true
+      },
+      "same-account": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:cross-account-both}}。ロール側には許可があります。バケット側の許可がないため、読み取りは暗黙に拒否されます。",
+    "toggles": {
+      "allow-role": "バケットポリシーで `analytics-role` の ARN を指定して読み取りを許可すると、バケット側とロール側の両方に許可がそろい、読み取れます。",
+      "allow-org": "バケットポリシーに Principal が `*` で `aws:PrincipalOrgID` が `o-exampleorgid` に一致することを条件とした Allow を追加すると、`analytics-role` のリクエストはその条件を満たします。ロール側とバケット側の両方に許可がそろうため、読み取れます。",
+      "same-account": "バケットをロールと同じアカウント A に変えます。この設定では、ロール側のポリシーが `partner-data` のオブジェクトの読み取りを許可しているため、読み取れます。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "iam.identity-policy-types",
+    "iam.cross-account-both-policies",
+    "iam.policy-resource-element",
+    "s3.bucket-policy",
+    "iam.principal-wildcard-orgid",
+    "iam.global-key-principalorgid"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}

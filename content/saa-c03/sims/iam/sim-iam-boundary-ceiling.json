@@ -1,0 +1,141 @@
+{
+  "id": "sim-iam-boundary-ceiling",
+  "title": "権限の境界は何を決めるか",
+  "intro": "アカウント A の IAM ユーザー `dev-taro` が、同じアカウントの S3 バケット `example-reports` の `2026/q1.csv` を削除しようとします。アイデンティティベースのポリシーは、このバケット内のオブジェクトの読み取りと削除を許可しています。権限の境界の Allow は、アクションに `s3:GetObject` と `s3:PutObject`、リソースに `*` を指定しています。",
+  "predict": {
+    "text": "この削除リクエストの結果と理由はどれですか。",
+    "key": "blocker",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "none"
+      },
+      {
+        "text": "拒否される（権限の境界に許可がない）",
+        "value": "boundary"
+      },
+      {
+        "text": "拒否される（アイデンティティベースのポリシーに許可がない）",
+        "value": "no-allow"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "user",
+      "name": "dev-taro",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "none"
+    },
+    "request": {
+      "action": "s3:DeleteObject",
+      "tls": true
+    },
+    "resource": {
+      "arn": "arn:aws:s3:::example-reports/2026/q1.csv",
+      "account": "111122223333"
+    },
+    "scps": null,
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject",
+          "s3:DeleteObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::example-reports/*"
+        ]
+      }
+    ],
+    "boundary": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        "resources": [
+          "*"
+        ]
+      }
+    ],
+    "resourcePolicy": null
+  },
+  "toggles": [
+    {
+      "id": "get-object",
+      "label": "読み取りに変える",
+      "set": {
+        "request": {
+          "action": "s3:GetObject",
+          "tls": true
+        }
+      }
+    },
+    {
+      "id": "put-object",
+      "label": "書き込みに変える",
+      "set": {
+        "request": {
+          "action": "s3:PutObject",
+          "tls": true
+        }
+      }
+    },
+    {
+      "id": "remove-boundary",
+      "label": "権限の境界を外す",
+      "set": {
+        "boundary": null
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "implicit-deny",
+      "blocker": "boundary",
+      "allowed": false,
+      "crossAccount": false
+    },
+    "toggles": {
+      "get-object": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "put-object": {
+        "decision": "implicit-deny",
+        "blocker": "no-allow",
+        "allowed": false,
+        "crossAccount": false
+      },
+      "remove-boundary": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "{{rule:boundary-ceiling}}。アイデンティティベースのポリシーには削除の許可があります。権限の境界に削除の許可がないため、このリクエストは暗黙に拒否されます。",
+    "toggles": {
+      "get-object": "読み取りに変えると、アイデンティティベースのポリシーと権限の境界の両方が `s3:GetObject` を許可しているため、読み取れます。",
+      "put-object": "書き込みに変えると、権限の境界の Allow が当てはまります。境界自体は権限を付与しないため、アイデンティティベースのポリシーに書き込みの許可がないこのリクエストは暗黙に拒否されます。",
+      "remove-boundary": "権限の境界を外すと、アイデンティティベースのポリシーにある `s3:DeleteObject` の許可でオブジェクトを削除できます。"
+    }
+  },
+  "factRefs": [
+    "iam.implicit-deny",
+    "iam.identity-policy-types",
+    "iam.boundary-basics",
+    "iam.policy-resource-element"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}

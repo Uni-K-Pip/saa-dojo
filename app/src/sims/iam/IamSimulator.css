@@ -1,0 +1,120 @@
+.iam-result,
+.iam-explore {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.iam-result,
+.iam-fields,
+.iam-stage-groups,
+.iam-stage-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.iam-summary {
+  padding: 0.65rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.iam-stage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.iam-stage,
+.iam-statement {
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.iam-stage { border-inline-start-width: 4px; }
+.iam-stage.iam-stage-blocked {
+  border-color: var(--ng);
+  background: var(--ng-bg);
+}
+
+.iam-stage.iam-stage-muted {
+  border-inline-start-width: 1px;
+  color: var(--muted);
+}
+
+.iam-result p,
+.iam-statement dl { margin: 0; }
+.iam-stage p + p { margin-block-start: 0.35rem; }
+
+.iam-stage-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.45rem;
+}
+
+.iam-stage-heading > * { min-width: 0; }
+.iam-stage-number { color: var(--muted); font-weight: 700; }
+.iam-state-allow, .iam-state-clear { color: var(--ok); }
+.iam-state-deny, .iam-error { color: var(--ng); }
+
+.iam-policies > summary {
+  min-height: 44px;
+  padding-block: 0.55rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.iam-policy + .iam-policy { margin-block-start: 0.65rem; }
+.iam-statement + .iam-statement { margin-block-start: 0.35rem; }
+.iam-statement dt, .iam-statement dd { display: inline; }
+.iam-statement dt { font-weight: 600; }
+.iam-statement dt::after { content: ': '; }
+.iam-statement dd { margin: 0; }
+
+.iam-match-badge {
+  display: inline-block;
+  padding-inline: 0.4rem;
+  margin-block-end: 0.35rem;
+  color: var(--text);
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: max(12px, 0.85rem);
+  font-weight: 600;
+}
+
+.iam-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.2rem;
+}
+
+.iam-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding-inline: 0.55rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.iam-field select:disabled {
+  color: var(--muted);
+  background: var(--surface-2);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .iam-stage { animation: iam-stage-appear 120ms ease-out backwards; }
+}
+
+@keyframes iam-stage-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

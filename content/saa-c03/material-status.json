@@ -134,6 +134,31 @@
       "checkedAt": "2026-11-23",
       "hash": "c384b840a82b"
     },
+    "sim-iam-boundary-ceiling": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "0c1703cfea54"
+    },
+    "sim-iam-cross-account-bucket": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "c25f597e9ebc"
+    },
+    "sim-iam-cross-account-identity": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "f4c2e5129c76"
+    },
+    "sim-iam-explicit-deny": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "400ca695c98a"
+    },
+    "sim-iam-implicit-deny": {
+      "status": "verified",
+      "checkedAt": "2026-11-26",
+      "hash": "046b376d0203"
+    },
     "sim-trace-gateway-endpoint": {
       "status": "verified",
       "checkedAt": "2026-11-24",

@@ -1,0 +1,159 @@
+{
+  "id": "sim-iam-explicit-deny",
+  "title": "許可があっても拒否されるのはどんなときか",
+  "intro": "アカウント A の IAM ユーザー `hana` が、同じアカウントの S3 バケット `example-reports` の `2026/q1.csv` を TLS を使わずに読み取ろうとします。アイデンティティベースのポリシーは、このバケットのオブジェクトの読み取りと書き込みを許可しています。バケットポリシーの Deny は、Action が `s3:*`、Principal が `*` で、バケットとその中のオブジェクトに対する `aws:SecureTransport` が `false` のリクエストを対象にしています。",
+  "predict": {
+    "text": "TLS を使わないこの読み取りリクエストはどうなりますか。",
+    "key": "decision",
+    "choices": [
+      {
+        "text": "許可される",
+        "value": "allow"
+      },
+      {
+        "text": "拒否される（暗黙の拒否）",
+        "value": "implicit-deny"
+      },
+      {
+        "text": "拒否される（明示的な拒否）",
+        "value": "explicit-deny"
+      }
+    ]
+  },
+  "config": {
+    "op": "evaluate",
+    "principal": {
+      "kind": "user",
+      "name": "hana",
+      "account": "111122223333"
+    },
+    "org": {
+      "membership": "none"
+    },
+    "request": {
+      "action": "s3:GetObject",
+      "tls": false
+    },
+    "resource": {
+      "arn": "arn:aws:s3:::example-reports/2026/q1.csv",
+      "account": "111122223333"
+    },
+    "scps": null,
+    "identityPolicy": [
+      {
+        "effect": "Allow",
+        "actions": [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        "resources": [
+          "arn:aws:s3:::example-reports/*"
+        ]
+      }
+    ],
+    "boundary": null,
+    "resourcePolicy": [
+      {
+        "effect": "Deny",
+        "actions": [
+          "s3:*"
+        ],
+        "resources": [
+          "arn:aws:s3:::example-reports",
+          "arn:aws:s3:::example-reports/*"
+        ],
+        "principal": "*",
+        "condition": {
+          "key": "aws:SecureTransport",
+          "value": false
+        }
+      }
+    ]
+  },
+  "toggles": [
+    {
+      "id": "use-tls",
+      "label": "TLS を使う",
+      "set": {
+        "request": {
+          "action": "s3:GetObject",
+          "tls": true
+        }
+      }
+    },
+    {
+      "id": "allow-all",
+      "label": "ユーザー側の許可を広げる",
+      "set": {
+        "identityPolicy": [
+          {
+            "effect": "Allow",
+            "actions": [
+              "*"
+            ],
+            "resources": [
+              "*"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "remove-deny",
+      "label": "バケットポリシーを外す",
+      "set": {
+        "resourcePolicy": null
+      }
+    }
+  ],
+  "expect": {
+    "initial": {
+      "decision": "explicit-deny",
+      "blocker": "explicit-deny",
+      "denyIn": [
+        "resource-policy"
+      ],
+      "allowed": false,
+      "crossAccount": false
+    },
+    "toggles": {
+      "use-tls": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      },
+      "allow-all": {
+        "decision": "explicit-deny",
+        "blocker": "explicit-deny",
+        "allowed": false,
+        "crossAccount": false
+      },
+      "remove-deny": {
+        "decision": "allow",
+        "blocker": "none",
+        "allowed": true,
+        "crossAccount": false
+      }
+    }
+  },
+  "explain": {
+    "initial": "TLS を使っていないので、`aws:SecureTransport` が `false` になり、バケットポリシーの Deny が当てはまります。{{rule:explicit-deny}}。読み取りの許可があっても、このリクエストは明示的に拒否されます。",
+    "toggles": {
+      "use-tls": "TLS を使うと `aws:SecureTransport` が `true` になり、バケットポリシーの Deny の条件に当てはまりません。アイデンティティベースのポリシーの許可で読み取れます。",
+      "allow-all": "ユーザー側の Allow の Action と Resource を `*` に変えても、バケットポリシーの Deny が引き続き当てはまるため、明示的な拒否のままです。",
+      "remove-deny": "バケットポリシーを外すと、TLS を使わない読み取りに当てはまっていた Deny がなくなり、アイデンティティベースのポリシーの許可で読み取れます。"
+    }
+  },
+  "factRefs": [
+    "iam.principal-wildcard-orgid",
+    "iam.implicit-deny",
+    "iam.policy-evaluation-allow-deny",
+    "iam.identity-policy-types",
+    "iam.global-key-securetransport",
+    "s3.bucket-policy",
+    "iam.policy-resource-element"
+  ],
+  "lessonRefs": [],
+  "createdBy": "v8"
+}
