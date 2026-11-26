@@ -1,4 +1,5 @@
 // Markdown の変換プラグイン。囲み記事（`> **試験のポイント**`・`> **ひっかけ注意**`）を色付きの枠にする。
+import type { Element, Root as HastRoot, RootContent as HastContent } from 'hast';
 import type { Blockquote, Parent, Root, RootContent } from 'mdast';
 import type { Plugin } from 'unified';
 import { inlineCheckId, isInlineCheckBlockquote, parseInlineChecks } from '../../../scripts/lib/inline-check.mjs';
@@ -32,6 +33,40 @@ function walk(node: Parent, visit: (bq: Blockquote) => RootContent[] | void): vo
     }
     if ('children' in child) walk(child as Parent, visit);
   }
+}
+
+const SHORT_CELL_LENGTH = 6;
+const SHORT_CELL_MAX_COLUMNS = 3;
+
+function hastText(node: HastRoot | HastContent): string {
+  if (node.type === 'text') return node.value;
+  return 'children' in node ? node.children.map(hastText).join('') : '';
+}
+
+/**
+ * 3 列までの表で、各行の第 1 列のセルが短い（6 字まで）とき、`cell-short` の印を付ける（CSS で折り返さないようにする）。
+ * 幅の狭い画面で、長い文の列に押されて、短い見出しが 1〜2 字ずつに折り返されるのを防ぐ。
+ */
+export function rehypeShortFirstCells() {
+  const visit = (node: HastRoot | Element): void => {
+    for (const child of node.children) {
+      if (child.type !== 'element') continue;
+      if (child.tagName !== 'tr') {
+        visit(child);
+        continue;
+      }
+      const cells = child.children.filter((item): item is Element => item.type === 'element');
+      // 列の多い表は、第 1 列を広げるとほかの列が 1〜2 字ずつになるので、変えない
+      if (cells.length > SHORT_CELL_MAX_COLUMNS) continue;
+      const cell = cells.at(0);
+      const length = cell ? [...hastText(cell).trim()].length : 0;
+      if (cell && length > 0 && length <= SHORT_CELL_LENGTH) {
+        const className = cell.properties.className;
+        cell.properties.className = [...(Array.isArray(className) ? className : []), 'cell-short'];
+      }
+    }
+  };
+  return (tree: HastRoot) => visit(tree);
 }
 
 export function remarkCallouts() {

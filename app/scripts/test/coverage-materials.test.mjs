@@ -247,6 +247,16 @@ describe('図鑑の core の事実の到達', () => {
     expect(coreFactReach(f, { texts: text, entryOf }).reach.all.reached).toBe(1);
     expect(coreFactReach(f, { texts: text }).reach.all.reached).toBe(0);
   });
+  it('コードの中（フェンス、文中のコード）に書いた図鑑リンクは、到達に数えない', () => {
+    const f = [{ id: 's3.a', tier: 1, depth: 'core' }, { id: 's3.b', tier: 1, depth: 'core' }, { id: 's3.c', tier: 1, depth: 'core' }];
+    const text = [
+      '書き方の例:', '', '```markdown', '[S3](#/services/s3?f=a)', '```', '',
+      '文中のコード `[S3](#/services/s3?f=b)` も数えない。', '', '[本文のリンク](#/services/s3?f=c)',
+    ].join('\n');
+    const r = coreFactReach(f, { texts: [text] });
+    expect(r.reach.all).toMatchObject({ total: 3, reached: 1 });
+    expect(r.linkedFacts).toBe(1);
+  });
   it('core がなければ割合は null', () => {
     expect(coreFactReach([], {}).reach.tier1).toEqual({ total: 0, reached: 0, percent: null });
   });

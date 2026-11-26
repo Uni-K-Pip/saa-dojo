@@ -111,3 +111,9 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
 }
+
+/* 印刷: 段のカードとサブネットの塊は紙 1 枚より短いので、ページの途中で切らない */
+@media print {
+  .trace-stage,
+  .trace-subnet { break-inside: avoid; }
+}

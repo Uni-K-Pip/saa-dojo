@@ -6,7 +6,7 @@ import { artifactRefOf, diagramRefOf } from '../../../scripts/lib/diagram-refs.m
 import { ArtifactRef } from './ArtifactRef';
 import { DiagramRef } from './DiagramRef';
 import { CheckAnswerContext, InlineCheck, InlineCheckOption, InlineCheckReason, type CheckAnswer } from './InlineCheck';
-import { remarkCallouts, remarkInlineChecks } from './markdown-plugins';
+import { rehypeShortFirstCells, remarkCallouts, remarkInlineChecks } from './markdown-plugins';
 
 const QUESTION_ID = /^saa-(?:basics|[1-4]\.[1-5])-[a-z][a-z0-9]{0,5}-\d{3}$/;
 
@@ -70,7 +70,7 @@ export function Markdown({ children, renderQuestionRef, onCheckAnswer }: Props) 
   return (
     <div className="markdown">
       <CheckAnswerContext.Provider value={onCheckAnswer}>
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkInlineChecks, remarkCallouts]} components={components} skipHtml>
+        <ReactMarkdown remarkPlugins={[remarkGfm, remarkInlineChecks, remarkCallouts]} rehypePlugins={[rehypeShortFirstCells]} components={components} skipHtml>
           {children}
         </ReactMarkdown>
       </CheckAnswerContext.Provider>

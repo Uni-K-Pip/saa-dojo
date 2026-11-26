@@ -144,6 +144,9 @@ export const OUTPUT_KEYS = {
 
 const ANY_IPV4 = '0.0.0.0/0';
 const S3 = 'pl-s3';
+// S3 の IP 範囲に当たらないとわかる範囲（プライベートの範囲と文書用のアドレス）。VPC の範囲も同じに扱う
+const NOT_S3_RANGES = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '192.0.2.0/24', '198.51.100.0/24', '203.0.113.0/24'].map(parseCidr);
+const S3_RANGE_MESSAGE = 'S3 との通信を追う設定では、S3 の IP 範囲に当たりうる CIDR を扱いません。0.0.0.0/0 のほかは、VPC の範囲、プライベートの範囲、文書用のアドレスに収まる CIDR を指定してください。';
 const directions = ['inbound', 'outbound'];
 const isRecord = (value) => Object.prototype.toString.call(value) === '[object Object]';
 const isString = (value) => typeof value === 'string';
@@ -238,6 +241,11 @@ function prepare(config) {
   const ref = (record, id, field) => {
     requireInput(Object.hasOwn(record, id), 'unknown-ref', `${id} が設定にありません。`, field);
   };
+  // S3 との通信では、S3 に当たるルートとルールを 0.0.0.0/0 と S3 のプレフィックスリストだけとして計算する（S3 の IP 範囲は扱わない）。
+  // S3 の IP 範囲に当たりうる CIDR を書いた設定は、当たらないものとして黙って計算せずに、入力で拒否する
+  const s3Flow = config.externals.some(({ id, kind }) => kind === 's3' && (id === flow.from || id === flow.to));
+  const requireNotS3Range = (block, field) => requireInput(!s3Flow || !block || block.prefix === 0 ||
+    [vpc, ...NOT_S3_RANGES].some((range) => includes(range, block.start) && includes(range, block.end)), 'flow', S3_RANGE_MESSAGE, field);
   const subnets = new Map();
   for (const [index, subnet] of config.subnets.entries()) {
     const field = `subnets.${index}`;
@@ -274,6 +282,7 @@ function prepare(config) {
     }
     const address = readAddress(external.ip, `${field}.ip`, true).start;
     requireInput(!includes(vpc, address), 'host-address', 'インターネットの相手には VPC の範囲外のアドレスを指定してください。', `${field}.ip`);
+    requireInput(!addresses.has(address), 'host-address', 'インターネットの相手には、ほかの相手と重ならないアドレスを指定してください。', `${field}.ip`);
     addresses.add(address);
     endpoints.set(external.id, { ...external, address });
   }
@@ -300,6 +309,7 @@ function prepare(config) {
         'S3 のプレフィックスリストとゲートウェイエンドポイントは組にしてください。', field);
       requireInput(!block || dest === ANY_IPV4 || !overlaps(vpc, block), 'route',
         '既定ルート以外は VPC の範囲と重ならない宛先を指定してください。', `${field}.dest`);
+      requireNotS3Range(block, `${field}.dest`);
       if (isNatRoute({ target })) {
         const nat = endpoints.get(target.slice(4));
         requireInput(isNat(nat), 'unknown-ref', 'ルートが指す NAT ゲートウェイが設定にありません。', `${field}.target`);
@@ -314,9 +324,12 @@ function prepare(config) {
   }
 
   const nacls = new Map(Object.entries(config.nacls).map(([id, acl]) => [id, acl === 'default' ? acl :
-    Object.fromEntries(directions.map((dir) => [dir, acl[dir].map((rule, index) => ({
-      ...rule, block: readAddress(rule.cidr, `nacls.${id}.${dir}.${index}.cidr`),
-    })).sort((a, b) => a.rule - b.rule)]))]));
+    Object.fromEntries(directions.map((dir) => [dir, acl[dir].map((rule, index) => {
+      const field = `nacls.${id}.${dir}.${index}.cidr`;
+      const block = readAddress(rule.cidr, field);
+      requireNotS3Range(block, field);
+      return { ...rule, block };
+    }).sort((a, b) => a.rule - b.rule)]))]));
   const securityGroups = new Map(Object.entries(config.securityGroups).map(([id, group]) => [id,
     Object.fromEntries(directions.map((dir) => [dir, group[dir]?.map((rule, index) => {
       const field = `securityGroups.${id}.${dir}.${index}.peer`;
@@ -324,7 +337,10 @@ function prepare(config) {
         ref(config.securityGroups, rule.peer.slice(3), field);
         return { ...rule, sg: rule.peer.slice(3) };
       }
-      return rule.peer === S3 ? rule : { ...rule, block: readAddress(rule.peer, field) };
+      if (rule.peer === S3) return rule;
+      const block = readAddress(rule.peer, field);
+      requireNotS3Range(block, field);
+      return { ...rule, block };
     })]))]));
 
   const from = endpoints.get(flow.from);

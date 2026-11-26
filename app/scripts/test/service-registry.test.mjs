@@ -123,7 +123,8 @@ describe('validate の名寄せ', () => {
     fs.mkdirSync(path.join(dir, 'questions', 'd1', '1.1'), { recursive: true });
     fs.copyFileSync(path.join(contentDir, 'blueprint.json'), path.join(dir, 'blueprint.json'));
     if (withRegistry) fs.copyFileSync(path.join(contentDir, 'services.json'), path.join(dir, 'services.json'));
-    const q = readJson('questions/d1/1.1/saa-1.1-ex-001.json');
+    // 実際の問題をひな形にするが、図鑑の事実への参照（factRefs）は外す（この見本は図鑑のエントリを持たないので、付いているとエラーになる）
+    const { factRefs: _factRefs, ...q } = readJson('questions/d1/1.1/saa-1.1-ex-001.json');
     for (const n of [1, 2]) {
       const id = `saa-1.1-ex-00${n}`;
       fs.writeFileSync(path.join(dir, 'questions', 'd1', '1.1', `${id}.json`), JSON.stringify({ ...q, id, services }));

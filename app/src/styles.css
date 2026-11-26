@@ -777,6 +777,12 @@ button.option:disabled {
   background: var(--surface-2);
 }
 
+/* 3 列までの表の、第 1 列の短いセル（6 字まで。印は rehypeShortFirstCells が付ける）は折り返さない。
+   長い文の列に押されて、短い見出しが 1〜2 字ずつに折り返されるのを防ぐ */
+.markdown .cell-short {
+  white-space: nowrap;
+}
+
 .markdown code {
   background: var(--surface-2);
   padding: 1px 5px;

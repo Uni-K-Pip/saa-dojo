@@ -158,6 +158,31 @@ describe('本文のリンクとサービス名', () => {
     ]);
   });
 
+  it('コードの中（フェンス、文中のコード）のリンクは拾わない', () => {
+    const text = [
+      '[本文](#/services/s3?f=in-text)',
+      '',
+      '```markdown',
+      '[フェンスの中](#/services/s3?f=in-fence)',
+      '```',
+      '',
+      '- リストの中のフェンス',
+      '',
+      '  ~~~',
+      '  [リストのフェンスの中](#/services/compare/cmp-in-list)',
+      '  ~~~',
+      '',
+      '> ```',
+      '> [引用のフェンスの中](#/services/iam)',
+      '> ```',
+      '',
+      '文中のコード `[例](#/services/s3?f=in-span)` と ``[例](#/services/kms)``。',
+      '',
+      '[フェンスのあと](#/services/sqs)',
+    ].join('\n');
+    expect(parseCatalogLinks(text).map(({ raw }) => raw)).toEqual(['#/services/s3?f=in-text', '#/services/sqs']);
+  });
+
   it('サービス名から扱うエントリを引く（hostedBy は親）', () => {
     expect(entryIdForName(serviceIndex, 'Amazon Simple Storage Service')).toBe('s3');
     expect(entryIdForName(serviceIndex, 'Amazon EC2 Spot Instances')).toBe('ec2');

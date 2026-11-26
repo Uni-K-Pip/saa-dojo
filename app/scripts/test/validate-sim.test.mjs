@@ -9,6 +9,7 @@ import { catalogHash } from '../../../scripts/lib/catalog.mjs';
 import { materialHash } from '../../../scripts/lib/material-status.mjs';
 import { simHashSubject } from '../../../scripts/lib/sim.mjs';
 import * as cidr from '../../../scripts/lib/sims/cidr.mjs';
+import { SIMULATORS } from '../../../scripts/lib/sims/index.mjs';
 import { buildContent } from '../lib/content-build.mjs';
 
 const appDir = fileURLToPath(new URL('../../', import.meta.url));
@@ -134,7 +135,10 @@ describe('validate とコンテンツのビルド', () => {
     const normal = build();
     expect(normal.ok).toBe(true);
     expect(normal.manifest.counts).toMatchObject({ sims: 0, simsExcluded: { pending: 5 } });
-    expect(output(normal.manifest, 'sim-index')).toEqual([]);
+    // 出せるシナリオがなくても、一覧にはシミュレーターの名前を出す（シナリオは 0 件）。
+    // 説明と「扱わないこと」は、検証の済んだシナリオが出るまで出さない
+    const empty = output(normal.manifest, 'sim-index');
+    expect(empty).toEqual(SIMULATORS.map(({ id, name }) => ({ id, name, description: '', notCovered: [], scenarios: [] })));
     expect(output(normal.manifest, 'course').stages[0].units[0].items).toEqual(lessons);
     expect(normal.manifest.files).not.toHaveProperty(`sim:${id}`);
 
@@ -144,6 +148,8 @@ describe('validate とコンテンツのビルド', () => {
     expect(output(dev.manifest, 'course').stages[0].units[0].items).toEqual([...lessons, simItem]);
     const [entry] = output(dev.manifest, 'sim-index');
     expect(entry.id).toBe('cidr');
+    expect(entry.description).toBe(SIMULATORS[0].description);
+    expect(entry.notCovered).toEqual(cidr.NOT_COVERED);
     expect(entry.scenarios.map(({ id }) => id)).toEqual([...entry.scenarios.map(({ id }) => id)].sort());
     expect(entry.scenarios.every(({ status }) => status === 'pending')).toBe(true);
     const item = output(dev.manifest, `sim:${id}`);

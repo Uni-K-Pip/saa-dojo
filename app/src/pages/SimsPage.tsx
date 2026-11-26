@@ -6,15 +6,14 @@ import { compareEvents, type SimRunEvent } from '../domain/events';
 import { useStudy } from '../state/study';
 import './SimsPage.css';
 
+// 画面の部品だけを持つ。シミュレーターの名前と説明は、読み込んだ一覧（scripts/lib/sims/index.mjs の SIMULATORS から作る）から取る
 const simulators = {
   cidr: {
-    name: 'CIDR とサブネット',
     Scenario: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrScenario }))),
     Explore: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrExplore }))),
     Limitations: lazy(() => import('../sims/cidr/CidrSimulator').then((m) => ({ default: m.CidrLimitations }))),
   },
   trace: {
-    name: 'VPC の通信の追跡',
     Scenario: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceScenario }))),
     Explore: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceExplore }))),
     Limitations: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceLimitations }))),
@@ -83,12 +82,12 @@ function ScenarioList({ entry }: { entry: SimIndexEntry }) {
 
 export function SimulatorPage() {
   const { sim = '' } = useParams();
-  const entry = use(loadSimIndex()).find(({ id, scenarios }) => id === sim && scenarios.length > 0);
+  const entry = use(loadSimIndex()).find(({ id }) => id === sim);
   const simulator = getSimulator(sim);
   if (!simulator) return <SimNotFound id={sim} />;
-  if (!entry) return (
+  if (!entry?.scenarios.length) return (
     <article className="sim">
-      <h1>{simulator.name}</h1>
+      <h1>{entry?.name ?? 'シミュレーター'}</h1>
       <p>表示できるシナリオはまだありません。</p>
       <Link to="/sims">シミュレーターの一覧へ</Link>
     </article>
