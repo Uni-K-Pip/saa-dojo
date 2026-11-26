@@ -93,8 +93,8 @@ export const RULES = {
     factRef: 's3.bucket-policy', evidence: ['アクセスを許可・拒否する JSON 形式のリソースベースポリシー'],
   },
   wildcard: {
-    label: 'ワイルドカード', text: 'Action と Resource の * は任意の文字列に一致します',
-    factRef: 'iam.policy-resource-element', evidence: ['* が任意の文字列に'],
+    label: 'ワイルドカード', text: 'Resource の ARN の区画内では * が任意の文字列に一致し、Action でも複数の文字に一致する * を使えます',
+    factRef: 'iam.policy-resource-element', evidence: ['* が任意の文字列に', '複数の文字に一致する *'],
   },
 };
 

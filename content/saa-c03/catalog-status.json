@@ -5866,8 +5866,8 @@
   },
   "iam.policy-resource-element": {
     "status": "verified",
-    "checkedAt": "2026-11-25",
-    "hash": "b1b6da583766"
+    "checkedAt": "2026-11-26",
+    "hash": "92deb9dad162"
   },
   "iam.poweruseraccess-no-iam": {
     "status": "verified",
