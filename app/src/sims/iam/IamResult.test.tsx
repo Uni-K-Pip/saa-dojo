@@ -74,7 +74,7 @@ describe('IAM のポリシーの評価の結果', () => {
     expect(stages[1]).toHaveTextContent('当てはまった文: SCP（ルート）: Allow * ／ SCP（OU）: Allow * ／ SCP（アカウント）: Allow *');
     expect(stages[1]).toHaveTextContent('上限を満たしています。');
     expect(stages[2]).toHaveClass('iam-stage-muted');
-    expect(stages[3]).toHaveTextContent('許可の出どころです。');
+    expect(stages[3]).toHaveTextContent('許可を与えています。');
   });
 
   it('別アカウントの段を 2 つに分け、通し番号を付ける', () => {
@@ -105,7 +105,7 @@ describe('IAM のポリシーの評価の結果', () => {
     const boundary = screen.getAllByRole('listitem')[4];
     expect(boundary).toHaveStyle({ animationDelay: '480ms' });
     expect(boundary).toHaveClass('iam-stage-blocked');
-    expect(boundary).toHaveTextContent('－ 許可なしこの許可が足りません。');
+    expect(boundary).toHaveTextContent('－ 許可なしここに許可がないので、拒否になります。');
     rerender(<IamResult {...iam({ tls: false, bucketPolicy: 'deny-insecure' })} />);
     const deny = screen.getAllByRole('listitem')[0];
     expect(deny).toHaveClass('iam-stage-blocked');

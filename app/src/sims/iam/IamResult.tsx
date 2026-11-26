@@ -33,9 +33,9 @@ const STATES: Record<Stage['state'], readonly [mark: string, label: string]> = {
 };
 const IMPACTS: Record<Stage['impact'], string> = {
   'decides-deny': 'ここで拒否に決まります。ほかのポリシーの許可は結果を変えません。',
-  grants: '許可の出どころです。',
+  grants: '許可を与えています。',
   passes: '上限を満たしています。',
-  blocks: 'この許可が足りません。',
+  blocks: 'ここに許可がないので、拒否になります。',
   bypassed: 'リソースベースのポリシーが IAM ユーザーを名指しで許可しているので、ここに許可がなくても結果は変わりません。',
   unused: '',
 };

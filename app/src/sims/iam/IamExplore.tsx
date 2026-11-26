@@ -50,14 +50,14 @@ export function IamExplore() {
           options={[[ 'member', 'メンバーアカウント'], ['none', '組織に入っていない'], ['management', '管理アカウント']]} />
         <IamSelect label="SCP" value={switches.scp ?? 'none'} onChange={choose('scp')} disabled={config.org.membership === 'none'}
           options={[[ 'none', 'なし'], ['full', 'すべての階層で Allow *'], ['ou-read-only', 'OU だけ Allow s3:Get*'],
-            ['deny-delete', 'アカウントの SCP で s3:DeleteObject を Deny']]} />
+            ['deny-delete', 'アカウントで s3:DeleteObject を Deny']]} />
         <IamSelect label="アイデンティティベースのポリシー" value={switches.identity ?? 'read'} onChange={choose('identity')} disabled={root}
           options={[[ 'read', 'Allow s3:GetObject'], ['none', 'なし'], ['read-write', 'Allow s3:GetObject と s3:PutObject'], ['all', 'Allow s3:*']]} />
         <IamSelect label="権限の境界" value={switches.boundary ?? 'none'} onChange={choose('boundary')} disabled={root}
           options={[[ 'none', 'なし'], ['read', 'Allow s3:Get*'], ['all', 'Allow s3:*']]} />
         <IamSelect label="バケットポリシー" value={switches.bucketPolicy ?? 'none'} onChange={choose('bucketPolicy')} disabled={root}
           options={[[ 'none', 'なし'], ['allow-principal', 'プリンシパルを名指しで Allow'], ['allow-org', '組織のプリンシパルに Allow'],
-            ['deny-insecure', 'TLS でないリクエストを Deny'], ['allow-principal-deny-insecure', '名指しで Allow と、TLS でないリクエストを Deny']]} />
+            ['deny-insecure', 'TLS なしのリクエストを Deny'], ['allow-principal-deny-insecure', '名指しで Allow と、TLS なしを Deny']]} />
       </div>
       <div className="visually-hidden" aria-live="polite" aria-atomic="true">
         {result.ok && summarizeIam(result.output)}
