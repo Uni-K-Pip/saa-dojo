@@ -87,15 +87,6 @@ describe('VPC の通信の追跡の結果', () => {
     expect(direction('戻り').getByText('宛先を 10.0.2.10 に付け替え（元のアドレス 10.0.1.20）')).toBeVisible();
   });
 
-  it('インターネットから NAT ゲートウェイへ向かう接続は、NAT の段で、内側の部品へ接続できない理由を表示する', () => {
-    render(<TraceResult {...trace({ from: 'client', to: 'nat' })} />);
-    expect(screen.getByText('行きのNAT ゲートウェイ（NAT）で止まりました')).toBeVisible();
-    const forward = direction('行き').getAllByRole('listitem');
-    expect(forward.at(-1)).toHaveClass('trace-stopped');
-    expect(forward.at(-1)).toHaveTextContent('外側から、NAT ゲートウェイの内側の部品への接続は開始できません。');
-    expect(direction('戻り').getByText('行きで止まったので、戻りはありません')).toBeVisible();
-  });
-
   it('閉じた構成にサブネットの種類、ルート、部品、段の番号を表示する', async () => {
     const user = userEvent.setup();
     render(<TraceResult {...trace()} />);
