@@ -29,9 +29,32 @@ describe('Markdown の囲み記事', () => {
   it('表を描画し、生の HTML は描画しない', () => {
     const out = html('| A | B |\n|---|---|\n| 1 | 2 |\n\n<script>alert(1)</script><b>太字</b>');
     expect(out).toContain('<table>');
-    expect(out).toContain('<td>1</td>');
+    expect(out).toContain('<td>2</td>');
     expect(out).not.toContain('<script');
     expect(out).not.toContain('<b>');
+  });
+
+  it('表の第 1 列の短いセル（6 字まで）にだけ、折り返さない印を付ける', () => {
+    const out = html([
+      '| 判断軸 | 決め手 |',
+      '|---|---|',
+      '| **可用性** | 短い |',
+      '| コスト最適化 | 六字ちょうど |',
+      '| 七字になる見出し | 長い |',
+      '|  | 空のセル |',
+    ].join('\n'));
+    expect(out).toContain('<th class="cell-short">判断軸</th>');
+    expect(out).toContain('<th>決め手</th>');
+    expect(out).toContain('<td class="cell-short"><strong>可用性</strong></td>');
+    expect(out).toContain('<td class="cell-short">コスト最適化</td>');
+    expect(out).toContain('<td>七字になる見出し</td>');
+    // 第 2 列は、短くても印を付けない。空のセルにも付けない
+    expect(out).toContain('<td>短い</td>');
+    expect(out).toContain('<td></td>');
+    expect(out.match(/cell-short/g)).toHaveLength(3);
+    // 3 列までの表だけ。4 列からは付けない
+    expect(html('| 項目 | B | C |\n|---|---|---|\n| 前提 | 2 | 3 |').match(/cell-short/g)).toHaveLength(2);
+    expect(html('| 項目 | B | C | D |\n|---|---|---|---|\n| 前提 | 2 | 3 | 4 |')).not.toContain('cell-short');
   });
 
   it('外部リンクは新しいタブで開く', () => {

@@ -3,6 +3,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { COMPARISON_ID, FACT_ID, SERVICE_ID } from './schema.mjs';
+import { withoutCode } from './markdown-code.mjs';
 
 export const CATALOG_DIR = 'catalog';
 export const CATALOG_STATUS_FILE = 'catalog-status.json';
@@ -59,11 +60,13 @@ export function effectiveStatus(statusMap, id, kind, obj) {
 
 // ---------------------------------------------------------------- 本文のリンク
 
-// Markdown 本文の図鑑へのリンク（#/services/<id>、#/services/<id>?f=<スラッグ>、#/services/compare/<cmp-id>）
+// Markdown 本文の図鑑へのリンク（#/services/<id>、#/services/<id>?f=<スラッグ>、#/services/compare/<cmp-id>）。
+// コードの中（フェンスで囲んだブロックと、バッククォートで囲んだ文中のコード）は読まない。表示ではリンクにならず、
+// 書き方の例として実在しない ID も書けるようにするため（図と実物の参照を読む parseMaterialRefs と同じ扱い）
 export function parseCatalogLinks(text) {
   const out = [];
   const re = /#\/services\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?(?:\?f=([a-z0-9-]+))?/g;
-  for (const m of String(text ?? '').matchAll(re)) {
+  for (const m of withoutCode(String(text ?? '')).matchAll(re)) {
     if (m[1] === 'compare') out.push({ kind: 'comparison', id: m[2] ?? '', raw: m[0] });
     else out.push({ kind: 'entry', id: m[1], slug: m[3], raw: m[0], extra: m[2] });
   }

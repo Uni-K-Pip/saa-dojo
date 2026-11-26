@@ -350,6 +350,7 @@ describe('入力の検査', () => {
     ['host-address', 'publicIps.alb', (c) => { c.publicIps.alb = '10.0.10.9'; }],
     ['host-address', 'publicIps.nat', (c) => { c.publicIps.nat = c.publicIps.alb; }],
     ['host-address', 'publicIps.alb', (c) => { c.publicIps.alb = c.externals[0].ip; }],
+    ['host-address', 'externals.1.ip', (c) => { c.externals[1].ip = c.externals[0].ip; }],
     ['unknown-ref', 'subnets.1.routeTable', (c) => { c.subnets[1].routeTable = 'toString'; }],
     ['unknown-ref', 'subnets.1.nacl', (c) => { c.subnets[1].nacl = 'missing'; }],
     ['unknown-ref', 'hosts.0.subnet', (c) => { c.hosts[0].subnet = 'missing'; }],
@@ -370,6 +371,15 @@ describe('入力の検査', () => {
     ['flow', 'flow.from', (c) => { c.flow.from = 'nat'; }],
     ['flow', 'flow.from', (c) => { Object.assign(c.flow, { from: 's3', to: 'alb' }); }],
     ['flow', 'flow', (c) => { Object.assign(c.flow, { from: 'client', to: 'update' }); }],
+    // S3 との通信（プリセットの通信はアプリ → S3）では、S3 の IP 範囲に当たりうる CIDR を拒否する
+    ['flow', 'routeTables.rt-app.2.dest', (c) => { c.routeTables['rt-app'].push({ dest: '52.0.0.0/8', target: 'igw' }); }],
+    ['flow', 'routeTables.rt-pub.1.dest', (c) => { c.routeTables['rt-pub'].push({ dest: '128.0.0.0/1', target: 'igw' }); }],
+    ['flow', 'securityGroups.sg-app.outbound.0.peer', (c) => { c.securityGroups['sg-app'].outbound = [{ ports: 'all', peer: '52.216.0.0/15' }]; }],
+    ['flow', 'securityGroups.sg-db.inbound.0.peer', (c) => { c.securityGroups['sg-db'].inbound[0].peer = '3.5.0.0/19'; }],
+    ['flow', 'nacls.acl-app.outbound.1.cidr', (c) => {
+      c.nacls['acl-app'] = { inbound: [], outbound: [{ rule: 100, action: 'allow', ports: 'all', cidr: ANY }, { rule: 90, action: 'deny', ports: 'all', cidr: '16.12.0.0/16' }] };
+    }],
+    ['flow', 'nacls.acl-default.inbound.0.cidr', (c) => { c.nacls['acl-default'] = { inbound: [{ rule: 100, action: 'allow', ports: 'all', cidr: '172.32.0.0/16' }], outbound: [] }; }],
   ])('%s を %s で報告します', (code, field, change) => {
     const config = buildPresetConfig();
     change(config);
@@ -378,6 +388,37 @@ describe('入力の検査', () => {
     expect(result).toMatchObject({ ok: false, error: { code, field, message: expect.stringMatching(/。$/) } });
     expect(validateInput(config)).toEqual(result);
     if (code === 'ipv6') expect(result.error.message).toBe(NOT_COVERED[0]);
+  });
+
+  it('S3 の IP 範囲に当たりうる CIDR を拒否するのは、S3 との通信を追うときだけです', () => {
+    const withPublicRanges = (flow) => {
+      const config = buildPresetConfig(flow);
+      config.routeTables['rt-pub'].push({ dest: '52.0.0.0/8', target: 'igw' });
+      config.securityGroups['sg-app'].outbound = [{ ports: 'all', peer: ANY }, { ports: 'all', peer: '52.216.0.0/15' }];
+      config.nacls['acl-default'] = {
+        inbound: [{ rule: 100, action: 'allow', ports: 'all', cidr: ANY }, { rule: 200, action: 'deny', ports: 'all', cidr: '16.12.0.0/16' }],
+        outbound: [{ rule: 100, action: 'allow', ports: 'all', cidr: ANY }],
+      };
+      return config;
+    };
+    // インターネットの相手との通信では、S3 の IP 範囲の扱いが結果に関わらないので、そのまま追跡する
+    expect(run(withPublicRanges({ from: 'app', to: 'update' }))).toMatchObject({ ok: true, output: { delivered: true } });
+    expect(run(withPublicRanges({ from: 'client', to: 'alb' }))).toMatchObject({ ok: true, output: { delivered: true } });
+    expect(run(withPublicRanges({ from: 'app', to: 's3' }))).toMatchObject({ ok: false, error: { code: 'flow' } });
+
+    // S3 との通信でも、S3 に当たらないとわかる範囲（VPC、プライベート、文書用のアドレス）と 0.0.0.0/0 は書ける
+    const config = buildPresetConfig({ from: 'app', to: 's3' });
+    config.routeTables['rt-app'].push({ dest: '192.0.2.0/24', target: 'igw' }, { dest: '172.16.0.0/12', target: 'nat:nat' });
+    config.securityGroups['sg-app'].outbound = [
+      { ports: 'all', peer: '10.0.0.0/16' }, { ports: 'all', peer: '192.168.10.0/24' }, { ports: 'all', peer: '198.51.100.7/32' },
+      { ports: 'all', peer: '203.0.113.0/24' }, { ports: 'all', peer: 'pl-s3' },
+    ];
+    config.nacls['acl-default'] = {
+      inbound: [{ rule: 90, action: 'deny', ports: 'all', cidr: '10.0.3.0/24' }, { rule: 100, action: 'allow', ports: 'all', cidr: ANY }],
+      outbound: [{ rule: 100, action: 'allow', ports: 'all', cidr: ANY }],
+    };
+    expect(SIM_CONFIG_SCHEMAS.trace.safeParse(config).success).toBe(true);
+    expect(run(config)).toMatchObject({ ok: true, output: { delivered: true, routeTarget: 'vpce' } });
   });
 
   it.each([

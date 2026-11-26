@@ -17,7 +17,9 @@ const appDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..
 const contentDir = path.resolve(appDir, '../content/saa-c03');
 const read = (rel) => fs.readFileSync(path.join(contentDir, rel), 'utf8');
 
-const baseQuestion = JSON.parse(read('questions/d1/1.1/saa-1.1-ex-001.json'));
+// 問題のひな形。実際の問題の欄を引き継ぐが、図鑑の事実への参照（factRefs）は外す。台帳を渡して図鑑のエントリを
+// 渡さないテストでは、ひな形の factRefs が「事実がありません」のエラーになるため（factRefs の検査は、下のテストが自分で足して確かめる）
+const { factRefs: _factRefs, ...baseQuestion } = JSON.parse(read('questions/d1/1.1/saa-1.1-ex-001.json'));
 // レッスンの見本。実際のレッスンは読まない（教材の側で図や実物を足しても、このテストが落ちないようにする）。
 // 形は実際のレッスンに合わせる: 複数行のリストで書いたフロントマター、見出し・箇条書き・表、
 // 末尾の「確認問題」の節（このテストが渡す問題にはない ID を 1 つ挙げる）。図・実物・図鑑への参照は書かない

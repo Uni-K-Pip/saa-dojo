@@ -90,10 +90,19 @@ describe('シミュレーターの画面', () => {
     ['/sims/trace', 'VPC の通信の追跡', '表示できるシナリオはまだありません。'],
     [`/sims/cidr/${id}`, '見つかりません', /まだ検証が済んでいないシナリオ/],
   ])('0 件で %s を開く', async (path, heading, message) => {
-    useFakeContent(files([]));
+    // 出せるシナリオが 0 件でも、一覧のデータにはシミュレーターの名前がある
+    useFakeContent(files([{ ...entry, scenarios: [] }, { ...traceEntry, scenarios: [] }]));
     renderApp(path);
     expect(await screen.findByRole('heading', { name: heading, level: 1 })).toBeVisible();
     expect(screen.getByText(message)).toBeVisible();
+    expect(screen.queryByRole('heading', { name: '自由に試す' })).toBeNull();
+  });
+
+  it('一覧のデータにシミュレーターがないときは、名前なしで 0 件の案内を出す', async () => {
+    useFakeContent(files([]));
+    renderApp('/sims/cidr');
+    expect(await screen.findByRole('heading', { name: 'シミュレーター', level: 1 })).toBeVisible();
+    expect(screen.getByText('表示できるシナリオはまだありません。')).toBeVisible();
     expect(screen.queryByRole('heading', { name: '自由に試す' })).toBeNull();
   });
 

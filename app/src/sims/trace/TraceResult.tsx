@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { Config, Gate, Nacl, NaclRule, Output, Ports, Reason, SecurityGroup, SecurityGroupRule, Stage } from '../../../../scripts/lib/sims/trace.mjs';
 import type { SettingRow } from '../SimFlow';
 
@@ -206,12 +207,37 @@ function stageNumbers(output: Output, matches: (stage: Stage) => boolean) {
   }).join('・');
 }
 
+// 閉じたままの <details> は紙に中身が出ないので、印刷のあいだだけ開き、終わったら元の開閉に戻す
+function useOpenWhilePrinting() {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    let openBefore: boolean | undefined;
+    const beforePrint = () => {
+      if (!ref.current || openBefore !== undefined) return;
+      openBefore = ref.current.open;
+      ref.current.open = true;
+    };
+    const afterPrint = () => {
+      if (ref.current && openBefore !== undefined) ref.current.open = openBefore;
+      openBefore = undefined;
+    };
+    window.addEventListener('beforeprint', beforePrint);
+    window.addEventListener('afterprint', afterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', beforePrint);
+      window.removeEventListener('afterprint', afterPrint);
+    };
+  }, []);
+  return ref;
+}
+
 function TraceTopology({ config, output }: { config: Config; output: Output }) {
+  const details = useOpenWhilePrinting();
   const igwNumbers = stageNumbers(output, ({ gate }) => gate === 'igw');
   const endpointNumbers = stageNumbers(output, ({ gate }) => gate === 'vpce');
   const hasEndpoint = Object.values(config.routeTables).some((routes) => routes.some(({ target }) => target === 'vpce-s3'));
   return (
-    <details className="trace-topology">
+    <details ref={details} className="trace-topology">
       <summary>構成を見る</summary>
       <p>VPC {config.vpc.cidr}</p>
       <p>{GATES.igw}のアタッチ{config.vpc.igw ? 'あり' : 'なし'} {igwNumbers && <span className="trace-numbers">{igwNumbers}</span>}</p>
