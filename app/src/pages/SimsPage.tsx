@@ -19,6 +19,12 @@ const simulators = {
     Explore: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceExplore }))),
     Limitations: lazy(() => import('../sims/trace/TraceSimulator').then((m) => ({ default: m.TraceLimitations }))),
   },
+  iam: {
+    name: 'IAM のポリシーの評価',
+    Scenario: lazy(() => import('../sims/iam/IamSimulator').then((m) => ({ default: m.IamScenario }))),
+    Explore: lazy(() => import('../sims/iam/IamSimulator').then((m) => ({ default: m.IamExplore }))),
+    Limitations: lazy(() => import('../sims/iam/IamSimulator').then((m) => ({ default: m.IamLimitations }))),
+  },
 };
 
 type Simulator = (typeof simulators)[keyof typeof simulators];
